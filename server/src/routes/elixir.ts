@@ -74,7 +74,7 @@ elixirRouter.get("/resources", requireAuth, async (req: AuthenticatedRequest, re
         select: { resource: { select: { slug: true } } },
       }),
     ])
-    const ownedSlugs = new Set<string>(owned.map((row: { resource: { slug: string } }) => row.resource.slug))
+    const ownedSlugs = new Set(owned.map((row) => row.resource.slug))
     res.json({
       data: mergeStarterElixirResources(resources, ownedSlugs),
     })

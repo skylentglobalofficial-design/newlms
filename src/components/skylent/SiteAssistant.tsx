@@ -184,7 +184,7 @@ function suggestionsFor(answers: Answers): Suggestion[] {
     list.push({
       title: `All ${level === "PG" ? "postgraduate" : "undergraduate"} degrees`,
       to: `/education?level=${(level ?? "UG").toLowerCase()}&mode=${answers.mode ?? "online"}`,
-      note: "University pathways · Register interest",
+      note: "Sample listings. Applications are not open.",
       open: false,
     })
     return list
@@ -488,7 +488,7 @@ export default function SiteAssistant() {
         from: "bot",
         kind: "text",
         text: next.goal === "degree"
-          ? "These university degree pathways match your goals. Open any pathway to inspect the curriculum or register interest."
+          ? "These degree samples match your answers. Applications are not open."
           : "These programmes match your answers. Each page states whether enrolment is open.",
       })
       push({ from: "bot", kind: "suggestions", items })
@@ -600,9 +600,9 @@ export default function SiteAssistant() {
               <path d="M6 6l12 12M18 6L6 18" />
             </svg>
           </button>
-          <p className="sia-invite__text">Not sure where to start? Match your goals to a live Skylent course or programme in 30 seconds.</p>
+          <p className="sia-invite__text">Not sure where to start? A short questionnaire can suggest a programme from the catalogue.</p>
           <button type="button" className="sia-invite__go" onClick={() => openPanel("finder")}>
-            Match my track
+            Start questionnaire
             <ArrowRight />
           </button>
         </div>
@@ -631,7 +631,7 @@ export default function SiteAssistant() {
               <SkylentBot size={36} className="sia-head__bot" />
               <div className="sia-head__text">
                 <span id={titleId} className="sia-head__title">Find a programme</span>
-                <span className="sia-head__sub">Interactive Track &amp; Programme Finder</span>
+                <span className="sia-head__sub">A questionnaire</span>
               </div>
               <button type="button" className="sia-restart" onClick={startFinder}>
                 Start over
@@ -644,8 +644,8 @@ export default function SiteAssistant() {
             </div>
 
             <div className="sia-scope">
-              <p>Answer 2 quick questions to match your goals with live Skylent courses, programmes, or university pathways.</p>
-              <p>Want a full 6-phase personalised roadmap? Try <Link to="/path" onClick={close}>Find My Path</Link> with our 90-second skill diagnostic.</p>
+              <p>This questionnaire matches your choices to programmes and degree samples. The matches are fixed rules.</p>
+              <p>Lesson help is inside an open lesson, and only when {AI_NAME} is switched on. During an open quiz it withholds the quiz answers. <Link to="/path" onClick={close}>Find My Path</Link> is a separate, longer questionnaire.</p>
             </div>
 
             <div className="sia-thread" ref={threadRef} aria-live="polite" aria-busy={sending}>

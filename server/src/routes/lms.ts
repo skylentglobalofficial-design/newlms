@@ -1,4 +1,3 @@
-import { createFacultyDoubtTicket, listLearnerDoubtTickets, type FacultyDoubtTicket } from "../lib/doubt-sla.js"
 import { Router } from "express"
 import { z } from "zod"
 import { AssignmentStatus, CurriculumNodeType } from "@prisma/client"
@@ -14,7 +13,7 @@ import { isAuthoredProgramme } from "../lib/authored-courses.js"
 import { courseIsEnrolable } from "../lib/course-publication.js"
 import { readConsent, recordPolicyAcceptance } from "../lib/policy.js"
 import { answersInOptionRange, QuizAttemptThrottled, QuizMaxAttemptsExceeded, recordScoredQuizAttempt } from "../lib/quiz-attempts.js"
-import { awardCourseEnrolmentElixir, awardVerifiedLearning } from "../lib/elixir.js"
+import { awardVerifiedLearning } from "../lib/elixir.js"
 import {
   capabilityAvailable,
   isDatabaseUnavailableError,
@@ -270,12 +269,6 @@ lmsRouter.post("/enrollments", requireAuth, requireCsrf, async (req: Authenticat
         })
         return created
       })
-      await awardCourseEnrolmentElixir({
-        userId,
-        enrollmentId: enrollment.id,
-        slug: program.slug,
-        title: program.name,
-      })
       const workspace = await buildCourseWorkspace({
         ...enrollment,
         course: program.programCourses[0].course,
@@ -319,13 +312,6 @@ lmsRouter.post("/enrollments", requireAuth, requireCsrf, async (req: Authenticat
       await syncCertificateState(enrollment.id, course.id)
       enrollment = await prisma.userEnrollment.findUniqueOrThrow({ where: { id: enrollment.id } })
     }
-    await awardCourseEnrolmentElixir({
-      userId,
-      enrollmentId: enrollment.id,
-      slug: course.slug,
-      title: course.title,
-      listedPriceRupees: course.price,
-    })
     const workspace = await buildCourseWorkspace({ ...enrollment, course })
     return res.status(201).json({ data: await attachProgramWorkspace(userId, workspace, null, course.id) })
   } catch (error) {
@@ -1118,144 +1104,5 @@ lmsRouter.get("/courses/:slug/certificate", requireAuth, async (req: Authenticat
     }
     console.error("Failed to load certificate state:", error instanceof Error ? error.name : "unknown")
     res.status(500).json({ error: "Failed to load certificate state" })
-  }
-})
-
-
-lmsRouter.post(
-  "/courses/:slug/lessons/:lessonKey/doubt",
-  requireAuth,
-  requireCsrf,
-  async (req: AuthenticatedRequest, res) => {
-    const parsed = slugParamSchema.merge(lessonKeySchema).safeParse(req.params)
-    if (!parsed.success) return res.status(400).json({ error: "Invalid request" })
-    const body = z
-      .object({
-        question: z.string().trim().max(1000).optional(),
-        lessonTitle: z.string().trim().max(240).optional(),
-      })
-      .safeParse(req.body ?? {})
-    if (!body.success) return res.status(400).json({ error: "Invalid request" })
-    try {
-      const course = await findCourseBySlug(parsed.data.slug)
-      if (!course) return res.status(404).json({ error: "Course not found" })
-      const enrollment = await resolveCourseEnrollment(req.auth!.user.id, course.id)
-      if (!enrollment) return res.status(403).json({ error: "Not enrolled in this course" })
-      const found = await findNodeByLessonKey(course, parsed.data.lessonKey)
-      if (!found) return res.status(404).json({ error: "Lesson not found" })
-      const ticket = createFacultyDoubtTicket({
-        userId: req.auth!.user.id,
-        learnerName: req.auth!.user.displayName ?? req.auth!.user.email,
-        courseSlug: course.slug,
-        lessonKey: parsed.data.lessonKey,
-        lessonTitle: body.data.lessonTitle ?? found.node.title,
-        question: body.data.question,
-      })
-      type DoubtDbRow = {
-        id: string
-        userId: string
-        learnerName: string
-        courseSlug: string
-        lessonKey: string
-        lessonTitle: string | null
-        question: string
-        status: string
-        slaMinutes: number
-        createdAt: Date
-        resolvedAt: Date | null
-        resolvedById: string | null
-        resolutionNote: string | null
-      }
-      const doubtDelegate = (prisma as unknown as {
-        facultyDoubtTicket?: {
-          upsert: (args: Record<string, unknown>) => Promise<DoubtDbRow>
-          findMany: (args: Record<string, unknown>) => Promise<DoubtDbRow[]>
-        }
-      }).facultyDoubtTicket
-      if (doubtDelegate) {
-        await doubtDelegate
-          .upsert({
-            where: { id: ticket.id },
-            create: {
-              id: ticket.id,
-              userId: ticket.userId,
-              learnerName: ticket.learnerName,
-              courseSlug: ticket.courseSlug,
-              lessonKey: ticket.lessonKey,
-              lessonTitle: ticket.lessonTitle,
-              question: ticket.question,
-              status: ticket.status,
-              slaMinutes: ticket.slaMinutes,
-            },
-            update: {
-              question: ticket.question,
-            },
-          })
-          .catch((err: unknown) =>
-            console.error("Failed to persist doubt to DB:", err instanceof Error ? err.name : "unknown"),
-          )
-      }
-      res.status(201).json({ data: ticket })
-    } catch (error) {
-      sendLmsFailure(res, error, "Failed to escalate doubt")
-    }
-  },
-)
-
-lmsRouter.get("/doubts/mine", requireAuth, async (req: AuthenticatedRequest, res) => {
-  try {
-    const userId = req.auth!.user.id
-    const byId = new Map<string, FacultyDoubtTicket>()
-    for (const mem of listLearnerDoubtTickets(userId)) {
-      byId.set(mem.id, mem)
-    }
-    type DoubtDbRow = {
-      id: string
-      userId: string
-      learnerName: string
-      courseSlug: string
-      lessonKey: string
-      lessonTitle: string | null
-      question: string
-      status: string
-      slaMinutes: number
-      createdAt: Date
-      resolvedAt: Date | null
-      resolvedById: string | null
-      resolutionNote: string | null
-    }
-    const doubtDelegate = (prisma as unknown as {
-      facultyDoubtTicket?: {
-        findMany: (args: Record<string, unknown>) => Promise<DoubtDbRow[]>
-      }
-    }).facultyDoubtTicket
-    if (doubtDelegate) {
-      const dbRows = await doubtDelegate.findMany({
-        where: { userId },
-        orderBy: { createdAt: "desc" },
-        take: 30,
-      }).catch((): DoubtDbRow[] => [])
-      for (const row of dbRows) {
-        byId.set(row.id, {
-          id: row.id,
-          userId: row.userId,
-          learnerName: row.learnerName,
-          courseSlug: row.courseSlug,
-          lessonKey: row.lessonKey,
-          lessonTitle: row.lessonTitle ?? row.lessonKey,
-          question: row.question,
-          status: row.status === "resolved" ? "resolved" : "open",
-          slaMinutes: row.slaMinutes,
-          createdAt: row.createdAt.toISOString(),
-          resolvedAt: row.resolvedAt ? row.resolvedAt.toISOString() : null,
-          resolvedById: row.resolvedById ?? null,
-          resolutionNote: row.resolutionNote ?? null,
-        })
-      }
-    }
-    const sorted = [...byId.values()].sort((a, b) => b.createdAt.localeCompare(a.createdAt))
-    res.json({ data: sorted })
-  } catch (error) {
-    sendLmsFailure(res, error, "Failed to load learner doubts")
   }
 })

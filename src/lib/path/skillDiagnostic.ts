@@ -1,228 +1,162 @@
-/**
- * Phase P12: 90-Second Adaptive Skill Diagnostic & Percentile Benchmark (/path).
- * Evaluates practical reasoning across SQL/Data, Product Scoping, and Python/GenAI Systems
- * before enrolment (inspired by CodeSignal / DataCamp Signal).
- */
-
 export type DiagnosticQuestion = {
   id: string
-  domain: "data" | "product" | "ai_engineering"
-  domainLabel: string
-  prompt: string
-  codeOrContext: string
-  options: ReadonlyArray<{
+  track: "data" | "product" | "ai"
+  title: string
+  scenario: string
+  options: Array<{
     id: string
     label: string
-    isCorrect: boolean
-    feedback: string
+    isOptimal: boolean
+    explanation: string
   }>
 }
 
-export const SKILL_DIAGNOSTIC_QUESTIONS: readonly DiagnosticQuestion[] = [
+export const SKILL_DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
   {
     id: "q-sql-grain",
-    domain: "data",
-    domainLabel: "Data Analytics & SQL",
-    prompt: "You run a LEFT JOIN from `orders` (166 valid rows) to `refund_events` (where 1 order can have 2 partial refund rows). `SUM(orders.net_revenue)` jumps by 18%. Why?",
-    codeOrContext: "SELECT SUM(o.net_revenue) FROM orders o LEFT JOIN refund_events r ON o.order_id = r.order_id;",
+    track: "data",
+    title: "SQL & Data Pipeline Diagnostic",
+    scenario: "You join an orders table (1,000 rows) with an order_items table (3,500 rows) on order_id. The raw sum of order_total in the joined result is 3x higher than expected. What is the fundamental issue?",
     options: [
       {
-        id: "fanout",
-        label: "One-to-many join fan-out duplicated parent order rows before aggregation",
-        isCorrect: true,
-        feedback: "Exact match: pre-aggregating `refund_events` by `order_id` in a CTE preserves the 1-row-per-order grain.",
+        id: "opt-fanout",
+        label: "1:N Join Fan-Out: Order header totals are duplicated across multiple item rows",
+        isOptimal: true,
+        explanation: "Correct. A 1:N join duplicates parent header columns for every child row. You must aggregate order_items at the order level first or calculate item-level line totals.",
       },
       {
-        id: "nulls",
-        label: "LEFT JOIN converts NULL refund amounts into positive revenue",
-        isCorrect: false,
-        feedback: "NULLs on the right table do not increase `o.net_revenue`; row multiplication from 1:N joins does.",
+        id: "opt-inner",
+        label: "INNER JOIN was used instead of LEFT JOIN",
+        isOptimal: false,
+        explanation: "Incorrect. An INNER JOIN filters unmatched rows; it does not inflate totals by duplicating parent rows.",
       },
       {
-        id: "index",
-        label: "Missing primary key index on `refund_events` caused duplicate table scans",
-        isCorrect: false,
-        feedback: "Indexes affect query speed, not the mathematical result of `SUM(o.net_revenue)`.",
+        id: "opt-index",
+        label: "Missing database primary key index on order_id",
+        isOptimal: false,
+        explanation: "Incorrect. Indexing impacts query execution speed, not the numerical result of row duplication.",
       },
     ],
   },
   {
     id: "q-pm-triage",
-    domain: "product",
-    domainLabel: "Product Management & Scoping",
-    prompt: "Harbor Retail has 9 weekend delivery exceptions per week across 12 stores, and 3 go unlogged in WhatsApp threads. You have 2 engineers for 6 weeks and cannot replace their ERP. What is your highest-leverage bet?",
-    codeOrContext: "Constraint: 2 engineers · 6 weeks · No ERP replacement · Goal: Eliminate unlogged weekend exceptions",
+    track: "product",
+    title: "Product Scoping & Triage Diagnostic",
+    scenario: "Harbor Retail store managers complain that weekend order exceptions get lost. Leadership demands 'Build an AI assistant for store managers'. You have 2 engineers and 6 weeks. What is the correct PRD first step?",
     options: [
       {
-        id: "erp",
-        label: "Build a full custom warehouse & inventory ERP with automated vendor EDI",
-        isCorrect: false,
-        feedback: "Violates the 2-engineer, 6-week constraint and attempts an ERP rewrite.",
+        id: "opt-triage",
+        label: "Map the exact exception owner and handoff SLA before proposing any AI or software UI",
+        isOptimal: true,
+        explanation: "Correct. 'AI assistant' is an unvalidated solution. You must isolate who struggles, why weekend handoffs fail, and establish the operational owner first.",
       },
       {
-        id: "triage-queue",
-        label: "Ship a mobile-first Weekend Exception Triage Queue with mandatory photo/SKU logging & 4-hour SLA alerts",
-        isCorrect: true,
-        feedback: "Exact match: solves the 3 unlogged exceptions within the 2-engineer, 6-week constraint without touching the ERP.",
+        id: "opt-build-llm",
+        label: "Fine-tune an open-source LLM on previous customer support tickets immediately",
+        isOptimal: false,
+        explanation: "Incorrect. This violates the 6-week constraint and solves for a solution rather than understanding the root cause.",
       },
       {
-        id: "survey",
-        label: "Run a 6-week NPS survey across all 12 store managers before writing any spec",
-        isCorrect: false,
-        feedback: "Spends the entire 6-week engineering window on surveys when observational data already exists.",
+        id: "opt-whatsapp",
+        label: "Create a shared WhatsApp group for all 12 store managers",
+        isOptimal: false,
+        explanation: "Incorrect. WhatsApp groups lack accountability, audit trails, and create worse operational confusion.",
       },
     ],
   },
   {
     id: "q-ai-rag",
-    domain: "ai_engineering",
-    domainLabel: "Python, Data Science & GenAI Systems",
-    prompt: "Your enterprise RAG assistant answers refund policy questions with 94% fluency, but fabricates a '30-day unconditional refund' rule when retrieving outdated 2023 chunks. What fixes the root cause?",
-    codeOrContext: "Pipeline: Hybrid Retriever (top_k=8) → LLM Generator → Customer Response",
+    track: "ai",
+    title: "Python & GenAI Systems Diagnostic",
+    scenario: "In an enterprise RAG system, your LLM answers questions using obsolete internal policies not found in retrieved chunks. What architectural guardrail resolves this?",
     options: [
       {
-        id: "temperature",
-        label: "Increase LLM temperature from 0.1 to 0.9 so it considers more policy interpretations",
-        isCorrect: false,
-        feedback: "Higher temperature increases hallucination variance; it does not filter stale chunks.",
+        id: "opt-grounding",
+        label: "Enforce strict citation grounding and refuse answers without verified source chunk attribution",
+        isOptimal: true,
+        explanation: "Correct. An attribution citation gate ensures the generator is bound to retrieved evidence and triggers an honest refusal when chunks lack the required facts.",
       },
       {
-        id: "metadata-citation",
-        label: "Enforce `effective_date` metadata filtering in retrieval + mandatory `[doc_id]` citation verification gate",
-        isCorrect: true,
-        feedback: "Exact match: filtering deprecated chunks at retrieval and verifying inline citations blocks ungrounded policy claims.",
+        id: "opt-temperature",
+        label: "Set model temperature to 0.0 without changing prompt or retrieval pipeline",
+        isOptimal: false,
+        explanation: "Incorrect. Lowering temperature makes generation deterministic but does not prevent the model from retrieving internal parametric memory.",
       },
       {
-        id: "prompt-length",
-        label: "Remove system prompt constraints so the model replies faster",
-        isCorrect: false,
-        feedback: "Removing citation guardrails worsens ungrounded policy fabrication.",
+        id: "opt-bigger-model",
+        label: "Switch to a 10x larger model checkpoint",
+        isOptimal: false,
+        explanation: "Incorrect. Larger models still hallucinate ungrounded facts if the retrieval-citation contract is missing.",
       },
     ],
   },
-] as const
+]
 
-export type DiagnosticEvaluation = {
-  answeredCount: number
-  correctCount: number
+export type DiagnosticResult = {
   scorePercent: number
-  percentileEstimate: number
-  readinessTier: "Foundation Builder" | "Execution Ready" | "Fast-Track Capstone"
-  strongestDomain: string
-  gapSummary: string
-  recommendedCourse: {
-    slug: string
-    title: string
-    startModule: string
-    href: string
-  }
+  percentile: string
+  readinessTier: "Industry Ready (Top 8%)" | "Strong Practical Foundation" | "Foundational (Recommended: Module 1)"
+  correctCount: number
+  totalQuestions: number
+  recommendedCourseSlug: string
+  recommendedCourseTitle: string
+  recommendedModule: string
+  gapsIdentified: string[]
 }
 
-export function evaluateSkillDiagnostic(answers: Record<string, string>): DiagnosticEvaluation {
-  let answeredCount = 0
-  let correctCount = 0
-  const domainCorrect: Record<"data" | "product" | "ai_engineering", boolean> = {
-    data: false,
-    product: false,
-    ai_engineering: false,
-  }
+export function evaluateSkillDiagnostic(answers: Record<string, string>): DiagnosticResult {
+  let optimal = 0
+  const gaps: string[] = []
 
   for (const q of SKILL_DIAGNOSTIC_QUESTIONS) {
-    const chosenId = answers[q.id]
-    if (!chosenId) continue
-    answeredCount += 1
-    const opt = q.options.find((o) => o.id === chosenId)
-    if (opt?.isCorrect) {
-      correctCount += 1
-      domainCorrect[q.domain] = true
+    const selected = answers[q.id]
+    const opt = q.options.find((o) => o.id === selected)
+    if (opt?.isOptimal) {
+      optimal += 1
+    } else {
+      gaps.push(q.title.replace(" Diagnostic", ""))
     }
   }
 
-  const scorePercent = Math.round((correctCount / SKILL_DIAGNOSTIC_QUESTIONS.length) * 100)
-  const percentileEstimate =
-    correctCount === 3 ? 92 : correctCount === 2 ? 74 : correctCount === 1 ? 45 : 22
-  const readinessTier =
-    correctCount === 3
-      ? "Fast-Track Capstone"
-      : correctCount === 2
-        ? "Execution Ready"
-        : "Foundation Builder"
+  const scorePercent = Math.round((optimal / SKILL_DIAGNOSTIC_QUESTIONS.length) * 100)
 
-  if (!domainCorrect.data) {
+  if (scorePercent === 100) {
     return {
-      answeredCount,
-      correctCount,
       scorePercent,
-      percentileEstimate,
-      readinessTier,
-      strongestDomain: domainCorrect.product
-        ? "Product Scoping"
-        : domainCorrect.ai_engineering
-          ? "Python & GenAI Systems"
-          : " analytical foundations",
-      gapSummary:
-        "Join grain & commercial SQL validation gap detected — start with Data Analytics (Module 3: SQL Joins & Data-Quality Checks).",
-      recommendedCourse: {
-        slug: "data-analytics",
-        title: "Data Analytics (Northwind SQL Lab)",
-        startModule: "Module 3 · SQL Joins, CTEs & Grain Audits",
-        href: "/courses/data-analytics",
-      },
+      percentile: "92nd Percentile (Top 8%)",
+      readinessTier: "Industry Ready (Top 8%)",
+      correctCount: optimal,
+      totalQuestions: SKILL_DIAGNOSTIC_QUESTIONS.length,
+      recommendedCourseSlug: "data-analytics",
+      recommendedCourseTitle: "Data Analytics with Gen AI",
+      recommendedModule: "Module 3 · Multi-Table Joins & Commercial Modeling",
+      gapsIdentified: gaps,
     }
   }
 
-  if (!domainCorrect.product) {
+  if (scorePercent >= 66) {
     return {
-      answeredCount,
-      correctCount,
       scorePercent,
-      percentileEstimate,
-      readinessTier,
-      strongestDomain: "Data Analytics & SQL",
-      gapSummary:
-        "Constrained product scoping & PRD trade-off gap detected — start with Product Management (Harbor Desk Case).",
-      recommendedCourse: {
-        slug: "product-management",
-        title: "Product Management (Harbor Desk Case)",
-        startModule: "Module 4 · Choosing One Bet Under Constraints",
-        href: "/courses/product-management",
-      },
-    }
-  }
-
-  if (!domainCorrect.ai_engineering) {
-    return {
-      answeredCount,
-      correctCount,
-      scorePercent,
-      percentileEstimate,
-      readinessTier,
-      strongestDomain: "Data & Product Execution",
-      gapSummary:
-        "Grounded RAG retrieval & citation verification gap detected — start with Generative AI & LLM Systems.",
-      recommendedCourse: {
-        slug: "generative-ai",
-        title: "Generative AI & LLM Systems",
-        startModule: "Module 2 · Grounded RAG & Citation Verification",
-        href: "/courses/generative-ai",
-      },
+      percentile: "74th Percentile",
+      readinessTier: "Strong Practical Foundation",
+      correctCount: optimal,
+      totalQuestions: SKILL_DIAGNOSTIC_QUESTIONS.length,
+      recommendedCourseSlug: gaps.some(g => g.includes("Product Scoping")) ? "product-management" : "data-analytics",
+      recommendedCourseTitle: gaps.some(g => g.includes("Product Scoping")) ? "Product Management" : "Data Analytics",
+      recommendedModule: "Module 2 · Triage, Clean Datasets & Metrics",
+      gapsIdentified: gaps,
     }
   }
 
   return {
-    answeredCount,
-    correctCount,
     scorePercent,
-    percentileEstimate,
-    readinessTier,
-    strongestDomain: "Full-Spectrum Data, Product & AI",
-    gapSummary:
-      "3/3 benchmark passed (Top 8% cohort readiness) — you are ready to tackle our advanced Capstone Studios & AI Systems tracks.",
-    recommendedCourse: {
-      slug: "generative-ai",
-      title: "Generative AI & LLM Systems",
-      startModule: "Module 5 · Enterprise RAG & Agent Capstone Studio",
-      href: "/courses/generative-ai",
-    },
+    percentile: "45th Percentile",
+    readinessTier: "Foundational (Recommended: Module 1)",
+    correctCount: optimal,
+    totalQuestions: SKILL_DIAGNOSTIC_QUESTIONS.length,
+    recommendedCourseSlug: "data-analytics",
+    recommendedCourseTitle: "Data Analytics Foundations",
+    recommendedModule: "Module 1 · Foundations, Net Revenue & Problem Framing",
+    gapsIdentified: gaps.length ? gaps : ["Core Analytical Framing"],
   }
 }

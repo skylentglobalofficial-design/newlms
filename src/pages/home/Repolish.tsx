@@ -68,7 +68,7 @@ export function HomeHero({
     : catalogue === "unknown"
       ? AVAILABILITY_UNKNOWN
       : dataAnalyticsOpen && productManagementOpen
-        ? "Two programmes are open to start: Data Analytics (with Northwind SQL labs) and Product Management (with the Harbor Desk case), alongside all 6 live self-paced courses."
+        ? "Two programmes are open to start: Data Analytics (SQL & commercial analysis) and Product Management (product scoping & specs)."
         : programmesIndexIntro(true, openTitles)
   return (
     <section className="hxw-hero" data-clear-launcher aria-labelledby="hx-hero-title">
@@ -76,33 +76,28 @@ export function HomeHero({
       <div className="sky-container hxw-hero__grid">
         <div className="hxw-hero__copy">
           <h1 id="hx-hero-title" className="hxw-hero__title hx-rise">
-            Learn. Practise. Build. <em>Prove it.</em>
+            Your education is just <em>the beginning.</em>
           </h1>
-          <p className="hxw-hero__lead hx-rise">
-            In-browser SQL & Python labs, executive case studies, and verifiable proof of work.
-          </p>
+          <p className="hxw-hero__lead hx-rise">Learn something useful. Put it to work. Build a record of what you can do.</p>
           <p className="hxw-hero__today hx-rise">{availability}</p>
           <div className="hxw-hero__actions hx-rise">
             <Link className="sk-btn sk-btn-primary hx-btn" to="/programmes">
               Explore programmes
               <ArrowRight />
             </Link>
-            <Link className="sk-btn sk-btn-secondary hx-btn" to="/programmes#live-courses">
-              All 6 live courses
-            </Link>
+            <a className="sk-btn sk-btn-secondary hx-btn" href="#how-it-works">
+              See how Skylent works
+            </a>
             <Link className="hxw-hero__path" to="/path">
               Find My Path
             </Link>
           </div>
-          <ul
-            className="hxw-hero__caps hx-rise"
-            aria-label="Verified platform capabilities"
-          >
-            <li>Interactive SQL &amp; Python practice</li>
-            <li>Applied business case studies</li>
-            <li>Graded assessments &amp; faculty review</li>
-            <li>Verifiable credentials</li>
-          </ul>
+          <div className="hx-elixir-pills hx-rise" style={{ marginTop: 18 }} aria-label="Platform access and pricing summary">
+            <span className="hx-elixir-pill">Pilot Enrolment: ₹0 Free Access (No Card Needed)</span>
+            <span className="hx-elixir-pill">₹99 Weekend Bootcamps = 99 Elixir Coins</span>
+            <span className="hx-elixir-pill">Verified SKL Dossiers (/verify)</span>
+          </div>
+          
         </div>
         <div className="hxw-hero__visual hx-rise">
           <div className="hxw-stage">
@@ -118,19 +113,6 @@ export function HomeHero({
                 fetchPriority="high"
               />
             </div>
-            <div className="hxw-ws" aria-label="Skylent OS workspace summary">
-              <div className="hxw-ws__top">
-                <span className="hxw-ws__mark" aria-hidden="true">OS</span>
-                <div>
-                  <span className="hxw-ws__title">Skylent Workspace</span>
-                  <span className="hxw-ws__note">In-browser SQL, Python &amp; Case Studios</span>
-                </div>
-              </div>
-              <div className="hxw-ws__pair">
-                <span><b>Northwind SQL</b>166-row retail dataset</span>
-                <span><b>Harbor Desk</b>Operations case studio</span>
-              </div>
-            </div>
           </div>
         </div>
       </div>
@@ -143,11 +125,11 @@ export function HomeHero({
    No partner names: none are confirmed. */
 
 const JOURNEY_STEPS = [
-  { n: "01", title: "Explore", text: "Pick your track or 90-sec diagnostic." },
-  { n: "02", title: "Learn", text: "Concise lessons with concept checks." },
-  { n: "03", title: "Practise", text: "Query live SQL & Python sandboxes." },
-  { n: "04", title: "Build", text: "Ship graded capstones & cold calls." },
-  { n: "05", title: "Prove", text: "Share your cryptographic work dossier." },
+  { n: "01", title: "Explore", text: "Find a meaningful learning direction." },
+  { n: "02", title: "Learn", text: "Build knowledge through structured learning." },
+  { n: "03", title: "Practise", text: "Apply concepts through assignments and practical work." },
+  { n: "04", title: "Build", text: "Create work that demonstrates developing capability." },
+  { n: "05", title: "Progress", text: "Use learning progress and completed work to inform the next step." },
 ] as const
 
 export function HomeTrust() {
@@ -155,7 +137,7 @@ export function HomeTrust() {
     <section className="hxw-journey" data-clear-launcher aria-labelledby="hx-journey-title">
       <div className="sky-container">
         <h2 id="hx-journey-title" className="hxw-journey__title">A connected learning journey</h2>
-        <p className="hxw-journey__lead">Five clear steps from first query to verifiable portfolio.</p>
+        <p className="hxw-journey__lead">Five stages, in this order. Each one follows the last.</p>
         <ol className="hxw-journey__steps">
           {JOURNEY_STEPS.map((step) => (
             <li key={step.n}>
@@ -314,7 +296,7 @@ function LmsCanvas({ stage }: { stage: number }) {
         <div>
           <p className="hx-k">Module {facts.currentModuleNumber} · {facts.current.kind}{facts.current.duration ? ` · ${facts.current.duration}` : ""}</p>
           <h3>{facts.current.title}</h3>
-          <p className="hx-canvas__note">Lesson {facts.done + 1} of {facts.total} in the {facts.title} curriculum sequence.</p>
+          <p className="hx-canvas__note">Lesson {facts.done + 1} of {facts.total} in the Data Analytics curriculum.</p>
           <span className="hx-bar" aria-hidden="true"><span style={{ width: `${facts.percent}%` }} /></span>
         </div>
       </div>
@@ -520,170 +502,6 @@ function useProductDemo(delays: readonly number[]) {
 
 const LMS_BEATS = [1700, 1700, 1700, 1700, 1700] as const
 
-
-export function ZeroLoginInteractiveTryout() {
-  const [tab, setTab] = useState<"sql" | "case">("sql")
-  const [sqlRan, setSqlRan] = useState(false)
-  const [casePick, setCasePick] = useState<"a" | "b" | "c" | null>(null)
-
-  return (
-    <section id="try-skylent-os" className="hx-tryout" aria-labelledby="hx-tryout-title">
-      <div className="sky-container">
-        <header className="hx-head">
-          <div>
-            <p className="hx-eyebrow hx-eyebrow--dark">Interactive Workspace Preview (No Sign-in Needed)</p>
-            <h2 id="hx-tryout-title" className="hx-h2 hx-h2--sm">
-              Test-drive the execution workspace in 30 seconds <em>— no account required.</em>
-            </h2>
-          </div>
-          <p className="hx-sub">
-            Run a live Northwind SQL revenue query or defend a 60-second Boardroom Cold Call right here on the page.
-          </p>
-        </header>
-
-        <div className="hx-tryout__box">
-          <div className="hx-tryout__tabs" role="tablist" aria-label="Interactive sandbox tabs">
-            <button
-              type="button"
-              role="tab"
-              aria-selected={tab === "sql"}
-              className={tab === "sql" ? "hx-tryout__tab is-on" : "hx-tryout__tab"}
-              onClick={() => setTab("sql")}
-            >
-              <span>01 · Live Northwind SQL Lab</span>
-              <em>Data Analytics · Instant Query Execution</em>
-            </button>
-            <button
-              type="button"
-              role="tab"
-              aria-selected={tab === "case"}
-              className={tab === "case" ? "hx-tryout__tab is-on" : "hx-tryout__tab"}
-              onClick={() => setTab("case")}
-            >
-              <span>02 · 60-Second Case Cold Call</span>
-              <em>Product Management · Executive Decision Check</em>
-            </button>
-          </div>
-
-          {tab === "sql" ? (
-            <div className="hx-tryout__pane">
-              <div className="hx-tryout__code">
-                <div className="hx-tryout__bar">
-                  <span className="sky-mono">northwind_mart.orders · Read-Only Sandbox</span>
-                  <button
-                    type="button"
-                    className="sk-btn sk-btn-primary hx-tryout__run"
-                    onClick={() => setSqlRan(true)}
-                  >
-                    {sqlRan ? "Executed (14 ms)" : "Run query"}
-                  </button>
-                </div>
-                <pre className="hx-sql">{NORTHWIND_CATEGORY_SQL_EXCERPT}</pre>
-              </div>
-              <div className="hx-tryout__output">
-                {!sqlRan ? (
-                  <div className="hx-tryout__idle">
-                    <strong>Run the query against 166 Northwind order rows</strong>
-                    <p>See how Skylent OS validates row integrity, filters returned orders, and computes net category revenue in real time.</p>
-                  </div>
-                ) : (
-                  <div className="hx-tryout__result">
-                    <div className="hx-tryout__result-head">
-                      <span>4 categories · 166 valid rows scanned</span>
-                      <strong>Net revenue: ₹8,12,020</strong>
-                    </div>
-                    <div className="hx-bars">
-                      {NORTHWIND.categories.map((row) => (
-                        <div key={row.name}>
-                          <span>{row.name}</span>
-                          <span className="hx-bar">
-                            <span style={{ width: `${Math.round((row.value / NORTHWIND.categories[0].value) * 100)}%` }} />
-                          </span>
-                          <span>{rupees(row.value)}</span>
-                        </div>
-                      ))}
-                    </div>
-                    <div className="hx-tryout__cta">
-                      <Link to="/courses/data-analytics" className="hx-inline-link">
-                        Continue in the full Data Analytics SQL Lab <ArrowRight />
-                      </Link>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          ) : (
-            <div className="hx-tryout__pane">
-              <div className="hx-tryout__code">
-                <div className="hx-tryout__bar">
-                  <span className="sky-mono">Harbor Desk · Executive Boardroom Cold Call</span>
-                  <span className="hx-tryout__timer">Decision scenario</span>
-                </div>
-                <h3 className="hx-tryout__q">
-                  “Enterprise ticket resolution dropped 18% this month, and your VP of Sales demands a custom SLA dashboard by Friday. However, engineering says 42% of tickets lack root-cause tags. What is your Monday morning move?”
-                </h3>
-                <div className="hx-tryout__choices">
-                  <button
-                    type="button"
-                    className={casePick === "a" ? "hx-tryout__choice is-on" : "hx-tryout__choice"}
-                    onClick={() => setCasePick("a")}
-                  >
-                    <strong>Option A · Ship the dashboard immediately using raw ticket timestamps</strong>
-                    <span>Satisfies Sales before Friday, even if category breakdowns are noisy.</span>
-                  </button>
-                  <button
-                    type="button"
-                    className={casePick === "b" ? "hx-tryout__choice is-on" : "hx-tryout__choice"}
-                    onClick={() => setCasePick("b")}
-                  >
-                    <strong>Option B · Enforce mandatory triage tags on new tickets + ship a 2-metric interim view</strong>
-                    <span>Fixes data hygiene at the intake bottleneck while giving Sales verified response-time visibility.</span>
-                  </button>
-                  <button
-                    type="button"
-                    className={casePick === "c" ? "hx-tryout__choice is-on" : "hx-tryout__choice"}
-                    onClick={() => setCasePick("c")}
-                  >
-                    <strong>Option C · Delay all reporting for 3 weeks to backfill historical tags manually</strong>
-                    <span>Guarantees 100% clean historical charts before showing anything to leadership.</span>
-                  </button>
-                </div>
-              </div>
-              <div className="hx-tryout__output">
-                {!casePick ? (
-                  <div className="hx-tryout__idle">
-                    <strong>Select an executive response to see the rubric & peer benchmark</strong>
-                    <p>Every Skylent course pairs technical execution with timed Boardroom Cold Calls so you can defend trade-offs in real interviews.</p>
-                  </div>
-                ) : (
-                  <div className="hx-tryout__result">
-                    <div className="hx-tryout__result-head">
-                      <span>{casePick === "b" ? "Recommended trade-off" : "Rubric feedback"}</span>
-                      <strong>64% of enrolled operators chose Option B</strong>
-                    </div>
-                    <p className="hx-tryout__explain">
-                      {casePick === "b"
-                        ? "Spot on. Shipping an unverified dashboard (Option A) destroys trust when numbers don't reconcile, while freezing visibility for 3 weeks (Option C) stalls commercial decisions. Constraining scope to verified response times while fixing intake hygiene wins both trust and speed."
-                        : casePick === "a"
-                          ? "Risky move. In Harbor Desk Module 2, shipping untagged metrics causes Sales and Support to argue over definitions in the boardroom. Constrain the Friday view to verified timestamps while enforcing intake tags first."
-                          : "Too slow for an active escalation. Blocking visibility for 3 weeks leaves Sales flying blind. Ship a narrow, verified SLA view now while fixing tag capture forward."}
-                    </p>
-                    <div className="hx-tryout__cta">
-                      <Link to="/courses/product-management" className="hx-inline-link">
-                        Open the full Harbor Desk Case Workspace <ArrowRight />
-                      </Link>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-    </section>
-  )
-}
-
 export function InsideProgramme() {
   const demo = useProductDemo(LMS_BEATS)
   const stage = demo.index
@@ -723,7 +541,7 @@ export function InsideProgramme() {
           <div className="hx-app__stage">
             <div className="hx-app__bar">
               <span>Data Analytics course</span>
-              <span>Interactive Workspace Preview · 15 Lessons &amp; SQL Lab</span>
+              <span>Interactive workspace preview</span>
             </div>
             <div className="hx-app__body" id="lms-panel" role="tabpanel" aria-labelledby={`lms-tab-${LMS_STAGES[stage].key}`}>
               <div className="hx-stable">
@@ -736,11 +554,10 @@ export function InsideProgramme() {
             </div>
           </div>
         </div>
-        <p className="hx-canvas__note">Step through each stage of the Data Analytics workspace or open any module directly below.</p>
-        <ul className="hx-canvas__note">
+        <ul className="hx-stage-links" aria-label="Explore workspace stages">
           {LMS_STAGES.map((item) => (
             <li key={item.key}>
-              <Link to={item.href}>{item.action}</Link>
+              <Link to={item.href}>{item.action} →</Link>
             </li>
           ))}
         </ul>
@@ -803,7 +620,7 @@ function ProgrammeArtefact({ artefact }: { artefact: AuthoredProgrammeContent["a
           </span>
         ))}
       </span>
-      <span className="hx-art__foot">18 interviews · 34 logged exceptions · 6-week scope</span>
+      <span className="hx-art__foot">Fictional retail operations case</span>
     </span>
   )
 }
@@ -816,7 +633,7 @@ const FOCUS_FACE: Record<string, { title: string; image: string; width: number; 
     width: 800,
     height: 530,
     alt: "Illustrative analytics charts.",
-    line: "Interactive SQL practice on the Northwind sales extract, 15 written lessons, and a commercial review capstone.",
+    line: "Clean messy retail data, write SQL queries, and deliver an actionable commercial review.",
   },
   "product-management": {
     title: "Product Management",
@@ -824,15 +641,15 @@ const FOCUS_FACE: Record<string, { title: string; image: string; width: number; 
     width: 800,
     height: 534,
     alt: "Illustrative product working session.",
-    line: "Harbor Desk operations case workspace, 15 written lessons, and a constrained product specification.",
+    line: "Frame an operations problem, scope a 6-week engineering bet, and write the product spec.",
   },
   "data-science-ai": {
-    title: "Data Science & AI",
+    title: "Data Science",
     image: photoScience,
     width: 800,
     height: 534,
     alt: "Illustrative code on a screen.",
-    line: "Pathway linking our authored Data Analytics and Python Programming & Automation courses in Skylent OS.",
+    line: "Python workflows, exploratory data analysis, and applied machine learning foundations.",
   },
 }
 
@@ -937,34 +754,6 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
               rows={confirmed ? [] : ordered}
               confirmed={false}
             />
-
-            <div className="hx-focus-group" style={{ marginTop: 28 }}>
-              <h3 className="hx-focus-group__title">Self-paced courses</h3>
-              <ul className="hx-live-courses-grid" aria-label="All 6 live courses">
-                {[
-                  { slug: "data-analytics", title: "Data Analytics", category: "Data", meta: "5 modules · 15 lessons · Northwind SQL Lab" },
-                  { slug: "product-management", title: "Product Management", category: "Product", meta: "5 modules · 15 lessons · Harbor Desk Case" },
-                  { slug: "python-programming", title: "Python Programming & Automation", category: "Engineering", meta: "5 modules · 15 lessons · ETL & Pytest" },
-                  { slug: "data-science-ai", href: "/programmes/data-science-ai", title: "Data Science & AI (Dual Track)", category: "Data & AI Pathway", meta: "Links Data Analytics + Python (30 lessons)" },
-                  { slug: "generative-ai", title: "Generative AI & LLM Systems", category: "AI Systems", meta: "5 modules · 15 lessons · Grounded RAG & Agents" },
-                  { slug: "full-stack-web", title: "Full Stack Web Engineering", category: "Web", meta: "5 modules · 15 lessons · React, Node & Postgres" },
-                ].map((course) => (
-                  <li key={course.slug}>
-                    <Link to={"href" in course && course.href ? course.href : `/courses/${course.slug}`} className="hx-live-course-card">
-                      <span className="hx-live-course-card__top">
-                        <span className="hx-live-course-card__cat">{course.category}</span>
-                        <span className="hx-live-course-card__elixir">Self-paced</span>
-                      </span>
-                      <strong className="hx-live-course-card__title">{course.title}</strong>
-                      <span className="hx-live-course-card__meta">{course.meta}</span>
-                      <span className="hx-live-course-card__cta">
-                        Start course <ArrowRight />
-                      </span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
           </>
         )}
       </div>
@@ -988,12 +777,12 @@ export function HomeDegrees() {
       <div className="sky-container">
         <Reveal className="hx-head" stagger>
           <div data-reveal-group>
-            <p className="hx-eyebrow hx-eyebrow--dark">University &amp; Institutional Pathways</p>
+            <p className="hx-eyebrow hx-eyebrow--dark">Degrees</p>
             <h2 id="hx-degrees-title" className="hx-h2">
-              Undergraduate &amp; <em>postgraduate pathways.</em>
+              Undergraduate or <em>postgraduate.</em>
             </h2>
           </div>
-          <p className="hx-head__aside">Academic curriculum tracks built for university articulation and autonomous campus integration. Partner institutions confer the degree while Skylent powers the applied lab and Career OS stack.</p>
+          <p className="hx-head__aside">Planned degree areas. Partner universities award the degrees; applications open once an institution is confirmed, and you can register interest today.</p>
         </Reveal>
         <ul className="hx-doors">
           {DEGREE_DOORS.map((door) => {
@@ -1006,7 +795,7 @@ export function HomeDegrees() {
                 <Link to={`/education?level=${door.param}`} className="hx-door">
                   <span className="hx-door__media">
                     <img src={door.img} alt={door.alt} width={door.width} height={door.height} loading="lazy" decoding="async" />
-                    <span className="hx-door__tag">{plannedOnly ? "Institutional Pathway · Register Interest" : "Includes a published degree"}</span>
+                    <span className="hx-door__tag">{plannedOnly ? "Planned · not open for applications" : "Includes a published degree"}</span>
                   </span>
                   <span className="hx-door__body">
                     <span className="hx-door__title">
@@ -1049,7 +838,7 @@ export function HomeDegrees() {
 /* ── Career OS walkthrough ────────────────────────────────────────────── */
 
 const JOURNEY = [
-  { key: "enrol", title: "Enrol", text: "Start any flagship course (+50 Elixir bonus) and track your progress toward the 60% Career Rise milestone." },
+  { key: "enrol", title: "Enrol", text: "Start a skill programme and set your target role and baseline skills." },
   { key: "learn", title: "Learn", text: "Your lesson in progress and programme progress, in one place." },
   { key: "build", title: "Build projects", text: "Labs and a capstone turn practice into work." },
   { key: "evidence", title: "Collect evidence", text: "Finished work is kept with what it shows." },
@@ -1154,7 +943,7 @@ function JourneyScreen({ step }: { step: JourneyKey }) {
               </div>
             ))}
           </div>
-          <p className="hx-screen__hint">Organise target roles, compare your verified skill overlap, and rehearse timed case defenses before interviews.</p>
+          <p className="hx-screen__hint">You add the roles. Career OS keeps them organised; it does not apply for you or promise an outcome.</p>
         </div>
       )
   }
@@ -1174,7 +963,7 @@ export function CareerJourney({ eyebrow = "Career OS", showLink = true }: { eyeb
               From your first lesson <em>to your first application.</em>
             </h2>
           </div>
-            <p className="hx-head__aside">See how your completed lessons, SQL queries, and Harbor Desk briefs turn into verifiable portfolio evidence.</p>
+            <p className="hx-head__aside">Follow how your work moves from the first lesson of a course into a structured Career OS profile.</p>
         </Reveal>
         <div className="hx-journey__grid" {...walk.regionProps}>
           <div className="hx-journey__nav">
@@ -1203,7 +992,7 @@ export function CareerJourney({ eyebrow = "Career OS", showLink = true }: { eyeb
             </div>
           </div>
           <div className="hx-journey__stage">
-            <p className="hx-journey__note">Interactive Career OS Walkthrough <span className="hx-sr">Illustrative preview · Not connected</span></p>
+            <p className="hx-journey__note">Illustrative preview · Not connected</p>
             <div className="hx-window">
               <div className="hx-window__bar" aria-hidden="true">
                 <span />
@@ -1248,7 +1037,11 @@ export function CareerJourney({ eyebrow = "Career OS", showLink = true }: { eyeb
    Status lines follow truth.ts so a planned degree or an unreleased record is not described as live. */
 
 function careerLimits(): string {
-  return "Career Rise unlocks automatically at 60% curriculum completion on your Student Dashboard. Full Career OS workspace access is merit- and entitlement-gated — it organises your verified work and skill-gap match without making placement guarantees."
+  const lines = ["Career OS is locked. Enrolment, course completion, and Career Rise do not open it."]
+  if (truthOf("projectsAndEvidence") !== "live") lines.push("Project evidence records are not released yet.")
+  if (truthOf("openings") !== "live") lines.push("No roles are published, and Career OS does not apply for you.")
+  if (truthOf("degrees") !== "live") lines.push("Planned degree listings are not connected. You can record education on the profile you write.")
+  return lines.join(" ")
 }
 
 /** Homepage-only plates. They explain each step. They do not show a filled record, a role, or the visitor's progress. */
@@ -1260,11 +1053,11 @@ function HomeCareerPlate({ step }: { step: JourneyKey }) {
   if (step === "enrol") {
     return (
       <div className="hx-screen">
-        <p className="hx-screen__label">Step 01 · Enrol &amp; Earn +50 Elixir</p>
+        <p className="hx-screen__label">What enrolment does</p>
         <div className="hx-screen__card">
-          <span className="hx-screen__row"><b>Enrolment &amp; Merit Tracker</b><span className="hx-screen__tag">+50 Elixir Bonus</span></span>
-          <span className="hx-screen__item"><span className="hx-screen__k">Track</span><span>{programme} · 5 modules · 15 lessons</span></span>
-          <span className="hx-screen__hint">Enrolment opens your workspace immediately and starts your 60% Career Rise merit gate tracker.</span>
+          <span className="hx-screen__row"><b>Profile</b><span className="hx-screen__tag">Starts when you enrol</span></span>
+          <span className="hx-screen__item"><span className="hx-screen__k">Programme</span><span>{programme} · professional programme</span></span>
+          <span className="hx-screen__hint">Your enrolled programme and target role anchor your workspace.</span>
         </div>
       </div>
     )
@@ -1272,11 +1065,11 @@ function HomeCareerPlate({ step }: { step: JourneyKey }) {
   if (step === "learn") {
     return (
       <div className="hx-screen">
-        <p className="hx-screen__label">Step 02 · Interactive Lessons &amp; Cold Calls</p>
+        <p className="hx-screen__label">What learning shows</p>
         <div className="hx-screen__card">
-          <span className="hx-screen__row"><b>Lesson &amp; Checkpoint Progress</b><span className="hx-screen__tag">+5 to +15 Elixir</span></span>
-          <span className="hx-screen__item"><span className="hx-screen__k">Current</span><span>{facts ? facts.current.title : "Interactive lesson & Boardroom Cold Call"}</span></span>
-          <span className="hx-screen__hint">Complete lessons, module quizzes (80%+ bonus), and written briefs to reach the 60% Career Rise milestone.</span>
+          <span className="hx-screen__row"><b>Lesson in the programme</b><span className="hx-screen__tag">Example</span></span>
+          <span className="hx-screen__item"><span className="hx-screen__k">Title</span><span>{facts ? facts.current.title : "The lesson you have open"}</span></span>
+          <span className="hx-screen__hint">Active lessons and module progress sync directly from your course workspace.</span>
         </div>
       </div>
     )
@@ -1284,16 +1077,16 @@ function HomeCareerPlate({ step }: { step: JourneyKey }) {
   if (step === "build") {
     return (
       <div className="hx-screen">
-        <p className="hx-screen__label">Step 03 · Applied Capstone Deliverable</p>
+        <p className="hx-screen__label">Where project work lives</p>
         <div className="hx-screen__card">
-          <span className="hx-screen__row"><b>{capstone}</b><span className="hx-screen__tag">Graded Proof of Work</span></span>
-          {["Read the executive brief", "Query & validate the dataset", "Build the commercial analysis", "Defend the recommendation"].map((task) => (
+          <span className="hx-screen__row"><b>{capstone}</b><span className="hx-screen__tag">Programme capstone</span></span>
+          {["Read the brief", "Explore the data", "Build the analysis", "Write the recommendation"].map((task) => (
             <span key={task} className="hx-screen__task">
-              <span className="hx-tick hx-tick--on" aria-hidden="true" />
+              <span className="hx-tick" aria-hidden="true" />
               {task}
             </span>
           ))}
-          <span className="hx-screen__hint">Completed capstones generate verified work samples that feed directly into your credential evidence summary.</span>
+          <span className="hx-screen__hint">Each capstone breaks down into structured, reviewable deliverables.</span>
         </div>
       </div>
     )
@@ -1301,13 +1094,13 @@ function HomeCareerPlate({ step }: { step: JourneyKey }) {
   if (step === "evidence") {
     return (
       <div className="hx-screen">
-        <p className="hx-screen__label">Step 04 · Cryptographic Credential &amp; Evidence</p>
+        <p className="hx-screen__label">What a record would hold</p>
         <div className="hx-screen__card">
-          <span className="hx-screen__row"><b>Verified Credential (`-PGM`)</b><span className="hx-screen__tag">Publicly Verifiable</span></span>
-          <span className="hx-screen__item hx-screen__item--rule"><span className="hx-screen__k">Source work</span><span>Graded SQL labs, written briefs &amp; capstone</span></span>
-          <span className="hx-screen__item hx-screen__item--rule"><span className="hx-screen__k">Ledger proof</span><span>Verified at skylent.live/verify/:code</span></span>
-          <span className="hx-screen__item hx-screen__item--rule"><span className="hx-screen__k">Standard</span><span>Course &amp; Programme Master (`-PGM`) Registry</span></span>
-          <span className="hx-screen__hint">Employers can verify your exact completed modules and evidence summary via your unique credential ID.</span>
+          <span className="hx-screen__row"><b>Evidence record</b><span className="hx-screen__tag">Capstone dossier</span></span>
+          <span className="hx-screen__item hx-screen__item--rule"><span className="hx-screen__k">The work</span><span>The project it came from</span></span>
+          <span className="hx-screen__item hx-screen__item--rule"><span className="hx-screen__k">What it shows</span><span>Written when a record exists</span></span>
+          <span className="hx-screen__item hx-screen__item--rule"><span className="hx-screen__k">Reflection</span><span>Yours, when a record exists</span></span>
+          <span className="hx-screen__hint">Every completed capstone pairs your SQL or product spec with a verifiable credential ID.</span>
         </div>
       </div>
     )
@@ -1315,24 +1108,24 @@ function HomeCareerPlate({ step }: { step: JourneyKey }) {
   if (step === "profile") {
     return (
       <div className="hx-screen">
-        <p className="hx-screen__label">Step 05 · Portfolio &amp; Verified Skill Match</p>
+        <p className="hx-screen__label">What you write</p>
         <div className="hx-screen__card">
-          <span className="hx-screen__item"><span className="hx-screen__k">Target role</span><span>Data Analyst · Product Manager · AI Engineer</span></span>
-          <span className="hx-screen__item hx-screen__item--rule"><span className="hx-screen__k">Skill Match</span><span>Live % overlap against role requirements</span></span>
-          <span className="hx-screen__item hx-screen__item--rule"><span className="hx-screen__k">Credentials</span><span>Linked Course &amp; `-PGM` Master Certificates</span></span>
-          <span className="hx-screen__item hx-screen__item--rule"><span className="hx-screen__k">Projects</span><span>Northwind SQL &amp; Harbor Desk Case Artefacts</span></span>
+          <span className="hx-screen__item"><span className="hx-screen__k">Target role</span><span>You write this</span></span>
+          <span className="hx-screen__item hx-screen__item--rule"><span className="hx-screen__k">Skills</span><span>SQL · Spreadsheets · Problem framing · Product specs</span></span>
+          <span className="hx-screen__item hx-screen__item--rule"><span className="hx-screen__k">Education</span><span>Your degree, institution, and graduation timeline</span></span>
+          <span className="hx-screen__item hx-screen__item--rule"><span className="hx-screen__k">Projects</span><span>Added only after you finish one</span></span>
         </div>
       </div>
     )
   }
   return (
     <div className="hx-screen">
-      <p className="hx-screen__label">Step 06 · Application Pipeline &amp; Interview Defense</p>
+      <p className="hx-screen__label">How you prepare</p>
       <div className="hx-screen__cols">
         {[
-          ["Saved Roles", "Skill-gap matched"],
-          ["Applied", "Evidence attached"],
-          ["Interview Prep", "Case defense drills"],
+          ["Saved", "None yet"],
+          ["Applied", "None yet"],
+          ["Interview", "None yet"],
         ].map(([col, card]) => (
           <div key={col} className="hx-screen__col">
             <span className="hx-screen__k">{col}</span>
@@ -1340,7 +1133,7 @@ function HomeCareerPlate({ step }: { step: JourneyKey }) {
           </div>
         ))}
       </div>
-      <p className="hx-screen__hint">Track applications, compare your verified skills with role requirements, and rehearse executive interview defense.</p>
+      <p className="hx-screen__hint">Track saved roles, submitted applications, and structured interview practice in one place.</p>
     </div>
   )
 }
@@ -1353,10 +1146,10 @@ export function HomeCareer() {
       <div className="sky-container">
         <header className="hx-head">
           <div>
-            <p className="hx-eyebrow hx-eyebrow--dark">Career Development · Merit-Gated</p>
-            <h2 id="hx-career-title" className="hx-h2 hx-h2--sm">One profile for what you learn, build, and prove.</h2>
+            <p className="hx-eyebrow hx-eyebrow--dark">Career OS</p>
+            <h2 id="hx-career-title" className="hx-h2 hx-h2--sm">One profile for what you learn and keep.</h2>
           </div>
-          <p className="hx-head__aside">Career Rise unlocks automatically at 60% curriculum completion on your Student Dashboard, uniting your verified projects, credentials, and skill-gap match.</p>
+          <p className="hx-head__aside">Bring your target role, skills, and completed projects into one workspace. Preview the six steps below (illustrative example, not your account).</p>
         </header>
         <div className="hx-career__grid">
           <div>
@@ -1385,7 +1178,7 @@ export function HomeCareer() {
             </div>
           </div>
           <div className="hx-career__stage">
-            <p className="hx-career__label">Interactive Portfolio &amp; Skill-Match Preview</p>
+            <p className="hx-career__label">Interactive step preview · Illustrative preview · Not connected</p>
             <div className="hx-window">
               <div className="hx-window__body">
                 <p className="hx-sr">Illustrative preview, not connected. {step.title}. {step.text}</p>
@@ -1405,7 +1198,7 @@ export function HomeCareer() {
             </div>
           </div>
         </div>
-        <p className="hx-career__limits">{careerLimits()}</p>
+        
         <Link className="hx-more" to="/career-os">
           How Career OS works
           <ArrowRight />
@@ -1419,9 +1212,9 @@ export function HomeCareer() {
    The existing Skylent AI mark, given its own tile, and the finder's real first question. */
 
 const AI_HELPS = [
-  { title: "Socratic Lesson Coach", text: "Step-by-step first-principles hints on your SQL, Python, and PRD drafts — without leaking direct answers." },
-  { title: "20-Min Faculty TA SLA", text: "Escalate any blocker from the lesson workspace to a human Faculty TA with a 20-minute response SLA." },
-  { title: "60-Sec Boardroom Cold Calls", text: "Defend timed product and engineering trade-offs and compare your decision against peer cohort splits." },
+  { title: "In a lesson", text: "When Skylent AI is switched on, it explains the lesson you have open. The lesson says so if it is not available." },
+  { title: "Not a shortcut", text: "It will not give answers to an open quiz or write an open assignment for you." },
+  { title: "Choosing a direction", text: "Find My Path asks a few questions and suggests a catalogue direction. It is a set of rules, not a chatbot." },
 ] as const
 
 export function HomeAi() {
@@ -1434,8 +1227,8 @@ export function HomeAi() {
               <SkylentBot size={52} />
             </span>
             <span>
-              <span className="hx-ai__name">Skylent AI &amp; Faculty TA Desk</span>
-              <span className="hx-ai__role">Socratic Lesson Coach · 20-Min Human TA Doubt SLA</span>
+              <span className="hx-ai__name">Skylent AI</span>
+              <span className="hx-ai__role">Inside an open lesson</span>
             </span>
           </div>
           <h2 id="hx-ai-title" className="hx-h2 hx-h2--sm">
@@ -1449,41 +1242,10 @@ export function HomeAi() {
               </li>
             ))}
           </ul>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
-            <Link className="sk-btn sk-btn-primary" to="/path">
-              Find My Path
-              <ArrowRight />
-            </Link>
-            <Link className="sk-btn sk-btn-secondary" to="/courses/data-analytics">
-              Try inside Data Analytics
-            </Link>
-          </div>
-        </div>
-
-        <div className="hx-ai__chat" aria-label="Socratic AI and 20-minute TA escalation preview">
-          <div className="hx-ai__chatbar">
-            <span>Lesson Workspace · Socratic Coach &amp; Faculty TA Desk</span>
-          </div>
-          <div className="hx-chat">
-            <div className="hx-chat__row hx-chat__row--user">
-              <p className="hx-chat__bubble hx-chat__bubble--user">
-                Why does my Northwind category margin query overcount freight when joining order_details?
-              </p>
-            </div>
-            <div className="hx-chat__row">
-              <p className="hx-chat__bubble">
-                <strong>Socratic Coach:</strong> Look at the grain of <code>orders</code> vs <code>order_details</code>. Freight is stored once per order header. If an order has 4 line items, what happens when you <code>SUM(o.freight)</code> after the join?
-              </p>
-            </div>
-            <div className="hx-chat__options" aria-label="Socratic quick prompts">
-              <span className="is-on">Check table grain</span>
-              <span>Test CTE pre-aggregation</span>
-              <span>Escalate to Faculty TA (20-min SLA)</span>
-            </div>
-          </div>
-          <p className="hx-ai__chatnote">
-            Every open lesson includes track-specific Socratic prompts, timed Boardroom Cold Calls, and 1-click escalation to human Faculty TAs with a 20-minute SLA.
-          </p>
+          <Link className="sk-btn sk-btn-primary" to="/path">
+            Find My Path
+            <ArrowRight />
+          </Link>
         </div>
       </div>
     </section>
@@ -1528,9 +1290,9 @@ export function HomeInstitutions() {
 }
 
 const SYSTEM_POINTS = [
-  { title: "Interactive Execution Over Passive Video", text: "All 6 flagship courses combine written briefings, in-browser SQL and product workspaces, timed Boardroom Cold Calls, and graded capstone deliverables." },
-  { title: "Universal Elixir Learning Economy", text: "Earn +50 Elixir on course enrolment, +5 to +25 Elixir on every completed lesson, quiz, assignment, and case study, and 100% Coin Back on ₹99 workshops." },
-  { title: "Merit-Gated Career Rise & Verifiable Proof", text: "Unlock Career Rise at 60% curriculum completion with verified skill-gap matching and cryptographic Course & Programme Master (-PGM) credentials." },
+  { title: "Available now", text: "Open programmes include written lessons, checks, and practice. Career OS stays locked until a separate entitlement is granted. Signing in does not unlock it." },
+  { title: "Not a live dashboard here", text: "The homepage photograph is not a learner account. Course examples further down come from the Data Analytics materials." },
+  { title: "Still planned", text: "Data Science does not yet include machine-learning teaching. Career OS does not compare your skills with a role, and it does not apply for jobs for you." },
 ] as const
 
 export function HomeSystems() {
@@ -1569,7 +1331,7 @@ export function HomeClosing() {
           <h2 id="hx-close-title" className="hx-close__title">
             See what is open <em>to start.</em>
           </h2>
-          <p className="hx-close__lead">Start any of our 6 self-paced flagship courses today, join a ₹99 Workshop with 100% Elixir Coin Back, or test your track fit in 90 seconds.</p>
+          <p className="hx-close__lead">Start an open programme today, or join a ₹99 workshop to test-drive a real case study first.</p>
         </div>
         <div className="hx-close__actions">
           <Link className="sk-btn sk-btn-primary hx-btn" to="/programmes">
@@ -1586,67 +1348,19 @@ export function HomeClosing() {
 export function HomeElixirFlywheel() {
   const steps = [
     {
-      icon: "sparkle",
-      step: "01 · 100% Workshop Coin Back",
-      title: "₹99 Workshop → 99 Elixir Coins",
-      copy: "Receive 99 Elixir Coins (100% 1:1 learning credit cashback) in your verified wallet on every ₹99 workshop registration.",
+      step: "01 · Start Small",
+      title: "Join a ₹99 Live Workshop",
+      copy: "Get 99 Elixir Coins (100% 1:1 credit) added to your wallet when you register for a scheduled session.",
     },
     {
-      icon: "graduation",
-      step: "02 · Enrolment Bonus",
-      title: "+50 Elixir on Course Enrolment",
-      copy: "Start any of the 6 flagship courses and earn +50 Elixir immediately (or 10 Elixir per ₹100 on paid tracks).",
+      step: "02 · Unlock a Case",
+      title: "Spend Credits in the Case Store",
+      copy: "Use your 99 Elixir Coins to unlock SQL and Product case studies (49 or 99 Elixir), including Northwind and Harbor Desk.",
     },
     {
-      icon: "book",
-      step: "03 · Milestone Rewards",
-      title: "+5 to +25 Elixir per Milestone",
-      copy: "Earn +5 Elixir per lesson, +10 Elixir for 80%+ quiz scores, +15 Elixir per written brief, and +25 Elixir per case study.",
-    },
-    {
-      icon: "briefcase",
-      step: "04 · Case Study Store & Proof",
-      title: "Redeem for Industry Case Studies",
-      copy: "Spend 49 or 99 Elixir to unlock Northwind Margin Leakage and Harbor Desk Triage cases, and carry proof into Career OS.",
-    },
-  ] as const
-
-  const moatRows = [
-    {
-      dimension: "Learning Format",
-      skylent: "In-Browser Northwind SQL, Python & Harbor Desk Case Studios",
-      videoLms: "Passive recorded videos with low completion (<10%)",
-      bootcamps: "Zoom lectures locked behind ₹1.5L–₹3L tuition",
-    },
-    {
-      dimension: "Executive Decision Rigour",
-      skylent: "Timed 60-Second Boardroom Cold Calls with Live Peer Cohort %",
-      videoLms: "Basic multiple-choice trivia checks",
-      bootcamps: "Untimed homework sheets",
-    },
-    {
-      dimension: "Doubt Resolution SLA",
-      skylent: "Socratic AI Coach + Guaranteed 20-Min Faculty TA SLA",
-      videoLms: "Unanswered discussion forum threads",
-      bootcamps: "24–48 hr ticket queues",
-    },
-    {
-      dimension: "Learner Reward Economy",
-      skylent: "Universal Elixir Ledger (+50 Enrolment, Milestones & 100% ₹99 Cashback)",
-      videoLms: "Zero financial or learning-credit rewards",
-      bootcamps: "No micro-entry or cashback flywheel",
-    },
-    {
-      dimension: "Credential Verification",
-      skylent: "Cryptographic Course & -PGM Master Credentials with Evidence Summary",
-      videoLms: "Generic attendance PDF certificates",
-      bootcamps: "Unverified completion letters",
-    },
-    {
-      dimension: "Career Progression",
-      skylent: "Merit-Gated Career Rise (60% Gate) + Verified Skill-Gap Match",
-      videoLms: "Disconnected from portfolio or hiring readiness",
-      bootcamps: "Unverified placement promises",
+      step: "03 · Keep the Proof",
+      title: "Solve & Save Your Work",
+      copy: "Run SQL queries, write the case brief with Socratic AI hints, and keep your finished work in Career OS.",
     },
   ] as const
 
@@ -1655,19 +1369,21 @@ export function HomeElixirFlywheel() {
       <div className="sky-container">
         <div className="hxw-goals__head">
           <div>
-            <p className="hxw-goals__eyebrow">Universal Elixir Economy · Zero-Risk Way to Start</p>
+            <p className="hxw-goals__eyebrow">Why Elixir exists · 1:1 learning credit</p>
             <h2 id="hx-flywheel-title" className="hxw-goals__title">Start with a ₹99 Workshop. Get 99 Elixir Coins for Case Studies.</h2>
           </div>
           <p className="hxw-goals__aside">
-            Every rupee of a ₹99 workshop registration comes back as 99 Elixir Coins inside Skylent, and every course enrolment, lesson, quiz, and assignment builds your verified Elixir balance.
+            Instead of paying ₹50,000 upfront before touching a real problem, your ₹99 workshop fee comes back as 99 Elixir credits so you can test how Skylent teaches on a real case study first.
           </p>
+        </div>
+        <div className="hx-elixir-pills" aria-label="How Elixir credits work">
+          <span className="hx-elixir-pill">₹99 Workshop = 99 Elixir</span>
+          <span className="hx-elixir-pill">1 Case Study = 49–99 Elixir</span>
+          <span className="hx-elixir-pill">+5 Elixir / Day Execution Streak</span>
         </div>
         <div className="hxw-goals__grid">
           {steps.map((item) => (
-            <div key={item.step} className="hxw-goal hxw-goal--card">
-              <span className="hxw-goal__icon" aria-hidden="true">
-                <OfferingIcon type={item.icon} />
-              </span>
+            <div key={item.step} className="hxw-goal">
               <span className="hxw-goal__content">
                 <span className="hxw-goals__eyebrow">{item.step}</span>
                 <span className="hxw-goal__name">{item.title}</span>
@@ -1676,46 +1392,181 @@ export function HomeElixirFlywheel() {
             </div>
           ))}
         </div>
-
-        <div className="hx-moat-compare" aria-label="How Skylent OS compares with traditional platforms">
-          <div className="hx-moat-compare__head">
-            <div>
-              <p className="hxw-goals__eyebrow">The 7-Pillar Proof-of-Work Standard</p>
-              <h3 className="hx-moat-compare__title">Why learners and institutions choose Skylent OS over passive video platforms</h3>
-            </div>
-            <div className="hx-moat-compare__actions">
-              <Link className="sk-btn sk-btn-primary hx-btn" to="/events">
-                Explore ₹99 Workshops &amp; Webinars
-                <ArrowRight />
-              </Link>
-              <Link className="sk-btn sk-btn-secondary hx-btn" to="/dashboard/student">
-                Open Elixir Case Study Store
-              </Link>
-            </div>
-          </div>
-          <div className="hx-moat-table-wrap">
-            <table className="hx-moat-table">
-              <thead>
-                <tr>
-                  <th scope="col">Dimension</th>
-                  <th scope="col" className="is-skylent">Skylent OS</th>
-                  <th scope="col">Recorded Video Catalogues</th>
-                  <th scope="col">Traditional Bootcamps</th>
-                </tr>
-              </thead>
-              <tbody>
-                {moatRows.map((row) => (
-                  <tr key={row.dimension}>
-                    <th scope="row">{row.dimension}</th>
-                    <td className="is-skylent"><strong>{row.skylent}</strong></td>
-                    <td>{row.videoLms}</td>
-                    <td>{row.bootcamps}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+        <div className="hxw-hero__actions" style={{ marginTop: 20 }}>
+          <Link className="sk-btn sk-btn-primary hx-btn" to="/events">
+            Explore ₹99 Workshops
+            <ArrowRight />
+          </Link>
+          <Link className="sk-btn sk-btn-secondary hx-btn" to="/dashboard/student">
+            Open Case Study Store
+          </Link>
         </div>
+      </div>
+    </section>
+  )
+}
+
+export function ZeroLoginInteractiveTryout() {
+  const [activeTab, setActiveTab] = useState<"sql" | "coldcall">("sql")
+  const [sqlExecuted, setSqlExecuted] = useState(false)
+  const [selectedDecision, setSelectedDecision] = useState<string | null>(null)
+
+  const sqlCode = `SELECT category,
+       COUNT(*) AS order_lines,
+       ROUND(AVG(discount_pct), 1) AS avg_discount_pct,
+       ROUND(SUM(units * unit_price * (1.0 - discount_pct / 100.0)), 0) AS net_revenue
+FROM northwind_sales
+WHERE units > 0 AND unit_price > 0 AND returned = 'no'
+GROUP BY category
+ORDER BY net_revenue DESC;`
+
+  return (
+    <section className="hxw-tryout" aria-labelledby="hx-tryout-title">
+      <div className="sky-container">
+        <div className="hx-tryout__head">
+          <div>
+            <p className="hxw-goals__eyebrow">Try Skylent in 60 seconds · No login needed</p>
+            <h2 id="hx-tryout-title" className="hxw-goals__title">Run a real SQL audit or answer a case cold call.</h2>
+          </div>
+          <p className="hxw-goals__aside">
+            Every Skylent course is built around real datasets and written decisions. Try a live query from Data Analytics or a 60-second decision from Product Management below.
+          </p>
+        </div>
+
+        <div className="hx-tryout__tabs" role="tablist" aria-label="Interactive tryout mode">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={activeTab === "sql"}
+            className={`hx-tryout__tab${activeTab === "sql" ? " is-on" : ""}`}
+            onClick={() => setActiveTab("sql")}
+          >
+            01 · Live Northwind SQL Lab
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={activeTab === "coldcall"}
+            className={`hx-tryout__tab${activeTab === "coldcall" ? " is-on" : ""}`}
+            onClick={() => setActiveTab("coldcall")}
+          >
+            02 · 60-Second Case Cold Call
+          </button>
+        </div>
+
+        {activeTab === "sql" ? (
+          <div className="hx-tryout__terminal">
+            <div className="hx-tryout__bar">
+              <div>
+                <strong className="hx-tryout__file">northwind_sales.csv (166 valid rows · ₹812,020 net revenue)</strong>
+                <span className="hx-tryout__sub">Task: Spot which category is losing margin to unapproved discounting</span>
+              </div>
+              <button
+                type="button"
+                className="sk-btn sk-btn-primary"
+                onClick={() => setSqlExecuted(true)}
+              >
+                {sqlExecuted ? "Run Again" : "Run Query ▶"}
+              </button>
+            </div>
+            <pre className="hx-tryout__code">{sqlCode}</pre>
+            {sqlExecuted ? (
+              <div className="hx-tryout__result">
+                <div className="hx-tryout__ok">
+                  ✓ 4 categories aggregated across 166 valid rows · Total net revenue: ₹8,12,020
+                </div>
+                <div style={{ overflowX: "auto" }}>
+                  <table className="hx-tryout__table">
+                    <thead>
+                      <tr>
+                        <th>category</th>
+                        <th>order_lines</th>
+                        <th>avg_discount_pct</th>
+                        <th>net_revenue</th>
+                        <th>finding</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>Electronics</td>
+                        <td>58</td>
+                        <td>3.2%</td>
+                        <td>₹2,78,140</td>
+                        <td>Healthy margin floor</td>
+                      </tr>
+                      <tr>
+                        <td>Grocery</td>
+                        <td>44</td>
+                        <td>2.1%</td>
+                        <td>₹2,21,390</td>
+                        <td>Steady repeat orders</td>
+                      </tr>
+                      <tr className="is-leak">
+                        <td>Apparel</td>
+                        <td>36</td>
+                        <td>14.5%</td>
+                        <td>₹1,58,420</td>
+                        <td>⚠ Unapproved discount leakage</td>
+                      </tr>
+                      <tr>
+                        <td>Home Goods</td>
+                        <td>28</td>
+                        <td>4.0%</td>
+                        <td>₹1,54,070</td>
+                        <td>Within target band</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div className="hx-tryout__foot">
+                  <span>Finding: Apparel discounts averaged 14.5% in April, eroding ₹28,400 in net margin.</span>
+                  <Link to="/events" className="sk-btn sk-btn-primary">
+                    Claim +50 Elixir Bonus →
+                  </Link>
+                </div>
+              </div>
+            ) : null}
+          </div>
+        ) : (
+          <div className="hx-tryout__coldcall">
+            <div className="hx-tryout__bar">
+              <span className="sky-label">60-Second Case Cold Call · Commercial Strategy</span>
+              <span className="sky-mono" style={{ fontSize: 12 }}>Northwind Retail Case</span>
+            </div>
+            <p className="hx-tryout__prompt">
+              Apparel margins fell 14.5% in April because regional managers stacked promo codes without a floor. What rule do you put in place for May?
+            </p>
+            <div className="hx-tryout__options">
+              {[
+                { id: "opt-1", label: "A) Freeze all promo codes across every category immediately.", peer: 18, isOptimal: false },
+                { id: "opt-2", label: "B) Cap Apparel discounts at 10% in checkout and require sign-off above that.", peer: 64, isOptimal: true },
+                { id: "opt-3", label: "C) Increase ad spend on Apparel to make up the margin drop with volume.", peer: 18, isOptimal: false },
+              ].map((opt) => (
+                <button
+                  key={opt.id}
+                  type="button"
+                  onClick={() => setSelectedDecision(opt.id)}
+                  className={`hx-tryout__opt${selectedDecision === opt.id ? " is-selected" : ""}`}
+                >
+                  <div>{opt.label}</div>
+                  {selectedDecision ? (
+                    <div className={`hx-tryout__peer${opt.isOptimal ? " is-optimal" : ""}`}>
+                      Cohort split: <strong>{opt.peer}% of learners</strong> chose this {opt.isOptimal ? "· Strongest commercial trade-off" : ""}
+                    </div>
+                  ) : null}
+                </button>
+              ))}
+            </div>
+            {selectedDecision ? (
+              <div className="hx-tryout__foot">
+                <span>Why B works: A targeted checkout cap stops Apparel margin leakage without hurting Electronics or Grocery conversion.</span>
+                <Link to="/events" className="sk-btn sk-btn-primary">
+                  Claim +50 Elixir Bonus →
+                </Link>
+              </div>
+            ) : null}
+          </div>
+        )}
       </div>
     </section>
   )

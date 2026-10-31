@@ -8,7 +8,6 @@ import { LessonContextPanel } from '../components/product/ProductLanguage'
 import { AiMark, ProductSlice } from '../components/skylent/primitives'
 import { getLessonMeta } from '../content/course-lookups'
 import { isAuthoredCourse } from '../lib/live-intents'
-import { isMultiTrackAuthoredCourse } from '../content/multi-track-packs'
 import type { QuizQuestion } from '../components/lms/AssessmentSurface'
 import { courseProductProfile } from '../lib/course-product'
 import { lessonPracticeLink } from '../lib/practice-environments'
@@ -680,7 +679,7 @@ export default function LearnPage() {
 
             {selectedLesson ? (
               <article className="os-lesson-stage">
-                {!selectedState.locked && selectedLesson.type !== 'video' && (isAuthoredCourse(readyCourse.slug) || isMultiTrackAuthoredCourse(readyCourse.slug)) ? (
+                {!selectedState.locked && selectedLesson.type !== 'video' && isAuthoredCourse(readyCourse.slug) ? (
                   <LessonSlide
                     courseSlug={readyCourse.slug}
                     lessonId={selectedLesson.id}
@@ -731,7 +730,7 @@ export default function LearnPage() {
                     ) : null}
                   </div>
                 </div>
-                {selectedState.locked ? null : (isAuthoredCourse(readyCourse.slug) || isMultiTrackAuthoredCourse(readyCourse.slug)) ? (
+                {selectedState.locked ? null : isAuthoredCourse(readyCourse.slug) ? (
                   <LessonContextPanel courseSlug={readyCourse.slug} lessonId={selectedLesson.id} />
                 ) : (
                   <p className="os-lead">

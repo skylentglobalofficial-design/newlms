@@ -1322,170 +1322,124 @@
 }
 
 
-/* ── 90-Second Adaptive Skill Diagnostic ───────────────────────────────── */
+/* ── 90-Second Adaptive Skill Diagnostic ─────────────────────────────────── */
 .path-diag {
-  margin: 0 0 24px;
-  padding: 18px 20px;
+  margin: 18px 0 24px;
+  padding: 18px 22px;
   border-radius: 14px;
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-  color: #f8fafc;
-  border: 1px solid rgba(56, 189, 248, 0.28);
-  box-shadow: 0 14px 32px -16px rgba(15, 23, 42, 0.35);
+  background: var(--path-paper);
+  border: 1px solid var(--path-line);
 }
-
-.path-diag__bar {
+.path-diag__head {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  align-items: center;
   flex-wrap: wrap;
+  gap: 12px;
 }
-
-.path-diag__bar > div {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  max-width: 68ch;
+.path-diag__title {
+  font-family: var(--path-heading);
+  font-size: 1.0625rem;
+  font-weight: 650;
+  margin: 4px 0 !important;
 }
-
-.path-diag__badge {
-  display: inline-flex;
-  align-self: flex-start;
-  font-size: 0.72rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: #38bdf8;
-  background: rgba(56, 189, 248, 0.14);
-  padding: 3px 9px;
-  border-radius: 999px;
+.path-diag__sub {
+  font-size: 0.875rem;
+  color: var(--path-body);
 }
-
-.path-diag__bar strong {
-  font-size: 1.05rem;
-  color: #ffffff;
-}
-
-.path-diag__bar span {
-  font-size: 0.85rem;
-  color: #cbd5e1;
-}
-
-.path-diag__toggle {
-  background: #38bdf8 !important;
-  color: #0f172a !important;
-  border-color: #38bdf8 !important;
-  font-weight: 700 !important;
-}
-
 .path-diag__body {
   margin-top: 18px;
-  padding-top: 18px;
-  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  padding-top: 16px;
+  border-top: 1px solid var(--path-line);
 }
-
-.path-diag__grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 14px;
-}
-
-.path-diag__card {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  padding: 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
 .path-diag__q {
-  margin: 0;
-  font-size: 0.88rem;
-  font-weight: 600;
-  color: #ffffff;
-  line-height: 1.45;
+  margin-bottom: 16px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--path-line);
 }
-
+.path-diag__qtitle {
+  font-size: 0.8125rem;
+  font-weight: 650;
+  color: var(--path-mark);
+}
+.path-diag__qtext {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  margin: 6px 0 10px !important;
+}
 .path-diag__opts {
-  display: flex;
-  flex-direction: column;
+  display: grid;
   gap: 8px;
 }
-
 .path-diag__opt {
-  text-align: left;
-  padding: 9px 11px;
+  padding: 9px 13px;
   border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  background: rgba(15, 23, 42, 0.6);
-  color: #e2e8f0;
-  font-size: 0.8rem;
-  line-height: 1.4;
+  border: 1px solid var(--path-line);
+  background: transparent;
+  text-align: left;
+  font-family: inherit;
+  font-size: 0.8125rem;
+  color: var(--path-ink);
   cursor: pointer;
-  transition: all 140ms ease;
 }
-
-.path-diag__opt:hover {
-  border-color: #38bdf8;
-  color: #ffffff;
-}
-
-.path-diag__opt.is-on {
-  background: rgba(56, 189, 248, 0.2);
-  border-color: #38bdf8;
-  color: #ffffff;
+.path-diag__opt.is-selected {
+  border: 2px solid var(--path-mark);
+  background: var(--path-soft);
   font-weight: 600;
 }
-
 .path-diag__result {
-  margin-top: 16px;
-  padding: 16px 18px;
-  border-radius: 12px;
-  background: rgba(16, 185, 129, 0.14);
-  border: 1px solid rgba(52, 211, 153, 0.4);
+  margin-top: 14px;
+  padding: 16px;
+  border-radius: 10px;
+  background: var(--path-soft);
+  border: 1px solid var(--path-line-strong);
+}
+.path-diag__result-top {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  align-items: baseline;
   flex-wrap: wrap;
-}
-
-.path-diag__fit {
-  font-size: 0.74rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: #6ee7b7;
-}
-
-.path-diag__result h3 {
-  margin: 4px 0;
-  font-size: 1.02rem;
-  color: #ffffff;
-}
-
-.path-diag__result p {
-  margin: 0;
-  font-size: 0.85rem;
-  color: #d1fae5;
-}
-
-.path-diag__actions {
-  display: flex;
   gap: 10px;
-  flex-wrap: wrap;
 }
 
-.path-diag__hint {
-  margin: 12px 0 0;
-  font-size: 0.82rem;
-  color: #94a3b8;
+/* ── Mode Switcher Tabs on /path ─────────────────────────────────────────── */
+.path-mode-tabs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 14px;
 }
-
-@media (max-width: 900px) {
-  .path-diag__grid {
-    grid-template-columns: 1fr;
+.path-mode-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 14px 18px;
+  border-radius: 12px;
+  border: 1px solid var(--path-line);
+  background: var(--path-paper);
+  color: var(--path-ink);
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 140ms ease, background 140ms ease, box-shadow 140ms ease;
+}
+.path-mode-tab strong {
+  font-size: 0.9375rem;
+  font-weight: 700;
+}
+.path-mode-tab span {
+  font-size: 0.8125rem;
+  color: var(--path-body);
+  line-height: 1.45;
+}
+.path-mode-tab.is-on {
+  border: 2px solid var(--path-mark);
+  background: var(--path-soft);
+  box-shadow: 0 6px 18px -10px rgba(81, 66, 181, 0.28);
+}
+@media (max-width: 720px) {
+  .path-mode-tabs {
+    grid-template-columns: minmax(0, 1fr);
   }
 }

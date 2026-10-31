@@ -11,25 +11,43 @@ import "./HomeRepolish.css"
 import "./AboutRepolish.css"
 
 const PRODUCTS = [
-  { title: "Education", text: "Explore degree pathways and structured learning options. Degree availability depends on confirmed institutional arrangements.", to: "/education" },
-  { title: "Programmes", text: "Build practical skills through structured programmes, lessons and project-based work.", to: "/programmes" },
-  { title: "Career OS", text: "Bring your professional profile, projects, evidence and career activity into one workspace.", to: "/career-os" },
-  { title: "Skylent AI", text: "Lesson help inside an open lesson, when it is switched on. Find My Path is a separate questionnaire.", to: "/#skylent-ai" },
+  { title: "Education", text: "Planned undergraduate and postgraduate university degree pathways, online and on campus.", to: "/education" },
+  { title: "Programmes", text: "Practical skill tracks with browser SQL labs, product case studios, and graded capstones.", to: "/programmes" },
+  { title: "Career OS", text: "Bring your professional profile, verified capstone dossiers, and role preparation into one workspace.", to: "/career-os" },
+  { title: "Skylent AI", text: "Socratic lesson coach with 1-click Hinglish intuition and 20-minute Faculty TA support.", to: "/#skylent-ai" },
 ]
 
 const FLOW = ["Learn", "Practise", "Build work", "Show your skills", "Take the next step"]
 
 const AUDIENCES = [
-  { title: "Students", text: "Explore education options and build practical skills alongside your studies.", to: "/education" },
-  { title: "Working learners", text: "Develop skills through structured programmes built around practical work.", to: "/programmes" },
-  { title: "Career changers", text: "Organise projects and professional evidence in one place.", to: "/career-os" },
-  { title: "Institutions", text: "Discuss learning programmes and digital learning support for your learners.", to: "/institutions" },
+  { title: "Students", text: "Build verifiable SQL, Product, and engineering proof-of-work alongside your college studies.", to: "/programmes" },
+  { title: "Working learners", text: "Develop practical capability through self-paced modules and weekend ₹99 live bootcamps.", to: "/events" },
+  { title: "Career changers", text: "Assemble cryptographic capstone dossiers (/verify) that recruiters can inspect directly.", to: "/career-os" },
+  { title: "Institutions & Deans", text: "Deploy Skylent's browser labs and CCRO cohort analytics across your college departments.", to: "/institutions" },
 ]
 
 const PRINCIPLES = [
-  { title: "Learning should lead to doing", text: "Lessons matter more when learners can apply ideas through exercises, cases and projects." },
-  { title: "Show the work, not just the claim", text: "We want learners to build a clearer record of what they have learned and made." },
-  { title: "Be clear about what is ready", text: "We avoid publishing learner counts, placement rates or partner logos that we cannot verify." },
+  { title: "Execution over passive video", text: "Every flagship track centres on a live workspace—such as the 166-row Northwind SQL database or the Harbor Desk PRD studio." },
+  { title: "Verifiable proof, not resume claims", text: "Every completed course issues a cryptographic SKL credential paired with the exact query outputs and written briefs you defended." },
+  { title: "Radical transparency & zero debt traps", text: "No predatory ISA contracts, no fake placement percentages, and a ₹0 pilot foundation track with ₹99 coin-back weekend workshops." },
+]
+
+const CREDIBILITY_PILLARS = [
+  {
+    kicker: "Registered Entity & India HQ",
+    title: "Skylent Global Pvt. Ltd. · Bhubaneswar, Odisha",
+    body: "Headquartered in Bhubaneswar, Odisha, India, building execution-first learning infrastructure for learners and higher-education institutions across India.",
+  },
+  {
+    kicker: "Practitioner Curriculum Architecture",
+    title: "Built by Data, Product & AI Practitioners",
+    body: "Every module, SQL dataset, and 60-second case cold call is authored around real commercial trade-offs and graded on a transparent 25% · 35% · 40% rubric.",
+  },
+  {
+    kicker: "Human + Socratic AI Support",
+    title: "Socratic AI Coach + 20-Min Faculty TA SLA",
+    body: "Stuck on a SQL join or PRD constraint? Use 1-click Hinglish intuition inside any lesson or escalate to a human Teaching Assistant.",
+  },
 ]
 
 export default function AboutPage() {
@@ -39,17 +57,20 @@ export default function AboutPage() {
         <section className="hx-hero" aria-labelledby="abx-title">
           <div className="hx-hero__glow" aria-hidden="true" />
           <div className="sky-container hx-hero__inner">
-            <p className="hx-eyebrow">About Skylent</p>
+            <p className="hx-eyebrow">About Skylent Global Pvt. Ltd. · Bhubaneswar, India</p>
             <h1 id="abx-title" className="hx-hero__title">
               Education should lead somewhere. <em>We’re building the path.</em>
             </h1>
             <p className="hx-hero__lead">
-              Skylent brings education, practical learning and career tools into one connected experience. The idea is simple: learn something, put it to work, and keep a clearer record of what you can do.
+              Skylent brings practical skill programmes, in-browser execution labs, and verifiable career dossiers into one connected platform—headquartered in Bhubaneswar, Odisha and built for learners and colleges across India.
             </p>
             <div className="hx-hero__actions">
               <Link className="sk-btn sk-btn-primary hx-btn" to="/programmes">
                 Explore programmes
                 <ArrowRight />
+              </Link>
+              <Link className="sk-btn hx-btn hx-btn--ghost" to="/verify">
+                Inspect verified dossiers
               </Link>
               <Link className="sk-btn hx-btn hx-btn--ghost" to="/contact">
                 Talk to Skylent
@@ -58,7 +79,23 @@ export default function AboutPage() {
           </div>
         </section>
 
-        <section className="abx-section" aria-labelledby="abx-products">
+        <section className="abx-section" aria-labelledby="abx-trust">
+          <div className="sky-container">
+            <p className="hx-eyebrow hx-eyebrow--dark">Company &amp; Academic Standards</p>
+            <h2 id="abx-trust" className="hx-h2 hx-h2--sm">Who builds Skylent, and how we operate.</h2>
+            <ul className="abx-principles">
+              {CREDIBILITY_PILLARS.map((item) => (
+                <li key={item.title}>
+                  <span className="hx-eyebrow hx-eyebrow--dark" style={{ marginBottom: 4 }}>{item.kicker}</span>
+                  <b>{item.title}</b>
+                  <span>{item.body}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+
+        <section className="abx-section" aria-labelledby="abx-products" style={{ paddingTop: 0 }}>
           <div className="sky-container">
             <div className="hx-head">
               <div>
@@ -67,7 +104,7 @@ export default function AboutPage() {
                   Education, skills and careers. <em>Connected.</em>
                 </h2>
               </div>
-              <p className="hx-head__aside">Skylent is being built as a connected learning platform—not just a place to browse courses. Explore the parts that are available today.</p>
+              <p className="hx-head__aside">Skylent is built as a connected execution platform—not a passive video library. Explore the parts that are live today.</p>
             </div>
             <ul className="abx-products">
               {PRODUCTS.map((product) => (

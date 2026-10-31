@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react"
-import { Link } from "react-router-dom"
 import { apiV1 } from "../../lib/api-base"
 import { ensureCsrfToken } from "../../lib/auth-api"
 
@@ -13,7 +12,6 @@ type RiseRow = {
   completedModules: number
   totalModules: number
   thresholdPercent: number
-  mockDefenseHref?: string
 }
 
 export default function CareerRiseCard() {
@@ -62,7 +60,7 @@ export default function CareerRiseCard() {
       <header className="sh-card-head">
         <h2 id="career-rise-title">Career Rise</h2>
       </header>
-      <p className="sh-note">Career Rise opens after you complete 60% of a course or programme and choose to enrol. It does not unlock Career OS.</p>
+      <p className="sh-note">Career Rise opens after you complete 60% of a course or programme and choose to enrol. Once enrolled, complete your Mock Interview &amp; Evidence Milestones (SQL/Case defense + rubric rounds). It does not unlock Career OS automatically.</p>
       {error ? <p className="sh-empty">{error}</p> : null}
       {rows == null ? <p className="sh-note">Checking eligibility…</p> : rows.length === 0 ? (
         <p className="sh-empty">No enrolled curriculum yet, so Career Rise is not available.</p>
@@ -73,23 +71,8 @@ export default function CareerRiseCard() {
               <div className="sh-row-main">
                 <strong>{row.title}</strong>
                 <span className="sh-note">{row.completedModules} of {row.totalModules} modules · {row.percent}%</span>
-                {row.enrolled ? (
-                  <span className="sh-note" style={{ display: "block", marginTop: 4 }}>
-                    ✓ 60% Curriculum Gate · ✓ Case Evidence · ✓ Mock Interview Defense
-                  </span>
-                ) : null}
               </div>
-              {row.enrolled ? (
-                <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
-                  <span className="os-status is-done">Enrolled</span>
-                  <Link
-                    className="os-link"
-                    to={row.mockDefenseHref ?? `/career-os/interviews?track=${encodeURIComponent(row.slug)}`}
-                  >
-                    Start Mock Defense →
-                  </Link>
-                </div>
-              ) : row.eligible ? (
+              {row.enrolled ? <span className="os-status is-done">Enrolled</span> : row.eligible ? (
                 <button type="button" className="os-link" disabled={pending === row.slug} onClick={() => void enrol(row)}>
                   {pending === row.slug ? "Enrolling…" : "Enrol in Career Rise"}
                 </button>

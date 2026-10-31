@@ -31,31 +31,12 @@ const QUICK: Array<{ action: SkylentAiAction; label: string }> = [
 ]
 
 
-const TRACK_SOCRATIC_PROMPTS: Record<string, { label: string; question: string }> = {
-  "data-analytics": {
-    label: "Debug my SQL logic",
-    question: "How should I verify my SQL join and aggregation logic on this lesson without giving me the final query?",
-  },
-  "product-management": {
-    label: "Pressure-test my PRD scope",
-    question: "What trade-offs or edge cases should I check in my product scope for this lesson without writing the memo for me?",
-  },
-  "python-programming": {
-    label: "Check my Python edge cases",
-    question: "What data-type or boundary edge cases should I test in my Python logic for this lesson without giving me the code?",
-  },
-  "data-science-ai": {
-    label: "Check for data leakage",
-    question: "How do I verify my feature engineering and validation split on this lesson to avoid data leakage?",
-  },
-  "generative-ai": {
-    label: "Verify RAG grounding",
-    question: "How should I evaluate retrieval grounding and citation accuracy for this lesson step?",
-  },
-  "full-stack-web": {
-    label: "Audit API idempotency",
-    question: "What request validation and idempotency checks should I verify for this backend/frontend step?",
-  },
+export function hinglishIntuitionPromptFor(): { action: SkylentAiAction; label: string; question: string } {
+  return {
+    action: "ask",
+    label: "🇮🇳 Explain in Simple Hinglish",
+    question: "Explain the core intuition of this lesson in simple Hinglish with a real-world desi analogy, without answering quiz or assignment questions directly.",
+  }
 }
 
 export function socraticQuickPromptsFor(
@@ -66,6 +47,7 @@ export function socraticQuickPromptsFor(
   const base: Array<{ action: SkylentAiAction; label: string; question?: string }> = QUICK.filter(
     (item) => !(assessmentOpen && item.action === "quiz"),
   )
+  base.push(hinglishIntuitionPromptFor())
   if (lessonKind === "assignment") {
     return [
       ...base,
@@ -76,14 +58,13 @@ export function socraticQuickPromptsFor(
       },
     ]
   }
-  const trackPrompt = TRACK_SOCRATIC_PROMPTS[courseSlug]
-  if (trackPrompt) {
+  if (courseSlug === "data-analytics") {
     return [
       ...base,
       {
         action: "ask",
-        label: trackPrompt.label,
-        question: trackPrompt.question,
+        label: "Debug my SQL logic",
+        question: "How should I verify my SQL join and aggregation logic on this lesson without giving me the final query?",
       },
     ]
   }
@@ -94,36 +75,17 @@ const UNAVAILABLE = `${AI_NAME} isn't switched on yet.`
 const UNREACHABLE = `${AI_NAME} could not be reached.`
 
 /** Courses whose lesson text, concepts and case facts the server loads (server/src/lib/skylent-ai/authored.ts). */
-const AUTHORED_AI_COURSES = new Set([
-  "data-analytics",
-  "product-management",
-  "python-programming",
-  "data-science-ai",
-  "generative-ai",
-  "full-stack-web",
-])
-
-export function hinglishIntuitionPromptFor(courseSlug: string, lessonTitle?: string): {
-  action: SkylentAiAction
-  label: string
-  question: string
-} {
-  return {
-    action: "ask",
-    label: "Explain in Simple Hinglish",
-    question: `Explain the core first-principles intuition of "${lessonTitle ?? courseSlug}" in simple Hinglish with a practical Indian real-world analogy, without giving away any quiz or assignment answers.`,
-  }
-}
+const AUTHORED_AI_COURSES = new Set(["data-analytics", "product-management", "python-programming", "data-science-ai", "generative-ai", "full-stack-web"])
 
 /** Case facts the server attaches to the lesson context (server/src/lib/skylent-ai/authored.ts). */
 function caseChipFor(courseSlug: string, caseLabel?: string | null): string | null {
   if (caseLabel) return caseLabel
   if (courseSlug === "data-analytics") return "Northwind dataset"
   if (courseSlug === "product-management") return "Harbor Desk case"
-  if (courseSlug === "python-programming") return "Python ETL audit log"
-  if (courseSlug === "data-science-ai") return "Churn cohort dataset"
-  if (courseSlug === "generative-ai") return "Enterprise RAG corpus"
-  if (courseSlug === "full-stack-web") return "Idempotent ledger API"
+  if (courseSlug === "python-programming") return "Algorithmic Runtime Benchmarks"
+  if (courseSlug === "data-science-ai") return "Customer Churn Prediction Model"
+  if (courseSlug === "generative-ai") return "Grounded RAG Pipeline"
+  if (courseSlug === "full-stack-web") return "RESTful SaaS Backend"
   return null
 }
 
@@ -479,20 +441,6 @@ export default function SkylentAI({ courseSlug, lessonId, lessonTitle, lessonNum
               {item.label}
             </button>
           ))}
-          {(() => {
-            const hinglish = hinglishIntuitionPromptFor(courseSlug, lessonTitle)
-            return (
-              <button
-                key={hinglish.label}
-                type="button"
-                className="os-btn os-btn-ghost"
-                disabled={inputDisabled}
-                onClick={() => void submit(hinglish.action, hinglish.question)}
-              >
-                {hinglish.label}
-              </button>
-            )
-          })()}
         </div>
         <form
           className="os-ai-form"
@@ -535,15 +483,7 @@ export default function SkylentAI({ courseSlug, lessonId, lessonTitle, lessonNum
             <button
               type="button"
               className="os-link"
-              onClick={() => {
-                setDoubtEscalated(true)
-                void fetch(`/api/v1/lms/courses/${encodeURIComponent(courseSlug)}/lessons/${encodeURIComponent(lessonId)}/doubt`, {
-                  method: "POST",
-                  credentials: "include",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ lessonTitle, question: draft.trim() || undefined }),
-                }).catch(() => undefined)
-              }}
+              onClick={() => setDoubtEscalated(true)}
             >
               Stuck on this step? Flag for Faculty TA review (20-min SLA)
             </button>

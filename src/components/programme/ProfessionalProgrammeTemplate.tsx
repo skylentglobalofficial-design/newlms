@@ -210,8 +210,8 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
   const workspaceAccess = useProgrammeWorkspaceAccess(program.slug)
   const practiceHref = practiceWorkspaceHref(content.artefact)
   const practiceCopy = content.artefact === "northwind"
-    ? "Northwind is an industry retail sales extract. Enrolled learners write and execute real SQL queries in the live lab to conduct an end-to-end commercial review."
-    : "Harbor Desk is an applied operations case study. You conduct user research, frame the operational problem, and write a constrained product specification."
+    ? "Write and run SQL queries directly on the Northwind sales extract inside the browser lab, then carry your findings into the capstone."
+    : "Synthesise store interviews, triage weekend exceptions, and write an implementable 6-week specification inside the case workspace."
 
   const primaryAction = canEnrol ? (
     <button type="button" className="sk-btn sk-btn-primary" onClick={onEnrol}>
@@ -281,7 +281,8 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
           className="pp-rail cine-in cine-in--fade cine-d4"
           rows={[
             { label: "Enrolment", value: enrolChip },
-            { label: "Format", value: facts.format },
+            { label: "Format", value: `${facts.format} · 4–6 hrs/week` },
+            { label: "Access & fee", value: "Pilot access · Payment is not collected (No card required)" },
             { label: "You start with", value: startsWith },
           ]}
         />
@@ -644,7 +645,7 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
           <Reveal delay={180} className="pp-actions">
             {primaryAction}
             <button type="button" className="sk-btn sk-btn-secondary" onClick={() => openSkylentAi("finder")}>
-              {canEnrol ? "Not sure yet? Find your path in 90 seconds" : "Find your path in 90 seconds"}
+              {canEnrol ? "Not sure yet? Try the questionnaire" : "Try the questionnaire"}
             </button>
           </Reveal>
         </Reveal>

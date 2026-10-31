@@ -1,3 +1,16 @@
+export const AUTHORED_AI_COURSES = [
+  "data-analytics",
+  "product-management",
+  "python-programming",
+  "data-science-ai",
+  "generative-ai",
+  "full-stack-web",
+] as const
+
+export function isAuthoredAiCourse(slug: string): boolean {
+  return (AUTHORED_AI_COURSES as readonly string[]).includes(slug)
+}
+
 import { existsSync, readFileSync } from "node:fs"
 import { dirname, join } from "node:path"
 import { fileURLToPath } from "node:url"
@@ -298,7 +311,7 @@ export function buildLessonAiContext(input: {
 }): LessonAiContext {
   const isDa = input.courseSlug === "data-analytics"
   const isPm = input.courseSlug === "product-management"
-  const authored = isDa || isPm
+  const authored = isAuthoredAiCourse(input.courseSlug)
   const meta = isDa ? getDaAiMeta(input.lessonId) : isPm ? getPmAiMeta(input.lessonId) : undefined
   const body = authored ? readAuthoredLessonBody(input.courseSlug, input.lessonId) : ""
   const excerpt = authored ? compactLessonExcerpt(body) : ""
@@ -350,7 +363,19 @@ export function buildLessonAiContext(input: {
           note: HARBOR_FACTS.note,
         }
       : null,
-    caseLabel: isDa ? "Northwind dataset" : isPm ? "Harbor Desk case" : null,
+    caseLabel: isDa
+      ? "Northwind dataset"
+      : isPm
+        ? "Harbor Desk case"
+        : input.courseSlug === "python-programming"
+          ? "Algorithmic Runtime Benchmarks"
+          : input.courseSlug === "data-science-ai"
+            ? "Customer Churn Prediction Model"
+            : input.courseSlug === "generative-ai"
+              ? "Grounded RAG Pipeline"
+              : input.courseSlug === "full-stack-web"
+                ? "RESTful SaaS Backend"
+                : null,
     excerpt,
   }
 }

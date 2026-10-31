@@ -1,118 +1,111 @@
-/**
- * Phase P14: Daily Execution Streak, 14-Day Proof-of-Work Activity Heatmap & Weekly Elixir Goal
- * (inspired by Duolingo, LeetCode, and Boot.dev habit loops).
- */
-
-export type HeatmapDay = {
+export type LearnerActivityPoint = {
   date: string
-  label: string
   count: number
   active: boolean
 }
 
-export type ExecutionStreakSummary = {
+export type LearnerExecutionStreak = {
   currentStreakDays: number
   longestStreakDays: number
-  activeToday: boolean
   weeklyActionsCount: number
-  weeklyGoalTarget: number
-  weeklyGoalPercent: number
   streakBonusElixir: number
-  heatmapDays: HeatmapDay[]
+  activityHeatmap: LearnerActivityPoint[]
 }
 
-function toUtcDateKey(isoOrDate: string | Date): string | null {
-  const d = typeof isoOrDate === "string" ? new Date(isoOrDate) : isoOrDate
-  if (Number.isNaN(d.getTime())) return null
-  return d.toISOString().slice(0, 10)
-}
-
-function addUtcDays(dateKey: string, deltaDays: number): string {
-  const d = new Date(`${dateKey}T00:00:00.000Z`)
-  d.setUTCDate(d.getUTCDate() + deltaDays)
-  return d.toISOString().slice(0, 10)
-}
-
-function formatShortDay(dateKey: string): string {
-  const d = new Date(`${dateKey}T00:00:00.000Z`)
-  return d.toLocaleDateString("en-IN", { month: "short", day: "numeric", timeZone: "UTC" })
+function toDateKey(date: Date): string {
+  return date.toISOString().slice(0, 10)
 }
 
 export function computeLearnerExecutionStreak(
-  activityTimestamps: readonly (string | null | undefined)[],
-  referenceDateIso: string = new Date().toISOString(),
-): ExecutionStreakSummary {
-  const todayKey = toUtcDateKey(referenceDateIso) ?? new Date().toISOString().slice(0, 10)
-  const countsByDate = new Map<string, number>()
+  activityTimestamps: Array<string | Date | number | null | undefined>,
+  baseDate = new Date(),
+): LearnerExecutionStreak {
+  const countsByDay = new Map<string, number>()
 
   for (const raw of activityTimestamps) {
     if (!raw) continue
-    const key = toUtcDateKey(raw)
-    if (!key) continue
-    countsByDate.set(key, (countsByDate.get(key) ?? 0) + 1)
+    const d = new Date(raw)
+    if (Number.isNaN(d.getTime())) continue
+    const key = toDateKey(d)
+    countsByDay.set(key, (countsByDay.get(key) ?? 0) + 1)
   }
 
-  // Build 14-day heatmap ending today (oldest -> newest)
-  const heatmapDays: HeatmapDay[] = []
-  for (let offset = -13; offset <= 0; offset += 1) {
-    const key = addUtcDays(todayKey, offset)
-    const count = countsByDate.get(key) ?? 0
-    heatmapDays.push({
+  // Generate 14-day trailing heatmap ending today
+  const activityHeatmap: LearnerActivityPoint[] = []
+  let weeklyActionsCount = 0
+
+  for (let i = 13; i >= 0; i--) {
+    const day = new Date(baseDate)
+    day.setUTCDate(day.getUTCDate() - i)
+    const key = toDateKey(day)
+    const count = countsByDay.get(key) ?? 0
+    activityHeatmap.push({
       date: key,
-      label: formatShortDay(key),
       count,
       active: count > 0,
     })
-  }
-
-  // Weekly actions in last 7 days (including today)
-  let weeklyActionsCount = 0
-  for (let offset = -6; offset <= 0; offset += 1) {
-    const key = addUtcDays(todayKey, offset)
-    weeklyActionsCount += countsByDate.get(key) ?? 0
-  }
-
-  const activeToday = (countsByDate.get(todayKey) ?? 0) > 0
-  const yesterdayKey = addUtcDays(todayKey, -1)
-  const activeYesterday = (countsByDate.get(yesterdayKey) ?? 0) > 0
-
-  // Current streak counts consecutive active days ending today (or yesterday if not yet active today)
-  let currentStreakDays = 0
-  if (activeToday || activeYesterday) {
-    let cursor = activeToday ? todayKey : yesterdayKey
-    while ((countsByDate.get(cursor) ?? 0) > 0) {
-      currentStreakDays += 1
-      cursor = addUtcDays(cursor, -1)
+    if (i < 7) {
+      weeklyActionsCount += count
     }
   }
 
-  // Longest streak across all recorded dates
-  const sortedDates = [...countsByDate.keys()].sort()
-  let longestStreakDays = currentStreakDays
-  let run = 0
-  let prevKey: string | null = null
-  for (const key of sortedDates) {
-    if (prevKey && addUtcDays(prevKey, 1) === key) {
-      run += 1
+  // Calculate current streak (look back from today; if today has 0, check if yesterday had >0 to preserve active streak)
+  let currentStreak = 0
+  const todayKey = toDateKey(baseDate)
+  const yesterday = new Date(baseDate)
+  yesterday.setUTCDate(yesterday.getUTCDate() - 1)
+  const yesterdayKey = toDateKey(yesterday)
+
+  const todayActive = (countsByDay.get(todayKey) ?? 0) > 0
+  const yesterdayActive = (countsByDay.get(yesterdayKey) ?? 0) > 0
+
+  if (todayActive || yesterdayActive) {
+    let checkDate = todayActive ? new Date(baseDate) : yesterday
+    while (true) {
+      const key = toDateKey(checkDate)
+      if ((countsByDay.get(key) ?? 0) > 0) {
+        currentStreak += 1
+        checkDate.setUTCDate(checkDate.getUTCDate() - 1)
+      } else {
+        break
+      }
+    }
+  }
+
+  // Calculate longest streak across all recorded days
+  const sortedDays = Array.from(countsByDay.keys()).sort()
+  let longestStreak = 0
+  let tempStreak = 0
+  let prevDate: Date | null = null
+
+  for (const dayKey of sortedDays) {
+    if ((countsByDay.get(dayKey) ?? 0) === 0) continue
+    const cur = new Date(`${dayKey}T00:00:00Z`)
+    if (!prevDate) {
+      tempStreak = 1
     } else {
-      run = 1
+      const diffMs = cur.getTime() - prevDate.getTime()
+      const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24))
+      if (diffDays === 1) {
+        tempStreak += 1
+      } else {
+        tempStreak = 1
+      }
     }
-    if (run > longestStreakDays) longestStreakDays = run
-    prevKey = key
+    prevDate = cur
+    if (tempStreak > longestStreak) {
+      longestStreak = tempStreak
+    }
   }
 
-  const weeklyGoalTarget = 5
-  const weeklyGoalPercent = Math.min(100, Math.round((weeklyActionsCount / weeklyGoalTarget) * 100))
-  const streakBonusElixir = currentStreakDays * 5
+  longestStreak = Math.max(longestStreak, currentStreak)
+  const streakBonusElixir = currentStreak * 5
 
   return {
-    currentStreakDays,
-    longestStreakDays,
-    activeToday,
+    currentStreakDays: currentStreak,
+    longestStreakDays: longestStreak,
     weeklyActionsCount,
-    weeklyGoalTarget,
-    weeklyGoalPercent,
     streakBonusElixir,
-    heatmapDays,
+    activityHeatmap,
   }
 }

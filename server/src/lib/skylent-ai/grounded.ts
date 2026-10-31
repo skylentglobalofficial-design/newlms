@@ -182,17 +182,22 @@ export function groundedAnswer(input: AiAskInput): string {
     return assignmentRefusalFor(context)
   }
 
-  if (/hinglish|simple hindi|desi analogy/i.test(question)) {
-    const obj = context.objective || `mastering the core decision in “${context.lessonTitle}”`
-    return `Hinglish First-Principles Intuition (“${context.lessonTitle}”): Is lesson ka main focus hai — ${obj}. Asli funda yeh hai ki pehle system ki root-cause aur boundaries pakdo, bina seedha guess-work ke. Ab is approach se lab execute karo — main graded quiz ya assignment ka direct answer leak nahi karunga!`
-  }
-
   if (!context.authored) {
     return `This lesson is “${context.lessonTitle}” in ${context.courseTitle}. It is a thinner catalogue listing, not an authored Skylent flagship path. I can only speak to the lesson title here — I will not invent extra modules, certificates, or live classes.`
   }
 
   if (looksLikeOffTopic(question)) {
     return offTopicAnswer(question, context)
+  }
+
+  if (/hinglish|desi analogy|simple hinglish|hindi me/i.test(question)) {
+    if (context.courseSlug === "data-analytics" || context.northwind) {
+      return "Hinglish Intuition: Socho ek retail shop par 180 entries aayi, lekin 14 rows me returned items ya zero price tha. Agar aap bina clean kiye total karoge to headline revenue galat niklega! Isliye hum pehle 'valid-row rule' (units > 0, unit_price > 0, returned = no) lagate hain aur fir har item par discount minus karke real net revenue (₹812,020) nikalte hain."
+    }
+    if (context.courseSlug === "product-management" || context.harbor) {
+      return "Hinglish Intuition: Jab company ka management bolta hai 'Hume store managers ke liye ek AI tool banana hai', to wo seedha solution soch rahe hain, problem nahi. Real problem ye hai ki weekend par delivery fail hone par customer complaint kiski responsibility hai, ye kisi ko pata hi nahi! Ek product manager pehle user ka dard aur ownership decide karta hai, software baad me banta hai."
+    }
+    return `Hinglish Intuition (${context.lessonTitle}): Simple shabdo me samjhein — pehle core business outcome par focus karein bina kisi complex jargon ke: ${context.objective || context.concepts.join(", ") || "Real execution evidence"}. Kisi bhi assignment me bina root cause clear kiye final answer na likhein.`
   }
 
   if (!quizPending && !practicePending && context.northwind) {

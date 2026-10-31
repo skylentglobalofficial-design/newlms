@@ -1,6 +1,6 @@
 /**
  * Clients for the Skylent additions on the existing backend (server/src/routes/skylent/*):
- *   /api/v1/certificates  — issue (learner), mine (learner), verify (public)
+ *   /api/v1/certificates  — issue (learner), issue-programme (learner), mine (learner), verify (public)
  *   /api/v1/enquiries     — public enquiry / counselling / degree enquiry
  *   /api/v1/reva/chat     — site-wide assistant (legacy internal route name; the UI name is "Skylent AI")
  * No mock data and no fallbacks: a failed request throws, and the caller shows an honest error state.
@@ -26,26 +26,13 @@ export type SkylentCertificate = {
   verifyPath?: string
   issuedAt: string
   revoked?: boolean
+  issuer?: string
+  verificationStandard?: string
+  evidenceSummary?: string
+  credentialLevel?: "course" | "programme"
   id?: string
   userId?: string
   courseId?: string
-}
-
-export type ProofOfWorkArtifact = {
-  projectType: string
-  courseSlug: string
-  title: string
-  status: string
-  finding: string | null
-  whyItMatters: string | null
-  recommendation: string | null
-  updatedAt: string
-}
-
-export type ProofOfWorkDossier = {
-  verifiedModulesSummary: string
-  verifiedSkills: string[]
-  artifacts: ProofOfWorkArtifact[]
 }
 
 export type CertificateVerification =
@@ -56,11 +43,8 @@ export type CertificateVerification =
       courseTitle: string
       issuedAt: string
       issuer?: string
-      credentialStandard?: string
       verificationStandard?: string
       evidenceSummary?: string
-      credentialLevel?: "course" | "programme"
-      proofOfWork?: ProofOfWorkDossier
     }
   | { valid: false }
 
@@ -87,7 +71,7 @@ export async function issueCertificate(courseSlug: string): Promise<SkylentCerti
   return parsed.data
 }
 
-/** POST /certificates/issue-programme — issues a Programme Master Certificate (-PGM) when all linked courses are complete. */
+/** POST /certificates/issue-programme — issues a Programme Master Certificate when all courses in the programme are complete. */
 export async function issueProgrammeCertificate(programSlug: string): Promise<SkylentCertificate> {
   const token = await ensureCsrfToken()
   const response = await fetch(`${API_BASE}/certificates/issue-programme`, {
@@ -101,7 +85,7 @@ export async function issueProgrammeCertificate(programSlug: string): Promise<Sk
 }
 
 /**
- * GET /certificates/verify/:code — public. Returns name, course, date, and Proof-of-Work Dossier.
+ * GET /certificates/verify/:code — public. Returns only name, course and date.
  * 404 with { data: { valid: false } } means "no such certificate, or revoked"; 400 means a malformed ID.
  */
 export async function verifyCertificate(code: string, signal?: AbortSignal): Promise<CertificateVerification> {
@@ -199,15 +183,4 @@ export async function askSiteAi(messages: SiteAiTurn[], signal?: AbortSignal): P
   const raw = parsed.data.answer ?? ""
   const match = raw.match(/\[\[go:(\/[^\]\s]*)\]\]/)
   return { answer: raw.replace(/\s*\[\[go:[^\]]*\]\]/g, "").trim(), goTo: match ? match[1] : null }
-}
-
-export async function checkSiteAiAvailable(signal?: AbortSignal): Promise<boolean> {
-  try {
-    const response = await fetch(`${API_BASE}/reva/status`, { credentials: "include", signal })
-    if (!response.ok) return false
-    const parsed = await parseApiJson<{ data: { available: boolean } }>(response)
-    return Boolean(parsed.data?.available)
-  } catch {
-    return false
-  }
 }
