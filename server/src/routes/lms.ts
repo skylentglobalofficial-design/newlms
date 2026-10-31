@@ -1151,25 +1151,49 @@ lmsRouter.post(
         lessonTitle: body.data.lessonTitle ?? found.node.title,
         question: body.data.question,
       })
-      const caps = await readSchemaCapabilities().catch(() => null)
-      if (caps?.facultyDoubtTickets) {
-        await prisma.facultyDoubtTicket.upsert({
-          where: { id: ticket.id },
-          create: {
-            id: ticket.id,
-            userId: ticket.userId,
-            learnerName: ticket.learnerName,
-            courseSlug: ticket.courseSlug,
-            lessonKey: ticket.lessonKey,
-            lessonTitle: ticket.lessonTitle,
-            question: ticket.question,
-            status: ticket.status,
-            slaMinutes: ticket.slaMinutes,
-          },
-          update: {
-            question: ticket.question,
-          },
-        }).catch((err) => console.error("Failed to persist doubt to DB:", err instanceof Error ? err.name : "unknown"))
+      type DoubtDbRow = {
+        id: string
+        userId: string
+        learnerName: string
+        courseSlug: string
+        lessonKey: string
+        lessonTitle: string | null
+        question: string
+        status: string
+        slaMinutes: number
+        createdAt: Date
+        resolvedAt: Date | null
+        resolvedById: string | null
+        resolutionNote: string | null
+      }
+      const doubtDelegate = (prisma as unknown as {
+        facultyDoubtTicket?: {
+          upsert: (args: Record<string, unknown>) => Promise<DoubtDbRow>
+          findMany: (args: Record<string, unknown>) => Promise<DoubtDbRow[]>
+        }
+      }).facultyDoubtTicket
+      if (doubtDelegate) {
+        await doubtDelegate
+          .upsert({
+            where: { id: ticket.id },
+            create: {
+              id: ticket.id,
+              userId: ticket.userId,
+              learnerName: ticket.learnerName,
+              courseSlug: ticket.courseSlug,
+              lessonKey: ticket.lessonKey,
+              lessonTitle: ticket.lessonTitle,
+              question: ticket.question,
+              status: ticket.status,
+              slaMinutes: ticket.slaMinutes,
+            },
+            update: {
+              question: ticket.question,
+            },
+          })
+          .catch((err: unknown) =>
+            console.error("Failed to persist doubt to DB:", err instanceof Error ? err.name : "unknown"),
+          )
       }
       res.status(201).json({ data: ticket })
     } catch (error) {
@@ -1185,13 +1209,32 @@ lmsRouter.get("/doubts/mine", requireAuth, async (req: AuthenticatedRequest, res
     for (const mem of listLearnerDoubtTickets(userId)) {
       byId.set(mem.id, mem)
     }
-    const caps = await readSchemaCapabilities().catch(() => null)
-    if (caps?.facultyDoubtTickets) {
-      const dbRows = await prisma.facultyDoubtTicket.findMany({
+    type DoubtDbRow = {
+      id: string
+      userId: string
+      learnerName: string
+      courseSlug: string
+      lessonKey: string
+      lessonTitle: string | null
+      question: string
+      status: string
+      slaMinutes: number
+      createdAt: Date
+      resolvedAt: Date | null
+      resolvedById: string | null
+      resolutionNote: string | null
+    }
+    const doubtDelegate = (prisma as unknown as {
+      facultyDoubtTicket?: {
+        findMany: (args: Record<string, unknown>) => Promise<DoubtDbRow[]>
+      }
+    }).facultyDoubtTicket
+    if (doubtDelegate) {
+      const dbRows = await doubtDelegate.findMany({
         where: { userId },
         orderBy: { createdAt: "desc" },
         take: 30,
-      })
+      }).catch((): DoubtDbRow[] => [])
       for (const row of dbRows) {
         byId.set(row.id, {
           id: row.id,
