@@ -63,7 +63,7 @@ export default function OnlineDegreeView({ degree }: { degree: Degree }) {
         <div className="dg-hero__row">
           <p className="dg-lead cine-in cine-d2">
             {degree.sample || !degree.institution
-              ? "This page describes a planned online degree area. Skylent does not award the degree, and applications are not open. Timetable, fees and entry details are published only once an institution is confirmed."
+              ? "Planned online degree pathway. Partner universities award the degree; timetable, fees, and admissions open once an institution is confirmed."
               : "Live sessions, recorded lectures, reading and assessed work all happen in one online learning environment, so the week runs on a laptop and not on a campus."}
           </p>
           <div className="dg-actions cine-in cine-d3">
@@ -84,7 +84,7 @@ export default function OnlineDegreeView({ degree }: { degree: Degree }) {
                 label: "Listing",
                 value: (
                   <span className="dg-listing">
-                    <span>Planned pathway · register interest</span>
+                    <span>Sample listing · not open for applications</span>
                   </span>
                 ),
               },

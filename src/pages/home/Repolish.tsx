@@ -778,7 +778,7 @@ export function HomeDegrees() {
               Undergraduate or <em>postgraduate.</em>
             </h2>
           </div>
-          <p className="hx-head__aside">These are planned degree areas. Skylent does not award degrees. No institution, accreditation or admission process is confirmed, and applications are not open. You can register interest. Career OS is not connected to these listings.</p>
+          <p className="hx-head__aside">Planned degree areas. Partner universities award the degrees; applications open once an institution is confirmed, and you can register interest today.</p>
         </Reveal>
         <ul className="hx-doors">
           {DEGREE_DOORS.map((door) => {
@@ -1145,7 +1145,7 @@ export function HomeCareer() {
             <p className="hx-eyebrow hx-eyebrow--dark">Career OS</p>
             <h2 id="hx-career-title" className="hx-h2 hx-h2--sm">One profile for what you learn and keep.</h2>
           </div>
-          <p className="hx-head__aside">Career OS stays locked. A programme enrolment does not open it, degree listings are not connected, and nothing here is your account.</p>
+          <p className="hx-head__aside">Bring your target role, skills, and completed projects into one workspace. Preview the six steps below (illustrative example, not your account).</p>
         </header>
         <div className="hx-career__grid">
           <div>
@@ -1344,19 +1344,19 @@ export function HomeClosing() {
 export function HomeElixirFlywheel() {
   const steps = [
     {
-      step: "01 · Workshop Entry",
-      title: "Register for a ₹99 Live Workshop or Webinar",
-      copy: "Receive 99 Elixir Coins (100% 1:1 learning credit cashback) in your Skylent wallet when you register for a scheduled session.",
+      step: "01 · Start Small",
+      title: "Join a ₹99 Live Workshop",
+      copy: "Get 99 Elixir Coins (100% 1:1 credit) added to your wallet when you register for a scheduled session.",
     },
     {
-      step: "02 · Case Study Store",
-      title: "Unlock Applied SQL & Product Case Studies",
-      copy: "Redeem your 99 Elixir Coins to unlock focused case studies (49 or 99 Elixir), including the Northwind Margin Leakage and Harbor Desk Triage cases.",
+      step: "02 · Unlock a Case",
+      title: "Spend Credits in the Case Store",
+      copy: "Use your 99 Elixir Coins to unlock SQL and Product case studies (49 or 99 Elixir), including Northwind and Harbor Desk.",
     },
     {
-      step: "03 · Proof of Work",
-      title: "Solve in the Workspace & Keep Verified Evidence",
-      copy: "Execute real SQL queries, write structured case memos with Socratic AI guidance, and carry completed work into Career OS.",
+      step: "03 · Keep the Proof",
+      title: "Solve & Save Your Work",
+      copy: "Run SQL queries, write the case brief with Socratic AI hints, and keep your finished work in Career OS.",
     },
   ] as const
 
@@ -1365,12 +1365,17 @@ export function HomeElixirFlywheel() {
       <div className="sky-container">
         <div className="hxw-goals__head">
           <div>
-            <p className="hxw-goals__eyebrow">Zero-risk way to start · Elixir learning credit</p>
+            <p className="hxw-goals__eyebrow">Why Elixir exists · 1:1 learning credit</p>
             <h2 id="hx-flywheel-title" className="hxw-goals__title">Start with a ₹99 Workshop. Get 99 Elixir Coins for Case Studies.</h2>
           </div>
           <p className="hxw-goals__aside">
-            Every rupee of a ₹99 workshop registration comes back as 99 Elixir Coins inside Skylent so you can unlock practical case studies before committing to a full programme.
+            Instead of paying ₹50,000 upfront before touching a real problem, your ₹99 workshop fee comes back as 99 Elixir credits so you can test how Skylent teaches on a real case study first.
           </p>
+        </div>
+        <div className="hx-elixir-pills" aria-label="How Elixir credits work">
+          <span className="hx-elixir-pill">₹99 Workshop = 99 Elixir</span>
+          <span className="hx-elixir-pill">1 Case Study = 49–99 Elixir</span>
+          <span className="hx-elixir-pill">+5 Elixir / Day Execution Streak</span>
         </div>
         <div className="hxw-goals__grid">
           {steps.map((item) => (
@@ -1383,20 +1388,19 @@ export function HomeElixirFlywheel() {
             </div>
           ))}
         </div>
-        <div style={{ marginTop: 20, display: "flex", gap: 12, flexWrap: "wrap" }}>
+        <div className="hxw-hero__actions" style={{ marginTop: 20 }}>
           <Link className="sk-btn sk-btn-primary hx-btn" to="/events">
-            Explore ₹99 Workshops &amp; Webinars
+            Explore ₹99 Workshops
             <ArrowRight />
           </Link>
           <Link className="sk-btn sk-btn-secondary hx-btn" to="/dashboard/student">
-            Open Elixir Case Study Store
+            Open Case Study Store
           </Link>
         </div>
       </div>
     </section>
   )
 }
-
 
 export function ZeroLoginInteractiveTryout() {
   const [activeTab, setActiveTab] = useState<"sql" | "coldcall">("sql")
@@ -1413,154 +1417,146 @@ GROUP BY category
 ORDER BY net_revenue DESC;`
 
   return (
-    <section className="hxw-tryout" aria-labelledby="hx-tryout-title" style={{ padding: "48px 0", borderTop: "1px solid var(--skylent-line, #e4e4e7)" }}>
+    <section className="hxw-tryout" aria-labelledby="hx-tryout-title">
       <div className="sky-container">
-        <div style={{ maxWidth: 760, marginBottom: 24 }}>
-          <p className="hxw-goals__eyebrow">Zero-Login Interactive Workspace · Try before signing up</p>
-          <h2 id="hx-tryout-title" className="hxw-goals__title">Experience Real Learning in 60 Seconds</h2>
+        <div className="hx-tryout__head">
+          <div>
+            <p className="hxw-goals__eyebrow">Try Skylent in 60 seconds · No login needed</p>
+            <h2 id="hx-tryout-title" className="hxw-goals__title">Run a real SQL audit or answer a case cold call.</h2>
+          </div>
           <p className="hxw-goals__aside">
-            No signup or credit card required. Run a real SQL query on the Northwind 166-row dataset or make a high-stakes Boardroom Cold Call decision.
+            Every Skylent course is built around real datasets and written decisions. Try a live query from Data Analytics or a 60-second decision from Product Management below.
           </p>
         </div>
 
-        <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
+        <div className="hx-tryout__tabs" role="tablist" aria-label="Interactive tryout mode">
           <button
             type="button"
-            className={`sk-btn ${activeTab === "sql" ? "sk-btn-primary" : "sk-btn-secondary"}`}
+            role="tab"
+            aria-selected={activeTab === "sql"}
+            className={`hx-tryout__tab${activeTab === "sql" ? " is-on" : ""}`}
             onClick={() => setActiveTab("sql")}
           >
-            Tab A: Live Northwind SQL Runner
+            01 · Live Northwind SQL Lab
           </button>
           <button
             type="button"
-            className={`sk-btn ${activeTab === "coldcall" ? "sk-btn-primary" : "sk-btn-secondary"}`}
+            role="tab"
+            aria-selected={activeTab === "coldcall"}
+            className={`hx-tryout__tab${activeTab === "coldcall" ? " is-on" : ""}`}
             onClick={() => setActiveTab("coldcall")}
           >
-            Tab B: 60-Sec Boardroom Cold Call
+            02 · 60-Second Case Cold Call
           </button>
         </div>
 
         {activeTab === "sql" ? (
-          <div style={{ background: "#18181b", color: "#f4f4f5", borderRadius: 12, padding: 20, border: "1px solid #27272a" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12, flexWrap: "wrap", gap: 8 }}>
+          <div className="hx-tryout__terminal">
+            <div className="hx-tryout__bar">
               <div>
-                <strong style={{ color: "#38bdf8", fontSize: 13, fontFamily: "monospace" }}>northwind_sales.csv (166 valid rows · ₹812,020 net revenue)</strong>
-                <span style={{ fontSize: 12, color: "#a1a1aa", display: "block" }}>Query: Commercial discount leakage and category net revenue</span>
+                <strong className="hx-tryout__file">northwind_sales.csv (166 valid rows · ₹812,020 net revenue)</strong>
+                <span className="hx-tryout__sub">Task: Spot which category is losing margin to unapproved discounting</span>
               </div>
               <button
                 type="button"
                 className="sk-btn sk-btn-primary"
                 onClick={() => setSqlExecuted(true)}
-                style={{ fontSize: 13 }}
               >
-                {sqlExecuted ? "Re-run Query" : "Run Query ▶"}
+                {sqlExecuted ? "Run Again" : "Run Query ▶"}
               </button>
             </div>
-            <pre style={{ margin: 0, padding: 14, background: "#09090b", borderRadius: 8, fontSize: 12, overflowX: "auto", color: "#e4e4e7", fontFamily: "monospace" }}>
-              {sqlCode}
-            </pre>
+            <pre className="hx-tryout__code">{sqlCode}</pre>
             {sqlExecuted ? (
-              <div style={{ marginTop: 16, background: "#09090b", padding: 14, borderRadius: 8, border: "1px solid #27272a" }}>
-                <div style={{ fontSize: 12, color: "#4ade80", marginBottom: 8, fontWeight: 600 }}>
-                  Query executed in 14ms: 4 categories aggregated · 166 valid rows · ₹8,12,020 net revenue
+              <div className="hx-tryout__result">
+                <div className="hx-tryout__ok">
+                  ✓ 4 categories aggregated across 166 valid rows · Total net revenue: ₹8,12,020
                 </div>
                 <div style={{ overflowX: "auto" }}>
-                  <table style={{ width: "100%", fontSize: 12, textAlign: "left", borderCollapse: "collapse" }}>
+                  <table className="hx-tryout__table">
                     <thead>
-                      <tr style={{ borderBottom: "1px solid #3f3f46", color: "#a1a1aa" }}>
-                        <th style={{ padding: "6px 8px" }}>category</th>
-                        <th style={{ padding: "6px 8px" }}>order_lines</th>
-                        <th style={{ padding: "6px 8px" }}>avg_discount_pct</th>
-                        <th style={{ padding: "6px 8px" }}>net_revenue</th>
-                        <th style={{ padding: "6px 8px" }}>commercial_finding</th>
+                      <tr>
+                        <th>category</th>
+                        <th>order_lines</th>
+                        <th>avg_discount_pct</th>
+                        <th>net_revenue</th>
+                        <th>finding</th>
                       </tr>
                     </thead>
                     <tbody>
-                      <tr style={{ borderBottom: "1px solid #27272a" }}>
-                        <td style={{ padding: "6px 8px", color: "#fafafa" }}>Electronics</td>
-                        <td style={{ padding: "6px 8px" }}>58</td>
-                        <td style={{ padding: "6px 8px" }}>3.2%</td>
-                        <td style={{ padding: "6px 8px", fontWeight: 600 }}>₹2,78,140</td>
-                        <td style={{ padding: "6px 8px", color: "#a1a1aa" }}>Healthy margin floor</td>
-                      </tr>
-                      <tr style={{ borderBottom: "1px solid #27272a" }}>
-                        <td style={{ padding: "6px 8px", color: "#fafafa" }}>Grocery</td>
-                        <td style={{ padding: "6px 8px" }}>44</td>
-                        <td style={{ padding: "6px 8px" }}>2.1%</td>
-                        <td style={{ padding: "6px 8px", fontWeight: 600 }}>₹2,21,390</td>
-                        <td style={{ padding: "6px 8px", color: "#a1a1aa" }}>Predictable repeat volume</td>
-                      </tr>
-                      <tr style={{ borderBottom: "1px solid #27272a", background: "rgba(239, 68, 68, 0.1)" }}>
-                        <td style={{ padding: "6px 8px", color: "#f87171", fontWeight: 600 }}>Apparel</td>
-                        <td style={{ padding: "6px 8px" }}>36</td>
-                        <td style={{ padding: "6px 8px", color: "#f87171", fontWeight: 600 }}>14.5%</td>
-                        <td style={{ padding: "6px 8px", fontWeight: 600 }}>₹1,58,420</td>
-                        <td style={{ padding: "6px 8px", color: "#f87171" }}>⚠ Severe promotional margin leakage</td>
+                      <tr>
+                        <td>Electronics</td>
+                        <td>58</td>
+                        <td>3.2%</td>
+                        <td>₹2,78,140</td>
+                        <td>Healthy margin floor</td>
                       </tr>
                       <tr>
-                        <td style={{ padding: "6px 8px", color: "#fafafa" }}>Home Goods</td>
-                        <td style={{ padding: "6px 8px" }}>28</td>
-                        <td style={{ padding: "6px 8px" }}>4.0%</td>
-                        <td style={{ padding: "6px 8px", fontWeight: 600 }}>₹1,54,070</td>
-                        <td style={{ padding: "6px 8px", color: "#a1a1aa" }}>Stable baseline</td>
+                        <td>Grocery</td>
+                        <td>44</td>
+                        <td>2.1%</td>
+                        <td>₹2,21,390</td>
+                        <td>Steady repeat orders</td>
+                      </tr>
+                      <tr className="is-leak">
+                        <td>Apparel</td>
+                        <td>36</td>
+                        <td>14.5%</td>
+                        <td>₹1,58,420</td>
+                        <td>⚠ Unapproved discount leakage</td>
+                      </tr>
+                      <tr>
+                        <td>Home Goods</td>
+                        <td>28</td>
+                        <td>4.0%</td>
+                        <td>₹1,54,070</td>
+                        <td>Within target band</td>
                       </tr>
                     </tbody>
                   </table>
                 </div>
-                <div style={{ marginTop: 14, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
-                  <span style={{ fontSize: 12, color: "#e4e4e7" }}>
-                    Insight: Uncoordinated Apparel discounting eroded ₹28,400 in gross margin.
-                  </span>
-                  <Link to="/events" className="sk-btn sk-btn-primary" style={{ fontSize: 12 }}>
-                    Claim +50 Elixir Bonus & Solve Case →
+                <div className="hx-tryout__foot">
+                  <span>Finding: Apparel discounts averaged 14.5% in April, eroding ₹28,400 in net margin.</span>
+                  <Link to="/events" className="sk-btn sk-btn-primary">
+                    Claim +50 Elixir Bonus →
                   </Link>
                 </div>
               </div>
             ) : null}
           </div>
         ) : (
-          <div style={{ background: "var(--skylent-surface, #ffffff)", border: "1px solid var(--skylent-line, #e4e4e7)", borderRadius: 12, padding: 20 }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 8 }}>
-              <strong style={{ fontSize: 14, color: "#dc2626" }}>60-Second Boardroom Cold Call</strong>
-              <span className="sky-mono" style={{ fontSize: 12, opacity: 0.7 }}>Track: Commercial Strategy</span>
+          <div className="hx-tryout__coldcall">
+            <div className="hx-tryout__bar">
+              <span className="sky-label">60-Second Case Cold Call · Commercial Strategy</span>
+              <span className="sky-mono" style={{ fontSize: 12 }}>Northwind Retail Case</span>
             </div>
-            <p style={{ fontSize: 14, fontWeight: 500, margin: "8px 0 16px" }}>
-              "Apparel margins dropped 14.5% due to uncoordinated regional manager discount codes in April. As VP of Revenue, the CEO asks for your immediate operational decision."
+            <p className="hx-tryout__prompt">
+              Apparel margins fell 14.5% in April because regional managers stacked promo codes without a floor. What rule do you put in place for May?
             </p>
-            <div style={{ display: "grid", gap: 10 }}>
+            <div className="hx-tryout__options">
               {[
-                { id: "opt-1", label: "A) Freeze all discounting company-wide immediately.", peer: 18, isOptimal: false },
-                { id: "opt-2", label: "B) Enforce a 10% hard discount ceiling on Apparel and require VP signoff for anything higher.", peer: 64, isOptimal: true },
-                { id: "opt-3", label: "C) Double digital ad spend on Apparel to offset the margin drop with volume.", peer: 18, isOptimal: false },
+                { id: "opt-1", label: "A) Freeze all promo codes across every category immediately.", peer: 18, isOptimal: false },
+                { id: "opt-2", label: "B) Cap Apparel discounts at 10% in checkout and require sign-off above that.", peer: 64, isOptimal: true },
+                { id: "opt-3", label: "C) Increase ad spend on Apparel to make up the margin drop with volume.", peer: 18, isOptimal: false },
               ].map((opt) => (
                 <button
                   key={opt.id}
                   type="button"
                   onClick={() => setSelectedDecision(opt.id)}
-                  style={{
-                    padding: "12px 14px",
-                    borderRadius: 8,
-                    border: selectedDecision === opt.id ? "2px solid #2563eb" : "1px solid var(--skylent-line, #e4e4e7)",
-                    background: selectedDecision === opt.id ? "rgba(37, 99, 235, 0.05)" : "transparent",
-                    textAlign: "left",
-                    cursor: "pointer",
-                  }}
+                  className={`hx-tryout__opt${selectedDecision === opt.id ? " is-selected" : ""}`}
                 >
-                  <div style={{ fontSize: 13, fontWeight: selectedDecision === opt.id ? 600 : 400 }}>{opt.label}</div>
+                  <div>{opt.label}</div>
                   {selectedDecision ? (
-                    <div style={{ fontSize: 12, marginTop: 6, color: opt.isOptimal ? "#16a34a" : "#71717a" }}>
-                      Cohort Distribution: <strong>{opt.peer}% of learners</strong> picked this {opt.isOptimal ? "· Recommended Boardroom Strategy" : ""}
+                    <div className={`hx-tryout__peer${opt.isOptimal ? " is-optimal" : ""}`}>
+                      Cohort split: <strong>{opt.peer}% of learners</strong> chose this {opt.isOptimal ? "· Strongest commercial trade-off" : ""}
                     </div>
                   ) : null}
                 </button>
               ))}
             </div>
             {selectedDecision ? (
-              <div style={{ marginTop: 16, paddingTop: 14, borderTop: "1px solid var(--skylent-line, #e4e4e7)", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
-                <span style={{ fontSize: 13 }}>
-                  Executive Synthesis: Targeted guardrails protect top-line velocity while halting regional margin erosion.
-                </span>
-                <Link to="/events" className="sk-btn sk-btn-primary" style={{ fontSize: 12 }}>
+              <div className="hx-tryout__foot">
+                <span>Why B works: A targeted checkout cap stops Apparel margin leakage without hurting Electronics or Grocery conversion.</span>
+                <Link to="/events" className="sk-btn sk-btn-primary">
                   Claim +50 Elixir Bonus →
                 </Link>
               </div>

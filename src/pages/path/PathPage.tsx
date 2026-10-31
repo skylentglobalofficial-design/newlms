@@ -220,24 +220,15 @@ function SkillDiagnosticSection() {
   }
 
   return (
-    <section
-      aria-labelledby="skill-diag-title"
-      style={{
-        margin: "16px 0 24px",
-        padding: "16px 20px",
-        borderRadius: 12,
-        background: "var(--skylent-surface, #ffffff)",
-        border: "1px solid var(--skylent-line, #e4e4e7)",
-      }}
-    >
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 10 }}>
+    <section className="path-diag" aria-labelledby="skill-diag-title">
+      <div className="path-diag__head">
         <div>
-          <span className="sky-label">Benchmarking &amp; Diagnostic</span>
-          <h2 id="skill-diag-title" style={{ fontSize: 16, margin: "4px 0" }}>
-            90-Second Adaptive Skill Diagnostic &amp; Percentile Test
+          <span className="sky-label">Optional 90-Second Skill Check</span>
+          <h2 id="skill-diag-title" className="path-diag__title">
+            Benchmark your SQL, Product &amp; GenAI readiness
           </h2>
-          <p style={{ fontSize: 13, color: "var(--skylent-muted, #71717a)", margin: 0 }}>
-            Test your commercial SQL, Product scoping, and Python/GenAI readiness before choosing your path.
+          <p className="path-diag__sub">
+            Answer 3 quick scenario questions to see your percentile and starting module.
           </p>
         </div>
         <button
@@ -245,31 +236,23 @@ function SkillDiagnosticSection() {
           className="sk-btn sk-btn-secondary"
           onClick={() => setOpen((prev) => !prev)}
         >
-          {open ? "Collapse Diagnostic" : "Start 90-Sec Test →"}
+          {open ? "Hide check" : "Start 90-Sec Test →"}
         </button>
       </div>
 
       {open ? (
-        <div style={{ marginTop: 20 }}>
+        <div className="path-diag__body">
           {SKILL_DIAGNOSTIC_QUESTIONS.map((q, idx) => (
-            <div key={q.id} style={{ marginBottom: 18, paddingBottom: 16, borderBottom: "1px solid var(--skylent-line, #e4e4e7)" }}>
-              <strong style={{ fontSize: 13, color: "#2563eb" }}>Q{idx + 1} · {q.title}</strong>
-              <p style={{ fontSize: 13, margin: "6px 0 10px" }}>{q.scenario}</p>
-              <div style={{ display: "grid", gap: 8 }}>
+            <div key={q.id} className="path-diag__q">
+              <strong className="path-diag__qtitle">Q{idx + 1} · {q.title}</strong>
+              <p className="path-diag__qtext">{q.scenario}</p>
+              <div className="path-diag__opts">
                 {q.options.map((opt) => (
                   <button
                     key={opt.id}
                     type="button"
                     onClick={() => handleSelect(q.id, opt.id)}
-                    style={{
-                      padding: "8px 12px",
-                      borderRadius: 6,
-                      border: answers[q.id] === opt.id ? "2px solid #2563eb" : "1px solid var(--skylent-line, #e4e4e7)",
-                      background: answers[q.id] === opt.id ? "rgba(37, 99, 235, 0.05)" : "transparent",
-                      textAlign: "left",
-                      fontSize: 12,
-                      cursor: "pointer",
-                    }}
+                    className={`path-diag__opt${answers[q.id] === opt.id ? " is-selected" : ""}`}
                   >
                     {opt.label}
                   </button>
@@ -285,21 +268,21 @@ function SkillDiagnosticSection() {
               disabled={Object.keys(answers).length < SKILL_DIAGNOSTIC_QUESTIONS.length}
               onClick={handleScore}
             >
-              Score My Readiness &amp; Compute Percentile
+              Score My Readiness &amp; Percentile
             </button>
           ) : (
-            <div style={{ background: "rgba(37, 99, 235, 0.06)", padding: 16, borderRadius: 8, marginTop: 16 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", flexWrap: "wrap", gap: 8 }}>
+            <div className="path-diag__result">
+              <div className="path-diag__result-top">
                 <div>
-                  <strong style={{ fontSize: 18, color: "#1e40af" }}>Readiness: {result.scorePercent}% ({result.percentile})</strong>
-                  <span style={{ fontSize: 12, display: "block", color: "#1e40af", fontWeight: 600 }}>{result.readinessTier}</span>
+                  <strong style={{ fontSize: 17 }}>Readiness: {result.scorePercent}% ({result.percentile})</strong>
+                  <span style={{ fontSize: 12, display: "block", marginTop: 2 }}>{result.readinessTier}</span>
                 </div>
-                <Link to={`/courses/${result.recommendedCourseSlug}`} className="sk-btn sk-btn-primary" style={{ fontSize: 12 }}>
+                <Link to={`/courses/${result.recommendedCourseSlug}`} className="sk-btn sk-btn-primary">
                   Start at {result.recommendedModule} →
                 </Link>
               </div>
-              <p style={{ fontSize: 12, margin: "10px 0 0" }}>
-                Recommended Course: <strong>{result.recommendedCourseTitle}</strong>. Gaps identified: {result.gapsIdentified.join(", ") || "None (Ready for Advanced Studio)"}.
+              <p style={{ fontSize: 12.5, marginTop: 10 }}>
+                Recommended course: <strong>{result.recommendedCourseTitle}</strong> · Focus areas: {result.gapsIdentified.join(", ") || "Advanced Studio Ready"}.
               </p>
             </div>
           )}

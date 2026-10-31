@@ -189,10 +189,10 @@ export default function EventsPage() {
 
         <section className="cat-section" aria-labelledby="events-elixir-store-title">
           <div className="cat-rail">
-            <p className="cat-label">100% Coin Back Flywheel</p>
+            <p className="cat-label">Why Elixir Credits Exist · 1:1 Learning Credit</p>
             <h2 id="events-elixir-store-title">Redeemable with your 99 Workshop Elixir Coins</h2>
             <p className="cat-lead">
-              When you register for a ₹99 session, 99 Elixir Coins are credited to your wallet in My Learning. Use them to unlock these practical case studies and playbooks:
+              Your ₹99 workshop fee returns 1:1 as 99 Elixir Coins in My Learning—so you can unlock and solve a real SQL or Product case study before committing to a full programme:
             </p>
             <ul className="ws-list">
               <li>

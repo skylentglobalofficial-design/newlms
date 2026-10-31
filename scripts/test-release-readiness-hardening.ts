@@ -756,6 +756,22 @@ console.log("14. Admin C-Suite Unit Economics UI and Student Programme Master Ce
   assert(verifyPageSrc.includes("Share Verified Dossier on LinkedIn ↗"), "Gap 5 closed: 1-click LinkedIn viral sharing")
   assert(groundedSrc.includes("Hinglish Intuition"), "Gap 6 closed: Socratic Hinglish intuition mode")
 
+console.log("23. Per-Pixel & Deep-Dive UX Audit Fixes: SPA Routing (.htaccess/_redirects/vercel.json), Studio CSS Classes, Career OS 3-Pillar Strip, and Clickable Programme Cards")
+  const htaccessSrc = readFileSync(resolve(process.cwd(), "public/.htaccess"), "utf8")
+  const redirectsSrc = readFileSync(resolve(process.cwd(), "public/_redirects"), "utf8")
+  const vercelSrc = readFileSync(resolve(process.cwd(), "vercel.json"), "utf8")
+  const homeCssSrc = readFileSync(resolve(process.cwd(), "src/pages/HomeRepolish.css"), "utf8")
+  const careerPublicSrc = readFileSync(resolve(process.cwd(), "src/pages/career/CareerOSPublicPage.tsx"), "utf8")
+  const programsPageSrc = readFileSync(resolve(process.cwd(), "src/pages/ProgramsPage.tsx"), "utf8")
+  const verifyCssSrc = readFileSync(resolve(process.cwd(), "src/pages/VerifyPage.css"), "utf8")
+  const pathCssSrc = readFileSync(resolve(process.cwd(), "src/pages/path/PathPages.css"), "utf8")
+
+  assert(htaccessSrc.includes("RewriteRule ^ index.html [L]") && redirectsSrc.includes("/index.html  200") && vercelSrc.includes('"destination": "/index.html"'), "SPA direct-URL routing configs (.htaccess, _redirects, vercel.json) must exist")
+  assert(homeCssSrc.includes(".hx-tryout__terminal") && homeCssSrc.includes(".hx-elixir-pills"), "HomeRepolish.css must define dedicated studio CSS classes for ZeroLoginInteractiveTryout and HomeElixirFlywheel")
+  assert(careerPublicSrc.includes("cpx-pillars") && careerPublicSrc.includes("Available in Career OS"), "CareerOSPublicPage.tsx must render the 3-pillar proof-of-work strip and clean status labels")
+  assert(programsPageSrc.includes('{live ? "View programme" : "View outline"}') && !programsPageSrc.includes("pgx-card__static"), "ProgramsPage.tsx must make all programme cards clickable to inspect outlines")
+  assert(verifyCssSrc.includes(".vfy-exemplars") && pathCssSrc.includes(".path-diag"), "VerifyPage.css and PathPages.css must define clean CSS classes for exemplars and diagnostic")
+
   console.log("release-readiness-hardening ok")
 }
 

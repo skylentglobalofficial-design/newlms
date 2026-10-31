@@ -32,7 +32,7 @@ export default function CampusDegreeView({ degree }: { degree: Degree }) {
             <h1 className="dg-h1 dg-h1--campus cine-in cine-d1">{degree.title}</h1>
             <p className="dg-lead cine-in cine-d2">
               {degree.sample || !degree.institution
-                ? "This page describes a planned on-campus degree area. Skylent does not award the degree, and applications are not open. Campus, dates and fees are published only once an institution is confirmed."
+                ? "Planned on-campus degree pathway. Partner universities award the degree; campus location, dates, and fees are published once an institution is confirmed."
                 : "A degree you attend in person, taught on campus by the institution that awards it."}
             </p>
             <div className="dg-actions cine-in cine-d3">
@@ -48,7 +48,7 @@ export default function CampusDegreeView({ degree }: { degree: Degree }) {
             <div className="sky-label dg-title__factshead">At a glance</div>
             <div className="sky-spec__row">
               <dt className="sky-spec__label">Admissions</dt>
-              <dd className="sky-spec__value">Planned pathway · register interest</dd>
+              <dd className="sky-spec__value">Sample listing · not open for applications</dd>
             </div>
             <div className="sky-spec__row">
               <dt className="sky-spec__label">Discipline</dt>

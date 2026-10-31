@@ -35,7 +35,7 @@ const LEVELS: { id: Level; param: "ug" | "pg"; title: string; short: string; lea
 const MODE_COPY: Record<DeliveryMode, { label: string; line: string; photos: Record<Level, { src: string; alt: string }> }> = {
   ONLINE: {
     label: "Online",
-    line: "A planned way to study on screen. No online degree is open, and no institution has been confirmed.",
+    line: "Planned online study with live tutorials and recorded lectures once a partner university is confirmed.",
     photos: {
       UNDERGRADUATE: { src: photoOnlineUg, alt: "A student in a video lesson on a laptop at home." },
       POSTGRADUATE: { src: photoOnlinePg, alt: "A learner taking notes beside a laptop." },
@@ -43,7 +43,7 @@ const MODE_COPY: Record<DeliveryMode, { label: string; line: string; photos: Rec
   },
   CAMPUS: {
     label: "On campus",
-    line: "A planned way to study in person. No campus or awarding institution has been confirmed.",
+    line: "Planned full-time campus study taught in person once a partner university is confirmed.",
     photos: {
       UNDERGRADUATE: { src: photoCampusUg, alt: "Students at long benches in a lecture hall." },
       POSTGRADUATE: { src: photoCampusPg, alt: "Two students studying together outdoors on a campus lawn." },
@@ -175,7 +175,7 @@ export default function EducationPage() {
               <h1 id="edx-title" className="edx-h1">
                 Degree areas, <em>not open yet.</em>
               </h1>
-              <p className="edx-lede">These are sample areas for a future undergraduate or postgraduate degree, online or on campus. Skylent does not award degrees. No institution is confirmed, so you can register interest but not apply.</p>
+              <p className="edx-lede">Planned undergraduate and postgraduate pathways, online or on campus. Partner universities award the degrees; register interest below to be notified when partner institutions and admissions are confirmed.</p>
               {settled && unavailable ? (
                 <p className="edx-lede" role="status">The degree list could not be checked just now. The areas below remain samples, and applications are not open. <button type="button" className="edx-link" onClick={reload}>Try again</button></p>
               ) : null}

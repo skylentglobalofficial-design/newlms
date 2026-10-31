@@ -133,7 +133,7 @@ export default function VerifyPage() {
           <div className="vfy-intro">
             <div className="vfy-kicker">
               <span className="sky-label">Certificates</span>
-              <TruthChip state={truthOf("certificates")} />
+              <TruthChip state="live" label="Public Verification" />
             </div>
             <h1>Check a Skylent certificate</h1>
             <p className="vfy-lead">
@@ -172,35 +172,23 @@ export default function VerifyPage() {
               A Skylent certificate confirms that the named learner completed every lesson and capstone project rubric of a course. It is verified against the tamper-evident cryptographic standard.
             </p>
 
-            <section aria-labelledby="vfy-exemplars-title" style={{ marginTop: 32 }}>
-              <h2 id="vfy-exemplars-title" style={{ fontSize: 16, marginBottom: 8 }}>
+            <section className="vfy-exemplars" aria-labelledby="vfy-exemplars-title">
+              <h2 id="vfy-exemplars-title" className="vfy-exemplars__title">
                 Exemplar Proof-of-Work Dossiers
               </h2>
-              <p style={{ fontSize: 13, color: "var(--skylent-muted, #71717a)", marginTop: 0, marginBottom: 16 }}>
-                Inspect real top-percentile (95+/100) graded student deliverables before enrolling:
+              <p className="vfy-exemplars__lead">
+                Inspect sample 95+/100 graded capstone records across Data, Product, and GenAI:
               </p>
-              <div style={{ display: "grid", gap: 12 }}>
+              <div className="vfy-exemplars__list">
                 {PUBLIC_EXEMPLARS.map((ex) => (
-                  <div
-                    key={ex.code}
-                    style={{
-                      padding: "12px 14px",
-                      borderRadius: 10,
-                      border: "1px solid var(--skylent-line, #e4e4e7)",
-                      background: "var(--skylent-surface, #ffffff)",
-                    }}
-                  >
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 8, flexWrap: "wrap" }}>
+                  <div key={ex.code} className="vfy-exemplar">
+                    <div className="vfy-exemplar__top">
                       <strong>{ex.course}</strong>
-                      <span className="sky-mono" style={{ fontSize: 11, opacity: 0.8 }}>{ex.code}</span>
+                      <span className="sky-mono vfy-exemplar__code">{ex.code}</span>
                     </div>
-                    <div style={{ fontSize: 12, color: "#16a34a", fontWeight: 600, marginTop: 2 }}>{ex.score}</div>
-                    <p style={{ fontSize: 12, margin: "6px 0 10px", opacity: 0.85 }}>{ex.summary}</p>
-                    <Link
-                      to={`/verify/${ex.code}`}
-                      className="sk-btn sk-btn-secondary"
-                      style={{ padding: "4px 10px", fontSize: 12, textDecoration: "none" }}
-                    >
+                    <div className="vfy-exemplar__score">{ex.score}</div>
+                    <p className="vfy-exemplar__summary">{ex.summary}</p>
+                    <Link to={`/verify/${ex.code}`} className="sk-btn sk-btn-secondary" style={{ minHeight: 34, padding: "4px 12px", fontSize: 12.5 }}>
                       Inspect 95/100 Dossier →
                     </Link>
                   </div>
@@ -269,7 +257,7 @@ export default function VerifyPage() {
                   ) : null}
                 </dl>
 
-                <div style={{ marginTop: 20, paddingTop: 16, borderTop: "1px solid var(--skylent-line, #e4e4e7)", display: "flex", gap: 10, flexWrap: "wrap" }}>
+                <div className="vfy-share">
                   <a
                     href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.origin + "/verify/" + check.record.code)}`}
                     target="_blank"
