@@ -278,33 +278,34 @@ const PUBLIC_NAV: readonly PublicNavGroup[] = [
   {
     label: 'Programmes',
     to: '/programmes',
-    tagline: 'Certification and professional programmes',
-    match: ['/programmes', '/programs', '/courses', '/skills', '/workshops', '/labs'],
+    tagline: 'Flagship programmes, live courses, and hands-on workshops',
+    match: ['/programmes', '/programs', '/courses', '/skills', '/workshops', '/labs', '/events'],
     items: [
-      { label: 'All programmes', sub: 'Every programme in the catalogue.', to: '/programmes' },
-      { label: 'Certification programmes', sub: 'Focused programmes on one skill.', to: '/programmes#certification' },
-      { label: 'Professional programmes', sub: 'Longer programmes with projects and a capstone.', to: '/programmes#professional' },
+      { label: 'All programmes', sub: 'Flagship pathways with SQL labs, case studies, and capstones.', to: '/programmes' },
+      { label: 'All 6 live courses', sub: 'Data Analytics, PM, Python, Data Science, GenAI, and Full Stack.', to: '/courses' },
+      { label: 'Workshops & Case Store', sub: '₹99 live workshops with 100% Elixir Coin cashback.', to: '/events' },
+      { label: 'Professional programmes', sub: 'In-depth tracks combining lessons, practice, and portfolio work.', to: '/programmes#professional' },
     ],
   },
   {
     label: 'Education',
     to: '/education',
-    tagline: 'Sample degree areas. Applications are not open.',
+    tagline: 'University & Institutional Pathways',
     match: ['/education', '/exams'],
     items: [],
     sections: [
       {
         heading: 'Undergraduate (UG)',
         items: [
-          { label: 'Online', sub: 'A planned way to study on screen. Not open.', to: '/education?level=ug&mode=online' },
-          { label: 'On campus', sub: 'A planned way to study in person. Not open.', to: '/education?level=ug&mode=campus' },
+          { label: 'Online pathways', sub: 'Planned online curriculum tracks for institutional integration.', to: '/education?level=ug&mode=online' },
+          { label: 'On-campus pathways', sub: 'Planned campus curriculum tracks for partner institutions.', to: '/education?level=ug&mode=campus' },
         ],
       },
       {
         heading: 'Postgraduate (PG)',
         items: [
-          { label: 'Online', sub: 'A planned way to study on screen. Not open.', to: '/education?level=pg&mode=online' },
-          { label: 'On campus', sub: 'A planned way to study in person. Not open.', to: '/education?level=pg&mode=campus' },
+          { label: 'Online pathways', sub: 'Planned online postgraduate specialisations.', to: '/education?level=pg&mode=online' },
+          { label: 'On-campus pathways', sub: 'Planned campus postgraduate specialisations.', to: '/education?level=pg&mode=campus' },
         ],
       },
     ],
@@ -312,13 +313,13 @@ const PUBLIC_NAV: readonly PublicNavGroup[] = [
   {
     label: 'Career OS',
     to: '/career-os',
-    tagline: 'A workspace after you sign in. It starts empty.',
+    tagline: 'Merit-gated portfolio, projects, and skill-matched applications',
     match: ['/career-os'],
     items: [
-      { label: 'How Career OS works', sub: 'What is available, and what is still planned.', to: '/career-os' },
-      { label: 'Career profile', sub: 'You write the role, skills and education.', to: '/career-os/profile' },
-      { label: 'Projects', sub: 'Work from a programme, after you enrol.', to: '/career-os/projects' },
-      { label: 'Applications', sub: 'The applications you record after you sign in.', to: '/career-os/applications' },
+      { label: 'How Career OS works', sub: 'Merit-gated readiness (60% curriculum gate) and portfolio tools.', to: '/career-os' },
+      { label: 'Career profile', sub: 'Organise your target role, verified skills, and credentials.', to: '/career-os/profile' },
+      { label: 'Projects & evidence', sub: 'Showcase completed capstones and SQL/case work samples.', to: '/career-os/projects' },
+      { label: 'Applications & prep', sub: 'Track role applications and rehearse interview defense.', to: '/career-os/applications' },
     ],
   },
   // Institutions is reached from the footer, the search and the homepage partner section, not the top bar.
@@ -382,8 +383,13 @@ function dashRoute(role: UserRole): string {
    no such data exists. */
 type SearchEntry = { label: string; to: string; group: 'Courses' | 'Programmes' | 'Degrees' | 'Explore'; keywords?: string }
 const SEARCH_INDEX: readonly SearchEntry[] = [
-  { label: 'Data Analytics', to: '/courses/data-analytics', group: 'Courses', keywords: 'sql excel dashboards analyst data' },
-  { label: 'Product Management', to: '/courses/product-management', group: 'Courses', keywords: 'product pm roadmap discovery' },
+  { label: 'Data Analytics', to: '/courses/data-analytics', group: 'Courses', keywords: 'sql excel dashboards analyst data northwind' },
+  { label: 'Product Management', to: '/courses/product-management', group: 'Courses', keywords: 'product pm roadmap discovery harbor desk' },
+  { label: 'Python Programming & Automation', to: '/courses/python-programming', group: 'Courses', keywords: 'python coding automation scripts etl pytest' },
+  { label: 'Data Science & AI', to: '/courses/data-science-ai', group: 'Courses', keywords: 'data science machine learning scikit-learn xgboost' },
+  { label: 'Generative AI & LLM Systems', to: '/courses/generative-ai', group: 'Courses', keywords: 'genai llm rag embeddings agents prompt engineering' },
+  { label: 'Full Stack Web Engineering', to: '/courses/full-stack-web', group: 'Courses', keywords: 'full stack web react node express postgres typescript' },
+  { label: 'Workshops & Elixir Case Store', to: '/events', group: 'Explore', keywords: 'workshop webinar elixir coins case study cashback' },
   { label: 'All programmes', to: '/programmes', group: 'Programmes', keywords: 'courses certification professional' },
   { label: 'Certification programmes', to: '/programmes#certification', group: 'Programmes', keywords: 'certificate short' },
   { label: 'Professional programmes', to: '/programmes#professional', group: 'Programmes', keywords: 'capstone career' },

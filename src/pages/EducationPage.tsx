@@ -71,7 +71,7 @@ function DegreeRow({ degree }: { degree: Degree }) {
         <span className="edx-degree__title">{degree.title}</span>
         <span className="edx-degree__meta">
           {degree.sample ? (
-            <span className="edx-soon">Sample listing · not open for applications</span>
+            <span className="edx-soon">Planned pathway · register interest</span>
           ) : degree.institution?.name ? (
             <span>{degree.institution.name}</span>
           ) : (

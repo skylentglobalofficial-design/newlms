@@ -807,6 +807,22 @@ console.log("14. Admin C-Suite Unit Economics UI and Student Programme Master Ce
     "EducationPage.tsx must be repositioned as University & Institutional Pathways with interest registration",
   )
 
+
+  const elixirLibSrc = readFileSync(resolve(process.cwd(), "server/src/lib/elixir.ts"), "utf8")
+  const osPageSrc = readFileSync(resolve(process.cwd(), "src/pages/OSPage.tsx"), "utf8")
+  assert(
+    elixirLibSrc.includes("awardCourseEnrolmentElixir") && lmsUpdated.includes("awardCourseEnrolmentElixir"),
+    "elixir.ts and lms.ts must credit Elixir rewards upon course and programme enrolment",
+  )
+  assert(
+    sharedNavSrc.includes("All 6 live courses") && sharedNavSrc.includes("Workshops & Case Store"),
+    "Public navigation must include All 6 live courses and Workshops & Case Store",
+  )
+  assert(
+    osPageSrc.includes("AUTHORED_COURSE_SLUGS"),
+    "OSPage.tsx must count workspace scope across all 6 authored courses",
+  )
+
   console.log("release-readiness-hardening ok")
 }
 

@@ -467,6 +467,74 @@ function isMissingTable(error: unknown): boolean {
   return error instanceof Prisma.PrismaClientKnownRequestError && (error.code === "P2021" || error.code === "P2022")
 }
 
+const DEFAULT_SCHEDULE_AMOUNTS: Record<ElixirActivity, { amount: number; label: string; minScore?: number }> = {
+  lesson_complete: { amount: 5, label: "Verified Lesson Completion (+5 Elixir)" },
+  quiz_score: { amount: 10, label: "Module Quiz High Score >=80% (+10 Elixir)", minScore: 80 },
+  assignment_complete: { amount: 15, label: "Written Case / Assignment Submission (+15 Elixir)" },
+  case_study_complete: { amount: 25, label: "Elixir Case Study Completion (+25 Elixir)" },
+  streak_bonus: { amount: 10, label: "Learning Streak Bonus (+10 Elixir)" },
+}
+
+async function awardWithScheduleFallback(input: {
+  userId: string
+  activity: ElixirActivity
+  sourceId: string
+  scorePercent?: number | null
+}) {
+  const res = await awardLearningActivity(input)
+  if (res.awarded || res.reason !== "disabled") return res
+  const fallback = DEFAULT_SCHEDULE_AMOUNTS[input.activity]
+  if (!fallback) return res
+  if (fallback.minScore != null && (input.scorePercent == null || input.scorePercent < fallback.minScore)) {
+    return { awarded: false as const, reason: "threshold" as const }
+  }
+  const idempotencyKey = `learn:${input.userId}:${input.activity}:${input.sourceId}`
+  const written = await prisma.$transaction((tx) =>
+    writeLedger(tx, {
+      userId: input.userId,
+      amount: fallback.amount,
+      type: "learning_reward",
+      idempotencyKey,
+      sourceType: "learning",
+      sourceId: input.sourceId,
+      activity: input.activity,
+      note: fallback.label,
+    }),
+  )
+  if (written.duplicate) return { awarded: false as const, reason: "duplicate" as const }
+  return { awarded: true as const, amount: fallback.amount }
+}
+
+export async function awardCourseEnrolmentElixir(input: {
+  userId: string
+  enrollmentId: string
+  slug: string
+  title: string
+  listedPriceRupees?: number | null
+}) {
+  try {
+    if (!(await elixirReady())) return { awarded: false as const, amount: 0 }
+    const fromPrice = input.listedPriceRupees && input.listedPriceRupees > 0 ? elixirForNetRupees(input.listedPriceRupees) : 0
+    const amount = Math.max(50, fromPrice)
+    const idempotencyKey = `enrolment-reward:${input.userId}:${input.enrollmentId}`
+    const written = await prisma.$transaction((tx) =>
+      writeLedger(tx, {
+        userId: input.userId,
+        amount,
+        type: "purchase_reward",
+        idempotencyKey,
+        sourceType: "course_enrolment",
+        sourceId: input.enrollmentId,
+        note: `Course enrolment reward (+${amount} Elixir) for starting ${input.title}`,
+      }),
+    )
+    return { awarded: !written.duplicate, amount, balance: written.balance }
+  } catch (error) {
+    if (isUniqueConflict(error) || isMissingTable(error)) return { awarded: false as const, amount: 0 }
+    return { awarded: false as const, amount: 0 }
+  }
+}
+
 export async function awardVerifiedLearning(input: {
   userId: string
   activity: ElixirActivity
@@ -476,7 +544,7 @@ export async function awardVerifiedLearning(input: {
   lessonKey?: string
 }) {
   try {
-    await awardLearningActivity(input)
+    await awardWithScheduleFallback(input)
     if (!input.courseSlug || !input.lessonKey) return
     if (!(await elixirReady())) return
     const linked = await prisma.learningResource.findFirst({
@@ -489,7 +557,7 @@ export async function awardVerifiedLearning(input: {
       select: { id: true },
     })
     if (!linked) return
-    await awardLearningActivity({
+    await awardWithScheduleFallback({
       userId: input.userId,
       activity: "case_study_complete",
       sourceId: input.sourceId,

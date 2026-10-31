@@ -84,7 +84,7 @@ export default function OnlineDegreeView({ degree }: { degree: Degree }) {
                 label: "Listing",
                 value: (
                   <span className="dg-listing">
-                    <span>Sample listing · not open for applications</span>
+                    <span>Planned pathway · register interest</span>
                   </span>
                 ),
               },

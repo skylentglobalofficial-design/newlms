@@ -150,7 +150,7 @@ export default function ElixirWalletPanel() {
       {/* 4-Way Earning Breakdown */}
       <div>
         <h3 style={{ fontSize: 15, fontWeight: 700, color: "#0f172a", margin: "0 0 10px" }}>
-          How You Earn Elixir Coins across Skylent:
+          How to earn Elixir Coins (Verified Merit Schedule)
         </h3>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 12 }}>
           {earningPillars.map((p) => (

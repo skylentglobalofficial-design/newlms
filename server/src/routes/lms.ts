@@ -14,7 +14,7 @@ import { isAuthoredProgramme } from "../lib/authored-courses.js"
 import { courseIsEnrolable } from "../lib/course-publication.js"
 import { readConsent, recordPolicyAcceptance } from "../lib/policy.js"
 import { answersInOptionRange, QuizAttemptThrottled, QuizMaxAttemptsExceeded, recordScoredQuizAttempt } from "../lib/quiz-attempts.js"
-import { awardVerifiedLearning } from "../lib/elixir.js"
+import { awardCourseEnrolmentElixir, awardVerifiedLearning } from "../lib/elixir.js"
 import {
   capabilityAvailable,
   isDatabaseUnavailableError,
@@ -270,6 +270,12 @@ lmsRouter.post("/enrollments", requireAuth, requireCsrf, async (req: Authenticat
         })
         return created
       })
+      await awardCourseEnrolmentElixir({
+        userId,
+        enrollmentId: enrollment.id,
+        slug: program.slug,
+        title: program.name,
+      })
       const workspace = await buildCourseWorkspace({
         ...enrollment,
         course: program.programCourses[0].course,
@@ -313,6 +319,13 @@ lmsRouter.post("/enrollments", requireAuth, requireCsrf, async (req: Authenticat
       await syncCertificateState(enrollment.id, course.id)
       enrollment = await prisma.userEnrollment.findUniqueOrThrow({ where: { id: enrollment.id } })
     }
+    await awardCourseEnrolmentElixir({
+      userId,
+      enrollmentId: enrollment.id,
+      slug: course.slug,
+      title: course.title,
+      listedPriceRupees: course.price,
+    })
     const workspace = await buildCourseWorkspace({ ...enrollment, course })
     return res.status(201).json({ data: await attachProgramWorkspace(userId, workspace, null, course.id) })
   } catch (error) {

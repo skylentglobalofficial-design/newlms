@@ -48,7 +48,7 @@ export default function CampusDegreeView({ degree }: { degree: Degree }) {
             <div className="sky-label dg-title__factshead">At a glance</div>
             <div className="sky-spec__row">
               <dt className="sky-spec__label">Admissions</dt>
-              <dd className="sky-spec__value">Sample listing · not open for applications</dd>
+              <dd className="sky-spec__value">Planned pathway · register interest</dd>
             </div>
             <div className="sky-spec__row">
               <dt className="sky-spec__label">Discipline</dt>

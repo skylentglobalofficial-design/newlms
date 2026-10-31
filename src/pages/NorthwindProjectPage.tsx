@@ -351,7 +351,7 @@ export default function LearnerProjectPage() {
         ) : careerLinkStatus === "error" ? (
           <p>Career OS could not be checked for this project. Reload the page to try again.</p>
         ) : careerLinkStatus === "locked" ? (
-          <p>Career OS is locked. Finishing this project does not unlock it.</p>
+          <p>Complete 60% of your course modules to unlock Career Rise and carry this project into your verified portfolio.</p>
         ) : project.progress.complete === project.progress.total ? (
           <button
             type="button"

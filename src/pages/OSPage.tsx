@@ -6,13 +6,13 @@ import { CourseWorkspacePreview } from "../components/product/ProductLanguage"
 import { courses } from "../data"
 import { countStaticCourseLessons } from "../lib/curriculum-counts"
 import { coursePracticeGroups, courseLessonStats } from "../lib/catalog-maturity"
-import { FLAGSHIP_COURSE_SLUG, PRODUCT_MANAGEMENT_SLUG } from "../lib/authored-courses"
+import { AUTHORED_COURSE_SLUGS, FLAGSHIP_COURSE_SLUG, PRODUCT_MANAGEMENT_SLUG } from "../lib/authored-courses"
 import "./Catalog.css"
 
 const analytics = courses.find((course) => course.slug === FLAGSHIP_COURSE_SLUG)
 const product = courses.find((course) => course.slug === PRODUCT_MANAGEMENT_SLUG)
 
-const authored = [analytics, product].filter(Boolean) as NonNullable<typeof analytics>[]
+const authored = courses.filter((course) => (AUTHORED_COURSE_SLUGS as readonly string[]).includes(course.slug))
 
 /** Everything the workspace holds today, counted from the authored courses. */
 const workspaceScope = authored.reduce(
@@ -81,8 +81,7 @@ export default function OSPage() {
                 ))}
               </div>
               <p className="cat-fine">
-                Counted from the two authored courses. Other catalogue courses open an outline, not a finished
-                teaching path.
+                Counted across all six authored flagship courses (Data Analytics, Product Management, Python Programming, Data Science & AI, Generative AI, and Full Stack Web) in Skylent OS.
               </p>
             </div>
             {featured ? (
