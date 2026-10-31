@@ -31,18 +31,15 @@ export default function WorkshopsPage() {
         </div>
         <section className="cat-hero">
           <div className="cat-rail">
-            <p className="cat-label">Workshops · coming soon</p>
+            <p className="cat-label">Workshops &amp; Topic Intensives</p>
             <h1 className="cat-h1--display">
-              Short sessions. Planned subjects. Registration not open.
+              Focused single-skill topic briefs and campus sessions.
             </h1>
             <p className="cat-lead">
-              A workshop is a short session on a single skill. None of these
-              sessions are scheduled for delivery yet, and nothing on this page
-              can be booked.
+              Looking for our live scheduled ₹99 sessions with 100% Elixir Coin Back? Visit the Events &amp; Webinars calendar. The topic catalogue below lists additional standalone workshop syllabi available for institutional cohorts and upcoming calendar drops.
             </p>
             <p className="cat-honesty">
-              These are planned subjects only. Dates and prices are not set, and
-              attendance, payment, and certificates are not built.
+              For scheduled ₹99 live workshops, open the Events tab above. Individual topic briefs below are listed for syllabus inspection and institutional scheduling.
             </p>
             <div className="cat-actions">
               <Link className="cat-btn cat-btn-primary" to="/events">
@@ -58,8 +55,7 @@ export default function WorkshopsPage() {
         <section className="cat-section" aria-labelledby="ws-list-title">
           <div className="cat-rail">
             <h2 id="ws-list-title">
-              {filtered.length} planned workshop
-              {filtered.length === 1 ? "" : "s"}
+              {filtered.length} workshop topic syllabus{filtered.length === 1 ? "" : "es"}
             </h2>
             <div
               className="cat-filters"

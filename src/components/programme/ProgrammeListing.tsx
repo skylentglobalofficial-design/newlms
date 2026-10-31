@@ -146,8 +146,8 @@ export default function ProgrammeListing({ program, truth, cta, honesty, afterEn
 
       {truth.linked.some((item) => item.authored) ? (
         <section className="sky-container" style={{ paddingBlock: "24px 40px" }} aria-label="Linked live courses ready to start">
-          <div style={{ padding: "24px", borderRadius: 16, border: "1px solid #DDD7FF", background: "#FAF9FF" }}>
-            <p className="sky-label" style={{ color: "#5142B5" }}>Live in Skylent OS · +50 Elixir Enrolment Bonus</p>
+          <div style={{ padding: "24px", borderRadius: 12, border: "1px solid #e2e8f0", background: "#f8fafc" }}>
+            <p className="sky-label" style={{ color: "#475569" }}>Included Self-Paced Course</p>
             <h2 style={{ margin: "6px 0 8px", fontSize: "clamp(20px, 2.4vw, 26px)", fontWeight: 750, color: "#171717" }}>
               Start the linked self-paced course{truth.linked.length > 1 ? "s" : ""} today
             </h2>
@@ -166,17 +166,17 @@ export default function ProgrammeListing({ program, truth, cta, honesty, afterEn
                     padding: "18px 20px",
                     borderRadius: 14,
                     background: "#ffffff",
-                    border: "1px solid #DDD7FF",
+                    border: "1px solid #e2e8f0",
                     color: "#171717",
                     textDecoration: "none",
-                    boxShadow: "0 12px 28px -18px rgba(81, 66, 181, 0.2)",
+                    boxShadow: "0 1px 3px rgba(15, 23, 42, 0.04)",
                   }}
                 >
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
                     <span style={{ fontSize: 12, fontWeight: 700, color: "#0E6A44", background: "#E7F6EF", padding: "2px 10px", borderRadius: 999 }}>
                       Open now · 15 Lessons
                     </span>
-                    <span style={{ fontSize: 12, fontWeight: 700, color: "#5142B5" }}>💎 +50 Elixir</span>
+                    <span style={{ fontSize: 12, fontWeight: 600, color: "#475569" }}>+50 Elixir</span>
                   </div>
                   <strong style={{ fontSize: 18, fontWeight: 750 }}>{item.title}</strong>
                   <span style={{ fontSize: 13.5, color: "#555B7D" }}>

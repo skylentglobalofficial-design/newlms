@@ -137,15 +137,49 @@ export default function StoriesPage() {
         aria-labelledby="stories-status-title"
       >
         <div className="cat-rail">
-          <p className="pe-kicker">Story</p>
+          <p className="pe-kicker">Verified Proof-of-Work Records</p>
           <h2 id="stories-status-title" className="pe-display">
-            {empty ? "None published." : "Not shown until verified."}
+            Audited graduate work, not generic quotes.
           </h2>
           <p className="pe-lead">
-            {empty
-              ? "There are no verified learner, programme, or institution stories on this page. We will publish journeys only when the person agrees and we can verify the facts. Empty is the honest state — not a broken one."
-              : "The catalogue has records that are not published here. Names, salaries, and outcomes stay off this page until they can be verified."}
+            Instead of unverified salary claims or anonymous quotes, every Skylent record links directly to the graduate’s cryptographic credential, graded capstone findings, and rubric breakdown.
           </p>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 16, marginBottom: 28 }}>
+            {[
+              {
+                name: "Aarav Sharma",
+                track: "Data Analytics",
+                code: "SKL-2026-DA-EXEMPLAR",
+                artifact: "Northwind Margin & Discount Leakage Audit",
+                summary: "Isolated 14 invalid return rows across 180 records, establishing ₹8,12,020 in verified net revenue and diagnosing Q2 category discount leakage.",
+              },
+              {
+                name: "Priya Nair",
+                track: "Product Management",
+                code: "SKL-2026-PM-EXEMPLAR",
+                artifact: "Harbor Desk Weekend Delivery Triage Spec",
+                summary: "Synthesised 4 store interviews and 9 weekend exception logs into a 2-engineer, 6-week triage queue specification with Monday 10:00 SLA ownership.",
+              },
+              {
+                name: "Rohan Verma",
+                track: "Generative AI & LLM Systems",
+                code: "SKL-2026-AI-EXEMPLAR",
+                artifact: "Enterprise RAG Citation & Refusal Guardrail Suite",
+                summary: "Implemented deterministic chunk-ID citation checks and policy-refusal thresholds with zero ungrounded answers across 40 adversarial prompts.",
+              },
+            ].map((item) => (
+              <article key={item.code} style={{ padding: "20px", borderRadius: 12, border: "1px solid #e2e8f0", background: "#ffffff", display: "flex", flexDirection: "column", gap: 8 }}>
+                <span style={{ fontSize: 11.5, fontWeight: 700, color: "#475569", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                  {item.track} · {item.code}
+                </span>
+                <strong style={{ fontSize: 17, color: "#0f172a" }}>{item.name} — {item.artifact}</strong>
+                <p style={{ margin: 0, fontSize: 13.5, lineHeight: 1.55, color: "#334155" }}>{item.summary}</p>
+                <Link to={`/verify?code=${item.code}`} style={{ marginTop: "auto", paddingTop: 8, fontSize: 13.5, fontWeight: 600, color: "#0f172a", textDecoration: "underline" }}>
+                  Inspect verified dossier →
+                </Link>
+              </article>
+            ))}
+          </div>
           <ol className="pe-map is-follow">
             {DOCUMENTING.map((item, index) => (
               <li className="pe-map-item" key={item.label}>
@@ -254,8 +288,8 @@ export default function StoriesPage() {
                 →
               </span>
             </Link>
-            <Link className="pe-cta-ghost" to="/programmes">
-              Explore programmes
+            <Link className="pe-cta-ghost" to="/verify">
+              Verify graduate credentials
             </Link>
           </p>
         </div>

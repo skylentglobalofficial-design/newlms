@@ -32,8 +32,8 @@ const workspaceScope = authored.reduce(
 )
 
 export default function OSPage() {
-  const [hero, setHero] = useState<"analytics" | "product">("analytics")
-  const featured = hero === "product" && product ? product : analytics
+  const [selectedSlug, setSelectedSlug] = useState<string>(FLAGSHIP_COURSE_SLUG)
+  const featured = authored.find((c) => c.slug === selectedSlug) ?? analytics
   const firstLesson = featured?.modules[0]?.lessons[0]
   const firstQuiz = featured?.modules.flatMap((module) => module.lessons).find((lesson) => lesson.type === "quiz")
   const capstone = featured?.modules.flatMap((module) => module.lessons).find((lesson) => /capstone|product case/i.test(lesson.title))
@@ -61,7 +61,7 @@ export default function OSPage() {
                 <Link className="cat-btn cat-btn-ghost" to="/login">Sign in to your workspace</Link>
               </div>
               <p className="cat-honesty">
-                Open a course, enrol, then Skylent OS starts at the first lesson. Payment is not collected in this pilot.
+                Select any of the 6 authored courses on the right to inspect its module structure, practice checks, and graded capstone workspace.
               </p>
 
               <p className="cat-label os-scope-label">In the workspace today</p>
@@ -87,25 +87,19 @@ export default function OSPage() {
             {featured ? (
               <div className="cat-hero-visual">
                 <p className="cat-preview-caption">What you open after enrol</p>
-                <div className="cat-hero-switch" role="tablist" aria-label="Course workspace preview">
-                  <button
-                    type="button"
-                    role="tab"
-                    aria-selected={hero === "analytics"}
-                    className={hero === "analytics" ? "is-on" : undefined}
-                    onClick={() => setHero("analytics")}
-                  >
-                    Data Analytics
-                  </button>
-                  <button
-                    type="button"
-                    role="tab"
-                    aria-selected={hero === "product"}
-                    className={hero === "product" ? "is-on" : undefined}
-                    onClick={() => setHero("product")}
-                  >
-                    Product Management
-                  </button>
+                <div className="cat-hero-switch" role="tablist" aria-label="Course workspace preview" style={{ flexWrap: "wrap" }}>
+                  {authored.map((c) => (
+                    <button
+                      key={c.slug}
+                      type="button"
+                      role="tab"
+                      aria-selected={featured.slug === c.slug}
+                      className={featured.slug === c.slug ? "is-on" : undefined}
+                      onClick={() => setSelectedSlug(c.slug)}
+                    >
+                      {c.title}
+                    </button>
+                  ))}
                 </div>
                 <CourseWorkspacePreview
                   courseTitle={featured.title}
@@ -114,7 +108,7 @@ export default function OSPage() {
                   workTitle={capstone?.title ?? "Capstone"}
                   modules={featured.modules.map((module) => module.title)}
                   lessonCount={countStaticCourseLessons(featured)}
-                  visual={hero === "product" ? "harbor-desk" : "northwind"}
+                  visual={featured.slug === "product-management" ? "harbor-desk" : "northwind"}
                   marketing
                 />
               </div>

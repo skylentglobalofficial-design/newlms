@@ -580,14 +580,14 @@ export default function DashboardStudentPage() {
               <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: 12, marginBottom: 12 }}>
                 <div>
                   <strong style={{ fontSize: 15, display: "block" }}>
-                    🔥 {streak.currentStreakDays}-Day Execution Streak · 14-Day Proof-of-Work Activity Grid
+                    {streak.currentStreakDays}-Day Execution Streak · 14-Day Proof-of-Work Activity Grid
                   </strong>
                   <span className="sh-note">
                     Weekly Goal: {streak.weeklyActionsCount} / {streak.weeklyGoalTarget} verified actions ({streak.weeklyGoalPercent}%) · Longest streak: {streak.longestStreakDays}d
                   </span>
                 </div>
                 <span style={{ fontSize: 12, fontWeight: 700, padding: "4px 10px", borderRadius: 999, background: "rgba(81, 66, 181, 0.12)", color: "#43349F" }}>
-                  💎 +{streak.streakBonusElixir} Elixir Streak Momentum
+                  +{streak.streakBonusElixir} Elixir Streak Momentum
                 </span>
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "repeat(14, minmax(0, 1fr))", gap: 6 }} role="list" aria-label="Last 14 days activity heatmap">

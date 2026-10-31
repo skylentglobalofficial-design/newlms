@@ -73,25 +73,25 @@ export default function ElixirWalletPanel() {
 
   const earningPillars = [
     {
-      icon: "🎓",
+      icon: "01",
       title: "Course Purchase Rewards",
       rule: "10 Elixir per ₹100",
       detail: "Enrolling in or purchasing any verified course awards 10 Elixir Coins per ₹100 of net value.",
     },
     {
-      icon: "⚡",
+      icon: "02",
       title: "100% Workshop Cashback",
       rule: "99 Coins on ₹99 Entry",
       detail: "100% 1:1 instant cashback credited on every ₹99 live interactive workshop registration.",
     },
     {
-      icon: "📝",
+      icon: "03",
       title: "Lesson & Lab Milestones",
       rule: "+5 to +25 Elixir",
       detail: "Earn +5 on lesson completion, +15 on assignment submission, and +25 on capstone completion.",
     },
     {
-      icon: "🎯",
+      icon: "04",
       title: "Academic Excellence",
       rule: "+10 Elixir per Quiz",
       detail: "Scoring 80% or higher on any module checkpoint quiz awards an instant +10 Elixir bonus.",
@@ -116,7 +116,7 @@ export default function ElixirWalletPanel() {
       >
         <div>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <span style={{ fontSize: 24 }}>💎</span>
+            <span style={{ fontSize: 13, fontWeight: 700, padding: "4px 8px", borderRadius: 6, background: "#f1f5f9", color: "#0f172a" }}>ELX</span>
             <div>
               <span style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "#5142B5" }}>
                 Verified Elixir Balance
@@ -240,7 +240,7 @@ export default function ElixirWalletPanel() {
                 <div style={{ flexShrink: 0 }}>
                   {resource.owned ? (
                     <span style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 13, fontWeight: 600, color: "#166534" }}>
-                      <span>✓ Unlocked</span>
+                      <span>Unlocked</span>
                       {resource.courseSlug && resource.lessonKey ? (
                         <Link className="sk-btn sk-btn-secondary" to={`/learn/${resource.courseSlug}/${resource.lessonKey}`} style={{ padding: "6px 12px", fontSize: 12, marginLeft: 6 }}>
                           Launch Case →

@@ -868,7 +868,7 @@ export function Nav() {
             {user ? (
               <>
                 <Link to="/dashboard/student" onClick={closeSheet} className="sk-btn sk-btn-secondary">
-                  💎 Elixir Wallet &amp; Case Store
+                  Elixir Wallet &amp; Case Store
                 </Link>
                 <Link to={accountPath} onClick={closeSheet} className="sk-btn sk-btn-secondary">
                   Your account
@@ -888,7 +888,7 @@ export function Nav() {
             ) : (
               <>
                 <Link to="/events" onClick={closeSheet} className="sk-btn sk-btn-secondary">
-                  💎 ₹99 Workshop = 99 Elixir Coins
+                  ₹99 Workshops &amp; Webinars
                 </Link>
                 <Link to="/login" onClick={closeSheet} className="sk-btn sk-btn-secondary">
                   Sign in

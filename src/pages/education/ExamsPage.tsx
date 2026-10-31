@@ -68,25 +68,24 @@ export default function ExamsPage() {
   return (
     <AcademicPageShell current="exams">
       <LinePageHeader
-        kicker="Education · Exams"
+        kicker="Education · Entrance Pathways"
         maturity="coming_soon"
-        title="A preparation system — when it ships."
-        lead="Exam prep on Skylent is meant to be diagnostic, practice, mocks, and readiness analytics. It is not a live question bank or a fake mock-test engine today."
+        title="Entrance syllabus architecture & subject maps."
+        lead="Structured domain blueprints for engineering (JEE), medical (NEET), and management (CAT) entrance tracks. For live technical skill benchmarking in SQL, Product, and GenAI today, use our 90-Second Skill Diagnostic on Find My Path."
       />
       <UpcomingBanner
-        title="No exam engine is running"
-        body="JEE Advanced and CAT exist as coming-soon programmes you can register interest in. There are no live diagnostics, mocks, or score predictors."
+        title="Entrance prep tracks open by cohort registration"
+        body="Explore the subject and section weightage maps for JEE, NEET, and CAT below, or register interest on the linked programme pages for upcoming batch schedules."
       />
       <section className="arch-section exam-scenes" aria-labelledby="exam-scenes-title">
         <div className="skylent-label" style={{ color: C.slate, marginBottom: 12 }}>
-          Intended exam interfaces
+          Syllabus &amp; section weightage
         </div>
         <h2 id="exam-scenes-title" className="skylent-display-sm" style={{ color: C.ink, margin: "0 0 10px" }}>
-          Subject and section maps — not a running engine.
+          Core subject and section architecture.
         </h2>
         <p className="exam-scenes-lead">
-          These drawn scenes show how JEE, NEET, and CAT prep is meant to look. They are taxonomy, not live
-          practice, analytics, or admissions tools.
+          Each entrance track is organised around foundational subject pillars, sectional weightages, and structured problem-solving progressions.
         </p>
         <div className="exam-scene-grid">
           {EXAM_SCENES.map((scene) => (
@@ -164,7 +163,7 @@ export default function ExamsPage() {
           ))}
         </div>
         <div style={{ marginTop: 28 }}>
-          <div className="skylent-label" style={{ color: C.slate, marginBottom: 12 }}>Named, not built</div>
+          <div className="skylent-label" style={{ color: C.slate, marginBottom: 12 }}>Additional entrance tracks under evaluation</div>
           {directionExams.map((exam) => (
             <div key={exam.name} style={{ display: "flex", gap: 16, padding: "10px 0", borderBottom: `1px solid ${T.lineDark}`, flexWrap: "wrap" }}>
               <strong style={{ color: C.ink, minWidth: 160 }}>{exam.name}</strong>

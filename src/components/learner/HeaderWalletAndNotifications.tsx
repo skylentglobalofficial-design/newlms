@@ -187,7 +187,7 @@ export function HeaderWalletAndNotifications({ variant = "public" }: { variant?:
             whiteSpace: "nowrap",
           }}
         >
-          <span aria-hidden="true">💎</span>
+          
           <span>Elixir · {balanceLabel}</span>
         </button>
 
@@ -217,7 +217,7 @@ export function HeaderWalletAndNotifications({ variant = "public" }: { variant?:
                   Verified Elixir Wallet
                 </span>
                 <div style={{ fontSize: 22, fontWeight: 700, marginTop: 2 }}>
-                  💎 {wallet ? `${wallet.balance} Elixir` : walletUnavailable ? "Unavailable" : "Loading…"}
+                  {wallet ? `${wallet.balance} Elixir` : walletUnavailable ? "Unavailable" : "Loading…"}
                 </div>
               </div>
               {wallet?.consistent ? (
@@ -419,11 +419,11 @@ export function HeaderWalletAndNotifications({ variant = "public" }: { variant?:
                   const isUnread = !seenIds.has(item.id)
                   const badgeIcon =
                     item.kind === "elixir"
-                      ? "💎"
+                      ? "ELX"
                       : item.kind === "faculty_reply"
-                        ? "👩‍🏫"
+                        ? "TA"
                         : item.kind === "certificate"
-                          ? "📜"
+                          ? "CERT"
                           : "⏱️"
                   return (
                     <li key={item.id}>

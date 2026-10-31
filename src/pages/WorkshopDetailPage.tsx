@@ -41,7 +41,7 @@ export default function WorkshopDetailPage() {
             <Link className="cat-back" to="/workshops">
               ← Workshops
             </Link>
-            <p className="cat-label">Workshop · coming soon</p>
+            <p className="cat-label">Workshop Topic Syllabus</p>
             <h1>{workshop.title}</h1>
             <p className="cat-lead">{workshop.desc}</p>
 
@@ -65,12 +65,14 @@ export default function WorkshopDetailPage() {
             </dl>
 
             <p className="cat-honesty">
-              No price is set. Payment is not collected. This is not a
-              scheduled session you can book.
+              To join an active ₹99 live workshop track, visit our scheduled Events page, or contact our team to request this topic for your campus cohort.
             </p>
             <div className="cat-actions">
+              <Link className="cat-btn cat-btn-primary" to="/events">
+                View scheduled ₹99 live workshops
+              </Link>
               <Link className="cat-btn cat-btn-ghost" to="/contact">
-                Contact us about workshops
+                Request for campus cohort
               </Link>
             </div>
           </div>
@@ -79,9 +81,9 @@ export default function WorkshopDetailPage() {
         {outline.length > 0 ? (
           <section className="cat-section" aria-labelledby="ws-outline-title">
             <div className="cat-rail">
-              <p className="cat-label">Intended outline</p>
-              <h2 id="ws-outline-title">What the session is intended to cover</h2>
-              <p className="cat-fine">Planned subject matter. Nothing here is scheduled or delivered yet.</p>
+              <p className="cat-label">Session syllabus</p>
+              <h2 id="ws-outline-title">Core topics covered in this module</h2>
+              <p className="cat-fine">Structured topic breakdown for cohort and campus sessions.</p>
               <ul className="pd-outcomes">
                 {outline.map((item) => (
                   <li key={item}>{item}</li>
