@@ -1,5 +1,5 @@
 /**
- * /programmes — unified 3-column architectural catalogue index.
+ * /programmes — unified 3x2 photo-card catalogue index with visual presentation hero.
  *
  * Rows come from GET /catalog/programs (or the published list when that request fails,
  * see useCatalogPrograms). Readiness uses programmeTruth, the same helper as the programme page.
@@ -18,6 +18,13 @@ import type { CatalogProgramSummary } from "../lib/catalog-api"
 import { AVAILABILITY_UNKNOWN, programmesIndexIntro, publicCatalogueState, publicCatalogueStatus } from "../lib/catalogue-availability"
 import { catalogueProgrammeIsOpen, isPublicProgrammeIndexRow } from "../lib/programme-catalogue"
 import { programmeDiscoveryFor } from "../lib/programme-discovery"
+import analyticsVisual from "@/assets/site/program-analytics.jpg"
+import productVisual from "@/assets/site/program-product.jpg"
+import scienceVisual from "@/assets/site/degree-computing.jpg"
+import webVisual from "@/assets/site/program-web.jpg"
+import aiVisual from "@/assets/site/program-ai.jpg"
+import sqlVisual from "@/assets/site/program-library.jpg"
+import heroClassroomVisual from "@/assets/site/home/hero-classroom-960.webp"
 import "./ProgramsIndex.css"
 
 type Kind = "certification" | "professional"
@@ -28,7 +35,8 @@ type Row = {
   title: string
   line: string
   category: string
-  kicker: string
+  image: string
+  alt: string
   lab: string
   meta: string
   skills: string[]
@@ -50,7 +58,8 @@ const CARD_FACE: Record<
     title: string
     line: string
     category: string
-    kicker: string
+    image: string
+    alt: string
     lab: string
     meta: string
     skills: string[]
@@ -58,45 +67,50 @@ const CARD_FACE: Record<
 > = {
   "data-analytics-pro": {
     title: "Data Analytics",
-    line: "Master spreadsheet auditing, SQL joins, CTEs, and commercial margin analysis in the live Northwind SQL Lab.",
+    line: "Audit 166 Northwind retail rows, write SQL joins and CTEs, and defend a Q3 commercial margin review.",
     category: "Data",
-    kicker: "Commercial & SQL Analytics",
+    image: analyticsVisual,
+    alt: "Analytics charts and notebook on a desk.",
     lab: "Northwind SQL Lab · 166 Rows",
     meta: "5 modules · 15 lessons · 3 quizzes · 1 capstone",
-    skills: ["SQL Joins", "Northwind Lab", "Margin Audit"],
+    skills: ["SQL & CTEs", "Northwind Lab", "Margin Audit"],
   },
   "product-management": {
     title: "Product Management",
-    line: "Conduct user research, diagnose the Harbor Desk weekend exception queue, and write a constrained 6-week PRD.",
+    line: "Diagnose 9 weekend store exceptions on the Harbor Desk case and ship a 6-week engineering-constrained PRD.",
     category: "Product",
-    kicker: "Product Strategy & Discovery",
+    image: productVisual,
+    alt: "Product working session around a table.",
     lab: "Harbor Desk Studio · 18 Interviews",
     meta: "5 modules · 15 lessons · 3 quizzes · 1 capstone",
     skills: ["PRD Scoping", "Harbor Desk Case", "Triage Specs"],
   },
   "data-science-ai": {
     title: "Data Science & AI",
-    line: "Combine our authored Data Analytics (SQL & Commercial Review) and Python Programming & Automation courses in one track.",
+    line: "Dual-track pathway combining Data Analytics (SQL & cohorts) and Python Programming & Automation (ETL & pytest).",
     category: "Data",
-    kicker: "Data Science & AI Pathway",
+    image: scienceVisual,
+    alt: "Data science code and cohort analysis on screens.",
     lab: "SQL + Python Dual Track · 30 Lessons",
     meta: "10 modules · 30 lessons · 6 quizzes · 2 capstones",
-    skills: ["SQL + Python", "Cohort Validation", "Pipeline Evals"],
+    skills: ["SQL & Python", "Cohort Validation", "Leakage Audit"],
   },
   "full-stack": {
     title: "Full Stack Development",
-    line: "Ship end-to-end TypeScript applications with React state architecture, Node/Express REST APIs, and PostgreSQL.",
+    line: "Build type-safe React 18 interfaces, Node/Express APIs, PostgreSQL schemas, and idempotent payment ledgers.",
     category: "Engineering",
-    kicker: "Full-Stack Web Systems",
+    image: webVisual,
+    alt: "Full-stack engineering workspace on a laptop.",
     lab: "React, Node & PostgreSQL Stack",
     meta: "5 modules · 15 lessons · 3 quizzes · 1 capstone",
     skills: ["React & TS", "Node & Express", "PostgreSQL"],
   },
   "generative-ai-program": {
     title: "Generative AI",
-    line: "Architect structured prompt systems, grounded RAG retrieval pipelines, ReAct tool agents, and LLM evaluation suites.",
+    line: "Architect grounded RAG pipelines, vector retrieval, ReAct tool agents, and adversarial LLM evaluation suites.",
     category: "AI",
-    kicker: "Applied AI Engineering",
+    image: aiVisual,
+    alt: "Generative AI system architecture and evaluation studio.",
     lab: "Grounded RAG · LLM Eval Suite",
     meta: "5 modules · 15 lessons · 3 quizzes · 1 capstone",
     skills: ["Prompt Systems", "Grounded RAG", "ReAct Agents"],
@@ -105,7 +119,8 @@ const CARD_FACE: Record<
     title: "SQL for Business Analytics",
     line: "Write defensible multi-table SQL joins, CTEs, window functions, and category revenue audits on retail order data.",
     category: "SQL",
-    kicker: "SQL Query Certification",
+    image: sqlVisual,
+    alt: "SQL query and analytics workspace.",
     lab: "Northwind SQL Query Workbench",
     meta: "5 SQL modules · 15 lessons · Live SQL practice",
     skills: ["Joins & CTEs", "Window Functions", "Data Hygiene"],
@@ -153,7 +168,8 @@ function toRow(program: CatalogProgramSummary): Row | null {
   const title = face?.title || discovery?.courseTitle || program.name
   const line = face?.line || content?.cardLine || program.desc || "Interactive lessons, sandbox labs, and graded capstone work."
   const category = face?.category || KIND_COPY[kind].label
-  const kicker = face?.kicker || `${category} Programme`
+  const image = face?.image || analyticsVisual
+  const alt = face?.alt || `${title} workspace preview`
   const lab = face?.lab || "Skylent OS Interactive Workspace"
   const meta = face?.meta || "5 modules · 15 lessons · 3 quizzes · 1 capstone"
   const skills = face?.skills || ["Written Lessons", "Sandbox Lab", "Capstone"]
@@ -164,11 +180,12 @@ function toRow(program: CatalogProgramSummary): Row | null {
     title,
     line,
     category,
-    kicker,
+    image,
+    alt,
     lab,
     meta,
     skills,
-    search: `${title} ${program.name} ${line} ${category} ${kicker} ${lab} ${skills.join(" ")} ${outcomeFor(program.slug)}`.toLowerCase(),
+    search: `${title} ${program.name} ${line} ${category} ${lab} ${skills.join(" ")} ${outcomeFor(program.slug)}`.toLowerCase(),
   }
 }
 
@@ -179,7 +196,7 @@ function presentedOpen(row: Row): boolean {
 function statusText(row: Row, confirmed: boolean): string {
   const state = publicCatalogueState(confirmed, presentedOpen(row))
   if (state === "unknown" || state === "open") return confirmed ? "Open for enrolment" : STATUS_NOT_CONFIRMED
-  if (row.truth.linked.some((l) => l.authored)) return "Open now"
+  if (row.truth.linked.some((l) => l.authored)) return "Open for enrolment"
   if (row.truth.state === "soon") return "Open via SQL Lab"
   return publicCatalogueStatus("closed")
 }
@@ -189,24 +206,27 @@ function ProgrammeCard({ row, confirmed }: { row: Row; confirmed: boolean }) {
   const status = statusText(row, confirmed)
   const hasAuthoredTrack = row.truth.linked.some((l) => l.authored)
   const live = (presentedOpen(row) || hasAuthoredTrack || row.program.slug === "sql-certificate") && confirmed
+  const showStatus = status !== STATUS_NOT_CONFIRMED
   return (
     <li className="pgx-card">
       <Link to={to} className="pgx-card__link" data-clear-launcher>
-        <span className="pgx-course-banner">
-          <span className="pgx-course-banner__top">
-            <span className="pgx-course-banner__brand">
-              {row.kind === "certification" ? "Certification track" : "Flagship programme"}
-            </span>
-            <span className={live ? "pgx-course-banner__elixir" : "pgx-status"}>
+        <span className="pgx-card__media">
+          <img src={row.image} alt={row.alt} loading="lazy" decoding="async" />
+          {showStatus ? (
+            <span className={live ? "pgx-status pgx-status--open" : "pgx-status"}>
               {status}
             </span>
-          </span>
-          <span className="pgx-course-banner__title">{row.lab}</span>
-          <span className="pgx-course-banner__meta">{row.meta}</span>
+          ) : null}
         </span>
         <span className="pgx-card__body">
-          <span className="pgx-card__kicker">{row.kicker}</span>
+          <span style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+            <span className="pgx-card__kicker">{row.category}</span>
+            <span style={{ fontSize: 11, fontWeight: 700, color: "#4338ca", background: "#eef2ff", padding: "2px 9px", borderRadius: 999 }}>
+              {row.lab}
+            </span>
+          </span>
           <span className="pgx-card__title">{row.title}</span>
+          <span style={{ fontSize: 12.5, fontWeight: 600, color: "#475569" }}>{row.meta}</span>
           <span className="pgx-card__line">{row.line}</span>
           <span className="pgx-skill-tags">
             {row.skills.map((skill) => (
@@ -287,28 +307,39 @@ export default function ProgramsPage() {
               <p className="pgx-eyebrow">Skylent programmes</p>
               <h1 id="pgx-title">Find the right programme for your next step.</h1>
               <p className="pgx-lede">{intro}</p>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 16 }}>
+                <span className="pgx-skill-tag">In-Browser SQL &amp; Python Workbenches</span>
+                <span className="pgx-skill-tag">25% · 35% · 40% Grading Rubric</span>
+                <span className="pgx-skill-tag">Verifiable Proof-of-Work Dossiers</span>
+              </div>
             </div>
-            <aside className="pgx-intro__spec" aria-label="Execution standard">
-              <span className="pgx-intro__spec-kicker">Execution Standard · Every Track</span>
-              <div className="pgx-intro__spec-grid">
-                <div>
-                  <strong>5 Modules · 15 Lessons</strong>
-                  <span>Structured written readings + concept checks</span>
-                </div>
-                <div>
-                  <strong>In-Browser Lab Studio</strong>
-                  <span>Northwind SQL, Harbor Desk, Python &amp; RAG</span>
-                </div>
-                <div>
-                  <strong>25% · 35% · 40% Rubric</strong>
-                  <span>Quizzes, applied briefs &amp; capstone defense</span>
-                </div>
-                <div>
-                  <strong>Proof-of-Work Dossier</strong>
-                  <span>Verifiable credential &amp; Career OS profile</span>
+            <div className="pgx-intro__visual" aria-label="Skylent OS live workspace preview">
+              <div className="pgx-intro__photo-wrap">
+                <img
+                  src={heroClassroomVisual}
+                  alt="Learners collaborating on practical case studies and SQL labs"
+                  width={960}
+                  height={640}
+                  decoding="async"
+                />
+                <div className="pgx-intro__hud">
+                  <div className="pgx-intro__hud-top">
+                    <span className="pgx-intro__hud-badge">SKYLENT OS · LIVE WORKBENCH</span>
+                    <span className="pgx-intro__hud-status">6 Tracks Open</span>
+                  </div>
+                  <div className="pgx-intro__hud-grid">
+                    <div>
+                      <strong>Northwind SQL Lab</strong>
+                      <span>166 validated retail order rows</span>
+                    </div>
+                    <div>
+                      <strong>Harbor Desk Studio</strong>
+                      <span>18 interviews · 6-week PRD scope</span>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </aside>
+            </div>
           </div>
         </section>
 
@@ -391,12 +422,12 @@ export default function ProgramsPage() {
                     <div>
                       <p className="pgx-eyebrow">All 6 Flagship Tracks</p>
                       <h2 id="pgx-professional">
-                        {confirmed ? "Programmes & self-paced tracks" : "Availability could not be confirmed"}
+                        {confirmed ? "Open now" : "Availability could not be confirmed"}
                       </h2>
                     </div>
                     <p>
                       {confirmed
-                        ? "Open any track to inspect its live workbench, 5-module curriculum, and graded capstone."
+                        ? "Select any programme below to open its interactive workbench, 5-module syllabus, and capstone studio."
                         : AVAILABILITY_UNKNOWN}
                     </p>
                   </header>

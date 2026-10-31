@@ -7,6 +7,12 @@ import { TruthChip } from "../components/skylent/primitives"
 import { catalogCourseListView, type CatalogCourseListView } from "../lib/catalog-maturity"
 import { useCatalogCourses } from "../hooks/useCatalog"
 import CatalogueNotice, { STATUS_NOT_CONFIRMED } from "../components/programme/CatalogueNotice"
+import analyticsVisual from "@/assets/site/program-analytics.jpg"
+import productVisual from "@/assets/site/program-product.jpg"
+import scienceVisual from "@/assets/site/degree-computing.jpg"
+import webVisual from "@/assets/site/program-web.jpg"
+import aiVisual from "@/assets/site/program-ai.jpg"
+import pythonVisual from "@/assets/site/program-library.jpg"
 import "./Catalog.css"
 
 export default function CoursesPage() {
@@ -132,18 +138,34 @@ const COURSE_SKILL_TAGS: Record<string, readonly string[]> = {
   "full-stack-web": ["React & TypeScript", "Node & Express", "PostgreSQL", "API Security"],
 }
 
+const COURSE_PHOTOS: Record<string, string> = {
+  "data-analytics": analyticsVisual,
+  "product-management": productVisual,
+  "python-programming": pythonVisual,
+  "data-science-ai": scienceVisual,
+  "generative-ai": aiVisual,
+  "full-stack-web": webVisual,
+}
+
 function CourseUnitChrome({ view }: { view: CatalogCourseListView }) {
+  const photo = COURSE_PHOTOS[view.slug] ?? analyticsVisual
   return (
-    <div className="cat-unit" aria-hidden="true">
-      <div className="cat-unit-top">
-        <p className="cat-unit-brand">Skylent OS · Proof of Work</p>
-        <span className="cat-unit-elixir">Self-paced</span>
+    <div style={{ position: "relative", aspectRatio: "16 / 10", overflow: "hidden", background: "#0f172a" }} aria-hidden="true">
+      <img
+        src={photo}
+        alt=""
+        loading="lazy"
+        decoding="async"
+        style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+      />
+      <div style={{ position: "absolute", top: 12, left: 12, right: 12, display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
+        <span style={{ fontSize: 11.5, fontWeight: 700, padding: "4px 10px", borderRadius: 999, background: "#ffffff", color: "#16865b", boxShadow: "0 2px 8px rgba(15,23,42,0.15)" }}>
+          Open for enrolment
+        </span>
+        <span style={{ fontSize: 11, fontWeight: 700, padding: "4px 10px", borderRadius: 999, background: "rgba(15,23,42,0.82)", color: "#f8fafc", backdropFilter: "blur(6px)" }}>
+          {view.countLabel}
+        </span>
       </div>
-      <p className="cat-unit-kicker">{view.course.category} · {view.course.level}</p>
-      <p className="cat-unit-title">{view.countLabel}</p>
-      <p className="cat-unit-meta">
-        3 module quizzes · Applied briefs · 1 graded capstone
-      </p>
     </div>
   )
 }
