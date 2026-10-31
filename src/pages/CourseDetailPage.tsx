@@ -378,6 +378,20 @@ export default function CourseDetailPage() {
                   </ul>
                 </article>
               </div>
+              <div className="cat-caps" style={{ marginTop: 20 }}>
+                <article className="cat-cap">
+                  <strong>💎 +50 Elixir Enrolment &amp; Milestone Credits</strong>
+                  <p className="cat-fine" style={{ marginTop: 6 }}>Earn +50 Elixir when you enrol, plus +5 to +15 Elixir on every completed lesson, module quiz, and written brief.</p>
+                </article>
+                <article className="cat-cap">
+                  <strong>⚡ Boardroom Cold Call Checkpoints</strong>
+                  <p className="cat-fine" style={{ marginTop: 6 }}>Practise timed executive justification prompts inside the lesson workspace and compare your decision with peer cohorts.</p>
+                </article>
+                <article className="cat-cap">
+                  <strong>🤖 Socratic AI + 20-Min TA Escalation</strong>
+                  <p className="cat-fine" style={{ marginTop: 6 }}>Get guided Socratic coaching inside every lesson and escalate technical doubts to Faculty TAs with a 20-minute SLA.</p>
+                </article>
+              </div>
             </div>
           </section>
         ) : null}

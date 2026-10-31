@@ -469,10 +469,10 @@ function isMissingTable(error: unknown): boolean {
 
 const DEFAULT_SCHEDULE_AMOUNTS: Record<ElixirActivity, { amount: number; label: string; minScore?: number }> = {
   lesson_complete: { amount: 5, label: "Verified Lesson Completion (+5 Elixir)" },
+  quiz_complete: { amount: 5, label: "Module Quiz Completion (+5 Elixir)" },
   quiz_score: { amount: 10, label: "Module Quiz High Score >=80% (+10 Elixir)", minScore: 80 },
   assignment_complete: { amount: 15, label: "Written Case / Assignment Submission (+15 Elixir)" },
   case_study_complete: { amount: 25, label: "Elixir Case Study Completion (+25 Elixir)" },
-  streak_bonus: { amount: 10, label: "Learning Streak Bonus (+10 Elixir)" },
 }
 
 async function awardWithScheduleFallback(input: {

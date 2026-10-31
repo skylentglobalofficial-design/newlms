@@ -95,7 +95,7 @@ export default function EventsPage() {
                 : loadError
                   ? "The events list could not be loaded. You can try again below."
                   : events.length === 0
-                    ? "No sessions are scheduled. Nothing on this page can be booked."
+                    ? "Explore our 3 Flagship ₹99 Workshop Tracks (with 100% Elixir Coin Back) and the Case Study Store below while new calendar dates are being scheduled."
                     : "These are the sessions currently published. Open one to see whether you can register."}
             </p>
             <div className="cat-actions">
@@ -147,7 +147,7 @@ export default function EventsPage() {
                 </button>
               </p>
             ) : events.length === 0 ? (
-              <p className="cat-empty">No events are scheduled.</p>
+              <p className="cat-empty">Live calendar dates are being updated. Review the 3 Flagship ₹99 Workshop Tracks and 4 Redeemable Case Studies below.</p>
             ) : (
               <ul className="ws-list">
                 {events.map((event) => (

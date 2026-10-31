@@ -127,8 +127,8 @@ export default function VerifyPage() {
             </form>
 
             <p className="vfy-what">
-              A Skylent certificate confirms that the named learner completed every lesson of a course. It is not project evidence and it
-              is not an employment outcome.
+              A Skylent credential confirms that the named learner completed every required module, lesson, and assessment in a course or
+              professional programme (`-PGM`), together with the verified work and evidence summary recorded on the Skylent ledger.
             </p>
           </div>
 

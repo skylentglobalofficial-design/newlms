@@ -1229,9 +1229,9 @@ export function HomeCareer() {
    The existing Skylent AI mark, given its own tile, and the finder's real first question. */
 
 const AI_HELPS = [
-  { title: "In a lesson", text: "When Skylent AI is switched on, it explains the lesson you have open. The lesson says so if it is not available." },
-  { title: "Not a shortcut", text: "It will not give answers to an open quiz or write an open assignment for you." },
-  { title: "Choosing a direction", text: "Find My Path asks a few questions and suggests a catalogue direction. It is a set of rules, not a chatbot." },
+  { title: "Socratic Lesson Coach", text: "Inside every open lesson, Skylent AI guides your SQL queries, Python logic, and product case memos with Socratic prompts rather than handing out shortcuts." },
+  { title: "20-Minute Faculty TA Doubt SLA", text: "Need human verification? Escalate any technical or case-study question directly from the lesson workspace with a live 20-minute Faculty TA SLA." },
+  { title: "Boardroom Cold Call Prep", text: "Practise Harvard and IIM-style timed executive decision prompts and benchmark your strategic recommendation against peer cohorts." },
 ] as const
 
 export function HomeAi() {
@@ -1307,9 +1307,9 @@ export function HomeInstitutions() {
 }
 
 const SYSTEM_POINTS = [
-  { title: "Available now", text: "Open programmes include written lessons, checks, and practice. Career OS stays locked until a separate entitlement is granted. Signing in does not unlock it." },
-  { title: "Not a live dashboard here", text: "The homepage photograph is not a learner account. Course examples further down come from the Data Analytics materials." },
-  { title: "Still planned", text: "Data Science does not yet include machine-learning teaching. Career OS does not compare your skills with a role, and it does not apply for jobs for you." },
+  { title: "Interactive Execution Over Passive Video", text: "All 6 flagship courses combine written briefings, in-browser SQL and product workspaces, timed Boardroom Cold Calls, and graded capstone deliverables." },
+  { title: "Universal Elixir Learning Economy", text: "Earn +50 Elixir on course enrolment, +5 to +25 Elixir on every completed lesson, quiz, assignment, and case study, and 100% Coin Back on ₹99 workshops." },
+  { title: "Merit-Gated Career Rise & Verifiable Proof", text: "Unlock Career Rise at 60% curriculum completion with verified skill-gap matching and cryptographic Course & Programme Master (-PGM) credentials." },
 ] as const
 
 export function HomeSystems() {
@@ -1365,19 +1365,19 @@ export function HomeClosing() {
 export function HomeElixirFlywheel() {
   const steps = [
     {
-      step: "01 · Workshop Entry",
-      title: "Register for a ₹99 Live Workshop or Webinar",
-      copy: "Receive 99 Elixir Coins (100% 1:1 learning credit cashback) in your Skylent wallet when you register for a scheduled session.",
+      step: "01 · Course & Workshop Credits",
+      title: "+50 Elixir on Enrolment & 100% Workshop Coin Back",
+      copy: "Earn +50 Elixir (or 10 Elixir per ₹100) when you enrol in a course, plus 99 Elixir Coins (100% 1:1 cashback) on every ₹99 workshop registration.",
     },
     {
-      step: "02 · Case Study Store",
+      step: "02 · Milestone Rewards",
+      title: "Earn Elixir on Every Lesson, Quiz & Assignment",
+      copy: "Collect +5 Elixir per lesson, +10 Elixir for scoring 80%+ on module quizzes, +15 Elixir per written assignment, and +25 Elixir per completed case study.",
+    },
+    {
+      step: "03 · Case Study Store & Proof",
       title: "Unlock Applied SQL & Product Case Studies",
-      copy: "Redeem your 99 Elixir Coins to unlock focused case studies (49 or 99 Elixir), including the Northwind Margin Leakage and Harbor Desk Triage cases.",
-    },
-    {
-      step: "03 · Proof of Work",
-      title: "Solve in the Workspace & Keep Verified Evidence",
-      copy: "Execute real SQL queries, write structured case memos with Socratic AI guidance, and carry completed work into Career OS.",
+      copy: "Redeem your Elixir balance (49 or 99 Elixir) for industry case studies like Northwind Margin Leakage and Harbor Desk Triage, and carry verified proof into Career OS.",
     },
   ] as const
 
