@@ -282,7 +282,7 @@ const PUBLIC_NAV: readonly PublicNavGroup[] = [
     match: ['/programmes', '/programs', '/courses', '/skills', '/workshops', '/labs', '/events'],
     items: [
       { label: 'All programmes', sub: 'Flagship pathways with SQL labs, case studies, and capstones.', to: '/programmes' },
-      { label: 'All 6 live courses', sub: 'Data Analytics, PM, Python, Data Science, GenAI, and Full Stack.', to: '/courses' },
+      { label: 'All 6 live courses', sub: 'Data Analytics, PM, Python, Data Science, GenAI, and Full Stack.', to: '/programmes#live-courses' },
       { label: 'Workshops & Case Store', sub: '₹99 live workshops with 100% Elixir Coin cashback.', to: '/events' },
       { label: 'Professional programmes', sub: 'In-depth tracks combining lessons, practice, and portfolio work.', to: '/programmes#professional' },
     ],

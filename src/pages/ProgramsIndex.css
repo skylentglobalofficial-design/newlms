@@ -171,3 +171,68 @@
 @media (prefers-reduced-motion: reduce) {
   .pgx .pgx-card__link { transition: none; }
 }
+
+
+/* ── All 6 Flagship Self-Paced Courses Grid on /programmes (#live-courses) ── */
+.pgx .pgx-course-banner {
+  display: grid;
+  align-content: start;
+  gap: 6px;
+  padding: 16px 18px 14px;
+  background: linear-gradient(135deg, #10263D 0%, #2E236C 55%, #5142B5 100%);
+  color: #ffffff;
+}
+.pgx .pgx-course-banner__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+.pgx .pgx-course-banner__brand {
+  font-family: var(--sk-font-mono, ui-monospace, monospace);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(240, 237, 255, 0.8);
+}
+.pgx .pgx-course-banner__elixir {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+}
+.pgx .pgx-course-banner__title {
+  font-family: var(--sk-font-heading);
+  font-size: 18px;
+  font-weight: 750;
+  line-height: 1.25;
+  color: #ffffff;
+}
+.pgx .pgx-course-banner__meta {
+  font-family: var(--sk-font-mono, ui-monospace, monospace);
+  font-size: 11px;
+  color: #C4B8FF;
+}
+.pgx .pgx-skill-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+.pgx .pgx-skill-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: #F3F0FF;
+  border: 1px solid #DDD7FF;
+  color: #43349F;
+  font-size: 11.5px;
+  font-weight: 600;
+}

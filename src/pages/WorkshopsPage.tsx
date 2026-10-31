@@ -45,8 +45,11 @@ export default function WorkshopsPage() {
               attendance, payment, and certificates are not built.
             </p>
             <div className="cat-actions">
-              <Link className="cat-btn cat-btn-primary" to="/programmes">
-                Browse programmes
+              <Link className="cat-btn cat-btn-primary" to="/events">
+                Explore ₹99 Live Workshop Tracks (100% Elixir Coin Back)
+              </Link>
+              <Link className="cat-btn cat-btn-ghost" to="/programmes#live-courses">
+                Browse 6 live courses
               </Link>
             </div>
           </div>

@@ -87,7 +87,7 @@ export function HomeHero({
               Explore programmes
               <ArrowRight />
             </Link>
-            <Link className="sk-btn sk-btn-secondary hx-btn" to="/courses">
+            <Link className="sk-btn sk-btn-secondary hx-btn" to="/programmes#live-courses">
               All 6 live courses
             </Link>
             <Link className="hxw-hero__path" to="/path">

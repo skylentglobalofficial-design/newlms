@@ -23,8 +23,9 @@ export default function LabsPage() {
               named project. There is no catalogue of disconnected experiments here.
             </p>
             <div className="cat-actions">
-              <Link className="cat-btn cat-btn-primary" to="/courses/data-analytics">Open Data Analytics</Link>
-              <Link className="cat-btn cat-btn-ghost" to="/os">See the workspace</Link>
+              <Link className="cat-btn cat-btn-primary" to="/courses/data-analytics">Open Data Analytics (Northwind SQL Lab)</Link>
+              <Link className="cat-btn cat-btn-ghost" to="/courses/product-management">Open Product Management (Harbor Desk Case)</Link>
+              <Link className="cat-btn cat-btn-ghost" to="/programmes#live-courses">All 6 live courses</Link>
             </div>
           </div>
         </section>

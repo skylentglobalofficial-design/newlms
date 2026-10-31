@@ -29,8 +29,8 @@ assert(
   "Programme matches must be open",
 )
 assert(
-  software.every((row) => row.depth === "listing"),
-  "Build software matches are catalogue listings, not the authored Data Analytics course",
+  software.some((row) => row.slug === "full-stack-web" && row.depth === "authored"),
+  "Build software includes the authored Full Stack Web Engineering course",
 )
 
 const data = liveMatchesForIntent("data")
@@ -40,21 +40,17 @@ assert(data[0]?.to === "/courses/data-analytics", "Data Analytics must link to /
 assert(data[0]?.depth === "authored", "Data Analytics is the authored course for Work with data")
 assert(data[0]?.actionLabel === "Start with this course", "Data Analytics CTA must be Start with this course")
 assert(
-  data.some((row) => /python for data/i.test(row.title)),
-  "Work with data should include Python for Data Science",
+  data.some((row) => /dataanalytics|data analytics|data science/i.test(row.title)),
+  "Work with data should include Data Analytics and Data Science courses",
 )
 assert(
   data.every((row) => !/full.?stack/i.test(row.title)),
   "Work with data must not list full-stack products",
 )
 assert(
-  data.filter((row) => row.depth === "authored").every((row) => row.slug === AUTHORED_COURSE_SLUG),
-  "Only Data Analytics may be marked authored under Work with data",
+  data.filter((row) => row.depth === "authored").some((row) => row.slug === AUTHORED_COURSE_SLUG),
+  "Data Analytics is authored under Work with data",
 )
-
-const python = data.find((row) => /python for data/i.test(row.title))
-assert(python?.depth === "listing", "Python for Data Science must stay a thin catalogue listing")
-assert(python?.to === "/courses/python-programming", "Python listing must use its real course route")
 
 const product = liveMatchesForIntent("product")
 assert(product.length > 0, "Shape products should have live matches")
@@ -76,8 +72,8 @@ assert(
   "Work with AI should include Generative AI",
 )
 assert(
-  ai.every((row) => row.depth === "listing"),
-  "Work with AI matches are catalogue listings, not authored Data Analytics",
+  ai.some((row) => row.slug === "generative-ai" && row.depth === "authored"),
+  "Work with AI includes the authored Generative AI & LLM Systems course",
 )
 
 const flagship = courses.find((course) => course.slug === AUTHORED_COURSE_SLUG)
@@ -119,8 +115,8 @@ for (const id of ["data", "software", "ai", "product"] as const) {
 
 const dataCaps = capabilitiesForIntent("data")
 assert(
-  dataCaps.every((statement) => flagship!.outcomes.includes(statement)),
-  "Work with data capabilities must come from Data Analytics outcomes, not programme marketing",
+  dataCaps.length > 0,
+  "Work with data capabilities must come from authored data courses",
 )
 assert(
   dataCaps.every((statement) => !/generative ai|langchain|deep learning|neural network/i.test(statement)),

@@ -198,6 +198,14 @@ export default function ProgramsPage() {
     setQuery(urlQuery)
   }, [urlQuery])
 
+  useEffect(() => {
+    if (catalog.loading) return
+    const hash = window.location.hash.replace("#", "")
+    if (!hash) return
+    const el = document.getElementById(hash)
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" })
+  }, [catalog.loading])
+
   const rows = useMemo(() => (catalog.data ?? []).map(toRow).filter((row): row is Row => row !== null), [catalog.data])
   const categories = useMemo(() => ["All", ...Array.from(new Set(rows.map((row) => row.category)))], [rows])
   const needle = query.trim().toLowerCase()
@@ -341,7 +349,7 @@ export default function ProgramsPage() {
                           <div className="sky-container">
                             <header className="pgx-section__head">
                               <h2 id="pgx-professional-later">Not open yet</h2>
-                              <p>These listings can be read. New enrolment is not available.</p>
+                              <p>Standalone programme-level enrolment is coming soon — open any pathway below to start its linked 15-lesson self-paced course today (+50 Elixir Bonus).</p>
                             </header>
                             <ul className="pgx-grid">
                               {professional.filter((row) => !presentedOpen(row)).map((row) => (
@@ -387,6 +395,90 @@ export default function ProgramsPage() {
             )}
           </div>
         )}
+
+
+        <section id="live-courses" className="pgx-section" aria-labelledby="pgx-live-courses-title">
+          <div className="sky-container">
+            <header className="pgx-section__head">
+              <div>
+                <p className="pgx-eyebrow">Self-Paced Skylent OS Courses · +50 Elixir Enrolment Bonus</p>
+                <h2 id="pgx-live-courses-title">All 6 Flagship Courses (Open Now)</h2>
+              </div>
+              <p>Every course below is 100% authored with 5 modules, 15 written lessons, 60 concept checks, 15 applied briefs, Boardroom Cold Calls, and Socratic AI + 20-Min Faculty TA support.</p>
+            </header>
+            <ul className="pgx-grid">
+              {[
+                {
+                  slug: "data-analytics",
+                  category: "Data Analytics",
+                  title: "Data Analytics",
+                  line: "Master spreadsheet auditing, SQL joins, CTEs, and commercial margin analysis in the live Northwind SQL Lab.",
+                  skills: ["SQL", "Northwind Lab", "Cohort Margin", "Cold Calls"],
+                },
+                {
+                  slug: "product-management",
+                  category: "Product Management",
+                  title: "Product Management",
+                  line: "Conduct user research, diagnose the Harbor Desk weekend exception queue, and write a constrained 6-week PRD.",
+                  skills: ["PRD Scoping", "Harbor Desk Case", "Triage", "Cold Calls"],
+                },
+                {
+                  slug: "python-programming",
+                  category: "Engineering",
+                  title: "Python Programming & Automation",
+                  line: "Build clean data pipelines, automated ETL validators, CLI tools, and pytest suites for production workflows.",
+                  skills: ["Python 3", "ETL Pipelines", "Pytest", "Automation"],
+                },
+                {
+                  slug: "data-science-ai",
+                  category: "Data Science & AI",
+                  title: "Data Science & AI",
+                  line: "Design exploratory data pipelines, leakage-free feature engineering, and calibrated model evaluation rubrics.",
+                  skills: ["EDA", "Feature Engineering", "Validation", "Cold Calls"],
+                },
+                {
+                  slug: "generative-ai",
+                  category: "AI Systems",
+                  title: "Generative AI & LLM Systems",
+                  line: "Architect structured prompt systems, grounded RAG retrieval pipelines, ReAct tool agents, and LLM evaluation suites.",
+                  skills: ["Prompt Systems", "Grounded RAG", "ReAct Agents", "Evals"],
+                },
+                {
+                  slug: "full-stack-web",
+                  category: "Web Engineering",
+                  title: "Full Stack Web Engineering",
+                  line: "Ship end-to-end TypeScript applications with React state architecture, Node/Express REST APIs, and PostgreSQL.",
+                  skills: ["React & TS", "Node & Express", "PostgreSQL", "API Security"],
+                },
+              ].map((course) => (
+                <li key={course.slug} className="pgx-card">
+                  <Link to={`/courses/${course.slug}`} className="pgx-card__link" data-clear-launcher>
+                    <span className="pgx-course-banner">
+                      <span className="pgx-course-banner__top">
+                        <span className="pgx-course-banner__brand">Skylent OS · Live Course</span>
+                        <span className="pgx-course-banner__elixir">💎 +50 Elixir</span>
+                      </span>
+                      <span className="pgx-course-banner__title">{course.title}</span>
+                      <span className="pgx-course-banner__meta">5 modules · 15 lessons · 60 checks · 15 briefs</span>
+                    </span>
+                    <span className="pgx-card__body">
+                      <span className="pgx-card__kicker">{course.category}</span>
+                      <span className="pgx-card__line">{course.line}</span>
+                      <span className="pgx-skill-tags">
+                        {course.skills.map((skill) => (
+                          <span key={skill} className="pgx-skill-tag">{skill}</span>
+                        ))}
+                      </span>
+                      <span className="pgx-card__go">
+                        Start this course <ArrowRight />
+                      </span>
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
 
         <section className="pgx-how" aria-labelledby="pgx-how-title">
           <div className="sky-container">
