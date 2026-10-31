@@ -13,47 +13,6 @@ export const skylentCertificatesRouter = Router()
 export const SKYLENT_CREDENTIAL_ISSUER = "Skylent Global Pvt. Ltd."
 export const SKYLENT_CREDENTIAL_STANDARD = "Skylent Verified Skill & Completion Record v1"
 
-export const EXEMPLAR_CERTIFICATES = [
-  {
-    code: "SKL-2026-DA-EXEMPLAR",
-    learnerName: "Aarav Sharma",
-    courseTitle: "Data Analytics with Gen AI",
-    courseSlug: "data-analytics",
-    issuedAt: new Date("2026-10-15T10:00:00Z"),
-    score: "96/100 · Exemplar Capstone Dossier",
-    issuer: SKYLENT_CREDENTIAL_ISSUER,
-    credentialStandard: SKYLENT_CREDENTIAL_STANDARD,
-    evidenceSummary: "Northwind Sales & Revenue Leakage Audit: Identified 14.5% discount leakage in Apparel category across 166 validated order lines with SQL aggregation.",
-  },
-  {
-    code: "SKL-2026-PM-EXEMPLAR",
-    learnerName: "Priya Nair",
-    courseTitle: "Product Management",
-    courseSlug: "product-management",
-    issuedAt: new Date("2026-10-18T14:30:00Z"),
-    score: "95/100 · Exemplar Capstone Dossier",
-    issuer: SKYLENT_CREDENTIAL_ISSUER,
-    credentialStandard: SKYLENT_CREDENTIAL_STANDARD,
-    evidenceSummary: "Harbor Desk Operations Triage PRD: Scoped weekend exception ownership workflow for 12 stores under 2-engineer, 6-week resource constraint.",
-  },
-  {
-    code: "SKL-2026-AI-EXEMPLAR",
-    learnerName: "Rohan Verma",
-    courseTitle: "Generative AI & LLM Systems",
-    courseSlug: "generative-ai",
-    issuedAt: new Date("2026-10-22T09:15:00Z"),
-    score: "98/100 · Exemplar Capstone Dossier",
-    issuer: SKYLENT_CREDENTIAL_ISSUER,
-    credentialStandard: SKYLENT_CREDENTIAL_STANDARD,
-    evidenceSummary: "Enterprise Grounded RAG with Citation Policy: Evaluated hallucination bounds and prompt injection security with automated test harness.",
-  },
-] as const
-
-export function resolveExemplarCertificate(code: string) {
-  const norm = code.trim().toUpperCase()
-  return EXEMPLAR_CERTIFICATES.find((item) => item.code === norm) ?? null
-}
-
 const verifyLimit = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 30,
@@ -63,6 +22,7 @@ const verifyLimit = rateLimit({
     response.status(429).json({ error: "Too many verification attempts. Try again later." })
   },
 })
+
 
 export function buildProgrammeCertificateCode(programSlug: string, year = new Date().getFullYear(), randomHex?: string) {
   const suffix = (randomHex ?? randomBytes(4).toString("hex")).toUpperCase().slice(0, 8)
@@ -89,12 +49,33 @@ function publicLearnerName(stored: string): string {
   return stored
 }
 
+const issuedProgrammeCertCache = new Map<
+  string,
+  {
+    code: string
+    userId: string
+    learnerName: string
+    courseTitle: string
+    courseSlug: string | null
+    programSlug: string
+    issuedAt: Date
+    revoked: boolean
+  }
+>()
+
 export function buildCertificateEvidenceSummary(cert: {
   code: string
   learnerName: string
   courseTitle: string
   issuedAt: Date
+  evidenceSummary?: string
 }) {
+  const isProgramme = cert.code.includes("-PGM") || cert.code.includes("-PRG-")
+  const evidenceSummary =
+    cert.evidenceSummary ??
+    (isProgramme
+      ? "Verified completion of all linked programme courses, modules, and applied case assessments."
+      : "Verified completion of all required course lessons, quizzes, and applied case work.")
   return {
     code: cert.code,
     learnerName: publicLearnerName(cert.learnerName),
@@ -102,6 +83,9 @@ export function buildCertificateEvidenceSummary(cert: {
     issuedAt: cert.issuedAt,
     issuer: SKYLENT_CREDENTIAL_ISSUER,
     credentialStandard: SKYLENT_CREDENTIAL_STANDARD,
+    verificationStandard: SKYLENT_CREDENTIAL_STANDARD,
+    credentialLevel: isProgramme ? ("programme" as const) : ("course" as const),
+    evidenceSummary,
   }
 }
 
@@ -217,11 +201,39 @@ skylentCertificatesRouter.get("/mine", requireAuth, async (req: AuthenticatedReq
         })
       : []
     const slugById = new Map(courses.map((course) => [course.id, course.slug]))
+    const caps = await readSchemaCapabilities()
+    let dbProgCerts: Array<{ code: string; learnerName: string; programTitle: string; programSlug: string; issuedAt: Date; revoked: boolean; evidenceSummary: string | null }> = []
+    if (caps.programmeCertificates) {
+      dbProgCerts = await prisma.programmeCertificate.findMany({
+        where: { userId: req.auth!.user.id },
+        orderBy: { issuedAt: "desc" },
+      })
+    }
+    const progMap = new Map<string, any>()
+    for (const cp of issuedProgrammeCertCache.values()) {
+      if (cp.userId === req.auth!.user.id && !cp.revoked) {
+        progMap.set(cp.code, {
+          ...issuedLearnerView(cp, cp.courseSlug),
+          programSlug: cp.programSlug,
+          revoked: false,
+        })
+      }
+    }
+    for (const dp of dbProgCerts) {
+      progMap.set(dp.code, {
+        ...issuedLearnerView({ code: dp.code, learnerName: dp.learnerName, courseTitle: dp.programTitle, issuedAt: dp.issuedAt }, null),
+        programSlug: dp.programSlug,
+        revoked: dp.revoked,
+      })
+    }
     res.json({
-      data: rows.map((row) => ({
-        ...issuedLearnerView(row, slugById.get(row.courseId) ?? null),
-        revoked: row.revoked,
-      })),
+      data: [
+        ...progMap.values(),
+        ...rows.map((row) => ({
+          ...issuedLearnerView(row, slugById.get(row.courseId) ?? null),
+          revoked: row.revoked,
+        })),
+      ],
     })
   } catch (error) {
     if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
@@ -232,37 +244,39 @@ skylentCertificatesRouter.get("/mine", requireAuth, async (req: AuthenticatedReq
   }
 })
 
-/** Public check. Returns name, course, date, and credential issuer metadata. Supports public exemplars. */
+/** Public check. Returns name, course, date, and credential issuer metadata. */
 skylentCertificatesRouter.get("/verify/:code", verifyLimit, async (req, res) => {
   const rawCode = req.params.code
   const normalized = (Array.isArray(rawCode) ? rawCode[0] : rawCode)?.toUpperCase()
   const code = z.string().regex(/^SKL-\d{4}-[A-Z0-9]{1,6}-[A-Z0-9]{4,8}$/).safeParse(normalized)
   if (!code.success) return void res.status(400).json({ error: "Invalid certificate ID" })
-
-  const exemplar = resolveExemplarCertificate(normalized || "")
-  if (exemplar) {
-    return void res.json({
-      data: {
-        valid: true,
-        code: exemplar.code,
-        learnerName: exemplar.learnerName,
-        courseTitle: exemplar.courseTitle,
-        issuedAt: exemplar.issuedAt.toISOString(),
-        issuer: exemplar.issuer,
-        verificationStandard: exemplar.credentialStandard,
-        evidenceSummary: exemplar.evidenceSummary,
-        score: exemplar.score,
-        isExemplar: true,
-      },
-    })
-  }
-
-  let cert: Awaited<ReturnType<typeof prisma.skylentCertificate.findUnique>>
-  try {
-    if (!(await certificatesReady())) return void res.status(503).json(CERTIFICATE_UNAVAILABLE)
-    cert = await prisma.skylentCertificate.findUnique({ where: { code: code.data } })
-  } catch (error) {
-    return void sendCertificateUnavailable(res, error)
+  // A failed probe or lookup is not "no such certificate". Both stay inside this try
+  // so a dead database cannot escape as an HTML error or a 404.
+  let cert: { code: string; learnerName: string; courseTitle: string; issuedAt: Date; revoked?: boolean; evidenceSummary?: string } | null =
+    issuedProgrammeCertCache.get(code.data) ?? null
+  if (!cert) {
+    try {
+      if (!(await certificatesReady())) return void res.status(503).json(CERTIFICATE_UNAVAILABLE)
+      const caps = await readSchemaCapabilities()
+      if (caps.programmeCertificates) {
+        const dbProg = await prisma.programmeCertificate.findUnique({ where: { code: code.data } })
+        if (dbProg) {
+          cert = {
+            code: dbProg.code,
+            learnerName: dbProg.learnerName,
+            courseTitle: dbProg.programTitle,
+            issuedAt: dbProg.issuedAt,
+            evidenceSummary: dbProg.evidenceSummary ?? undefined,
+            revoked: dbProg.revoked,
+          }
+        }
+      }
+      if (!cert) {
+        cert = await prisma.skylentCertificate.findUnique({ where: { code: code.data } })
+      }
+    } catch (error) {
+      return void sendCertificateUnavailable(res, error)
+    }
   }
   if (!cert || cert.revoked) return void res.status(404).json({ data: { valid: false } })
   res.json({
@@ -272,6 +286,7 @@ skylentCertificatesRouter.get("/verify/:code", verifyLimit, async (req, res) => 
     },
   })
 })
+
 
 skylentCertificatesRouter.post("/issue-programme", requireAuth, requireCsrf, async (req: AuthenticatedRequest, res) => {
   try {
@@ -305,18 +320,64 @@ skylentCertificatesRouter.post("/issue-programme", requireAuth, requireCsrf, asy
       }
     }
     const primaryCourse = program.programCourses[0].course
-    const code = buildProgrammeCertificateCode(program.slug)
-    return void res.status(201).json({
+    const caps = await readSchemaCapabilities()
+    let code: string
+    let issuedAt: Date
+    let isExisting = false
+
+    if (caps.programmeCertificates) {
+      const dbExisting = await prisma.programmeCertificate.findUnique({
+        where: { userId_programSlug: { userId: user.id, programSlug: program.slug } },
+      })
+      if (dbExisting) {
+        code = dbExisting.code
+        issuedAt = dbExisting.issuedAt
+        isExisting = true
+      } else {
+        code = buildProgrammeCertificateCode(program.slug)
+        const created = await prisma.programmeCertificate.create({
+          data: {
+            code,
+            userId: user.id,
+            programSlug: program.slug,
+            learnerName: publicLearnerName(learnerName),
+            programTitle: program.name,
+            evidenceSummary: "Verified completion of all linked programme courses, modules, and applied case assessments.",
+          },
+        })
+        issuedAt = created.issuedAt
+      }
+    } else {
+      const existingProg = [...issuedProgrammeCertCache.values()].find(
+        (item) => item.userId === user.id && item.programSlug === program.slug && !item.revoked,
+      )
+      code = existingProg?.code ?? buildProgrammeCertificateCode(program.slug)
+      issuedAt = existingProg?.issuedAt ?? new Date()
+      isExisting = Boolean(existingProg)
+    }
+
+    issuedProgrammeCertCache.set(code, {
+      code,
+      userId: user.id,
+      learnerName: publicLearnerName(learnerName),
+      courseTitle: program.name,
+      courseSlug: primaryCourse.slug,
+      programSlug: program.slug,
+      issuedAt,
+      revoked: false,
+    })
+    const summary = buildCertificateEvidenceSummary({
+      code,
+      learnerName,
+      courseTitle: program.name,
+      issuedAt,
+    })
+    return void res.status(isExisting ? 200 : 201).json({
       data: {
-        code,
-        learnerName: publicLearnerName(learnerName),
+        ...summary,
         programSlug: program.slug,
         programTitle: program.name,
         courseSlug: primaryCourse.slug,
-        courseTitle: program.name,
-        issuedAt: new Date(),
-        issuer: SKYLENT_CREDENTIAL_ISSUER,
-        credentialStandard: SKYLENT_CREDENTIAL_STANDARD,
         verifyPath: `/verify/${code}`,
       },
     })

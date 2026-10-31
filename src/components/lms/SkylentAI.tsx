@@ -22,70 +22,33 @@ type UiState = "checking" | "unavailable" | "unreachable" | "ready" | "loading" 
 /** What the panel keeps per turn. Only `role` and `content` are ever sent back to the API. */
 type UiTurn = SkylentAiTurn & { basedOn?: string; heldBack?: boolean }
 
-/** The four real modes of POST /lms/ai/ask (plus the free question, mode "ask"). Nothing else exists. */
-const QUICK: Array<{ action: SkylentAiAction; label: string }> = [
-  { action: "explain", label: "Explain simpler" },
-  { action: "example", label: "Give an example" },
-  { action: "quiz", label: "Quiz me" },
-  { action: "practice", label: "Practice question" },
-]
+/**
+ * Context-aware Socratic debug ("Debug my SQL logic") and rubric criteria ("Check rubric criteria")
+ * prompts exported for lesson workspace interactivity across all 6 flagship tracks.
+ */
+import {
+  QUICK,
+  TRACK_SOCRATIC_PROMPTS,
+  socraticQuickPromptsFor,
+} from "../../lib/socratic-prompts"
 
-
-export function hinglishIntuitionPromptFor(): { action: SkylentAiAction; label: string; question: string } {
-  return {
-    action: "ask",
-    label: "🇮🇳 Explain in Simple Hinglish",
-    question: "Explain the core intuition of this lesson in simple Hinglish with a real-world desi analogy, without answering quiz or assignment questions directly.",
-  }
-}
-
-export function socraticQuickPromptsFor(
-  courseSlug: string,
-  lessonKind?: string | null,
-  assessmentOpen = false,
-): Array<{ action: SkylentAiAction; label: string; question?: string }> {
-  const base: Array<{ action: SkylentAiAction; label: string; question?: string }> = QUICK.filter(
-    (item) => !(assessmentOpen && item.action === "quiz"),
-  )
-  base.push(hinglishIntuitionPromptFor())
-  if (lessonKind === "assignment") {
-    return [
-      ...base,
-      {
-        action: "ask",
-        label: "Check rubric criteria",
-        question: "What are the key criteria my response should cover for this lesson, without writing the answer for me?",
-      },
-    ]
-  }
-  if (courseSlug === "data-analytics") {
-    return [
-      ...base,
-      {
-        action: "ask",
-        label: "Debug my SQL logic",
-        question: "How should I verify my SQL join and aggregation logic on this lesson without giving me the final query?",
-      },
-    ]
-  }
-  return base
+export {
+  QUICK,
+  TRACK_SOCRATIC_PROMPTS,
+  socraticQuickPromptsFor,
 }
 
 const UNAVAILABLE = `${AI_NAME} isn't switched on yet.`
 const UNREACHABLE = `${AI_NAME} could not be reached.`
 
 /** Courses whose lesson text, concepts and case facts the server loads (server/src/lib/skylent-ai/authored.ts). */
-const AUTHORED_AI_COURSES = new Set(["data-analytics", "product-management", "python-programming", "data-science-ai", "generative-ai", "full-stack-web"])
+const AUTHORED_AI_COURSES = new Set(["data-analytics", "product-management"])
 
 /** Case facts the server attaches to the lesson context (server/src/lib/skylent-ai/authored.ts). */
 function caseChipFor(courseSlug: string, caseLabel?: string | null): string | null {
   if (caseLabel) return caseLabel
   if (courseSlug === "data-analytics") return "Northwind dataset"
   if (courseSlug === "product-management") return "Harbor Desk case"
-  if (courseSlug === "python-programming") return "Algorithmic Runtime Benchmarks"
-  if (courseSlug === "data-science-ai") return "Customer Churn Prediction Model"
-  if (courseSlug === "generative-ai") return "Grounded RAG Pipeline"
-  if (courseSlug === "full-stack-web") return "RESTful SaaS Backend"
   return null
 }
 
@@ -483,7 +446,15 @@ export default function SkylentAI({ courseSlug, lessonId, lessonTitle, lessonNum
             <button
               type="button"
               className="os-link"
-              onClick={() => setDoubtEscalated(true)}
+              onClick={() => {
+                setDoubtEscalated(true)
+                void fetch(`/api/v1/lms/courses/${encodeURIComponent(courseSlug)}/lessons/${encodeURIComponent(lessonId)}/doubt`, {
+                  method: "POST",
+                  credentials: "include",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ lessonTitle, question: draft.trim() || undefined }),
+                }).catch(() => undefined)
+              }}
             >
               Stuck on this step? Flag for Faculty TA review (20-min SLA)
             </button>

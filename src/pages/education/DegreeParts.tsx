@@ -270,7 +270,7 @@ export function ClosingBand({
         </div>
         <Reveal delay={180} className="dg-close__actions">
           <button type="button" className="sk-btn sk-btn-primary" onClick={() => openSkylentAi("finder")}>
-            Start the questionnaire
+            Find My Path
             <ArrowRight />
           </button>
           <Link to={secondary.to} className="sk-btn sk-btn-secondary">
@@ -291,7 +291,7 @@ export function DegreeNotFound() {
         <DegreeCrumb />
         <h1 className="dg-h1">This degree route is not listed.</h1>
         <p className="dg-lead">
-          Skylent lists only its sample degree areas, and this address does not match one of them. Nothing has been removed: the
+          This degree pathway URL was not found in the active catalogue. You can explore all undergraduate and postgraduate pathways below, or
           listing does not exist.
         </p>
         <div className="dg-actions">

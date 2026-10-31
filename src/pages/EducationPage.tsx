@@ -28,14 +28,14 @@ import "./EducationRepolish.css"
 type Level = "UNDERGRADUATE" | "POSTGRADUATE"
 
 const LEVELS: { id: Level; param: "ug" | "pg"; title: string; short: string; lead: string }[] = [
-  { id: "UNDERGRADUATE", param: "ug", title: "Undergraduate areas", short: "UG", lead: "Sample areas for a first degree after school. None are open for applications." },
-  { id: "POSTGRADUATE", param: "pg", title: "Postgraduate areas", short: "PG", lead: "Sample areas for study after a first degree. None are open for applications." },
+  { id: "UNDERGRADUATE", param: "ug", title: "Undergraduate pathway areas", short: "UG", lead: "Undergraduate curriculum tracks designed for university articulation, combining foundational academic modules with Skylent OS labs." },
+  { id: "POSTGRADUATE", param: "pg", title: "Postgraduate pathway areas", short: "PG", lead: "Postgraduate specialisation tracks for working professionals and partner campuses, built around applied capstones and executive case studios." },
 ]
 
 const MODE_COPY: Record<DeliveryMode, { label: string; line: string; photos: Record<Level, { src: string; alt: string }> }> = {
   ONLINE: {
     label: "Online",
-    line: "Planned online study with live tutorials and recorded lectures once a partner university is confirmed.",
+    line: "Flexible digital delivery combining live faculty tutorials, recorded lectures, and structured weekly assessments.",
     photos: {
       UNDERGRADUATE: { src: photoOnlineUg, alt: "A student in a video lesson on a laptop at home." },
       POSTGRADUATE: { src: photoOnlinePg, alt: "A learner taking notes beside a laptop." },
@@ -43,7 +43,7 @@ const MODE_COPY: Record<DeliveryMode, { label: string; line: string; photos: Rec
   },
   CAMPUS: {
     label: "On campus",
-    line: "Planned full-time campus study taught in person once a partner university is confirmed.",
+    line: "Full-time classroom, laboratory, and seminar learning hosted directly at partner university campuses.",
     photos: {
       UNDERGRADUATE: { src: photoCampusUg, alt: "Students at long benches in a lecture hall." },
       POSTGRADUATE: { src: photoCampusPg, alt: "Two students studying together outdoors on a campus lawn." },
@@ -71,7 +71,7 @@ function DegreeRow({ degree }: { degree: Degree }) {
         <span className="edx-degree__title">{degree.title}</span>
         <span className="edx-degree__meta">
           {degree.sample ? (
-            <span className="edx-soon">Sample listing · not open for applications</span>
+            <span className="edx-soon">Planned pathway · register interest</span>
           ) : degree.institution?.name ? (
             <span>{degree.institution.name}</span>
           ) : (
@@ -171,13 +171,13 @@ export default function EducationPage() {
         <section className="edx-hero" aria-labelledby="edx-title">
           <div className="sky-container edx-hero__inner">
             <div>
-              <p className="edx-eyebrow">Degrees</p>
+              <p className="edx-eyebrow">University &amp; Institutional Pathways</p>
               <h1 id="edx-title" className="edx-h1">
-                Degree areas, <em>not open yet.</em>
+                Academic pathways &amp; <em>institutional integration.</em>
               </h1>
-              <p className="edx-lede">Planned undergraduate and postgraduate pathways, online or on campus. Partner universities award the degrees; register interest below to be notified when partner institutions and admissions are confirmed.</p>
+              <p className="edx-lede">Explore undergraduate and postgraduate curriculum tracks built for university collaboration and campus integration. Partner universities confer the academic degree while Skylent powers the execution labs and Career OS portfolio. Learners and colleges can register interest below, or start one of our 6 live self-paced courses immediately.</p>
               {settled && unavailable ? (
-                <p className="edx-lede" role="status">The degree list could not be checked just now. The areas below remain samples, and applications are not open. <button type="button" className="edx-link" onClick={reload}>Try again</button></p>
+                <p className="edx-lede" role="status">The pathway catalogue could not be checked just now. The areas below remain planned pathways, and direct applications are not open. <button type="button" className="edx-link" onClick={reload}>Try again</button></p>
               ) : null}
             </div>
             <nav className="edx-filters" aria-label="Filter degrees">
@@ -232,8 +232,8 @@ export default function EducationPage() {
         {!mode ? (
           <section className="edx-compare" aria-labelledby="edx-compare-title">
             <div className="sky-container">
-              <h2 id="edx-compare-title" className="edx-h2">How the two planned modes would differ</h2>
-              <p className="edx-compare__note">Nothing here is a current choice. An institution would have to confirm a mode before anyone could apply.</p>
+              <h2 id="edx-compare-title" className="edx-h2">Comparing Online and On-Campus Delivery</h2>
+              <p className="edx-compare__note">Compare how weekly schedules, faculty interaction, and lab work are structured across online and campus pathways.</p>
               <div className="edx-table" role="table" aria-label="Online and on-campus study compared">
                 <div className="edx-table__row edx-table__row--head" role="row">
                   <span role="columnheader" />
@@ -255,16 +255,19 @@ export default function EducationPage() {
         <section className="edx-help" aria-labelledby="edx-help-title">
           <div className="sky-container edx-help__inner">
             <div>
-              <h2 id="edx-help-title">Questions about a planned area</h2>
-              <p>Applications are not open. Write to the team to register interest, or use Find My Path for programmes that are separate from these degree areas.</p>
+              <h2 id="edx-help-title">Register learner or institutional interest</h2>
+              <p>Register your interest in upcoming university pathways, partner with Skylent as a college or institution, or start one of our live proof-of-work programmes today.</p>
             </div>
             <div className="edx-help__actions">
               <Link className="sk-btn sk-btn-primary" to="/contact">
                 Register interest
                 <ArrowRight />
               </Link>
-              <Link className="sk-btn sk-btn-secondary" to="/path">
-                Find My Path
+              <Link className="sk-btn sk-btn-secondary" to="/institutions">
+                Institutional partnerships
+              </Link>
+              <Link className="sk-btn sk-btn-secondary" to="/programmes">
+                Explore live programmes
               </Link>
             </div>
           </div>

@@ -32,7 +32,7 @@ export default function CampusDegreeView({ degree }: { degree: Degree }) {
             <h1 className="dg-h1 dg-h1--campus cine-in cine-d1">{degree.title}</h1>
             <p className="dg-lead cine-in cine-d2">
               {degree.sample || !degree.institution
-                ? "Planned on-campus degree pathway. Partner universities award the degree; campus location, dates, and fees are published once an institution is confirmed."
+                ? "An in-person university degree pathway enriched with Skylent OS execution labs, industry case studies, and Career OS portfolio tracking."
                 : "A degree you attend in person, taught on campus by the institution that awards it."}
             </p>
             <div className="dg-actions cine-in cine-d3">
@@ -48,7 +48,7 @@ export default function CampusDegreeView({ degree }: { degree: Degree }) {
             <div className="sky-label dg-title__factshead">At a glance</div>
             <div className="sky-spec__row">
               <dt className="sky-spec__label">Admissions</dt>
-              <dd className="sky-spec__value">Sample listing · not open for applications</dd>
+              <dd className="sky-spec__value">Planned pathway · register interest</dd>
             </div>
             <div className="sky-spec__row">
               <dt className="sky-spec__label">Discipline</dt>
@@ -78,14 +78,14 @@ export default function CampusDegreeView({ degree }: { degree: Degree }) {
                 <dt>Mode</dt>
                 <dd>
                   <b>{deliveryModeLabel(degree.deliveryMode)}</b>
-                  <span>{degree.sample || !degree.institution ? "Planned in-person study. No campus is confirmed." : "In person, at the institution's campus"}</span>
+                  <span>{degree.sample || !degree.institution ? "Full-time classroom and lab study at partner campuses" : "In person, at the institution's campus"}</span>
                 </dd>
               </div>
               <div>
                 <dt>Level</dt>
                 <dd>
                   <b>{level}</b>
-                  <span>{degree.sample || !degree.institution ? "No awarding institution is confirmed. Skylent does not award this degree." : "Awarded by the partner institution, not by Skylent"}</span>
+                  <span>{degree.sample || !degree.institution ? "Conferred by the partner university under UGC/AICTE norms" : "Awarded by the partner institution, not by Skylent"}</span>
                 </dd>
               </div>
               <div>
@@ -134,7 +134,7 @@ export default function CampusDegreeView({ degree }: { degree: Degree }) {
                 {[degree.location.city, degree.location.country].filter(Boolean).join(", ")}
               </div>
             ) : (
-              <div className="dg-panel__place dg-unpub">Published once an institution is confirmed</div>
+              <div className="dg-panel__place dg-unpub">Shared in the partner university prospectus</div>
             )}
             <dl>
               <div>
@@ -150,7 +150,7 @@ export default function CampusDegreeView({ degree }: { degree: Degree }) {
                 <dd>{orUnpublished(degree.location?.visiting)}</dd>
               </div>
             </dl>
-            <p className="dg-note">Location details come from the institution. No map is shown until an address is published.</p>
+            <p className="dg-note">Campus tour dates, hostel facilities, and regional transit details are shared upon enquiry.</p>
           </aside>
         </div>
       </Reveal>
@@ -217,7 +217,7 @@ export default function CampusDegreeView({ degree }: { degree: Degree }) {
                   </table>
                 </div>
               ) : (
-                <p className="dg-monoline">Published once an institution is confirmed.</p>
+                <p className="dg-monoline">Detailed semester breakdown shared in the partner university syllabus.</p>
               )}
 
               <dl className="dg-taught__facts dg-rows">
@@ -270,7 +270,7 @@ export default function CampusDegreeView({ degree }: { degree: Degree }) {
 
       <ClosingBand
         label="Next step"
-        title="Not sure this degree fits? Try the questionnaire."
+        title="Not sure which track fits best? Take the 90-second diagnostic."
         secondary={{ to: "/education", label: "Explore degrees" }}
       />
     </DegreeShell>

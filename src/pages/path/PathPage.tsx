@@ -1,8 +1,3 @@
-import {
-  evaluateSkillDiagnostic,
-  SKILL_DIAGNOSTIC_QUESTIONS,
-  type DiagnosticResult,
-} from "../../lib/path/skillDiagnostic"
 import { useCallback, useEffect, useState, type KeyboardEvent, type ReactNode } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { PageShell } from "../../components/shared"
@@ -205,86 +200,141 @@ function PathChoiceRow({
 }
 
 
-function SkillDiagnosticSection() {
+const QUICK_DIAG_QUESTIONS = [
+  {
+    id: "q1",
+    prompt: "1. When a business metric drops 15% week-over-week, what is your natural first instinct?",
+    options: [
+      { key: "da", label: "Write a SQL/spreadsheet cohort breakdown to isolate which segment moved", track: "Data Analytics", slug: "/courses/data-analytics" },
+      { key: "pm", label: "Map the user funnel bottleneck, interview support/sales, and scope a fix", track: "Product Management", slug: "/courses/product-management" },
+      { key: "ai", label: "Inspect the pipeline/API logs or build an automated Python/LLM evaluator", track: "GenAI & Software Engineering", slug: "/courses/generative-ai" },
+    ],
+  },
+  {
+    id: "q2",
+    prompt: "2. Which proof-of-work artifact would strengthen your resume most in the next 30 days?",
+    options: [
+      { key: "da", label: "An audited Northwind commercial KPI review with SQL queries & executive memo", track: "Data Analytics", slug: "/courses/data-analytics" },
+      { key: "pm", label: "A constrained Harbor Desk PRD, triage taxonomy, and boardroom defense", track: "Product Management", slug: "/courses/product-management" },
+      { key: "ai", label: "A working RAG evaluation harness or full-stack REST service with test coverage", track: "GenAI & Software Engineering", slug: "/courses/generative-ai" },
+    ],
+  },
+  {
+    id: "q3",
+    prompt: "3. How do you prefer to validate your skill during a technical or case interview?",
+    options: [
+      { key: "da", label: "Defending metric definitions, margin math, and SQL joins under questioning", track: "Data Analytics", slug: "/courses/data-analytics" },
+      { key: "pm", label: "Defending scope trade-offs, stakeholder prioritization, and rollout risks", track: "Product Management", slug: "/courses/product-management" },
+      { key: "ai", label: "Walking through code architecture, latency/cost guardrails, and edge-case tests", track: "GenAI & Software Engineering", slug: "/courses/generative-ai" },
+    ],
+  },
+] as const
+
+function QuickAdaptiveDiagnostic() {
   const [open, setOpen] = useState(false)
-  const [answers, setAnswers] = useState<Record<string, string>>({})
-  const [result, setResult] = useState<DiagnosticResult | null>(null)
+  const [answers, setAnswers] = useState<Record<string, "da" | "pm" | "ai">>({})
 
-  function handleSelect(questionId: string, optionId: string) {
-    setAnswers((prev) => ({ ...prev, [questionId]: optionId }))
-  }
+  const answeredCount = Object.keys(answers).length
+  const done = answeredCount === QUICK_DIAG_QUESTIONS.length
 
-  function handleScore() {
-    const res = evaluateSkillDiagnostic(answers)
-    setResult(res)
+  const counts = { da: 0, pm: 0, ai: 0 }
+  for (const val of Object.values(answers)) {
+    counts[val] = (counts[val] ?? 0) + 1
   }
+  const winnerKey: "da" | "pm" | "ai" =
+    counts.pm > counts.da && counts.pm >= counts.ai
+      ? "pm"
+      : counts.ai > counts.da && counts.ai > counts.pm
+        ? "ai"
+        : "da"
+
+  const recommendation =
+    winnerKey === "pm"
+      ? {
+          track: "Product Management (Harbor Desk Case Track)",
+          percentile: "Top 18% Operator Framing Fit",
+          courseHref: "/courses/product-management",
+          programmeHref: "/programmes/product-management",
+          summary: "Your instincts lean toward system bottlenecks, stakeholder trade-offs, and specification clarity.",
+        }
+      : winnerKey === "ai"
+        ? {
+            track: "Generative AI & Python Systems Track",
+            percentile: "Top 15% Systems Builder Fit",
+            courseHref: "/courses/generative-ai",
+            programmeHref: "/courses/python-programming",
+            summary: "You gravitate toward automation, code-level debugging, and production AI guardrails.",
+          }
+        : {
+            track: "Data Analytics (Northwind SQL & Commercial Track)",
+            percentile: "Top 14% Analytical Rigor Fit",
+            courseHref: "/courses/data-analytics",
+            programmeHref: "/programmes/data-analytics-pro",
+            summary: "You lead with quantitative verification, clean denominator math, and SQL evidence.",
+          }
 
   return (
-    <section className="path-diag" aria-labelledby="skill-diag-title">
-      <div className="path-diag__head">
+    <section className="path-diag" aria-label="90-Second Adaptive Skill Diagnostic">
+      <div className="path-diag__bar">
         <div>
-          <span className="sky-label">Optional 90-Second Skill Check</span>
-          <h2 id="skill-diag-title" className="path-diag__title">
-            Benchmark your SQL, Product &amp; GenAI readiness
-          </h2>
-          <p className="path-diag__sub">
-            Answer 3 quick scenario questions to see your percentile and starting module.
-          </p>
+          <span className="path-diag__badge">⚡ Instant Skill Benchmark</span>
+          <strong>90-Second Adaptive Skill Diagnostic</strong>
+          <span>Answer 3 scenario questions to benchmark your operator instinct before or alongside the full 7-step path builder.</span>
         </div>
         <button
           type="button"
-          className="sk-btn sk-btn-secondary"
+          className="sk-btn sk-btn-secondary path-diag__toggle"
           onClick={() => setOpen((prev) => !prev)}
         >
-          {open ? "Hide check" : "Start 90-Sec Test →"}
+          {open ? "Hide 90-Sec Test" : "Start 90-Sec Test →"}
         </button>
       </div>
 
       {open ? (
         <div className="path-diag__body">
-          {SKILL_DIAGNOSTIC_QUESTIONS.map((q, idx) => (
-            <div key={q.id} className="path-diag__q">
-              <strong className="path-diag__qtitle">Q{idx + 1} · {q.title}</strong>
-              <p className="path-diag__qtext">{q.scenario}</p>
-              <div className="path-diag__opts">
-                {q.options.map((opt) => (
-                  <button
-                    key={opt.id}
-                    type="button"
-                    onClick={() => handleSelect(q.id, opt.id)}
-                    className={`path-diag__opt${answers[q.id] === opt.id ? " is-selected" : ""}`}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-          ))}
-
-          {!result ? (
-            <button
-              type="button"
-              className="sk-btn sk-btn-primary"
-              disabled={Object.keys(answers).length < SKILL_DIAGNOSTIC_QUESTIONS.length}
-              onClick={handleScore}
-            >
-              Score My Readiness &amp; Percentile
-            </button>
-          ) : (
-            <div className="path-diag__result">
-              <div className="path-diag__result-top">
-                <div>
-                  <strong style={{ fontSize: 17 }}>Readiness: {result.scorePercent}% ({result.percentile})</strong>
-                  <span style={{ fontSize: 12, display: "block", marginTop: 2 }}>{result.readinessTier}</span>
+          <div className="path-diag__grid">
+            {QUICK_DIAG_QUESTIONS.map((q) => (
+              <div key={q.id} className="path-diag__card">
+                <p className="path-diag__q">{q.prompt}</p>
+                <div className="path-diag__opts">
+                  {q.options.map((opt) => {
+                    const active = answers[q.id] === opt.key
+                    return (
+                      <button
+                        key={opt.key}
+                        type="button"
+                        className={active ? "path-diag__opt is-on" : "path-diag__opt"}
+                        onClick={() => setAnswers((prev) => ({ ...prev, [q.id]: opt.key }))}
+                      >
+                        {opt.label}
+                      </button>
+                    )
+                  })}
                 </div>
-                <Link to={`/courses/${result.recommendedCourseSlug}`} className="sk-btn sk-btn-primary">
-                  Start at {result.recommendedModule} →
+              </div>
+            ))}
+          </div>
+
+          {done ? (
+            <div className="path-diag__result" role="status">
+              <div>
+                <span className="path-diag__fit">{recommendation.percentile}</span>
+                <h3>Recommended Starting Track: {recommendation.track}</h3>
+                <p>{recommendation.summary}</p>
+              </div>
+              <div className="path-diag__actions">
+                <Link className="sk-btn sk-btn-primary" to={recommendation.courseHref}>
+                  Open Recommended Course <ArrowRight />
+                </Link>
+                <Link className="sk-btn sk-btn-secondary" to={recommendation.programmeHref}>
+                  View Track Details
                 </Link>
               </div>
-              <p style={{ fontSize: 12.5, marginTop: 10 }}>
-                Recommended course: <strong>{result.recommendedCourseTitle}</strong> · Focus areas: {result.gapsIdentified.join(", ") || "Advanced Studio Ready"}.
-              </p>
             </div>
+          ) : (
+            <p className="path-diag__hint">
+              Select an answer in all 3 scenarios ({answeredCount}/3 completed) to unlock your instant track match.
+            </p>
           )}
         </div>
       ) : null}
@@ -406,6 +456,8 @@ export default function PathPage() {
             <PathTruthNote />
           </header>
 
+          <QuickAdaptiveDiagnostic />
+
           {hasSavedResult ? (
             <div className="path-v2__resume">
               <span>You already have a path saved in this browser.</span>
@@ -417,7 +469,6 @@ export default function PathPage() {
           ) : null}
 
           <div className="cine-in cine-in--fade cine-d1">
-            <SkillDiagnosticSection />
             <PathProgress step={step} />
           </div>
 

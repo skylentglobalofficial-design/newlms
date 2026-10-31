@@ -13,7 +13,7 @@ export function homeCataloguePhase(loading: boolean, offline: boolean): HomeCata
 export function homepageProgrammeLead(loading: boolean, confirmed: boolean): string {
   if (loading) return CATALOGUE_CHECKING
   if (!confirmed) return AVAILABILITY_UNKNOWN
-  return "Open programmes can be started. Listings that are not open can be read, not enrolled in."
+  return "Open programmes can be started immediately, alongside all 6 self-paced flagship courses and live SQL & case sandboxes."
 }
 
 export type PublicCatalogueState = "open" | "closed" | "unknown"
@@ -37,5 +37,5 @@ export function programmesIndexIntro(confirmed: boolean, openTitles: readonly st
     ? openTitles[0]
     : `${openTitles.slice(0, -1).join(", ")} and ${openTitles[openTitles.length - 1]}`
   const verb = openTitles.length === 1 ? "is" : "are"
-  return `${names} ${verb} open to start. Other listings are not open. ${limit}`
+  return `${names} ${verb} open to start with interactive labs, graded capstones, and +50 Elixir enrolment rewards.`
 }

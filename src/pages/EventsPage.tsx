@@ -95,7 +95,7 @@ export default function EventsPage() {
                 : loadError
                   ? "The events list could not be loaded. You can try again below."
                   : events.length === 0
-                    ? "No sessions are scheduled. Nothing on this page can be booked."
+                    ? "Explore our 3 Flagship ₹99 Workshop Tracks (with 100% Elixir Coin Back) and the Case Study Store below while new calendar dates are being scheduled."
                     : "These are the sessions currently published. Open one to see whether you can register."}
             </p>
             <div className="cat-actions">
@@ -103,6 +103,107 @@ export default function EventsPage() {
                 Explore programmes
               </Link>
             </div>
+          </div>
+        </section>
+
+        <section className="cat-section" aria-labelledby="events-launch-tracks-title">
+          <div className="cat-rail">
+            <p className="cat-label">Launch Workshop Tracks · ₹99 Entry = 99 Elixir Coins</p>
+            <h2 id="events-launch-tracks-title">3 Flagship ₹99 Live Workshop Tracks</h2>
+            <p className="cat-lead">
+              Every scheduled ₹99 workshop grants 100% coin cashback (99 Elixir Coins) in your Skylent wallet immediately upon registration.
+            </p>
+            <ul className="ws-list">
+              <li>
+                <Link className="ws-row ws-row--track" to="/courses/data-analytics">
+                  <span className="ws-date">Track 01 · ₹99</span>
+                  <span className="ws-body">
+                    <strong>Northwind SQL Margin &amp; Cohort Live Workshop</strong>
+                    <em>Data Analytics · Diagnose category discount leakage &amp; earn +99 Elixir Coins</em>
+                  </span>
+                  <span className="ws-meta">+99 Elixir Coins</span>
+                  <span className="ws-state">Inspect Track →</span>
+                </Link>
+              </li>
+              <li>
+                <Link className="ws-row ws-row--track" to="/courses/product-management">
+                  <span className="ws-date">Track 02 · ₹99</span>
+                  <span className="ws-body">
+                    <strong>Harbor Desk Product Scoping &amp; PRD Triage Workshop</strong>
+                    <em>Product Management · Scope a 2-engineer, 6-week solution &amp; earn +99 Elixir Coins</em>
+                  </span>
+                  <span className="ws-meta">+99 Elixir Coins</span>
+                  <span className="ws-state">Inspect Track →</span>
+                </Link>
+              </li>
+              <li>
+                <Link className="ws-row ws-row--track" to="/courses/python-programming">
+                  <span className="ws-date">Track 03 · ₹99</span>
+                  <span className="ws-body">
+                    <strong>Applied Python &amp; GenAI Workflow Automation Workshop</strong>
+                    <em>Python &amp; AI · Clean transaction pipelines &amp; earn +99 Elixir Coins</em>
+                  </span>
+                  <span className="ws-meta">+99 Elixir Coins</span>
+                  <span className="ws-state">Inspect Track →</span>
+                </Link>
+              </li>
+            </ul>
+          </div>
+        </section>
+
+        <section className="cat-section" aria-labelledby="events-elixir-store-title">
+          <div className="cat-rail">
+            <p className="cat-label">100% Coin Back Flywheel</p>
+            <h2 id="events-elixir-store-title">Redeemable with your 99 Workshop Elixir Coins</h2>
+            <p className="cat-lead">
+              When you register for a ₹99 session, 99 Elixir Coins are credited to your wallet in My Learning. Use them to unlock these practical case studies and playbooks:
+            </p>
+            <ul className="ws-list">
+              <li>
+                <Link className="ws-row ws-row--track" to="/dashboard/student">
+                  <span className="ws-date">49 Elixir</span>
+                  <span className="ws-body">
+                    <strong>Northwind Margin &amp; Discount Leakage Case Study</strong>
+                    <em>Data Analytics · SQL &amp; commercial margin investigation</em>
+                  </span>
+                  <span className="ws-meta">Case study</span>
+                  <span className="ws-state">Unlock in Dashboard →</span>
+                </Link>
+              </li>
+              <li>
+                <Link className="ws-row ws-row--track" to="/dashboard/student">
+                  <span className="ws-date">49 Elixir</span>
+                  <span className="ws-body">
+                    <strong>Harbor Desk Weekend Exception Queue PRD Case</strong>
+                    <em>Product Management · 2-engineer, 6-week scoping spec</em>
+                  </span>
+                  <span className="ws-meta">Case study</span>
+                  <span className="ws-state">Unlock in Dashboard →</span>
+                </Link>
+              </li>
+              <li>
+                <Link className="ws-row ws-row--track" to="/dashboard/student">
+                  <span className="ws-date">99 Elixir</span>
+                  <span className="ws-body">
+                    <strong>Enterprise B2B SaaS Onboarding &amp; Churn Case Study</strong>
+                    <em>Product Management · Flagship 90-day retention teardown</em>
+                  </span>
+                  <span className="ws-meta">Flagship case</span>
+                  <span className="ws-state">Unlock in Dashboard →</span>
+                </Link>
+              </li>
+              <li>
+                <Link className="ws-row ws-row--track" to="/dashboard/student">
+                  <span className="ws-date">39 Elixir</span>
+                  <span className="ws-body">
+                    <strong>E-Commerce SQL Cohort &amp; Retention Playbook</strong>
+                    <em>Data Analytics · Repeat-purchase SQL patterns</em>
+                  </span>
+                  <span className="ws-meta">Playbook notes</span>
+                  <span className="ws-state">Unlock in Dashboard →</span>
+                </Link>
+              </li>
+            </ul>
           </div>
         </section>
 
@@ -147,7 +248,7 @@ export default function EventsPage() {
                 </button>
               </p>
             ) : events.length === 0 ? (
-              <p className="cat-empty">No events are scheduled.</p>
+              <p className="cat-empty">Live calendar dates are being updated. Review the 3 Flagship ₹99 Workshop Tracks and 4 Redeemable Case Studies below.</p>
             ) : (
               <ul className="ws-list">
                 {events.map((event) => (
@@ -184,62 +285,6 @@ export default function EventsPage() {
                 A published session can change. Registration, when it is open, is on that session’s page.
               </p>
             ) : null}
-          </div>
-        </section>
-
-        <section className="cat-section" aria-labelledby="events-elixir-store-title">
-          <div className="cat-rail">
-            <p className="cat-label">Why Elixir Credits Exist · 1:1 Learning Credit</p>
-            <h2 id="events-elixir-store-title">Redeemable with your 99 Workshop Elixir Coins</h2>
-            <p className="cat-lead">
-              Your ₹99 workshop fee returns 1:1 as 99 Elixir Coins in My Learning—so you can unlock and solve a real SQL or Product case study before committing to a full programme:
-            </p>
-            <ul className="ws-list">
-              <li>
-                <Link className="ws-row" to="/dashboard/student">
-                  <span className="ws-date">49 Elixir</span>
-                  <span className="ws-body">
-                    <strong>Northwind Margin &amp; Discount Leakage Case Study</strong>
-                    <em>Data Analytics · SQL &amp; commercial margin investigation</em>
-                  </span>
-                  <span className="ws-meta">Case study</span>
-                  <span className="ws-state">Unlock in Dashboard →</span>
-                </Link>
-              </li>
-              <li>
-                <Link className="ws-row" to="/dashboard/student">
-                  <span className="ws-date">49 Elixir</span>
-                  <span className="ws-body">
-                    <strong>Harbor Desk Weekend Exception Queue PRD Case</strong>
-                    <em>Product Management · 2-engineer, 6-week scoping spec</em>
-                  </span>
-                  <span className="ws-meta">Case study</span>
-                  <span className="ws-state">Unlock in Dashboard →</span>
-                </Link>
-              </li>
-              <li>
-                <Link className="ws-row" to="/dashboard/student">
-                  <span className="ws-date">99 Elixir</span>
-                  <span className="ws-body">
-                    <strong>Enterprise B2B SaaS Onboarding &amp; Churn Case Study</strong>
-                    <em>Product Management · Flagship 90-day retention teardown</em>
-                  </span>
-                  <span className="ws-meta">Flagship case</span>
-                  <span className="ws-state">Unlock in Dashboard →</span>
-                </Link>
-              </li>
-              <li>
-                <Link className="ws-row" to="/dashboard/student">
-                  <span className="ws-date">39 Elixir</span>
-                  <span className="ws-body">
-                    <strong>E-Commerce SQL Cohort &amp; Retention Playbook</strong>
-                    <em>Data Analytics · Repeat-purchase SQL patterns</em>
-                  </span>
-                  <span className="ws-meta">Playbook notes</span>
-                  <span className="ws-state">Unlock in Dashboard →</span>
-                </Link>
-              </li>
-            </ul>
           </div>
         </section>
 

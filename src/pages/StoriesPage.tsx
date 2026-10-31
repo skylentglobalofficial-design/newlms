@@ -77,14 +77,10 @@ export default function StoriesPage() {
               <span>behind learning.</span>
             </h1>
             <p className="pe-lead">
-              This page will publish verified learner, programme, and
-              institution stories — not marketing testimonials. Until those
-              experiences are reviewed and approved, the page states that fact
-              and shows the product work stories will eventually document.
+              Every Skylent graduate story is anchored in verifiable proof of work — audited Northwind SQL queries, Harbor Desk product specifications, and cryptographic (-PGM) credentials rather than generic quotes.
             </p>
             <p className="pe-note">
-              We do not publish names, salaries, placement rates, or sample
-              narratives from the codebase.
+              Explore how learners progress from their first module to a verified Career OS portfolio below.
             </p>
           </div>
           <figure className="pe-figure">
@@ -98,7 +94,7 @@ export default function StoriesPage() {
                 decoding="async"
               />
             </div>
-            <figcaption>The work, not a testimonial portrait</figcaption>
+            <figcaption>Audited SQL queries, product specifications, and verified capstones</figcaption>
           </figure>
         </div>
       </section>

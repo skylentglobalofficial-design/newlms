@@ -1,4 +1,3 @@
-import { computeLearnerExecutionStreak } from '../lib/execution-streak'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate, Link } from 'react-router-dom'
 import { AuthDashboardShell } from '../components/AuthDashboardShell'
@@ -361,7 +360,7 @@ export default function DashboardStudentPage() {
         authoredLinked.length > 0 &&
         authoredLinked.every((courseRow) => courseRow.progress.allComplete) &&
         !seenProgrammeClaims.has(item.programSlug) &&
-        !certificateRows.some((cert) => cert.code.includes('-PRG-') && cert.courseTitle === (item.programName ?? item.programSlug))
+        !certificateRows.some((cert) => (cert.code.includes('-PGM') || cert.code.includes('-PRG-')) && cert.courseTitle === (item.programName ?? item.programSlug))
       ) {
         seenProgrammeClaims.add(item.programSlug)
         claimableProgrammes.push({
@@ -408,20 +407,9 @@ export default function DashboardStudentPage() {
                   {cert.revoked ? (
                     <span className="os-status is-idle">Revoked</span>
                   ) : (
-                    <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-                      <a
-                        href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(typeof window !== 'undefined' ? window.location.origin + '/verify/' + cert.code : 'https://skylent.live/verify/' + cert.code)}`}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="os-link"
-                        style={{ fontSize: 12 }}
-                      >
-                        Share on LinkedIn ↗
-                      </a>
-                      <Link className="os-link sh-row-link" to={`/verify/${cert.code}`} aria-label={`Verify the ${cert.courseTitle} certificate`}>
+                    <Link className="os-link sh-row-link" to={`/verify/${cert.code}`} aria-label={`Verify the ${cert.courseTitle} certificate`}>
                       Verify <ArrowRight />
                     </Link>
-                    </div>
                   )}
                 </li>
               ))}
@@ -491,19 +479,6 @@ export default function DashboardStudentPage() {
     </section>
   )
 
-  
-  const projectRows = projects.status === 'ready' ? projects.data : []
-  const currentProject = course ? findProjectForCourse(projectRows, course.slug) : null
-
-  const activityTimestamps = [
-    ...enrolmentRows.map((e) => e.createdAt),
-    ...projectRows.map((p) => p.updatedAt),
-    ...certificateRows.map((c) => c.issuedAt),
-    ...(workspace && workspace.progress && workspace.progress.completedCount > 0 ? [new Date().toISOString()] : []),
-  ]
-  const executionStreak = computeLearnerExecutionStreak(activityTimestamps)
-
-
   /* ── Empty learner: no primary enrolment workspace ── */
 
   if (!course || !workspace) {
@@ -513,76 +488,6 @@ export default function DashboardStudentPage() {
           <p className="os-eyebrow">My Courses</p>
           <h1>Start with a course</h1>
           <section className="sh-card" aria-label="Elixir wallet"><ElixirWalletPanel /></section>
-        
-        <div className="sh-card sh-streak" style={{ padding: "14px 18px", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <span style={{ fontSize: 24 }} aria-hidden="true">🔥</span>
-            <div>
-              <strong style={{ fontSize: 16 }}>{executionStreak.currentStreakDays}-Day Execution Streak</strong>
-              <span style={{ fontSize: 12, display: "block", color: "var(--skylent-muted, #71717a)" }}>
-                {executionStreak.streakBonusElixir > 0
-                  ? `+${executionStreak.streakBonusElixir} Elixir Momentum Bonus active · Longest streak: ${executionStreak.longestStreakDays} days`
-                  : `Complete an action today to start your momentum streak · Longest: ${executionStreak.longestStreakDays} days`}
-              </span>
-            </div>
-          </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-            <div style={{ fontSize: 12, textAlign: "right" }}>
-              <strong>Weekly Goal</strong>: {executionStreak.weeklyActionsCount} / 5 actions
-            </div>
-            <div style={{ display: "flex", gap: 3 }} aria-label="14-Day Activity Heatmap">
-              {executionStreak.activityHeatmap.map((p) => (
-                <span
-                  key={p.date}
-                  title={`${p.date}: ${p.count} actions`}
-                  style={{
-                    width: 8,
-                    height: 18,
-                    borderRadius: 2,
-                    background: p.active ? "#16a34a" : "var(--skylent-line, #e4e4e7)",
-                    display: "inline-block",
-                  }}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-
-          
-        <div className="sh-card sh-streak" style={{ padding: "14px 18px", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <span style={{ fontSize: 24 }} aria-hidden="true">🔥</span>
-            <div>
-              <strong style={{ fontSize: 16 }}>{executionStreak.currentStreakDays}-Day Execution Streak</strong>
-              <span style={{ fontSize: 12, display: "block", color: "var(--skylent-muted, #71717a)" }}>
-                {executionStreak.streakBonusElixir > 0
-                  ? `+${executionStreak.streakBonusElixir} Elixir Momentum Bonus active · Longest streak: ${executionStreak.longestStreakDays} days`
-                  : `Complete an action today to start your momentum streak · Longest: ${executionStreak.longestStreakDays} days`}
-              </span>
-            </div>
-          </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-            <div style={{ fontSize: 12, textAlign: "right" }}>
-              <strong>Weekly Goal</strong>: {executionStreak.weeklyActionsCount} / 5 actions
-            </div>
-            <div style={{ display: "flex", gap: 3 }} aria-label="14-Day Activity Heatmap">
-              {executionStreak.activityHeatmap.map((p) => (
-                <span
-                  key={p.date}
-                  title={`${p.date}: ${p.count} actions`}
-                  style={{
-                    width: 8,
-                    height: 18,
-                    borderRadius: 2,
-                    background: p.active ? "#16a34a" : "var(--skylent-line, #e4e4e7)",
-                    display: "inline-block",
-                  }}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-
           <div className="sh-next">
             <p className="sh-next-label"><span aria-hidden="true" />Next step</p>
             <h2>Choose what to learn first</h2>
@@ -649,41 +554,6 @@ export default function DashboardStudentPage() {
         <p className="os-eyebrow">My Courses</p>
         <h1>What to do next</h1>
         <section className="sh-card" aria-label="Elixir wallet"><ElixirWalletPanel /></section>
-        
-        <div className="sh-card sh-streak" style={{ padding: "14px 18px", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <span style={{ fontSize: 24 }} aria-hidden="true">🔥</span>
-            <div>
-              <strong style={{ fontSize: 16 }}>{executionStreak.currentStreakDays}-Day Execution Streak</strong>
-              <span style={{ fontSize: 12, display: "block", color: "var(--skylent-muted, #71717a)" }}>
-                {executionStreak.streakBonusElixir > 0
-                  ? `+${executionStreak.streakBonusElixir} Elixir Momentum Bonus active · Longest streak: ${executionStreak.longestStreakDays} days`
-                  : `Complete an action today to start your momentum streak · Longest: ${executionStreak.longestStreakDays} days`}
-              </span>
-            </div>
-          </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-            <div style={{ fontSize: 12, textAlign: "right" }}>
-              <strong>Weekly Goal</strong>: {executionStreak.weeklyActionsCount} / 5 actions
-            </div>
-            <div style={{ display: "flex", gap: 3 }} aria-label="14-Day Activity Heatmap">
-              {executionStreak.activityHeatmap.map((p) => (
-                <span
-                  key={p.date}
-                  title={`${p.date}: ${p.count} actions`}
-                  style={{
-                    width: 8,
-                    height: 18,
-                    borderRadius: 2,
-                    background: p.active ? "#16a34a" : "var(--skylent-line, #e4e4e7)",
-                    display: "inline-block",
-                  }}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-
         <ul className="sh-facts">
           <li>
             {enrollments.status === 'ready' ? (

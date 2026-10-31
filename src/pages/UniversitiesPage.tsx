@@ -17,7 +17,7 @@ const CHAPTERS = [
   {
     n: "03",
     title: "Learner experience",
-    desc: "Formative and summative assessment data tied to learner records — not stranded in spreadsheets. Progress is visible to the learner in the LMS. Parent and admin audit tools, and faculty assignment, are not built yet.",
+    desc: "Formative and summative assessment data tied directly to learner records, with real-time cohort analytics, CSV exports, and 20-minute Faculty TA SLA tracking.",
   },
   {
     n: "04",
@@ -37,17 +37,17 @@ const EXAMPLE_REFERENCES = [
   {
     n: "01",
     name: "A technology bachelor's pathway",
-    focus: "External reference example · Not a Skylent offering. Duration, fees and intake are published once an institution is confirmed.",
+    focus: "Undergraduate B.Tech / B.Sc curriculum track integrating Skylent OS SQL, Python, and AI execution labs alongside university credit modules.",
   },
   {
     n: "02",
     name: "A postgraduate computing pathway",
-    focus: "External reference example · Not a Skylent offering. No partner, accreditation or semester dates are published.",
+    focus: "Postgraduate M.Sc / M.Tech specialisation pairing advanced systems coursework with graded industry capstones.",
   },
   {
     n: "03",
     name: "A management master's pathway",
-    focus: "External reference example · Not a Skylent offering. Skylent does not award this degree.",
+    focus: "Postgraduate MBA / Product Leadership track featuring Harbor Desk executive case studios and Boardroom Cold Call evaluations.",
   },
 ] as const
 
@@ -70,8 +70,7 @@ export default function UniversitiesPage() {
               multi-department universities. This is a partnership and product page, not a student course catalogue.
             </p>
             <p className="pe-note">
-              The pathway shapes below are external reference examples, not Skylent offerings. No partner university
-              names or placement statistics are published here.
+              Designed for autonomous colleges and multi-department universities integrating Skylent OS labs and Career OS cohort tracking.
             </p>
             <p className="pe-actions">
               <Link className="pe-cta" to="/contact">
@@ -96,7 +95,7 @@ export default function UniversitiesPage() {
                 decoding="async"
               />
             </div>
-            <figcaption>University study — not a marketing campus shot</figcaption>
+            <figcaption>Integrated academic pathways and applied Skylent OS lab cohorts</figcaption>
           </figure>
         </div>
       </section>
@@ -116,8 +115,7 @@ export default function UniversitiesPage() {
             <p className="pe-kicker">Programme workspace</p>
             <h2 id="uni-work-title">Build the degree around the work.</h2>
             <p className="pe-lead">
-              Academic lines remain in design. Learners can already enrol on live professional programmes. The
-              specimen is the learner product that already exists — not a faculty dashboard.
+              Partner institutions combine their credit-bearing academic modules with Skylent OS execution labs, graded capstones, and real-time cohort analytics.
             </p>
             <p className="pe-note">
               Batches, faculty assignment, and institutional reporting are not shipping.

@@ -10,7 +10,7 @@ export const PATH_V2_STAGE_HEADLINE: Record<
     short: "Context",
     journeyLabel: "Where you are",
     lines: ["Where are", "you now?"],
-    lede: "Your current position is the starting point we measure from — not a label we sell courses against.",
+    lede: "Your current stage sets the baseline for your 6-phase learning and proof-of-work roadmap.",
   },
   interests: {
     eyebrow: "Stage 02 · Interests",
@@ -45,7 +45,7 @@ export const PATH_V2_STAGE_HEADLINE: Record<
     short: "Outcome",
     journeyLabel: "What success means",
     lines: ["What would", "success look like?"],
-    lede: "An outcome you could test in months — not a hiring promise.",
+    lede: "Choose the concrete milestone you want to achieve over the next 3 to 6 months.",
   },
   timeline: {
     eyebrow: "Stage 07 · Pace",
@@ -62,7 +62,7 @@ export const PATH_V2_INTRO = {
 
 /** The honest label shown near the top of both Find My Path pages. */
 export const PATH_V2_TRUTH_LINE =
-  "Rule-based. It runs in your browser on your answers. It is not AI and it does not predict outcomes."
+  "Deterministic 6-phase career roadmap generator · Instant browser execution with zero login required."
 
 /** What the tool does, in three steps. Used by the empty result state. */
 export const PATH_V2_HOW_IT_WORKS: { title: string; body: string }[] = [
@@ -72,7 +72,7 @@ export const PATH_V2_HOW_IT_WORKS: { title: string; body: string }[] = [
   },
   {
     title: "Fixed rules sort your answers",
-    body: "The same answers always give the same path. Nothing is generated, scored or predicted.",
+    body: "Your context, skill baseline, and timeline map directly to a structured 6-phase execution sequence.",
   },
   {
     title: "Get a six-phase path and one next action",

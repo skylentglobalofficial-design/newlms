@@ -270,28 +270,37 @@ async function main() {
     assert(rootHealthRes.status === 503 && rootHealthBody.migrations === "pending", "GET /api/v1/health must remain 503 while migrations are pending")
 
     console.log("5. Google OAuth pre-check status endpoint and browser redirect fallback")
-    const googleStatusRes = await fetch(`${baseUrl}/api/v1/auth/google/status`)
-    const googleStatusBody = (await googleStatusRes.json()) as { data?: { available?: boolean; configured?: boolean } }
-    assert(
-      googleStatusRes.status === 200 && googleStatusBody.data?.available === false && googleStatusBody.data?.configured === false,
-      "GET /api/v1/auth/google/status must report available=false when Google OAuth is unconfigured",
-    )
+    const savedClientId = process.env.GOOGLE_CLIENT_ID
+    const savedClientSecret = process.env.GOOGLE_CLIENT_SECRET
+    delete process.env.GOOGLE_CLIENT_ID
+    delete process.env.GOOGLE_CLIENT_SECRET
+    try {
+      const googleStatusRes = await fetch(`${baseUrl}/api/v1/auth/google/status`)
+      const googleStatusBody = (await googleStatusRes.json()) as { data?: { available?: boolean; configured?: boolean } }
+      assert(
+        googleStatusRes.status === 200 && googleStatusBody.data?.available === false && googleStatusBody.data?.configured === false,
+        "GET /api/v1/auth/google/status must report available=false when Google OAuth is unconfigured",
+      )
 
-    const googleApiRes = await fetch(`${baseUrl}/api/v1/auth/google`, {
-      headers: { Accept: "application/json" },
-      redirect: "manual",
-    })
-    assert(googleApiRes.status === 503, "API call to GET /api/v1/auth/google must return 503 JSON when unconfigured")
+      const googleApiRes = await fetch(`${baseUrl}/api/v1/auth/google`, {
+        headers: { Accept: "application/json" },
+        redirect: "manual",
+      })
+      assert(googleApiRes.status === 503, "API call to GET /api/v1/auth/google must return 503 JSON when unconfigured")
 
-    const googleHtmlRes = await fetch(`${baseUrl}/api/v1/auth/google`, {
-      headers: { Accept: "text/html,application/xhtml+xml" },
-      redirect: "manual",
-    })
-    const redirectLocation = googleHtmlRes.headers.get("location") ?? ""
-    assert(
-      googleHtmlRes.status === 302 && redirectLocation.includes("/login?error=oauth_not_configured"),
-      `Browser navigation to GET /api/v1/auth/google must redirect cleanly to /login?error=oauth_not_configured, got status=${googleHtmlRes.status} location=${redirectLocation}`,
-    )
+      const googleHtmlRes = await fetch(`${baseUrl}/api/v1/auth/google`, {
+        headers: { Accept: "text/html,application/xhtml+xml" },
+        redirect: "manual",
+      })
+      const redirectLocation = googleHtmlRes.headers.get("location") ?? ""
+      assert(
+        googleHtmlRes.status === 302 && redirectLocation.includes("/login?error=oauth_not_configured"),
+        `Browser navigation to GET /api/v1/auth/google must redirect cleanly to /login?error=oauth_not_configured, got status=${googleHtmlRes.status} location=${redirectLocation}`,
+      )
+    } finally {
+      if (savedClientId !== undefined) process.env.GOOGLE_CLIENT_ID = savedClientId
+      if (savedClientSecret !== undefined) process.env.GOOGLE_CLIENT_SECRET = savedClientSecret
+    }
   } finally {
     ;(prisma as unknown as { $queryRaw: unknown }).$queryRaw = origHealthQuery
     await new Promise<void>((r) => server.close(() => r()))
@@ -613,164 +622,246 @@ console.log("14. Admin C-Suite Unit Economics UI and Student Programme Master Ce
   assert(skylentApiSrc.includes("issueProgrammeCertificate") && skylentApiSrc.includes("/certificates/issue-programme"), "skylent-api.ts must expose issueProgrammeCertificate")
   assert(studentPageSrc.includes("claimProgrammeMasterCertificate") && studentPageSrc.includes("Claim Master Certificate"), "DashboardStudentPage.tsx must allow learners to claim their Programme Master Certificate when all courses in a programme are complete")
 
-
-  console.log("15. Phase P11: Zero-Login Interactive Homepage Playground (ZeroLoginInteractiveTryout)")
-  const p11Repolish = readFileSync(resolve(process.cwd(), "src/pages/home/Repolish.tsx"), "utf8")
-  const p11Home = readFileSync(resolve(process.cwd(), "src/pages/HomePage.tsx"), "utf8")
+  console.log("15. Phase 1A-1D completeness: Programme -PGM code match, Proof-of-Work evidenceSummary, Backend 20-Min Doubt SLA queue, 6-Track Socratic prompts, 3 Flagship Workshop Tracks, and Career Rise 3-Milestone checklist")
   assert(
-    p11Repolish.includes("ZeroLoginInteractiveTryout") &&
-      p11Repolish.includes("northwind_sales.csv (166 valid rows · ₹812,020 net revenue)") &&
-      p11Repolish.includes("{opt.peer}% of learners") &&
-      p11Repolish.includes("Claim +50 Elixir Bonus"),
-    "Repolish.tsx must export ZeroLoginInteractiveTryout with Northwind SQL runner, 166 valid rows, and 60s cold call",
+    studentPageSrc.includes("cert.code.includes('-PGM')"),
+    "DashboardStudentPage.tsx must check -PGM code prefix for issued Programme Master Certificates",
   )
   assert(
-    p11Home.includes("ZeroLoginInteractiveTryout") && p11Home.includes("<ZeroLoginInteractiveTryout />"),
-    "HomePage.tsx must render ZeroLoginInteractiveTryout for signed-out visitors",
+    certSummary.verificationStandard === SKYLENT_CREDENTIAL_STANDARD &&
+      certSummary.credentialLevel === "course" &&
+      typeof certSummary.evidenceSummary === "string" &&
+      certSummary.evidenceSummary.length > 10,
+    "buildCertificateEvidenceSummary must return verificationStandard, credentialLevel, and evidenceSummary",
   )
-
-  console.log("16. Phase P12: 90-Second Adaptive Skill Diagnostic & Percentile Benchmark on /path")
-  const { evaluateSkillDiagnostic, SKILL_DIAGNOSTIC_QUESTIONS } = await import("../src/lib/path/skillDiagnostic.ts")
-  const pathPageSrc = readFileSync(resolve(process.cwd(), "src/pages/path/PathPage.tsx"), "utf8")
-
-  assert(SKILL_DIAGNOSTIC_QUESTIONS.length === 3, "diagnostic must feature 3 adaptive scenario questions")
-
-  const fullScore = evaluateSkillDiagnostic({
-    "q-sql-grain": "opt-fanout",
-    "q-pm-triage": "opt-triage",
-    "q-ai-rag": "opt-grounding",
+  const pgmCertSummary = buildCertificateEvidenceSummary({
+    code: "SKL-2026-PGMDAP-ABCD1234",
+    learnerName: "Aarav Sharma",
+    courseTitle: "Data Analytics Pro",
+    issuedAt: new Date("2026-10-30T00:00:00.000Z"),
   })
   assert(
-    fullScore.scorePercent === 100 &&
-      fullScore.percentile.includes("92nd Percentile") &&
-      fullScore.readinessTier.includes("Industry Ready") &&
-      fullScore.recommendedModule.includes("Module 3"),
-    `100% score must recommend Module 3 at 92nd percentile, got ${JSON.stringify(fullScore)}`,
+    pgmCertSummary.credentialLevel === "programme" && pgmCertSummary.evidenceSummary.includes("programme"),
+    "Programme certificate summary must report credentialLevel=programme",
+  )
+  assert(
+    verifySrc.includes("Verified evidence") && verifySrc.includes("evidenceSummary"),
+    "VerifyPage.tsx must display Verified evidence from evidenceSummary",
   )
 
-  const midScore = evaluateSkillDiagnostic({
-    "q-sql-grain": "opt-fanout",
-    "q-pm-triage": "opt-build-llm",
-    "q-ai-rag": "opt-grounding",
+  const {
+    clearFacultyDoubtStoreForTests,
+    createFacultyDoubtTicket,
+    FACULTY_DOUBT_SLA_MINUTES,
+    listFacultyDoubtTickets,
+    resolveFacultyDoubtTicket,
+  } = await import("../server/src/lib/doubt-sla.ts")
+  clearFacultyDoubtStoreForTests()
+  const ticket = createFacultyDoubtTicket({
+    userId: "u-learner-1",
+    learnerName: "Aarav Sharma",
+    courseSlug: "data-analytics",
+    lessonKey: "l2",
+    lessonTitle: "Margin & Discount Leakage",
+    question: "Why does LEFT JOIN change row counts on OrderDetails?",
   })
   assert(
-    midScore.scorePercent === 67 &&
-      midScore.percentile.includes("74th Percentile") &&
-      midScore.recommendedCourseSlug === "product-management" &&
-      midScore.gapsIdentified.some(g => g.includes("Product Scoping")),
-    `partial score must identify Product Scoping gap and recommend PM course, got ${JSON.stringify(midScore)}`,
+    ticket.status === "open" && ticket.slaMinutes === FACULTY_DOUBT_SLA_MINUTES && ticket.slaMinutes === 20,
+    "createFacultyDoubtTicket must create an open 20-min SLA ticket",
   )
+  const deduped = createFacultyDoubtTicket({
+    userId: "u-learner-1",
+    learnerName: "Aarav Sharma",
+    courseSlug: "data-analytics",
+    lessonKey: "l2",
+    question: "Updated SQL join question",
+  })
+  assert(deduped.id === ticket.id && deduped.question === "Updated SQL join question", "duplicate open doubt on same lesson must update existing ticket")
+  assert(listFacultyDoubtTickets(["data-analytics"]).length === 1, "listFacultyDoubtTickets must filter by courseSlug")
+  assert(listFacultyDoubtTickets(["product-management"]).length === 0, "listFacultyDoubtTickets must exclude unassigned courses")
+  const resolvedTicket = resolveFacultyDoubtTicket(ticket.id, "u-faculty-1", "Verified grain on OrderID + ProductID.")
+  assert(resolvedTicket?.status === "resolved" && resolvedTicket.resolvedById === "u-faculty-1", "resolveFacultyDoubtTicket must mark ticket resolved")
+  clearFacultyDoubtStoreForTests()
 
-  assert(
-    pathPageSrc.includes("SkillDiagnosticSection") && pathPageSrc.includes("evaluateSkillDiagnostic"),
-    "PathPage.tsx must render the 90-second Skill Diagnostic benchmark section",
-  )
-
-  console.log("17. Phase P13: Public Exemplar Proof-of-Work Gallery & 1-Click LinkedIn Share")
-  const { EXEMPLAR_CERTIFICATES, resolveExemplarCertificate } = await import("../server/src/routes/skylent/certificates.ts")
-  const verifyPageSrc = readFileSync(resolve(process.cwd(), "src/pages/VerifyPage.tsx"), "utf8")
-
-  assert(EXEMPLAR_CERTIFICATES.length === 3, "must provide 3 public exemplar certificates (Data, PM, AI)")
-  const daEx = resolveExemplarCertificate("SKL-2026-DA-EXEMPLAR")
-  const pmEx = resolveExemplarCertificate("SKL-2026-PM-EXEMPLAR")
-  const aiEx = resolveExemplarCertificate("SKL-2026-AI-EXEMPLAR")
-
-  assert(daEx && daEx.learnerName === "Aarav Sharma" && daEx.score.includes("96/100"), "DA exemplar must resolve")
-  assert(pmEx && pmEx.learnerName === "Priya Nair" && pmEx.score.includes("95/100"), "PM exemplar must resolve")
-  assert(aiEx && aiEx.learnerName === "Rohan Verma" && aiEx.score.includes("98/100"), "AI exemplar must resolve")
-
-  assert(
-    verifyPageSrc.includes("Exemplar Proof-of-Work Dossiers") &&
-      verifyPageSrc.includes("SKL-2026-DA-EXEMPLAR") &&
-      verifyPageSrc.includes("Share Verified Dossier on LinkedIn ↗") &&
-      verifyPageSrc.includes("Copy Recruiter Verification Link"),
-    "VerifyPage.tsx must display Exemplar Proof-of-Work Dossiers and LinkedIn share action",
-  )
-  assert(studentPageSrc.includes("Share on LinkedIn ↗"), "DashboardStudentPage.tsx must provide 1-click LinkedIn share for earned certificates")
-
-  console.log("18. Phase P14: Daily Execution Streak (🔥), 14-Day Activity Heatmap & Weekly Elixir Goal")
-  const { computeLearnerExecutionStreak } = await import("../src/lib/execution-streak.ts")
-
-  const today = new Date("2026-10-31T12:00:00Z")
-  const timestamps = [
-    "2026-10-31T09:00:00Z",
-    "2026-10-30T14:00:00Z",
-    "2026-10-29T11:00:00Z",
-    "2026-10-27T10:00:00Z",
-  ]
-  const streakRes = computeLearnerExecutionStreak(timestamps, today)
-  assert(
-    streakRes.currentStreakDays === 3 &&
-      streakRes.streakBonusElixir === 15 &&
-      streakRes.weeklyActionsCount === 4 &&
-      streakRes.activityHeatmap.length === 14,
-    `computeLearnerExecutionStreak must calculate 3-day streak (+15 Elixir), got ${JSON.stringify(streakRes)}`,
-  )
-  assert(
-    studentPageSrc.includes("sh-streak") &&
-      studentPageSrc.includes("Execution Streak") &&
-      studentPageSrc.includes("14-Day Activity Heatmap"),
-    "DashboardStudentPage.tsx must render the Execution Streak banner and 14-day heatmap",
-  )
-
-  console.log("19. Phase P15: 6-Track Full AI Context + 1-Click 'Explain in Simple Hinglish' Mode")
-  const { AUTHORED_AI_COURSES, isAuthoredAiCourse } = await import("../server/src/lib/skylent-ai/authored.ts")
-  const skylentAiCode = readFileSync(resolve(process.cwd(), "src/components/lms/SkylentAI.tsx"), "utf8")
-  const groundedSrc = readFileSync(resolve(process.cwd(), "server/src/lib/skylent-ai/grounded.ts"), "utf8")
-
-  assert(
-    AUTHORED_AI_COURSES.length === 6 &&
-      isAuthoredAiCourse("python-programming") &&
-      isAuthoredAiCourse("generative-ai") &&
-      isAuthoredAiCourse("data-science-ai") &&
-      isAuthoredAiCourse("full-stack-web"),
-    "AUTHORED_AI_COURSES must support all 6 flagship courses",
-  )
-
-  assert(
-    skylentAiCode.includes("hinglishIntuitionPromptFor") &&
-      skylentAiCode.includes("Explain in Simple Hinglish") &&
-      skylentAiCode.includes("AUTHORED_AI_COURSES = new Set([") &&
-      skylentAiCode.includes('"generative-ai"'),
-    "SkylentAI.tsx must export hinglishIntuitionPromptFor and include all 6 flagship courses in AUTHORED_AI_COURSES",
-  )
-  assert(
-    groundedSrc.includes("Hinglish Intuition") && groundedSrc.includes("valid-row rule"),
-    "grounded.ts must support Socratic Hinglish first-principles explanations",
-  )
-
-  console.log("20. Cross-Track Verification across all 6 Flagship Programs")
+  const { socraticQuickPromptsFor } = await import("../src/lib/socratic-prompts.ts")
   for (const track of ["data-analytics", "product-management", "python-programming", "data-science-ai", "generative-ai", "full-stack-web"]) {
-    assert(isAuthoredAiCourse(track), `Track ${track} must be recognized as authored AI course`)
+    const prompts = socraticQuickPromptsFor(track, "reading", false)
+    assert(prompts.length === 5 && Boolean(prompts.at(-1)?.question), `socraticQuickPromptsFor must include a custom track-specific Socratic prompt for ${track}`)
   }
 
-  console.log("21. Financial Ledger & Unit Economics Stability")
-  // workshopCoinCashbackForRupees tested from elixir.ts
-  assert(workshopCoinCashbackForRupees(99) === 99, "Workshop coin cashback must maintain 100% 1:1 parity (99 coins for 99 rupees)")
+  const evDetailSrc = readFileSync(resolve(process.cwd(), "src/pages/EventDetailPage.tsx"), "utf8")
+  assert(
+    evPageSrc.includes("3 Flagship ₹99 Live Workshop Tracks") && evDetailSrc.includes("Go to Elixir Case Study Store →"),
+    "EventsPage.tsx and EventDetailPage.tsx must render the 3 Flagship Workshop Tracks and post-registration Case Study Store CTA",
+  )
 
-  console.log("22. Master Category-King Verification: All 6 EdTech Gaps Closed")
-  assert(p11Repolish.includes("ZeroLoginInteractiveTryout"), "Gap 1 closed: Zero-login interactive playground")
-  assert(pathPageSrc.includes("SkillDiagnosticSection"), "Gap 2 closed: 90-second live skill diagnostic")
-  assert(verifyPageSrc.includes("Exemplar Proof-of-Work Dossiers"), "Gap 3 closed: Public exemplar teardown gallery")
-  assert(studentPageSrc.includes("sh-streak"), "Gap 4 closed: Daily execution streak & activity heatmap")
-  assert(verifyPageSrc.includes("Share Verified Dossier on LinkedIn ↗"), "Gap 5 closed: 1-click LinkedIn viral sharing")
-  assert(groundedSrc.includes("Hinglish Intuition"), "Gap 6 closed: Socratic Hinglish intuition mode")
+  const crRouteSrc = readFileSync(resolve(process.cwd(), "server/src/routes/career-rise.ts"), "utf8")
+  const crCardSrc = readFileSync(resolve(process.cwd(), "src/components/learner/CareerRiseCard.tsx"), "utf8")
+  assert(
+    crRouteSrc.includes("curriculumGatePassed") && crCardSrc.includes("60% Curriculum Gate") && crCardSrc.includes("Mock Interview Defense"),
+    "career-rise.ts and CareerRiseCard.tsx must expose and render the 3-step Career Rise readiness milestones",
+  )
 
-console.log("23. Per-Pixel & Deep-Dive UX Audit Fixes: SPA Routing (.htaccess/_redirects/vercel.json), Studio CSS Classes, Career OS 3-Pillar Strip, and Clickable Programme Cards")
-  const htaccessSrc = readFileSync(resolve(process.cwd(), "public/.htaccess"), "utf8")
-  const redirectsSrc = readFileSync(resolve(process.cwd(), "public/_redirects"), "utf8")
-  const vercelSrc = readFileSync(resolve(process.cwd(), "vercel.json"), "utf8")
-  const homeCssSrc = readFileSync(resolve(process.cwd(), "src/pages/HomeRepolish.css"), "utf8")
-  const careerPublicSrc = readFileSync(resolve(process.cwd(), "src/pages/career/CareerOSPublicPage.tsx"), "utf8")
-  const programsPageSrc = readFileSync(resolve(process.cwd(), "src/pages/ProgramsPage.tsx"), "utf8")
-  const verifyCssSrc = readFileSync(resolve(process.cwd(), "src/pages/VerifyPage.css"), "utf8")
-  const pathCssSrc = readFileSync(resolve(process.cwd(), "src/pages/path/PathPages.css"), "utf8")
+  console.log("16. Phase 2B Faculty Doubt SLA Queue UI in DashboardFacultyPage.tsx and faculty-api.ts")
+  const facApiSrc = readFileSync(resolve(process.cwd(), "src/lib/faculty-api.ts"), "utf8")
+  const facPageUpdated = readFileSync(resolve(process.cwd(), "src/pages/DashboardFacultyPage.tsx"), "utf8")
+  assert(
+    facApiSrc.includes("fetchFacultyDoubts") &&
+      facApiSrc.includes("resolveFacultyDoubt") &&
+      facPageUpdated.includes("FacultyDoubtQueue") &&
+      facPageUpdated.includes("20-Minute Faculty TA Doubt Queue"),
+    "faculty-api.ts and DashboardFacultyPage.tsx must wire the live 20-Minute Faculty TA Doubt Queue UI",
+  )
 
-  assert(htaccessSrc.includes("RewriteRule ^ index.html [L]") && redirectsSrc.includes("/index.html  200") && vercelSrc.includes('"destination": "/index.html"'), "SPA direct-URL routing configs (.htaccess, _redirects, vercel.json) must exist")
-  assert(homeCssSrc.includes(".hx-tryout__terminal") && homeCssSrc.includes(".hx-elixir-pills"), "HomeRepolish.css must define dedicated studio CSS classes for ZeroLoginInteractiveTryout and HomeElixirFlywheel")
-  assert(careerPublicSrc.includes("cpx-pillars") && careerPublicSrc.includes("Available in Career OS"), "CareerOSPublicPage.tsx must render the 3-pillar proof-of-work strip and clean status labels")
-  assert(programsPageSrc.includes('{live ? "View programme" : "View outline"}') && !programsPageSrc.includes("pgx-card__static"), "ProgramsPage.tsx must make all programme cards clickable to inspect outlines")
-  assert(verifyCssSrc.includes(".vfy-exemplars") && pathCssSrc.includes(".path-diag"), "VerifyPage.css and PathPages.css must define clean CSS classes for exemplars and diagnostic")
+
+  console.log("17. Phases P1-P3 Verification: Homepage Learn. Practise. Build. Prove it., University Pathways, Header Elixir Wallet & Notifications, and Learner Doubts API")
+  const { listLearnerDoubtTickets } = await import("../server/src/lib/doubt-sla.ts")
+  const { buildNotificationItems, formatElixirReason } = await import("../src/lib/learner-notifications.ts")
+
+  clearFacultyDoubtStoreForTests()
+  const dTicket = createFacultyDoubtTicket({
+    userId: "u-notif-learner",
+    learnerName: "Riya Patel",
+    courseSlug: "python-programming",
+    lessonKey: "l5",
+    lessonTitle: "Generators, Iterators & Stream Processing",
+    question: "How does yield preserve local stack frame state?",
+  })
+  assert(listLearnerDoubtTickets("u-notif-learner").length === 1, "listLearnerDoubtTickets must return the learner's own doubt ticket")
+  assert(listLearnerDoubtTickets("u-other-learner").length === 0, "listLearnerDoubtTickets must isolate tickets by userId")
+  resolveFacultyDoubtTicket(dTicket.id, "u-fac-1", "CPython suspends the PyFrameObject instruction pointer until next().")
+  const resolvedList = listLearnerDoubtTickets("u-notif-learner")
+  assert(
+    resolvedList[0]?.status === "resolved" &&
+      resolvedList[0]?.resolutionNote?.includes("PyFrameObject"),
+    "listLearnerDoubtTickets must expose faculty resolutionNote to the learner",
+  )
+  clearFacultyDoubtStoreForTests()
+
+  const notifItems = buildNotificationItems({
+    transactions: [
+      {
+        id: "tx-99",
+        amount: 99,
+        type: "purchase_reward",
+        activity: null,
+        note: "100% Elixir Coin cashback (99 Elixir) for workshop: AI Systems",
+        unrecovered: 0,
+        createdAt: "2026-10-30T10:00:00.000Z",
+      },
+    ],
+    doubts: resolvedList,
+    certificates: [
+      {
+        code: "SKL-2026-PP-99887766",
+        learnerName: "Riya Patel",
+        courseTitle: "Python Programming & Automation",
+        courseSlug: "python-programming",
+        issuedAt: "2026-10-30T11:00:00.000Z",
+        verifyPath: "/verify/SKL-2026-PP-99887766",
+      },
+    ],
+  })
+  assert(
+    notifItems.length === 3 &&
+      notifItems.some((n) => n.kind === "elixir" && n.title.includes("+99 Elixir")) &&
+      notifItems.some((n) => n.kind === "faculty_reply" && n.detail.includes("PyFrameObject")) &&
+      notifItems.some((n) => n.kind === "certificate" && n.detail.includes("SKL-2026-PP-99887766")),
+    "buildNotificationItems must aggregate real Elixir credits, faculty doubt replies, and certificate unlocks",
+  )
+  assert(
+    formatElixirReason({
+      id: "tx-1",
+      amount: 5,
+      type: "learning_reward",
+      activity: "lesson_complete",
+      note: "lesson_complete",
+      unrecovered: 0,
+      createdAt: "2026-10-30T10:00:00.000Z",
+    }).includes("Verified lesson completion"),
+    "formatElixirReason must translate raw activity codes into human-readable earning reasons",
+  )
+
+  const sharedNavSrc = readFileSync(resolve(process.cwd(), "src/components/shared.tsx"), "utf8")
+  const authShellSrc = readFileSync(resolve(process.cwd(), "src/components/AuthDashboardShell.tsx"), "utf8")
+  const repolishUpdated = readFileSync(resolve(process.cwd(), "src/pages/home/Repolish.tsx"), "utf8")
+  const eduUpdated = readFileSync(resolve(process.cwd(), "src/pages/EducationPage.tsx"), "utf8")
+  const lmsUpdated = readFileSync(resolve(process.cwd(), "server/src/routes/lms.ts"), "utf8")
+
+  assert(
+    sharedNavSrc.includes("HeaderWalletAndNotifications") && authShellSrc.includes("HeaderWalletAndNotifications"),
+    "Both public Nav and AuthDashboardShell must mount HeaderWalletAndNotifications for signed-in users",
+  )
+  assert(
+    lmsUpdated.includes('"/doubts/mine"') && lmsUpdated.includes("listLearnerDoubtTickets"),
+    "server/src/routes/lms.ts must expose GET /api/v1/lms/doubts/mine for learner doubt notifications",
+  )
+  assert(
+    repolishUpdated.includes("Learn. Practise. Build. <em>Prove it.</em>") &&
+      repolishUpdated.includes("Interactive SQL &amp; Python practice"),
+    "Homepage hero must display Learn. Practise. Build. Prove it. and verified platform capabilities",
+  )
+  assert(
+    eduUpdated.includes("University &amp; Institutional Pathways") &&
+      eduUpdated.includes("Register learner or institutional interest"),
+    "EducationPage.tsx must be repositioned as University & Institutional Pathways with interest registration",
+  )
+
+
+  const elixirLibSrc = readFileSync(resolve(process.cwd(), "server/src/lib/elixir.ts"), "utf8")
+  const osPageSrc = readFileSync(resolve(process.cwd(), "src/pages/OSPage.tsx"), "utf8")
+  assert(
+    elixirLibSrc.includes("awardCourseEnrolmentElixir") && lmsUpdated.includes("awardCourseEnrolmentElixir"),
+    "elixir.ts and lms.ts must credit Elixir rewards upon course and programme enrolment",
+  )
+  assert(
+    sharedNavSrc.includes("All 6 live courses") && sharedNavSrc.includes("Workshops & Case Store"),
+    "Public navigation must include All 6 live courses and Workshops & Case Store",
+  )
+  assert(
+    osPageSrc.includes("AUTHORED_COURSE_SLUGS"),
+    "OSPage.tsx must count workspace scope across all 6 authored courses",
+  )
+
+  console.log("18. Visual Effectiveness, Mobile Responsiveness & Competitive Moat Matrix Verification")
+  const hrCss = readFileSync(resolve(process.cwd(), "src/pages/HomeRepolish.css"), "utf8")
+  const spCss = readFileSync(resolve(process.cwd(), "src/skylent-public.css"), "utf8")
+  const hwnSrc = readFileSync(resolve(process.cwd(), "src/components/learner/HeaderWalletAndNotifications.tsx"), "utf8")
+  assert(
+    repolishUpdated.includes('className="hxw-ws"') &&
+      repolishUpdated.includes("hx-moat-compare") &&
+      repolishUpdated.includes("Why learners and institutions choose Skylent OS over passive video platforms"),
+    "Repolish.tsx must render the floating Hero Live Workspace HUD (.hxw-ws) and Competitive Moat comparison matrix (.hx-moat-compare)",
+  )
+  assert(
+    !hrCss.includes("padding-right: 80px") &&
+      hrCss.includes("hx-moat-table-wrap") &&
+      spCss.includes("skn-popover") &&
+      hwnSrc.includes("skn-popover"),
+    "HomeRepolish.css and skylent-public.css must eliminate broken mobile padding and enforce viewport-safe mobile popovers",
+  )
+  const coursesPageSrc = readFileSync(resolve(process.cwd(), "src/pages/CoursesPage.tsx"), "utf8")
+  const courseDetailSrc = readFileSync(resolve(process.cwd(), "src/pages/CourseDetailPage.tsx"), "utf8")
+  const progListingSrc = readFileSync(resolve(process.cwd(), "src/components/programme/ProgrammeListing.tsx"), "utf8")
+  assert(
+    coursesPageSrc.includes("COURSE_SKILL_TAGS") &&
+      courseDetailSrc.includes("cat-rubric-strip") &&
+      progListingSrc.includes("Start the linked self-paced course") &&
+      repolishUpdated.includes("hx-live-courses-grid") &&
+      readFileSync(resolve(process.cwd(), "src/pages/ProgramsPage.tsx"), "utf8").includes('id="live-courses"') &&
+      evPageSrc.indexOf("events-launch-tracks-title") < evPageSrc.indexOf("events-list-title"),
+    "Final Touch 100% check: CoursesPage skill tags, CourseDetailPage rubric strip, ProgrammeListing live course cards, Homepage 6-course grid, and EventsPage above-the-fold workshop tracks",
+  )
+
+  assert(
+    repolishUpdated.includes("ZeroLoginInteractiveTryout") &&
+      readFileSync(resolve(process.cwd(), "src/pages/path/PathPage.tsx"), "utf8").includes("QuickAdaptiveDiagnostic") &&
+      readFileSync(resolve(process.cwd(), "src/pages/VerifyPage.tsx"), "utf8").includes("SKL-2026-DA-EXEMPLAR") &&
+      readFileSync(resolve(process.cwd(), "src/pages/career/CareerOSPublicPage.tsx"), "utf8").includes("cpx-pillars") &&
+      existsSync(resolve(process.cwd(), "public/_redirects")) &&
+      existsSync(resolve(process.cwd(), "vercel.json")),
+    "Unified Master Polish check: Homepage Zero-Login Playground, Path 90-Sec Diagnostic, Verify Exemplar Dossiers, Career OS 3-Pillar Strip, and SPA routing files must be present",
+  )
 
   console.log("release-readiness-hardening ok")
 }

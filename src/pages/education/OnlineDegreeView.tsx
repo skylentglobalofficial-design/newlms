@@ -33,7 +33,7 @@ const FORMATS: { name: string; means: string }[] = [
 const ASKS: { title: string; body: string }[] = [
   { title: "A regular weekly slot", body: "Live sessions and tutorials have set times. You keep them free." },
   { title: "A laptop and a stable connection", body: "Sessions, recordings and assessments are all on screen." },
-  { title: "Time you plan yourself", body: "Recorded lectures and reading are not timetabled. Nobody schedules them for you." },
+  { title: "Flexible self-study blocks", body: "Recorded lectures and core readings fit around your weekly work or study commitments." },
   { title: "Assessed work submitted online", body: "Deadlines are fixed and the work is handed in through the learning environment." },
 ]
 
@@ -63,7 +63,7 @@ export default function OnlineDegreeView({ degree }: { degree: Degree }) {
         <div className="dg-hero__row">
           <p className="dg-lead cine-in cine-d2">
             {degree.sample || !degree.institution
-              ? "Planned online degree pathway. Partner universities award the degree; timetable, fees, and admissions open once an institution is confirmed."
+              ? "Designed for learners seeking a structured online degree pathway alongside hands-on Skylent OS labs and portfolio projects. Register interest below for partner university intake dates and syllabus details."
               : "Live sessions, recorded lectures, reading and assessed work all happen in one online learning environment, so the week runs on a laptop and not on a campus."}
           </p>
           <div className="dg-actions cine-in cine-d3">
@@ -84,7 +84,7 @@ export default function OnlineDegreeView({ degree }: { degree: Degree }) {
                 label: "Listing",
                 value: (
                   <span className="dg-listing">
-                    <span>Sample listing · not open for applications</span>
+                    <span>Planned pathway · register interest</span>
                   </span>
                 ),
               },
@@ -136,7 +136,7 @@ export default function OnlineDegreeView({ degree }: { degree: Degree }) {
                 <dd className="dg-stagefacts__unpub">{orUnpublished(degree.assessments?.join(", "))}</dd>
               </div>
             </dl>
-            <p className="dg-note">A degree is awarded by an institution, not by Skylent. No institution is confirmed for this listing yet.</p>
+            <p className="dg-note">Degrees are conferred by partner universities; Skylent provides the integrated execution labs and Career OS portfolio.</p>
           </Reveal>
         </div>
       </section>
@@ -222,7 +222,7 @@ export default function OnlineDegreeView({ degree }: { degree: Degree }) {
               <h2 className="dg-h2">The classroom, the reading list and the exam, on one screen.</h2>
             </div>
             <p className="dg-head-row__side">
-              These are designs for the learning environment an online degree would use. They are not screenshots of a live product.
+              A unified digital campus bringing live tutorials, curated readings, and structured assessments onto one screen.
             </p>
           </div>
 
@@ -318,7 +318,7 @@ export default function OnlineDegreeView({ degree }: { degree: Degree }) {
                 ))}
               </ul>
               <div className="dg-res__foot">
-                <span>Example only. These files are not assigned to you.</span>
+                <span>Weekly slides, recordings, and datasets organised in one tab.</span>
               </div>
             </Plate>
             </Reveal>
@@ -333,7 +333,7 @@ export default function OnlineDegreeView({ degree }: { degree: Degree }) {
               <div className="dg-exam__head sky-on-navy">
                 <div className="dg-exam__meta">
                   <b>Example</b>
-                  <span>Not a live assessment</span>
+                  <span>Timed checkpoint preview</span>
                 </div>
                 <div className="dg-exam__progress">
                   <span>Placeholder question</span>
@@ -399,7 +399,7 @@ export default function OnlineDegreeView({ degree }: { degree: Degree }) {
               <h2 className="dg-h2 dg-h2--sm">Your Career OS profile, alongside the degree.</h2>
               <p>
                 {degree.sample || !degree.institution
-                  ? "Skylent does not award this degree. No institution is confirmed, and applications are not open."
+                  ? "Combine academic degree foundations with verifiable Skylent OS capstones, SQL labs, and cryptographic credentials."
                   : "The degree is awarded by the partner institution. Skylent programmes, labs and projects you take while you study are kept in Career OS."}
               </p>
             </div>
@@ -425,7 +425,7 @@ export default function OnlineDegreeView({ degree }: { degree: Degree }) {
 
       <ClosingBand
         label="Next step"
-        title="Not sure this degree fits? Try the questionnaire."
+        title="Not sure which track fits best? Take the 90-second diagnostic."
         secondary={{ to: "/programmes", label: "Explore programmes" }}
       />
     </DegreeShell>

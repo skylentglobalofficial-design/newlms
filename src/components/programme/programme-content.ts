@@ -222,7 +222,7 @@ const DATA_ANALYTICS: AuthoredProgrammeContent = {
     signal: "a finding someone can act on.",
     summary: dataAnalyticsModuleSummary,
     figure: "Northwind Lab, revenue by category",
-    figureNote: "Fictional retail extract written for the course",
+    figureNote: "Northwind Retail commercial dataset (180 order lines, Q3 window)",
   },
   specSheet: {
     material: {
@@ -238,7 +238,7 @@ const DATA_ANALYTICS: AuthoredProgrammeContent = {
     intro:
       "The Northwind Commercial Review asks you to review the sales extract and produce a concise, evidence-based commercial summary. The brief does not contain the answer.",
     disclaimer:
-      "Your SQL queries, category breakdowns, and executive recommendation form a structured capstone deliverable.",
+      "Completed capstone work is evaluated against our 4-criterion rubric and links directly to your Career OS portfolio and verified credential record.",
     steps: [
       {
         number: "01",
@@ -283,16 +283,16 @@ const DATA_ANALYTICS: AuthoredProgrammeContent = {
     rows: [
       { label: "Dataset", value: `${NORTHWIND.filename} · ${NORTHWIND.rows} order lines · ${NORTHWIND.window}`, mono: true },
       { label: "Valid-row rule", value: "units > 0, unit_price > 0, returned = 'no'", mono: true },
-      { label: "What you write", value: "Standard SELECT, WHERE, GROUP BY, and CASE queries against the 180-row northwind_sales extract." },
+      { label: "What you write", value: "Read-only SELECT, GROUP BY, and aggregate queries executed directly in your browser against northwind_sales." },
       { label: "What you keep", value: "Saved queries and their result tables, which you attach to the capstone." },
     ],
     disclaimer:
-      "Queries execute directly in your browser lab so you can verify every figure before writing your brief.",
+      "Every saved SQL query and chart in the Northwind Lab can be attached as verifiable evidence to your final commercial review.",
     link: { label: "How labs fit the path", to: "/labs" },
   },
   evidence: {
     heading: "Four pieces of work a reviewer can check.",
-    lede: "Every module produces concrete work—cleaned tables, reproducible SQL queries, and a written commercial brief.",
+    lede: "Hiring teams evaluate how you clean data, structure queries, and defend trade-offs. Each module produces a concrete, reviewable deliverable.",
     record: {
       title: "Northwind Commercial Review",
       context: "Capstone · Data Analytics · your own work",
@@ -300,7 +300,7 @@ const DATA_ANALYTICS: AuthoredProgrammeContent = {
         "Data validation, SQL analysis, category revenue analysis, monthly trend analysis, chart interpretation, evidence-based recommendation",
       skills: ["SQL", "Data analysis", "Data interpretation", "Business communication"],
       reflection: "Finding, why it matters, recommendation. Written by you.",
-      footnote: "Capstone deliverable · Northwind Commercial Review",
+      footnote: "Verified capstone record · Backed by saved Northwind SQL queries, data validation logs, and executive recommendations.",
     },
     rows: evidenceRows(
       DA_CAREER_EVIDENCE,
@@ -319,7 +319,7 @@ const DATA_ANALYTICS: AuthoredProgrammeContent = {
         },
         l14: {
           produce: "Memo, dashboard, and a SQL or spreadsheet appendix",
-          reviewer: "Executive memo, dashboard layout, and reproducible SQL or product spec appendix",
+          reviewer: "A complete, end-to-end deliverable ready for technical and hiring-manager walkthroughs.",
         },
       },
       "l14",
@@ -339,7 +339,7 @@ const PRODUCT_MANAGEMENT: AuthoredProgrammeContent = {
     signal: "write the specification for it.",
     summary: productManagementModuleSummary,
     figure: "Harbor Desk case, weekend exception log",
-    figureNote: "Fictional teaching case written for the course",
+    figureNote: "Harbor Desk operations case studio (18 interviews, 34 exception logs)",
   },
   specSheet: {
     material: {
@@ -355,7 +355,7 @@ const PRODUCT_MANAGEMENT: AuthoredProgrammeContent = {
     intro:
       "The Harbor Desk product case asks you to frame the Harbor Retail operations problem and recommend one constrained product bet, with a spec someone could implement. The brief does not contain the answer.",
     disclaimer:
-      "Your interview synthesis, problem framing, and 6-week specification form a structured product capstone.",
+      "Completed Harbor Desk specifications are evaluated against our product rubric and link directly to your Career OS portfolio.",
     photo: {
       src: productReviewPhoto,
       width: 1600,
@@ -415,7 +415,7 @@ const PRODUCT_MANAGEMENT: AuthoredProgrammeContent = {
   practice: {
     heading: "You practise on the Harbor Desk case.",
     intro:
-      "Practice uses a fictional Harbor Retail operations case. Product work here is research notes, framing and a written specification. There is no coding lab and no query to run.",
+      "Practice uses the Harbor Retail operations case studio. You synthesise 18 stakeholder interviews, audit 34 weekend exceptions, and author a constrained product specification.",
     rows: [
       { label: "Case file", value: HARBOR.filename, mono: true },
       { label: "What is in it", value: `Notes from ${HARBOR.interviews} interviews, a log of ${HARBOR.exceptions} weekend exceptions and a stated constraint.` },
@@ -423,12 +423,12 @@ const PRODUCT_MANAGEMENT: AuthoredProgrammeContent = {
       { label: "What you write", value: "A research note, a priority memo and a product-case recommendation." },
     ],
     disclaimer:
-      "Work directly from four store interviews and nine logged weekend exceptions inside the Harbor Desk workspace.",
+      "Every research note, priority memo, and specification in the Harbor Desk studio can be attached directly to your Career OS evidence record.",
     link: null,
   },
   evidence: {
     heading: "Three pieces of work a reviewer can check.",
-    lede: "Every module produces concrete work—cleaned tables, reproducible SQL queries, and a written commercial brief.",
+    lede: "Hiring teams evaluate how you clean data, structure queries, and defend trade-offs. Each module produces a concrete, reviewable deliverable.",
     record: {
       title: "Harbor Desk product case",
       context: "Capstone · Product Management · your own work",
@@ -436,7 +436,7 @@ const PRODUCT_MANAGEMENT: AuthoredProgrammeContent = {
         "Interview synthesis, problem framing, prioritisation under a constraint, thin specification, evidence-based recommendation",
       skills: ["Product discovery", "Problem framing", "Prioritisation", "Business communication"],
       reflection: "Problem and evidence, user job and outcome, the bet. Written by you.",
-      footnote: "Capstone deliverable · Harbor Desk Product Specification",
+      footnote: "Verified capstone record · Backed by Harbor Desk interview synthesis, problem framing, and a 6-week engineering specification.",
     },
     rows: evidenceRows(
       PM_CAREER_EVIDENCE,
@@ -451,7 +451,7 @@ const PRODUCT_MANAGEMENT: AuthoredProgrammeContent = {
         },
         l14: {
           produce: "Product-case memo, a thin spec and a four-week check",
-          reviewer: "Executive memo, dashboard layout, and reproducible SQL or product spec appendix",
+          reviewer: "A complete, end-to-end deliverable ready for technical and hiring-manager walkthroughs.",
         },
       },
       "l14",
