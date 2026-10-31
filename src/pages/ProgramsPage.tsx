@@ -38,55 +38,73 @@ type Row = {
 
 const PROFESSIONAL_ORDER = ["data-analytics-pro", "product-management", "data-science-ai", "full-stack", "generative-ai-program"] as const
 
-const CARD_FACE: Record<string, { title: string; line: string; category: string; image: string; alt: string }> = {
+const CARD_FACE: Record<string, { title: string; line: string; category: string; image: string; alt: string; lab: string; meta: string; skills: string[] }> = {
   "data-analytics-pro": {
     title: "Data Analytics",
-    line: "Take a messy sales extract to a finding and a recommendation someone can act on in the Northwind SQL Lab.",
+    line: "Audit 166 Northwind retail rows, write SQL joins and CTEs, and defend a Q3 commercial margin review.",
     category: "Data",
     image: analyticsVisual,
     alt: "Illustrative analytics charts on a desk.",
+    lab: "Northwind SQL Lab · 166 Rows",
+    meta: "5 modules · 15 lessons · 3 quizzes · 1 capstone",
+    skills: ["SQL & CTEs", "Northwind Lab", "Margin Audit"],
   },
   "product-management": {
     title: "Product Management",
-    line: "Frame one retail operations problem on the Harbor Desk case and write a constrained product specification.",
+    line: "Diagnose 9 weekend store exceptions on the Harbor Desk case and ship a 6-week engineering-constrained PRD.",
     category: "Product",
     image: productVisual,
     alt: "Illustrative product working session around a table.",
+    lab: "Harbor Desk Studio · 18 Interviews",
+    meta: "5 modules · 15 lessons · 3 quizzes · 1 capstone",
+    skills: ["PRD Scoping", "Harbor Desk Case", "Triage Specs"],
   },
   "data-science-ai": {
     title: "Data Science & AI",
-    line: "Pathway linking our authored Data Analytics and Python Programming & Automation courses in Skylent OS.",
+    line: "Dual-track pathway combining Data Analytics (SQL & cohorts) and Python Programming & Automation (ETL & pytest).",
     category: "Data",
     image: scienceVisual,
     alt: "Illustrative code on a laptop and monitors.",
+    lab: "SQL + Python Dual Track · 30 Lessons",
+    meta: "10 modules · 30 lessons · 6 quizzes · 2 capstones",
+    skills: ["SQL & Python", "Cohort Validation", "Leakage Audit"],
   },
   "full-stack": {
     title: "Full Stack Development",
-    line: "Pathway linking the 15-lesson Full Stack Web Engineering course (REST APIs, PostgreSQL, React, and security).",
+    line: "Build type-safe React 18 interfaces, Node/Express APIs, PostgreSQL schemas, and idempotent payment ledgers.",
     category: "Engineering",
     image: scienceVisual,
     alt: "Full-stack engineering workspace on a laptop.",
+    lab: "React, Node & PostgreSQL Stack",
+    meta: "5 modules · 15 lessons · 3 quizzes · 1 capstone",
+    skills: ["React & TS", "Node & Express", "PostgreSQL"],
   },
   "generative-ai-program": {
     title: "Generative AI",
-    line: "Pathway linking the 15-lesson Generative AI & LLM Systems course (embeddings, grounded RAG, and ReAct agents).",
+    line: "Architect grounded RAG pipelines, vector retrieval, ReAct tool agents, and adversarial LLM evaluation suites.",
     category: "AI",
     image: productVisual,
     alt: "AI system architecture and evaluation session.",
+    lab: "Grounded RAG · LLM Eval Suite",
+    meta: "5 modules · 15 lessons · 3 quizzes · 1 capstone",
+    skills: ["Prompt Systems", "Grounded RAG", "ReAct Agents"],
   },
   "sql-certificate": {
     title: "SQL for Business Analytics",
-    line: "A focused SQL certificate outline. For live SQL lab practice today, start the Data Analytics programme.",
+    line: "Focused SQL query track covering filtering, multi-table joins, CTEs, window functions, and revenue reconciliation.",
     category: "SQL",
     image: analyticsVisual,
     alt: "SQL query and analytics chart preview.",
+    lab: "Northwind SQL Query Environment",
+    meta: "5 SQL modules · Live query practice via Data Analytics",
+    skills: ["Joins & CTEs", "Window Functions", "Data Hygiene"],
   },
 }
 
 const KIND_COPY: Record<Kind, { title: string; lead: string; label: string }> = {
   certification: {
     title: "Certification programmes",
-    lead: "Shorter listings aimed at one skill. A certificate is not issued from a listing that is not open.",
+    lead: "Focused single-skill syllabus tracks backed by Skylent OS labs.",
     label: "Certification",
   },
   professional: {
@@ -144,15 +162,18 @@ function presentedOpen(row: Row): boolean {
 function statusText(row: Row, confirmed: boolean): string {
   const state = publicCatalogueState(confirmed, presentedOpen(row))
   if (state === "unknown" || state === "open") return confirmed ? "Open for enrolment" : STATUS_NOT_CONFIRMED
-  if (row.truth.state === "soon") return "Coming soon"
+  if (row.truth.linked.some((l) => l.authored)) return "Self-paced track open"
+  if (row.truth.state === "soon") return "SQL track via Data Analytics"
   return publicCatalogueStatus("closed")
 }
 
 function ProgrammeCard({ row, confirmed }: { row: Row; confirmed: boolean }) {
   const to = `/programmes/${row.program.slug}`
   const status = statusText(row, confirmed)
-  const live = presentedOpen(row) && confirmed
+  const hasAuthoredTrack = row.truth.linked.some((l) => l.authored)
+  const live = (presentedOpen(row) || hasAuthoredTrack) && confirmed
   const showStatus = status !== STATUS_NOT_CONFIRMED
+  const cardMeta = CARD_FACE[row.program.slug]
   const face = (
     <>
       <span className="pgx-card__media">
@@ -162,16 +183,26 @@ function ProgrammeCard({ row, confirmed }: { row: Row; confirmed: boolean }) {
       <span className="pgx-card__body">
         <span style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
           <span className="pgx-card__kicker">{row.category}</span>
-          {confirmed && row.truth.linked.some((l) => l.authored) ? (
-            <span style={{ fontSize: 11, fontWeight: 600, color: "#64748b" }}>
-              15 lessons
+          {cardMeta?.lab ? (
+            <span style={{ fontSize: 11, fontWeight: 700, color: "#4338ca", background: "#eef2ff", padding: "2px 8px", borderRadius: 999 }}>
+              {cardMeta.lab}
             </span>
           ) : null}
         </span>
         <span className="pgx-card__title">{row.title}</span>
+        {cardMeta?.meta ? (
+          <span style={{ fontSize: 12, fontWeight: 600, color: "#475569" }}>{cardMeta.meta}</span>
+        ) : null}
         <span className="pgx-card__line">{row.line}</span>
+        {cardMeta?.skills?.length ? (
+          <span className="pgx-skill-tags">
+            {cardMeta.skills.map((skill) => (
+              <span key={skill} className="pgx-skill-tag">{skill}</span>
+            ))}
+          </span>
+        ) : null}
         <span className="pgx-card__go">
-          {live ? "View programme" : row.truth.linked.some((l) => l.authored) ? "View pathway & linked courses" : "View details"}
+          {presentedOpen(row) && confirmed ? "Explore programme" : hasAuthoredTrack ? "Explore pathway & curriculum" : "Explore SQL syllabus"}
           <ArrowRight />
         </span>
       </span>
@@ -404,7 +435,7 @@ export default function ProgramsPage() {
                 <p className="pgx-eyebrow">Self-paced curriculum</p>
                 <h2 id="pgx-live-courses-title">Individual courses</h2>
               </div>
-              <p>Every course below is 100% authored with 5 modules, 15 structured lessons, 3 module quizzes, applied assignments, a graded capstone, Boardroom Cold Calls, and Socratic AI + 20-Min Faculty TA support.</p>
+              <p>5 modules · 15 lessons · 3 quizzes · 1 graded capstone per course, with in-browser sandboxes and 20-minute TA support.</p>
             </header>
             <ul className="pgx-grid">
               {[

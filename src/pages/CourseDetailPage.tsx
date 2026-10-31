@@ -280,6 +280,25 @@ export default function CourseDetailPage() {
                   Payment is not collected in this pilot. A certificate for this course is issued when every lesson in it is complete.
                 </p>
               </div>
+              {showLiveCurriculum ? (
+                <div className="cat-rubric-strip cat-hero-rubric" style={{ gridColumn: "1 / -1", marginTop: 18 }} aria-label="How Your Proof-of-Work Certificate Is Graded · 100% Elixir Fee Credit Eligible">
+                  <div className="cat-rubric-item">
+                    <span className="cat-rubric-weight">25% · Concept Checks</span>
+                    <strong>3 Module Quizzes (15 Questions)</strong>
+                    <span>+10 Elixir bonus at 80%+ score.</span>
+                  </div>
+                  <div className="cat-rubric-item">
+                    <span className="cat-rubric-weight">35% · Applied Practice</span>
+                    <strong>Applied Briefs &amp; Lab Execution</strong>
+                    <span>In-browser lab + 20-Min TA SLA.</span>
+                  </div>
+                  <div className="cat-rubric-item">
+                    <span className="cat-rubric-weight">40% · Executive Proof</span>
+                    <strong>Capstone &amp; Cold Call Defense</strong>
+                    <span>Career Rise at 60% · Certificate at 100%.</span>
+                  </div>
+                </div>
+              ) : null}
             </div>
           </div>
         </section>
@@ -381,23 +400,7 @@ export default function CourseDetailPage() {
                   </ul>
                 </article>
               </div>
-              <div className="cat-rubric-strip cat-hero-rubric" aria-label="How Your Proof-of-Work Certificate Is Graded · 100% Elixir Fee Credit Eligible">
-                <div className="cat-rubric-item">
-                  <span className="cat-rubric-weight">25% · Concept Checks</span>
-                  <strong>3 Module Quizzes (15 Questions)</strong>
-                  <span>Earn +10 Elixir bonus when scoring 80%+ on module checks.</span>
-                </div>
-                <div className="cat-rubric-item">
-                  <span className="cat-rubric-weight">35% · Applied Practice</span>
-                  <strong>Applied Briefs &amp; Lab Execution</strong>
-                  <span>Earn +15 Elixir per submitted brief with Socratic AI &amp; 20-Min TA SLA.</span>
-                </div>
-                <div className="cat-rubric-item">
-                  <span className="cat-rubric-weight">40% · Executive Proof</span>
-                  <strong>Capstone &amp; Cold Call Defense</strong>
-                  <span>Unlocks Career Rise at 60% progress &amp; Cryptographic Certificate at 100%.</span>
-                </div>
-              </div>
+
 
             </div>
           </section>

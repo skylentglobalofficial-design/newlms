@@ -51,7 +51,7 @@ export default function CoursesPage() {
             <p className="cat-lead">
               {catalog.offline
                 ? `Focused courses with lessons, checks and practice. ${STATUS_NOT_CONFIRMED}: the catalogue could not be checked just now, so enrolment is paused.`
-                : "Focused courses with written lessons, checks, and practical assignments. All six flagship courses — Data Analytics, Product Management, Python Programming, Data Science & AI, Generative AI, and Full Stack Web — are open now."}
+                : "All 6 flagship courses are open now — each with 5 modules, 15 lessons, in-browser labs, and a graded capstone."}
             </p>
             <Link className="cat-text-link" to="/programmes">Looking for a longer pathway? See programmes</Link>
             <input

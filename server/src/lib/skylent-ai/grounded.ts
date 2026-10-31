@@ -184,7 +184,7 @@ export function groundedAnswer(input: AiAskInput): string {
 
   if (/hinglish|simple hindi|desi analogy/i.test(question)) {
     const obj = context.objective || `mastering the core decision in “${context.lessonTitle}”`
-    return `Is lesson (“${context.lessonTitle}”) ka core concept simple bhasha mein: ${obj}. Asli funda yeh hai ki pehle system ki root-cause aur boundaries pakdo, bina seedha ratte-baazi ya guess-work ke. Ab is approach ko use karke assignment ya lab execute karo — agar kahin doubt aaye toh step-by-step guidance poochh sakte ho!`
+    return `Hinglish First-Principles Intuition (“${context.lessonTitle}”): Is lesson ka main focus hai — ${obj}. Asli funda yeh hai ki pehle system ki root-cause aur boundaries pakdo, bina seedha guess-work ke. Ab is approach se lab execute karo — main graded quiz ya assignment ka direct answer leak nahi karunga!`
   }
 
   if (!context.authored) {

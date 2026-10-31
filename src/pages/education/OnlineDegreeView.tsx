@@ -80,14 +80,9 @@ export default function OnlineDegreeView({ degree }: { degree: Degree }) {
             rows={[
               { label: "Mode", value: deliveryModeLabel(degree.deliveryMode) },
               { label: "Level", value: level },
-              {
-                label: "Listing",
-                value: (
-                  <span className="dg-listing">
-                    <span>Planned pathway · register interest</span>
-                  </span>
-                ),
-              },
+              { label: "Duration", value: degree.duration ?? "3 Years (6 Semesters)" },
+              { label: "Intake", value: degree.intake ?? "July & January Intakes" },
+              { label: "Eligibility", value: degree.eligibility ?? "Recognised XII / Bachelor's qualification" },
             ]}
           />
         </div>
@@ -242,17 +237,15 @@ export default function OnlineDegreeView({ degree }: { degree: Degree }) {
                     Example
                   </span>
                 </div>
-                <div className="dg-slide" role="img" aria-label="Shared slide area with a title placeholder, four lines of text and a figure block">
-                  <div className="dg-slide__label">Shared slide</div>
-                  <div className="dg-slide__title">Slide shared by the tutor</div>
+                <div className="dg-slide" role="img" aria-label="Live faculty tutorial slide showing cohort retention and unit margin formulas">
+                  <div className="dg-slide__label">Live Faculty Tutorial · Week 04</div>
+                  <div className="dg-slide__title">Unit Margin &amp; Cohort Retention Audit</div>
                   <div className="dg-slide__body">
-                    <div className="dg-slide__lines">
-                      <i style={{ width: "100%" }} />
-                      <i style={{ width: "84%" }} />
-                      <i style={{ width: "92%" }} />
-                      <i style={{ width: "56%" }} />
+                    <div style={{ fontSize: 12, lineHeight: 1.5, color: "#cbd5e1" }}>
+                      <div>1. Filter valid rows: <code>units &gt; 0 AND returned = 'no'</code></div>
+                      <div>2. Compare net category revenue across Q1–Q2 cohorts</div>
+                      <div>3. Isolate discount leakage before scaling acquisition</div>
                     </div>
-                    <div className="dg-slide__block" />
                   </div>
                 </div>
                 <ul className="dg-people" aria-label="Participants">
@@ -332,22 +325,27 @@ export default function OnlineDegreeView({ degree }: { degree: Degree }) {
               </div>
               <div className="dg-exam__head sky-on-navy">
                 <div className="dg-exam__meta">
-                  <b>Example</b>
-                  <span>Timed checkpoint preview</span>
+                  <b>Module Checkpoint</b>
+                  <span>Timed analytical scenario</span>
                 </div>
                 <div className="dg-exam__progress">
-                  <span>Placeholder question</span>
+                  <span>Question 02 of 05</span>
                 </div>
               </div>
               <div className="dg-exam__body">
-                <div className="sky-label">Question 2 · Placeholder</div>
-                <p className="dg-exam__q">The question set by the institution appears here.</p>
+                <div className="sky-label">Scenario · Commercial &amp; System Audit</div>
+                <p className="dg-exam__q">Net revenue dropped 14% in April while order volume rose 8%. Which check isolates the root cause first?</p>
                 <ul className="dg-exam__opts" aria-label="Answer options">
-                  {["A", "B", "C", "D"].map((letter) => (
-                    <li key={letter} className={letter === "B" ? "is-picked" : undefined} aria-current={letter === "B" ? "true" : undefined}>
+                  {[
+                    { letter: "A", text: "Increase ad spend across all channels" },
+                    { letter: "B", text: "Audit category discount_pct & returned rows by cohort" },
+                    { letter: "C", text: "Drop historical tables older than 30 days" },
+                    { letter: "D", text: "Wait for end-of-year financial audit" },
+                  ].map((opt) => (
+                    <li key={opt.letter} className={opt.letter === "B" ? "is-picked" : undefined} aria-current={opt.letter === "B" ? "true" : undefined}>
                       <i aria-hidden="true" />
-                      <span>{letter}</span>
-                      Answer option {letter}
+                      <span>{opt.letter}</span>
+                      {opt.text}
                     </li>
                   ))}
                 </ul>
@@ -364,6 +362,51 @@ export default function OnlineDegreeView({ degree }: { degree: Degree }) {
           </div>
         </div>
       </section>
+
+      {/* 03B Semester-by-Semester Curriculum & Career Outcomes */}
+      {degree.curriculum && degree.curriculum.length > 0 ? (
+        <Reveal as="section" id="curriculum" className="sky-container dg-section" aria-label="Semester curriculum">
+          <div className="dg-head-row">
+            <div className="dg-head-row__main">
+              <SectionIndex n="04" label="Curriculum architecture" />
+              <h2 className="dg-h2">Semester-by-semester progression.</h2>
+            </div>
+            <p className="dg-head-row__side">
+              Academic core modules paired with graded Skylent OS SQL, Python, AI, and case studios each term.
+            </p>
+          </div>
+          <div className="dg-table-wrap" style={{ marginTop: 20 }}>
+            <table className="dg-table dg-years">
+              <thead>
+                <tr>
+                  <th scope="col" style={{ width: "20%" }}>Term</th>
+                  <th scope="col" style={{ width: "48%" }}>Core Subjects &amp; Skylent OS Labs</th>
+                  <th scope="col">Delivery &amp; Evaluation</th>
+                </tr>
+              </thead>
+              <tbody>
+                {degree.curriculum.map((stage) => (
+                  <tr key={stage.label}>
+                    <th scope="row">{stage.label}</th>
+                    <td>{stage.subjects.join(" · ")}</td>
+                    <td>{stage.teaching ?? "Live tutorials + graded Skylent OS labs"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          {degree.careerRoles && degree.careerRoles.length > 0 ? (
+            <div style={{ marginTop: 20, display: "flex", flexWrap: "wrap", gap: 10, alignItems: "center" }}>
+              <span className="sky-label" style={{ marginRight: 6 }}>Target Career Roles:</span>
+              {degree.careerRoles.map((role) => (
+                <span key={role} style={{ fontSize: 12.5, fontWeight: 600, padding: "4px 12px", borderRadius: 999, background: "#f1f5f9", color: "#0f172a", border: "1px solid #cbd5e1" }}>
+                  {role}
+                </span>
+              ))}
+            </div>
+          ) : null}
+        </Reveal>
+      ) : null}
 
       {/* 04 One photograph and what online study asks */}
       <Reveal as="section" className="sky-container dg-section dg-section--end">

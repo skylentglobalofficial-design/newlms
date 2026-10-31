@@ -79,7 +79,7 @@ export function HomeHero({
             Learn. Practise. Build. <em>Prove it.</em>
           </h1>
           <p className="hxw-hero__lead hx-rise">
-            Master practical skills through interactive SQL and Python practice, business case studies, graded assessments, and evidence-backed credentials.
+            In-browser SQL & Python labs, executive case studies, and verifiable proof of work.
           </p>
           <p className="hxw-hero__today hx-rise">{availability}</p>
           <div className="hxw-hero__actions hx-rise">
@@ -143,11 +143,11 @@ export function HomeHero({
    No partner names: none are confirmed. */
 
 const JOURNEY_STEPS = [
-  { n: "01", title: "Explore", text: "Find a meaningful learning direction." },
-  { n: "02", title: "Learn", text: "Build knowledge through structured learning." },
-  { n: "03", title: "Practise", text: "Apply concepts through assignments and practical work." },
-  { n: "04", title: "Build", text: "Create work that demonstrates developing capability." },
-  { n: "05", title: "Progress", text: "Use learning progress and completed work to inform the next step." },
+  { n: "01", title: "Explore", text: "Pick your track or 90-sec diagnostic." },
+  { n: "02", title: "Learn", text: "Concise lessons with concept checks." },
+  { n: "03", title: "Practise", text: "Query live SQL & Python sandboxes." },
+  { n: "04", title: "Build", text: "Ship graded capstones & cold calls." },
+  { n: "05", title: "Prove", text: "Share your cryptographic work dossier." },
 ] as const
 
 export function HomeTrust() {
@@ -155,7 +155,7 @@ export function HomeTrust() {
     <section className="hxw-journey" data-clear-launcher aria-labelledby="hx-journey-title">
       <div className="sky-container">
         <h2 id="hx-journey-title" className="hxw-journey__title">A connected learning journey</h2>
-        <p className="hxw-journey__lead">Five stages, in this order. Each one follows the last.</p>
+        <p className="hxw-journey__lead">Five clear steps from first query to verifiable portfolio.</p>
         <ol className="hxw-journey__steps">
           {JOURNEY_STEPS.map((step) => (
             <li key={step.n}>
@@ -1419,9 +1419,9 @@ export function HomeCareer() {
    The existing Skylent AI mark, given its own tile, and the finder's real first question. */
 
 const AI_HELPS = [
-  { title: "Socratic Lesson Coach", text: "Inside every open lesson, Skylent AI guides your SQL queries, Python logic, and product case memos with Socratic prompts rather than handing out shortcuts." },
-  { title: "20-Minute Faculty TA Doubt SLA", text: "Need human verification? Escalate any technical or case-study question directly from the lesson workspace with a live 20-minute Faculty TA SLA." },
-  { title: "Boardroom Cold Call Prep", text: "Practise timed executive decision scenarios under 60-second pressure and benchmark your strategic trade-offs against peer cohort responses." },
+  { title: "Socratic Lesson Coach", text: "Step-by-step first-principles hints on your SQL, Python, and PRD drafts — without leaking direct answers." },
+  { title: "20-Min Faculty TA SLA", text: "Escalate any blocker from the lesson workspace to a human Faculty TA with a 20-minute response SLA." },
+  { title: "60-Sec Boardroom Cold Calls", text: "Defend timed product and engineering trade-offs and compare your decision against peer cohort splits." },
 ] as const
 
 export function HomeAi() {
