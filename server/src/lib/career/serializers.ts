@@ -164,31 +164,31 @@ export function serializeInterviewPractice(p: InterviewPractice) {
   }
 }
 
-export function serializeSupportRequest(req: CareerSupportRequest & { tasks?: CareerSupportTask[] }) {
+export function serializeSupportRequest(r: CareerSupportRequest & { tasks?: CareerSupportTask[] }) {
   return {
-    id: req.id,
-    type: req.type,
-    subject: req.subject,
-    description: req.description,
-    status: req.status,
-    priority: req.priority,
-    assignedTo: req.assignedTo,
-    tasks: req.tasks?.map(serializeSupportTask) ?? [],
-    createdAt: req.createdAt.toISOString(),
-    updatedAt: req.updatedAt.toISOString(),
+    id: r.id,
+    type: r.type,
+    subject: r.subject,
+    details: r.details,
+    status: r.status,
+    priority: r.priority,
+    resolvedAt: isoDateTime(r.resolvedAt),
+    tasks: r.tasks ? r.tasks.map(serializeSupportTask) : undefined,
+    createdAt: r.createdAt.toISOString(),
+    updatedAt: r.updatedAt.toISOString(),
   }
 }
 
-export function serializeSupportTask(task: CareerSupportTask) {
+export function serializeSupportTask(t: CareerSupportTask) {
   return {
-    id: task.id,
-    requestId: task.requestId,
-    title: task.title,
-    description: task.description,
-    status: task.status,
-    dueAt: isoDateTime(task.dueAt),
-    completedAt: isoDateTime(task.completedAt),
-    createdAt: task.createdAt.toISOString(),
-    updatedAt: task.updatedAt.toISOString(),
+    id: t.id,
+    requestId: t.requestId,
+    title: t.title,
+    description: t.description,
+    status: t.status,
+    dueDate: isoDate(t.dueDate),
+    completedAt: isoDateTime(t.completedAt),
+    createdAt: t.createdAt.toISOString(),
+    updatedAt: t.updatedAt.toISOString(),
   }
 }

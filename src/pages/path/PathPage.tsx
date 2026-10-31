@@ -1,3 +1,8 @@
+import {
+  evaluateSkillDiagnostic,
+  SKILL_DIAGNOSTIC_QUESTIONS,
+  type DiagnosticResult,
+} from "../../lib/path/skillDiagnostic"
 import { useCallback, useEffect, useState, type KeyboardEvent, type ReactNode } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { PageShell } from "../../components/shared"
@@ -199,6 +204,111 @@ function PathChoiceRow({
   )
 }
 
+
+function SkillDiagnosticSection() {
+  const [open, setOpen] = useState(false)
+  const [answers, setAnswers] = useState<Record<string, string>>({})
+  const [result, setResult] = useState<DiagnosticResult | null>(null)
+
+  function handleSelect(questionId: string, optionId: string) {
+    setAnswers((prev) => ({ ...prev, [questionId]: optionId }))
+  }
+
+  function handleScore() {
+    const res = evaluateSkillDiagnostic(answers)
+    setResult(res)
+  }
+
+  return (
+    <section
+      aria-labelledby="skill-diag-title"
+      style={{
+        margin: "16px 0 24px",
+        padding: "16px 20px",
+        borderRadius: 12,
+        background: "var(--skylent-surface, #ffffff)",
+        border: "1px solid var(--skylent-line, #e4e4e7)",
+      }}
+    >
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 10 }}>
+        <div>
+          <span className="sky-label">Benchmarking &amp; Diagnostic</span>
+          <h2 id="skill-diag-title" style={{ fontSize: 16, margin: "4px 0" }}>
+            90-Second Adaptive Skill Diagnostic &amp; Percentile Test
+          </h2>
+          <p style={{ fontSize: 13, color: "var(--skylent-muted, #71717a)", margin: 0 }}>
+            Test your commercial SQL, Product scoping, and Python/GenAI readiness before choosing your path.
+          </p>
+        </div>
+        <button
+          type="button"
+          className="sk-btn sk-btn-secondary"
+          onClick={() => setOpen((prev) => !prev)}
+        >
+          {open ? "Collapse Diagnostic" : "Start 90-Sec Test →"}
+        </button>
+      </div>
+
+      {open ? (
+        <div style={{ marginTop: 20 }}>
+          {SKILL_DIAGNOSTIC_QUESTIONS.map((q, idx) => (
+            <div key={q.id} style={{ marginBottom: 18, paddingBottom: 16, borderBottom: "1px solid var(--skylent-line, #e4e4e7)" }}>
+              <strong style={{ fontSize: 13, color: "#2563eb" }}>Q{idx + 1} · {q.title}</strong>
+              <p style={{ fontSize: 13, margin: "6px 0 10px" }}>{q.scenario}</p>
+              <div style={{ display: "grid", gap: 8 }}>
+                {q.options.map((opt) => (
+                  <button
+                    key={opt.id}
+                    type="button"
+                    onClick={() => handleSelect(q.id, opt.id)}
+                    style={{
+                      padding: "8px 12px",
+                      borderRadius: 6,
+                      border: answers[q.id] === opt.id ? "2px solid #2563eb" : "1px solid var(--skylent-line, #e4e4e7)",
+                      background: answers[q.id] === opt.id ? "rgba(37, 99, 235, 0.05)" : "transparent",
+                      textAlign: "left",
+                      fontSize: 12,
+                      cursor: "pointer",
+                    }}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ))}
+
+          {!result ? (
+            <button
+              type="button"
+              className="sk-btn sk-btn-primary"
+              disabled={Object.keys(answers).length < SKILL_DIAGNOSTIC_QUESTIONS.length}
+              onClick={handleScore}
+            >
+              Score My Readiness &amp; Compute Percentile
+            </button>
+          ) : (
+            <div style={{ background: "rgba(37, 99, 235, 0.06)", padding: 16, borderRadius: 8, marginTop: 16 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", flexWrap: "wrap", gap: 8 }}>
+                <div>
+                  <strong style={{ fontSize: 18, color: "#1e40af" }}>Readiness: {result.scorePercent}% ({result.percentile})</strong>
+                  <span style={{ fontSize: 12, display: "block", color: "#1e40af", fontWeight: 600 }}>{result.readinessTier}</span>
+                </div>
+                <Link to={`/courses/${result.recommendedCourseSlug}`} className="sk-btn sk-btn-primary" style={{ fontSize: 12 }}>
+                  Start at {result.recommendedModule} →
+                </Link>
+              </div>
+              <p style={{ fontSize: 12, margin: "10px 0 0" }}>
+                Recommended Course: <strong>{result.recommendedCourseTitle}</strong>. Gaps identified: {result.gapsIdentified.join(", ") || "None (Ready for Advanced Studio)"}.
+              </p>
+            </div>
+          )}
+        </div>
+      ) : null}
+    </section>
+  )
+}
+
 export default function PathPage() {
   const navigate = useNavigate()
   const [ready, setReady] = useState(false)
@@ -324,6 +434,7 @@ export default function PathPage() {
           ) : null}
 
           <div className="cine-in cine-in--fade cine-d1">
+            <SkillDiagnosticSection />
             <PathProgress step={step} />
           </div>
 

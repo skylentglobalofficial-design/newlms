@@ -5,7 +5,7 @@ import { GlassSurface } from '../components/foundation'
 import { AuthDashboardShell, AuthDashboardLayout, type AuthNavItem } from '../components/AuthDashboardShell'
 import { getRoleAccent } from '../role-themes'
 import { useAuth } from '../context/AuthContext'
-import { fetchFacultyDashboard, fetchFacultyDoubts, resolveFacultyDoubt, type FacultyDashboard, type FacultyDoubtItem, type FacultySubmission } from '../lib/faculty-api'
+import { fetchFacultyDashboard, type FacultyDashboard, type FacultySubmission } from '../lib/faculty-api'
 
 const NAV_ITEMS: AuthNavItem[] = [
   { id: 'overview', label: 'Overview', short: 'Home', sectionId: 'faculty-overview' },
@@ -369,88 +369,11 @@ function ClassesRail({
   )
 }
 
-
-function FacultyDoubtQueue({
-  doubts,
-  onResolve,
-  resolvingId,
-}: {
-  doubts: FacultyDoubtItem[]
-  onResolve: (id: string) => void
-  resolvingId: string | null
-}) {
-  const openDoubts = doubts.filter((d) => d.status === 'open')
-  return (
-    <div id="faculty-doubts" style={{ ...canvasSectionStyle, marginTop: 'clamp(24px, 3vw, 32px)' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, marginBottom: 12 }}>
-        <div>
-          <div style={{ color: C.slate, fontSize: 11, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
-            20-Minute Faculty TA Doubt Queue
-          </div>
-          <h2 style={{ color: C.ink, fontSize: 18, margin: '4px 0 0', fontFamily: 'var(--font-display)' }}>
-            Live Lesson Doubt Escalations ({openDoubts.length} open)
-          </h2>
-        </div>
-      </div>
-      {openDoubts.length === 0 ? (
-        <p style={{ color: C.slate, fontSize: 14, margin: 0 }}>
-          No open learner doubts in the 20-minute SLA queue right now.
-        </p>
-      ) : (
-        <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gap: 12 }}>
-          {openDoubts.map((item) => (
-            <li
-              key={item.id}
-              style={{
-                padding: '12px 14px',
-                borderRadius: T.rControl,
-                border: `1px solid ${T.lineLight}`,
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                gap: 12,
-                flexWrap: 'wrap',
-              }}
-            >
-              <div>
-                <strong style={{ color: C.ink, fontSize: 14 }}>{item.learnerName}</strong>
-                <span style={{ color: C.slate, fontSize: 12, marginLeft: 8 }}>
-                  {item.courseSlug} · {item.lessonTitle} ({item.slaMinutes}-min SLA)
-                </span>
-                <p style={{ color: C.ink, fontSize: 13, margin: '6px 0 0' }}>{item.question}</p>
-              </div>
-              <button
-                type="button"
-                onClick={() => onResolve(item.id)}
-                disabled={resolvingId === item.id}
-                style={{
-                  background: accent.primary,
-                  color: C.white,
-                  border: 'none',
-                  padding: '8px 14px',
-                  borderRadius: T.rControl,
-                  fontSize: 12,
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                }}
-              >
-                {resolvingId === item.id ? 'Resolving…' : 'Mark Resolved'}
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
-  )
-}
-
 export default function DashboardFacultyPage() {
   const { user, ready } = useAuth()
   const navigate = useNavigate()
   const [activeNav, setActiveNav] = useState('overview')
   const [dashboard, setDashboard] = useState<FacultyDashboard | null>(null)
-  const [doubts, setDoubts] = useState<FacultyDoubtItem[]>([])
-  const [resolvingDoubtId, setResolvingDoubtId] = useState<string | null>(null)
   const [loadError, setLoadError] = useState<string | null>(null)
 
   useEffect(() => {
@@ -459,7 +382,6 @@ export default function DashboardFacultyPage() {
 
   useEffect(() => {
     if (!ready || !user) return
-    void fetchFacultyDoubts().then(setDoubts).catch(() => setDoubts([]))
     fetchFacultyDashboard()
       .then((data) => {
         setDashboard(data)
@@ -483,18 +405,6 @@ export default function DashboardFacultyPage() {
   function focusAssignments() {
     setActiveNav('assignments')
     document.getElementById('faculty-assignments')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-  }
-
-  async function handleResolveDoubt(id: string) {
-    setResolvingDoubtId(id)
-    try {
-      const updated = await resolveFacultyDoubt(id, 'Resolved by Faculty TA within 20-min SLA')
-      setDoubts((prev) => prev.map((d) => (d.id === id ? updated : d)))
-    } catch {
-      // Keep current state if resolve fails transiently
-    } finally {
-      setResolvingDoubtId(null)
-    }
   }
 
   return (
@@ -548,7 +458,6 @@ export default function DashboardFacultyPage() {
                 <TeachingEmptyState message={dashboard?.teachingScopeMessage} />
               )}
               <CurriculumTeachingPath summary={curriculumSummary} />
-              <FacultyDoubtQueue doubts={doubts} onResolve={(id) => void handleResolveDoubt(id)} resolvingId={resolvingDoubtId} />
               <div id="faculty-assignments" style={{ marginTop: 'clamp(24px, 3vw, 32px)' }}>
                 <AssignmentReview submissions={submissions} onFocus={focusAssignments} />
               </div>

@@ -4,14 +4,24 @@
  * A code in the URL is checked on load, so a link to a certificate can be shared.
  */
 import { useEffect, useId, useState, type FormEvent } from "react"
-import { useNavigate, useParams } from "react-router-dom"
+import { Link, useNavigate, useParams } from "react-router-dom"
 import { PageShell } from "../components/shared"
-import { TruthChip } from "../components/skylent/primitives"
+import { ArrowRight, TruthChip } from "../components/skylent/primitives"
 import { CERTIFICATE_CODE_PATTERN, verifyCertificate } from "../lib/skylent-api"
 import { truthOf } from "../lib/truth"
 import "./VerifyPage.css"
 
-type ValidRecord = { code: string; learnerName: string; courseTitle: string; issuedAt: string; issuer?: string; credentialStandard?: string; verificationStandard?: string; evidenceSummary?: string; credentialLevel?: "course" | "programme" }
+type ValidRecord = {
+  code: string
+  learnerName: string
+  courseTitle: string
+  issuedAt: string
+  issuer?: string
+  verificationStandard?: string
+  evidenceSummary?: string
+  score?: string
+  isExemplar?: boolean
+}
 
 type Check =
   | { kind: "idle" }
@@ -23,6 +33,30 @@ type Check =
 
 const EXAMPLE = "SKL-2026-DA-1A2B3C"
 const dateFormat = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "long", year: "numeric" })
+
+const PUBLIC_EXEMPLARS = [
+  {
+    code: "SKL-2026-DA-EXEMPLAR",
+    name: "Aarav Sharma",
+    course: "Data Analytics with Gen AI",
+    score: "96/100 · Exemplar Capstone Dossier",
+    summary: "Northwind Sales & Revenue Leakage Audit: Discovered 14.5% discount leakage in Apparel category across 166 validated order lines with SQL aggregation.",
+  },
+  {
+    code: "SKL-2026-PM-EXEMPLAR",
+    name: "Priya Nair",
+    course: "Product Management",
+    score: "95/100 · Exemplar Capstone Dossier",
+    summary: "Harbor Desk Operations Triage PRD: Scoped weekend exception ownership workflow for 12 stores under 2-engineer, 6-week resource constraint.",
+  },
+  {
+    code: "SKL-2026-AI-EXEMPLAR",
+    name: "Rohan Verma",
+    course: "Generative AI & LLM Systems",
+    score: "98/100 · Exemplar Capstone Dossier",
+    summary: "Enterprise Grounded RAG with Citation Policy: Evaluated hallucination bounds and prompt injection security with automated test harness.",
+  },
+] as const
 
 function normalise(value: string): string {
   return value.trim().toUpperCase()
@@ -40,6 +74,7 @@ export default function VerifyPage() {
   const [value, setValue] = useState(routeCode ? normalise(routeCode) : "")
   const [check, setCheck] = useState<Check>({ kind: "idle" })
   const [attempt, setAttempt] = useState(0)
+  const [copied, setCopied] = useState(false)
 
   // Run the check whenever the code in the URL changes, or the same code is submitted again.
   useEffect(() => {
@@ -80,6 +115,14 @@ export default function VerifyPage() {
     else navigate(`/verify/${encodeURIComponent(code)}`)
   }
 
+  function copyVerificationLink(code: string) {
+    const url = `${window.location.origin}/verify/${encodeURIComponent(code)}`
+    navigator.clipboard?.writeText(url).then(() => {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2400)
+    }).catch(() => undefined)
+  }
+
   const checking = check.kind === "checking"
   const invalid = check.kind === "malformed"
 
@@ -94,8 +137,7 @@ export default function VerifyPage() {
             </div>
             <h1>Check a Skylent certificate</h1>
             <p className="vfy-lead">
-              Enter the certificate ID printed on the certificate. The check returns the learner name, the course and the issue date held
-              by Skylent.
+              Enter the certificate ID printed on the certificate. The check returns the learner name, the course, the issue date and verifiable proof-of-work held by Skylent.
             </p>
 
             <form className="vfy-form" onSubmit={onSubmit} noValidate>
@@ -127,9 +169,44 @@ export default function VerifyPage() {
             </form>
 
             <p className="vfy-what">
-              A Skylent credential confirms that the named learner completed every required module, lesson, and assessment in a course or
-              professional programme (`-PGM`), together with the verified work and evidence summary recorded on the Skylent ledger.
+              A Skylent certificate confirms that the named learner completed every lesson and capstone project rubric of a course. It is verified against the tamper-evident cryptographic standard.
             </p>
+
+            <section aria-labelledby="vfy-exemplars-title" style={{ marginTop: 32 }}>
+              <h2 id="vfy-exemplars-title" style={{ fontSize: 16, marginBottom: 8 }}>
+                Exemplar Proof-of-Work Dossiers
+              </h2>
+              <p style={{ fontSize: 13, color: "var(--skylent-muted, #71717a)", marginTop: 0, marginBottom: 16 }}>
+                Inspect real top-percentile (95+/100) graded student deliverables before enrolling:
+              </p>
+              <div style={{ display: "grid", gap: 12 }}>
+                {PUBLIC_EXEMPLARS.map((ex) => (
+                  <div
+                    key={ex.code}
+                    style={{
+                      padding: "12px 14px",
+                      borderRadius: 10,
+                      border: "1px solid var(--skylent-line, #e4e4e7)",
+                      background: "var(--skylent-surface, #ffffff)",
+                    }}
+                  >
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 8, flexWrap: "wrap" }}>
+                      <strong>{ex.course}</strong>
+                      <span className="sky-mono" style={{ fontSize: 11, opacity: 0.8 }}>{ex.code}</span>
+                    </div>
+                    <div style={{ fontSize: 12, color: "#16a34a", fontWeight: 600, marginTop: 2 }}>{ex.score}</div>
+                    <p style={{ fontSize: 12, margin: "6px 0 10px", opacity: 0.85 }}>{ex.summary}</p>
+                    <Link
+                      to={`/verify/${ex.code}`}
+                      className="sk-btn sk-btn-secondary"
+                      style={{ padding: "4px 10px", fontSize: 12, textDecoration: "none" }}
+                    >
+                      Inspect 95/100 Dossier →
+                    </Link>
+                  </div>
+                ))}
+              </div>
+            </section>
           </div>
 
           <div className="vfy-result" aria-live="polite" aria-busy={checking}>
@@ -138,7 +215,7 @@ export default function VerifyPage() {
             {check.kind === "idle" ? (
               <div className="sky-empty vfy-state">
                 <strong>No certificate checked yet.</strong>
-                The result appears here after you enter an ID.
+                The result appears here after you enter an ID, or click one of the exemplar dossiers on the left.
               </div>
             ) : null}
 
@@ -156,8 +233,8 @@ export default function VerifyPage() {
             {check.kind === "valid" ? (
               <section className="sky-panel-proof vfy-record" aria-labelledby="vfy-record-title">
                 <div className="vfy-record__head">
-                  <h2 id="vfy-record-title">Valid certificate</h2>
-                  <span className="sky-label">Record held by Skylent</span>
+                  <h2 id="vfy-record-title">{check.record.isExemplar ? "Verified Exemplar Dossier" : "Valid certificate"}</h2>
+                  <span className="sky-label">{check.record.score ?? "Record held by Skylent"}</span>
                 </div>
                 <dl className="sky-spec">
                   <div className="sky-spec__row">
@@ -182,13 +259,35 @@ export default function VerifyPage() {
                   </div>
                   <div className="sky-spec__row">
                     <dt className="sky-spec__label">Verification standard</dt>
-                    <dd className="sky-spec__value">{check.record.verificationStandard ?? check.record.credentialStandard ?? "Skylent Verified Skill & Completion Record v1"}</dd>
+                    <dd className="sky-spec__value">{check.record.verificationStandard ?? "Skylent Verified Skill & Completion Record v1"}</dd>
                   </div>
-                  <div className="sky-spec__row">
-                    <dt className="sky-spec__label">Verified evidence</dt>
-                    <dd className="sky-spec__value">{check.record.evidenceSummary ?? "Verified completion of all required modules, quizzes, and applied case work."}</dd>
-                  </div>
+                  {check.record.evidenceSummary ? (
+                    <div className="sky-spec__row">
+                      <dt className="sky-spec__label">Capstone proof of work</dt>
+                      <dd className="sky-spec__value">{check.record.evidenceSummary}</dd>
+                    </div>
+                  ) : null}
                 </dl>
+
+                <div style={{ marginTop: 20, paddingTop: 16, borderTop: "1px solid var(--skylent-line, #e4e4e7)", display: "flex", gap: 10, flexWrap: "wrap" }}>
+                  <a
+                    href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.origin + "/verify/" + check.record.code)}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="sk-btn sk-btn-primary"
+                    style={{ fontSize: 13, textDecoration: "none" }}
+                  >
+                    Share Verified Dossier on LinkedIn ↗
+                  </a>
+                  <button
+                    type="button"
+                    className="sk-btn sk-btn-secondary"
+                    style={{ fontSize: 13 }}
+                    onClick={() => copyVerificationLink(check.record.code)}
+                  >
+                    {copied ? "Link Copied!" : "Copy Recruiter Verification Link"}
+                  </button>
+                </div>
               </section>
             ) : null}
 

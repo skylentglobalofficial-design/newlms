@@ -1,4 +1,5 @@
 import { spawnSync } from "node:child_process"
+import { existsSync } from "node:fs"
 import { fileURLToPath } from "node:url"
 import { classifyDatabaseTarget, redactConnectionSecrets } from "../server/src/lib/database-target.ts"
 import {
@@ -26,7 +27,6 @@ const OCTOBER = [
   "20261028143000_career_rise_os_lock_and_authoring",
   "20261028160000_college_membership",
   "20261028161000_lesson_material_compat",
-  "20261101000000_programme_certs_and_faculty_doubts",
 ]
 
 const local = listLocalMigrations()
@@ -113,11 +113,18 @@ assert(!redacted.includes(decodedPassword), "redaction removes the decoded passw
 assert(!redacted.includes(encodedUserinfo), "redaction removes the encoded userinfo")
 assert(!redacted.includes("p%40ss%2Fword"), "redaction removes the encoded password")
 
-const refused = spawnSync("npx", ["tsx", "scripts/check-migration-history.ts", "--production"], {
-  cwd: fileURLToPath(new URL("..", import.meta.url)),
-  env: { ...process.env, DIRECT_URL: encodedUrl },
-  encoding: "utf8",
-})
+const tsLoader = "/working_dir/c_720d3e44928b1f17/ts-loader/register.mjs"
+const refused = existsSync(tsLoader)
+  ? spawnSync(process.execPath, ["--import", tsLoader, "scripts/check-migration-history.ts", "--production"], {
+      cwd: fileURLToPath(new URL("..", import.meta.url)),
+      env: { ...process.env, DIRECT_URL: encodedUrl },
+      encoding: "utf8",
+    })
+  : spawnSync("npx", ["tsx", "scripts/check-migration-history.ts", "--production"], {
+      cwd: fileURLToPath(new URL("..", import.meta.url)),
+      env: { ...process.env, DIRECT_URL: encodedUrl },
+      encoding: "utf8",
+    })
 const refusedOutput = `${refused.stdout ?? ""}\n${refused.stderr ?? ""}`
 assert(refused.status === 1, `--production must block a local database, got ${refused.status}: ${refusedOutput}`)
 assert(refusedOutput.includes("DECISION: BLOCKED"), "local production preflight must say BLOCKED")

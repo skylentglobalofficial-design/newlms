@@ -12,11 +12,6 @@ type RiseRow = {
   completedModules: number
   totalModules: number
   thresholdPercent: number
-  milestones?: {
-    curriculumGatePassed: boolean
-    caseEvidenceReady: boolean
-    mockInterviewUnlocked: boolean
-  }
 }
 
 export default function CareerRiseCard() {
@@ -76,9 +71,6 @@ export default function CareerRiseCard() {
               <div className="sh-row-main">
                 <strong>{row.title}</strong>
                 <span className="sh-note">{row.completedModules} of {row.totalModules} modules · {row.percent}%</span>
-                <span className="sh-note" style={{ display: "block", fontSize: 11, marginTop: 2 }}>
-                  Milestones: {row.eligible ? "✓ 60% Curriculum Gate" : `○ 60% Curriculum Gate (${row.percent}%)`} · {row.completedModules >= 1 ? "✓ Case Evidence" : "○ Case Evidence"} · {row.enrolled ? "✓ Mock Interview Unlocked" : "○ Mock Interview Defense"}
-                </span>
               </div>
               {row.enrolled ? <span className="os-status is-done">Enrolled</span> : row.eligible ? (
                 <button type="button" className="os-link" disabled={pending === row.slug} onClick={() => void enrol(row)}>

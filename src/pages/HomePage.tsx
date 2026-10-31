@@ -1,7 +1,7 @@
 /**
  * HomePage — the public homepage.
  *
- * Hero → How learning works → Programmes → Degrees → Career OS → Skylent AI → Closing.
+ * Hero → Zero-Login Interactive Tryout → How learning works → Programmes → Flywheel → Degrees → Career OS → Skylent AI → Closing.
  * Navigation and footer come from PageShell. Career OS and institutions stay on their own pages.
  */
 import { PageShell } from "@/components/shared"
@@ -17,6 +17,7 @@ import {
   HomeHero,
   HomeProgrammes,
   InsideProgramme,
+  ZeroLoginInteractiveTryout,
 } from "./home/Repolish"
 import "./HomePage.v2.css"
 import "./HomeRepolish.css"
@@ -31,6 +32,7 @@ export default function HomePage() {
           catalogue={catalogue}
           openTitles={catalogue === "confirmed" ? confirmedOpenTitles(catalog.data ?? []) : []}
         />
+        <ZeroLoginInteractiveTryout />
         <InsideProgramme />
         <HomeProgrammes
           programmes={catalog.data ?? []}

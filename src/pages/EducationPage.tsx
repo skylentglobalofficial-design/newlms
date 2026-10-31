@@ -28,8 +28,8 @@ import "./EducationRepolish.css"
 type Level = "UNDERGRADUATE" | "POSTGRADUATE"
 
 const LEVELS: { id: Level; param: "ug" | "pg"; title: string; short: string; lead: string }[] = [
-  { id: "UNDERGRADUATE", param: "ug", title: "Undergraduate pathway areas", short: "UG", lead: "Planned undergraduate curriculum directions for institutional articulation. Direct student applications are not open; you can register interest." },
-  { id: "POSTGRADUATE", param: "pg", title: "Postgraduate pathway areas", short: "PG", lead: "Planned postgraduate specialisation directions for working professionals and partner campuses. Register interest to receive updates." },
+  { id: "UNDERGRADUATE", param: "ug", title: "Undergraduate areas", short: "UG", lead: "Sample areas for a first degree after school. None are open for applications." },
+  { id: "POSTGRADUATE", param: "pg", title: "Postgraduate areas", short: "PG", lead: "Sample areas for study after a first degree. None are open for applications." },
 ]
 
 const MODE_COPY: Record<DeliveryMode, { label: string; line: string; photos: Record<Level, { src: string; alt: string }> }> = {
@@ -71,7 +71,7 @@ function DegreeRow({ degree }: { degree: Degree }) {
         <span className="edx-degree__title">{degree.title}</span>
         <span className="edx-degree__meta">
           {degree.sample ? (
-            <span className="edx-soon">Planned pathway · register interest</span>
+            <span className="edx-soon">Sample listing · not open for applications</span>
           ) : degree.institution?.name ? (
             <span>{degree.institution.name}</span>
           ) : (
@@ -171,13 +171,13 @@ export default function EducationPage() {
         <section className="edx-hero" aria-labelledby="edx-title">
           <div className="sky-container edx-hero__inner">
             <div>
-              <p className="edx-eyebrow">University &amp; Institutional Pathways</p>
+              <p className="edx-eyebrow">Degrees</p>
               <h1 id="edx-title" className="edx-h1">
-                Academic pathways &amp; <em>institutional integration.</em>
+                Degree areas, <em>not open yet.</em>
               </h1>
-              <p className="edx-lede">Explore planned undergraduate and postgraduate curriculum areas designed for university collaboration and campus integration. Skylent does not directly award degrees, and no university partnership or academic credit approval is confirmed yet. Learners and colleges can register interest below, or start one of our six live industry courses immediately.</p>
+              <p className="edx-lede">These are sample areas for a future undergraduate or postgraduate degree, online or on campus. Skylent does not award degrees. No institution is confirmed, so you can register interest but not apply.</p>
               {settled && unavailable ? (
-                <p className="edx-lede" role="status">The pathway catalogue could not be checked just now. The areas below remain planned pathways, and direct applications are not open. <button type="button" className="edx-link" onClick={reload}>Try again</button></p>
+                <p className="edx-lede" role="status">The degree list could not be checked just now. The areas below remain samples, and applications are not open. <button type="button" className="edx-link" onClick={reload}>Try again</button></p>
               ) : null}
             </div>
             <nav className="edx-filters" aria-label="Filter degrees">
@@ -255,19 +255,16 @@ export default function EducationPage() {
         <section className="edx-help" aria-labelledby="edx-help-title">
           <div className="sky-container edx-help__inner">
             <div>
-              <h2 id="edx-help-title">Register learner or institutional interest</h2>
-              <p>Register your interest in upcoming university pathways, partner with Skylent as a college or institution, or start one of our live proof-of-work programmes today.</p>
+              <h2 id="edx-help-title">Questions about a planned area</h2>
+              <p>Applications are not open. Write to the team to register interest, or use Find My Path for programmes that are separate from these degree areas.</p>
             </div>
             <div className="edx-help__actions">
               <Link className="sk-btn sk-btn-primary" to="/contact">
                 Register interest
                 <ArrowRight />
               </Link>
-              <Link className="sk-btn sk-btn-secondary" to="/institutions">
-                Institutional partnerships
-              </Link>
-              <Link className="sk-btn sk-btn-secondary" to="/programmes">
-                Explore live programmes
+              <Link className="sk-btn sk-btn-secondary" to="/path">
+                Find My Path
               </Link>
             </div>
           </div>
