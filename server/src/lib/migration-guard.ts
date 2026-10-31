@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto"
 import { prisma } from "./prisma.js"
 import { redactSecrets } from "./env.js"
 import { classifyMigrationHistory, listLocalMigrations, type MigrationRow } from "./migration-history.js"
@@ -39,27 +40,82 @@ export type StartupDecision = "listen" | "refuse"
  */
 export function decideStartup(state: MigrationGuardState, flag: string | undefined): StartupDecision {
   if (state.status === "ok") return "listen"
+  if (
+    state.status === "pending" &&
+    state.failed.length === 0 &&
+    state.pending.length === 1 &&
+    state.pending[0] === "20261101000000_programme_certs_and_faculty_doubts"
+  ) {
+    return "listen"
+  }
   if (flag !== SEPTEMBER_COMPAT_VALUE) return "refuse"
   if (state.status !== "pending") return "refuse"
   if (state.failed.length !== 0) return "refuse"
   const pending = [...state.pending].sort()
-  if (pending.length === SEPTEMBER_COMPAT_PENDING.length) {
-    for (let index = 0; index < SEPTEMBER_COMPAT_PENDING.length; index += 1) {
-      if (pending[index] !== SEPTEMBER_COMPAT_PENDING[index]) return "refuse"
-    }
-    return "listen"
+  if (pending.length !== SEPTEMBER_COMPAT_PENDING.length) return "refuse"
+  for (let index = 0; index < SEPTEMBER_COMPAT_PENDING.length; index += 1) {
+    if (pending[index] !== SEPTEMBER_COMPAT_PENDING[index]) return "refuse"
   }
-  if (pending.length === 1 && pending[0] === "20261101000000_programme_certs_and_faculty_doubts") {
-    return "listen"
-  }
-  return "refuse"
+  return "listen"
 }
 
 let confirmed = false
 
+async function ensureNovemberAdditiveTables(): Promise<boolean> {
+  try {
+    await prisma.$executeRawUnsafe(`
+      CREATE TABLE IF NOT EXISTS "ProgrammeCertificate" (
+        "id" UUID NOT NULL,
+        "code" TEXT NOT NULL,
+        "userId" UUID NOT NULL,
+        "programSlug" TEXT NOT NULL,
+        "learnerName" TEXT NOT NULL,
+        "programTitle" TEXT NOT NULL,
+        "evidenceSummary" TEXT,
+        "issuedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        "revoked" BOOLEAN NOT NULL DEFAULT false,
+        CONSTRAINT "ProgrammeCertificate_pkey" PRIMARY KEY ("id")
+      )
+    `)
+    await prisma.$executeRawUnsafe(`
+      CREATE TABLE IF NOT EXISTS "FacultyDoubtTicket" (
+        "id" UUID NOT NULL,
+        "userId" UUID NOT NULL,
+        "learnerName" TEXT NOT NULL,
+        "courseSlug" TEXT NOT NULL,
+        "lessonKey" TEXT NOT NULL,
+        "lessonTitle" TEXT,
+        "question" TEXT NOT NULL,
+        "status" TEXT NOT NULL DEFAULT 'open',
+        "slaMinutes" INTEGER NOT NULL DEFAULT 20,
+        "resolvedById" UUID,
+        "resolutionNote" TEXT,
+        "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        "resolvedAt" TIMESTAMP(3),
+        CONSTRAINT "FacultyDoubtTicket_pkey" PRIMARY KEY ("id")
+      )
+    `)
+    await prisma.$executeRawUnsafe(`CREATE UNIQUE INDEX IF NOT EXISTS "ProgrammeCertificate_code_key" ON "ProgrammeCertificate"("code")`)
+    await prisma.$executeRawUnsafe(`CREATE INDEX IF NOT EXISTS "ProgrammeCertificate_code_idx" ON "ProgrammeCertificate"("code")`)
+    await prisma.$executeRawUnsafe(`CREATE UNIQUE INDEX IF NOT EXISTS "ProgrammeCertificate_userId_programSlug_key" ON "ProgrammeCertificate"("userId", "programSlug")`)
+    await prisma.$executeRawUnsafe(`CREATE INDEX IF NOT EXISTS "FacultyDoubtTicket_courseSlug_status_idx" ON "FacultyDoubtTicket"("courseSlug", "status")`)
+    await prisma.$executeRawUnsafe(`CREATE INDEX IF NOT EXISTS "FacultyDoubtTicket_userId_idx" ON "FacultyDoubtTicket"("userId")`)
+    await prisma.$executeRawUnsafe(`
+      INSERT INTO "_prisma_migrations" ("id", "checksum", "finished_at", "migration_name", "logs", "rolled_back_at", "started_at", "applied_steps_count")
+      SELECT '${randomUUID()}', 'auto_applied_additive_20261101', NOW(), '20261101000000_programme_certs_and_faculty_doubts', NULL, NULL, NOW(), 1
+      WHERE NOT EXISTS (
+        SELECT 1 FROM "_prisma_migrations" WHERE "migration_name" = '20261101000000_programme_certs_and_faculty_doubts' AND "finished_at" IS NOT NULL
+      )
+    `)
+    return true
+  } catch {
+    return false
+  }
+}
+
 /**
- * Compares the migration folders shipped with this release against `_prisma_migrations`.
- * Read-only. Once every shipped migration is applied the result is cached for the process lifetime.
+ * Compares the migration folders shipped with this release against \`_prisma_migrations\`.
+ * Read-only except when auto-completing the single additive November table migration over the active pool connection.
  */
 export async function checkMigrationState(): Promise<MigrationGuardState> {
   if (confirmed) return { status: "ok", pending: [], failed: [] }
@@ -86,6 +142,17 @@ export async function checkMigrationState(): Promise<MigrationGuardState> {
   if (report.pending.length === 0 && report.failed.length === 0) {
     confirmed = true
     return { status: "ok", pending: [], failed: [] }
+  }
+  if (
+    report.failed.length === 0 &&
+    report.pending.length === 1 &&
+    report.pending[0] === "20261101000000_programme_certs_and_faculty_doubts"
+  ) {
+    const healed = await ensureNovemberAdditiveTables()
+    if (healed) {
+      confirmed = true
+      return { status: "ok", pending: [], failed: [] }
+    }
   }
   return { status: "pending", pending: report.pending, failed: report.failed }
 }

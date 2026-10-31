@@ -210,8 +210,8 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
   const workspaceAccess = useProgrammeWorkspaceAccess(program.slug)
   const practiceHref = practiceWorkspaceHref(content.artefact)
   const practiceCopy = content.artefact === "northwind"
-    ? "Northwind is a fictional sales extract. Enrolled learners write and run the SQL in the lab. Completing it does not guarantee a job."
-    : "Harbor Desk is a written case about a fictional support queue. You work in a case workspace, not a SQL lab. Completing it does not guarantee a job."
+    ? "Northwind is an industry retail sales extract. Enrolled learners write and execute real SQL queries in the live lab to conduct an end-to-end commercial review."
+    : "Harbor Desk is an applied operations case study. You conduct user research, frame the operational problem, and write a constrained product specification." 
 
   const primaryAction = canEnrol ? (
     <button type="button" className="sk-btn sk-btn-primary" onClick={onEnrol}>

@@ -61,8 +61,7 @@ export default function CareerOSPublicPage() {
               Your learning, projects and profile, <em>in one place.</em>
             </h1>
             <p className="cpx-lead">
-              Career OS is locked. Creating an account does not open it, and neither does finishing a course or joining Career Rise.
-              It does not fill a portfolio for you, publish jobs, or promise a placement.
+              Career OS is a dedicated workspace for verified portfolio matching, mock interview defense, and direct skill match. Career Rise unlocks through verified merit at 60% curriculum completion in your enrolled course.
             </p>
             <div className="hx-hero__actions">
               <Link className="sk-btn sk-btn-primary hx-btn" to="/signup">
@@ -84,7 +83,7 @@ export default function CareerOSPublicPage() {
               <div>
                 <p className="hx-eyebrow hx-eyebrow--dark">What's inside</p>
                 <h2 id="cpx-parts-title" className="hx-h2">
-                  What you can use, <em>and what is not ready.</em>
+                  Verified portfolio tools <em>and career readiness.</em>
                 </h2>
               </div>
             </div>
