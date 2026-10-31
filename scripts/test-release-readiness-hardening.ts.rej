@@ -1,9 +1,0 @@
-diff a/scripts/test-release-readiness-hardening.ts b/scripts/test-release-readiness-hardening.ts	(rejected hunks)
-@@ -848,6 +848,7 @@ console.log("14. Admin C-Suite Unit Economics UI and Student Programme Master Ce
-       courseDetailSrc.includes("cat-rubric-strip") &&
-       progListingSrc.includes("Start the linked self-paced course") &&
-       repolishUpdated.includes("hx-live-courses-grid") &&
-+      readFileSync(resolve(process.cwd(), "src/pages/ProgramsPage.tsx"), "utf8").includes('id="live-courses"') &&
-       evPageSrc.indexOf("events-launch-tracks-title") < evPageSrc.indexOf("events-list-title"),
-     "Final Touch 100% check: CoursesPage skill tags, CourseDetailPage rubric strip, ProgrammeListing live course cards, Homepage 6-course grid, and EventsPage above-the-fold workshop tracks",
-   )
