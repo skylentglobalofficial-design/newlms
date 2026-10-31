@@ -4,7 +4,7 @@ process.env.SESSION_SECRET ||= "test-only-session-secret-0123456789abcdef"
 process.env.FRONTEND_URL ||= "http://127.0.0.1:8443"
 process.env.NODE_ENV ||= "test"
 
-import { readdirSync, readFileSync } from "node:fs"
+import { existsSync, readdirSync, readFileSync } from "node:fs"
 import { join, resolve } from "node:path"
 import type { AddressInfo } from "node:net"
 import express from "express"
@@ -683,7 +683,7 @@ console.log("14. Admin C-Suite Unit Economics UI and Student Programme Master Ce
   assert(resolvedTicket?.status === "resolved" && resolvedTicket.resolvedById === "u-faculty-1", "resolveFacultyDoubtTicket must mark ticket resolved")
   clearFacultyDoubtStoreForTests()
 
-  const { socraticQuickPromptsFor } = await import("../src/lib/socratic-prompts.ts")
+  const { socraticQuickPromptsFor } = await import("../src/components/lms/SkylentAI.tsx")
   for (const track of ["data-analytics", "product-management", "python-programming", "data-science-ai", "generative-ai", "full-stack-web"]) {
     const prompts = socraticQuickPromptsFor(track, "reading", false)
     assert(prompts.length === 5 && Boolean(prompts.at(-1)?.question), `socraticQuickPromptsFor must include a custom track-specific Socratic prompt for ${track}`)
@@ -808,59 +808,253 @@ console.log("14. Admin C-Suite Unit Economics UI and Student Programme Master Ce
   )
 
 
-  const elixirLibSrc = readFileSync(resolve(process.cwd(), "server/src/lib/elixir.ts"), "utf8")
-  const osPageSrc = readFileSync(resolve(process.cwd(), "src/pages/OSPage.tsx"), "utf8")
-  assert(
-    elixirLibSrc.includes("awardCourseEnrolmentElixir") && lmsUpdated.includes("awardCourseEnrolmentElixir"),
-    "elixir.ts and lms.ts must credit Elixir rewards upon course and programme enrolment",
+  console.log("18. Phases P5-P7 Verification: Proof-of-Work Dossier on /verify/:code, 6-Track Capstone Project Studios, and 1-Click Career Rise Mock Defense")
+  const { buildProofOfWorkDossier } = await import("../server/src/routes/skylent/certificates.ts")
+  const dossier = buildProofOfWorkDossier(
+    [
+      {
+        projectType: "python-pipeline-audit",
+        courseSlug: "python-programming",
+        title: "Python Transaction Pipeline & Anomaly Audit",
+        status: "ready_to_review",
+        finding: "Quarantined 14 duplicate webhook retries and 3 negative-fee rows.",
+        whyItMatters: "Prevents double-crediting merchant balances in nightly settlement runs.",
+        recommendation: "Enforce composite (gateway_tx_id, settlement_epoch) idempotency keys.",
+        updatedAt: new Date("2026-10-30T12:00:00.000Z"),
+      },
+    ],
+    "Python Programming & Automation",
   )
   assert(
-    sharedNavSrc.includes("All 6 live courses") && sharedNavSrc.includes("Workshops & Case Store"),
-    "Public navigation must include All 6 live courses and Workshops & Case Store",
+    dossier.verifiedSkills.length >= 4 &&
+      dossier.artifacts.length === 1 &&
+      dossier.artifacts[0]?.title === "Python Transaction Pipeline & Anomaly Audit" &&
+      dossier.artifacts[0]?.finding?.includes("14 duplicate webhook retries"),
+    "buildProofOfWorkDossier must return track-specific verifiedSkills and formatted project artifacts",
   )
+  const verifyUpdatedSrc = readFileSync(resolve(process.cwd(), "src/pages/VerifyPage.tsx"), "utf8")
   assert(
-    osPageSrc.includes("AUTHORED_COURSE_SLUGS"),
-    "OSPage.tsx must count workspace scope across all 6 authored courses",
+    verifyUpdatedSrc.includes("Verified Proof-of-Work Dossier") && verifyUpdatedSrc.includes("proofOfWork"),
+    "VerifyPage.tsx must render the Verified Proof-of-Work Dossier section",
   )
 
-  console.log("18. Visual Effectiveness, Mobile Responsiveness & Competitive Moat Matrix Verification")
-  const hrCss = readFileSync(resolve(process.cwd(), "src/pages/HomeRepolish.css"), "utf8")
-  const spCss = readFileSync(resolve(process.cwd(), "src/skylent-public.css"), "utf8")
-  const hwnSrc = readFileSync(resolve(process.cwd(), "src/components/learner/HeaderWalletAndNotifications.tsx"), "utf8")
+  const { PROJECT_DEFS, findProjectByCourse } = await import("../server/src/lib/skylent-projects/catalog.ts")
+  const { defaultProjectPathForCourse } = await import("../src/lib/projects-api.ts")
+  const { courseProductProfile } = await import("../src/lib/course-product.ts")
+  assert(PROJECT_DEFS.length === 6, "PROJECT_DEFS must define Capstone Project Studios for all 6 flagship courses")
+  for (const slug of ["data-analytics", "product-management", "python-programming", "data-science-ai", "generative-ai", "full-stack-web"]) {
+    const def = findProjectByCourse(slug)
+    const defaultPath = defaultProjectPathForCourse(slug)
+    const prodProfile = courseProductProfile(slug)
+    assert(
+      Boolean(def) &&
+        def?.tasks.length === 6 &&
+        defaultPath === def?.workspaceHref &&
+        prodProfile?.project?.href === def?.workspaceHref,
+      `Course ${slug} must have a 6-task Capstone Project Studio wired across catalog.ts, projects-api.ts, and course-product.ts`,
+    )
+  }
+
+  const { buildCareerRiseMockDefenseHref } = await import("../server/src/routes/career-rise.ts")
   assert(
-    repolishUpdated.includes('className="hxw-ws"') &&
-      repolishUpdated.includes("hx-moat-compare") &&
-      repolishUpdated.includes("Why learners and institutions choose Skylent OS over passive video platforms"),
-    "Repolish.tsx must render the floating Hero Live Workspace HUD (.hxw-ws) and Competitive Moat comparison matrix (.hx-moat-compare)",
+    buildCareerRiseMockDefenseHref("generative-ai") === "/career-os/interviews?track=generative-ai" &&
+      crCardSrc.includes("Start Mock Defense →"),
+    "Career Rise must expose buildCareerRiseMockDefenseHref and render the 1-click Start Mock Defense link",
   )
+
+
+  console.log("19. Phases P8-P9 Verification: In-Browser TrackInteractiveSandbox (Python, Data Science, GenAI, Full-Stack) and Recruiter Proof-of-Work Verifier")
+  const { SANDBOX_PRESETS } = await import("../src/components/labs/TrackInteractiveSandbox.tsx")
+  for (const projectType of [
+    "python-pipeline-audit",
+    "churn-cohort-validation",
+    "enterprise-rag-evaluation",
+    "idempotent-ledger-architecture",
+  ]) {
+    const preset = SANDBOX_PRESETS[projectType]
+    assert(Boolean(preset), `SANDBOX_PRESETS must include interactive evaluator for ${projectType}`)
+    const outcome = preset.evaluate(preset.defaultInput)
+    assert(outcome.passed === true && outcome.metrics.length >= 3, `Default test vector for ${projectType} must pass interactive verification`)
+  }
+  const nwProjPageSrc = readFileSync(resolve(process.cwd(), "src/pages/NorthwindProjectPage.tsx"), "utf8")
+  const recPageSrc = readFileSync(resolve(process.cwd(), "src/pages/DashboardRecruiterPage.tsx"), "utf8")
   assert(
-    !hrCss.includes("padding-right: 80px") &&
-      hrCss.includes("hx-moat-table-wrap") &&
-      spCss.includes("skn-popover") &&
-      hwnSrc.includes("skn-popover"),
-    "HomeRepolish.css and skylent-public.css must eliminate broken mobile padding and enforce viewport-safe mobile popovers",
+    nwProjPageSrc.includes("TrackInteractiveSandbox") && recPageSrc.includes("Verified Proof-of-Work"),
+    "NorthwindProjectPage.tsx and DashboardRecruiterPage.tsx must mount TrackInteractiveSandbox and Recruiter Proof-of-Work Verifier",
   )
+
+
+  console.log("20. Phase P10 Final Blueprint Completion: 90-Lesson Multi-Track Content Packs (All 6 Flagship Courses) and Cloudflare R2 Object Storage")
+  const { getLessonMeta, getCareerEvidence } = await import("../src/content/course-lookups.ts")
+  const { getMultiTrackLessonBody, getMultiTrackAssignment } = await import("../src/content/multi-track-packs.ts")
+  const { getCourseQuiz } = await import("../src/content/course-quiz-lookups.ts")
+  const { getPracticeQuizPrompt } = await import("../src/content/quiz-practice-prompts.ts")
+  for (const track of ["data-analytics", "product-management", "python-programming", "data-science-ai", "generative-ai", "full-stack-web"]) {
+    for (let i = 1; i <= 15; i += 1) {
+      const lessonId = `l${i}`
+      const meta = getLessonMeta(track, lessonId)
+      assert(Boolean(meta && meta.objective.length > 15), `Course ${track} lesson ${lessonId} must have authored lesson metadata and objective`)
+      if (track !== "data-analytics" && track !== "product-management") {
+        const body = getMultiTrackLessonBody(track, lessonId)
+        assert(Boolean(body && body.length > 40), `Course ${track} lesson ${lessonId} must have authored lesson body`)
+      }
+    }
+    if (track !== "data-analytics" && track !== "product-management") {
+      const assignment = getMultiTrackAssignment(track, "l14")
+      assert(Boolean(assignment && assignment.rubric.length >= 3), `Course ${track} l14 capstone must include a structured rubric`)
+    }
+    assert(Boolean(getCourseQuiz(track, "l3") && getCourseQuiz(track, "l9") && getCourseQuiz(track, "l15")), `Course ${track} must have quiz banks for l3, l9, and l15`)
+    assert(Boolean(getCareerEvidence(track, "l14")), `Course ${track} l14 must expose Career OS evidence metadata`)
+    assert(Boolean(getPracticeQuizPrompt(track, "l3")), `Course ${track} l3 must expose a practice quiz prompt`)
+  }
+
+  const { getStorageConfigStatus, generateSignedUrl, uploadFile, downloadFile, deleteFile } = await import("../server/src/lib/storage.ts")
+  const prevEnv = { ...process.env }
+  try {
+    process.env.STORAGE_PROVIDER = "r2"
+    process.env.STORAGE_BUCKET = "skylent-prod-assets"
+    process.env.R2_ACCOUNT_ID = "acc12345"
+    process.env.R2_ACCESS_KEY_ID = "ak12345"
+    process.env.R2_SECRET_ACCESS_KEY = "sk12345"
+    process.env.R2_IN_MEMORY_MODE = "1"
+    process.env.NODE_ENV = "production"
+    const r2Status = getStorageConfigStatus()
+    assert(r2Status.configured && r2Status.implemented && r2Status.productionAllowed, "Cloudflare R2 storage provider must be configured and production-allowed")
+    const signedUrl = await generateSignedUrl("assignments/u1/submission.pdf", { expiresInSeconds: 600 })
+    assert(signedUrl.includes("acc12345.r2.cloudflarestorage.com") && signedUrl.includes("X-Amz-Signature="), "generateSignedUrl must produce an AWS SigV4 presigned R2 URL")
+    const uploaded = await uploadFile("assignments/u1/submission.pdf", Buffer.from("skylent-proof"))
+    assert(uploaded.provider === "r2" && uploaded.size === 13, "uploadFile must support R2 provider")
+    const downloaded = await downloadFile("assignments/u1/submission.pdf")
+    assert(downloaded.toString() === "skylent-proof", "downloadFile must round-trip R2 payload")
+    await deleteFile("assignments/u1/submission.pdf")
+  } finally {
+    for (const k of Object.keys(process.env)) {
+      if (!(k in prevEnv)) delete process.env[k]
+    }
+    Object.assign(process.env, prevEnv)
+  }
+
+  console.log("21. Final Touch & AlmaBetter/AlmaX Pixel-by-Pixel Surface Verification")
   const coursesPageSrc = readFileSync(resolve(process.cwd(), "src/pages/CoursesPage.tsx"), "utf8")
   const courseDetailSrc = readFileSync(resolve(process.cwd(), "src/pages/CourseDetailPage.tsx"), "utf8")
   const progListingSrc = readFileSync(resolve(process.cwd(), "src/components/programme/ProgrammeListing.tsx"), "utf8")
+  const careerPublicSrc = readFileSync(resolve(process.cwd(), "src/pages/career/CareerOSPublicPage.tsx"), "utf8")
+  const instPageSrc = readFileSync(resolve(process.cwd(), "src/pages/InstitutionsPage.tsx"), "utf8")
+  const homeCssSrc = readFileSync(resolve(process.cwd(), "src/pages/HomeRepolish.css"), "utf8")
   assert(
     coursesPageSrc.includes("COURSE_SKILL_TAGS") &&
       courseDetailSrc.includes("cat-rubric-strip") &&
+      courseDetailSrc.includes("Graded Capstone Project Studio") &&
       progListingSrc.includes("Start the linked self-paced course") &&
       repolishUpdated.includes("hx-live-courses-grid") &&
+      repolishUpdated.includes("ZeroLoginInteractiveTryout") &&
+      homeCssSrc.includes(".hx-page--home .hxw-ws") &&
       readFileSync(resolve(process.cwd(), "src/pages/ProgramsPage.tsx"), "utf8").includes('id="live-courses"') &&
-      evPageSrc.indexOf("events-launch-tracks-title") < evPageSrc.indexOf("events-list-title"),
-    "Final Touch 100% check: CoursesPage skill tags, CourseDetailPage rubric strip, ProgrammeListing live course cards, Homepage 6-course grid, and EventsPage above-the-fold workshop tracks",
-  )
-
-  assert(
-    repolishUpdated.includes("ZeroLoginInteractiveTryout") &&
-      readFileSync(resolve(process.cwd(), "src/pages/path/PathPage.tsx"), "utf8").includes("QuickAdaptiveDiagnostic") &&
-      readFileSync(resolve(process.cwd(), "src/pages/VerifyPage.tsx"), "utf8").includes("SKL-2026-DA-EXEMPLAR") &&
-      readFileSync(resolve(process.cwd(), "src/pages/career/CareerOSPublicPage.tsx"), "utf8").includes("cpx-pillars") &&
+      evPageSrc.indexOf("events-launch-tracks-title") < evPageSrc.indexOf("events-list-title") &&
+      careerPublicSrc.includes("cpx-pillars") &&
+      instPageSrc.includes("Isolated College Tenant OS") &&
+      existsSync(resolve(process.cwd(), "public/.htaccess")) &&
       existsSync(resolve(process.cwd(), "public/_redirects")) &&
       existsSync(resolve(process.cwd(), "vercel.json")),
-    "Unified Master Polish check: Homepage Zero-Login Playground, Path 90-Sec Diagnostic, Verify Exemplar Dossiers, Career OS 3-Pillar Strip, and SPA routing files must be present",
+    "Final Touch & AlmaBetter/AlmaX pixel parity check failed across public and catalogue surfaces",
+  )
+
+  console.log("22. Phases P11-P15 Verification: Zero-Login Homepage Tryout, 90-Sec Skill Diagnostic, Exemplar Dossiers & LinkedIn Share, Daily Execution Streak Heatmap, and Hinglish Socratic AI Mode")
+  const { SKILL_DIAGNOSTIC_QUESTIONS, evaluateSkillDiagnostic } = await import("../src/lib/path/skillDiagnostic.ts")
+  assert(SKILL_DIAGNOSTIC_QUESTIONS.length === 3, "SKILL_DIAGNOSTIC_QUESTIONS must contain 3 scenario diagnostic checks")
+  const perfectDiag = evaluateSkillDiagnostic({
+    "q-sql-grain": "fanout",
+    "q-pm-triage": "triage-queue",
+    "q-ai-rag": "metadata-citation",
+  })
+  assert(
+    perfectDiag.scorePercent === 100 &&
+      perfectDiag.percentileEstimate === 92 &&
+      perfectDiag.readinessTier === "Fast-Track Capstone",
+    "evaluateSkillDiagnostic must score 3/3 as 100% (92nd percentile, Fast-Track Capstone)",
+  )
+  const sqlGapDiag = evaluateSkillDiagnostic({
+    "q-sql-grain": "nulls",
+    "q-pm-triage": "triage-queue",
+    "q-ai-rag": "metadata-citation",
+  })
+  assert(
+    sqlGapDiag.scorePercent === 67 &&
+      sqlGapDiag.recommendedCourse.slug === "data-analytics",
+    "evaluateSkillDiagnostic must route a SQL grain gap to data-analytics",
+  )
+
+  const { computeLearnerExecutionStreak } = await import("../src/lib/execution-streak.ts")
+  const streakOut = computeLearnerExecutionStreak(
+    [
+      "2026-10-29T10:00:00.000Z",
+      "2026-10-30T14:00:00.000Z",
+      "2026-10-31T09:00:00.000Z",
+      "2026-10-31T11:00:00.000Z",
+    ],
+    "2026-10-31T12:00:00.000Z",
+  )
+  assert(
+    streakOut.currentStreakDays === 3 &&
+      streakOut.activeToday === true &&
+      streakOut.weeklyActionsCount === 4 &&
+      streakOut.heatmapDays.length === 14 &&
+      streakOut.streakBonusElixir === 15,
+    `computeLearnerExecutionStreak must compute 3-day streak, 14-day heatmap, and +15 Elixir momentum, got ${JSON.stringify(streakOut)}`,
+  )
+
+  const { resolveExemplarCertificate, EXEMPLAR_CERTIFICATES } = await import("../server/src/routes/skylent/certificates.ts")
+  assert(EXEMPLAR_CERTIFICATES.length === 3, "EXEMPLAR_CERTIFICATES must define 3 exemplar graded dossiers")
+  const exDa = resolveExemplarCertificate("skl-2026-da-exemplar")
+  assert(
+    exDa?.valid === true &&
+      exDa.proofOfWork.artifacts.length === 1 &&
+      exDa.proofOfWork.artifacts[0]?.finding?.includes("166 valid rows"),
+    "resolveExemplarCertificate must return a valid Proof-of-Work Dossier for SKL-2026-DA-EXEMPLAR",
+  )
+
+  const { hinglishIntuitionPromptFor } = await import("../src/components/lms/SkylentAI.tsx")
+  const { groundedAnswer } = await import("../server/src/lib/skylent-ai/grounded.ts")
+  const { buildLessonAiContext } = await import("../server/src/lib/skylent-ai/authored.ts")
+  const hinglishPrompt = hinglishIntuitionPromptFor("data-analytics", "SQL joins and data-quality checks")
+  assert(
+    hinglishPrompt.label.includes("Explain in Simple Hinglish") &&
+      hinglishPrompt.question.includes("Hinglish"),
+    "hinglishIntuitionPromptFor must generate a 1-click Hinglish Socratic prompt",
+  )
+  const hinglishReply = groundedAnswer({
+    action: "ask",
+    question: hinglishPrompt.question,
+    history: [],
+    context: buildLessonAiContext({
+      courseSlug: "data-analytics",
+      courseTitle: "Data Analytics",
+      moduleTitle: "SQL for analysts",
+      lessonId: "l8",
+      lessonTitle: "SQL joins and data-quality checks",
+      lessonKind: "notes",
+    }),
+  })
+  assert(
+    hinglishReply.includes("Hinglish First-Principles Intuition") &&
+      hinglishReply.includes("direct answer leak nahi karunga"),
+    "groundedAnswer must return a Socratic Hinglish First-Principles Intuition response without leaking answers",
+  )
+
+  const homePageP11 = readFileSync(resolve(process.cwd(), "src/pages/HomePage.tsx"), "utf8")
+  const repolishP11 = readFileSync(resolve(process.cwd(), "src/pages/home/Repolish.tsx"), "utf8")
+  const pathPageP12 = readFileSync(resolve(process.cwd(), "src/pages/path/PathPage.tsx"), "utf8")
+  const verifyPageP13 = readFileSync(resolve(process.cwd(), "src/pages/VerifyPage.tsx"), "utf8")
+  const studentPageP14 = readFileSync(resolve(process.cwd(), "src/pages/DashboardStudentPage.tsx"), "utf8")
+  assert(
+    homePageP11.includes("ZeroLoginInteractiveTryout") &&
+      (repolishP11.includes("Live Northwind SQL Lab") || repolishP11.includes("Live Northwind SQL Runner")) &&
+      pathPageP12.includes("90-Second Live Skill Diagnostic") &&
+      verifyPageP13.includes("Public Exemplar Proof-of-Work") &&
+      verifyPageP13.includes("Share Verified Dossier on LinkedIn") &&
+      studentPageP14.includes("14-Day Proof-of-Work Activity Grid") &&
+      studentPageP14.includes("Share on LinkedIn"),
+    "All Phases P11-P15 UI components must be mounted across HomePage, PathPage, VerifyPage, and DashboardStudentPage",
   )
 
   console.log("release-readiness-hardening ok")

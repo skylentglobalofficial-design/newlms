@@ -1,4 +1,5 @@
 import { FLAGSHIP_COURSE_SLUG, PRODUCT_MANAGEMENT_SLUG } from "../lib/authored-courses"
+import { getMultiTrackPracticePrompt, isMultiTrackAuthoredCourse } from "./multi-track-packs"
 
 /** First-question prompts for showcase copy only — no answer keys or explanations. */
 const PRACTICE_PROMPTS: Record<string, Record<string, string>> = {
@@ -15,5 +16,6 @@ export function getPracticeQuizPrompt(
   lessonId: string | undefined,
 ): string | null {
   if (!courseSlug || !lessonId) return null
+  if (isMultiTrackAuthoredCourse(courseSlug)) return getMultiTrackPracticePrompt(courseSlug, lessonId)
   return PRACTICE_PROMPTS[courseSlug]?.[lessonId] ?? null
 }

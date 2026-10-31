@@ -361,6 +361,44 @@ export default function DashboardRecruiterPage() {
                 </ul>
               ) : null}
             </section>
+
+            <section id="rec-talent-verify" style={{ marginTop: 28, ...panelStyle }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, flexWrap: 'wrap', marginBottom: 8 }}>
+                <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 600, color: C.ink, margin: 0 }}>
+                  Verified Proof-of-Work &amp; Credential Dossier Check
+                </h2>
+                <a href="/verify" className="os-btn os-btn-ghost" style={{ textDecoration: 'none', fontSize: 13 }}>
+                  Open Public Credential Verifier (/verify) →
+                </a>
+              </div>
+              <p style={{ color: C.slate, fontSize: 13, lineHeight: 1.6, margin: '0 0 10px' }}>
+                Every Skylent candidate certificate ID (e.g. <code>SKL-2026-DA-...</code> or <code>SKL-2026-PGM...</code>) resolves a live Proof-of-Work Dossier across all 6 flagship Capstone Project Studios:
+              </p>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                {[
+                  'Data Analytics · Northwind Commercial Review',
+                  'Product Management · Harbor Desk Product Case',
+                  'Python · Settlement Pipeline & Anomaly Audit',
+                  'Data Science & AI · Out-of-Time Churn Validation',
+                  'Generative AI · Enterprise Policy RAG Evaluation',
+                  'Full Stack Web · Idempotent Wallet & Webhook Spec',
+                ].map((label) => (
+                  <span
+                    key={label}
+                    style={{
+                      fontSize: 12,
+                      padding: '4px 10px',
+                      borderRadius: 999,
+                      background: 'var(--skylent-surface-paper)',
+                      border: `1px solid ${T.lineLight}`,
+                      color: C.ink,
+                    }}
+                  >
+                    ✓ {label}
+                  </span>
+                ))}
+              </div>
+            </section>
           </>
         ) : null}
       </div>

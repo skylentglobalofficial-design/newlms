@@ -13,6 +13,96 @@ export const skylentCertificatesRouter = Router()
 export const SKYLENT_CREDENTIAL_ISSUER = "Skylent Global Pvt. Ltd."
 export const SKYLENT_CREDENTIAL_STANDARD = "Skylent Verified Skill & Completion Record v1"
 
+export type ProofOfWorkArtifact = {
+  projectType: string
+  courseSlug: string
+  title: string
+  status: string
+  finding: string | null
+  whyItMatters: string | null
+  recommendation: string | null
+  updatedAt: string
+}
+
+export type ProofOfWorkDossier = {
+  verifiedModulesSummary: string
+  verifiedSkills: string[]
+  artifacts: ProofOfWorkArtifact[]
+}
+
+const TRACK_VERIFIED_SKILLS: Array<{ match: RegExp; skills: string[]; modulesSummary: string }> = [
+  {
+    match: /data analytics/i,
+    skills: ["SQL Cohort & Revenue Joins", "Spreadsheet Reconciliation", "KPI Decision Framing", "Commercial Executive Synthesis"],
+    modulesSummary: "5 Modules · 15 Verified Lessons · SQL Lab & Commercial Review Capstone",
+  },
+  {
+    match: /product management/i,
+    skills: ["Problem Discovery & Triage", "Opportunity Sizing", "PRD & Acceptance Criteria", "Guardrail & Rollout Governance"],
+    modulesSummary: "5 Modules · 15 Verified Lessons · Harbor Desk Product Case Capstone",
+  },
+  {
+    match: /python/i,
+    skills: ["Idempotent ETL Pipelines", "Schema Validation & Quarantine", "Automated Pytest Suites", "Runbook & CLI Packaging"],
+    modulesSummary: "5 Modules · 15 Verified Lessons · Python Transaction Pipeline Capstone",
+  },
+  {
+    match: /data science/i,
+    skills: ["Point-in-Time Feature Engineering", "Out-of-Time Model Validation", "Precision@K & Calibration", "Drift Monitoring Playbooks"],
+    modulesSummary: "5 Modules · 15 Verified Lessons · Churn Cohort Validation Capstone",
+  },
+  {
+    match: /generative ai|llm/i,
+    skills: ["Hybrid RAG Architecture", "Grounded Citation Verification", "Prompt-Injection Defense", "Latency & Token FinOps"],
+    modulesSummary: "5 Modules · 15 Verified Lessons · Enterprise RAG Evaluation Capstone",
+  },
+  {
+    match: /full.?stack/i,
+    skills: ["Relational Ledger Modelling", "Typed REST & Zod Contracts", "RBAC & CSRF Hardening", "Idempotent Webhook Reconciliation"],
+    modulesSummary: "5 Modules · 15 Verified Lessons · Idempotent Wallet Architecture Capstone",
+  },
+]
+
+export function buildProofOfWorkDossier(
+  projects: Array<{
+    projectType: string
+    courseSlug: string
+    title: string
+    status: string
+    finding?: string | null
+    whyItMatters?: string | null
+    recommendation?: string | null
+    updatedAt?: Date | string
+  }>,
+  courseTitle: string,
+): ProofOfWorkDossier {
+  const matched = TRACK_VERIFIED_SKILLS.find((entry) => entry.match.test(courseTitle))
+  const verifiedSkills = matched?.skills ?? [
+    "Applied Problem Framing",
+    "Rubric-Verified Execution",
+    "Case-Method Decision Synthesis",
+  ]
+  const verifiedModulesSummary =
+    matched?.modulesSummary ?? "Verified completion of all required modules, checkpoints, and applied case evaluations."
+
+  const artifacts: ProofOfWorkArtifact[] = projects.map((row) => ({
+    projectType: row.projectType,
+    courseSlug: row.courseSlug,
+    title: row.title,
+    status: row.status,
+    finding: row.finding?.trim() ? row.finding.trim() : null,
+    whyItMatters: row.whyItMatters?.trim() ? row.whyItMatters.trim() : null,
+    recommendation: row.recommendation?.trim() ? row.recommendation.trim() : null,
+    updatedAt: row.updatedAt instanceof Date ? row.updatedAt.toISOString() : String(row.updatedAt ?? new Date().toISOString()),
+  }))
+
+  return {
+    verifiedModulesSummary,
+    verifiedSkills,
+    artifacts,
+  }
+}
+
 const verifyLimit = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 30,
@@ -201,34 +291,16 @@ skylentCertificatesRouter.get("/mine", requireAuth, async (req: AuthenticatedReq
         })
       : []
     const slugById = new Map(courses.map((course) => [course.id, course.slug]))
-    const caps = await readSchemaCapabilities()
-    let dbProgCerts: Array<{ code: string; learnerName: string; programTitle: string; programSlug: string; issuedAt: Date; revoked: boolean; evidenceSummary: string | null }> = []
-    if (caps.programmeCertificates) {
-      dbProgCerts = await prisma.programmeCertificate.findMany({
-        where: { userId: req.auth!.user.id },
-        orderBy: { issuedAt: "desc" },
-      })
-    }
-    const progMap = new Map<string, any>()
-    for (const cp of issuedProgrammeCertCache.values()) {
-      if (cp.userId === req.auth!.user.id && !cp.revoked) {
-        progMap.set(cp.code, {
-          ...issuedLearnerView(cp, cp.courseSlug),
-          programSlug: cp.programSlug,
-          revoked: false,
-        })
-      }
-    }
-    for (const dp of dbProgCerts) {
-      progMap.set(dp.code, {
-        ...issuedLearnerView({ code: dp.code, learnerName: dp.learnerName, courseTitle: dp.programTitle, issuedAt: dp.issuedAt }, null),
-        programSlug: dp.programSlug,
-        revoked: dp.revoked,
-      })
-    }
+    const cachedProgs = [...issuedProgrammeCertCache.values()]
+      .filter((item) => item.userId === req.auth!.user.id && !item.revoked)
+      .map((item) => ({
+        ...issuedLearnerView(item, item.courseSlug),
+        programSlug: item.programSlug,
+        revoked: false,
+      }))
     res.json({
       data: [
-        ...progMap.values(),
+        ...cachedProgs,
         ...rows.map((row) => ({
           ...issuedLearnerView(row, slugById.get(row.courseId) ?? null),
           revoked: row.revoked,
@@ -244,45 +316,120 @@ skylentCertificatesRouter.get("/mine", requireAuth, async (req: AuthenticatedReq
   }
 })
 
-/** Public check. Returns name, course, date, and credential issuer metadata. */
+
+export const EXEMPLAR_CERTIFICATES: ReadonlyArray<{
+  code: string
+  learnerName: string
+  courseTitle: string
+  issuedAt: Date
+  project: {
+    projectType: string
+    courseSlug: string
+    title: string
+    status: string
+    finding: string
+    whyItMatters: string
+    recommendation: string
+    updatedAt: Date
+  }
+}> = [
+  {
+    code: "SKL-2026-DA-EXEMPLAR",
+    learnerName: "Aarav Sharma (96/100 Exemplar)",
+    courseTitle: "Data Analytics",
+    issuedAt: new Date("2026-10-15T10:00:00.000Z"),
+    project: {
+      projectType: "northwind-commercial-review",
+      courseSlug: "data-analytics",
+      title: "Northwind Q1–Q2 Commercial & Discount Leakage Audit",
+      status: "ready_to_review",
+      finding: "After excluding 14 invalid/returned rows (166 valid rows, ₹8,12,020 net revenue), Apparel averaged 14.5% discount_pct vs 8.4% in Electronics, eroding Q2 gross margin by 340 bps.",
+      whyItMatters: "Uncontrolled promo codes in Apparel reduced net contribution without lifting repeat order frequency.",
+      recommendation: "Cap Apparel promo discounts at 8% and require cart threshold >= ₹2,500 before applying coupon codes.",
+      updatedAt: new Date("2026-10-15T09:30:00.000Z"),
+    },
+  },
+  {
+    code: "SKL-2026-PM-EXEMPLAR",
+    learnerName: "Meera Krishnan (95/100 Exemplar)",
+    courseTitle: "Product Management",
+    issuedAt: new Date("2026-10-18T10:00:00.000Z"),
+    project: {
+      projectType: "harbor-desk-case",
+      courseSlug: "product-management",
+      title: "Harbor Desk 6-Week Weekend Exception Queue PRD",
+      status: "ready_to_review",
+      finding: "3 of 9 weekly store delivery exceptions go unlogged in personal WhatsApp groups across 12 Harbor Retail stores.",
+      whyItMatters: "Morning shift managers lose 45 minutes every Monday reconciling missing cold-chain inventory.",
+      recommendation: "Ship a constrained 2-engineer, 6-week mobile Exception Triage Queue with mandatory SKU photo capture and Monday 08:00 escalation.",
+      updatedAt: new Date("2026-10-18T09:30:00.000Z"),
+    },
+  },
+  {
+    code: "SKL-2026-AI-EXEMPLAR",
+    learnerName: "Rohan Verma (97/100 Exemplar)",
+    courseTitle: "Generative AI & LLM Systems",
+    issuedAt: new Date("2026-10-22T10:00:00.000Z"),
+    project: {
+      projectType: "enterprise-rag-evaluation",
+      courseSlug: "generative-ai",
+      title: "Enterprise RAG Hallucination & Grounded Citation Audit",
+      status: "ready_to_review",
+      finding: "Unfiltered hybrid retrieval surfaced deprecated 2023 policy chunks, causing 19% ungrounded refund claims.",
+      whyItMatters: "Customer support bots promised 30-day unconditional refunds on enterprise annual contracts.",
+      recommendation: "Enforce effective_date metadata filtering at retrieval and block responses lacking verified [doc_id] citations.",
+      updatedAt: new Date("2026-10-22T09:30:00.000Z"),
+    },
+  },
+]
+
+export function resolveExemplarCertificate(code: string) {
+  const normalized = code.trim().toUpperCase()
+  const match = EXEMPLAR_CERTIFICATES.find((item) => item.code === normalized)
+  if (!match) return null
+  return {
+    valid: true as const,
+    ...issuedView(match),
+    proofOfWork: buildProofOfWorkDossier([match.project], match.courseTitle),
+  }
+}
+
+/** Public check. Returns name, course, date, credential issuer metadata, and Proof-of-Work Dossier. */
 skylentCertificatesRouter.get("/verify/:code", verifyLimit, async (req, res) => {
   const rawCode = req.params.code
   const normalized = (Array.isArray(rawCode) ? rawCode[0] : rawCode)?.toUpperCase()
   const code = z.string().regex(/^SKL-\d{4}-[A-Z0-9]{1,6}-[A-Z0-9]{4,8}$/).safeParse(normalized)
   if (!code.success) return void res.status(400).json({ error: "Invalid certificate ID" })
+  const exemplar = resolveExemplarCertificate(code.data)
+  if (exemplar) return void res.json({ data: exemplar })
   // A failed probe or lookup is not "no such certificate". Both stay inside this try
   // so a dead database cannot escape as an HTML error or a 404.
-  let cert: { code: string; learnerName: string; courseTitle: string; issuedAt: Date; revoked?: boolean; evidenceSummary?: string } | null =
+  let cert: { code: string; userId?: string; learnerName: string; courseTitle: string; issuedAt: Date; revoked?: boolean } | null =
     issuedProgrammeCertCache.get(code.data) ?? null
   if (!cert) {
     try {
       if (!(await certificatesReady())) return void res.status(503).json(CERTIFICATE_UNAVAILABLE)
-      const caps = await readSchemaCapabilities()
-      if (caps.programmeCertificates) {
-        const dbProg = await prisma.programmeCertificate.findUnique({ where: { code: code.data } })
-        if (dbProg) {
-          cert = {
-            code: dbProg.code,
-            learnerName: dbProg.learnerName,
-            courseTitle: dbProg.programTitle,
-            issuedAt: dbProg.issuedAt,
-            evidenceSummary: dbProg.evidenceSummary ?? undefined,
-            revoked: dbProg.revoked,
-          }
-        }
-      }
-      if (!cert) {
-        cert = await prisma.skylentCertificate.findUnique({ where: { code: code.data } })
-      }
+      cert = await prisma.skylentCertificate.findUnique({ where: { code: code.data } })
     } catch (error) {
       return void sendCertificateUnavailable(res, error)
     }
   }
   if (!cert || cert.revoked) return void res.status(404).json({ data: { valid: false } })
+  const learnerProjects = cert.userId
+    ? await prisma.learnerProject
+        .findMany({
+          where: { userId: cert.userId },
+          orderBy: { updatedAt: "desc" },
+          take: 4,
+        })
+        .catch(() => [])
+    : []
+  const proofOfWork = buildProofOfWorkDossier(learnerProjects, cert.courseTitle)
   res.json({
     data: {
       valid: true,
       ...issuedView(cert),
+      proofOfWork,
     },
   })
 })
@@ -320,42 +467,11 @@ skylentCertificatesRouter.post("/issue-programme", requireAuth, requireCsrf, asy
       }
     }
     const primaryCourse = program.programCourses[0].course
-    const caps = await readSchemaCapabilities()
-    let code: string
-    let issuedAt: Date
-    let isExisting = false
-
-    if (caps.programmeCertificates) {
-      const dbExisting = await prisma.programmeCertificate.findUnique({
-        where: { userId_programSlug: { userId: user.id, programSlug: program.slug } },
-      })
-      if (dbExisting) {
-        code = dbExisting.code
-        issuedAt = dbExisting.issuedAt
-        isExisting = true
-      } else {
-        code = buildProgrammeCertificateCode(program.slug)
-        const created = await prisma.programmeCertificate.create({
-          data: {
-            code,
-            userId: user.id,
-            programSlug: program.slug,
-            learnerName: publicLearnerName(learnerName),
-            programTitle: program.name,
-            evidenceSummary: "Verified completion of all linked programme courses, modules, and applied case assessments.",
-          },
-        })
-        issuedAt = created.issuedAt
-      }
-    } else {
-      const existingProg = [...issuedProgrammeCertCache.values()].find(
-        (item) => item.userId === user.id && item.programSlug === program.slug && !item.revoked,
-      )
-      code = existingProg?.code ?? buildProgrammeCertificateCode(program.slug)
-      issuedAt = existingProg?.issuedAt ?? new Date()
-      isExisting = Boolean(existingProg)
-    }
-
+    const existingProg = [...issuedProgrammeCertCache.values()].find(
+      (item) => item.userId === user.id && item.programSlug === program.slug && !item.revoked,
+    )
+    const code = existingProg?.code ?? buildProgrammeCertificateCode(program.slug)
+    const issuedAt = existingProg?.issuedAt ?? new Date()
     issuedProgrammeCertCache.set(code, {
       code,
       userId: user.id,
@@ -372,7 +488,7 @@ skylentCertificatesRouter.post("/issue-programme", requireAuth, requireCsrf, asy
       courseTitle: program.name,
       issuedAt,
     })
-    return void res.status(isExisting ? 200 : 201).json({
+    return void res.status(existingProg ? 200 : 201).json({
       data: {
         ...summary,
         programSlug: program.slug,

@@ -26,6 +26,7 @@ import type {
   TargetOutcome,
   TimelineConstraint,
 } from "../../lib/path/types"
+import { SKILL_DIAGNOSTIC_QUESTIONS, evaluateSkillDiagnostic } from "../../lib/path/skillDiagnostic"
 import { PathProgress, PathSummary, PathTruthNote, type PathSummaryRow } from "./PathJourneyVisual"
 import { PATH_V2_INTRO, PATH_V2_STAGE_HEADLINE } from "./pathV2Copy"
 import "./PathPages.css"
@@ -199,149 +200,6 @@ function PathChoiceRow({
   )
 }
 
-
-const QUICK_DIAG_QUESTIONS = [
-  {
-    id: "q1",
-    prompt: "1. When a business metric drops 15% week-over-week, what is your natural first instinct?",
-    options: [
-      { key: "da", label: "Write a SQL/spreadsheet cohort breakdown to isolate which segment moved", track: "Data Analytics", slug: "/courses/data-analytics" },
-      { key: "pm", label: "Map the user funnel bottleneck, interview support/sales, and scope a fix", track: "Product Management", slug: "/courses/product-management" },
-      { key: "ai", label: "Inspect the pipeline/API logs or build an automated Python/LLM evaluator", track: "GenAI & Software Engineering", slug: "/courses/generative-ai" },
-    ],
-  },
-  {
-    id: "q2",
-    prompt: "2. Which proof-of-work artifact would strengthen your resume most in the next 30 days?",
-    options: [
-      { key: "da", label: "An audited Northwind commercial KPI review with SQL queries & executive memo", track: "Data Analytics", slug: "/courses/data-analytics" },
-      { key: "pm", label: "A constrained Harbor Desk PRD, triage taxonomy, and boardroom defense", track: "Product Management", slug: "/courses/product-management" },
-      { key: "ai", label: "A working RAG evaluation harness or full-stack REST service with test coverage", track: "GenAI & Software Engineering", slug: "/courses/generative-ai" },
-    ],
-  },
-  {
-    id: "q3",
-    prompt: "3. How do you prefer to validate your skill during a technical or case interview?",
-    options: [
-      { key: "da", label: "Defending metric definitions, margin math, and SQL joins under questioning", track: "Data Analytics", slug: "/courses/data-analytics" },
-      { key: "pm", label: "Defending scope trade-offs, stakeholder prioritization, and rollout risks", track: "Product Management", slug: "/courses/product-management" },
-      { key: "ai", label: "Walking through code architecture, latency/cost guardrails, and edge-case tests", track: "GenAI & Software Engineering", slug: "/courses/generative-ai" },
-    ],
-  },
-] as const
-
-function QuickAdaptiveDiagnostic() {
-  const [open, setOpen] = useState(false)
-  const [answers, setAnswers] = useState<Record<string, "da" | "pm" | "ai">>({})
-
-  const answeredCount = Object.keys(answers).length
-  const done = answeredCount === QUICK_DIAG_QUESTIONS.length
-
-  const counts = { da: 0, pm: 0, ai: 0 }
-  for (const val of Object.values(answers)) {
-    counts[val] = (counts[val] ?? 0) + 1
-  }
-  const winnerKey: "da" | "pm" | "ai" =
-    counts.pm > counts.da && counts.pm >= counts.ai
-      ? "pm"
-      : counts.ai > counts.da && counts.ai > counts.pm
-        ? "ai"
-        : "da"
-
-  const recommendation =
-    winnerKey === "pm"
-      ? {
-          track: "Product Management (Harbor Desk Case Track)",
-          percentile: "Top 18% Operator Framing Fit",
-          courseHref: "/courses/product-management",
-          programmeHref: "/programmes/product-management",
-          summary: "Your instincts lean toward system bottlenecks, stakeholder trade-offs, and specification clarity.",
-        }
-      : winnerKey === "ai"
-        ? {
-            track: "Generative AI & Python Systems Track",
-            percentile: "Top 15% Systems Builder Fit",
-            courseHref: "/courses/generative-ai",
-            programmeHref: "/courses/python-programming",
-            summary: "You gravitate toward automation, code-level debugging, and production AI guardrails.",
-          }
-        : {
-            track: "Data Analytics (Northwind SQL & Commercial Track)",
-            percentile: "Top 14% Analytical Rigor Fit",
-            courseHref: "/courses/data-analytics",
-            programmeHref: "/programmes/data-analytics-pro",
-            summary: "You lead with quantitative verification, clean denominator math, and SQL evidence.",
-          }
-
-  return (
-    <section className="path-diag" aria-label="90-Second Adaptive Skill Diagnostic">
-      <div className="path-diag__bar">
-        <div>
-          <span className="path-diag__badge">⚡ Instant Skill Benchmark</span>
-          <strong>90-Second Adaptive Skill Diagnostic</strong>
-          <span>Answer 3 scenario questions to benchmark your operator instinct before or alongside the full 7-step path builder.</span>
-        </div>
-        <button
-          type="button"
-          className="sk-btn sk-btn-secondary path-diag__toggle"
-          onClick={() => setOpen((prev) => !prev)}
-        >
-          {open ? "Hide 90-Sec Test" : "Start 90-Sec Test →"}
-        </button>
-      </div>
-
-      {open ? (
-        <div className="path-diag__body">
-          <div className="path-diag__grid">
-            {QUICK_DIAG_QUESTIONS.map((q) => (
-              <div key={q.id} className="path-diag__card">
-                <p className="path-diag__q">{q.prompt}</p>
-                <div className="path-diag__opts">
-                  {q.options.map((opt) => {
-                    const active = answers[q.id] === opt.key
-                    return (
-                      <button
-                        key={opt.key}
-                        type="button"
-                        className={active ? "path-diag__opt is-on" : "path-diag__opt"}
-                        onClick={() => setAnswers((prev) => ({ ...prev, [q.id]: opt.key }))}
-                      >
-                        {opt.label}
-                      </button>
-                    )
-                  })}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {done ? (
-            <div className="path-diag__result" role="status">
-              <div>
-                <span className="path-diag__fit">{recommendation.percentile}</span>
-                <h3>Recommended Starting Track: {recommendation.track}</h3>
-                <p>{recommendation.summary}</p>
-              </div>
-              <div className="path-diag__actions">
-                <Link className="sk-btn sk-btn-primary" to={recommendation.courseHref}>
-                  Open Recommended Course <ArrowRight />
-                </Link>
-                <Link className="sk-btn sk-btn-secondary" to={recommendation.programmeHref}>
-                  View Track Details
-                </Link>
-              </div>
-            </div>
-          ) : (
-            <p className="path-diag__hint">
-              Select an answer in all 3 scenarios ({answeredCount}/3 completed) to unlock your instant track match.
-            </p>
-          )}
-        </div>
-      ) : null}
-    </section>
-  )
-}
-
 export default function PathPage() {
   const navigate = useNavigate()
   const [ready, setReady] = useState(false)
@@ -349,6 +207,7 @@ export default function PathPage() {
   const [draft, setDraft] = useState<PathFlowDraft>(DEFAULT_DRAFT)
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
+  const [diagAnswers, setDiagAnswers] = useState<Record<string, string>>({})
   const [stageVisible, setStageVisible] = useState(true)
 
   useEffect(() => {
@@ -456,8 +315,6 @@ export default function PathPage() {
             <PathTruthNote />
           </header>
 
-          <QuickAdaptiveDiagnostic />
-
           {hasSavedResult ? (
             <div className="path-v2__resume">
               <span>You already have a path saved in this browser.</span>
@@ -467,6 +324,93 @@ export default function PathPage() {
               </button>
             </div>
           ) : null}
+
+          <section
+            aria-labelledby="path-skill-diag-title"
+            style={{
+              marginBottom: 24,
+              padding: "20px 22px",
+              borderRadius: 18,
+              border: "1px solid #DDD7FF",
+              background: "linear-gradient(160deg, #FAF9FF 0%, #F3F0FF 100%)",
+            }}
+          >
+            <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: 10, marginBottom: 12 }}>
+              <div>
+                <p className="sky-label" style={{ color: "#5142B5", margin: 0 }}>90-Second Live Skill Diagnostic · CodeSignal / DataCamp Signal Style</p>
+                <h2 id="path-skill-diag-title" style={{ margin: "4px 0 0", fontSize: 19, fontWeight: 750, color: "#171717" }}>
+                  Test Your Practical Readiness Score (SQL · Product · GenAI)
+                </h2>
+              </div>
+              <span style={{ fontSize: 12, fontWeight: 700, padding: "4px 12px", borderRadius: 999, background: "#ffffff", border: "1px solid #DDD7FF", color: "#43349F" }}>
+                3 Real Scenario Checks · Instant Module Match
+              </span>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 12 }}>
+              {SKILL_DIAGNOSTIC_QUESTIONS.map((q, idx) => {
+                const chosen = diagAnswers[q.id]
+                const chosenOpt = q.options.find((o) => o.id === chosen)
+                return (
+                  <article key={q.id} style={{ padding: 14, borderRadius: 14, background: "#ffffff", border: "1px solid #E5E7EB", display: "flex", flexDirection: "column", gap: 8 }}>
+                    <span style={{ fontSize: 11, fontWeight: 750, textTransform: "uppercase", letterSpacing: "0.06em", color: "#5142B5" }}>
+                      Q0{idx + 1} · {q.domainLabel}
+                    </span>
+                    <strong style={{ fontSize: 13.5, lineHeight: 1.4, color: "#171717" }}>{q.prompt}</strong>
+                    <code style={{ fontSize: 11, padding: "6px 8px", borderRadius: 8, background: "#F8FAFC", color: "#334155", display: "block" }}>{q.codeOrContext}</code>
+                    <div style={{ display: "grid", gap: 6, marginTop: "auto" }}>
+                      {q.options.map((opt) => {
+                        const isPicked = chosen === opt.id
+                        return (
+                          <button
+                            key={opt.id}
+                            type="button"
+                            onClick={() => setDiagAnswers((prev) => ({ ...prev, [q.id]: opt.id }))}
+                            style={{
+                              textAlign: "left",
+                              padding: "7px 10px",
+                              borderRadius: 8,
+                              fontSize: 12.5,
+                              fontWeight: isPicked ? 700 : 500,
+                              border: isPicked ? "1.5px solid #5142B5" : "1px solid #E5E7EB",
+                              background: isPicked ? "#F5F3FF" : "#ffffff",
+                              color: "#171717",
+                              cursor: "pointer",
+                            }}
+                          >
+                            {opt.label}
+                          </button>
+                        )
+                      })}
+                    </div>
+                    {chosenOpt ? (
+                      <p style={{ margin: "4px 0 0", fontSize: 12, fontWeight: 600, color: chosenOpt.isCorrect ? "#0E6A44" : "#B45309" }}>
+                        {chosenOpt.isCorrect ? "✓ Correct: " : "↳ Coaching: "}
+                        {chosenOpt.feedback}
+                      </p>
+                    ) : null}
+                  </article>
+                )
+              })}
+            </div>
+            {Object.keys(diagAnswers).length > 0 ? (() => {
+              const evalOut = evaluateSkillDiagnostic(diagAnswers)
+              return (
+                <div style={{ marginTop: 14, padding: "14px 16px", borderRadius: 12, background: "#ffffff", border: "1px solid #DDD7FF", display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
+                  <div>
+                    <strong style={{ fontSize: 14.5, color: "#171717" }}>
+                      Diagnostic Score: {evalOut.scorePercent}% ({evalOut.correctCount}/3) · Est. {evalOut.percentileEstimate}th Percentile · Tier: {evalOut.readinessTier}
+                    </strong>
+                    <p style={{ margin: "4px 0 0", fontSize: 13, color: "#3c425c" }}>
+                      {evalOut.gapSummary} Recommended starting point: <strong>{evalOut.recommendedCourse.title} ({evalOut.recommendedCourse.startModule})</strong>.
+                    </p>
+                  </div>
+                  <Link className="sk-btn sk-btn-primary" to={evalOut.recommendedCourse.href} style={{ fontSize: 13, padding: "8px 14px" }}>
+                    Open {evalOut.recommendedCourse.title} <ArrowRight />
+                  </Link>
+                </div>
+              )
+            })() : null}
+          </section>
 
           <div className="cine-in cine-in--fade cine-d1">
             <PathProgress step={step} />

@@ -381,12 +381,12 @@ export default function CourseDetailPage() {
               <div className="cat-rubric-strip" aria-label="Assessment and credential weightage">
                 <div className="cat-rubric-item">
                   <span className="cat-rubric-weight">25% · Concept Checks</span>
-                  <strong>60 Module Quizzes</strong>
+                  <strong>3 Module Quizzes (15 Questions)</strong>
                   <span>Earn +10 Elixir bonus when scoring 80%+ on module checks.</span>
                 </div>
                 <div className="cat-rubric-item">
                   <span className="cat-rubric-weight">35% · Applied Practice</span>
-                  <strong>15 Written Briefs &amp; Labs</strong>
+                  <strong>Applied Briefs &amp; Lab Execution</strong>
                   <span>Earn +15 Elixir per submitted brief with Socratic AI &amp; 20-Min TA SLA.</span>
                 </div>
                 <div className="cat-rubric-item">
@@ -398,15 +398,21 @@ export default function CourseDetailPage() {
               <div className="cat-caps" style={{ marginTop: 20 }}>
                 <article className="cat-cap">
                   <strong>💎 +50 Elixir Enrolment &amp; Milestone Credits</strong>
-                  <p className="cat-fine" style={{ marginTop: 6 }}>Earn +50 Elixir when you enrol, plus +5 to +15 Elixir on every completed lesson, module quiz, and written brief.</p>
+                  <p style={{ margin: "6px 0 0", fontSize: 13.5, color: "#555B7D" }}>
+                    Receive +50 Elixir on enrolment, +5 per lesson, +10 on 80%+ quizzes, +15 per brief, and +100 on full course completion.
+                  </p>
                 </article>
                 <article className="cat-cap">
-                  <strong>⚡ Boardroom Cold Call Checkpoints</strong>
-                  <p className="cat-fine" style={{ marginTop: 6 }}>Practise timed executive justification prompts inside the lesson workspace and compare your decision with peer cohorts.</p>
+                  <strong>⚡ 60-Sec Boardroom Cold Calls &amp; Cohort Split</strong>
+                  <p style={{ margin: "6px 0 0", fontSize: 13.5, color: "#555B7D" }}>
+                    Practise timed executive trade-off decisions inside every lesson and compare your decision against the peer cohort % split.
+                  </p>
                 </article>
                 <article className="cat-cap">
-                  <strong>🤖 Socratic AI + 20-Min TA Escalation</strong>
-                  <p className="cat-fine" style={{ marginTop: 6 }}>Get guided Socratic coaching inside every lesson and escalate technical doubts to Faculty TAs with a 20-minute SLA.</p>
+                  <strong>🤖 Socratic AI Tutor + 20-Min Faculty TA SLA</strong>
+                  <p style={{ margin: "6px 0 0", fontSize: 13.5, color: "#555B7D" }}>
+                    Ask Socratic AI for conceptual hints or escalate complex blockers to a live Faculty TA with a 20-minute SLA tracker.
+                  </p>
                 </article>
               </div>
             </div>
@@ -445,6 +451,18 @@ export default function CourseDetailPage() {
                   ) : null}
                 </div>
               </div>
+              {profile?.project ? (
+                <div style={{ marginTop: 22, padding: "20px 22px", borderRadius: 16, border: "1px solid #DDD7FF", background: "#FAF9FF", display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: 16 }}>
+                  <div style={{ maxWidth: "46em" }}>
+                    <p className="cat-label" style={{ color: "#5142B5", margin: 0 }}>Graded Capstone Project Studio · Proof-of-Work Dossier</p>
+                    <h3 style={{ margin: "6px 0 6px", fontSize: 19, fontWeight: 750, color: "#171717" }}>{profile.project.title}</h3>
+                    <p style={{ margin: 0, fontSize: 14, color: "#3c425c" }}>{profile.project.summary}</p>
+                  </div>
+                  <Link className="cat-btn cat-btn-primary" to={profile.project.href}>
+                    {profile.project.ctaLabel} →
+                  </Link>
+                </div>
+              ) : null}
             </div>
           </section>
         ) : null}

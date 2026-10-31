@@ -26,6 +26,7 @@ import {
   type ProjectReflectionDraft,
 } from "../lib/draft-storage"
 import HarborDeskStudio from "../components/labs/HarborDeskStudio"
+import TrackInteractiveSandbox from "../components/labs/TrackInteractiveSandbox"
 import LabSqlChart from "../components/labs/LabSqlChart"
 import { ProductSlice } from "../components/skylent/primitives"
 import "./LearnWorkspace.css"
@@ -401,7 +402,7 @@ export default function LearnerProjectPage() {
           </aside>
 
           <section className="lab-workspace">
-            {project.projectType === "harbor-desk-case" ? <HarborDeskStudio /> : null}
+            {project.projectType === "harbor-desk-case" ? <HarborDeskStudio /> : <TrackInteractiveSandbox projectType={project.projectType} />}
             {selected ? (
               <>
                 <p className="os-eyebrow">

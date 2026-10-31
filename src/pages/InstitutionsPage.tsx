@@ -1,8 +1,8 @@
 /**
  * /institutions (repolish). The B2B entry point, now linked from the main navigation and the
  * homepage. It describes what Skylent provides to learners today (programmes, labs, LMS progress,
- * Career OS, lesson help) and how a partnership is set up. No partner names, logos, results or
- * dashboards are shown; institution reporting is described as something planned with the partner.
+ * Career OS, lesson help, and the isolated College Tenant OS with 1-click CSV export) and how a
+ * partnership is set up. No unverified partner names, logos, or placement guarantees are shown.
  */
 import { Link } from "react-router-dom"
 import { PageShell } from "../components/shared"
@@ -14,24 +14,24 @@ import "./AboutRepolish.css"
 import "./InstitutionsRepolish.css"
 
 const PROVIDES = [
-  { title: "Programmes", text: "Certification and professional programmes your learners can take alongside their studies." },
-  { title: "Labs and capstones", text: "Hands-on practice on realistic data and cases, finished with a project." },
-  { title: "Learning platform", text: "Lessons, checks, assignments and progress for every enrolled learner." },
-  { title: "Career OS", text: "Each learner keeps a profile of skills, projects and certificates." },
-  { title: "Skylent AI", text: "Lesson help inside an open lesson, when it is switched on. It explains ideas and does not answer an open quiz or write an open assignment." },
+  { title: "6 Live 15-Lesson Courses & Programmes", text: "Data Analytics, Product Management, Python, Data Science & AI, Generative AI, and Full Stack Web — ready for immediate campus cohort deployment." },
+  { title: "Graded Labs, Cold Calls & Capstones", text: "In-browser SQL & Python sandboxes, 60-second Boardroom Cold Calls, and 6-task Capstone Project Studios that generate verifiable work samples." },
+  { title: "Isolated College Tenant OS (/dashboard/college)", text: "Dedicated institutional portal for Deans, HODs, and Placement Officers with strict multi-tenant data isolation." },
+  { title: "1-Click NAAC / NIRF / Placement CSV Export", text: "Export audited cohort progress, lesson completion rates, capstone readiness, and cryptographic certificate codes (-PGM) in one click." },
+  { title: "Socratic AI + 20-Min Faculty TA SLA", text: "In-lesson Socratic AI hints that never spoil quizzes, backed by live Faculty TA escalation with a 20-minute response SLA." },
 ]
 
 const PARTNERS = [
-  { title: "Colleges and universities", text: "Add practical programmes and a career profile beside the degree you award." },
-  { title: "Skill and training institutions", text: "Run Skylent programmes with your cohorts and trainers." },
-  { title: "Academic and industry partners", text: "Shape programmes, cases and projects with us." },
+  { title: "Colleges and universities", text: "Add practical 15-lesson courses, graded capstones, and cryptographic credentials beside the degree you award." },
+  { title: "Placement & Training Cells (TPOs)", text: "Track real-time cohort readiness across the 60% Career Rise gate and export verified skill dossiers for visiting recruiters." },
+  { title: "Campus ₹99 Workshop Chapters", text: "Host live campus workshops where every ₹99 seat grants 99 Elixir Coins (100% coin cashback) for applied case studies." },
 ]
 
 const STEPS = [
-  { title: "Understand", text: "We map your learners, curriculum and goals together." },
-  { title: "Configure", text: "Choose the programmes and set up an organisation account." },
-  { title: "Launch", text: "Learners enrol, learn and build projects on Skylent." },
-  { title: "Improve", text: "Review progress with us and plan reporting that fits your institution." },
+  { title: "Understand", text: "We map your departments, academic calendar, and cohort skill goals together." },
+  { title: "Configure", text: "Provision your isolated College Tenant OS and assign tracks across semesters." },
+  { title: "Launch", text: "Students enrol (+50 Elixir bonus), practise in sandboxes, and ship graded capstones." },
+  { title: "Audit & Export", text: "Monitor live cohort telemetry and export verified CSV reports for accreditation and placement drives." },
 ]
 
 export default function InstitutionsPage() {
@@ -42,13 +42,12 @@ export default function InstitutionsPage() {
           <div className="hx-hero__glow" aria-hidden="true" />
           <div className="sky-container hx-hero__inner inx-hero">
             <div>
-              <p className="hx-eyebrow">For institutions</p>
+              <p className="hx-eyebrow">For institutions · Multi-Tenant College OS</p>
               <h1 id="inx-title" className="hx-hero__title">
                 Practical learning and <em>Career OS</em> for your learners.
               </h1>
               <p className="hx-hero__lead">
-                Skylent works with colleges, universities and training partners to add programmes, labs and Career OS alongside their own
-                teaching.
+                Deploy Skylent’s 6 live 15-lesson courses, interactive SQL &amp; Python sandboxes, cryptographic credentials, and isolated College Tenant Dashboard alongside your campus curriculum.
               </p>
               <div className="hx-hero__actions">
                 <Link className="sk-btn sk-btn-primary hx-btn" to="/contact?for=institution">
@@ -72,7 +71,7 @@ export default function InstitutionsPage() {
               <div>
                 <p className="hx-eyebrow hx-eyebrow--dark">What Skylent provides</p>
                 <h2 id="inx-provides" className="hx-h2">
-                  Everything your learners use, <em>in one platform.</em>
+                  Everything your learners and faculty use, <em>in one platform.</em>
                 </h2>
               </div>
             </div>
@@ -105,7 +104,7 @@ export default function InstitutionsPage() {
         <section className="abx-section" aria-labelledby="inx-steps">
           <div className="sky-container">
             <p className="hx-eyebrow hx-eyebrow--dark">How it works</p>
-            <h2 id="inx-steps" className="hx-h2 hx-h2--sm">Understand, configure, launch, improve.</h2>
+            <h2 id="inx-steps" className="hx-h2 hx-h2--sm">Understand, configure, launch, audit.</h2>
             <ol className="inx-steps">
               {STEPS.map((step) => (
                 <li key={step.title}>

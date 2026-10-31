@@ -175,12 +175,13 @@
 
 /* ── All 6 Flagship Self-Paced Courses Grid on /programmes (#live-courses) ── */
 .pgx .pgx-course-banner {
-  display: grid;
-  align-content: start;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
   gap: 6px;
-  padding: 16px 18px 14px;
+  padding: 14px 18px;
   background: linear-gradient(135deg, #10263D 0%, #2E236C 55%, #5142B5 100%);
-  color: #ffffff;
+  color: #ffffff !important;
 }
 .pgx .pgx-course-banner__top {
   display: flex;

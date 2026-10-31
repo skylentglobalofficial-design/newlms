@@ -35,10 +35,6 @@ export type SchemaCapabilities = {
   platformAdminRole: boolean
   /** RoleName.COLLEGE_ADMIN from 20261028160000. */
   collegeAdminRole: boolean
-  /** ProgrammeCertificate from 20261101000000. */
-  programmeCertificates: boolean
-  /** FacultyDoubtTicket from 20261101000000. */
-  facultyDoubtTickets: boolean
 }
 
 const REQUIRED: {
@@ -118,8 +114,6 @@ export function capabilitiesFromColumns(
     collegeMembership: has("College", "id") && has("CollegeMembership", "id"),
     platformAdminRole: labels.has("PLATFORM_ADMIN"),
     collegeAdminRole: labels.has("COLLEGE_ADMIN"),
-    programmeCertificates: has("ProgrammeCertificate", "id"),
-    facultyDoubtTickets: has("FacultyDoubtTicket", "id"),
   }
 }
 
@@ -164,9 +158,7 @@ export async function readSchemaCapabilities(): Promise<SchemaCapabilities> {
         'skylentenquiry',
         'employermembership',
         'college',
-        'collegemembership',
-        'programmecertificate',
-        'facultydoubtticket'
+        'collegemembership'
       )
   `
   const enumRows = await prisma.$queryRaw<{ enumlabel: string }[]>`

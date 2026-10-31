@@ -1,5 +1,10 @@
 import { courses } from "../data"
-import { FLAGSHIP_COURSE_SLUG, PRODUCT_MANAGEMENT_SLUG, PYTHON_PROGRAMMING_SLUG, DATA_SCIENCE_SLUG, GENERATIVE_AI_SLUG, FULL_STACK_WEB_SLUG, isAuthoredCourse } from "./authored-courses"
+import { FLAGSHIP_COURSE_SLUG, PRODUCT_MANAGEMENT_SLUG, isAuthoredCourse } from "./authored-courses"
+
+const PYTHON_PROGRAMMING_SLUG = "python-programming"
+const DATA_SCIENCE_AI_SLUG = "data-science-ai"
+const GENERATIVE_AI_SLUG = "generative-ai"
+const FULL_STACK_WEB_SLUG = "full-stack-web"
 
 export type CourseDataset = {
   filename: string
@@ -140,143 +145,157 @@ const PRODUCT_MANAGEMENT_PROFILE: CourseProductProfile = {
 
 const PYTHON_PROGRAMMING_PROFILE: CourseProductProfile = {
   slug: PYTHON_PROGRAMMING_SLUG,
-  tools: ["Python 3.11+", "A text editor or IDE", "The Python Starter Suite in this course"],
-  prerequisite: "None. You do not need prior programming experience.",
+  tools: ["Python 3.11+", "pytest", "A code or text editor"],
+  prerequisite: "Basic familiarity with files and command-line navigation.",
   datasets: [
     {
-      filename: "python-starter-suite.py",
-      href: "/content/python-programming/python-starter-suite.py",
-      detail: "Starter automation scripts, log stream models, and generator pipelines.",
+      filename: "settlement_feed_2026_q2.jsonl",
+      detail: "Synthetic multi-gateway settlement feed with duplicate webhook retries and malformed currency rows.",
     },
   ],
   learningSteps: [
-    { label: "Learning", detail: "Written lessons in Skylent OS. Self-paced. No video stream and no live classroom." },
-    { label: "Practice", detail: "Syntax and architecture checks after a block of lessons." },
-    { label: "Assignment", detail: "Applied stream parsing, batch ETL automation, and modular utility design." },
-    { label: "Capstone", detail: "A complete production CLI automation package with pytest test suite." },
+    { label: "Learning", detail: "15 authored engineering lessons in Skylent OS covering data structures, ETL validation, and CLI packaging." },
+    { label: "Practice", detail: "Checkpoint quizzes and Socratic cold-call trade-off scenarios." },
+    { label: "Assignment", detail: "Idempotent ingestion, dead-letter quarantine, and pytest test suites." },
+    { label: "Capstone", detail: "Python Transaction Pipeline & Anomaly Audit saved in your project studio." },
   ],
   faq: [
-    {
-      q: "Are there videos or live classes?",
-      a: "No. Python Programming is written lessons, quizzes, and hands-on coding assignments in Skylent OS. You work at your own pace.",
-    },
     SHARED_FAQ_PAYMENT,
     SHARED_FAQ_CERT,
     {
-      q: "What do I actually work on?",
-      a: "Real-world engineering scripts: CPython bytecode inspection, constant-memory stream processors, immutable dataclasses, batch file ETL pipelines, and a production CLI utility.",
+      q: "What do I build in the Capstone Project Studio?",
+      a: "You specify and verify an idempotent settlement ingestion pipeline (`python-pipeline-audit`) with composite deduplication keys, quarantine logging, and pytest coverage.",
     },
   ],
-  practiceIntro: "Practice uses real-world automation scripts and stream parsing. There is no live classroom and no video stream.",
+  practiceIntro: "Practice centres on production Python ETL reliability, schema validation, and automated testing.",
   visual: "northwind",
   lab: null,
-  project: null,
-  labOmission: "This course focuses on backend Python automation scripts and test suites.",
+  project: {
+    label: "Open project studio",
+    href: "/os/projects/python-programming/python-pipeline-audit",
+    note: "Python Transaction Pipeline & Anomaly Audit — 6-task engineering project studio.",
+  },
+  labOmission: null,
   afterEnrol: "Skylent OS opens Python Programming & Automation at the first lesson.",
   ctaTitle: "Start Python Programming",
 }
 
-const DATA_SCIENCE_PROFILE: CourseProductProfile = {
-  slug: DATA_SCIENCE_SLUG,
-  tools: ["Python 3.11+", "scikit-learn", "NumPy & pandas", "XGBoost"],
-  prerequisite: "Python fundamentals or basic data manipulation experience.",
+const DATA_SCIENCE_AI_PROFILE: CourseProductProfile = {
+  slug: DATA_SCIENCE_AI_SLUG,
+  tools: ["Python / scikit-learn", "SQL & tabular cohorts", "Model evaluation notebooks"],
+  prerequisite: "Foundational SQL or Python data manipulation.",
   datasets: [
     {
-      filename: "credit_risk_dataset.csv",
-      href: "/content/data-analytics/northwind_sales.csv",
-      detail: "Tabular consumer records for feature engineering and churn modeling.",
+      filename: "subscription_cohorts_2026.csv",
+      detail: "Point-in-time B2B SaaS subscription cohorts with temporal cutoff windows and retention outreach constraints.",
     },
   ],
   learningSteps: [
-    { label: "Learning", detail: "Written lessons in Skylent OS. Self-paced. No video stream." },
-    { label: "Practice", detail: "Mathematical and leakage prevention checks." },
-    { label: "Assignment", detail: "Feature engineering pipelines and gradient boosted ensembles." },
-    { label: "Capstone", detail: "End-to-end predictive machine learning pipeline with threshold tuning." },
+    { label: "Learning", detail: "15 authored lessons covering EDA, point-in-time feature engineering, and model calibration." },
+    { label: "Practice", detail: "Leakage audits, Precision@K calculations, and case cold-calls." },
+    { label: "Assignment", detail: "Out-of-time validation splits, threshold economics, and PSI drift playbooks." },
+    { label: "Capstone", detail: "Customer Churn Cohort & Out-of-Time Validation Case in the project studio." },
   ],
   faq: [
-    { q: "Are there videos or live classes?", a: "No. Data Science & AI is written lessons, quizzes, and scikit-learn coding assignments in Skylent OS." },
     SHARED_FAQ_PAYMENT,
     SHARED_FAQ_CERT,
-    { q: "What do I actually work on?", a: "Leakage-free preprocessing pipelines, logistic regression regularization, XGBoost ensembles, and business threshold optimization." },
+    {
+      q: "What do I build in the Capstone Project Studio?",
+      a: "You complete the Customer Churn Cohort & Out-of-Time Validation Case (`churn-cohort-validation`), eliminating target leakage and aligning Precision@Top-500 with retention ROI.",
+    },
   ],
-  practiceIntro: "Practice uses real tabular data and scikit-learn pipelines with zero data leakage.",
+  practiceIntro: "Practice focuses on leakage-free temporal validation, calibrated probabilities, and decision economics.",
   visual: "northwind",
   lab: null,
-  project: null,
-  labOmission: "This course focuses on scikit-learn pipelines, cross-validation, and ensemble modeling.",
+  project: {
+    label: "Open project studio",
+    href: "/os/projects/data-science-ai/churn-cohort-validation",
+    note: "Customer Churn Cohort & Out-of-Time Validation Case — 6-task ML validation studio.",
+  },
+  labOmission: null,
   afterEnrol: "Skylent OS opens Data Science & AI at the first lesson.",
   ctaTitle: "Start Data Science & AI",
 }
 
 const GENERATIVE_AI_PROFILE: CourseProductProfile = {
   slug: GENERATIVE_AI_SLUG,
-  tools: ["Python 3.11+", "OpenAI API / Local LLMs", "Vector Embeddings & Chroma/FAISS", "RAGAS"],
-  prerequisite: "Python programming and basic API experience.",
+  tools: ["Structured JSON prompts", "Hybrid BM25 + Vector RAG", "LLM evaluation harnesses"],
+  prerequisite: "Working knowledge of APIs and JSON schemas.",
   datasets: [
     {
-      filename: "rag_knowledge_base.md",
-      href: "/content/product-management/harbor-desk-case.md",
-      detail: "Enterprise documentation and architecture records for RAG indexing.",
+      filename: "enterprise_policy_corpus_v2.json",
+      detail: "Synthetic enterprise SOP and refund policy corpus for testing section-aware chunking and citation grounding.",
     },
   ],
   learningSteps: [
-    { label: "Learning", detail: "Written lessons in Skylent OS. Self-paced. No video stream." },
-    { label: "Practice", detail: "Prompt engineering, sampling parameter, and RAG architecture checks." },
-    { label: "Assignment", detail: "Semantic search engines and autonomous ReAct tool-calling agents." },
-    { label: "Capstone", detail: "Grounded enterprise RAG assistant with quantitative RAGAS evaluation." },
+    { label: "Learning", detail: "15 authored lessons on prompt contracts, hybrid RAG, evaluation harnesses, and token FinOps." },
+    { label: "Practice", detail: "Citation verification checks, prompt-injection audits, and architecture cold-calls." },
+    { label: "Assignment", detail: "Golden 100-query evaluation rubrics, abstention rules, and latency/cost budgets." },
+    { label: "Capstone", detail: "Enterprise Policy RAG Grounding & Citation Audit in the project studio." },
   ],
   faq: [
-    { q: "Are there videos or live classes?", a: "No. Generative AI is written lessons, quizzes, and LLM application coding in Skylent OS." },
     SHARED_FAQ_PAYMENT,
     SHARED_FAQ_CERT,
-    { q: "What do I actually work on?", a: "Prompt injection defense, HNSW vector search, hybrid re-ranking, autonomous ReAct loops, and automated faithfulness evaluations." },
+    {
+      q: "What do I build in the Capstone Project Studio?",
+      a: "You complete the Enterprise Policy RAG Grounding & Citation Audit (`enterprise-rag-evaluation`) with hybrid retrieval, citation verification, and FinOps guardrails.",
+    },
   ],
-  practiceIntro: "Practice uses live vector embeddings, two-stage re-ranking, and grounded RAG pipelines.",
+  practiceIntro: "Practice focuses on grounded retrieval, citation verification, prompt security, and token unit economics.",
   visual: "harbor-desk",
   lab: null,
-  project: null,
-  labOmission: "This course focuses on RAG pipelines, agent function calling, and automated evaluations.",
+  project: {
+    label: "Open project studio",
+    href: "/os/projects/generative-ai/enterprise-rag-evaluation",
+    note: "Enterprise Policy RAG Grounding & Citation Audit — 6-task AI systems studio.",
+  },
+  labOmission: null,
   afterEnrol: "Skylent OS opens Generative AI & LLM Systems at the first lesson.",
-  ctaTitle: "Start Generative AI",
+  ctaTitle: "Start Generative AI & LLM Systems",
 }
 
 const FULL_STACK_WEB_PROFILE: CourseProductProfile = {
   slug: FULL_STACK_WEB_SLUG,
-  tools: ["TypeScript & Node.js", "Express / Fastify", "PostgreSQL & Prisma", "React"],
-  prerequisite: "Basic programming concepts and HTML/CSS familiarity.",
+  tools: ["React 19 + TypeScript", "Express + Zod", "PostgreSQL + Prisma"],
+  prerequisite: "Foundational JavaScript/TypeScript and HTML/CSS.",
   datasets: [
     {
-      filename: "schema.sql",
-      href: "/content/python-programming/python-starter-suite.py",
-      detail: "Relational database migration schemas and REST API test suites.",
+      filename: "wallet_ledger_spec_v1.sql",
+      detail: "Transactional wallet ledger schema and concurrent payment webhook test vectors.",
     },
   ],
   learningSteps: [
-    { label: "Learning", detail: "Written lessons in Skylent OS. Self-paced. No video stream." },
-    { label: "Practice", detail: "HTTP protocol, SQL constraint, and state architecture checks." },
-    { label: "Assignment", detail: "Validated RESTful backend APIs and optimistic UI dashboards." },
-    { label: "Capstone", detail: "Full-stack web application with relational persistence and security." },
+    { label: "Learning", detail: "15 authored lessons covering relational schemas, typed REST APIs, RBAC/CSRF, and React state resilience." },
+    { label: "Practice", detail: "Concurrency debugging, IDOR security checks, and architecture cold-calls." },
+    { label: "Assignment", detail: "Idempotent webhook handlers, Zod boundary contracts, and accessible UI state flows." },
+    { label: "Capstone", detail: "Full-Stack Idempotent Wallet & Webhook Spec in the project studio." },
   ],
   faq: [
-    { q: "Are there videos or live classes?", a: "No. Full Stack Web is written lessons, quizzes, and software engineering assignments in Skylent OS." },
     SHARED_FAQ_PAYMENT,
     SHARED_FAQ_CERT,
-    { q: "What do I actually work on?", a: "REST API lifecycle, Zod schema validation, PostgreSQL indexing, optimistic React UI updates, and CSRF/XSS security hardening." },
+    {
+      q: "What do I build in the Capstone Project Studio?",
+      a: "You complete the Full-Stack Idempotent Wallet & Webhook Spec (`idempotent-ledger-architecture`) spanning atomic Prisma transactions, Zod validation, and resilient React UI states.",
+    },
   ],
-  practiceIntro: "Practice uses real relational database schemas, REST APIs, and modern component state.",
-  visual: "northwind",
+  practiceIntro: "Practice centres on end-to-end type safety, transactional database invariants, and production security.",
+  visual: "harbor-desk",
   lab: null,
-  project: null,
-  labOmission: "This course focuses on full-stack web applications, relational databases, and security.",
+  project: {
+    label: "Open project studio",
+    href: "/os/projects/full-stack-web/idempotent-ledger-architecture",
+    note: "Full-Stack Idempotent Wallet & Webhook Spec — 6-task system architecture studio.",
+  },
+  labOmission: null,
   afterEnrol: "Skylent OS opens Full Stack Web Engineering at the first lesson.",
-  ctaTitle: "Start Full Stack Web",
+  ctaTitle: "Start Full Stack Web Engineering",
 }
 
 const PROFILES: Record<string, CourseProductProfile> = {
   [FLAGSHIP_COURSE_SLUG]: DATA_ANALYTICS_PROFILE,
   [PRODUCT_MANAGEMENT_SLUG]: PRODUCT_MANAGEMENT_PROFILE,
   [PYTHON_PROGRAMMING_SLUG]: PYTHON_PROGRAMMING_PROFILE,
-  [DATA_SCIENCE_SLUG]: DATA_SCIENCE_PROFILE,
+  [DATA_SCIENCE_AI_SLUG]: DATA_SCIENCE_AI_PROFILE,
   [GENERATIVE_AI_SLUG]: GENERATIVE_AI_PROFILE,
   [FULL_STACK_WEB_SLUG]: FULL_STACK_WEB_PROFILE,
 }
@@ -289,4 +308,4 @@ export function authoredCourseList() {
   return courses.filter((course) => isAuthoredCourse(course.slug))
 }
 
-export { FLAGSHIP_COURSE_SLUG, PRODUCT_MANAGEMENT_SLUG, PYTHON_PROGRAMMING_SLUG, DATA_SCIENCE_SLUG, GENERATIVE_AI_SLUG, FULL_STACK_WEB_SLUG }
+export { FLAGSHIP_COURSE_SLUG, PRODUCT_MANAGEMENT_SLUG }

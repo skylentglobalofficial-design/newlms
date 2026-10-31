@@ -139,10 +139,10 @@ function CourseUnitChrome({ view }: { view: CatalogCourseListView }) {
         <p className="cat-unit-brand">Skylent OS · Proof of Work</p>
         <span className="cat-unit-elixir">💎 +50 Elixir</span>
       </div>
-      <p className="cat-unit-kicker">{view.course.category}</p>
-      <p className="cat-unit-title">{view.title}</p>
+      <p className="cat-unit-kicker">{view.course.category} · {view.course.level}</p>
+      <p className="cat-unit-title">{view.countLabel}</p>
       <p className="cat-unit-meta">
-        {view.countLabel} · 60 checks · 15 briefs
+        3 module quizzes · Applied briefs · 1 graded capstone
       </p>
     </div>
   )

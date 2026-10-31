@@ -43,7 +43,8 @@ export default function CareerOSPublicAreaPage() {
             <p className="cos-public-lead">{area.sub}</p>
             <p className="cos-area-state cos-area-state-prominent">{area.empty}</p>
             <p className="cos-public-fine">
-              Career OS keeps your verified projects, skill-matched roles, and interview preparation private to your account. Sign in to access your workspace.
+              Career OS does not show sample jobs, applications, or interviews on public pages. Sign in to see your
+              workspace — empty areas stay empty.
             </p>
             <div className="cos-public-actions">
               <Link to="/login" state={{ returnTo: pathname }}>Sign in to open {area.label}</Link>

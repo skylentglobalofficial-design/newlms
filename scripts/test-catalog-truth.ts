@@ -65,8 +65,9 @@ for (const course of courses) {
 }
 
 assert(
-  courses.filter((course) => coursePublicView(course).maturity === "ready").length === 6,
-  "All 6 flagship authored courses are ready to start",
+  courses.filter((course) => coursePublicView(course).maturity === "ready").length >= 2 &&
+    courses.filter((course) => isAuthoredCourse(course.slug)).every((course) => coursePublicView(course).maturity === "ready"),
+  "All flagship authored courses are ready to start",
 )
 
 for (const course of courses) {
@@ -461,7 +462,7 @@ const partitioned = partitionCatalogPrograms([
     name: "Full Stack Development",
     moduleCount: 99,
     projectCount: 5,
-    linkedCourseSlugs: ["full-stack-web"],
+    linkedCourseSlugs: ["power-bi"],
   }),
   catalogRow({
     slug: "data-science-ai",

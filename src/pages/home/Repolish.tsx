@@ -959,12 +959,12 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
                   { slug: "data-analytics", title: "Data Analytics", category: "Data", meta: "5 modules · 15 lessons · Northwind SQL Lab" },
                   { slug: "product-management", title: "Product Management", category: "Product", meta: "5 modules · 15 lessons · Harbor Desk Case" },
                   { slug: "python-programming", title: "Python Programming & Automation", category: "Engineering", meta: "5 modules · 15 lessons · ETL & Pytest" },
-                  { slug: "data-science-ai", title: "Data Science & AI", category: "Data & AI", meta: "5 modules · 15 lessons · Feature & Model Eval" },
+                  { slug: "data-science-ai", href: "/programmes/data-science-ai", title: "Data Science & AI (Dual Track)", category: "Data & AI Pathway", meta: "Links Data Analytics + Python (30 lessons)" },
                   { slug: "generative-ai", title: "Generative AI & LLM Systems", category: "AI Systems", meta: "5 modules · 15 lessons · Grounded RAG & Agents" },
                   { slug: "full-stack-web", title: "Full Stack Web Engineering", category: "Web", meta: "5 modules · 15 lessons · React, Node & Postgres" },
                 ].map((course) => (
                   <li key={course.slug}>
-                    <Link to={`/courses/${course.slug}`} className="hx-live-course-card">
+                    <Link to={"href" in course && course.href ? course.href : `/courses/${course.slug}`} className="hx-live-course-card">
                       <span className="hx-live-course-card__top">
                         <span className="hx-live-course-card__cat">{course.category}</span>
                         <span className="hx-live-course-card__elixir">💎 +50 Elixir</span>

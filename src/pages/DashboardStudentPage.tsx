@@ -16,6 +16,7 @@ import { findProjectForCourse, listLearnerProjects, learnerProjectPath, projectS
 import { fetchMyCertificates, issueCertificate, issueProgrammeCertificate, type SkylentCertificate } from '../lib/skylent-api'
 import { fetchSkylentAiStatus } from '../lib/skylent-ai-api'
 import ElixirWalletPanel from '../components/learner/ElixirWallet'
+import { computeLearnerExecutionStreak } from '../lib/execution-streak'
 import { truthOf } from '../lib/truth'
 import { courseProductProfile } from '../lib/course-product'
 import { dashboardSqlLabHref, practiceEnvironmentForCourse } from '../lib/practice-environments'
@@ -407,9 +408,20 @@ export default function DashboardStudentPage() {
                   {cert.revoked ? (
                     <span className="os-status is-idle">Revoked</span>
                   ) : (
-                    <Link className="os-link sh-row-link" to={`/verify/${cert.code}`} aria-label={`Verify the ${cert.courseTitle} certificate`}>
-                      Verify <ArrowRight />
-                    </Link>
+                    <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+                      <a
+                        className="os-link sh-row-link"
+                        href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(`https://skylent.live/verify/${cert.code}`)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={`Share ${cert.courseTitle} certificate on LinkedIn`}
+                      >
+                        Share on LinkedIn ↗
+                      </a>
+                      <Link className="os-link sh-row-link" to={`/verify/${cert.code}`} aria-label={`Verify the ${cert.courseTitle} certificate`}>
+                        Verify <ArrowRight />
+                      </Link>
+                    </div>
                   )}
                 </li>
               ))}
@@ -554,6 +566,56 @@ export default function DashboardStudentPage() {
         <p className="os-eyebrow">My Courses</p>
         <h1>What to do next</h1>
         <section className="sh-card" aria-label="Elixir wallet"><ElixirWalletPanel /></section>
+        {(() => {
+          const activityDates: string[] = [
+            ...projectRows.map((p) => p.updatedAt),
+            ...certificateRows.map((c) => c.issuedAt),
+          ]
+          if (completedCount > 0 || resumeStarted) {
+            activityDates.push(new Date().toISOString())
+          }
+          const streak = computeLearnerExecutionStreak(activityDates)
+          return (
+            <section className="sh-card" aria-label="Daily Execution Streak and 14-Day Proof-of-Work Activity Heatmap" style={{ marginBottom: 16 }}>
+              <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: 12, marginBottom: 12 }}>
+                <div>
+                  <strong style={{ fontSize: 15, display: "block" }}>
+                    🔥 {streak.currentStreakDays}-Day Execution Streak · 14-Day Proof-of-Work Activity Grid
+                  </strong>
+                  <span className="sh-note">
+                    Weekly Goal: {streak.weeklyActionsCount} / {streak.weeklyGoalTarget} verified actions ({streak.weeklyGoalPercent}%) · Longest streak: {streak.longestStreakDays}d
+                  </span>
+                </div>
+                <span style={{ fontSize: 12, fontWeight: 700, padding: "4px 10px", borderRadius: 999, background: "rgba(81, 66, 181, 0.12)", color: "#43349F" }}>
+                  💎 +{streak.streakBonusElixir} Elixir Streak Momentum
+                </span>
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(14, minmax(0, 1fr))", gap: 6 }} role="list" aria-label="Last 14 days activity heatmap">
+                {streak.heatmapDays.map((day) => (
+                  <div
+                    key={day.date}
+                    role="listitem"
+                    title={`${day.label}: ${day.count} verified action(s)`}
+                    style={{
+                      height: 26,
+                      borderRadius: 6,
+                      background: day.active ? "#5142B5" : "rgba(15, 23, 42, 0.06)",
+                      border: day.active ? "1px solid #43349F" : "1px solid rgba(15, 23, 42, 0.1)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: 9.5,
+                      fontWeight: 700,
+                      color: day.active ? "#ffffff" : "#64748B",
+                    }}
+                  >
+                    {day.date.slice(8)}
+                  </div>
+                ))}
+              </div>
+            </section>
+          )
+        })()}
         <ul className="sh-facts">
           <li>
             {enrollments.status === 'ready' ? (

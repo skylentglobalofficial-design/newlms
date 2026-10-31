@@ -386,7 +386,7 @@ const SEARCH_INDEX: readonly SearchEntry[] = [
   { label: 'Data Analytics', to: '/courses/data-analytics', group: 'Courses', keywords: 'sql excel dashboards analyst data northwind' },
   { label: 'Product Management', to: '/courses/product-management', group: 'Courses', keywords: 'product pm roadmap discovery harbor desk' },
   { label: 'Python Programming & Automation', to: '/courses/python-programming', group: 'Courses', keywords: 'python coding automation scripts etl pytest' },
-  { label: 'Data Science & AI', to: '/courses/data-science-ai', group: 'Courses', keywords: 'data science machine learning scikit-learn xgboost' },
+  { label: 'Data Science & AI (Dual Track)', to: '/programmes/data-science-ai', group: 'Programmes', keywords: 'data science machine learning python sql analytics' },
   { label: 'Generative AI & LLM Systems', to: '/courses/generative-ai', group: 'Courses', keywords: 'genai llm rag embeddings agents prompt engineering' },
   { label: 'Full Stack Web Engineering', to: '/courses/full-stack-web', group: 'Courses', keywords: 'full stack web react node express postgres typescript' },
   { label: 'Workshops & Elixir Case Store', to: '/events', group: 'Explore', keywords: 'workshop webinar elixir coins case study cashback' },

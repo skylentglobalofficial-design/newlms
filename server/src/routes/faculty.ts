@@ -1,3 +1,4 @@
+import { listFacultyDoubtTickets, resolveFacultyDoubtTicket, FACULTY_DOUBT_SLA_MINUTES } from "../lib/doubt-sla.js"
 import crypto from "node:crypto"
 import { Router } from "express"
 import { z } from "zod"
@@ -588,3 +589,47 @@ facultyRouter.post(
     }
   },
 )
+
+
+facultyRouter.get("/doubts", requireAuth, requireRoles("faculty", "superadmin"), async (req: AuthenticatedRequest, res) => {
+  try {
+    let courseSlugs: string[] | null = null
+    if (!hasApiRole(req, "superadmin")) {
+      const assignedIds = await facultyAssignedCourseIds(req.auth!.user.id)
+      if (!assignedIds || assignedIds.length === 0) {
+        return res.json({ data: [], meta: { slaMinutes: FACULTY_DOUBT_SLA_MINUTES, openCount: 0 } })
+      }
+      const courses = await prisma.course.findMany({
+        where: { id: { in: assignedIds } },
+        select: { slug: true },
+      })
+      courseSlugs = courses.map((c) => c.slug)
+    }
+    const tickets = listFacultyDoubtTickets(courseSlugs)
+    const openCount = tickets.filter((t) => t.status === "open").length
+    res.json({ data: tickets, meta: { slaMinutes: FACULTY_DOUBT_SLA_MINUTES, openCount } })
+  } catch (error) {
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+      return res.status(503).json({ error: "Faculty doubts queue is not available right now.", code: "unavailable" })
+    }
+    console.error("Failed to list faculty doubts:", error instanceof Error ? error.name : "unknown")
+    res.status(500).json({ error: "Failed to list faculty doubts" })
+  }
+})
+
+facultyRouter.post("/doubts/:id/resolve", requireAuth, requireRoles("faculty", "superadmin"), requireCsrf, async (req: AuthenticatedRequest, res) => {
+  const id = typeof req.params.id === "string" ? req.params.id.trim() : ""
+  const body = z.object({ resolutionNote: z.string().trim().max(1000).optional() }).safeParse(req.body ?? {})
+  if (!id || !body.success) return res.status(400).json({ error: "Invalid request" })
+  try {
+    const resolved = resolveFacultyDoubtTicket(id, req.auth!.user.id, body.data.resolutionNote)
+    if (!resolved) return res.status(404).json({ error: "Doubt ticket not found" })
+    res.json({ data: resolved })
+  } catch (error) {
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+      return res.status(503).json({ error: "Faculty doubts queue is not available right now.", code: "unavailable" })
+    }
+    console.error("Failed to resolve faculty doubt:", error instanceof Error ? error.name : "unknown")
+    res.status(500).json({ error: "Failed to resolve faculty doubt" })
+  }
+})

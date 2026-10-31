@@ -348,8 +348,8 @@ export default function ProgramsPage() {
                         <section id="professional-later" className="pgx-section" aria-labelledby="pgx-professional-later">
                           <div className="sky-container">
                             <header className="pgx-section__head">
-                              <h2 id="pgx-professional-later">Not open yet</h2>
-                              <p>Standalone programme-level enrolment is coming soon — open any pathway below to start its linked 15-lesson self-paced course today (+50 Elixir Bonus).</p>
+                              <h2 id="pgx-professional-later">Pathways with linked self-paced courses</h2>
+                              <p>Open any pathway below to start its linked 15-lesson self-paced course in Skylent OS immediately (+50 Elixir Bonus).</p>
                             </header>
                             <ul className="pgx-grid">
                               {professional.filter((row) => !presentedOpen(row)).map((row) => (
@@ -401,68 +401,87 @@ export default function ProgramsPage() {
           <div className="sky-container">
             <header className="pgx-section__head">
               <div>
-                <p className="pgx-eyebrow">Self-Paced Skylent OS Courses · +50 Elixir Enrolment Bonus</p>
-                <h2 id="pgx-live-courses-title">All 6 Flagship Courses (Open Now)</h2>
+                <p className="pgx-eyebrow">Self-Paced Skylent OS Curriculum · +50 Elixir Enrolment Bonus</p>
+                <h2 id="pgx-live-courses-title">Self-Paced Courses &amp; Lab Tracks (Open Now)</h2>
               </div>
-              <p>Every course below is 100% authored with 5 modules, 15 written lessons, 60 concept checks, 15 applied briefs, Boardroom Cold Calls, and Socratic AI + 20-Min Faculty TA support.</p>
+              <p>Every course below is 100% authored with 5 modules, 15 structured lessons, 3 module quizzes, applied assignments, a graded capstone, Boardroom Cold Calls, and Socratic AI + 20-Min Faculty TA support.</p>
             </header>
             <ul className="pgx-grid">
               {[
                 {
-                  slug: "data-analytics",
-                  category: "Data Analytics",
+                  href: "/courses/data-analytics",
+                  badge: "Northwind SQL Lab · 166 Rows",
+                  meta: "5 modules · 15 lessons · 3 quizzes · 1 capstone",
+                  category: "Commercial & SQL Analytics",
                   title: "Data Analytics",
                   line: "Master spreadsheet auditing, SQL joins, CTEs, and commercial margin analysis in the live Northwind SQL Lab.",
-                  skills: ["SQL", "Northwind Lab", "Cohort Margin", "Cold Calls"],
+                  skills: ["SQL Joins", "Northwind Lab", "Margin Audit"],
+                  cta: "Start this course",
                 },
                 {
-                  slug: "product-management",
-                  category: "Product Management",
+                  href: "/courses/product-management",
+                  badge: "Harbor Desk Studio · 18 Interviews",
+                  meta: "5 modules · 15 lessons · 3 quizzes · 1 capstone",
+                  category: "Product Strategy & Discovery",
                   title: "Product Management",
                   line: "Conduct user research, diagnose the Harbor Desk weekend exception queue, and write a constrained 6-week PRD.",
-                  skills: ["PRD Scoping", "Harbor Desk Case", "Triage", "Cold Calls"],
+                  skills: ["PRD Scoping", "Harbor Desk Case", "Triage Specs"],
+                  cta: "Start this course",
                 },
                 {
-                  slug: "python-programming",
-                  category: "Engineering",
+                  href: "/courses/python-programming",
+                  badge: "Python 3 · ETL & Pytest Suite",
+                  meta: "5 modules · 15 lessons · 3 quizzes · 1 capstone",
+                  category: "Software & Data Automation",
                   title: "Python Programming & Automation",
                   line: "Build clean data pipelines, automated ETL validators, CLI tools, and pytest suites for production workflows.",
-                  skills: ["Python 3", "ETL Pipelines", "Pytest", "Automation"],
+                  skills: ["Python 3", "ETL Pipelines", "Pytest Suite"],
+                  cta: "Start this course",
                 },
                 {
-                  slug: "data-science-ai",
-                  category: "Data Science & AI",
-                  title: "Data Science & AI",
-                  line: "Design exploratory data pipelines, leakage-free feature engineering, and calibrated model evaluation rubrics.",
-                  skills: ["EDA", "Feature Engineering", "Validation", "Cold Calls"],
-                },
-                {
-                  slug: "generative-ai",
-                  category: "AI Systems",
+                  href: "/courses/generative-ai",
+                  badge: "Grounded RAG · LLM Eval Suite",
+                  meta: "5 modules · 15 lessons · 3 quizzes · 1 capstone",
+                  category: "Applied AI Engineering",
                   title: "Generative AI & LLM Systems",
                   line: "Architect structured prompt systems, grounded RAG retrieval pipelines, ReAct tool agents, and LLM evaluation suites.",
-                  skills: ["Prompt Systems", "Grounded RAG", "ReAct Agents", "Evals"],
+                  skills: ["Prompt Systems", "Grounded RAG", "ReAct Agents"],
+                  cta: "Start this course",
                 },
                 {
-                  slug: "full-stack-web",
-                  category: "Web Engineering",
+                  href: "/courses/full-stack-web",
+                  badge: "React, Node & PostgreSQL Stack",
+                  meta: "5 modules · 15 lessons · 3 quizzes · 1 capstone",
+                  category: "Full-Stack Web Systems",
                   title: "Full Stack Web Engineering",
                   line: "Ship end-to-end TypeScript applications with React state architecture, Node/Express REST APIs, and PostgreSQL.",
-                  skills: ["React & TS", "Node & Express", "PostgreSQL", "API Security"],
+                  skills: ["React & TS", "Node & Express", "PostgreSQL"],
+                  cta: "Start this course",
+                },
+                {
+                  href: "/programmes/data-science-ai",
+                  badge: "Combined 2-Course Track · 30 Lessons",
+                  meta: "Links Data Analytics + Python Programming",
+                  category: "Data Science & AI Pathway",
+                  title: "Data Science & AI (Dual Track)",
+                  line: "Combine our authored Data Analytics (SQL & Commercial Review) and Python Programming & Automation courses in one track.",
+                  skills: ["SQL + Python", "Data Hygiene", "Pipeline Evals"],
+                  cta: "Open 2-course pathway",
                 },
               ].map((course) => (
-                <li key={course.slug} className="pgx-card">
-                  <Link to={`/courses/${course.slug}`} className="pgx-card__link" data-clear-launcher>
+                <li key={course.href} className="pgx-card">
+                  <Link to={course.href} className="pgx-card__link" data-clear-launcher>
                     <span className="pgx-course-banner">
                       <span className="pgx-course-banner__top">
-                        <span className="pgx-course-banner__brand">Skylent OS · Live Course</span>
+                        <span className="pgx-course-banner__brand">Skylent OS · Verified Track</span>
                         <span className="pgx-course-banner__elixir">💎 +50 Elixir</span>
                       </span>
-                      <span className="pgx-course-banner__title">{course.title}</span>
-                      <span className="pgx-course-banner__meta">5 modules · 15 lessons · 60 checks · 15 briefs</span>
+                      <span className="pgx-course-banner__title">{course.badge}</span>
+                      <span className="pgx-course-banner__meta">{course.meta}</span>
                     </span>
                     <span className="pgx-card__body">
                       <span className="pgx-card__kicker">{course.category}</span>
+                      <span className="pgx-card__title">{course.title}</span>
                       <span className="pgx-card__line">{course.line}</span>
                       <span className="pgx-skill-tags">
                         {course.skills.map((skill) => (
@@ -470,7 +489,7 @@ export default function ProgramsPage() {
                         ))}
                       </span>
                       <span className="pgx-card__go">
-                        Start this course <ArrowRight />
+                        {course.cta} <ArrowRight />
                       </span>
                     </span>
                   </Link>

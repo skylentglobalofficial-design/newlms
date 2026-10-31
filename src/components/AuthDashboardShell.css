@@ -392,20 +392,3 @@
     display: none;
   }
 }
-
-
-/* Mobile-safe Header Elixir Wallet & Notification Popovers inside AuthDashboardShell */
-@media (max-width: 640px) {
-  .auth-shell .skn-popover {
-    position: fixed !important;
-    top: 64px !important;
-    left: 12px !important;
-    right: 12px !important;
-    width: auto !important;
-    max-width: none !important;
-  }
-  .auth-shell .skn__elixir-chip {
-    padding: 5px 9px !important;
-    font-size: 12px !important;
-  }
-}

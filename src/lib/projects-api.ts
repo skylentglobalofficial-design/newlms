@@ -112,6 +112,20 @@ export function harborDeskProjectPath() {
   return "/os/projects/product-management/harbor-desk-case"
 }
 
+const DEFAULT_PROJECT_TYPE_BY_COURSE: Record<string, string> = {
+  "data-analytics": "northwind-commercial-review",
+  "product-management": "harbor-desk-case",
+  "python-programming": "python-pipeline-audit",
+  "data-science-ai": "churn-cohort-validation",
+  "generative-ai": "enterprise-rag-evaluation",
+  "full-stack-web": "idempotent-ledger-architecture",
+}
+
+export function defaultProjectPathForCourse(courseSlug: string): string | null {
+  const projectType = DEFAULT_PROJECT_TYPE_BY_COURSE[courseSlug]
+  return projectType ? `/os/projects/${courseSlug}/${projectType}` : null
+}
+
 export function learnerProjectPath(courseSlug: string, projectType: string) {
   return `/os/projects/${courseSlug}/${projectType}`
 }

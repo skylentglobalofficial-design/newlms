@@ -13,6 +13,10 @@ import {
 
 export const careerRiseRouter = Router()
 
+export function buildCareerRiseMockDefenseHref(slug: string): string {
+  return `/career-os/interviews?track=${encodeURIComponent(slug)}`
+}
+
 const CAREER_RISE_UNAVAILABLE = {
   error: "Career Rise cannot be checked right now.",
   code: "unavailable" as const,
@@ -94,10 +98,11 @@ careerRiseRouter.get("/", async (req: AuthenticatedRequest, res) => {
         thresholdPercent: completion.thresholdPercent,
         eligible: completion.eligible,
         enrolled: Boolean(enrolment),
+        mockDefenseHref: buildCareerRiseMockDefenseHref(scope.slug),
         milestones: {
           curriculumGatePassed: completion.eligible,
-          caseEvidenceReady: completion.completedModules >= 1,
-          mockInterviewUnlocked: Boolean(enrolment),
+          caseEvidenceRequired: true,
+          mockDefenseHref: buildCareerRiseMockDefenseHref(scope.slug),
         },
       })
     }
@@ -227,11 +232,13 @@ careerRiseRouter.get("/workspace", async (req: AuthenticatedRequest, res) => {
     if (!enrolment) {
       return res.status(403).json({ error: "Career Rise is not open for this curriculum", code: "CAREER_RISE_LOCKED" })
     }
+    const targetSlug = course?.slug ?? program?.slug ?? "data-analytics"
     res.json({
       data: {
         enrolled: true,
         title: course?.title ?? program?.name,
-        slug: course?.slug ?? program?.slug,
+        slug: targetSlug,
+        mockDefenseHref: buildCareerRiseMockDefenseHref(targetSlug),
         coaching: null,
         placements: null,
         mentorship: null,

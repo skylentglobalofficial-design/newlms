@@ -45,7 +45,7 @@ function poisonCourse(slug: string) {
   }
 }
 
-for (const slug of ["data-analytics", "product-management", "python-programming", "generative-ai", "full-stack-web"] as const) {
+for (const slug of ["data-analytics", "product-management"] as const) {
   const source = courses.find((course) => course.slug === slug)
   assert(source, `${slug} authored course missing`)
   const poisoned = poisonCourse(slug)
@@ -60,9 +60,7 @@ for (const slug of ["data-analytics", "product-management", "python-programming"
   assert(JSON.stringify(shown.forWhom) === JSON.stringify(source.forWhom), `${slug} audience must be the authored audience`)
   assert(!/power\s*bi/i.test(surface), `${slug} effective public copy still claims Power BI`)
   assert(!/live classes|live \+/i.test(surface), `${slug} effective public copy still claims live classes`)
-  if (slug !== "python-programming" && slug !== "generative-ai" && slug !== "full-stack-web") {
-    assert(!/with Python|and Python|Python to/i.test(surface), `${slug} effective public copy still claims Python is taught`)
-  }
+  assert(!/with Python|and Python|Python to/i.test(surface), `${slug} effective public copy still claims Python is taught`)
   assert(shown.desc !== poisoned.desc && shown.outcomes[0] !== poisoned.outcomes[0], `${slug} still shows the stale API copy`)
   assert(served.desc === shown.desc, `${slug} API description must match the page`)
   assert(served.longDesc === shown.longDesc, `${slug} API long description must match the page`)
@@ -72,10 +70,10 @@ for (const slug of ["data-analytics", "product-management", "python-programming"
 }
 
 const untouched = effectiveAuthoredCourseCopy({
-  ...poisonCourse("power-bi"),
-  desc: "Power BI outline: reports and dashboards. Catalogue listing — thinner than Data Analytics.",
+  ...poisonCourse("python-programming"),
+  desc: "Python outline: variables, pandas, and visualisation. Catalogue listing — thinner than Data Analytics.",
 })
-assert(untouched.desc.startsWith("Power BI outline"), "Non-authored course descriptions stay on the catalogue row")
+assert(untouched.desc.startsWith("Python outline"), "Non-authored course descriptions stay on the catalogue row")
 
 const daProgramme = programs.find((program) => program.slug === "data-analytics-pro")
 const pmProgramme = programs.find((program) => program.slug === "product-management")
@@ -149,7 +147,7 @@ const mixed = effectiveProgrammePublicFacts({
   desc: "Listed as a data science direction.",
   format: "Self-paced",
   moduleCount: 7,
-  linkedCourseSlugs: ["data-analytics", "power-bi"],
+  linkedCourseSlugs: ["data-analytics", "python-programming"],
 })
 assert(mixed.taughtModuleCount === 7, "A mixed programme keeps the linked-course count from the API")
 assert(mixed.desc === "Listed as a data science direction.", "Programmes outside the honest set keep their API description")

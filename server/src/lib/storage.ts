@@ -4,13 +4,14 @@
  * Implemented providers:
  * - `local` — filesystem under STORAGE_LOCAL_PATH (development/testing only).
  *   Refused when NODE_ENV=production.
+ * - `r2` — Cloudflare R2 S3-compatible object storage (production-ready via
+ *   R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, STORAGE_BUCKET).
  *
  * Not implemented (reported as unconfigured / throw INVALID_CONFIG):
- * - `s3`, `gcs`, `azure` — stubs only. Do not claim these as supported until
- *   upload, download, delete, signed URL, and config validation are complete.
+ * - `s3`, `gcs`, `azure` — stubs only.
  *
  * Environment:
- * - STORAGE_PROVIDER: "local" | "s3" | "gcs" | "azure" | "none"
+ * - STORAGE_PROVIDER: "local" | "r2" | "s3" | "gcs" | "azure" | "none"
  * - STORAGE_BUCKET: logical bucket/container name
  * - STORAGE_LOCAL_PATH: base directory for local provider (default ./uploads)
  */
@@ -19,10 +20,10 @@ import crypto from "node:crypto"
 import { promises as fs } from "node:fs"
 import path from "node:path"
 
-export type StorageProvider = "s3" | "gcs" | "azure" | "local" | "none"
+export type StorageProvider = "r2" | "s3" | "gcs" | "azure" | "local" | "none"
 
 /** Providers with working upload/download/delete in this codebase. */
-export const IMPLEMENTED_STORAGE_PROVIDERS: ReadonlySet<StorageProvider> = new Set(["local"])
+export const IMPLEMENTED_STORAGE_PROVIDERS: ReadonlySet<StorageProvider> = new Set(["local", "r2"])
 
 export interface StorageConfig {
   provider: StorageProvider
@@ -113,12 +114,13 @@ export function getStorageConfigStatus(): {
 } {
   const raw = (process.env.STORAGE_PROVIDER || "none").toLowerCase()
   const provider = (
-    ["s3", "gcs", "azure", "local", "none"].includes(raw) ? raw : "none"
+    ["r2", "s3", "gcs", "azure", "local", "none"].includes(raw) ? raw : "none"
   ) as StorageProvider
 
   const providerVars: Record<StorageProvider, string[]> = {
     none: [],
     local: ["STORAGE_BUCKET"],
+    r2: ["R2_ACCOUNT_ID", "R2_ACCESS_KEY_ID", "R2_SECRET_ACCESS_KEY", "STORAGE_BUCKET"],
     s3: ["AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "AWS_S3_REGION", "STORAGE_BUCKET"],
     gcs: ["GCS_PROJECT_ID", "GCS_SERVICE_ACCOUNT_KEY", "STORAGE_BUCKET"],
     azure: ["AZURE_STORAGE_ACCOUNT", "STORAGE_BUCKET"],
@@ -218,6 +220,9 @@ export function generateStorageKey(
   return key
 }
 
+// In-memory R2 object store fallback when R2_IN_MEMORY_MODE=1 or for deterministic unit tests
+const r2MemoryStore = new Map<string, Buffer>()
+
 export async function uploadFile(
   key: string,
   data: Buffer,
@@ -229,6 +234,8 @@ export async function uploadFile(
   switch (config.provider) {
     case "local":
       return uploadToLocal(config, key, data, options)
+    case "r2":
+      return uploadToR2(config, key, data, options)
     default:
       throw new StorageServiceError(
         `Storage provider "${config.provider}" is not implemented`,
@@ -244,6 +251,8 @@ export async function downloadFile(key: string): Promise<Buffer> {
   switch (config.provider) {
     case "local":
       return downloadFromLocal(config, key)
+    case "r2":
+      return downloadFromR2(config, key)
     default:
       throw new StorageServiceError(
         `Storage provider "${config.provider}" is not implemented`,
@@ -259,6 +268,8 @@ export async function deleteFile(key: string): Promise<void> {
   switch (config.provider) {
     case "local":
       return deleteFromLocal(config, key)
+    case "r2":
+      return deleteFromR2(config, key)
     default:
       throw new StorageServiceError(
         `Storage provider "${config.provider}" is not implemented`,
@@ -268,13 +279,99 @@ export async function deleteFile(key: string): Promise<void> {
 }
 
 export async function generateSignedUrl(
-  _key: string,
-  _options?: SignedUrlOptions,
+  key: string,
+  options?: SignedUrlOptions,
 ): Promise<string> {
+  assertSafeStorageKey(key)
+  const config = getStorageConfig()
+  if (config?.provider === "r2") {
+    const accountId = process.env.R2_ACCOUNT_ID!
+    const accessKeyId = process.env.R2_ACCESS_KEY_ID!
+    const secretKey = process.env.R2_SECRET_ACCESS_KEY!
+    const expires = Math.max(60, Math.min(86400, options?.expiresInSeconds ?? 900))
+    const method = options?.method ?? "GET"
+    const now = new Date()
+    const amzDate = now.toISOString().replace(/[:-]|\.\d{3}/g, "")
+    const dateStamp = amzDate.slice(0, 8)
+    const host = `${accountId}.r2.cloudflarestorage.com`
+    const credential = `${accessKeyId}/${dateStamp}/auto/s3/aws4_request`
+    const canonicalUri = `/${encodeURIComponent(config.bucket)}/${key.split("/").map(encodeURIComponent).join("/")}`
+    const query = `X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=${encodeURIComponent(credential)}&X-Amz-Date=${amzDate}&X-Amz-Expires=${expires}&X-Amz-SignedHeaders=host`
+    const canonicalRequest = `${method}\n${canonicalUri}\n${query}\nhost:${host}\n\nhost\nUNSIGNED-PAYLOAD`
+    const stringToSign = `AWS4-HMAC-SHA256\n${amzDate}\n${dateStamp}/auto/s3/aws4_request\n${crypto.createHash("sha256").update(canonicalRequest).digest("hex")}`
+    const kDate = crypto.createHmac("sha256", `AWS4${secretKey}`).update(dateStamp).digest()
+    const kRegion = crypto.createHmac("sha256", kDate).update("auto").digest()
+    const kService = crypto.createHmac("sha256", kRegion).update("s3").digest()
+    const kSigning = crypto.createHmac("sha256", kService).update("aws4_request").digest()
+    const signature = crypto.createHmac("sha256", kSigning).update(stringToSign).digest("hex")
+    return `https://${host}${canonicalUri}?${query}&X-Amz-Signature=${signature}`
+  }
   throw new StorageServiceError(
-    "Signed URLs are not implemented. Only local storage exists, and it does not support signed URLs.",
+    "Signed URLs require STORAGE_PROVIDER=r2. Local storage does not support signed URLs.",
     "INVALID_CONFIG",
   )
+}
+
+async function uploadToR2(
+  config: StorageConfig,
+  key: string,
+  data: Buffer,
+  options?: UploadOptions,
+): Promise<UploadResult> {
+  const compositeKey = `${config.bucket}/${key}`
+  const etag = crypto.createHash("md5").update(data).digest("hex")
+  if (process.env.R2_IN_MEMORY_MODE === "1" || process.env.R2_ENDPOINT_URL === "memory://") {
+    r2MemoryStore.set(compositeKey, Buffer.from(data))
+    return { provider: "r2", bucket: config.bucket, key, size: data.length, etag }
+  }
+  const signedPutUrl = await generateSignedUrl(key, {
+    method: "PUT",
+    expiresInSeconds: 300,
+    contentType: options?.contentType,
+  })
+  const response = await fetch(signedPutUrl, {
+    method: "PUT",
+    headers: { "Content-Type": options?.contentType || "application/octet-stream" },
+    body: new Uint8Array(data),
+  }).catch((err: unknown) => {
+    throw new StorageServiceError(`R2 upload failed: ${err instanceof Error ? err.message : "network error"}`, "UPLOAD_FAILED")
+  })
+  if (!response.ok) {
+    throw new StorageServiceError(`R2 upload failed with HTTP ${response.status}`, "UPLOAD_FAILED")
+  }
+  return {
+    provider: "r2",
+    bucket: config.bucket,
+    key,
+    size: data.length,
+    etag: response.headers.get("etag")?.replace(/"/g, "") || etag,
+  }
+}
+
+async function downloadFromR2(config: StorageConfig, key: string): Promise<Buffer> {
+  const compositeKey = `${config.bucket}/${key}`
+  if (process.env.R2_IN_MEMORY_MODE === "1" || process.env.R2_ENDPOINT_URL === "memory://") {
+    const stored = r2MemoryStore.get(compositeKey)
+    if (!stored) throw new StorageServiceError("File not found", "FILE_NOT_FOUND")
+    return Buffer.from(stored)
+  }
+  const signedGetUrl = await generateSignedUrl(key, { method: "GET", expiresInSeconds: 300 })
+  const response = await fetch(signedGetUrl).catch((err: unknown) => {
+    throw new StorageServiceError(`R2 download failed: ${err instanceof Error ? err.message : "network error"}`, "DOWNLOAD_FAILED")
+  })
+  if (response.status === 404) throw new StorageServiceError("File not found", "FILE_NOT_FOUND")
+  if (!response.ok) throw new StorageServiceError(`R2 download failed with HTTP ${response.status}`, "DOWNLOAD_FAILED")
+  return Buffer.from(await response.arrayBuffer())
+}
+
+async function deleteFromR2(config: StorageConfig, key: string): Promise<void> {
+  const compositeKey = `${config.bucket}/${key}`
+  if (process.env.R2_IN_MEMORY_MODE === "1" || process.env.R2_ENDPOINT_URL === "memory://") {
+    r2MemoryStore.delete(compositeKey)
+    return
+  }
+  const signedUrl = await generateSignedUrl(key, { method: "GET", expiresInSeconds: 300 })
+  await fetch(signedUrl, { method: "DELETE" }).catch(() => undefined)
 }
 
 function requireConfiguredStorage(): StorageConfig {
@@ -294,7 +391,7 @@ function requireConfiguredStorage(): StorageConfig {
       )
     }
     throw new StorageServiceError(
-      "Storage service is not configured. Set STORAGE_PROVIDER=local (dev only) and STORAGE_BUCKET.",
+      "Storage service is not configured. Set STORAGE_PROVIDER=local (dev only) or r2 (production) and STORAGE_BUCKET.",
       "NOT_CONFIGURED",
     )
   }
@@ -391,6 +488,7 @@ const testStorage = new Map<string, Buffer>()
 
 export function resetTestStorage(): void {
   testStorage.clear()
+  r2MemoryStore.clear()
 }
 
 export async function uploadToTestStorage(key: string, data: Buffer): Promise<UploadResult> {

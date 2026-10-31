@@ -1,6 +1,6 @@
 /**
  * Clients for the Skylent additions on the existing backend (server/src/routes/skylent/*):
- *   /api/v1/certificates  — issue (learner), issue-programme (learner), mine (learner), verify (public)
+ *   /api/v1/certificates  — issue (learner), mine (learner), verify (public)
  *   /api/v1/enquiries     — public enquiry / counselling / degree enquiry
  *   /api/v1/reva/chat     — site-wide assistant (legacy internal route name; the UI name is "Skylent AI")
  * No mock data and no fallbacks: a failed request throws, and the caller shows an honest error state.
@@ -26,13 +26,26 @@ export type SkylentCertificate = {
   verifyPath?: string
   issuedAt: string
   revoked?: boolean
-  issuer?: string
-  verificationStandard?: string
-  evidenceSummary?: string
-  credentialLevel?: "course" | "programme"
   id?: string
   userId?: string
   courseId?: string
+}
+
+export type ProofOfWorkArtifact = {
+  projectType: string
+  courseSlug: string
+  title: string
+  status: string
+  finding: string | null
+  whyItMatters: string | null
+  recommendation: string | null
+  updatedAt: string
+}
+
+export type ProofOfWorkDossier = {
+  verifiedModulesSummary: string
+  verifiedSkills: string[]
+  artifacts: ProofOfWorkArtifact[]
 }
 
 export type CertificateVerification =
@@ -43,8 +56,11 @@ export type CertificateVerification =
       courseTitle: string
       issuedAt: string
       issuer?: string
+      credentialStandard?: string
       verificationStandard?: string
       evidenceSummary?: string
+      credentialLevel?: "course" | "programme"
+      proofOfWork?: ProofOfWorkDossier
     }
   | { valid: false }
 
@@ -71,7 +87,7 @@ export async function issueCertificate(courseSlug: string): Promise<SkylentCerti
   return parsed.data
 }
 
-/** POST /certificates/issue-programme — issues a Programme Master Certificate when all courses in the programme are complete. */
+/** POST /certificates/issue-programme — issues a Programme Master Certificate (-PGM) when all linked courses are complete. */
 export async function issueProgrammeCertificate(programSlug: string): Promise<SkylentCertificate> {
   const token = await ensureCsrfToken()
   const response = await fetch(`${API_BASE}/certificates/issue-programme`, {
@@ -85,45 +101,10 @@ export async function issueProgrammeCertificate(programSlug: string): Promise<Sk
 }
 
 /**
- * GET /certificates/verify/:code — public. Returns only name, course and date.
+ * GET /certificates/verify/:code — public. Returns name, course, date, and Proof-of-Work Dossier.
  * 404 with { data: { valid: false } } means "no such certificate, or revoked"; 400 means a malformed ID.
  */
-const EXEMPLAR_CERTIFICATES: Record<string, Extract<CertificateVerification, { valid: true }>> = {
-  "SKL-2026-DA-EXEMPLAR": {
-    valid: true,
-    code: "SKL-2026-DA-EXEMPLAR",
-    learnerName: "Aarav Mehta (Exemplar Graduate Dossier)",
-    courseTitle: "Data Analytics — Commercial & SQL Mastery",
-    issuedAt: "2026-02-14T10:30:00.000Z",
-    issuer: "Skylent Global Pvt. Ltd.",
-    verificationStandard: "Skylent Verified Skill & Completion Record v1",
-    evidenceSummary: "Audited 166 Northwind order rows (excluded 4 cancelled records), reconciled ₹8,12,020 net category revenue in SQL, and defended the Q3 margin variance review.",
-  },
-  "SKL-2026-PM-EXEMPLAR": {
-    valid: true,
-    code: "SKL-2026-PM-EXEMPLAR",
-    learnerName: "Riya Sharma (Exemplar Operator Dossier)",
-    courseTitle: "Product Management — Harbor Desk Case Track",
-    issuedAt: "2026-02-18T14:15:00.000Z",
-    issuer: "Skylent Global Pvt. Ltd.",
-    verificationStandard: "Skylent Verified Skill & Completion Record v1",
-    evidenceSummary: "Synthesized 18 enterprise support interviews, authored the Harbor Desk intake triage specification, and passed the 60-second Boardroom Cold Call defense.",
-  },
-  "SKL-2026-AI-EXEMPLAR": {
-    valid: true,
-    code: "SKL-2026-AI-EXEMPLAR",
-    learnerName: "Kabir Verma (Exemplar AI Engineer Dossier)",
-    courseTitle: "Generative AI & LLM Engineering",
-    issuedAt: "2026-02-22T09:45:00.000Z",
-    issuer: "Skylent Global Pvt. Ltd.",
-    verificationStandard: "Skylent Verified Skill & Completion Record v1",
-    evidenceSummary: "Built a citation-grounded RAG retrieval pipeline with prompt-injection guardrails, deterministic JSON schema validation, and latency benchmark suite.",
-  },
-}
-
 export async function verifyCertificate(code: string, signal?: AbortSignal): Promise<CertificateVerification> {
-  const normalized = code.trim().toUpperCase()
-  if (EXEMPLAR_CERTIFICATES[normalized]) return EXEMPLAR_CERTIFICATES[normalized]
   const response = await fetch(`${API_BASE}/certificates/verify/${encodeURIComponent(code.trim().toUpperCase())}`, { signal })
   if (response.status === 404) return { valid: false }
   if (response.status === 400) throw new Error("That does not look like a Skylent certificate ID.")
@@ -218,4 +199,15 @@ export async function askSiteAi(messages: SiteAiTurn[], signal?: AbortSignal): P
   const raw = parsed.data.answer ?? ""
   const match = raw.match(/\[\[go:(\/[^\]\s]*)\]\]/)
   return { answer: raw.replace(/\s*\[\[go:[^\]]*\]\]/g, "").trim(), goTo: match ? match[1] : null }
+}
+
+export async function checkSiteAiAvailable(signal?: AbortSignal): Promise<boolean> {
+  try {
+    const response = await fetch(`${API_BASE}/reva/status`, { credentials: "include", signal })
+    if (!response.ok) return false
+    const parsed = await parseApiJson<{ data: { available: boolean } }>(response)
+    return Boolean(parsed.data?.available)
+  } catch {
+    return false
+  }
 }

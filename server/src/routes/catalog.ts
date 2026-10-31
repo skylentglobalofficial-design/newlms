@@ -7,6 +7,85 @@ import { overlayPublicCourse, overlayPublicProgramme, PUBLIC_COURSE_COPY } from 
 
 const router = Router()
 
+const DATA_SCIENCE_AI_CATALOG_FALLBACK = {
+  slug: 'data-science-ai',
+  title: 'Data Science & AI',
+  category: 'Data',
+  level: 'Intermediate',
+  duration: '12 weeks',
+  mode: 'Self-paced',
+  price: 5999,
+  originalPrice: 11999,
+  desc: 'Design exploratory data pipelines, leakage-free feature engineering, and calibrated model evaluation rubrics.',
+  longDesc: 'A practical Data Science & AI course covering exploratory data analysis, point-in-time feature engineering, out-of-time model validation, probability calibration, and drift monitoring.',
+  outcomes: [
+    'Audit tabular cohorts for post-event target leakage',
+    'Engineer point-in-time rolling engagement features',
+    'Evaluate models using out-of-time temporal splits and Precision@K',
+    'Calibrate predicted probabilities across customer segments',
+  ],
+  forWhom: [
+    'Analysts transitioning into applied data science',
+    'Engineers building predictive cohort and churn models',
+  ],
+  projectCount: 3,
+  moduleCount: 5,
+  lessonCount: 15,
+  curriculum: [
+    {
+      sourceId: 'm1',
+      order: 0,
+      title: 'Point-in-Time Data & Leakage Auditing',
+      nodes: [
+        { sourceId: 'l1', order: 0, title: 'Framing Prediction Windows & Observation Cutoffs', nodeType: 'NOTES', duration: '45 min' },
+        { sourceId: 'l2', order: 1, title: 'Detecting Post-Event Target Leakage in Tabular Cohorts', nodeType: 'NOTES', duration: '45 min' },
+        { sourceId: 'l3', order: 2, title: 'Temporal Split & Leakage Check', nodeType: 'QUIZ', duration: '20 min' },
+      ],
+    },
+    {
+      sourceId: 'm2',
+      order: 1,
+      title: 'Feature Engineering & Cohort Signal',
+      nodes: [
+        { sourceId: 'l4', order: 0, title: 'Rolling Engagement Ratios & Behavioural Velocity Features', nodeType: 'NOTES', duration: '45 min' },
+        { sourceId: 'l5', order: 1, title: 'Handling Missingness, Censored Observations & Class Imbalance', nodeType: 'NOTES', duration: '45 min' },
+        { sourceId: 'l6', order: 2, title: 'Assignment — Point-in-Time Feature & Leakage Audit Memo', nodeType: 'ASSIGNMENT', duration: '3 hr' },
+      ],
+    },
+    {
+      sourceId: 'm3',
+      order: 2,
+      title: 'Model Benchmarking & Decision Thresholds',
+      nodes: [
+        { sourceId: 'l7', order: 0, title: 'Regularized Linear Baselines vs Gradient Boosted Trees', nodeType: 'NOTES', duration: '45 min' },
+        { sourceId: 'l8', order: 1, title: 'Precision@Top-K Under Constrained Operational Capacity', nodeType: 'NOTES', duration: '45 min' },
+        { sourceId: 'l9', order: 2, title: 'Ranking Metrics & Threshold Economics Check', nodeType: 'QUIZ', duration: '20 min' },
+      ],
+    },
+    {
+      sourceId: 'm4',
+      order: 3,
+      title: 'Probability Calibration & Subgroup Fairness',
+      nodes: [
+        { sourceId: 'l10', order: 0, title: 'Reliability Diagrams, Brier Score & Platt/Isotonic Calibration', nodeType: 'NOTES', duration: '45 min' },
+        { sourceId: 'l11', order: 1, title: 'Subgroup Error Slicing Across SMB & Enterprise Tiers', nodeType: 'NOTES', duration: '45 min' },
+        { sourceId: 'l12', order: 2, title: 'Assignment — Retention ROI & Calibration Specification', nodeType: 'ASSIGNMENT', duration: '3 hr' },
+      ],
+    },
+    {
+      sourceId: 'm5',
+      order: 4,
+      title: 'Production Drift Monitoring & Capstone',
+      nodes: [
+        { sourceId: 'l13', order: 0, title: 'Population Stability Index (PSI) & Shadow Deployment', nodeType: 'NOTES', duration: '45 min' },
+        { sourceId: 'l14', order: 1, title: 'Capstone — Customer Churn Cohort & Out-of-Time Validation Case', nodeType: 'ASSIGNMENT', duration: '6 hr' },
+        { sourceId: 'l15', order: 2, title: 'Final Data Science & Validation Check', nodeType: 'QUIZ', duration: '25 min' },
+      ],
+    },
+  ],
+}
+
+
 const slugParamSchema = z.object({
   slug: z
     .string()
@@ -209,6 +288,10 @@ router.get('/courses/:slug', async (request, response, next) => {
       },
     })
     if (!course || (publication && course.publicationStatus !== 'PUBLISHED')) {
+      if (parsed.data.slug === 'data-science-ai') {
+        response.json({ data: DATA_SCIENCE_AI_CATALOG_FALLBACK })
+        return
+      }
       response.status(404).json({ error: 'Course not found' })
       return
     }

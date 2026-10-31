@@ -152,7 +152,7 @@ export default function ProgrammeListing({ program, truth, cta, honesty, afterEn
               Start the linked self-paced course{truth.linked.length > 1 ? "s" : ""} today
             </h2>
             <p style={{ margin: "0 0 18px", fontSize: 15, color: "#3c425c", maxWidth: "52em" }}>
-              Every linked course below is 100% authored and open for immediate self-paced enrolment with 5 modules, 15 written lessons, 60 concept checks, 15 applied briefs, Boardroom Cold Calls, and Socratic AI + 20-Min Faculty TA support.
+              Every linked course below is 100% authored and open for immediate self-paced enrolment with 5 modules, 15 structured lessons, 3 module quizzes, applied assignments, a graded capstone, Boardroom Cold Calls, and Socratic AI + 20-Min Faculty TA support.
             </p>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 14 }}>
               {truth.linked.filter((item) => item.authored).map((item) => (
@@ -180,7 +180,7 @@ export default function ProgrammeListing({ program, truth, cta, honesty, afterEn
                   </div>
                   <strong style={{ fontSize: 18, fontWeight: 750 }}>{item.title}</strong>
                   <span style={{ fontSize: 13.5, color: "#555B7D" }}>
-                    5 modules · 60 concept checks · 15 written briefs · Cryptographic Certificate
+                    5 modules · 15 lessons · 3 quizzes · 1 capstone · Cryptographic Certificate
                   </span>
                   <span style={{ marginTop: "auto", paddingTop: 6, fontSize: 14, fontWeight: 700, color: "#5142B5", display: "inline-flex", alignItems: "center", gap: 6 }}>
                     Open {item.title} course <ArrowRight />

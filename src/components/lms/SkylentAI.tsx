@@ -22,33 +22,108 @@ type UiState = "checking" | "unavailable" | "unreachable" | "ready" | "loading" 
 /** What the panel keeps per turn. Only `role` and `content` are ever sent back to the API. */
 type UiTurn = SkylentAiTurn & { basedOn?: string; heldBack?: boolean }
 
-/**
- * Context-aware Socratic debug ("Debug my SQL logic") and rubric criteria ("Check rubric criteria")
- * prompts exported for lesson workspace interactivity across all 6 flagship tracks.
- */
-import {
-  QUICK,
-  TRACK_SOCRATIC_PROMPTS,
-  socraticQuickPromptsFor,
-} from "../../lib/socratic-prompts"
+/** The four real modes of POST /lms/ai/ask (plus the free question, mode "ask"). Nothing else exists. */
+const QUICK: Array<{ action: SkylentAiAction; label: string }> = [
+  { action: "explain", label: "Explain simpler" },
+  { action: "example", label: "Give an example" },
+  { action: "quiz", label: "Quiz me" },
+  { action: "practice", label: "Practice question" },
+]
 
-export {
-  QUICK,
-  TRACK_SOCRATIC_PROMPTS,
-  socraticQuickPromptsFor,
+
+const TRACK_SOCRATIC_PROMPTS: Record<string, { label: string; question: string }> = {
+  "data-analytics": {
+    label: "Debug my SQL logic",
+    question: "How should I verify my SQL join and aggregation logic on this lesson without giving me the final query?",
+  },
+  "product-management": {
+    label: "Pressure-test my PRD scope",
+    question: "What trade-offs or edge cases should I check in my product scope for this lesson without writing the memo for me?",
+  },
+  "python-programming": {
+    label: "Check my Python edge cases",
+    question: "What data-type or boundary edge cases should I test in my Python logic for this lesson without giving me the code?",
+  },
+  "data-science-ai": {
+    label: "Check for data leakage",
+    question: "How do I verify my feature engineering and validation split on this lesson to avoid data leakage?",
+  },
+  "generative-ai": {
+    label: "Verify RAG grounding",
+    question: "How should I evaluate retrieval grounding and citation accuracy for this lesson step?",
+  },
+  "full-stack-web": {
+    label: "Audit API idempotency",
+    question: "What request validation and idempotency checks should I verify for this backend/frontend step?",
+  },
+}
+
+export function socraticQuickPromptsFor(
+  courseSlug: string,
+  lessonKind?: string | null,
+  assessmentOpen = false,
+): Array<{ action: SkylentAiAction; label: string; question?: string }> {
+  const base: Array<{ action: SkylentAiAction; label: string; question?: string }> = QUICK.filter(
+    (item) => !(assessmentOpen && item.action === "quiz"),
+  )
+  if (lessonKind === "assignment") {
+    return [
+      ...base,
+      {
+        action: "ask",
+        label: "Check rubric criteria",
+        question: "What are the key criteria my response should cover for this lesson, without writing the answer for me?",
+      },
+    ]
+  }
+  const trackPrompt = TRACK_SOCRATIC_PROMPTS[courseSlug]
+  if (trackPrompt) {
+    return [
+      ...base,
+      {
+        action: "ask",
+        label: trackPrompt.label,
+        question: trackPrompt.question,
+      },
+    ]
+  }
+  return base
 }
 
 const UNAVAILABLE = `${AI_NAME} isn't switched on yet.`
 const UNREACHABLE = `${AI_NAME} could not be reached.`
 
 /** Courses whose lesson text, concepts and case facts the server loads (server/src/lib/skylent-ai/authored.ts). */
-const AUTHORED_AI_COURSES = new Set(["data-analytics", "product-management"])
+const AUTHORED_AI_COURSES = new Set([
+  "data-analytics",
+  "product-management",
+  "python-programming",
+  "data-science-ai",
+  "generative-ai",
+  "full-stack-web",
+])
+
+export function hinglishIntuitionPromptFor(courseSlug: string, lessonTitle?: string): {
+  action: SkylentAiAction
+  label: string
+  question: string
+} {
+  return {
+    action: "ask",
+    label: "🇮🇳 Explain in Simple Hinglish",
+    question: `Explain the core first-principles intuition of "${lessonTitle ?? courseSlug}" in simple Hinglish with a practical Indian real-world analogy, without giving away any quiz or assignment answers.`,
+  }
+}
 
 /** Case facts the server attaches to the lesson context (server/src/lib/skylent-ai/authored.ts). */
 function caseChipFor(courseSlug: string, caseLabel?: string | null): string | null {
   if (caseLabel) return caseLabel
   if (courseSlug === "data-analytics") return "Northwind dataset"
   if (courseSlug === "product-management") return "Harbor Desk case"
+  if (courseSlug === "python-programming") return "Python ETL audit log"
+  if (courseSlug === "data-science-ai") return "Churn cohort dataset"
+  if (courseSlug === "generative-ai") return "Enterprise RAG corpus"
+  if (courseSlug === "full-stack-web") return "Idempotent ledger API"
   return null
 }
 
@@ -404,6 +479,20 @@ export default function SkylentAI({ courseSlug, lessonId, lessonTitle, lessonNum
               {item.label}
             </button>
           ))}
+          {(() => {
+            const hinglish = hinglishIntuitionPromptFor(courseSlug, lessonTitle)
+            return (
+              <button
+                key={hinglish.label}
+                type="button"
+                className="os-btn os-btn-ghost"
+                disabled={inputDisabled}
+                onClick={() => void submit(hinglish.action, hinglish.question)}
+              >
+                {hinglish.label}
+              </button>
+            )
+          })()}
         </div>
         <form
           className="os-ai-form"

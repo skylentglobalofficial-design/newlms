@@ -1199,7 +1199,7 @@ lmsRouter.get("/doubts/mine", requireAuth, async (req: AuthenticatedRequest, res
           learnerName: row.learnerName,
           courseSlug: row.courseSlug,
           lessonKey: row.lessonKey,
-          lessonTitle: row.lessonTitle,
+          lessonTitle: row.lessonTitle ?? row.lessonKey,
           question: row.question,
           status: row.status === "resolved" ? "resolved" : "open",
           slaMinutes: row.slaMinutes,

@@ -1,5 +1,3 @@
-import { randomUUID } from "node:crypto"
-
 export type FacultyDoubtTicket = {
   id: string
   userId: string
@@ -40,7 +38,7 @@ export function createFacultyDoubtTicket(input: {
       return ticket
     }
   }
-  const id = randomUUID()
+  const id = `dbt-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`
   const ticket: FacultyDoubtTicket = {
     id,
     userId: input.userId,

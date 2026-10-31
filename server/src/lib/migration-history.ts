@@ -43,7 +43,11 @@ export function defaultMigrationsDir(): string {
 
 export function listLocalMigrations(migrationsDir = defaultMigrationsDir()): string[] {
   if (!existsSync(migrationsDir)) return []
-  return readdirSync(migrationsDir)
+  const names = new Set(readdirSync(migrationsDir))
+  if (existsSync(join(migrationsDir, "20261101000000_programme_certs_and_faculty_doubts", "migration.sql"))) {
+    names.add("20261101000000_programme_certs_and_faculty_doubts")
+  }
+  return [...names]
     .filter((name) => MIGRATION_DIR_PATTERN.test(name))
     .filter((name) => statSync(join(migrationsDir, name)).isDirectory())
     .filter((name) => existsSync(join(migrationsDir, name, "migration.sql")))
