@@ -197,7 +197,7 @@ function statusText(row: Row, confirmed: boolean): string {
   const state = publicCatalogueState(confirmed, presentedOpen(row))
   if (state === "unknown" || state === "open") return confirmed ? "Open for enrolment" : STATUS_NOT_CONFIRMED
   if (row.truth.linked.some((l) => l.authored)) return "Open for enrolment"
-  if (row.truth.state === "soon") return "Open via SQL Lab"
+  if (row.program.slug === "sql-certificate" || row.truth.state === "soon") return "Open via SQL Lab"
   return publicCatalogueStatus("closed")
 }
 
