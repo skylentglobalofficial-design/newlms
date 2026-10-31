@@ -13,45 +13,94 @@ export const skylentCertificatesRouter = Router()
 export const SKYLENT_CREDENTIAL_ISSUER = "Skylent Global Pvt. Ltd."
 export const SKYLENT_CREDENTIAL_STANDARD = "Skylent Verified Skill & Completion Record v1"
 
-export const EXEMPLAR_CERTIFICATES = [
-  {
-    code: "SKL-2026-DA-EXEMPLAR",
-    learnerName: "Aarav Sharma",
-    courseTitle: "Data Analytics with Gen AI",
-    courseSlug: "data-analytics",
-    issuedAt: new Date("2026-10-15T10:00:00Z"),
-    score: "96/100 · Exemplar Capstone Dossier",
-    issuer: SKYLENT_CREDENTIAL_ISSUER,
-    credentialStandard: SKYLENT_CREDENTIAL_STANDARD,
-    evidenceSummary: "Northwind Sales & Revenue Leakage Audit: Identified 14.5% discount leakage in Apparel category across 166 validated order lines with SQL aggregation.",
-  },
-  {
-    code: "SKL-2026-PM-EXEMPLAR",
-    learnerName: "Priya Nair",
-    courseTitle: "Product Management",
-    courseSlug: "product-management",
-    issuedAt: new Date("2026-10-18T14:30:00Z"),
-    score: "95/100 · Exemplar Capstone Dossier",
-    issuer: SKYLENT_CREDENTIAL_ISSUER,
-    credentialStandard: SKYLENT_CREDENTIAL_STANDARD,
-    evidenceSummary: "Harbor Desk Operations Triage PRD: Scoped weekend exception ownership workflow for 12 stores under 2-engineer, 6-week resource constraint.",
-  },
-  {
-    code: "SKL-2026-AI-EXEMPLAR",
-    learnerName: "Rohan Verma",
-    courseTitle: "Generative AI & LLM Systems",
-    courseSlug: "generative-ai",
-    issuedAt: new Date("2026-10-22T09:15:00Z"),
-    score: "98/100 · Exemplar Capstone Dossier",
-    issuer: SKYLENT_CREDENTIAL_ISSUER,
-    credentialStandard: SKYLENT_CREDENTIAL_STANDARD,
-    evidenceSummary: "Enterprise Grounded RAG with Citation Policy: Evaluated hallucination bounds and prompt injection security with automated test harness.",
-  },
-] as const
+export type ProofOfWorkArtifact = {
+  projectType: string
+  courseSlug: string
+  title: string
+  status: string
+  finding: string | null
+  whyItMatters: string | null
+  recommendation: string | null
+  updatedAt: string
+}
 
-export function resolveExemplarCertificate(code: string) {
-  const norm = code.trim().toUpperCase()
-  return EXEMPLAR_CERTIFICATES.find((item) => item.code === norm) ?? null
+export type ProofOfWorkDossier = {
+  verifiedModulesSummary: string
+  verifiedSkills: string[]
+  artifacts: ProofOfWorkArtifact[]
+}
+
+const TRACK_VERIFIED_SKILLS: Array<{ match: RegExp; skills: string[]; modulesSummary: string }> = [
+  {
+    match: /data analytics/i,
+    skills: ["SQL Cohort & Revenue Joins", "Spreadsheet Reconciliation", "KPI Decision Framing", "Commercial Executive Synthesis"],
+    modulesSummary: "5 Modules · 15 Verified Lessons · SQL Lab & Commercial Review Capstone",
+  },
+  {
+    match: /product management/i,
+    skills: ["Problem Discovery & Triage", "Opportunity Sizing", "PRD & Acceptance Criteria", "Guardrail & Rollout Governance"],
+    modulesSummary: "5 Modules · 15 Verified Lessons · Harbor Desk Product Case Capstone",
+  },
+  {
+    match: /python/i,
+    skills: ["Idempotent ETL Pipelines", "Schema Validation & Quarantine", "Automated Pytest Suites", "Runbook & CLI Packaging"],
+    modulesSummary: "5 Modules · 15 Verified Lessons · Python Transaction Pipeline Capstone",
+  },
+  {
+    match: /data science/i,
+    skills: ["Point-in-Time Feature Engineering", "Out-of-Time Model Validation", "Precision@K & Calibration", "Drift Monitoring Playbooks"],
+    modulesSummary: "5 Modules · 15 Verified Lessons · Churn Cohort Validation Capstone",
+  },
+  {
+    match: /generative ai|llm/i,
+    skills: ["Hybrid RAG Architecture", "Grounded Citation Verification", "Prompt-Injection Defense", "Latency & Token FinOps"],
+    modulesSummary: "5 Modules · 15 Verified Lessons · Enterprise RAG Evaluation Capstone",
+  },
+  {
+    match: /full.?stack/i,
+    skills: ["Relational Ledger Modelling", "Typed REST & Zod Contracts", "RBAC & CSRF Hardening", "Idempotent Webhook Reconciliation"],
+    modulesSummary: "5 Modules · 15 Verified Lessons · Idempotent Wallet Architecture Capstone",
+  },
+]
+
+export function buildProofOfWorkDossier(
+  projects: Array<{
+    projectType: string
+    courseSlug: string
+    title: string
+    status: string
+    finding?: string | null
+    whyItMatters?: string | null
+    recommendation?: string | null
+    updatedAt?: Date | string
+  }>,
+  courseTitle: string,
+): ProofOfWorkDossier {
+  const matched = TRACK_VERIFIED_SKILLS.find((entry) => entry.match.test(courseTitle))
+  const verifiedSkills = matched?.skills ?? [
+    "Applied Problem Framing",
+    "Rubric-Verified Execution",
+    "Case-Method Decision Synthesis",
+  ]
+  const verifiedModulesSummary =
+    matched?.modulesSummary ?? "Verified completion of all required modules, checkpoints, and applied case evaluations."
+
+  const artifacts: ProofOfWorkArtifact[] = projects.map((row) => ({
+    projectType: row.projectType,
+    courseSlug: row.courseSlug,
+    title: row.title,
+    status: row.status,
+    finding: row.finding?.trim() ? row.finding.trim() : null,
+    whyItMatters: row.whyItMatters?.trim() ? row.whyItMatters.trim() : null,
+    recommendation: row.recommendation?.trim() ? row.recommendation.trim() : null,
+    updatedAt: row.updatedAt instanceof Date ? row.updatedAt.toISOString() : String(row.updatedAt ?? new Date().toISOString()),
+  }))
+
+  return {
+    verifiedModulesSummary,
+    verifiedSkills,
+    artifacts,
+  }
 }
 
 const verifyLimit = rateLimit({
@@ -63,6 +112,7 @@ const verifyLimit = rateLimit({
     response.status(429).json({ error: "Too many verification attempts. Try again later." })
   },
 })
+
 
 export function buildProgrammeCertificateCode(programSlug: string, year = new Date().getFullYear(), randomHex?: string) {
   const suffix = (randomHex ?? randomBytes(4).toString("hex")).toUpperCase().slice(0, 8)
@@ -89,12 +139,33 @@ function publicLearnerName(stored: string): string {
   return stored
 }
 
+const issuedProgrammeCertCache = new Map<
+  string,
+  {
+    code: string
+    userId: string
+    learnerName: string
+    courseTitle: string
+    courseSlug: string | null
+    programSlug: string
+    issuedAt: Date
+    revoked: boolean
+  }
+>()
+
 export function buildCertificateEvidenceSummary(cert: {
   code: string
   learnerName: string
   courseTitle: string
   issuedAt: Date
+  evidenceSummary?: string
 }) {
+  const isProgramme = cert.code.includes("-PGM") || cert.code.includes("-PRG-")
+  const evidenceSummary =
+    cert.evidenceSummary ??
+    (isProgramme
+      ? "Verified completion of all linked programme courses, modules, and applied case assessments."
+      : "Verified completion of all required course lessons, quizzes, and applied case work.")
   return {
     code: cert.code,
     learnerName: publicLearnerName(cert.learnerName),
@@ -102,6 +173,9 @@ export function buildCertificateEvidenceSummary(cert: {
     issuedAt: cert.issuedAt,
     issuer: SKYLENT_CREDENTIAL_ISSUER,
     credentialStandard: SKYLENT_CREDENTIAL_STANDARD,
+    verificationStandard: SKYLENT_CREDENTIAL_STANDARD,
+    credentialLevel: isProgramme ? ("programme" as const) : ("course" as const),
+    evidenceSummary,
   }
 }
 
@@ -217,11 +291,21 @@ skylentCertificatesRouter.get("/mine", requireAuth, async (req: AuthenticatedReq
         })
       : []
     const slugById = new Map(courses.map((course) => [course.id, course.slug]))
+    const cachedProgs = [...issuedProgrammeCertCache.values()]
+      .filter((item) => item.userId === req.auth!.user.id && !item.revoked)
+      .map((item) => ({
+        ...issuedLearnerView(item, item.courseSlug),
+        programSlug: item.programSlug,
+        revoked: false,
+      }))
     res.json({
-      data: rows.map((row) => ({
-        ...issuedLearnerView(row, slugById.get(row.courseId) ?? null),
-        revoked: row.revoked,
-      })),
+      data: [
+        ...cachedProgs,
+        ...rows.map((row) => ({
+          ...issuedLearnerView(row, slugById.get(row.courseId) ?? null),
+          revoked: row.revoked,
+        })),
+      ],
     })
   } catch (error) {
     if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
@@ -232,46 +316,124 @@ skylentCertificatesRouter.get("/mine", requireAuth, async (req: AuthenticatedReq
   }
 })
 
-/** Public check. Returns name, course, date, and credential issuer metadata. Supports public exemplars. */
+
+export const EXEMPLAR_CERTIFICATES: ReadonlyArray<{
+  code: string
+  learnerName: string
+  courseTitle: string
+  issuedAt: Date
+  project: {
+    projectType: string
+    courseSlug: string
+    title: string
+    status: string
+    finding: string
+    whyItMatters: string
+    recommendation: string
+    updatedAt: Date
+  }
+}> = [
+  {
+    code: "SKL-2026-DA-EXEMPLAR",
+    learnerName: "Aarav Sharma (96/100 Exemplar)",
+    courseTitle: "Data Analytics",
+    issuedAt: new Date("2026-10-15T10:00:00.000Z"),
+    project: {
+      projectType: "northwind-commercial-review",
+      courseSlug: "data-analytics",
+      title: "Northwind Q1–Q2 Commercial & Discount Leakage Audit",
+      status: "ready_to_review",
+      finding: "After excluding 14 invalid/returned rows (166 valid rows, ₹8,12,020 net revenue), Apparel averaged 14.5% discount_pct vs 8.4% in Electronics, eroding Q2 gross margin by 340 bps.",
+      whyItMatters: "Uncontrolled promo codes in Apparel reduced net contribution without lifting repeat order frequency.",
+      recommendation: "Cap Apparel promo discounts at 8% and require cart threshold >= ₹2,500 before applying coupon codes.",
+      updatedAt: new Date("2026-10-15T09:30:00.000Z"),
+    },
+  },
+  {
+    code: "SKL-2026-PM-EXEMPLAR",
+    learnerName: "Meera Krishnan (95/100 Exemplar)",
+    courseTitle: "Product Management",
+    issuedAt: new Date("2026-10-18T10:00:00.000Z"),
+    project: {
+      projectType: "harbor-desk-case",
+      courseSlug: "product-management",
+      title: "Harbor Desk 6-Week Weekend Exception Queue PRD",
+      status: "ready_to_review",
+      finding: "3 of 9 weekly store delivery exceptions go unlogged in personal WhatsApp groups across 12 Harbor Retail stores.",
+      whyItMatters: "Morning shift managers lose 45 minutes every Monday reconciling missing cold-chain inventory.",
+      recommendation: "Ship a constrained 2-engineer, 6-week mobile Exception Triage Queue with mandatory SKU photo capture and Monday 08:00 escalation.",
+      updatedAt: new Date("2026-10-18T09:30:00.000Z"),
+    },
+  },
+  {
+    code: "SKL-2026-AI-EXEMPLAR",
+    learnerName: "Rohan Verma (97/100 Exemplar)",
+    courseTitle: "Generative AI & LLM Systems",
+    issuedAt: new Date("2026-10-22T10:00:00.000Z"),
+    project: {
+      projectType: "enterprise-rag-evaluation",
+      courseSlug: "generative-ai",
+      title: "Enterprise RAG Hallucination & Grounded Citation Audit",
+      status: "ready_to_review",
+      finding: "Unfiltered hybrid retrieval surfaced deprecated 2023 policy chunks, causing 19% ungrounded refund claims.",
+      whyItMatters: "Customer support bots promised 30-day unconditional refunds on enterprise annual contracts.",
+      recommendation: "Enforce effective_date metadata filtering at retrieval and block responses lacking verified [doc_id] citations.",
+      updatedAt: new Date("2026-10-22T09:30:00.000Z"),
+    },
+  },
+]
+
+export function resolveExemplarCertificate(code: string) {
+  const normalized = code.trim().toUpperCase()
+  const match = EXEMPLAR_CERTIFICATES.find((item) => item.code === normalized)
+  if (!match) return null
+  return {
+    valid: true as const,
+    ...issuedView(match),
+    proofOfWork: buildProofOfWorkDossier([match.project], match.courseTitle),
+  }
+}
+
+/** Public check. Returns name, course, date, credential issuer metadata, and Proof-of-Work Dossier. */
 skylentCertificatesRouter.get("/verify/:code", verifyLimit, async (req, res) => {
   const rawCode = req.params.code
   const normalized = (Array.isArray(rawCode) ? rawCode[0] : rawCode)?.toUpperCase()
   const code = z.string().regex(/^SKL-\d{4}-[A-Z0-9]{1,6}-[A-Z0-9]{4,8}$/).safeParse(normalized)
   if (!code.success) return void res.status(400).json({ error: "Invalid certificate ID" })
-
-  const exemplar = resolveExemplarCertificate(normalized || "")
-  if (exemplar) {
-    return void res.json({
-      data: {
-        valid: true,
-        code: exemplar.code,
-        learnerName: exemplar.learnerName,
-        courseTitle: exemplar.courseTitle,
-        issuedAt: exemplar.issuedAt.toISOString(),
-        issuer: exemplar.issuer,
-        verificationStandard: exemplar.credentialStandard,
-        evidenceSummary: exemplar.evidenceSummary,
-        score: exemplar.score,
-        isExemplar: true,
-      },
-    })
-  }
-
-  let cert: Awaited<ReturnType<typeof prisma.skylentCertificate.findUnique>>
-  try {
-    if (!(await certificatesReady())) return void res.status(503).json(CERTIFICATE_UNAVAILABLE)
-    cert = await prisma.skylentCertificate.findUnique({ where: { code: code.data } })
-  } catch (error) {
-    return void sendCertificateUnavailable(res, error)
+  const exemplar = resolveExemplarCertificate(code.data)
+  if (exemplar) return void res.json({ data: exemplar })
+  // A failed probe or lookup is not "no such certificate". Both stay inside this try
+  // so a dead database cannot escape as an HTML error or a 404.
+  let cert: { code: string; userId?: string; learnerName: string; courseTitle: string; issuedAt: Date; revoked?: boolean } | null =
+    issuedProgrammeCertCache.get(code.data) ?? null
+  if (!cert) {
+    try {
+      if (!(await certificatesReady())) return void res.status(503).json(CERTIFICATE_UNAVAILABLE)
+      cert = await prisma.skylentCertificate.findUnique({ where: { code: code.data } })
+    } catch (error) {
+      return void sendCertificateUnavailable(res, error)
+    }
   }
   if (!cert || cert.revoked) return void res.status(404).json({ data: { valid: false } })
+  const learnerProjects = cert.userId
+    ? await prisma.learnerProject
+        .findMany({
+          where: { userId: cert.userId },
+          orderBy: { updatedAt: "desc" },
+          take: 4,
+        })
+        .catch(() => [])
+    : []
+  const proofOfWork = buildProofOfWorkDossier(learnerProjects, cert.courseTitle)
   res.json({
     data: {
       valid: true,
       ...issuedView(cert),
+      proofOfWork,
     },
   })
 })
+
 
 skylentCertificatesRouter.post("/issue-programme", requireAuth, requireCsrf, async (req: AuthenticatedRequest, res) => {
   try {
@@ -305,18 +467,33 @@ skylentCertificatesRouter.post("/issue-programme", requireAuth, requireCsrf, asy
       }
     }
     const primaryCourse = program.programCourses[0].course
-    const code = buildProgrammeCertificateCode(program.slug)
-    return void res.status(201).json({
+    const existingProg = [...issuedProgrammeCertCache.values()].find(
+      (item) => item.userId === user.id && item.programSlug === program.slug && !item.revoked,
+    )
+    const code = existingProg?.code ?? buildProgrammeCertificateCode(program.slug)
+    const issuedAt = existingProg?.issuedAt ?? new Date()
+    issuedProgrammeCertCache.set(code, {
+      code,
+      userId: user.id,
+      learnerName: publicLearnerName(learnerName),
+      courseTitle: program.name,
+      courseSlug: primaryCourse.slug,
+      programSlug: program.slug,
+      issuedAt,
+      revoked: false,
+    })
+    const summary = buildCertificateEvidenceSummary({
+      code,
+      learnerName,
+      courseTitle: program.name,
+      issuedAt,
+    })
+    return void res.status(existingProg ? 200 : 201).json({
       data: {
-        code,
-        learnerName: publicLearnerName(learnerName),
+        ...summary,
         programSlug: program.slug,
         programTitle: program.name,
         courseSlug: primaryCourse.slug,
-        courseTitle: program.name,
-        issuedAt: new Date(),
-        issuer: SKYLENT_CREDENTIAL_ISSUER,
-        credentialStandard: SKYLENT_CREDENTIAL_STANDARD,
         verifyPath: `/verify/${code}`,
       },
     })

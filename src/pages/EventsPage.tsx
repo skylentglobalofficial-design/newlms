@@ -2,10 +2,9 @@ import { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
 import { PageShell } from "../components/shared"
 import { LearnPillarSubnav } from "../components/product/Architecture"
-import { CURATED_UPCOMING_WORKSHOPS } from "../lib/curated-workshops"
 import "./Catalog.css"
 
-type EventData = {
+export type EventData = {
   id: string
   slug: string
   title: string
@@ -17,11 +16,86 @@ type EventData = {
   endTime: string
   timezone: string
   capacity: number | null
+  meetingUrl?: string | null
   isOnline: boolean
   location: string | null
   registrationCount: number
   spotsRemaining: number | null
 }
+
+function upcomingWeekendIso(daysAhead: number, hourIst: number, durationMinutes = 90): { start: string; end: string } {
+  const now = new Date()
+  const target = new Date(now.getTime() + daysAhead * 24 * 60 * 60 * 1000)
+  const utcHour = Math.max(0, hourIst - 5)
+  const utcMin = hourIst >= 5 ? 30 : 0
+  target.setUTCHours(utcHour, utcMin, 0, 0)
+  const end = new Date(target.getTime() + durationMinutes * 60 * 1000)
+  return { start: target.toISOString(), end: end.toISOString() }
+}
+
+const slot1 = upcomingWeekendIso(3, 18, 90)
+const slot2 = upcomingWeekendIso(4, 11, 90)
+const slot3 = upcomingWeekendIso(10, 18, 90)
+
+export const CURATED_UPCOMING_WORKSHOPS: EventData[] = [
+  {
+    id: "evt-curated-da-bootcamp",
+    slug: "northwind-sql-margin-audit-bootcamp",
+    title: "Northwind SQL & Margin Leakage Live Bootcamp",
+    description:
+      "Hands-on 90-minute SQL & commercial analytics workshop. Query the 166-row Northwind retail dataset live in your browser, isolate the 14.5% Apparel discount leakage, and receive 99 Elixir Coins (100% 1:1 credit) to unlock full case studies in your dashboard.",
+    eventType: "WORKSHOP",
+    status: "PUBLISHED",
+    hostName: "Skylent Data Analytics Practice Lead",
+    startTime: slot1.start,
+    endTime: slot1.end,
+    timezone: "Asia/Kolkata",
+    capacity: 60,
+    meetingUrl: "https://skylent.live/os/labs/data-analytics/northwind",
+    isOnline: true,
+    location: "Online · Browser SQL Sandbox",
+    registrationCount: 42,
+    spotsRemaining: 18,
+  },
+  {
+    id: "evt-curated-pm-sprint",
+    slug: "harbor-desk-product-scoping-sprint",
+    title: "Harbor Desk Product PRD & Operations Triage Sprint",
+    description:
+      "Live 90-minute Product Management execution sprint. Synthesise 18 store-manager interviews, scope a 6-week engineering bet for a 2-engineer team, and earn 99 Elixir Coins (100% 1:1 credit) toward the Case Study Store.",
+    eventType: "WORKSHOP",
+    status: "PUBLISHED",
+    hostName: "Skylent Product Studio Lead",
+    startTime: slot2.start,
+    endTime: slot2.end,
+    timezone: "Asia/Kolkata",
+    capacity: 50,
+    meetingUrl: "https://skylent.live/os/projects/product-management/harbor-desk-case",
+    isOnline: true,
+    location: "Online · Harbor Desk Case Studio",
+    registrationCount: 28,
+    spotsRemaining: 22,
+  },
+  {
+    id: "evt-curated-genai-rag",
+    slug: "genai-rag-evaluation-masterclass",
+    title: "Grounded RAG & Hallucination Audit Masterclass",
+    description:
+      "Practical 90-minute GenAI engineering session on building citation-enforced RAG pipelines, catching ungrounded claims, and defending system latency trade-offs. Includes 99 Elixir Coins (100% 1:1 credit) on registration.",
+    eventType: "WEBINAR",
+    status: "PUBLISHED",
+    hostName: "Skylent AI Systems Architect",
+    startTime: slot3.start,
+    endTime: slot3.end,
+    timezone: "Asia/Kolkata",
+    capacity: 75,
+    meetingUrl: "https://skylent.live/courses/generative-ai",
+    isOnline: true,
+    location: "Online · Live Technical Walkthrough",
+    registrationCount: 50,
+    spotsRemaining: 25,
+  },
+]
 
 export default function EventsPage() {
   const [events, setEvents] = useState<EventData[]>(CURATED_UPCOMING_WORKSHOPS)

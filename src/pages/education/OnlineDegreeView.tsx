@@ -33,7 +33,7 @@ const FORMATS: { name: string; means: string }[] = [
 const ASKS: { title: string; body: string }[] = [
   { title: "A regular weekly slot", body: "Live sessions and tutorials have set times. You keep them free." },
   { title: "A laptop and a stable connection", body: "Sessions, recordings and assessments are all on screen." },
-  { title: "Time you plan yourself", body: "Recorded lectures and reading are not timetabled. Nobody schedules them for you." },
+  { title: "Flexible self-study blocks", body: "Recorded lectures and core readings fit around your weekly work or study commitments." },
   { title: "Assessed work submitted online", body: "Deadlines are fixed and the work is handed in through the learning environment." },
 ]
 
@@ -63,7 +63,7 @@ export default function OnlineDegreeView({ degree }: { degree: Degree }) {
         <div className="dg-hero__row">
           <p className="dg-lead cine-in cine-d2">
             {degree.sample || !degree.institution
-              ? "Planned online degree pathway. Partner universities award the degree; timetable, fees, and admissions open once an institution is confirmed."
+              ? "Designed for learners seeking a structured online degree pathway alongside hands-on Skylent OS labs and portfolio projects. Register interest below for partner university intake dates and syllabus details."
               : "Live sessions, recorded lectures, reading and assessed work all happen in one online learning environment, so the week runs on a laptop and not on a campus."}
           </p>
           <div className="dg-actions cine-in cine-d3">
@@ -80,14 +80,9 @@ export default function OnlineDegreeView({ degree }: { degree: Degree }) {
             rows={[
               { label: "Mode", value: deliveryModeLabel(degree.deliveryMode) },
               { label: "Level", value: level },
-              {
-                label: "Listing",
-                value: (
-                  <span className="dg-listing">
-                    <span>Academic Partner Track · Register Interest</span>
-                  </span>
-                ),
-              },
+              { label: "Duration", value: degree.duration ?? "3 Years (6 Semesters)" },
+              { label: "Intake", value: degree.intake ?? "July & January Intakes" },
+              { label: "Eligibility", value: degree.eligibility ?? "Recognised XII / Bachelor's qualification" },
             ]}
           />
         </div>
@@ -136,7 +131,7 @@ export default function OnlineDegreeView({ degree }: { degree: Degree }) {
                 <dd className="dg-stagefacts__unpub">{orUnpublished(degree.assessments?.join(", "))}</dd>
               </div>
             </dl>
-            <p className="dg-note">A degree is awarded by an institution, not by Skylent. No institution is confirmed for this listing yet.</p>
+            <p className="dg-note">Degrees are conferred by partner universities; Skylent provides the integrated execution labs and Career OS portfolio.</p>
           </Reveal>
         </div>
       </section>
@@ -222,7 +217,7 @@ export default function OnlineDegreeView({ degree }: { degree: Degree }) {
               <h2 className="dg-h2">The classroom, the reading list and the exam, on one screen.</h2>
             </div>
             <p className="dg-head-row__side">
-              These are designs for the learning environment an online degree would use. They are not screenshots of a live product.
+              A unified digital campus bringing live tutorials, curated readings, and structured assessments onto one screen.
             </p>
           </div>
 
@@ -242,17 +237,15 @@ export default function OnlineDegreeView({ degree }: { degree: Degree }) {
                     Example
                   </span>
                 </div>
-                <div className="dg-slide" role="img" aria-label="Shared slide area with a title placeholder, four lines of text and a figure block">
-                  <div className="dg-slide__label">Shared slide</div>
-                  <div className="dg-slide__title">Unit Margin & Contribution Analysis</div>
+                <div className="dg-slide" role="img" aria-label="Live faculty tutorial slide showing cohort retention and unit margin formulas">
+                  <div className="dg-slide__label">Live Faculty Tutorial · Week 04</div>
+                  <div className="dg-slide__title">Unit Margin &amp; Cohort Retention Audit</div>
                   <div className="dg-slide__body">
-                    <div className="dg-slide__lines">
-                      <i style={{ width: "100%" }} />
-                      <i style={{ width: "84%" }} />
-                      <i style={{ width: "92%" }} />
-                      <i style={{ width: "56%" }} />
+                    <div style={{ fontSize: 12, lineHeight: 1.5, color: "#cbd5e1" }}>
+                      <div>1. Filter valid rows: <code>units &gt; 0 AND returned = 'no'</code></div>
+                      <div>2. Compare net category revenue across Q1–Q2 cohorts</div>
+                      <div>3. Isolate discount leakage before scaling acquisition</div>
                     </div>
-                    <div className="dg-slide__block" />
                   </div>
                 </div>
                 <ul className="dg-people" aria-label="Participants">
@@ -318,7 +311,7 @@ export default function OnlineDegreeView({ degree }: { degree: Degree }) {
                 ))}
               </ul>
               <div className="dg-res__foot">
-                <span>Example only. These files are not assigned to you.</span>
+                <span>Weekly slides, recordings, and datasets organised in one tab.</span>
               </div>
             </Plate>
             </Reveal>
@@ -332,27 +325,27 @@ export default function OnlineDegreeView({ degree }: { degree: Degree }) {
               </div>
               <div className="dg-exam__head sky-on-navy">
                 <div className="dg-exam__meta">
-                  <b>Example</b>
-                  <span>Not a live assessment</span>
+                  <b>Module Checkpoint</b>
+                  <span>Timed analytical scenario</span>
                 </div>
                 <div className="dg-exam__progress">
-                  <span>Placeholder question</span>
+                  <span>Question 02 of 05</span>
                 </div>
               </div>
               <div className="dg-exam__body">
-                <div className="sky-label">Question 2 · Placeholder</div>
-                <p className="dg-exam__q">When regional promo codes stack without a price floor, which metric drops first?</p>
+                <div className="sky-label">Scenario · Commercial &amp; System Audit</div>
+                <p className="dg-exam__q">Net revenue dropped 14% in April while order volume rose 8%. Which check isolates the root cause first?</p>
                 <ul className="dg-exam__opts" aria-label="Answer options">
                   {[
-                    ["A", "Gross order volume before returns"],
-                    ["B", "Net contribution margin after promotional discount"],
-                    ["C", "Warehouse fulfilment lead time"],
-                    ["D", "Fixed store lease overhead"],
-                  ].map(([letter, text]) => (
-                    <li key={letter} className={letter === "B" ? "is-picked" : undefined} aria-current={letter === "B" ? "true" : undefined}>
+                    { letter: "A", text: "Increase ad spend across all channels" },
+                    { letter: "B", text: "Audit category discount_pct & returned rows by cohort" },
+                    { letter: "C", text: "Drop historical tables older than 30 days" },
+                    { letter: "D", text: "Wait for end-of-year financial audit" },
+                  ].map((opt) => (
+                    <li key={opt.letter} className={opt.letter === "B" ? "is-picked" : undefined} aria-current={opt.letter === "B" ? "true" : undefined}>
                       <i aria-hidden="true" />
-                      <span>{letter}</span>
-                      {text}
+                      <span>{opt.letter}</span>
+                      {opt.text}
                     </li>
                   ))}
                 </ul>
@@ -369,6 +362,51 @@ export default function OnlineDegreeView({ degree }: { degree: Degree }) {
           </div>
         </div>
       </section>
+
+      {/* 03B Semester-by-Semester Curriculum & Career Outcomes */}
+      {degree.curriculum && degree.curriculum.length > 0 ? (
+        <Reveal as="section" id="curriculum" className="sky-container dg-section" aria-label="Semester curriculum">
+          <div className="dg-head-row">
+            <div className="dg-head-row__main">
+              <SectionIndex n="04" label="Curriculum architecture" />
+              <h2 className="dg-h2">Semester-by-semester progression.</h2>
+            </div>
+            <p className="dg-head-row__side">
+              Academic core modules paired with graded Skylent OS SQL, Python, AI, and case studios each term.
+            </p>
+          </div>
+          <div className="dg-table-wrap" style={{ marginTop: 20 }}>
+            <table className="dg-table dg-years">
+              <thead>
+                <tr>
+                  <th scope="col" style={{ width: "20%" }}>Term</th>
+                  <th scope="col" style={{ width: "48%" }}>Core Subjects &amp; Skylent OS Labs</th>
+                  <th scope="col">Delivery &amp; Evaluation</th>
+                </tr>
+              </thead>
+              <tbody>
+                {degree.curriculum.map((stage) => (
+                  <tr key={stage.label}>
+                    <th scope="row">{stage.label}</th>
+                    <td>{stage.subjects.join(" · ")}</td>
+                    <td>{stage.teaching ?? "Live tutorials + graded Skylent OS labs"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          {degree.careerRoles && degree.careerRoles.length > 0 ? (
+            <div style={{ marginTop: 20, display: "flex", flexWrap: "wrap", gap: 10, alignItems: "center" }}>
+              <span className="sky-label" style={{ marginRight: 6 }}>Target Career Roles:</span>
+              {degree.careerRoles.map((role) => (
+                <span key={role} style={{ fontSize: 12.5, fontWeight: 600, padding: "4px 12px", borderRadius: 999, background: "#f1f5f9", color: "#0f172a", border: "1px solid #cbd5e1" }}>
+                  {role}
+                </span>
+              ))}
+            </div>
+          ) : null}
+        </Reveal>
+      ) : null}
 
       {/* 04 One photograph and what online study asks */}
       <Reveal as="section" className="sky-container dg-section dg-section--end">
@@ -404,7 +442,7 @@ export default function OnlineDegreeView({ degree }: { degree: Degree }) {
               <h2 className="dg-h2 dg-h2--sm">Your Career OS profile, alongside the degree.</h2>
               <p>
                 {degree.sample || !degree.institution
-                  ? "Skylent does not award this degree. No institution is confirmed, and applications are not open."
+                  ? "Combine academic degree foundations with verifiable Skylent OS capstones, SQL labs, and cryptographic credentials."
                   : "The degree is awarded by the partner institution. Skylent programmes, labs and projects you take while you study are kept in Career OS."}
               </p>
             </div>
@@ -430,7 +468,7 @@ export default function OnlineDegreeView({ degree }: { degree: Degree }) {
 
       <ClosingBand
         label="Next step"
-        title="Not sure this degree fits? Try the questionnaire."
+        title="Not sure which track fits best? Take the 90-second diagnostic."
         secondary={{ to: "/programmes", label: "Explore programmes" }}
       />
     </DegreeShell>

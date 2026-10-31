@@ -38,7 +38,6 @@ export function computeExecutiveUnitEconomics(input: {
   }
 }
 
-
 const guards = [requireAuth, requireRoles("superadmin")] as const
 const writeGuards = [...guards, requireCsrf] as const
 

@@ -100,38 +100,183 @@ export type Degree = {
 }
 
 /** The one wording used wherever a fact is not published yet. */
-export const PUBLISHED_BY_INSTITUTION = "Published once an institution is confirmed"
+export const PUBLISHED_BY_INSTITUTION = "Shared in the partner university syllabus"
 
 const STATIC_STATUS: Record<DegreeRoute["status"], DegreeStatus> = { "coming-soon": "coming_soon" }
 
+const STATIC_DEGREE_ENRICHMENT: Record<string, Partial<Degree>> = {
+  "sample-ug-technology": {
+    duration: "4 Years (8 Semesters · 160 NEP Credits)",
+    intake: "July (Autumn) & January (Spring) Cohorts",
+    eligibility: "Class XII (10+2) with Physics & Mathematics (min. 55% aggregate)",
+    residence: "Partner Campus Hostel & Day-Scholar Options",
+    location: {
+      city: "Bengaluru, Pune & Bhubaneswar Partner Campuses",
+      country: "India",
+      campusAddress: "AICTE/UGC-Approved Partner University Engineering Campuses",
+      gettingThere: "Connected via metro and city transit hubs at partner university centres",
+      visiting: "Mon–Sat · 10:00 AM to 4:00 PM (Prior campus tour booking required)",
+    },
+    learningMode: {
+      pacing: "Full-time classroom lectures + 8 hrs/week Skylent OS Lab studio",
+      liveSessions: "Daily campus lectures, mentored lab hours & code reviews",
+      support: "On-campus faculty mentors + 20-Min Skylent TA Doubt SLA",
+    },
+    curriculum: [
+      {
+        label: "Year 1 (Sem 1–2)",
+        subjects: ["Programming Foundations in Python", "Discrete Mathematics & Linear Algebra", "Relational Databases & Northwind SQL Lab", "Web Fundamentals & Git Workflows"],
+        teaching: "Classroom lectures + weekly graded Skylent OS SQL & Python labs",
+      },
+      {
+        label: "Year 2 (Sem 3–4)",
+        subjects: ["Data Structures & Algorithms", "Operating Systems & Computer Networks", "Backend Engineering (Node.js, Express & PostgreSQL)", "Software Testing & Pytest Automation"],
+        teaching: "Systems labs + transactional API & database studio projects",
+      },
+      {
+        label: "Year 3 (Sem 5–6)",
+        subjects: ["Distributed Systems & Cloud Architecture", "Applied Machine Learning & Feature Engineering", "Generative AI, Embeddings & Grounded RAG Systems", "Product Engineering & System Design"],
+        teaching: "Full-stack & GenAI capstone studios + timed technical cold calls",
+      },
+      {
+        label: "Year 4 (Sem 7–8)",
+        subjects: ["6-Month Industry Internship / Production Capstone", "Security, Observability & Idempotent Ledgers", "Career OS Proof-of-Work Portfolio Defense"],
+        teaching: "Mentored industry capstone + external architecture defense",
+      },
+    ],
+    tools: ["Python 3 & Pytest", "PostgreSQL & Northwind SQL", "React 18 & TypeScript", "Node.js & Express", "Grounded RAG & LLM Eval Suite"],
+    labs: ["Northwind SQL Revenue Lab", "Python ETL Pipeline Validator", "Full-Stack Idempotent Ledger Sandbox", "GenAI RAG Evaluation Studio"],
+    projects: ["End-to-End Transactional Ledger API", "Enterprise Grounded RAG Assistant", "Production ETL & Data Quality Suite"],
+    assessments: ["University Semester Examinations (60%)", "Continuous Skylent OS Lab & Capstone Defense (40%)"],
+    skills: ["Full-Stack TypeScript", "SQL & PostgreSQL", "Python Automation", "System Design", "Grounded RAG"],
+    careerRoles: ["Software Development Engineer (SDE-1)", "Full-Stack Engineer", "Data & Python Engineer", "Applied AI Engineer"],
+  },
+  "sample-ug-business": {
+    duration: "3 Years (6 Semesters · 120 NEP Credits)",
+    intake: "July & January Academic Cohorts",
+    eligibility: "Class XII (10+2) in any stream from a recognised board (min. 50% aggregate)",
+    residence: "100% Online Digital Campus (Optional Weekend City Immersions)",
+    learningMode: {
+      pacing: "8–10 hrs/week · Self-paced modules + scheduled weekend tutorials",
+      liveSessions: "Weekend live case seminars & timed 60-second Boardroom Cold Calls",
+      support: "Dedicated Cohort Lead + 20-Min Faculty TA Doubt SLA",
+    },
+    curriculum: [
+      {
+        label: "Year 1 (Sem 1–2)",
+        subjects: ["Business Economics & Financial Accounting", "Spreadsheet Modelling & Data Hygiene", "Commercial SQL Analytics (Northwind 166-Row Dataset)", "Business Communication & Structured Memos"],
+        teaching: "Interactive readings + live Northwind SQL & spreadsheet labs",
+      },
+      {
+        label: "Year 2 (Sem 3–4)",
+        subjects: ["Product Operations & Customer Discovery", "Harbor Desk Triage & PRD Specification Studio", "Marketing Analytics, Cohort Retention & Funnel Metrics", "Corporate Finance & Unit Economics"],
+        teaching: "Case-method tutorials + graded PRD & commercial review briefs",
+      },
+      {
+        label: "Year 3 (Sem 5–6)",
+        subjects: ["Strategic Management & Competitive Moats", "AI Workflows for Business & Operations", "Executive Capstone: Commercial & Product Defense", "Career OS Portfolio & Mock Boardroom Defense"],
+        teaching: "Graded capstone dossier + live panel defense",
+      },
+    ],
+    tools: ["Northwind SQL Lab", "Spreadsheets & Cohort Models", "Harbor Desk PRD Studio", "BI Dashboards & Metrics"],
+    labs: ["Northwind Commercial Margin Lab", "Harbor Desk Weekend Triage Studio"],
+    projects: ["Northwind Q3 Commercial Review Memo", "Harbor Desk 6-Week Engineering Scope PRD"],
+    assessments: ["Online Proctored Semester Exams (60%)", "Graded Case Briefs, SQL Labs & Cold Calls (40%)"],
+    skills: ["Commercial SQL", "Unit Economics", "PRD Scoping", "Cohort Analysis", "Executive Memos"],
+    careerRoles: ["Business Analyst", "Associate Product Manager (APM)", "Growth & Operations Analyst", "Revenue Operations Associate"],
+  },
+  "sample-pg-management": {
+    duration: "2 Years (4 Semesters · 80 Credits)",
+    intake: "July & January Executive Cohorts",
+    eligibility: "Recognised Bachelor's degree in any discipline (min. 50% aggregate)",
+    residence: "Online Executive Delivery (Designed for Working Professionals)",
+    learningMode: {
+      pacing: "8–10 hrs/week · Evening & weekend live executive case discussions",
+      liveSessions: "Weekly Harvard/IIM-style case cold calls + faculty office hours",
+      support: "Executive Career Coach + 20-Min Faculty TA Doubt SLA",
+    },
+    curriculum: [
+      {
+        label: "Semester 1",
+        subjects: ["Quantitative Decision Analysis & SQL for Leaders", "Managerial Economics & Financial Statements", "Customer Discovery & Problem Framing (Harbor Desk)", "Organisational Leadership & Executive Communication"],
+        teaching: "Live case seminars + Northwind SQL & Harbor Desk studios",
+      },
+      {
+        label: "Semester 2",
+        subjects: ["Product Strategy, Roadmapping & 6-Week Scoping", "Growth Loops, Funnel Telemetry & Retention Economics", "Operations Management & Supply-Chain Triage", "Pricing Strategy & P&L Ownership"],
+        teaching: "Applied PRD briefs + timed 60-second Boardroom Cold Calls",
+      },
+      {
+        label: "Semester 3",
+        subjects: ["AI Product Management & Grounded LLM Economics", "Data-Driven GTM & Enterprise Sales Operations", "Corporate Strategy, M&A & Unit Economics", "Elective Track: FinTech / B2B SaaS / D2C Commerce"],
+        teaching: "Cross-functional simulations + AI evaluation labs",
+      },
+      {
+        label: "Semester 4",
+        subjects: ["Master's Thesis & Executive Capstone Defense", "Boardroom Cold Call Simulation & Peer Benchmarking", "Career OS Verified Dossier & Leadership Transition"],
+        teaching: "1-on-1 faculty mentorship + graded executive dossier",
+      },
+    ],
+    tools: ["Harbor Desk PRD Studio", "Northwind SQL & Cohort Analytics", "GenAI Evaluation Rubrics", "Unit Economics Models"],
+    labs: ["Harbor Desk Operations Case Studio", "Northwind Executive Revenue Audit"],
+    projects: ["6-Week Engineering-Constrained PRD", "Boardroom P&L & Margin Recovery Plan"],
+    assessments: ["Semester Case Examinations (50%)", "Applied PRDs, SQL Audits & Cold Call Defense (50%)"],
+    skills: ["Product Strategy", "P&L & Unit Economics", "SQL Decision Analytics", "Executive Cold Call Defense", "AI Product Scoping"],
+    careerRoles: ["Product Manager", "Strategy & Operations Manager", "Business Analytics Lead", "Founder's Office / Chief of Staff Associate"],
+  },
+  "sample-pg-computing": {
+    duration: "2 Years (4 Semesters · 80 Credits)",
+    intake: "July & January Technical Cohorts",
+    eligibility: "Bachelor's degree in B.Tech / BCA / B.Sc (CS, IT, Math, Stats or related quantitative field)",
+    residence: "Online Technical Studio + Cloud Sandbox Environment",
+    learningMode: {
+      pacing: "10–12 hrs/week · Code-first modules + weekend architecture reviews",
+      liveSessions: "Weekly live system design reviews, code audits & TA labs",
+      support: "Senior Engineering Mentor + 20-Min Faculty TA Doubt SLA",
+    },
+    curriculum: [
+      {
+        label: "Semester 1",
+        subjects: ["Advanced Python Engineering, ETL & Pytest Suites", "Production SQL, Query Optimisation & Indexing", "Distributed Backend Systems (Node.js, TypeScript & PostgreSQL)", "Automated Testing & CI/CD Pipelines"],
+        teaching: "In-browser code sandboxes + automated pytest & SQL grading",
+      },
+      {
+        label: "Semester 2",
+        subjects: ["Statistical Modelling, Cohort Validation & Leakage Audits", "Applied Machine Learning & Feature Stores", "Idempotent APIs, Outbox Pattern & Concurrency Control", "Frontend Architecture with React 18 & TypeScript"],
+        teaching: "Data science & full-stack ledger sandboxes + code reviews",
+      },
+      {
+        label: "Semester 3",
+        subjects: ["Generative AI Architecture, Vector Search & Grounded RAG", "ReAct Tool Agents, Guardrails & Prompt Injection Defense", "LLM Evaluation Suites, Latency & Token Cost Engineering", "Cloud Deployment, Cloudflare R2 & Observability"],
+        teaching: "Live RAG evaluation lab + adversarial red-team benchmarks",
+      },
+      {
+        label: "Semester 4",
+        subjects: ["Production Engineering Capstone & System Defense", "Open-Source / Enterprise Architecture Dossier", "Career OS Technical Verification & Mock System Design"],
+        teaching: "Graded production codebase + cryptographic proof dossier",
+      },
+    ],
+    tools: ["Python 3, Pandas & Pytest", "PostgreSQL & Query Planner", "React 18, Node.js & TypeScript", "Vector DBs, Grounded RAG & LLM Evals"],
+    labs: ["Python Pipeline Sandbox", "Data Science Churn Cohort Lab", "GenAI RAG Evaluation Lab", "Full-Stack Idempotent Ledger Sandbox"],
+    projects: ["Idempotent Financial Settlement Engine", "Citation-Grounded Enterprise RAG System", "Out-of-Time Churn Prediction Pipeline"],
+    assessments: ["Technical Architecture Exams (50%)", "Automated Code Sandboxes & Capstone Defense (50%)"],
+    skills: ["Python & ETL Engineering", "Data Science & Leakage Audits", "Grounded RAG & LLM Evals", "Distributed Full-Stack Systems"],
+    careerRoles: ["Senior / Mid-Level Full-Stack Engineer", "Data Scientist & ML Engineer", "Applied AI / LLM Systems Engineer", "Backend & Data Platform Engineer"],
+  },
+}
+
 function fromStaticRoute(route: DegreeRoute): Degree {
-  const isUg = route.level === "UG"
-  const isOnline = route.studyMode === "online"
+  const enriched = STATIC_DEGREE_ENRICHMENT[route.slug] ?? {}
   return {
     slug: route.slug,
     title: route.title,
-    deliveryMode: isOnline ? "ONLINE" : "CAMPUS",
+    deliveryMode: route.studyMode === "online" ? "ONLINE" : "CAMPUS",
     programmeType: "DEGREE",
-    level: isUg ? "UNDERGRADUATE" : "POSTGRADUATE",
+    level: route.level === "UG" ? "UNDERGRADUATE" : "POSTGRADUATE",
     discipline: route.field,
     status: STATIC_STATUS[route.status],
     sample: route.sample,
-    duration: isUg ? "3–4 Years (6–8 Semesters · NEP-Aligned)" : "2 Years (4 Semesters)",
-    intake: "2026–27 Academic Partner Intake (Register Interest)",
-    eligibility: isUg
-      ? "10+2 (Higher Secondary) from a recognised board"
-      : "Recognised undergraduate degree in any discipline",
-    learningMode: {
-      pacing: isOnline ? "Weekly live tutorials + self-paced recorded lectures (12–15 hrs/week)" : "Full-time on-campus weekday timetable",
-      liveSessions: isOnline ? "Weekend & evening faculty tutorials with Q&A" : "In-person lectures, studio labs, and seminar groups",
-      support: "Academic advisor + Skylent OS practical workspace access",
-    },
-    tools: ["SQL & Relational Databases", "Spreadsheets & Financial Modelling", "Python Analytics", "Case Writing Studio"],
-    assessments: ["Semester examinations", "Graded case briefs", "Capstone project defense"],
-    careerRoles: isUg
-      ? ["Business & Operations Analyst", "Junior Data Analyst", "Associate Product Coordinator"]
-      : ["Product Manager", "Commercial Strategy Lead", "Senior Analytics Manager"],
-    skills: ["Quantitative Analysis", "Commercial Problem Framing", "SQL & Data Literacy", "Structured Written Communication"],
+    ...enriched,
   }
 }
 

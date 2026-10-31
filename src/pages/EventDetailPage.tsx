@@ -3,7 +3,7 @@ import { useParams, Link } from "react-router-dom"
 import { PageShell } from "../components/shared"
 import { useAuth } from "../context/AuthContext"
 import { ensureCsrfToken } from "../lib/auth-api"
-import { findCuratedWorkshopBySlug } from "../lib/curated-workshops"
+import { CURATED_UPCOMING_WORKSHOPS } from "./EventsPage"
 import "./Catalog.css"
 
 type EventDetail = {
@@ -29,13 +29,22 @@ type EventDetail = {
   } | null
 }
 
+function findCuratedWorkshopBySlug(slug: string | undefined): EventDetail | null {
+  if (!slug) return null
+  const found = CURATED_UPCOMING_WORKSHOPS.find((item) => item.slug === slug)
+  if (!found) return null
+  return {
+    ...found,
+    meetingUrl: found.meetingUrl ?? null,
+    userRegistration: null,
+  }
+}
+
 export default function EventDetailPage() {
   const { slug } = useParams<{ slug: string }>()
   const { user } = useAuth()
   const curated = findCuratedWorkshopBySlug(slug)
-  const [event, setEvent] = useState<EventDetail | null>(
-    curated ? { ...curated, userRegistration: null } : null,
-  )
+  const [event, setEvent] = useState<EventDetail | null>(curated)
   const [loading, setLoading] = useState(!curated)
   const [error, setError] = useState<string | null>(null)
   const [registering, setRegistering] = useState(false)
@@ -53,7 +62,7 @@ export default function EventDetailPage() {
       })
       .catch((err) => {
         if (fallback) {
-          setEvent({ ...fallback, userRegistration: null })
+          setEvent(fallback)
           setError(null)
         } else {
           setError(err.message)
@@ -80,7 +89,6 @@ export default function EventDetailPage() {
 
       if (!res.ok) {
         if (curated) {
-          // Graceful client confirmation when curated workshop is not yet seeded in DB
           setEvent((prev) =>
             prev
               ? {

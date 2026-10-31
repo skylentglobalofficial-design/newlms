@@ -21,6 +21,8 @@ import type { CatalogCurriculumModule } from "../lib/catalog-api"
 import { effectiveAuthoredCourseCopy } from "../lib/public-catalogue-copy"
 import { useCatalogCourse } from "../hooks/useCatalog"
 import { TruthChip } from "../components/skylent/primitives"
+import { HarborDeskPlate, NorthwindLabPlate } from "../components/programme/ProgrammeArtefacts"
+import TrackInteractiveSandbox from "../components/labs/TrackInteractiveSandbox"
 import CatalogueNotice, {
   STATUS_NOT_CONFIRMED,
 } from "../components/programme/CatalogueNotice"
@@ -225,7 +227,10 @@ export default function CourseDetailPage() {
                   {showLiveCurriculum && authoredStats ? (
                     <span>{authoredStats.assignmentCount} assignments</span>
                   ) : null}
+                  {authored ? <span>1 capstone</span> : null}
+                  
                 </p>
+                
               </aside>
               <div className="cat-intro-actions">
                 <div className="cat-actions">
@@ -277,9 +282,69 @@ export default function CourseDetailPage() {
                   Payment is not collected in this pilot. A certificate for this course is issued when every lesson in it is complete.
                 </p>
               </div>
+              {showLiveCurriculum ? (
+                <div className="cat-rubric-strip cat-hero-rubric" style={{ gridColumn: "1 / -1", marginTop: 18 }} aria-label="How Your Proof-of-Work Certificate Is Graded · 100% Elixir Fee Credit Eligible">
+                  <div className="cat-rubric-item">
+                    <span className="cat-rubric-weight">25% · Concept Checks</span>
+                    <strong>3 Module Quizzes (15 Questions)</strong>
+                    <span>+10 Elixir bonus at 80%+ score.</span>
+                  </div>
+                  <div className="cat-rubric-item">
+                    <span className="cat-rubric-weight">35% · Applied Practice</span>
+                    <strong>Applied Briefs &amp; Lab Execution</strong>
+                    <span>In-browser lab + 20-Min TA SLA.</span>
+                  </div>
+                  <div className="cat-rubric-item">
+                    <span className="cat-rubric-weight">40% · Executive Proof</span>
+                    <strong>Capstone &amp; Cold Call Defense</strong>
+                    <span>Career Rise at 60% · Certificate at 100%.</span>
+                  </div>
+                </div>
+              ) : null}
             </div>
           </div>
         </section>
+
+        {showLiveCurriculum ? (
+          <section className="sky-stage sky-band-navy" style={{ paddingBlock: "36px 40px" }} aria-label="Interactive course workbench preview">
+            <div className="cat-rail">
+              <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "baseline", gap: 12, marginBottom: 16 }}>
+                <div>
+                  <span style={{ fontSize: 11.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "#a5b4fc" }}>
+                    In-Browser Execution Workbench
+                  </span>
+                  <h2 style={{ margin: "4px 0 0", fontSize: "clamp(20px, 2.4vw, 26px)", fontWeight: 750, color: "#ffffff" }}>
+                    {profile?.project?.title ?? `${course.title} Live Studio`}
+                  </h2>
+                </div>
+                <span style={{ fontSize: 13, color: "#cbd5e1" }}>
+                  Zero local setup · Runs directly inside Skylent OS
+                </span>
+              </div>
+              <div className="sky-stage__plate" style={{ borderRadius: 14, overflow: "hidden" }}>
+                {course.slug === "data-analytics" ? (
+                  <NorthwindLabPlate />
+                ) : course.slug === "product-management" ? (
+                  <HarborDeskPlate />
+                ) : (
+                  <div style={{ padding: "18px", background: "#ffffff", borderRadius: 10 }}>
+                    <TrackInteractiveSandbox
+                      projectType={
+                        course.slug === "python-programming"
+                          ? "python-pipeline-audit"
+                          : course.slug === "data-science-ai"
+                            ? "churn-cohort-validation"
+                            : course.slug === "generative-ai"
+                              ? "enterprise-rag-evaluation"
+                              : "idempotent-ledger-architecture"
+                      }
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+          </section>
+        ) : null}
 
         <section className="cat-section" id="course-outline">
           <div className="cat-rail">
@@ -378,6 +443,8 @@ export default function CourseDetailPage() {
                   </ul>
                 </article>
               </div>
+
+
             </div>
           </section>
         ) : null}
@@ -414,6 +481,18 @@ export default function CourseDetailPage() {
                   ) : null}
                 </div>
               </div>
+              {profile?.project ? (
+                <div style={{ marginTop: 22, padding: "20px 22px", borderRadius: 16, border: "1px solid #DDD7FF", background: "#FAF9FF", display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: 16 }}>
+                  <div style={{ maxWidth: "46em" }}>
+                    <p className="cat-label" style={{ color: "#5142B5", margin: 0 }}>Graded Capstone Project Studio · Proof-of-Work Dossier</p>
+                    <h3 style={{ margin: "6px 0 6px", fontSize: 19, fontWeight: 750, color: "#171717" }}>{profile.project.title}</h3>
+                    <p style={{ margin: 0, fontSize: 14, color: "#3c425c" }}>{profile.project.summary}</p>
+                  </div>
+                  <Link className="cat-btn cat-btn-primary" to={profile.project.href}>
+                    {profile.project.ctaLabel} →
+                  </Link>
+                </div>
+              ) : null}
             </div>
           </section>
         ) : null}
@@ -460,7 +539,7 @@ export default function CourseDetailPage() {
                 <p>
                   {showLiveCurriculum
                     ? "Enrolment does not collect payment. It opens the written course in Skylent OS."
-                    : /* Non-authored outline listing (thinner than Data Analytics) */ "Review the module outline above, or start one of our open flagship courses today."}
+                    : "This listing is thinner than Data Analytics. Start a ready course, or read the outline below."}
                 </p>
               </div>
               {listingClosed ? (
