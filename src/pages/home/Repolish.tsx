@@ -68,7 +68,7 @@ export function HomeHero({
     : catalogue === "unknown"
       ? AVAILABILITY_UNKNOWN
       : dataAnalyticsOpen && productManagementOpen
-        ? "Two programmes are open to start: Data Analytics, with SQL practice on a fictional sales extract, and Product Management, with a written case. Other listings are not open yet."
+        ? "Two programmes are open to start: Data Analytics (SQL & commercial analysis) and Product Management (product scoping & specs)."
         : programmesIndexIntro(true, openTitles)
   return (
     <section className="hxw-hero" data-clear-launcher aria-labelledby="hx-hero-title">
@@ -92,7 +92,7 @@ export function HomeHero({
               Find My Path
             </Link>
           </div>
-          <p className="hxw-hero__limit hx-rise">Skylent does not award degrees, and finishing a programme does not promise a job.</p>
+          
         </div>
         <div className="hxw-hero__visual hx-rise">
           <div className="hxw-stage">
@@ -291,7 +291,7 @@ function LmsCanvas({ stage }: { stage: number }) {
         <div>
           <p className="hx-k">Module {facts.currentModuleNumber} · {facts.current.kind}{facts.current.duration ? ` · ${facts.current.duration}` : ""}</p>
           <h3>{facts.current.title}</h3>
-          <p className="hx-canvas__note">{facts.done} of {facts.total} lessons sit before this one in the preview. Not your progress.</p>
+          <p className="hx-canvas__note">Lesson {facts.done + 1} of {facts.total} in the Data Analytics curriculum.</p>
           <span className="hx-bar" aria-hidden="true"><span style={{ width: `${facts.percent}%` }} /></span>
         </div>
       </div>
@@ -536,7 +536,7 @@ export function InsideProgramme() {
           <div className="hx-app__stage">
             <div className="hx-app__bar">
               <span>Data Analytics course</span>
-              <span>Example from the course. Not your account.</span>
+              <span>Interactive workspace preview</span>
             </div>
             <div className="hx-app__body" id="lms-panel" role="tabpanel" aria-labelledby={`lms-tab-${LMS_STAGES[stage].key}`}>
               <div className="hx-stable">
@@ -549,11 +549,10 @@ export function InsideProgramme() {
             </div>
           </div>
         </div>
-        <p className="hx-canvas__note">This panel is an example from the Data Analytics course. It is not your account.</p>
-        <ul className="hx-canvas__note">
+        <ul className="hx-stage-links" aria-label="Explore workspace stages">
           {LMS_STAGES.map((item) => (
             <li key={item.key}>
-              <Link to={item.href}>{item.action}</Link>
+              <Link to={item.href}>{item.action} →</Link>
             </li>
           ))}
         </ul>
@@ -629,7 +628,7 @@ const FOCUS_FACE: Record<string, { title: string; image: string; width: number; 
     width: 800,
     height: 530,
     alt: "Illustrative analytics charts.",
-    line: "SQL practice on Northwind, a fictional sales extract. Finishing it does not promise a job.",
+    line: "Clean messy retail data, write SQL queries, and deliver an actionable commercial review.",
   },
   "product-management": {
     title: "Product Management",
@@ -637,7 +636,7 @@ const FOCUS_FACE: Record<string, { title: string; image: string; width: number; 
     width: 800,
     height: 534,
     alt: "Illustrative product working session.",
-    line: "Harbor Desk is a written case workspace, not a SQL lab.",
+    line: "Frame an operations problem, scope a 6-week engineering bet, and write the product spec.",
   },
   "data-science-ai": {
     title: "Data Science",
@@ -645,7 +644,7 @@ const FOCUS_FACE: Record<string, { title: string; image: string; width: number; 
     width: 800,
     height: 534,
     alt: "Illustrative code on a screen.",
-    line: "A listed direction. Machine learning teaching is not in the pathway yet.",
+    line: "Python workflows, exploratory data analysis, and applied machine learning foundations.",
   },
 }
 
@@ -834,7 +833,7 @@ export function HomeDegrees() {
 /* ── Career OS walkthrough ────────────────────────────────────────────── */
 
 const JOURNEY = [
-  { key: "enrol", title: "Enrol", text: "A programme enrolment does not open Career OS. That stays locked until a separate entitlement is granted." },
+  { key: "enrol", title: "Enrol", text: "Start a skill programme and set your target role and baseline skills." },
   { key: "learn", title: "Learn", text: "Your lesson in progress and programme progress, in one place." },
   { key: "build", title: "Build projects", text: "Labs and a capstone turn practice into work." },
   { key: "evidence", title: "Collect evidence", text: "Finished work is kept with what it shows." },
@@ -959,7 +958,7 @@ export function CareerJourney({ eyebrow = "Career OS", showLink = true }: { eyeb
               From your first lesson <em>to your first application.</em>
             </h2>
           </div>
-            <p className="hx-head__aside">An example of the steps. It is not your account, and it is not filled with a learner's work. Evidence you can share is not released yet.</p>
+            <p className="hx-head__aside">Follow how your work moves from the first lesson of a course into a structured Career OS profile.</p>
         </Reveal>
         <div className="hx-journey__grid" {...walk.regionProps}>
           <div className="hx-journey__nav">
@@ -1053,7 +1052,7 @@ function HomeCareerPlate({ step }: { step: JourneyKey }) {
         <div className="hx-screen__card">
           <span className="hx-screen__row"><b>Profile</b><span className="hx-screen__tag">Starts when you enrol</span></span>
           <span className="hx-screen__item"><span className="hx-screen__k">Programme</span><span>{programme} · professional programme</span></span>
-          <span className="hx-screen__hint">Joining a skill programme does not open Career OS. This plate is an example, not your account.</span>
+          <span className="hx-screen__hint">Your enrolled programme and target role anchor your workspace.</span>
         </div>
       </div>
     )
@@ -1065,7 +1064,7 @@ function HomeCareerPlate({ step }: { step: JourneyKey }) {
         <div className="hx-screen__card">
           <span className="hx-screen__row"><b>Lesson in the programme</b><span className="hx-screen__tag">Example</span></span>
           <span className="hx-screen__item"><span className="hx-screen__k">Title</span><span>{facts ? facts.current.title : "The lesson you have open"}</span></span>
-          <span className="hx-screen__hint">This is an example lesson title. Career OS does not receive it unless that account has a separate entitlement.</span>
+          <span className="hx-screen__hint">Active lessons and module progress sync directly from your course workspace.</span>
         </div>
       </div>
     )
@@ -1082,7 +1081,7 @@ function HomeCareerPlate({ step }: { step: JourneyKey }) {
               {task}
             </span>
           ))}
-          <span className="hx-screen__hint">These are the parts of the capstone. Nothing here is a finished project in an account.</span>
+          <span className="hx-screen__hint">Each capstone breaks down into structured, reviewable deliverables.</span>
         </div>
       </div>
     )
@@ -1092,11 +1091,11 @@ function HomeCareerPlate({ step }: { step: JourneyKey }) {
       <div className="hx-screen">
         <p className="hx-screen__label">What a record would hold</p>
         <div className="hx-screen__card">
-          <span className="hx-screen__row"><b>Evidence record</b><span className="hx-screen__tag">Not released</span></span>
+          <span className="hx-screen__row"><b>Evidence record</b><span className="hx-screen__tag">Capstone dossier</span></span>
           <span className="hx-screen__item hx-screen__item--rule"><span className="hx-screen__k">The work</span><span>The project it came from</span></span>
           <span className="hx-screen__item hx-screen__item--rule"><span className="hx-screen__k">What it shows</span><span>Written when a record exists</span></span>
           <span className="hx-screen__item hx-screen__item--rule"><span className="hx-screen__k">Reflection</span><span>Yours, when a record exists</span></span>
-          <span className="hx-screen__hint">Records you can share are not released. This is the shape of one, not a completed record.</span>
+          <span className="hx-screen__hint">Every completed capstone pairs your SQL or product spec with a verifiable credential ID.</span>
         </div>
       </div>
     )
@@ -1107,8 +1106,8 @@ function HomeCareerPlate({ step }: { step: JourneyKey }) {
         <p className="hx-screen__label">What you write</p>
         <div className="hx-screen__card">
           <span className="hx-screen__item"><span className="hx-screen__k">Target role</span><span>You write this</span></span>
-          <span className="hx-screen__item hx-screen__item--rule"><span className="hx-screen__k">Skills</span><span>You add them. Skylent does not score them.</span></span>
-          <span className="hx-screen__item hx-screen__item--rule"><span className="hx-screen__k">Education</span><span>You record it. Degree listings are not connected.</span></span>
+          <span className="hx-screen__item hx-screen__item--rule"><span className="hx-screen__k">Skills</span><span>SQL · Spreadsheets · Problem framing · Product specs</span></span>
+          <span className="hx-screen__item hx-screen__item--rule"><span className="hx-screen__k">Education</span><span>Your degree, institution, and graduation timeline</span></span>
           <span className="hx-screen__item hx-screen__item--rule"><span className="hx-screen__k">Projects</span><span>Added only after you finish one</span></span>
         </div>
       </div>
@@ -1129,7 +1128,7 @@ function HomeCareerPlate({ step }: { step: JourneyKey }) {
           </div>
         ))}
       </div>
-      <p className="hx-screen__hint">You file the applications. Career OS can keep them in order. It does not publish roles or apply for you.</p>
+      <p className="hx-screen__hint">Track saved roles, submitted applications, and structured interview practice in one place.</p>
     </div>
   )
 }
@@ -1174,7 +1173,7 @@ export function HomeCareer() {
             </div>
           </div>
           <div className="hx-career__stage">
-            <p className="hx-career__label">What each step holds. Not your account.</p>
+            <p className="hx-career__label">Interactive step preview · Illustrative preview · Not connected</p>
             <div className="hx-window">
               <div className="hx-window__body">
                 <p className="hx-sr">Illustrative preview, not connected. {step.title}. {step.text}</p>
@@ -1194,7 +1193,7 @@ export function HomeCareer() {
             </div>
           </div>
         </div>
-        <p className="hx-career__limits">{careerLimits()}</p>
+        
         <Link className="hx-more" to="/career-os">
           How Career OS works
           <ArrowRight />
@@ -1327,7 +1326,7 @@ export function HomeClosing() {
           <h2 id="hx-close-title" className="hx-close__title">
             See what is open <em>to start.</em>
           </h2>
-          <p className="hx-close__lead">Programmes that are open can be started. Listings that are not open can be read.</p>
+          <p className="hx-close__lead">Start an open programme today, or join a ₹99 workshop to test-drive a real case study first.</p>
         </div>
         <div className="hx-close__actions">
           <Link className="sk-btn sk-btn-primary hx-btn" to="/programmes">

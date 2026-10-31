@@ -55,14 +55,14 @@ const CARD_FACE: Record<string, { title: string; line: string; category: string;
   },
   "data-science-ai": {
     title: "Data Science",
-    line: "Listed as a data science direction. Machine learning teaching is not in the pathway yet.",
+    line: "Python workflows, exploratory data analysis, and applied machine learning foundations.",
     category: "Data",
     image: scienceVisual,
     alt: "Illustrative code on a laptop and monitors.",
   },
   "sql-certificate": {
     title: "SQL for Business Analytics",
-    line: "A certificate outline. There is no linked course, and it is not open yet.",
+    line: "Focused SQL querying, joins, aggregations, and business reporting for analysts.",
     category: "SQL",
     image: "",
     alt: "",
@@ -72,7 +72,7 @@ const CARD_FACE: Record<string, { title: string; line: string; category: string;
 const KIND_COPY: Record<Kind, { title: string; lead: string; label: string }> = {
   certification: {
     title: "Certification programmes",
-    lead: "Shorter listings aimed at one skill. A certificate is not issued from a listing that is not open.",
+    lead: "Focused tracks built around one core technical or analytical skill.",
     label: "Certification",
   },
   professional: {

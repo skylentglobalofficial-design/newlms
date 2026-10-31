@@ -460,7 +460,7 @@ export default function CourseDetailPage() {
                 <p>
                   {showLiveCurriculum
                     ? "Enrolment does not collect payment. It opens the written course in Skylent OS."
-                    : "This listing is thinner than Data Analytics. Start a ready course, or read the outline below."}
+                    : /* Non-authored outline listing (thinner than Data Analytics) */ "Review the module outline above, or start one of our open flagship courses today."}
                 </p>
               </div>
               {listingClosed ? (

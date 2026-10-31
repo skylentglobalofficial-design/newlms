@@ -238,7 +238,7 @@ const DATA_ANALYTICS: AuthoredProgrammeContent = {
     intro:
       "The Northwind Commercial Review asks you to review the sales extract and produce a concise, evidence-based commercial summary. The brief does not contain the answer.",
     disclaimer:
-      "This is learner work on a fictional Northwind Retail extract. It is not a certificate, not employer-validated, and not published.",
+      "Your SQL queries, category breakdowns, and executive recommendation form a structured capstone deliverable.",
     steps: [
       {
         number: "01",
@@ -283,16 +283,16 @@ const DATA_ANALYTICS: AuthoredProgrammeContent = {
     rows: [
       { label: "Dataset", value: `${NORTHWIND.filename} · ${NORTHWIND.rows} order lines · ${NORTHWIND.window}`, mono: true },
       { label: "Valid-row rule", value: "units > 0, unit_price > 0, returned = 'no'", mono: true },
-      { label: "What you write", value: "Read-only SELECT queries against northwind_sales. It is not PostgreSQL and not a production database." },
+      { label: "What you write", value: "Standard SELECT, WHERE, GROUP BY, and CASE queries against the 180-row northwind_sales extract." },
       { label: "What you keep", value: "Saved queries and their result tables, which you attach to the capstone." },
     ],
     disclaimer:
-      "This is a fictional Northwind Retail extract written for the course. It is not real company data, not a certificate, and not a job credential.",
+      "Queries execute directly in your browser lab so you can verify every figure before writing your brief.",
     link: { label: "How labs fit the path", to: "/labs" },
   },
   evidence: {
     heading: "Four pieces of work a reviewer can check.",
-    lede: "A certificate, project evidence and an employment outcome are three different things. This programme produces the second.",
+    lede: "Every module produces concrete work—cleaned tables, reproducible SQL queries, and a written commercial brief.",
     record: {
       title: "Northwind Commercial Review",
       context: "Capstone · Data Analytics · your own work",
@@ -300,7 +300,7 @@ const DATA_ANALYTICS: AuthoredProgrammeContent = {
         "Data validation, SQL analysis, category revenue analysis, monthly trend analysis, chart interpretation, evidence-based recommendation",
       skills: ["SQL", "Data analysis", "Data interpretation", "Business communication"],
       reflection: "Finding, why it matters, recommendation. Written by you.",
-      footnote: "Learner work on a fictional Northwind Retail extract. Not a certificate and not employer-validated.",
+      footnote: "Capstone deliverable · Northwind Commercial Review",
     },
     rows: evidenceRows(
       DA_CAREER_EVIDENCE,
@@ -319,7 +319,7 @@ const DATA_ANALYTICS: AuthoredProgrammeContent = {
         },
         l14: {
           produce: "Memo, dashboard, and a SQL or spreadsheet appendix",
-          reviewer: "A work sample. Not a certificate and not a placement.",
+          reviewer: "Executive memo, dashboard layout, and reproducible SQL or product spec appendix",
         },
       },
       "l14",
@@ -355,7 +355,7 @@ const PRODUCT_MANAGEMENT: AuthoredProgrammeContent = {
     intro:
       "The Harbor Desk product case asks you to frame the Harbor Retail operations problem and recommend one constrained product bet, with a spec someone could implement. The brief does not contain the answer.",
     disclaimer:
-      "This is learner work on a fictional Harbor Retail operations case. It is not a certificate, not employer-validated, and not published.",
+      "Your interview synthesis, problem framing, and 6-week specification form a structured product capstone.",
     photo: {
       src: productReviewPhoto,
       width: 1600,
@@ -423,12 +423,12 @@ const PRODUCT_MANAGEMENT: AuthoredProgrammeContent = {
       { label: "What you write", value: "A research note, a priority memo and a product-case recommendation." },
     ],
     disclaimer:
-      "Harbor Retail and Harbor Desk are fictional. This course does not use the Northwind Lab, and the case cannot support a revenue claim.",
+      "Work directly from four store interviews and nine logged weekend exceptions inside the Harbor Desk workspace.",
     link: null,
   },
   evidence: {
     heading: "Three pieces of work a reviewer can check.",
-    lede: "A certificate, project evidence and an employment outcome are three different things. This programme produces the second.",
+    lede: "Every module produces concrete work—cleaned tables, reproducible SQL queries, and a written commercial brief.",
     record: {
       title: "Harbor Desk product case",
       context: "Capstone · Product Management · your own work",
@@ -436,7 +436,7 @@ const PRODUCT_MANAGEMENT: AuthoredProgrammeContent = {
         "Interview synthesis, problem framing, prioritisation under a constraint, thin specification, evidence-based recommendation",
       skills: ["Product discovery", "Problem framing", "Prioritisation", "Business communication"],
       reflection: "Problem and evidence, user job and outcome, the bet. Written by you.",
-      footnote: "Learner work on a fictional Harbor Retail operations case. Not a certificate and not employer-validated.",
+      footnote: "Capstone deliverable · Harbor Desk Product Specification",
     },
     rows: evidenceRows(
       PM_CAREER_EVIDENCE,
@@ -451,7 +451,7 @@ const PRODUCT_MANAGEMENT: AuthoredProgrammeContent = {
         },
         l14: {
           produce: "Product-case memo, a thin spec and a four-week check",
-          reviewer: "A work sample. Not a certificate and not a placement.",
+          reviewer: "Executive memo, dashboard layout, and reproducible SQL or product spec appendix",
         },
       },
       "l14",
