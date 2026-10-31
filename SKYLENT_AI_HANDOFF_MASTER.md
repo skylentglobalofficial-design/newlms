@@ -12,6 +12,18 @@
 
 ---
 
+---
+
+## 0B. Visual Alignment Across Screenshots 1–7 (Unified Image-6 Card Grid + Images 4 & 5 Real Workbench Stage)
+
+| Screenshot Issue Reported by Operator | Root Cause | Exact Visual Fix Shipped |
+| :--- | :--- | :--- |
+| **Screenshot 1 (`image_6136f7.jpg`) & Screenshot 7 (`image_613332.jpg`) — Empty White Space on `/programmes`** | `.pgx-intro__inner` had `max-width: 760px` leaving the right half of the header empty, and `Open now` only had 2 stock-photo cards in a 3-column grid (leaving the 3rd column completely blank). | Converted `.pgx-intro` into a 2-column `.pgx-intro__split` header with an **Execution Standard** summary card on the right, and unified all 6 programme tracks into a single **3x2 grid (6 cards = 2 full rows of 3 cards, zero empty white holes)**. |
+| **Screenshot 2 (`image_6136b5.jpg`) vs Screenshot 6 (`image_613336.jpg`) & Screenshot 7 (`image_613332.jpg`) — Duplicate Section & Card Style** | `/programmes` had two separate card lists (`Open now` / `Pathways` stock-photo cards at the top, plus a duplicate `Individual courses` list at the bottom), while the **Screenshot 6 architectural card style** looked much cleaner on the outside than Screenshot 7. | Removed the duplicate bottom list and promoted the **Screenshot 6 Architectural Card Design** (`Flagship programme | Open for enrolment | Northwind SQL Lab · 166 Rows | 5 modules · 15 lessons · 3 quizzes · 1 capstone` + Category Kicker + Bold Title + 3 Skill Pills) to be the single unified card grid on `/programmes`, where every card links directly to `/programmes/:slug`. |
+| **Screenshot 3 (`image_613677.jpg`) vs Screenshots 4 & 5 (`image_61363e.jpg`, `image_613622.jpg`) — Real Inside Page Design** | `/programmes/data-analytics-pro` (Screenshots 4 & 5) had the 2-tone display headline, 3-column ruled spec bar (`ENROLMENT | FORMAT | YOU START WITH`), and the **full-bleed Dark-Violet Workbench Stage (`sky-stage sky-band-navy pp-stage`)**, whereas `/programmes/data-science-ai`, `/programmes/full-stack`, `/programmes/generative-ai-program`, and `/courses/:slug` (Screenshot 3) lacked that dark-violet workbench stage. | Added the **Screenshots 4 & 5 2-Tone Display Hero + 3-Column Ruled Spec Bar + Full-Bleed Dark-Violet Workbench Stage** to `ProgrammeListing.tsx` AND embedded the **Full-Bleed Dark-Violet Workbench Stage** right below the hero on `CourseDetailPage.tsx`. |
+
+---
+
 ## 0A. Complete Programme, Degree & Anti-AI Copy Overhaul (Latest Release)
 
 | Surface / File | What Looked "Half-Cut" or AI-Heavy Before | How It Is Fixed Now |

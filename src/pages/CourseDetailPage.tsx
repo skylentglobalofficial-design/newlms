@@ -21,6 +21,8 @@ import type { CatalogCurriculumModule } from "../lib/catalog-api"
 import { effectiveAuthoredCourseCopy } from "../lib/public-catalogue-copy"
 import { useCatalogCourse } from "../hooks/useCatalog"
 import { TruthChip } from "../components/skylent/primitives"
+import { HarborDeskPlate, NorthwindLabPlate } from "../components/programme/ProgrammeArtefacts"
+import TrackInteractiveSandbox from "../components/labs/TrackInteractiveSandbox"
 import CatalogueNotice, {
   STATUS_NOT_CONFIRMED,
 } from "../components/programme/CatalogueNotice"
@@ -302,6 +304,47 @@ export default function CourseDetailPage() {
             </div>
           </div>
         </section>
+
+        {showLiveCurriculum ? (
+          <section className="sky-stage sky-band-navy" style={{ paddingBlock: "36px 40px" }} aria-label="Interactive course workbench preview">
+            <div className="cat-rail">
+              <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "baseline", gap: 12, marginBottom: 16 }}>
+                <div>
+                  <span style={{ fontSize: 11.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "#a5b4fc" }}>
+                    In-Browser Execution Workbench
+                  </span>
+                  <h2 style={{ margin: "4px 0 0", fontSize: "clamp(20px, 2.4vw, 26px)", fontWeight: 750, color: "#ffffff" }}>
+                    {profile?.project?.title ?? `${course.title} Live Studio`}
+                  </h2>
+                </div>
+                <span style={{ fontSize: 13, color: "#cbd5e1" }}>
+                  Zero local setup · Runs directly inside Skylent OS
+                </span>
+              </div>
+              <div className="sky-stage__plate" style={{ borderRadius: 14, overflow: "hidden" }}>
+                {course.slug === "data-analytics" ? (
+                  <NorthwindLabPlate />
+                ) : course.slug === "product-management" ? (
+                  <HarborDeskPlate />
+                ) : (
+                  <div style={{ padding: "18px", background: "#ffffff", borderRadius: 10 }}>
+                    <TrackInteractiveSandbox
+                      projectType={
+                        course.slug === "python-programming"
+                          ? "python-pipeline-audit"
+                          : course.slug === "data-science-ai"
+                            ? "churn-cohort-validation"
+                            : course.slug === "generative-ai"
+                              ? "enterprise-rag-evaluation"
+                              : "idempotent-ledger-architecture"
+                      }
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+          </section>
+        ) : null}
 
         <section className="cat-section" id="course-outline">
           <div className="cat-rail">

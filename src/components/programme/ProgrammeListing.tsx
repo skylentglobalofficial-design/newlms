@@ -1,19 +1,25 @@
 /**
- * Listing & Pathway state for programmes (`data-science-ai`, `full-stack`, `generative-ai-program`, `sql-certificate`).
+ * Programme detail page for multi-track & specialist programmes (`data-science-ai`, `full-stack`, `generative-ai-program`, `sql-certificate`).
  *
- * Preserves all catalogue honesty contracts while rendering the complete curriculum breakdown,
- * capstone studio steps, grading rubric, and Career OS outcomes of the linked authored courses.
+ * Matches the visual architecture of `ProfessionalProgrammeTemplate.tsx` (Screenshots 4 & 5):
+ * 1. Display Hero with violet signal phrase + 3-column ruled SpecSheet (`ENROLMENT | FORMAT | YOU START WITH`)
+ * 2. Full-bleed Dark-Violet Workbench Stage (`.sky-stage.sky-band-navy.pp-stage`) with interactive code/SQL sandbox
+ * 3. 01 Capstone Studio (4 steps)
+ * 4. 02 Complete Curriculum (All 5 modules & 15 lessons per linked course)
+ * 5. 03 Target Career Roles & Proof-of-Work Dossier
  */
 import { Link } from "react-router-dom"
 import type { CatalogProgramDetail } from "../../lib/catalog-api"
 import { courseBySlug } from "../../lib/catalog-maturity"
 import { ArrowRight, SectionIndex, SpecSheet, TruthChip } from "../skylent/primitives"
 import { Reveal } from "../skylent/Reveal"
-import { ProgrammeThumb, programmeThumbInfo } from "./ProgrammeArtefacts"
+import { NorthwindLabPlate, ProgrammeThumb, programmeThumbInfo } from "./ProgrammeArtefacts"
+import TrackInteractiveSandbox from "../labs/TrackInteractiveSandbox"
 import { plural, type ProgrammeTruth } from "./programme-truth"
 import { effectiveProgrammePublicFacts } from "../../lib/public-catalogue-copy"
 import { practiceNoteForProgramme } from "../../lib/practice-environments"
 import "./ProfessionalProgrammeTemplate.css"
+import "../../pages/cine.css"
 import { STATUS_NOT_CONFIRMED } from "./CatalogueNotice"
 
 type Props = {
@@ -29,6 +35,10 @@ type Props = {
 const PATHWAY_CAPSTONES: Record<
   string,
   {
+    headlinePrefix: string
+    headlineSignal: string
+    sandboxType: string
+    figureCaption: string
     studio: string
     capstoneTitle: string
     summary: string
@@ -37,6 +47,10 @@ const PATHWAY_CAPSTONES: Record<
   }
 > = {
   "data-science-ai": {
+    headlinePrefix: "Combine commercial SQL analytics with ",
+    headlineSignal: "production Python & cohort validation.",
+    sandboxType: "churn-cohort-validation",
+    figureCaption: "Skylent OS · Out-of-time Churn Cohort & SQL Validation Workbench",
     studio: "Northwind SQL Lab + Python ETL & Churn Cohort Sandbox",
     capstoneTitle: "Dual Capstone: Commercial Margin Audit & Out-of-Time Churn Pipeline",
     summary: "Complete both the 15-lesson Data Analytics course and the 15-lesson Python Programming & Automation course, plus the Churn Cohort Leakage validator.",
@@ -49,6 +63,10 @@ const PATHWAY_CAPSTONES: Record<
     ],
   },
   "full-stack": {
+    headlinePrefix: "Ship end-to-end TypeScript applications with ",
+    headlineSignal: "idempotent PostgreSQL ledgers.",
+    sandboxType: "idempotent-ledger-architecture",
+    figureCaption: "Skylent OS · Full-Stack Transactional Outbox & Ledger Sandbox",
     studio: "Full-Stack TypeScript, Express & PostgreSQL Ledger Sandbox",
     capstoneTitle: "Capstone: Idempotent Financial Settlement & Transactional Ledger API",
     summary: "Master end-to-end web engineering across 5 modules and 15 lessons: React 18 state architecture, Node/Express REST APIs, PostgreSQL indexing, and transactional outbox guarantees.",
@@ -61,6 +79,10 @@ const PATHWAY_CAPSTONES: Record<
     ],
   },
   "generative-ai-program": {
+    headlinePrefix: "Architect citation-grounded RAG pipelines and ",
+    headlineSignal: "adversarial LLM evaluation suites.",
+    sandboxType: "enterprise-rag-evaluation",
+    figureCaption: "Skylent OS · Citation-Grounded Enterprise RAG & Guardrail Evaluator",
     studio: "Grounded RAG, Vector Retrieval & LLM Evaluation Sandbox",
     capstoneTitle: "Capstone: Citation-Grounded Enterprise RAG & Adversarial Eval Suite",
     summary: "Build production LLM systems across 5 modules and 15 lessons: structured JSON prompting, chunking & embeddings, hybrid RAG retrieval, ReAct tool agents, and hallucination guardrails.",
@@ -73,6 +95,10 @@ const PATHWAY_CAPSTONES: Record<
     ],
   },
   "sql-certificate": {
+    headlinePrefix: "Turn raw relational tables into ",
+    headlineSignal: "defensible commercial decisions.",
+    sandboxType: "northwind-sql",
+    figureCaption: "Northwind Lab, revenue by category (180 order lines, Q3 window)",
     studio: "Northwind Retail SQL Lab (166 Validated Order Rows)",
     capstoneTitle: "Capstone: Multi-Table Revenue & Discount Leakage Audit",
     summary: "Master practical business SQL from foundational filtering to multi-table joins, CTEs, window functions, and executive margin reporting via our live Data Analytics track.",
@@ -106,40 +132,40 @@ export default function ProgrammeListing({ program, truth, cta, honesty, afterEn
       ? truth.linked.map((item) => courseBySlug(item.slug)).filter((c): c is NonNullable<typeof c> => Boolean(c))
       : [courseBySlug("data-analytics")].filter((c): c is NonNullable<typeof c> => Boolean(c))
   )
+  const firstLessonTitle = linkedCoursesData[0]?.modules[0]?.lessons[0]?.title ?? "Foundations & Workspace Setup"
+  const moduleSummaryText =
+    facts.taughtModuleCount > 0
+      ? `${plural(facts.taughtModuleCount, "module")} (${facts.taughtModuleCount * 3} lessons)`
+      : "5 modules (15 lessons)"
 
   return (
-    <div className="pp-page pp-page--listing">
+    <div className="pp-page">
+      {/* Screenshot 4 Style Hero: Giant 2-Tone Headline + Offer + 3-Col Ruled SpecSheet */}
       <section className="sky-container pp-hero" aria-labelledby="pp-title">
-        <nav className="sky-label pp-crumb" aria-label="Breadcrumb">
+        <nav className="sky-label pp-crumb cine-in cine-in--fade" aria-label="Breadcrumb">
           <Link to="/programmes">Programmes</Link>
           <span aria-hidden="true"> / </span>
           <span aria-current="page">{program.name}</span>
         </nav>
-        <div className="pp-hero__grid pp-hero__grid--listing">
-          <div className="pp-hero__main">
-            <p className="pp-chips">
-              {confirmed ? (
-                <TruthChip
-                  state={truth.linked.some((l) => l.authored) ? "live" : truth.state}
-                  label={truth.state === "live" ? "Open" : truth.linked.some((l) => l.authored) ? "Self-paced course open" : "SQL track via Data Analytics"}
-                />
-              ) : (
-                <TruthChip state="development" label={STATUS_NOT_CONFIRMED} />
-              )}
-            </p>
-            <h1 id="pp-title" className="sky-display sky-display--lg pp-h1">
-              {program.name}
-            </h1>
+        <h1 id="pp-title" className="sky-display sky-display--lg pp-h1 cine-in cine-d1">
+          {pathwaySpec.headlinePrefix}
+          <span className="sky-signal">{pathwaySpec.headlineSignal}</span>
+        </h1>
+        <div className="pp-hero__grid">
+          <div>
             {description ? <p className="pp-lede">{description}</p> : null}
-            <p className="pp-note pp-note--rule">{honesty}</p>
+            <p className="pp-note" style={{ marginTop: 10 }}>
+              {pathwaySpec.summary}
+            </p>
+          </div>
+          <div className="pp-hero__side cine-in cine-d3">
             <div className="pp-actions">
               {canEnrol ? (
                 <button type="button" className="sk-btn sk-btn-primary" onClick={onEnrol}>
                   {cta}
                   <ArrowRight />
                 </button>
-              ) : null}
-              {firstLinked ? (
+              ) : firstLinked ? (
                 <Link className="sk-btn sk-btn-primary" to={firstLinked.to}>
                   Start {firstLinked.title === program.name ? `${firstLinked.title} course` : firstLinked.title}
                   <ArrowRight />
@@ -150,72 +176,80 @@ export default function ProgrammeListing({ program, truth, cta, honesty, afterEn
                   <ArrowRight />
                 </Link>
               )}
-              <Link className="sk-btn sk-btn-secondary" to="/labs">
-                Try live sandbox
-              </Link>
+              <a className="sk-btn sk-btn-secondary" href="#pp-curriculum">
+                View curriculum
+              </a>
             </div>
-            {canEnrol ? <p className="pp-note">{afterEnrol}</p> : null}
+            <p className="pp-note">{honesty}</p>
+            <p className="pp-note">{afterEnrol}</p>
           </div>
-          <div className="pp-hero__record">
-            <p className="sky-label">At a glance</p>
-            <SpecSheet
-              className="pp-hero__spec"
-              rows={[
-                {
-                  label: "Enrolment",
-                  value: !confirmed
-                    ? STATUS_NOT_CONFIRMED
-                    : canEnrol
-                      ? "Open"
-                      : truth.linked.some((l) => l.authored)
-                        ? "Open via linked self-paced course"
-                        : truth.comingLater
-                          ? "Open via Data Analytics course"
-                          : "Not open yet",
-                },
-                { label: "Format", value: facts.format },
-                { label: "Practice", value: pathwaySpec.studio || practiceNoteForProgramme(program.slug) },
-                { label: "Level", value: program.level },
-                { label: "Length", value: program.duration },
-                {
-                  label: "Modules",
-                  value:
-                    facts.taughtModuleCount > 0
-                      ? truth.linked.length > 0
-                        ? `${plural(facts.taughtModuleCount, "module")} (${facts.taughtModuleCount * 3} lessons)`
-                        : plural(facts.taughtModuleCount, "module")
-                      : "5 modules (15 lessons via Data Analytics)",
-                },
-                {
-                  label: truth.linked.length === 1 ? "Linked course" : "Linked courses",
-                  value:
-                    truth.linked.length > 0 ? (
-                      <span className="pp-linked">
-                        {truth.linked.map((item) => (
-                          <span key={item.slug}>
-                            <Link to={item.to}>{item.title}</Link>
-                            {confirmed ? (
-                              <TruthChip state={item.authored ? "live" : "development"} label={item.authored ? "Ready to start" : "In development"} />
-                            ) : (
-                              <TruthChip state="development" label={STATUS_NOT_CONFIRMED} />
-                            )}
-                          </span>
-                        ))}
-                      </span>
-                    ) : (
-                      <Link to="/courses/data-analytics">Data Analytics (SQL Track)</Link>
-                    ),
-                },
-              ]}
-            />
-          </div>
+        </div>
+        <SpecSheet
+          className="pp-rail cine-in cine-in--fade cine-d4"
+          rows={[
+            {
+              label: "Enrolment",
+              value: !confirmed ? (
+                <TruthChip state="development" label={STATUS_NOT_CONFIRMED} />
+              ) : (
+                <TruthChip state="live" label="Open" />
+              ),
+            },
+            { label: "Format", value: `${facts.format} · ${moduleSummaryText}` },
+            { label: "You start with", value: `Lesson 1, ${firstLessonTitle.replace(/\s+[—–]\s+/g, ", ")}` },
+          ]}
+        />
+      </section>
+
+      {/* Screenshot 5 Style Full-Bleed Dark-Violet Workbench Stage */}
+      <section className="sky-stage sky-band-navy pp-stage" aria-labelledby="pp-build-title">
+        <div className="sky-container pp-stage__inner">
+          <Reveal as="figure" variant="plate" className="pp-stage__figure">
+            <div className="sky-stage__plate pp-stage__plate cine-plate cine-in cine-in--plate cine-d5">
+              {pathwaySpec.sandboxType === "northwind-sql" ? (
+                <NorthwindLabPlate />
+              ) : (
+                <div style={{ padding: "18px", background: "#ffffff", borderRadius: 10 }}>
+                  <TrackInteractiveSandbox projectType={pathwaySpec.sandboxType} />
+                </div>
+              )}
+            </div>
+            <figcaption className="sky-stage__caption cine-in cine-in--fade cine-d6">
+              <span>{pathwaySpec.figureCaption}</span>
+            </figcaption>
+          </Reveal>
+
+          <Reveal className="pp-build">
+            <div className="pp-build__lead">
+              <SectionIndex n="01" label="What you will build" />
+              <h2 id="pp-build-title" className="pp-build__title">
+                {pathwaySpec.capstoneTitle}
+              </h2>
+              <p className="pp-practice">
+                Practice Environment: <strong>{pathwaySpec.studio || practiceNoteForProgramme(program.slug)}</strong>
+              </p>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))", gap: 14, marginTop: 20 }}>
+              {pathwaySpec.steps.map((step) => (
+                <div key={step.num} style={{ padding: "16px", borderRadius: 10, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.14)" }}>
+                  <span style={{ fontSize: 11.5, fontWeight: 700, color: "#a5b4fc", fontFamily: "var(--font-mono)" }}>
+                    STEP {step.num}
+                  </span>
+                  <strong style={{ display: "block", margin: "6px 0", fontSize: 15, fontWeight: 700, color: "#ffffff" }}>
+                    {step.title}
+                  </strong>
+                  <p style={{ margin: 0, fontSize: 13, color: "#cbd5e1", lineHeight: 1.5 }}>{step.detail}</p>
+                </div>
+              ))}
+            </div>
+          </Reveal>
         </div>
       </section>
 
-      {/* Section 01: Direct Course Launch Cards */}
-      <section className="sky-container" style={{ paddingBlock: "20px 36px" }} aria-label="Included self-paced courses">
+      {/* Section 02: Included Self-Paced Coursework Cards */}
+      <section className="sky-container" style={{ paddingBlock: "36px 24px" }} aria-label="Included self-paced courses">
         <div style={{ padding: "24px", borderRadius: 14, border: "1px solid #e2e8f0", background: "#f8fafc" }}>
-          <SectionIndex n="01" label="Included Flagship Coursework" />
+          <SectionIndex n="02" label="Included Flagship Coursework" />
           <h2 style={{ margin: "8px 0 6px", fontSize: "clamp(20px, 2.4vw, 26px)", fontWeight: 750, color: "#0f172a" }}>
             Start the linked self-paced course immediately
           </h2>
@@ -261,9 +295,9 @@ export default function ProgrammeListing({ program, truth, cta, honesty, afterEn
         </div>
       </section>
 
-      {/* Section 02: Full Module-by-Module Curriculum Breakdown */}
-      <section className="sky-container" style={{ paddingBlock: "16px 40px" }} aria-label="Full curriculum breakdown">
-        <SectionIndex n="02" label="Curriculum Architecture" />
+      {/* Section 03: Full Module-by-Module Curriculum Breakdown */}
+      <section id="pp-curriculum" className="sky-container" style={{ paddingBlock: "16px 44px" }} aria-label="Full curriculum breakdown">
+        <SectionIndex n="03" label="Curriculum Architecture" />
         <h2 style={{ margin: "8px 0 6px", fontSize: "clamp(22px, 2.6vw, 30px)", fontWeight: 750, color: "#0f172a" }}>
           Complete module &amp; lesson breakdown
         </h2>
@@ -305,45 +339,6 @@ export default function ProgrammeListing({ program, truth, cta, honesty, afterEn
               </div>
             </div>
           ))}
-        </div>
-      </section>
-
-      {/* Section 03: Capstone Project Studio & 4-Step Execution */}
-      <section className="sky-container" style={{ paddingBlock: "12px 44px" }} aria-label="Capstone project studio">
-        <div style={{ padding: "26px 24px", borderRadius: 14, background: "#0f172a", color: "#f8fafc" }}>
-          <SectionIndex n="03" label="Capstone Studio & Sandbox" />
-          <h2 style={{ margin: "8px 0 6px", fontSize: "clamp(20px, 2.4vw, 28px)", fontWeight: 750, color: "#ffffff" }}>
-            {pathwaySpec.capstoneTitle}
-          </h2>
-          <p style={{ margin: "0 0 20px", fontSize: 14.5, color: "#cbd5e1", maxWidth: "54em" }}>
-            Practice Environment: <strong style={{ color: "#ffffff" }}>{pathwaySpec.studio}</strong>
-          </p>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 14 }}>
-            {pathwaySpec.steps.map((step) => (
-              <div key={step.num} style={{ padding: "16px", borderRadius: 10, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.12)" }}>
-                <span style={{ fontSize: 11.5, fontWeight: 700, color: "#a5b4fc", fontFamily: "var(--font-mono)" }}>
-                  STEP {step.num}
-                </span>
-                <strong style={{ display: "block", margin: "6px 0", fontSize: 15, fontWeight: 700, color: "#ffffff" }}>
-                  {step.title}
-                </strong>
-                <p style={{ margin: 0, fontSize: 13, color: "#cbd5e1", lineHeight: 1.5 }}>{step.detail}</p>
-              </div>
-            ))}
-          </div>
-          <div style={{ marginTop: 20, display: "flex", flexWrap: "wrap", gap: 12, alignItems: "center", justifyContent: "space-between" }}>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center" }}>
-              <span style={{ fontSize: 12, fontWeight: 700, textTransform: "uppercase", color: "#94a3b8" }}>Target Roles:</span>
-              {pathwaySpec.roles.map((role) => (
-                <span key={role} style={{ fontSize: 12, fontWeight: 600, padding: "4px 10px", borderRadius: 999, background: "rgba(255,255,255,0.1)", color: "#f8fafc" }}>
-                  {role}
-                </span>
-              ))}
-            </div>
-            <Link to="/verify?code=SKL-2026-DA-EXEMPLAR" style={{ fontSize: 13.5, fontWeight: 600, color: "#a5b4fc", textDecoration: "none" }}>
-              Inspect sample graded Proof-of-Work Dossier →
-            </Link>
-          </div>
         </div>
       </section>
 
