@@ -208,6 +208,7 @@ export default function PathPage() {
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
   const [diagAnswers, setDiagAnswers] = useState<Record<string, string>>({})
+  const [diagOpen, setDiagOpen] = useState(false)
   const [stageVisible, setStageVisible] = useState(true)
 
   useEffect(() => {
@@ -337,16 +338,23 @@ export default function PathPage() {
           >
             <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: 10, marginBottom: 12 }}>
               <div>
-                <p className="sky-label" style={{ color: "#5142B5", margin: 0 }}>90-Second Live Skill Diagnostic · CodeSignal / DataCamp Signal Style</p>
+                <p className="sky-label" style={{ color: "#475569", margin: 0 }}>Optional · 90-Second Live Skill Diagnostic</p>
                 <h2 id="path-skill-diag-title" style={{ margin: "4px 0 0", fontSize: 19, fontWeight: 750, color: "#171717" }}>
                   Test Your Practical Readiness Score (SQL · Product · GenAI)
                 </h2>
               </div>
-              <span style={{ fontSize: 12, fontWeight: 700, padding: "4px 12px", borderRadius: 999, background: "#ffffff", border: "1px solid #DDD7FF", color: "#43349F" }}>
-                3 Real Scenario Checks · Instant Module Match
-              </span>
+              <button
+                type="button"
+                className="sk-btn sk-btn-secondary"
+                style={{ fontSize: 12.5, padding: "6px 14px" }}
+                onClick={() => setDiagOpen((prev) => !prev)}
+              >
+                {diagOpen ? "Hide skill check" : "Try 3-question skill check →"}
+              </button>
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 12 }}>
+            {diagOpen ? (
+            <>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 12, marginTop: 12 }}>
               {SKILL_DIAGNOSTIC_QUESTIONS.map((q, idx) => {
                 const chosen = diagAnswers[q.id]
                 const chosenOpt = q.options.find((o) => o.id === chosen)
@@ -410,6 +418,8 @@ export default function PathPage() {
                 </div>
               )
             })() : null}
+            </>
+            ) : null}
           </section>
 
           <div className="cine-in cine-in--fade cine-d1">

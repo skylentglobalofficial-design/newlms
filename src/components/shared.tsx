@@ -758,27 +758,7 @@ export function Nav() {
             </>
           ) : (
             <>
-              <Link
-                to="/events"
-                className="skn__elixir-chip"
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 6,
-                  padding: '6px 12px',
-                  borderRadius: 999,
-                  border: '1px solid rgba(81, 66, 181, 0.28)',
-                  background: 'rgba(81, 66, 181, 0.08)',
-                  color: '#43349F',
-                  fontSize: 12.5,
-                  fontWeight: 600,
-                  textDecoration: 'none',
-                  whiteSpace: 'nowrap',
-                }}
-              >
-                <span aria-hidden="true">💎</span>
-                <span>₹99 = 99 Elixir</span>
-              </Link>
+
               <Link to="/login" className="skn__signin">
                 Sign in
               </Link>

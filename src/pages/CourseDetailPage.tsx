@@ -226,24 +226,9 @@ export default function CourseDetailPage() {
                     <span>{authoredStats.assignmentCount} assignments</span>
                   ) : null}
                   {authored ? <span>1 capstone</span> : null}
-                  {authored ? <span className="cat-statline__elixir">💎 +50 Elixir Bonus</span> : null}
+                  
                 </p>
-                {showLiveCurriculum ? (
-                  <div className="cat-hero-rubric" aria-label="Course grading and proof-of-work weightage">
-                    <div className="cat-hero-rubric__pill">
-                      <strong>25% · Concept Checks</strong>
-                      <span>3 Module Quizzes (+10 Elixir @ 80%+)</span>
-                    </div>
-                    <div className="cat-hero-rubric__pill">
-                      <strong>35% · Applied Practice</strong>
-                      <span>Written Briefs &amp; In-Browser Lab (+15 Elixir)</span>
-                    </div>
-                    <div className="cat-hero-rubric__pill">
-                      <strong>40% · Executive Proof</strong>
-                      <span>Graded Capstone &amp; 60s Cold Call Defense</span>
-                    </div>
-                  </div>
-                ) : null}
+                
               </aside>
               <div className="cat-intro-actions">
                 <div className="cat-actions">
@@ -396,7 +381,7 @@ export default function CourseDetailPage() {
                   </ul>
                 </article>
               </div>
-              <div className="cat-rubric-strip" aria-label="Assessment and credential weightage">
+              <div className="cat-rubric-strip cat-hero-rubric" aria-label="How Your Proof-of-Work Certificate Is Graded · 100% Elixir Fee Credit Eligible">
                 <div className="cat-rubric-item">
                   <span className="cat-rubric-weight">25% · Concept Checks</span>
                   <strong>3 Module Quizzes (15 Questions)</strong>
@@ -413,26 +398,7 @@ export default function CourseDetailPage() {
                   <span>Unlocks Career Rise at 60% progress &amp; Cryptographic Certificate at 100%.</span>
                 </div>
               </div>
-              <div className="cat-caps" style={{ marginTop: 20 }}>
-                <article className="cat-cap">
-                  <strong>💎 +50 Elixir Enrolment &amp; Milestone Credits</strong>
-                  <p style={{ margin: "6px 0 0", fontSize: 13.5, color: "#555B7D" }}>
-                    Receive +50 Elixir on enrolment, +5 per lesson, +10 on 80%+ quizzes, +15 per brief, and +100 on full course completion.
-                  </p>
-                </article>
-                <article className="cat-cap">
-                  <strong>⚡ 60-Sec Boardroom Cold Calls &amp; Cohort Split</strong>
-                  <p style={{ margin: "6px 0 0", fontSize: 13.5, color: "#555B7D" }}>
-                    Practise timed executive trade-off decisions inside every lesson and compare your decision against the peer cohort % split.
-                  </p>
-                </article>
-                <article className="cat-cap">
-                  <strong>🤖 Socratic AI Tutor + 20-Min Faculty TA SLA</strong>
-                  <p style={{ margin: "6px 0 0", fontSize: 13.5, color: "#555B7D" }}>
-                    Ask Socratic AI for conceptual hints or escalate complex blockers to a live Faculty TA with a 20-minute SLA tracker.
-                  </p>
-                </article>
-              </div>
+
             </div>
           </section>
         ) : null}

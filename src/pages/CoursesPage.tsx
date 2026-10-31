@@ -137,7 +137,7 @@ function CourseUnitChrome({ view }: { view: CatalogCourseListView }) {
     <div className="cat-unit" aria-hidden="true">
       <div className="cat-unit-top">
         <p className="cat-unit-brand">Skylent OS · Proof of Work</p>
-        <span className="cat-unit-elixir">💎 +50 Elixir</span>
+        <span className="cat-unit-elixir">Self-paced</span>
       </div>
       <p className="cat-unit-kicker">{view.course.category} · {view.course.level}</p>
       <p className="cat-unit-title">{view.countLabel}</p>
@@ -170,7 +170,7 @@ function CourseCard({ view, featured = false, confirmed = true }: { view: Catalo
         ) : null}
         {view.maturity === "ready" ? (
           <p className="cat-card-moat">
-            ✓ Socratic AI + 20-Min TA SLA · ✓ Graded Capstone
+            Written lessons · In-browser lab · Graded capstone
           </p>
         ) : null}
         <span className={view.maturity === "ready" ? "cat-btn cat-btn-primary cat-card-cta" : "cat-btn cat-btn-ghost cat-card-cta"}>

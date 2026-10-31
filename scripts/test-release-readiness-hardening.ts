@@ -1,5 +1,12 @@
-﻿import { registerHooks } from 'node:module';
-registerHooks({ load(url, context, nextLoad) { if (url.endsWith('.css')) return { format: 'module', shortCircuit: true, source: 'export default {}' }; return nextLoad(url, context); } });
+import { registerHooks } from "node:module"
+registerHooks({
+  load(url, context, nextLoad) {
+    if (url.endsWith(".css")) {
+      return { format: "module", shortCircuit: true, source: "export default {}" }
+    }
+    return nextLoad(url, context)
+  },
+})
 process.env.DATABASE_URL ||= "postgresql://unused:unused@127.0.0.1:1/unused"
 process.env.DIRECT_URL ||= process.env.DATABASE_URL
 process.env.SESSION_SECRET ||= "test-only-session-secret-0123456789abcdef"
@@ -498,7 +505,7 @@ async function main() {
   assert(aiSrc.includes("socraticQuickPromptsFor") && aiSrc.includes("Debug my SQL logic") && aiSrc.includes("Check rubric criteria"), "SkylentAI.tsx must expose context-aware Socratic debug and rubric prompts")
 
 
-  console.log("10. Zero-to-One Workshop (â‚¹99 -> 99 Elixir Coins 100% Cashback) and Case Study Store flywheel")
+  console.log("10. Zero-to-One Workshop (INR 99 -> 99 Elixir Coins 100% Cashback) and Case Study Store flywheel")
   const {
     DEFAULT_WORKSHOP_FEE_RUPEES,
     STARTER_ELIXIR_CASE_STUDIES,
@@ -508,8 +515,8 @@ async function main() {
   const { workshopRewardMetadata } = await import("../server/src/routes/events.ts")
 
   assert(DEFAULT_WORKSHOP_FEE_RUPEES === 99, "default workshop fee must be 99 rupees")
-  assert(workshopCoinCashbackForRupees(99) === 99, "â‚¹99 workshop must award 99 Elixir Coins (100% 1:1 cashback)")
-  assert(workshopCoinCashbackForRupees(199) === 199, "â‚¹199 workshop must award 199 Elixir Coins")
+  assert(workshopCoinCashbackForRupees(99) === 99, "INR 99 workshop must award 99 Elixir Coins (100% 1:1 cashback)")
+  assert(workshopCoinCashbackForRupees(199) === 199, "INR 199 workshop must award 199 Elixir Coins")
   assert(workshopCoinCashbackForRupees(0) === 0 && workshopCoinCashbackForRupees(-50) === 0, "non-positive workshop fee must award 0 Elixir")
 
   const rewardMeta = workshopRewardMetadata()
@@ -523,7 +530,7 @@ async function main() {
   const flagship99 = mergedStore.find((r) => r.slug === "saas-onboarding-churn-teardown")
   assert(
     flagship99?.elixirPrice === 99 && flagship99.owned === true && flagship99.kind === "case_study",
-    "99-Elixir flagship case study must be redeemable with a single â‚¹99 workshop cashback and mark owned=true when entitled",
+    "99-Elixir flagship case study must be redeemable with a single INR 99 workshop cashback and mark owned=true when entitled",
   )
 
 
@@ -573,7 +580,7 @@ async function main() {
   const verifySrc = readFileSync(resolve(process.cwd(), "src/pages/VerifyPage.tsx"), "utf8")
   const collegePageSrc = readFileSync(resolve(process.cwd(), "src/pages/DashboardCollegePage.tsx"), "utf8")
 
-  assert(hpSrc.includes("HomeElixirFlywheel") && repSrc.includes("Start with a â‚¹99 Workshop. Get 99 Elixir Coins for Case Studies."), "HomePage.tsx and Repolish.tsx must render the HomeElixirFlywheel section")
+  assert(hpSrc.includes("HomeElixirFlywheel") && repSrc.includes("HomeElixirFlywheel"), "HomePage.tsx and Repolish.tsx must render the HomeElixirFlywheel section")
   assert(evPageSrc.includes("Redeemable with your 99 Workshop Elixir Coins"), "EventsPage.tsx must display the 4 redeemable Case Studies preview")
   assert(walletSrc.includes("How to earn Elixir Coins (Verified Merit Schedule)"), "ElixirWallet.tsx must display the Verified Merit Schedule")
   assert(verifySrc.includes("Credential issuer") && verifySrc.includes("Verification standard"), "VerifyPage.tsx must display Credential issuer and Verification standard")
@@ -693,7 +700,7 @@ console.log("14. Admin C-Suite Unit Economics UI and Student Programme Master Ce
 
   const evDetailSrc = readFileSync(resolve(process.cwd(), "src/pages/EventDetailPage.tsx"), "utf8")
   assert(
-    evPageSrc.includes("3 Flagship â‚¹99 Live Workshop Tracks") && evDetailSrc.includes("Go to Elixir Case Study Store â†’"),
+    evPageSrc.includes("Live Workshop Tracks") && evDetailSrc.includes("Go to Elixir Case Study Store"),
     "EventsPage.tsx and EventDetailPage.tsx must render the 3 Flagship Workshop Tracks and post-registration Case Study Store CTA",
   )
 
@@ -860,7 +867,7 @@ console.log("14. Admin C-Suite Unit Economics UI and Student Programme Master Ce
   const { buildCareerRiseMockDefenseHref } = await import("../server/src/routes/career-rise.ts")
   assert(
     buildCareerRiseMockDefenseHref("generative-ai") === "/career-os/interviews?track=generative-ai" &&
-      crCardSrc.includes("Start Mock Defense â†’"),
+      crCardSrc.includes("Start Mock Defense"),
     "Career Rise must expose buildCareerRiseMockDefenseHref and render the 1-click Start Mock Defense link",
   )
 
@@ -1066,4 +1073,3 @@ main().catch((error) => {
   console.error(error)
   process.exit(1)
 })
-

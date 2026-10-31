@@ -98,11 +98,10 @@ export function HomeHero({
             className="hxw-hero__caps hx-rise"
             aria-label="Verified platform capabilities"
           >
-            <li>✓ Interactive SQL &amp; Python practice</li>
-            <li>✓ Business case studies</li>
-            <li>✓ Practical assessments &amp; 20-min Faculty TA SLA</li>
-            <li>✓ Evidence-backed credentials</li>
-            <li>✓ Career development (60% Merit Gate)</li>
+            <li>Interactive SQL &amp; Python practice</li>
+            <li>Applied business case studies</li>
+            <li>Graded assessments &amp; faculty review</li>
+            <li>Verifiable credentials</li>
           </ul>
         </div>
         <div className="hxw-hero__visual hx-rise">
@@ -119,30 +118,17 @@ export function HomeHero({
                 fetchPriority="high"
               />
             </div>
-            <div className="hxw-ws" aria-label="Skylent OS live capabilities">
+            <div className="hxw-ws" aria-label="Skylent OS workspace summary">
               <div className="hxw-ws__top">
                 <span className="hxw-ws__mark" aria-hidden="true">OS</span>
                 <div>
-                  <span className="hxw-ws__title">Skylent Proof-of-Work OS</span>
-                  <span className="hxw-ws__note">6 Live Courses · SQL &amp; Case Labs</span>
+                  <span className="hxw-ws__title">Skylent Workspace</span>
+                  <span className="hxw-ws__note">In-browser SQL, Python &amp; Case Studios</span>
                 </div>
               </div>
-              <div className="hxw-ws__row">
-                <span>Merit Gate to Career Rise</span>
-                <span className="hxw-ws__pill">60% Threshold</span>
-              </div>
-              <span className="hxw-ws__track" aria-hidden="true"><span style={{ width: "68%" }} /></span>
-              <Link to="/events" className="hxw-ws__item">
-                <span className="hxw-ws__plus" aria-hidden="true">💎</span>
-                <span>
-                  <strong>+50 Elixir Enrolment Bonus</strong>
-                  <em>100% Coin Back on ₹99 Workshops</em>
-                </span>
-                <ArrowRight />
-              </Link>
               <div className="hxw-ws__pair">
-                <span><b>⚡ Cold Calls</b>Timed + Peer %</span>
-                <span><b>⏱️ 20-Min SLA</b>Faculty TA Help</span>
+                <span><b>Northwind SQL</b>166-row retail dataset</span>
+                <span><b>Harbor Desk</b>Operations case studio</span>
               </div>
             </div>
           </div>
@@ -589,7 +575,7 @@ export function ZeroLoginInteractiveTryout() {
                     className="sk-btn sk-btn-primary hx-tryout__run"
                     onClick={() => setSqlRan(true)}
                   >
-                    {sqlRan ? "Query Executed ✓ (14 ms)" : "Run Query ▶"}
+                    {sqlRan ? "Executed (14 ms)" : "Run query"}
                   </button>
                 </div>
                 <pre className="hx-sql">{NORTHWIND_CATEGORY_SQL_EXCERPT}</pre>
@@ -597,14 +583,14 @@ export function ZeroLoginInteractiveTryout() {
               <div className="hx-tryout__output">
                 {!sqlRan ? (
                   <div className="hx-tryout__idle">
-                    <strong>Click “Run Query ▶” to execute against 166 Northwind rows</strong>
+                    <strong>Run the query against 166 Northwind order rows</strong>
                     <p>See how Skylent OS validates row integrity, filters returned orders, and computes net category revenue in real time.</p>
                   </div>
                 ) : (
                   <div className="hx-tryout__result">
                     <div className="hx-tryout__result-head">
-                      <span>✓ 4 rows returned · 166 valid rows scanned (4 cancelled excluded)</span>
-                      <strong>Total: ₹8,12,020 · +25 💎 Elixir preview</strong>
+                      <span>4 categories · 166 valid rows scanned</span>
+                      <strong>Net revenue: ₹8,12,020</strong>
                     </div>
                     <div className="hx-bars">
                       {NORTHWIND.categories.map((row) => (
@@ -631,7 +617,7 @@ export function ZeroLoginInteractiveTryout() {
               <div className="hx-tryout__code">
                 <div className="hx-tryout__bar">
                   <span className="sky-mono">Harbor Desk · Executive Boardroom Cold Call</span>
-                  <span className="hx-tryout__timer">⏱ 60s Decision Scenario</span>
+                  <span className="hx-tryout__timer">Decision scenario</span>
                 </div>
                 <h3 className="hx-tryout__q">
                   “Enterprise ticket resolution dropped 18% this month, and your VP of Sales demands a custom SLA dashboard by Friday. However, engineering says 42% of tickets lack root-cause tags. What is your Monday morning move?”
@@ -672,7 +658,7 @@ export function ZeroLoginInteractiveTryout() {
                 ) : (
                   <div className="hx-tryout__result">
                     <div className="hx-tryout__result-head">
-                      <span>{casePick === "b" ? "✓ Strongest Product Operator Move" : "⚠ Trade-off Alert · Rubric Feedback"}</span>
+                      <span>{casePick === "b" ? "Recommended trade-off" : "Rubric feedback"}</span>
                       <strong>64% of enrolled operators chose Option B</strong>
                     </div>
                     <p className="hx-tryout__explain">
@@ -953,7 +939,7 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
             />
 
             <div className="hx-focus-group" style={{ marginTop: 28 }}>
-              <h3 className="hx-focus-group__title">All 6 Flagship Courses · Open for Self-Paced Enrolment (+50 Elixir Bonus)</h3>
+              <h3 className="hx-focus-group__title">Self-paced courses</h3>
               <ul className="hx-live-courses-grid" aria-label="All 6 live courses">
                 {[
                   { slug: "data-analytics", title: "Data Analytics", category: "Data", meta: "5 modules · 15 lessons · Northwind SQL Lab" },
@@ -967,7 +953,7 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
                     <Link to={"href" in course && course.href ? course.href : `/courses/${course.slug}`} className="hx-live-course-card">
                       <span className="hx-live-course-card__top">
                         <span className="hx-live-course-card__cat">{course.category}</span>
-                        <span className="hx-live-course-card__elixir">💎 +50 Elixir</span>
+                        <span className="hx-live-course-card__elixir">Self-paced</span>
                       </span>
                       <strong className="hx-live-course-card__title">{course.title}</strong>
                       <span className="hx-live-course-card__meta">{course.meta}</span>
@@ -1476,7 +1462,7 @@ export function HomeAi() {
 
         <div className="hx-ai__chat" aria-label="Socratic AI and 20-minute TA escalation preview">
           <div className="hx-ai__chatbar">
-            <span>⚡ Lesson Workspace · Socratic Coach &amp; 20-Min TA SLA</span>
+            <span>Lesson Workspace · Socratic Coach &amp; Faculty TA Desk</span>
           </div>
           <div className="hx-chat">
             <div className="hx-chat__row hx-chat__row--user">
@@ -1711,17 +1697,17 @@ export function HomeElixirFlywheel() {
             <table className="hx-moat-table">
               <thead>
                 <tr>
-                  <th scope="col">Capability</th>
-                  <th scope="col" className="is-skylent">Skylent Proof-of-Work OS</th>
-                  <th scope="col">Passive Video Catalogues (Coursera / Udemy style)</th>
-                  <th scope="col">High-Ticket Cohorts (₹1.5L+ Bootcamps)</th>
+                  <th scope="col">Dimension</th>
+                  <th scope="col" className="is-skylent">Skylent OS</th>
+                  <th scope="col">Recorded Video Catalogues</th>
+                  <th scope="col">Traditional Bootcamps</th>
                 </tr>
               </thead>
               <tbody>
                 {moatRows.map((row) => (
                   <tr key={row.dimension}>
                     <th scope="row">{row.dimension}</th>
-                    <td className="is-skylent"><strong>✓ {row.skylent}</strong></td>
+                    <td className="is-skylent"><strong>{row.skylent}</strong></td>
                     <td>{row.videoLms}</td>
                     <td>{row.bootcamps}</td>
                   </tr>

@@ -445,9 +445,9 @@ export default function VerifyPage() {
           >
             <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: 10, marginBottom: 14 }}>
               <div>
-                <p className="sky-label" style={{ color: "#5142B5", margin: 0 }}>Public Exemplar Proof-of-Work &amp; Top Fellow Teardown Gallery</p>
-                <h2 id="vfy-exemplar-gallery-title" style={{ margin: "4px 0 0", fontSize: 20, fontWeight: 750, color: "#171717" }}>
-                  Inspect a 95/100 Graded Skylent Proof-of-Work Dossier
+                <p className="sky-label" style={{ color: "#475569", margin: 0 }}>Public Exemplar Proof-of-Work Records</p>
+                <h2 id="vfy-exemplar-gallery-title" style={{ margin: "4px 0 0", fontSize: 19, fontWeight: 700, color: "#0f172a" }}>
+                  Sample verified graduate records
                 </h2>
               </div>
               <span style={{ fontSize: 12, fontWeight: 700, padding: "4px 12px", borderRadius: 999, background: "#ffffff", border: "1px solid #DDD7FF", color: "#43349F" }}>
@@ -484,7 +484,7 @@ export default function VerifyPage() {
                     style={{ marginTop: "auto", fontSize: 12.5, padding: "7px 12px" }}
                     onClick={() => navigate(`/verify/${item.code}`)}
                   >
-                    Inspect 95/100 Dossier →
+                    View sample record →
                   </button>
                 </article>
               ))}

@@ -163,8 +163,8 @@ function ProgrammeCard({ row, confirmed }: { row: Row; confirmed: boolean }) {
         <span style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
           <span className="pgx-card__kicker">{row.category}</span>
           {confirmed && row.truth.linked.some((l) => l.authored) ? (
-            <span style={{ fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 999, background: "#F3F0FF", color: "#5142B5" }}>
-              💎 +50 Elixir · 15 Lessons
+            <span style={{ fontSize: 11, fontWeight: 600, color: "#64748b" }}>
+              15 lessons
             </span>
           ) : null}
         </span>
@@ -401,8 +401,8 @@ export default function ProgramsPage() {
           <div className="sky-container">
             <header className="pgx-section__head">
               <div>
-                <p className="pgx-eyebrow">Self-Paced Skylent OS Curriculum · +50 Elixir Enrolment Bonus</p>
-                <h2 id="pgx-live-courses-title">Self-Paced Courses &amp; Lab Tracks (Open Now)</h2>
+                <p className="pgx-eyebrow">Self-paced curriculum</p>
+                <h2 id="pgx-live-courses-title">Individual courses</h2>
               </div>
               <p>Every course below is 100% authored with 5 modules, 15 structured lessons, 3 module quizzes, applied assignments, a graded capstone, Boardroom Cold Calls, and Socratic AI + 20-Min Faculty TA support.</p>
             </header>
@@ -473,8 +473,8 @@ export default function ProgramsPage() {
                   <Link to={course.href} className="pgx-card__link" data-clear-launcher>
                     <span className="pgx-course-banner">
                       <span className="pgx-course-banner__top">
-                        <span className="pgx-course-banner__brand">Skylent OS · Verified Track</span>
-                        <span className="pgx-course-banner__elixir">💎 +50 Elixir</span>
+                        <span className="pgx-course-banner__brand">Self-paced course</span>
+                        <span className="pgx-course-banner__elixir">Open now</span>
                       </span>
                       <span className="pgx-course-banner__title">{course.badge}</span>
                       <span className="pgx-course-banner__meta">{course.meta}</span>
