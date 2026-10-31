@@ -187,11 +187,15 @@ body:has(.skylent-public-canvas) {
 /* Headings on legacy public pages take the ink token. Skylent 2.0 sections
    (.site-light) colour their own headings with utilities and are left alone —
    this used to force #15171A onto the homepage headings with !important. */
-.skylent-public-canvas main h1:where(:not(.site-light *)),
-.skylent-public-canvas main h2:where(:not(.site-light *)),
-.skylent-public-canvas main h3:where(:not(.site-light *)),
-.skylent-public-canvas main h4:where(:not(.site-light *)) {
+.skylent-public-canvas main h1:where(:not(.site-light *, .sky-band-navy *, .sky-on-navy *, .cat-final-card *, .cat-unit *, .hx-close *, .hx-hero *)),
+.skylent-public-canvas main h2:where(:not(.site-light *, .sky-band-navy *, .sky-on-navy *, .cat-final-card *, .cat-unit *, .hx-close *, .hx-hero *)),
+.skylent-public-canvas main h3:where(:not(.site-light *, .sky-band-navy *, .sky-on-navy *, .cat-final-card *, .cat-unit *, .hx-close *, .hx-hero *)),
+.skylent-public-canvas main h4:where(:not(.site-light *, .sky-band-navy *, .sky-on-navy *, .cat-final-card *, .cat-unit *, .hx-close *, .hx-hero *)) {
   color: var(--skylent-color-ink) !important;
+}
+
+.skylent-public-canvas :is(.sky-band-navy, .sky-on-navy, .cat-final-card) :is(h1, h2, h3, h4) {
+  color: #ffffff !important;
 }
 
 .skylent-public-canvas main p[style*="color: rgba(255"],

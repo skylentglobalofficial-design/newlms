@@ -160,7 +160,14 @@ function ProgrammeCard({ row, confirmed }: { row: Row; confirmed: boolean }) {
         {showStatus ? <span className={live ? "pgx-status pgx-status--open" : "pgx-status"}>{status}</span> : null}
       </span>
       <span className="pgx-card__body">
-        <span className="pgx-card__kicker">{row.category}</span>
+        <span style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
+          <span className="pgx-card__kicker">{row.category}</span>
+          {confirmed && row.truth.linked.some((l) => l.authored) ? (
+            <span style={{ fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 999, background: "#F3F0FF", color: "#5142B5" }}>
+              💎 +50 Elixir · 15 Lessons
+            </span>
+          ) : null}
+        </span>
         <span className="pgx-card__title">{row.title}</span>
         <span className="pgx-card__line">{row.line}</span>
         <span className="pgx-card__go">

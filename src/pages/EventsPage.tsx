@@ -115,7 +115,7 @@ export default function EventsPage() {
             </p>
             <ul className="ws-list">
               <li>
-                <Link className="ws-row" to="/courses/data-analytics">
+                <Link className="ws-row ws-row--track" to="/courses/data-analytics">
                   <span className="ws-date">Track 01 · ₹99</span>
                   <span className="ws-body">
                     <strong>Northwind SQL Margin &amp; Cohort Live Workshop</strong>
@@ -126,7 +126,7 @@ export default function EventsPage() {
                 </Link>
               </li>
               <li>
-                <Link className="ws-row" to="/courses/product-management">
+                <Link className="ws-row ws-row--track" to="/courses/product-management">
                   <span className="ws-date">Track 02 · ₹99</span>
                   <span className="ws-body">
                     <strong>Harbor Desk Product Scoping &amp; PRD Triage Workshop</strong>
@@ -137,7 +137,7 @@ export default function EventsPage() {
                 </Link>
               </li>
               <li>
-                <Link className="ws-row" to="/courses/python-programming">
+                <Link className="ws-row ws-row--track" to="/courses/python-programming">
                   <span className="ws-date">Track 03 · ₹99</span>
                   <span className="ws-body">
                     <strong>Applied Python &amp; GenAI Workflow Automation Workshop</strong>
@@ -160,7 +160,7 @@ export default function EventsPage() {
             </p>
             <ul className="ws-list">
               <li>
-                <Link className="ws-row" to="/dashboard/student">
+                <Link className="ws-row ws-row--track" to="/dashboard/student">
                   <span className="ws-date">49 Elixir</span>
                   <span className="ws-body">
                     <strong>Northwind Margin &amp; Discount Leakage Case Study</strong>
@@ -171,7 +171,7 @@ export default function EventsPage() {
                 </Link>
               </li>
               <li>
-                <Link className="ws-row" to="/dashboard/student">
+                <Link className="ws-row ws-row--track" to="/dashboard/student">
                   <span className="ws-date">49 Elixir</span>
                   <span className="ws-body">
                     <strong>Harbor Desk Weekend Exception Queue PRD Case</strong>
@@ -182,7 +182,7 @@ export default function EventsPage() {
                 </Link>
               </li>
               <li>
-                <Link className="ws-row" to="/dashboard/student">
+                <Link className="ws-row ws-row--track" to="/dashboard/student">
                   <span className="ws-date">99 Elixir</span>
                   <span className="ws-body">
                     <strong>Enterprise B2B SaaS Onboarding &amp; Churn Case Study</strong>
@@ -193,7 +193,7 @@ export default function EventsPage() {
                 </Link>
               </li>
               <li>
-                <Link className="ws-row" to="/dashboard/student">
+                <Link className="ws-row ws-row--track" to="/dashboard/student">
                   <span className="ws-date">39 Elixir</span>
                   <span className="ws-body">
                     <strong>E-Commerce SQL Cohort &amp; Retention Playbook</strong>
