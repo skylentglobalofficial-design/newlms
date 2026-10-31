@@ -186,7 +186,7 @@ export default function ElixirWalletPanel() {
               Elixir Case Study &amp; Playbook Store
             </h3>
             <p style={{ margin: "2px 0 0", fontSize: 12, color: "#64748b" }}>
-              Unlock executive Harvard &amp; IIM-style business teardowns and SQL playbooks with your coins.
+              Unlock executive business teardowns, SQL playbooks, and decision scenarios with your coins.
             </p>
           </div>
           <span style={{ fontSize: 12, color: "#5142B5", fontWeight: 600 }}>

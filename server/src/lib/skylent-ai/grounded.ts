@@ -184,7 +184,7 @@ export function groundedAnswer(input: AiAskInput): string {
 
   if (/hinglish|simple hindi|desi analogy/i.test(question)) {
     const obj = context.objective || `mastering the core decision in “${context.lessonTitle}”`
-    return `🇮🇳 Hinglish First-Principles Intuition (“${context.lessonTitle}”): Is lesson ka main focus hai — ${obj}. Simple shabdon mein samjho: pehle data ya user problem ki asli root-cause (grain aur constraints) pakdo, bina seedha code ya UI jump kiye. Ab is logic ko apne shabdon mein apply karke dekho — main graded quiz ya assignment ka direct answer leak nahi karunga!`
+    return `Is lesson (“${context.lessonTitle}”) ka core concept simple bhasha mein: ${obj}. Asli funda yeh hai ki pehle system ki root-cause aur boundaries pakdo, bina seedha ratte-baazi ya guess-work ke. Ab is approach ko use karke assignment ya lab execute karo — agar kahin doubt aaye toh step-by-step guidance poochh sakte ho!`
   }
 
   if (!context.authored) {

@@ -110,7 +110,7 @@ export function hinglishIntuitionPromptFor(courseSlug: string, lessonTitle?: str
 } {
   return {
     action: "ask",
-    label: "🇮🇳 Explain in Simple Hinglish",
+    label: "Explain in Hinglish",
     question: `Explain the core first-principles intuition of "${lessonTitle ?? courseSlug}" in simple Hinglish with a practical Indian real-world analogy, without giving away any quiz or assignment answers.`,
   }
 }

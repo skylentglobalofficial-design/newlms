@@ -531,7 +531,7 @@ export function ZeroLoginInteractiveTryout() {
       <div className="sky-container">
         <header className="hx-head">
           <div>
-            <p className="hx-eyebrow hx-eyebrow--dark">Zero-Login Interactive Playground</p>
+            <p className="hx-eyebrow hx-eyebrow--dark">Interactive Workspace Preview (No Sign-in Needed)</p>
             <h2 id="hx-tryout-title" className="hx-h2 hx-h2--sm">
               Test-drive the execution workspace in 30 seconds <em>— no account required.</em>
             </h2>
@@ -1421,7 +1421,7 @@ export function HomeCareer() {
 const AI_HELPS = [
   { title: "Socratic Lesson Coach", text: "Inside every open lesson, Skylent AI guides your SQL queries, Python logic, and product case memos with Socratic prompts rather than handing out shortcuts." },
   { title: "20-Minute Faculty TA Doubt SLA", text: "Need human verification? Escalate any technical or case-study question directly from the lesson workspace with a live 20-minute Faculty TA SLA." },
-  { title: "Boardroom Cold Call Prep", text: "Practise Harvard and IIM-style timed executive decision prompts and benchmark your strategic recommendation against peer cohorts." },
+  { title: "Boardroom Cold Call Prep", text: "Practise timed executive decision scenarios under 60-second pressure and benchmark your strategic trade-offs against peer cohort responses." },
 ] as const
 
 export function HomeAi() {
@@ -1620,7 +1620,7 @@ export function HomeElixirFlywheel() {
     },
     {
       dimension: "Executive Decision Rigour",
-      skylent: "Harvard/IIM Timed Boardroom Cold Calls + Peer Cohort %",
+      skylent: "Timed 60-Second Boardroom Cold Calls with Live Peer Cohort %",
       videoLms: "Basic multiple-choice trivia checks",
       bootcamps: "Untimed homework sheets",
     },

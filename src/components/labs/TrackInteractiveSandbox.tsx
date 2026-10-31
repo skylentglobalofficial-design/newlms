@@ -376,4 +376,4 @@ export default function TrackInteractiveSandbox({ projectType }: { projectType: 
   )
 }
 
-export { SANDBOX_PRESETS }
+export { SANDBOX_PRESETS, TrackInteractiveSandbox }
