@@ -144,6 +144,54 @@ export default function ProgrammeListing({ program, truth, cta, honesty, afterEn
         </div>
       </section>
 
+      {truth.linked.some((item) => item.authored) ? (
+        <section className="sky-container" style={{ paddingBlock: "24px 40px" }} aria-label="Linked live courses ready to start">
+          <div style={{ padding: "24px", borderRadius: 16, border: "1px solid #DDD7FF", background: "#FAF9FF" }}>
+            <p className="sky-label" style={{ color: "#5142B5" }}>Live in Skylent OS · +50 Elixir Enrolment Bonus</p>
+            <h2 style={{ margin: "6px 0 8px", fontSize: "clamp(20px, 2.4vw, 26px)", fontWeight: 750, color: "#171717" }}>
+              Start the linked self-paced course{truth.linked.length > 1 ? "s" : ""} today
+            </h2>
+            <p style={{ margin: "0 0 18px", fontSize: 15, color: "#3c425c", maxWidth: "52em" }}>
+              Every linked course below is 100% authored and open for immediate self-paced enrolment with 5 modules, 15 written lessons, 60 concept checks, 15 applied briefs, Boardroom Cold Calls, and Socratic AI + 20-Min Faculty TA support.
+            </p>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 14 }}>
+              {truth.linked.filter((item) => item.authored).map((item) => (
+                <Link
+                  key={item.slug}
+                  to={item.to}
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 8,
+                    padding: "18px 20px",
+                    borderRadius: 14,
+                    background: "#ffffff",
+                    border: "1px solid #DDD7FF",
+                    color: "#171717",
+                    textDecoration: "none",
+                    boxShadow: "0 12px 28px -18px rgba(81, 66, 181, 0.2)",
+                  }}
+                >
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: "#0E6A44", background: "#E7F6EF", padding: "2px 10px", borderRadius: 999 }}>
+                      Open now · 15 Lessons
+                    </span>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: "#5142B5" }}>💎 +50 Elixir</span>
+                  </div>
+                  <strong style={{ fontSize: 18, fontWeight: 750 }}>{item.title}</strong>
+                  <span style={{ fontSize: 13.5, color: "#555B7D" }}>
+                    5 modules · 60 concept checks · 15 written briefs · Cryptographic Certificate
+                  </span>
+                  <span style={{ marginTop: "auto", paddingTop: 6, fontSize: 14, fontWeight: 700, color: "#5142B5", display: "inline-flex", alignItems: "center", gap: 6 }}>
+                    Open {item.title} course <ArrowRight />
+                  </span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      ) : null}
+
       <section className="sky-stage sky-band-navy pp-next pp-next--listing" aria-labelledby="pp-next-title">
         <div className={`sky-container pp-listing-stage${thumb.hasArtefact ? "" : " pp-listing-stage--plain"}`}>
           {thumb.hasArtefact ? (

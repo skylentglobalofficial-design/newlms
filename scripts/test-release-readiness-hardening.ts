@@ -840,6 +840,17 @@ console.log("14. Admin C-Suite Unit Economics UI and Student Programme Master Ce
       hwnSrc.includes("skn-popover"),
     "HomeRepolish.css and skylent-public.css must eliminate broken mobile padding and enforce viewport-safe mobile popovers",
   )
+  const coursesPageSrc = readFileSync(resolve(process.cwd(), "src/pages/CoursesPage.tsx"), "utf8")
+  const courseDetailSrc = readFileSync(resolve(process.cwd(), "src/pages/CourseDetailPage.tsx"), "utf8")
+  const progListingSrc = readFileSync(resolve(process.cwd(), "src/components/programme/ProgrammeListing.tsx"), "utf8")
+  assert(
+    coursesPageSrc.includes("COURSE_SKILL_TAGS") &&
+      courseDetailSrc.includes("cat-rubric-strip") &&
+      progListingSrc.includes("Start the linked self-paced course") &&
+      repolishUpdated.includes("hx-live-courses-grid") &&
+      evPageSrc.indexOf("events-launch-tracks-title") < evPageSrc.indexOf("events-list-title"),
+    "Final Touch 100% check: CoursesPage skill tags, CourseDetailPage rubric strip, ProgrammeListing live course cards, Homepage 6-course grid, and EventsPage above-the-fold workshop tracks",
+  )
 
   console.log("release-readiness-hardening ok")
 }

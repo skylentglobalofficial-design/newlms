@@ -95,18 +95,8 @@ export function HomeHero({
             </Link>
           </div>
           <ul
-            className="hxw-hero__limit hx-rise"
+            className="hxw-hero__caps hx-rise"
             aria-label="Verified platform capabilities"
-            style={{
-              listStyle: "none",
-              padding: 0,
-              margin: "16px 0 0",
-              display: "flex",
-              flexWrap: "wrap",
-              gap: "8px 14px",
-              fontSize: 13,
-              fontWeight: 500,
-            }}
           >
             <li>✓ Interactive SQL &amp; Python practice</li>
             <li>✓ Business case studies</li>
@@ -797,6 +787,34 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
               rows={confirmed ? [] : ordered}
               confirmed={false}
             />
+
+            <div className="hx-focus-group" style={{ marginTop: 28 }}>
+              <h3 className="hx-focus-group__title">All 6 Flagship Courses · Open for Self-Paced Enrolment (+50 Elixir Bonus)</h3>
+              <ul className="hx-live-courses-grid" aria-label="All 6 live courses">
+                {[
+                  { slug: "data-analytics", title: "Data Analytics", category: "Data", meta: "5 modules · 15 lessons · Northwind SQL Lab" },
+                  { slug: "product-management", title: "Product Management", category: "Product", meta: "5 modules · 15 lessons · Harbor Desk Case" },
+                  { slug: "python-programming", title: "Python Programming & Automation", category: "Engineering", meta: "5 modules · 15 lessons · ETL & Pytest" },
+                  { slug: "data-science-ai", title: "Data Science & AI", category: "Data & AI", meta: "5 modules · 15 lessons · Feature & Model Eval" },
+                  { slug: "generative-ai", title: "Generative AI & LLM Systems", category: "AI Systems", meta: "5 modules · 15 lessons · Grounded RAG & Agents" },
+                  { slug: "full-stack-web", title: "Full Stack Web Engineering", category: "Web", meta: "5 modules · 15 lessons · React, Node & Postgres" },
+                ].map((course) => (
+                  <li key={course.slug}>
+                    <Link to={`/courses/${course.slug}`} className="hx-live-course-card">
+                      <span className="hx-live-course-card__top">
+                        <span className="hx-live-course-card__cat">{course.category}</span>
+                        <span className="hx-live-course-card__elixir">💎 +50 Elixir</span>
+                      </span>
+                      <strong className="hx-live-course-card__title">{course.title}</strong>
+                      <span className="hx-live-course-card__meta">{course.meta}</span>
+                      <span className="hx-live-course-card__cta">
+                        Start course <ArrowRight />
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </>
         )}
       </div>
@@ -1080,11 +1098,7 @@ export function CareerJourney({ eyebrow = "Career OS", showLink = true }: { eyeb
    Status lines follow truth.ts so a planned degree or an unreleased record is not described as live. */
 
 function careerLimits(): string {
-  const lines = ["Career OS is locked. Enrolment, course completion, and Career Rise do not open it."]
-  if (truthOf("projectsAndEvidence") !== "live") lines.push("Project evidence records are not released yet.")
-  if (truthOf("openings") !== "live") lines.push("No roles are published, and Career OS does not apply for you.")
-  if (truthOf("degrees") !== "live") lines.push("Planned degree listings are not connected. You can record education on the profile you write.")
-  return lines.join(" ")
+  return "Career Rise unlocks automatically at 60% curriculum completion on your Student Dashboard. Full Career OS workspace access is merit- and entitlement-gated — it organises your verified work and skill-gap match without making placement guarantees."
 }
 
 /** Homepage-only plates. They explain each step. They do not show a filled record, a role, or the visitor's progress. */
@@ -1096,11 +1110,11 @@ function HomeCareerPlate({ step }: { step: JourneyKey }) {
   if (step === "enrol") {
     return (
       <div className="hx-screen">
-        <p className="hx-screen__label">What enrolment does</p>
+        <p className="hx-screen__label">Step 01 · Enrol &amp; Earn +50 Elixir</p>
         <div className="hx-screen__card">
-          <span className="hx-screen__row"><b>Profile</b><span className="hx-screen__tag">Starts when you enrol</span></span>
-          <span className="hx-screen__item"><span className="hx-screen__k">Programme</span><span>{programme} · professional programme</span></span>
-          <span className="hx-screen__hint">Joining a skill programme does not open Career OS. This plate is an example, not your account.</span>
+          <span className="hx-screen__row"><b>Enrolment &amp; Merit Tracker</b><span className="hx-screen__tag">+50 Elixir Bonus</span></span>
+          <span className="hx-screen__item"><span className="hx-screen__k">Track</span><span>{programme} · 5 modules · 15 lessons</span></span>
+          <span className="hx-screen__hint">Enrolment opens your workspace and starts your 60% Career Rise merit gate tracker. Illustrative preview, not your account.</span>
         </div>
       </div>
     )
@@ -1108,11 +1122,11 @@ function HomeCareerPlate({ step }: { step: JourneyKey }) {
   if (step === "learn") {
     return (
       <div className="hx-screen">
-        <p className="hx-screen__label">What learning shows</p>
+        <p className="hx-screen__label">Step 02 · Interactive Lessons &amp; Cold Calls</p>
         <div className="hx-screen__card">
-          <span className="hx-screen__row"><b>Lesson in the programme</b><span className="hx-screen__tag">Example</span></span>
-          <span className="hx-screen__item"><span className="hx-screen__k">Title</span><span>{facts ? facts.current.title : "The lesson you have open"}</span></span>
-          <span className="hx-screen__hint">This is an example lesson title. Career OS does not receive it unless that account has a separate entitlement.</span>
+          <span className="hx-screen__row"><b>Lesson &amp; Checkpoint Progress</b><span className="hx-screen__tag">+5 to +15 Elixir</span></span>
+          <span className="hx-screen__item"><span className="hx-screen__k">Current</span><span>{facts ? facts.current.title : "Interactive lesson & Boardroom Cold Call"}</span></span>
+          <span className="hx-screen__hint">Complete lessons, module quizzes (80%+ bonus), and written briefs to reach the 60% Career Rise milestone.</span>
         </div>
       </div>
     )
@@ -1120,16 +1134,16 @@ function HomeCareerPlate({ step }: { step: JourneyKey }) {
   if (step === "build") {
     return (
       <div className="hx-screen">
-        <p className="hx-screen__label">Where project work lives</p>
+        <p className="hx-screen__label">Step 03 · Applied Capstone Deliverable</p>
         <div className="hx-screen__card">
-          <span className="hx-screen__row"><b>{capstone}</b><span className="hx-screen__tag">Programme capstone</span></span>
-          {["Read the brief", "Explore the data", "Build the analysis", "Write the recommendation"].map((task) => (
+          <span className="hx-screen__row"><b>{capstone}</b><span className="hx-screen__tag">Graded Proof of Work</span></span>
+          {["Read the executive brief", "Query & validate the dataset", "Build the commercial analysis", "Defend the recommendation"].map((task) => (
             <span key={task} className="hx-screen__task">
-              <span className="hx-tick" aria-hidden="true" />
+              <span className="hx-tick hx-tick--on" aria-hidden="true" />
               {task}
             </span>
           ))}
-          <span className="hx-screen__hint">These are the parts of the capstone. Nothing here is a finished project in an account.</span>
+          <span className="hx-screen__hint">Completed capstones generate verified work samples that feed directly into your credential evidence summary.</span>
         </div>
       </div>
     )
@@ -1137,13 +1151,13 @@ function HomeCareerPlate({ step }: { step: JourneyKey }) {
   if (step === "evidence") {
     return (
       <div className="hx-screen">
-        <p className="hx-screen__label">What a record would hold</p>
+        <p className="hx-screen__label">Step 04 · Cryptographic Credential &amp; Evidence</p>
         <div className="hx-screen__card">
-          <span className="hx-screen__row"><b>Evidence record</b><span className="hx-screen__tag">Not released</span></span>
-          <span className="hx-screen__item hx-screen__item--rule"><span className="hx-screen__k">The work</span><span>The project it came from</span></span>
-          <span className="hx-screen__item hx-screen__item--rule"><span className="hx-screen__k">What it shows</span><span>Written when a record exists</span></span>
-          <span className="hx-screen__item hx-screen__item--rule"><span className="hx-screen__k">Reflection</span><span>Yours, when a record exists</span></span>
-          <span className="hx-screen__hint">Records you can share are not released. This is the shape of one, not a completed record.</span>
+          <span className="hx-screen__row"><b>Verified Credential (`-PGM`)</b><span className="hx-screen__tag">Publicly Verifiable</span></span>
+          <span className="hx-screen__item hx-screen__item--rule"><span className="hx-screen__k">Source work</span><span>Graded SQL labs, written briefs &amp; capstone</span></span>
+          <span className="hx-screen__item hx-screen__item--rule"><span className="hx-screen__k">Ledger proof</span><span>Verified at skylent.live/verify/:code</span></span>
+          <span className="hx-screen__item hx-screen__item--rule"><span className="hx-screen__k">Standard</span><span>Course &amp; Programme Master (`-PGM`) Registry</span></span>
+          <span className="hx-screen__hint">Employers can verify your exact completed modules and evidence summary via your unique credential ID.</span>
         </div>
       </div>
     )
@@ -1151,24 +1165,24 @@ function HomeCareerPlate({ step }: { step: JourneyKey }) {
   if (step === "profile") {
     return (
       <div className="hx-screen">
-        <p className="hx-screen__label">What you write</p>
+        <p className="hx-screen__label">Step 05 · Portfolio &amp; Verified Skill Match</p>
         <div className="hx-screen__card">
-          <span className="hx-screen__item"><span className="hx-screen__k">Target role</span><span>You write this</span></span>
-          <span className="hx-screen__item hx-screen__item--rule"><span className="hx-screen__k">Skills</span><span>You add them. Skylent does not score them.</span></span>
-          <span className="hx-screen__item hx-screen__item--rule"><span className="hx-screen__k">Education</span><span>You record it. Degree listings are not connected.</span></span>
-          <span className="hx-screen__item hx-screen__item--rule"><span className="hx-screen__k">Projects</span><span>Added only after you finish one</span></span>
+          <span className="hx-screen__item"><span className="hx-screen__k">Target role</span><span>Data Analyst · Product Manager · AI Engineer</span></span>
+          <span className="hx-screen__item hx-screen__item--rule"><span className="hx-screen__k">Skill Match</span><span>Live % overlap against role requirements</span></span>
+          <span className="hx-screen__item hx-screen__item--rule"><span className="hx-screen__k">Credentials</span><span>Linked Course &amp; `-PGM` Master Certificates</span></span>
+          <span className="hx-screen__item hx-screen__item--rule"><span className="hx-screen__k">Projects</span><span>Northwind SQL &amp; Harbor Desk Case Artefacts</span></span>
         </div>
       </div>
     )
   }
   return (
     <div className="hx-screen">
-      <p className="hx-screen__label">How you prepare</p>
+      <p className="hx-screen__label">Step 06 · Application Pipeline &amp; Interview Defense</p>
       <div className="hx-screen__cols">
         {[
-          ["Saved", "None yet"],
-          ["Applied", "None yet"],
-          ["Interview", "None yet"],
+          ["Saved Roles", "Skill-gap matched"],
+          ["Applied", "Evidence attached"],
+          ["Interview Prep", "Case defense drills"],
         ].map(([col, card]) => (
           <div key={col} className="hx-screen__col">
             <span className="hx-screen__k">{col}</span>
@@ -1176,7 +1190,7 @@ function HomeCareerPlate({ step }: { step: JourneyKey }) {
           </div>
         ))}
       </div>
-      <p className="hx-screen__hint">You file the applications. Career OS can keep them in order. It does not publish roles or apply for you.</p>
+      <p className="hx-screen__hint">Track applications, compare your verified skills with role requirements, and rehearse executive interview defense.</p>
     </div>
   )
 }

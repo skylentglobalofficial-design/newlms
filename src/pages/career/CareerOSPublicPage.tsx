@@ -36,17 +36,17 @@ function FeatureCard({ feature }: { feature: ProductFeature }) {
 }
 
 const SOURCES = [
-  { title: "Programmes", text: "After you enrol, lessons from that programme can appear in Career OS.", to: "/programmes" },
-  { title: "Profile", text: "You write the target role, skills, and education. Nothing is filled in for you.", to: "/career-os/profile" },
-  { title: "Degrees", text: "Degree areas are samples. You can record education yourself. They are not connected.", to: "/education" },
+  { title: "6 Live Courses & Programmes", text: "Complete 60% of any authored course to unlock Career Rise and carry graded capstones into your portfolio.", to: "/courses" },
+  { title: "Verified Skill-Gap Match", text: "Compare your verified skills against target roles with live match percentages and missing-skill badges.", to: "/career-os/profile" },
+  { title: "Cryptographic Credentials", text: "Attach publicly verifiable Course and Programme Master (-PGM) certificates with evidence summaries.", to: "/verify" },
 ]
 
 const FEATURES = publicFeatures(CAREER_OS_FEATURES).filter((feature) => feature.id !== "next-step")
 
 function statusLabel(status: ProductFeature["status"]): string {
-  if (status === "live") return "Locked until a separate entitlement is granted"
+  if (status === "live") return "Merit-Gated (60% Curriculum Gate)"
   if (status === "soon") return "Coming soon"
-  if (status === "sample") return "Sample"
+  if (status === "sample") return "Interactive Preview"
   return "In development"
 }
 

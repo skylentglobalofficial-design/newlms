@@ -123,20 +123,33 @@ export default function CoursesPage() {
   )
 }
 
+const COURSE_SKILL_TAGS: Record<string, readonly string[]> = {
+  "data-analytics": ["SQL", "Northwind Lab", "Margin Analysis", "Cold Calls"],
+  "product-management": ["PRD Scoping", "Harbor Desk Case", "Triage", "Cold Calls"],
+  "python-programming": ["Python 3", "Data Pipelines", "Pytest", "Automation"],
+  "data-science-ai": ["EDA", "Feature Engineering", "Model Validation", "Cold Calls"],
+  "generative-ai": ["Prompt Systems", "Grounded RAG", "ReAct Agents", "Eval Rubrics"],
+  "full-stack-web": ["React & TypeScript", "Node & Express", "PostgreSQL", "API Security"],
+}
+
 function CourseUnitChrome({ view }: { view: CatalogCourseListView }) {
   return (
     <div className="cat-unit" aria-hidden="true">
-      <p className="cat-unit-brand">Skylent</p>
+      <div className="cat-unit-top">
+        <p className="cat-unit-brand">Skylent OS · Proof of Work</p>
+        <span className="cat-unit-elixir">💎 +50 Elixir</span>
+      </div>
       <p className="cat-unit-kicker">{view.course.category}</p>
       <p className="cat-unit-title">{view.title}</p>
       <p className="cat-unit-meta">
-        {view.countLabel}
+        {view.countLabel} · 60 checks · 15 briefs
       </p>
     </div>
   )
 }
 
 function CourseCard({ view, featured = false, confirmed = true }: { view: CatalogCourseListView; featured?: boolean; confirmed?: boolean }) {
+  const tags = COURSE_SKILL_TAGS[view.slug] ?? []
   return (
     <Link className={featured ? "cat-tile is-ready" : "cat-tile is-listing"} to={`/courses/${view.slug}`}>
       {view.maturity === "ready" ? <CourseUnitChrome view={view} /> : <CourseThumb authored={false} />}
@@ -148,6 +161,18 @@ function CourseCard({ view, featured = false, confirmed = true }: { view: Catalo
           <span>{view.lessonLabel}</span>
           <span>{view.course.level}</span>
         </div>
+        {view.maturity === "ready" && tags.length > 0 ? (
+          <div className="cat-card-tags" aria-label="Skills practised">
+            {tags.map((tag) => (
+              <span key={tag} className="cat-card-tag">{tag}</span>
+            ))}
+          </div>
+        ) : null}
+        {view.maturity === "ready" ? (
+          <p className="cat-card-moat">
+            ✓ Socratic AI + 20-Min TA SLA · ✓ Graded Capstone
+          </p>
+        ) : null}
         <span className={view.maturity === "ready" ? "cat-btn cat-btn-primary cat-card-cta" : "cat-btn cat-btn-ghost cat-card-cta"}>
           {confirmed ? view.ctaLabel : "View course"}
         </span>
