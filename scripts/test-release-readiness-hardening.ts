@@ -823,6 +823,24 @@ console.log("14. Admin C-Suite Unit Economics UI and Student Programme Master Ce
     "OSPage.tsx must count workspace scope across all 6 authored courses",
   )
 
+  console.log("18. Visual Effectiveness, Mobile Responsiveness & Competitive Moat Matrix Verification")
+  const hrCss = readFileSync(resolve(process.cwd(), "src/pages/HomeRepolish.css"), "utf8")
+  const spCss = readFileSync(resolve(process.cwd(), "src/skylent-public.css"), "utf8")
+  const hwnSrc = readFileSync(resolve(process.cwd(), "src/components/learner/HeaderWalletAndNotifications.tsx"), "utf8")
+  assert(
+    repolishUpdated.includes('className="hxw-ws"') &&
+      repolishUpdated.includes("hx-moat-compare") &&
+      repolishUpdated.includes("Why learners and institutions choose Skylent OS over passive video platforms"),
+    "Repolish.tsx must render the floating Hero Live Workspace HUD (.hxw-ws) and Competitive Moat comparison matrix (.hx-moat-compare)",
+  )
+  assert(
+    !hrCss.includes("padding-right: 80px") &&
+      hrCss.includes("hx-moat-table-wrap") &&
+      spCss.includes("skn-popover") &&
+      hwnSrc.includes("skn-popover"),
+    "HomeRepolish.css and skylent-public.css must eliminate broken mobile padding and enforce viewport-safe mobile popovers",
+  )
+
   console.log("release-readiness-hardening ok")
 }
 

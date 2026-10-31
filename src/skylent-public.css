@@ -1099,3 +1099,20 @@ body:has(.skylent-public-canvas) {
 .skylent-public-canvas .skf__legal a { display: inline-flex; align-items: center; min-height: 44px; color: hsl(var(--site-muted)); text-decoration: none; }
 .skylent-public-canvas .skf__legal a:hover { color: hsl(var(--site-deep)); text-decoration: underline; text-underline-offset: 3px; }
 .skylent-public-canvas .skf__title { font-family: var(--sk-font-body) !important; font-size: 12px !important; font-weight: 600 !important; letter-spacing: .06em !important; }
+
+
+/* ── Mobile-safe Header Elixir Wallet & Notification Popovers ── */
+@media (max-width: 640px) {
+  .skn-popover {
+    position: fixed !important;
+    top: calc(var(--nav-h, 64px) + 8px) !important;
+    left: 12px !important;
+    right: 12px !important;
+    width: auto !important;
+    max-width: none !important;
+  }
+  .skn__elixir-chip {
+    padding: 5px 9px !important;
+    font-size: 12px !important;
+  }
+}

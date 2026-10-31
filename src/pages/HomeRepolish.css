@@ -543,7 +543,7 @@
 
 /* ── Skylent AI: identity, what it helps with, its first question ── */
 .hx-page--home .hx-ai--id { padding-block: clamp(40px, 5vw, 72px); border-top: 0; }
-.hx-page--home .hx-ai--id .hx-ai__layout { grid-template-columns: minmax(0, 40rem); }
+.hx-page--home .hx-ai--id .hx-ai__layout { grid-template-columns: minmax(0, 5.5fr) minmax(0, 6.5fr); }
 .hx-page--home .hx-ai__layout { display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); gap: clamp(28px, 5vw, 72px); align-items: center; }
 .hx-page--home .hx-ai__id { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
 .hx-page--home .hx-ai__avatar { display: grid; place-items: center; width: 68px; height: 68px; flex: none; border-radius: 20px; background: hsl(var(--site-navy)); background-image: radial-gradient(70% 70% at 50% 40%, hsl(var(--site-cyan) / .28), transparent 70%); color: #fff; box-shadow: 0 0 0 1px hsl(var(--site-navy-line)), 0 16px 32px -18px hsl(var(--site-navy) / .7); }
@@ -761,7 +761,7 @@
   .hx-page--home .hx-career__grid { grid-template-columns: minmax(0, 1fr); }
   .hx-page--home .hx-career__steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .hx-page--home .hx-career__live { margin-left: 0; }
-  .hx-page--home .hx-career__stage { padding-right: 80px; }
+  .hx-page--home .hx-career__stage { padding-right: 0; }
   .hx-page--home .hx-career .hx-window__body { padding-bottom: 28px; }
 }
 @media (max-width: 520px) {
@@ -867,3 +867,115 @@
 .hx-page--home .hx-chat__typing span,
 .hx-page--home .hx-app__side button:focus-visible { color: #5142B5; }
 .hx-page--home .hx-app__side button:focus-visible { outline-color: #5142B5; }
+
+
+/* ── Visual Effectiveness & Responsive Upgrade (7-Pillar Moat & Mobile Polish) ── */
+.hxw-goal--card {
+  align-items: flex-start;
+  box-shadow: 0 10px 28px -18px rgba(81, 66, 181, 0.16);
+}
+.hxw-goal--card .hxw-goals__eyebrow {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #5142B5;
+}
+.hx-moat-compare {
+  margin-top: clamp(28px, 4vw, 44px);
+  padding: clamp(20px, 3vw, 32px);
+  border-radius: 20px;
+  border: 1px solid #DDD7FF;
+  background: #ffffff;
+  box-shadow: 0 24px 48px -32px rgba(81, 66, 181, 0.22);
+}
+.hx-moat-compare__head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 16px 28px;
+  margin-bottom: 20px;
+}
+.hx-moat-compare__title {
+  margin: 0;
+  font-family: var(--sk-font-heading);
+  font-size: clamp(20px, 2.4vw, 28px);
+  font-weight: 750;
+  letter-spacing: -0.02em;
+  color: #171717;
+  max-width: 28em;
+}
+.hx-moat-compare__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.hx-moat-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border: 1px solid #E5E7EB;
+  border-radius: 14px;
+}
+.hx-moat-table {
+  width: 100%;
+  min-width: 680px;
+  border-collapse: collapse;
+  font-size: 14px;
+  line-height: 1.45;
+  text-align: left;
+}
+.hx-moat-table th,
+.hx-moat-table td {
+  padding: 13px 16px;
+  border-bottom: 1px solid #E5E7EB;
+  vertical-align: top;
+}
+.hx-moat-table tbody tr:last-child th,
+.hx-moat-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+.hx-moat-table thead th {
+  background: #FAF9FF;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #555B7D;
+}
+.hx-moat-table thead th.is-skylent {
+  background: #5142B5;
+  color: #ffffff;
+}
+.hx-moat-table tbody th {
+  font-weight: 650;
+  color: #171717;
+  background: #ffffff;
+  width: 20%;
+}
+.hx-moat-table td {
+  color: #555B7D;
+  background: #ffffff;
+}
+.hx-moat-table td.is-skylent {
+  background: #F5F3FF;
+  color: #1e1b4b;
+  border-inline: 1px solid #DDD7FF;
+}
+.hx-moat-table td.is-skylent strong {
+  color: #43349F;
+  font-weight: 650;
+}
+@media (max-width: 640px) {
+  .hx-moat-compare {
+    padding: 16px;
+  }
+  .hx-moat-compare__actions {
+    width: 100%;
+  }
+  .hx-moat-compare__actions .sk-btn {
+    flex: 1 1 100%;
+    justify-content: center;
+  }
+}

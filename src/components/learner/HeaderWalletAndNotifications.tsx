@@ -193,6 +193,7 @@ export function HeaderWalletAndNotifications({ variant = "public" }: { variant?:
 
         {openMenu === "wallet" ? (
           <div
+            className="skn-popover skn-popover--wallet"
             role="dialog"
             aria-label="Elixir Wallet & Verified Transactions"
             style={{

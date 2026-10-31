@@ -68,7 +68,7 @@ export function HomeHero({
     : catalogue === "unknown"
       ? AVAILABILITY_UNKNOWN
       : dataAnalyticsOpen && productManagementOpen
-        ? "Two programmes are open to start: Data Analytics, with SQL practice on a fictional sales extract, and Product Management, with a written case. Other listings are not open yet."
+        ? "Two programmes are open to start: Data Analytics (with Northwind SQL labs) and Product Management (with the Harbor Desk case), alongside all 6 live self-paced courses."
         : programmesIndexIntro(true, openTitles)
   return (
     <section className="hxw-hero" data-clear-launcher aria-labelledby="hx-hero-title">
@@ -128,6 +128,32 @@ export function HomeHero({
                 decoding="async"
                 fetchPriority="high"
               />
+            </div>
+            <div className="hxw-ws" aria-label="Skylent OS live capabilities">
+              <div className="hxw-ws__top">
+                <span className="hxw-ws__mark" aria-hidden="true">OS</span>
+                <div>
+                  <span className="hxw-ws__title">Skylent Proof-of-Work OS</span>
+                  <span className="hxw-ws__note">6 Live Courses · SQL &amp; Case Labs</span>
+                </div>
+              </div>
+              <div className="hxw-ws__row">
+                <span>Merit Gate to Career Rise</span>
+                <span className="hxw-ws__pill">60% Threshold</span>
+              </div>
+              <span className="hxw-ws__track" aria-hidden="true"><span style={{ width: "68%" }} /></span>
+              <Link to="/events" className="hxw-ws__item">
+                <span className="hxw-ws__plus" aria-hidden="true">💎</span>
+                <span>
+                  <strong>+50 Elixir Enrolment Bonus</strong>
+                  <em>100% Coin Back on ₹99 Workshops</em>
+                </span>
+                <ArrowRight />
+              </Link>
+              <div className="hxw-ws__pair">
+                <span><b>⚡ Cold Calls</b>Timed + Peer %</span>
+                <span><b>⏱️ 20-Min SLA</b>Faculty TA Help</span>
+              </div>
             </div>
           </div>
         </div>
@@ -1244,8 +1270,8 @@ export function HomeAi() {
               <SkylentBot size={52} />
             </span>
             <span>
-              <span className="hx-ai__name">Skylent AI</span>
-              <span className="hx-ai__role">Inside an open lesson</span>
+              <span className="hx-ai__name">Skylent AI &amp; Faculty TA Desk</span>
+              <span className="hx-ai__role">Socratic Lesson Coach · 20-Min Human TA Doubt SLA</span>
             </span>
           </div>
           <h2 id="hx-ai-title" className="hx-h2 hx-h2--sm">
@@ -1259,10 +1285,41 @@ export function HomeAi() {
               </li>
             ))}
           </ul>
-          <Link className="sk-btn sk-btn-primary" to="/path">
-            Find My Path
-            <ArrowRight />
-          </Link>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
+            <Link className="sk-btn sk-btn-primary" to="/path">
+              Find My Path
+              <ArrowRight />
+            </Link>
+            <Link className="sk-btn sk-btn-secondary" to="/courses/data-analytics">
+              Try inside Data Analytics
+            </Link>
+          </div>
+        </div>
+
+        <div className="hx-ai__chat" aria-label="Socratic AI and 20-minute TA escalation preview">
+          <div className="hx-ai__chatbar">
+            <span>⚡ Lesson Workspace · Socratic Coach &amp; 20-Min TA SLA</span>
+          </div>
+          <div className="hx-chat">
+            <div className="hx-chat__row hx-chat__row--user">
+              <p className="hx-chat__bubble hx-chat__bubble--user">
+                Why does my Northwind category margin query overcount freight when joining order_details?
+              </p>
+            </div>
+            <div className="hx-chat__row">
+              <p className="hx-chat__bubble">
+                <strong>Socratic Coach:</strong> Look at the grain of <code>orders</code> vs <code>order_details</code>. Freight is stored once per order header. If an order has 4 line items, what happens when you <code>SUM(o.freight)</code> after the join?
+              </p>
+            </div>
+            <div className="hx-chat__options" aria-label="Socratic quick prompts">
+              <span className="is-on">Check table grain</span>
+              <span>Test CTE pre-aggregation</span>
+              <span>Escalate to Faculty TA (20-min SLA)</span>
+            </div>
+          </div>
+          <p className="hx-ai__chatnote">
+            Every open lesson includes track-specific Socratic prompts, timed Boardroom Cold Calls, and 1-click escalation to human Faculty TAs with a 20-minute SLA.
+          </p>
         </div>
       </div>
     </section>
@@ -1365,19 +1422,67 @@ export function HomeClosing() {
 export function HomeElixirFlywheel() {
   const steps = [
     {
-      step: "01 · Course & Workshop Credits",
-      title: "+50 Elixir on Enrolment & 100% Workshop Coin Back",
-      copy: "Earn +50 Elixir (or 10 Elixir per ₹100) when you enrol in a course, plus 99 Elixir Coins (100% 1:1 cashback) on every ₹99 workshop registration.",
+      icon: "sparkle",
+      step: "01 · 100% Workshop Coin Back",
+      title: "₹99 Workshop → 99 Elixir Coins",
+      copy: "Receive 99 Elixir Coins (100% 1:1 learning credit cashback) in your verified wallet on every ₹99 workshop registration.",
     },
     {
-      step: "02 · Milestone Rewards",
-      title: "Earn Elixir on Every Lesson, Quiz & Assignment",
-      copy: "Collect +5 Elixir per lesson, +10 Elixir for scoring 80%+ on module quizzes, +15 Elixir per written assignment, and +25 Elixir per completed case study.",
+      icon: "graduation",
+      step: "02 · Enrolment Bonus",
+      title: "+50 Elixir on Course Enrolment",
+      copy: "Start any of the 6 flagship courses and earn +50 Elixir immediately (or 10 Elixir per ₹100 on paid tracks).",
     },
     {
-      step: "03 · Case Study Store & Proof",
-      title: "Unlock Applied SQL & Product Case Studies",
-      copy: "Redeem your Elixir balance (49 or 99 Elixir) for industry case studies like Northwind Margin Leakage and Harbor Desk Triage, and carry verified proof into Career OS.",
+      icon: "book",
+      step: "03 · Milestone Rewards",
+      title: "+5 to +25 Elixir per Milestone",
+      copy: "Earn +5 Elixir per lesson, +10 Elixir for 80%+ quiz scores, +15 Elixir per written brief, and +25 Elixir per case study.",
+    },
+    {
+      icon: "briefcase",
+      step: "04 · Case Study Store & Proof",
+      title: "Redeem for Industry Case Studies",
+      copy: "Spend 49 or 99 Elixir to unlock Northwind Margin Leakage and Harbor Desk Triage cases, and carry proof into Career OS.",
+    },
+  ] as const
+
+  const moatRows = [
+    {
+      dimension: "Learning Format",
+      skylent: "In-Browser Northwind SQL, Python & Harbor Desk Case Studios",
+      videoLms: "Passive recorded videos with low completion (<10%)",
+      bootcamps: "Zoom lectures locked behind ₹1.5L–₹3L tuition",
+    },
+    {
+      dimension: "Executive Decision Rigour",
+      skylent: "Harvard/IIM Timed Boardroom Cold Calls + Peer Cohort %",
+      videoLms: "Basic multiple-choice trivia checks",
+      bootcamps: "Untimed homework sheets",
+    },
+    {
+      dimension: "Doubt Resolution SLA",
+      skylent: "Socratic AI Coach + Guaranteed 20-Min Faculty TA SLA",
+      videoLms: "Unanswered discussion forum threads",
+      bootcamps: "24–48 hr ticket queues",
+    },
+    {
+      dimension: "Learner Reward Economy",
+      skylent: "Universal Elixir Ledger (+50 Enrolment, Milestones & 100% ₹99 Cashback)",
+      videoLms: "Zero financial or learning-credit rewards",
+      bootcamps: "No micro-entry or cashback flywheel",
+    },
+    {
+      dimension: "Credential Verification",
+      skylent: "Cryptographic Course & -PGM Master Credentials with Evidence Summary",
+      videoLms: "Generic attendance PDF certificates",
+      bootcamps: "Unverified completion letters",
+    },
+    {
+      dimension: "Career Progression",
+      skylent: "Merit-Gated Career Rise (60% Gate) + Verified Skill-Gap Match",
+      videoLms: "Disconnected from portfolio or hiring readiness",
+      bootcamps: "Unverified placement promises",
     },
   ] as const
 
@@ -1386,16 +1491,19 @@ export function HomeElixirFlywheel() {
       <div className="sky-container">
         <div className="hxw-goals__head">
           <div>
-            <p className="hxw-goals__eyebrow">Zero-risk way to start · Elixir learning credit</p>
+            <p className="hxw-goals__eyebrow">Universal Elixir Economy · Zero-Risk Way to Start</p>
             <h2 id="hx-flywheel-title" className="hxw-goals__title">Start with a ₹99 Workshop. Get 99 Elixir Coins for Case Studies.</h2>
           </div>
           <p className="hxw-goals__aside">
-            Every rupee of a ₹99 workshop registration comes back as 99 Elixir Coins inside Skylent so you can unlock practical case studies before committing to a full programme.
+            Every rupee of a ₹99 workshop registration comes back as 99 Elixir Coins inside Skylent, and every course enrolment, lesson, quiz, and assignment builds your verified Elixir balance.
           </p>
         </div>
         <div className="hxw-goals__grid">
           {steps.map((item) => (
-            <div key={item.step} className="hxw-goal">
+            <div key={item.step} className="hxw-goal hxw-goal--card">
+              <span className="hxw-goal__icon" aria-hidden="true">
+                <OfferingIcon type={item.icon} />
+              </span>
               <span className="hxw-goal__content">
                 <span className="hxw-goals__eyebrow">{item.step}</span>
                 <span className="hxw-goal__name">{item.title}</span>
@@ -1404,14 +1512,45 @@ export function HomeElixirFlywheel() {
             </div>
           ))}
         </div>
-        <div style={{ marginTop: 20, display: "flex", gap: 12, flexWrap: "wrap" }}>
-          <Link className="sk-btn sk-btn-primary hx-btn" to="/events">
-            Explore ₹99 Workshops &amp; Webinars
-            <ArrowRight />
-          </Link>
-          <Link className="sk-btn sk-btn-secondary hx-btn" to="/dashboard/student">
-            Open Elixir Case Study Store
-          </Link>
+
+        <div className="hx-moat-compare" aria-label="How Skylent OS compares with traditional platforms">
+          <div className="hx-moat-compare__head">
+            <div>
+              <p className="hxw-goals__eyebrow">The 7-Pillar Proof-of-Work Standard</p>
+              <h3 className="hx-moat-compare__title">Why learners and institutions choose Skylent OS over passive video platforms</h3>
+            </div>
+            <div className="hx-moat-compare__actions">
+              <Link className="sk-btn sk-btn-primary hx-btn" to="/events">
+                Explore ₹99 Workshops &amp; Webinars
+                <ArrowRight />
+              </Link>
+              <Link className="sk-btn sk-btn-secondary hx-btn" to="/dashboard/student">
+                Open Elixir Case Study Store
+              </Link>
+            </div>
+          </div>
+          <div className="hx-moat-table-wrap">
+            <table className="hx-moat-table">
+              <thead>
+                <tr>
+                  <th scope="col">Capability</th>
+                  <th scope="col" className="is-skylent">Skylent Proof-of-Work OS</th>
+                  <th scope="col">Passive Video Catalogues (Coursera / Udemy style)</th>
+                  <th scope="col">High-Ticket Cohorts (₹1.5L+ Bootcamps)</th>
+                </tr>
+              </thead>
+              <tbody>
+                {moatRows.map((row) => (
+                  <tr key={row.dimension}>
+                    <th scope="row">{row.dimension}</th>
+                    <td className="is-skylent"><strong>✓ {row.skylent}</strong></td>
+                    <td>{row.videoLms}</td>
+                    <td>{row.bootcamps}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </section>
