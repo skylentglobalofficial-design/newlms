@@ -47,13 +47,14 @@ export default function CoursesPage() {
         </div>
         <section className="cat-hero">
           <div className="cat-rail">
+            <p className="cat-label">Standalone Skill Courses · Free Pilot Access (Payment is not collected)</p>
             <h1>{catalog.offline ? "Skylent courses." : "Courses you can start this week."}</h1>
             <p className="cat-lead">
               {catalog.offline
                 ? `Focused courses with lessons, checks and practice. ${STATUS_NOT_CONFIRMED}: the catalogue could not be checked just now, so enrolment is paused.`
-                : "Focused courses with written lessons, checks, and practical assignments. All six flagship courses — Data Analytics, Product Management, Python Programming, Data Science & AI, Generative AI, and Full Stack Web — are open now."}
+                : "Courses are standalone, single-subject modules you can start immediately at ₹0 in this pilot. Looking for multi-course career tracks with full capstone dossiers? Compare with Programmes below."}
             </p>
-            <Link className="cat-text-link" to="/programmes">Looking for a longer pathway? See programmes</Link>
+            <Link className="cat-text-link" to="/programmes">Looking for a multi-module career track? See Programmes →</Link>
             <input
               className="cat-search"
               value={search}
@@ -123,33 +124,20 @@ export default function CoursesPage() {
   )
 }
 
-const COURSE_SKILL_TAGS: Record<string, readonly string[]> = {
-  "data-analytics": ["SQL", "Northwind Lab", "Margin Analysis", "Cold Calls"],
-  "product-management": ["PRD Scoping", "Harbor Desk Case", "Triage", "Cold Calls"],
-  "python-programming": ["Python 3", "Data Pipelines", "Pytest", "Automation"],
-  "data-science-ai": ["EDA", "Feature Engineering", "Model Validation", "Cold Calls"],
-  "generative-ai": ["Prompt Systems", "Grounded RAG", "ReAct Agents", "Eval Rubrics"],
-  "full-stack-web": ["React & TypeScript", "Node & Express", "PostgreSQL", "API Security"],
-}
-
 function CourseUnitChrome({ view }: { view: CatalogCourseListView }) {
   return (
     <div className="cat-unit" aria-hidden="true">
-      <div className="cat-unit-top">
-        <p className="cat-unit-brand">Skylent OS · Proof of Work</p>
-        <span className="cat-unit-elixir">Self-paced</span>
-      </div>
-      <p className="cat-unit-kicker">{view.course.category} · {view.course.level}</p>
-      <p className="cat-unit-title">{view.countLabel}</p>
+      <p className="cat-unit-brand">Skylent</p>
+      <p className="cat-unit-kicker">{view.course.category}</p>
+      <p className="cat-unit-title">{view.title}</p>
       <p className="cat-unit-meta">
-        3 module quizzes · Applied briefs · 1 graded capstone
+        {view.countLabel}
       </p>
     </div>
   )
 }
 
 function CourseCard({ view, featured = false, confirmed = true }: { view: CatalogCourseListView; featured?: boolean; confirmed?: boolean }) {
-  const tags = COURSE_SKILL_TAGS[view.slug] ?? []
   return (
     <Link className={featured ? "cat-tile is-ready" : "cat-tile is-listing"} to={`/courses/${view.slug}`}>
       {view.maturity === "ready" ? <CourseUnitChrome view={view} /> : <CourseThumb authored={false} />}
@@ -161,18 +149,6 @@ function CourseCard({ view, featured = false, confirmed = true }: { view: Catalo
           <span>{view.lessonLabel}</span>
           <span>{view.course.level}</span>
         </div>
-        {view.maturity === "ready" && tags.length > 0 ? (
-          <div className="cat-card-tags" aria-label="Skills practised">
-            {tags.map((tag) => (
-              <span key={tag} className="cat-card-tag">{tag}</span>
-            ))}
-          </div>
-        ) : null}
-        {view.maturity === "ready" ? (
-          <p className="cat-card-moat">
-            Written lessons · In-browser lab · Graded capstone
-          </p>
-        ) : null}
         <span className={view.maturity === "ready" ? "cat-btn cat-btn-primary cat-card-cta" : "cat-btn cat-btn-ghost cat-card-cta"}>
           {confirmed ? view.ctaLabel : "View course"}
         </span>

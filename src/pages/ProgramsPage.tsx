@@ -41,52 +41,38 @@ const PROFESSIONAL_ORDER = ["data-analytics-pro", "product-management", "data-sc
 const CARD_FACE: Record<string, { title: string; line: string; category: string; image: string; alt: string }> = {
   "data-analytics-pro": {
     title: "Data Analytics",
-    line: "Take a messy sales extract to a finding and a recommendation someone can act on in the Northwind SQL Lab.",
+    line: "Take a messy sales extract to a finding and a recommendation someone can act on.",
     category: "Data",
     image: analyticsVisual,
     alt: "Illustrative analytics charts on a desk.",
   },
   "product-management": {
     title: "Product Management",
-    line: "Frame one retail operations problem on the Harbor Desk case and write a constrained product specification.",
+    line: "Frame one retail operations problem and recommend a single constrained bet.",
     category: "Product",
     image: productVisual,
     alt: "Illustrative product working session around a table.",
   },
   "data-science-ai": {
-    title: "Data Science & AI",
-    line: "Pathway linking our authored Data Analytics and Python Programming & Automation courses in Skylent OS.",
+    title: "Data Science",
+    line: "Python workflows, exploratory data analysis, and applied machine learning foundations.",
     category: "Data",
     image: scienceVisual,
     alt: "Illustrative code on a laptop and monitors.",
   },
-  "full-stack": {
-    title: "Full Stack Development",
-    line: "Pathway linking the 15-lesson Full Stack Web Engineering course (REST APIs, PostgreSQL, React, and security).",
-    category: "Engineering",
-    image: scienceVisual,
-    alt: "Full-stack engineering workspace on a laptop.",
-  },
-  "generative-ai-program": {
-    title: "Generative AI",
-    line: "Pathway linking the 15-lesson Generative AI & LLM Systems course (embeddings, grounded RAG, and ReAct agents).",
-    category: "AI",
-    image: productVisual,
-    alt: "AI system architecture and evaluation session.",
-  },
   "sql-certificate": {
     title: "SQL for Business Analytics",
-    line: "A focused SQL certificate outline. For live SQL lab practice today, start the Data Analytics programme.",
+    line: "Focused SQL querying, joins, aggregations, and business reporting for analysts.",
     category: "SQL",
     image: analyticsVisual,
-    alt: "SQL query and analytics chart preview.",
+    alt: "Illustrative SQL analytics charts on a desk.",
   },
 }
 
 const KIND_COPY: Record<Kind, { title: string; lead: string; label: string }> = {
   certification: {
     title: "Certification programmes",
-    lead: "Shorter listings aimed at one skill. A certificate is not issued from a listing that is not open.",
+    lead: "Focused tracks built around one core technical or analytical skill.",
     label: "Certification",
   },
   professional: {
@@ -145,14 +131,13 @@ function statusText(row: Row, confirmed: boolean): string {
   const state = publicCatalogueState(confirmed, presentedOpen(row))
   if (state === "unknown" || state === "open") return confirmed ? "Open for enrolment" : STATUS_NOT_CONFIRMED
   if (row.truth.state === "soon") return "Coming soon"
-  if (confirmed && row.truth.linked.some((l) => l.authored)) return "Self-paced course open"
   return publicCatalogueStatus("closed")
 }
 
 function ProgrammeCard({ row, confirmed }: { row: Row; confirmed: boolean }) {
   const to = `/programmes/${row.program.slug}`
   const status = statusText(row, confirmed)
-  const live = (presentedOpen(row) || row.truth.linked.some((l) => l.authored)) && confirmed
+  const live = presentedOpen(row) && confirmed
   const showStatus = status !== STATUS_NOT_CONFIRMED
   const face = (
     <>
@@ -161,18 +146,11 @@ function ProgrammeCard({ row, confirmed }: { row: Row; confirmed: boolean }) {
         {showStatus ? <span className={live ? "pgx-status pgx-status--open" : "pgx-status"}>{status}</span> : null}
       </span>
       <span className="pgx-card__body">
-        <span style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
-          <span className="pgx-card__kicker">{row.category}</span>
-          {confirmed && row.truth.linked.some((l) => l.authored) ? (
-            <span style={{ fontSize: 11, fontWeight: 600, color: "#64748b" }}>
-              15 lessons
-            </span>
-          ) : null}
-        </span>
+        <span className="pgx-card__kicker">{row.category}</span>
         <span className="pgx-card__title">{row.title}</span>
         <span className="pgx-card__line">{row.line}</span>
         <span className="pgx-card__go">
-          {live ? "View programme" : row.truth.linked.some((l) => l.authored) ? "View pathway & linked courses" : "View details"}
+          {live ? "View programme" : "View outline"}
           <ArrowRight />
         </span>
       </span>
@@ -198,14 +176,6 @@ export default function ProgramsPage() {
   useEffect(() => {
     setQuery(urlQuery)
   }, [urlQuery])
-
-  useEffect(() => {
-    if (catalog.loading) return
-    const hash = window.location.hash.replace("#", "")
-    if (!hash) return
-    const el = document.getElementById(hash)
-    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" })
-  }, [catalog.loading])
 
   const rows = useMemo(() => (catalog.data ?? []).map(toRow).filter((row): row is Row => row !== null), [catalog.data])
   const categories = useMemo(() => ["All", ...Array.from(new Set(rows.map((row) => row.category)))], [rows])
@@ -246,10 +216,26 @@ export default function ProgramsPage() {
     <PageShell aurora={false}>
       <div className="site-light pgx">
         <section className="pgx-intro" aria-labelledby="pgx-title">
-          <div className="sky-container pgx-intro__inner">
-            <p className="pgx-eyebrow">Skylent programmes</p>
-            <h1 id="pgx-title">Find the right programme for your next step.</h1>
-            <p className="pgx-lede">{intro}</p>
+          <div className="sky-container pgx-intro__split">
+            <div className="pgx-intro__inner">
+              <p className="pgx-eyebrow">Skylent programmes · Free Pilot Access (No Card Required)</p>
+              <h1 id="pgx-title">Find the right programme for your next step.</h1>
+              <p className="pgx-lede">{intro}</p>
+              <p className="pgx-subnote">
+                <strong>Programmes vs. Courses:</strong> Programmes combine structured modules, browser labs, and a graded capstone dossier (4–6 hrs/week · ₹0 pilot access). Looking for a single standalone subject?{" "}
+                <Link to="/courses">Browse individual courses →</Link>
+              </p>
+            </div>
+            <aside className="pgx-standard" aria-label="Execution standard and access summary">
+              <span className="pgx-standard__kicker">Execution Standard</span>
+              <strong>What every open programme includes</strong>
+              <ul>
+                <li><span>Access &amp; Fee</span><b>₹0 Pilot Access (Payment is not collected)</b></li>
+                <li><span>Browser Studio</span><b>Northwind SQL (166 rows) &amp; Harbor Desk PRD</b></li>
+                <li><span>Evaluation</span><b>25% Checks · 35% Briefs · 40% Capstone</b></li>
+                <li><span>Credential</span><b>Verifiable SKL Dossier (/verify)</b></li>
+              </ul>
+            </aside>
           </div>
         </section>
 
@@ -330,7 +316,7 @@ export default function ProgramsPage() {
                 {professional.length ? (
                   confirmed ? (
                     <>
-                      {professional.filter((row) => presentedOpen(row) || row.truth.enrollable).length ? (
+                      {professional.filter((row) => presentedOpen(row)).length ? (
                         <section id="professional" className="pgx-section" aria-labelledby="pgx-professional">
                           <div className="sky-container">
                             <header className="pgx-section__head">
@@ -338,22 +324,22 @@ export default function ProgramsPage() {
                               <p>These programmes are open for enrolment and have a linked course.</p>
                             </header>
                             <ul className="pgx-grid">
-                              {professional.filter((row) => presentedOpen(row) || row.truth.enrollable).map((row) => (
+                              {professional.filter((row) => presentedOpen(row)).map((row) => (
                                 <ProgrammeCard key={row.program.slug} row={row} confirmed />
                               ))}
                             </ul>
                           </div>
                         </section>
                       ) : null}
-                      {professional.filter((row) => !presentedOpen(row) && !row.truth.enrollable).length ? (
+                      {professional.filter((row) => !presentedOpen(row)).length ? (
                         <section id="professional-later" className="pgx-section" aria-labelledby="pgx-professional-later">
                           <div className="sky-container">
                             <header className="pgx-section__head">
-                              <h2 id="pgx-professional-later">Pathways with linked self-paced courses</h2>
-                              <p>Open any pathway below to start its linked 15-lesson self-paced course in Skylent OS immediately (+50 Elixir Bonus).</p>
+                              <h2 id="pgx-professional-later">Not open yet</h2>
+                              <p>These listings can be read. New enrolment is not available.</p>
                             </header>
                             <ul className="pgx-grid">
-                              {professional.filter((row) => !presentedOpen(row) && !row.truth.enrollable).map((row) => (
+                              {professional.filter((row) => !presentedOpen(row)).map((row) => (
                                 <ProgrammeCard key={row.program.slug} row={row} confirmed />
                               ))}
                             </ul>
@@ -396,109 +382,6 @@ export default function ProgramsPage() {
             )}
           </div>
         )}
-
-
-        <section id="live-courses" className="pgx-section" aria-labelledby="pgx-live-courses-title">
-          <div className="sky-container">
-            <header className="pgx-section__head">
-              <div>
-                <p className="pgx-eyebrow">Self-paced curriculum</p>
-                <h2 id="pgx-live-courses-title">Individual courses</h2>
-              </div>
-              <p>Every course below is 100% authored with 5 modules, 15 structured lessons, 3 module quizzes, applied assignments, a graded capstone, Boardroom Cold Calls, and Socratic AI + 20-Min Faculty TA support.</p>
-            </header>
-            <ul className="pgx-grid">
-              {[
-                {
-                  href: "/courses/data-analytics",
-                  badge: "Northwind SQL Lab · 166 Rows",
-                  meta: "5 modules · 15 lessons · 3 quizzes · 1 capstone",
-                  category: "Commercial & SQL Analytics",
-                  title: "Data Analytics",
-                  line: "Master spreadsheet auditing, SQL joins, CTEs, and commercial margin analysis in the live Northwind SQL Lab.",
-                  skills: ["SQL Joins", "Northwind Lab", "Margin Audit"],
-                  cta: "Start this course",
-                },
-                {
-                  href: "/courses/product-management",
-                  badge: "Harbor Desk Studio · 18 Interviews",
-                  meta: "5 modules · 15 lessons · 3 quizzes · 1 capstone",
-                  category: "Product Strategy & Discovery",
-                  title: "Product Management",
-                  line: "Conduct user research, diagnose the Harbor Desk weekend exception queue, and write a constrained 6-week PRD.",
-                  skills: ["PRD Scoping", "Harbor Desk Case", "Triage Specs"],
-                  cta: "Start this course",
-                },
-                {
-                  href: "/courses/python-programming",
-                  badge: "Python 3 · ETL & Pytest Suite",
-                  meta: "5 modules · 15 lessons · 3 quizzes · 1 capstone",
-                  category: "Software & Data Automation",
-                  title: "Python Programming & Automation",
-                  line: "Build clean data pipelines, automated ETL validators, CLI tools, and pytest suites for production workflows.",
-                  skills: ["Python 3", "ETL Pipelines", "Pytest Suite"],
-                  cta: "Start this course",
-                },
-                {
-                  href: "/courses/generative-ai",
-                  badge: "Grounded RAG · LLM Eval Suite",
-                  meta: "5 modules · 15 lessons · 3 quizzes · 1 capstone",
-                  category: "Applied AI Engineering",
-                  title: "Generative AI & LLM Systems",
-                  line: "Architect structured prompt systems, grounded RAG retrieval pipelines, ReAct tool agents, and LLM evaluation suites.",
-                  skills: ["Prompt Systems", "Grounded RAG", "ReAct Agents"],
-                  cta: "Start this course",
-                },
-                {
-                  href: "/courses/full-stack-web",
-                  badge: "React, Node & PostgreSQL Stack",
-                  meta: "5 modules · 15 lessons · 3 quizzes · 1 capstone",
-                  category: "Full-Stack Web Systems",
-                  title: "Full Stack Web Engineering",
-                  line: "Ship end-to-end TypeScript applications with React state architecture, Node/Express REST APIs, and PostgreSQL.",
-                  skills: ["React & TS", "Node & Express", "PostgreSQL"],
-                  cta: "Start this course",
-                },
-                {
-                  href: "/programmes/data-science-ai",
-                  badge: "Combined 2-Course Track · 30 Lessons",
-                  meta: "Links Data Analytics + Python Programming",
-                  category: "Data Science & AI Pathway",
-                  title: "Data Science & AI (Dual Track)",
-                  line: "Combine our authored Data Analytics (SQL & Commercial Review) and Python Programming & Automation courses in one track.",
-                  skills: ["SQL + Python", "Data Hygiene", "Pipeline Evals"],
-                  cta: "Open 2-course pathway",
-                },
-              ].map((course) => (
-                <li key={course.href} className="pgx-card">
-                  <Link to={course.href} className="pgx-card__link" data-clear-launcher>
-                    <span className="pgx-course-banner">
-                      <span className="pgx-course-banner__top">
-                        <span className="pgx-course-banner__brand">Self-paced course</span>
-                        <span className="pgx-course-banner__elixir">Open now</span>
-                      </span>
-                      <span className="pgx-course-banner__title">{course.badge}</span>
-                      <span className="pgx-course-banner__meta">{course.meta}</span>
-                    </span>
-                    <span className="pgx-card__body">
-                      <span className="pgx-card__kicker">{course.category}</span>
-                      <span className="pgx-card__title">{course.title}</span>
-                      <span className="pgx-card__line">{course.line}</span>
-                      <span className="pgx-skill-tags">
-                        {course.skills.map((skill) => (
-                          <span key={skill} className="pgx-skill-tag">{skill}</span>
-                        ))}
-                      </span>
-                      <span className="pgx-card__go">
-                        {course.cta} <ArrowRight />
-                      </span>
-                    </span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
 
         <section className="pgx-how" aria-labelledby="pgx-how-title">
           <div className="sky-container">

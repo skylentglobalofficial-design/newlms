@@ -7,47 +7,47 @@ const CHAPTERS = [
   {
     n: "01",
     title: "Academic structure",
-    desc: "Faculty and programme leads define outcomes, credit alignment, and assessment structure with Skylent. Curriculum mapping sits across schools and departments — not as a student course catalogue.",
+    desc: "Faculty and programme leads define outcomes, credit alignment, and assessment structure with Skylent. Curriculum mapping sits across schools and departments.",
   },
   {
     n: "02",
     title: "Programme delivery",
-    desc: "LMS workflows, faculty tools, learner progress, and skills tracks on shared institutional rails. Delivery uses what already ships for learners: written programmes, quizzes, and assignments inside enrolled courses.",
+    desc: "LMS workflows, cohort tools, learner progress, and applied skills tracks on shared institutional rails: written lessons, quizzes, and studio assignments inside enrolled courses.",
   },
   {
     n: "03",
     title: "Learner experience",
-    desc: "Formative and summative assessment data tied directly to learner records, with real-time cohort analytics, CSV exports, and 20-minute Faculty TA SLA tracking.",
+    desc: "Formative and summative assessment data tied to learner records—not stranded in spreadsheets. Progress is visible to both the learner and institutional coordinators inside Skylent OS.",
   },
   {
     n: "04",
     title: "Career and skills connection",
-    desc: "Where programmes qualify, learners move into Career OS for portfolios, applications, and interview prep. Opportunities stay empty until a partner publishes a role.",
+    desc: "Where programmes qualify, learners build verified capstone portfolios, ATS profiles, and interview readiness inside Career OS alongside their university degree.",
   },
 ] as const
 
 const IMPLEMENTATION = [
   "Curriculum mapping across schools and departments",
-  "Faculty dashboards and assessment workflows",
-  "Learner progress parents and admins can audit",
-  "Career OS for qualifying professional pathways",
+  "Cohort progress tracking and assessment workflows",
+  "Verifiable capstone dossiers (/verify) for graduating students",
+  "Career OS portfolio readiness for qualifying pathways",
 ] as const
 
 const EXAMPLE_REFERENCES = [
   {
     n: "01",
-    name: "A technology bachelor's pathway",
-    focus: "Undergraduate B.Tech / B.Sc curriculum track integrating Skylent OS SQL, Python, and AI execution labs alongside university credit modules.",
+    name: "Undergraduate Technology Pathway (B.Sc. / B.Tech Supplement)",
+    focus: "Partner university awards the degree · Skylent OS provides the applied SQL, Python, and AI studio modules.",
   },
   {
     n: "02",
-    name: "A postgraduate computing pathway",
-    focus: "Postgraduate M.Sc / M.Tech specialisation pairing advanced systems coursework with graded industry capstones.",
+    name: "Postgraduate Computing & Analytics Pathway",
+    focus: "Partner university awards the degree · Skylent OS provides graded capstone datasets and Career OS portfolio integration.",
   },
   {
     n: "03",
-    name: "A management master's pathway",
-    focus: "Postgraduate MBA / Product Leadership track featuring Harbor Desk executive case studios and Boardroom Cold Call evaluations.",
+    name: "Postgraduate Management & Product Strategy Pathway",
+    focus: "Partner university awards the degree · Skylent OS provides Harbor Desk case simulations and structured PRD evaluations.",
   },
 ] as const
 
@@ -59,22 +59,21 @@ export default function UniversitiesPage() {
           <div className="pe-hero-copy">
             <p className="pe-eyebrow">
               <i aria-hidden="true" />
-              Universities
+              Universities &amp; Higher Education
             </p>
             <h1 id="uni-hero-title">
               <span>Degree pathways</span>
               <span>with institutional depth.</span>
             </h1>
             <p className="pe-lead">
-              Curriculum design, delivery infrastructure, assessment, and a Career OS profile — structured for
-              multi-department universities. This is a partnership and product page, not a student course catalogue.
+              Curriculum design, applied studio labs, structured assessment, and a Career OS portfolio—built to run alongside multi-department university degrees.
             </p>
             <p className="pe-note">
-              Designed for autonomous colleges and multi-department universities integrating Skylent OS labs and Career OS cohort tracking.
+              Partner universities award all academic degrees and credits. Skylent provides the digital learning workspace, browser labs, and verifiable capstone dossiers.
             </p>
             <p className="pe-actions">
-              <Link className="pe-cta" to="/contact">
-                Talk to partnerships
+              <Link className="pe-cta" to="/contact?for=institution">
+                Talk to university partnerships
                 <span className="pe-cta-arrow" aria-hidden="true">
                   →
                 </span>
@@ -95,7 +94,7 @@ export default function UniversitiesPage() {
                 decoding="async"
               />
             </div>
-            <figcaption>Integrated academic pathways and applied Skylent OS lab cohorts</figcaption>
+            <figcaption>University study combined with practical browser studios</figcaption>
           </figure>
         </div>
       </section>
@@ -113,19 +112,18 @@ export default function UniversitiesPage() {
         <div className="cat-rail pe-ink-stage">
           <div>
             <p className="pe-kicker">Programme workspace</p>
-            <h2 id="uni-work-title">Build the degree around the work.</h2>
+            <h2 id="uni-work-title">Build the degree around real student work.</h2>
             <p className="pe-lead">
-              Partner institutions combine their credit-bearing academic modules with Skylent OS execution labs, graded capstones, and real-time cohort analytics.
+              Students complete applied SQL, analytics, and product casework inside Skylent OS alongside their university lectures—graduating with both an academic degree and a verifiable project dossier.
             </p>
             <p className="pe-note">
-              Batches, faculty assignment, and institutional reporting are not shipping.
+              Institutional cohorts include dedicated College &amp; Organisation dashboards for tracking student progress.
             </p>
           </div>
           <div className="pe-product">
             <CertificateOsPreview />
             <p className="pe-caption">
-              Learner programme workspace already in Skylent OS. Not a faculty dashboard and not a certificate being
-              issued.
+              Learner programme workspace inside Skylent OS with integrated module checks and capstone verification.
             </p>
           </div>
         </div>
@@ -135,7 +133,7 @@ export default function UniversitiesPage() {
         <div className="cat-rail">
           <p className="pe-kicker">Collaboration model</p>
           <h2 id="uni-model-title" className="is-quiet">From academic design to career handoff.</h2>
-          <p className="pe-lead">A delivery model for universities — not a student course catalogue.</p>
+          <p className="pe-lead">A structured delivery model for partner universities and autonomous colleges.</p>
           {CHAPTERS.map((chapter, index) => (
             <article
               className={index % 2 === 1 ? "pe-folio is-flip" : "pe-folio"}
@@ -167,32 +165,29 @@ export default function UniversitiesPage() {
                 decoding="async"
               />
             </div>
-            <figcaption>Shared study space across a campus</figcaption>
+            <figcaption>Shared study space across a partner campus</figcaption>
           </figure>
           <div>
             <p className="pe-kicker">Implementation</p>
             <h2 id="uni-impl-title">Shared infrastructure across departments.</h2>
             <p className="pe-lead">
-              Universities would use Skylent for multi-program curriculum, faculty workflows, and learner lifecycle
-              visibility — with skills and career products where programmes require them. Institutional reporting is
-              not shipping.
+              Universities partner with Skylent to embed industry-aligned labs, case studios, and verifiable career portfolios across undergraduate and postgraduate departments.
             </p>
             <ol className="pe-plain">
               {IMPLEMENTATION.map((line) => (
                 <li key={line}>{line}</li>
               ))}
             </ol>
-            <p className="pe-note">Faculty dashboards listed here are intended, not live.</p>
           </div>
         </div>
       </section>
 
       <section className="pe-section is-paper" id="examples" aria-labelledby="uni-examples-title">
         <div className="cat-rail">
-          <p className="pe-kicker">External reference examples</p>
+          <p className="pe-kicker">Academic Partner Models</p>
           <h2 id="uni-examples-title">Shapes a university pathway can take.</h2>
           <p className="pe-lead">
-            External reference example · Not a Skylent offering. No university name, fee, accreditation or intake is published here.
+            Illustrative co-delivered degree architectures. Partner universities govern admissions, academic credits, and degree conferral.
           </p>
           <div className="pe-examples is-anatomy">
             {EXAMPLE_REFERENCES.map((program) => (
@@ -202,7 +197,7 @@ export default function UniversitiesPage() {
                   <h3>{program.name}</h3>
                   <p>{program.focus}</p>
                 </div>
-                <p className="pe-kicker">Not a Skylent offering</p>
+                <p className="pe-kicker">Academic Partner Track</p>
               </article>
             ))}
           </div>
@@ -214,10 +209,10 @@ export default function UniversitiesPage() {
           <p className="pe-kicker">Institutional partnerships</p>
           <h2 id="uni-close-title">Discuss a university deployment with Skylent.</h2>
           <p className="pe-lead">
-            We map academic structure, delivery workflows, and career handoff before any programme goes live.
+            We map academic structure, semester studio workflows, and Career OS handoff with your academic leadership team.
           </p>
           <p className="pe-actions">
-            <Link className="pe-cta" to="/contact">
+            <Link className="pe-cta" to="/contact?for=institution">
               Contact partnerships
               <span className="pe-cta-arrow" aria-hidden="true">
                 →

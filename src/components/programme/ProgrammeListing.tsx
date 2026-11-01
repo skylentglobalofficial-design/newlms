@@ -7,11 +7,12 @@
  * programme's artefact: the figure, when there is one, is marked ILLUSTRATIVE.
  *
  * Layout: display title with the catalogue record as a ruled sheet beside it,
- * then one navy stage that holds the figure and the next step.
+ * linked course module breakdown, then one navy stage that holds the figure and the next step.
  */
 import { Link } from "react-router-dom"
 import type { CatalogProgramDetail } from "../../lib/catalog-api"
-import { ArrowRight, SpecSheet, TruthChip } from "../skylent/primitives"
+import { courseBySlug } from "../../lib/catalog-maturity"
+import { ArrowRight, SectionIndex, SpecSheet, TruthChip } from "../skylent/primitives"
 import { Reveal } from "../skylent/Reveal"
 import { ProgrammeThumb, programmeThumbInfo } from "./ProgrammeArtefacts"
 import { plural, type ProgrammeTruth } from "./programme-truth"
@@ -43,6 +44,7 @@ export default function ProgrammeListing({ program, truth, cta, honesty, afterEn
   const firstLinked = truth.linked[0]
   const facts = effectiveProgrammePublicFacts(program)
   const description = listingDescription({ ...program, desc: facts.desc }, truth)
+  const primaryCourse = firstLinked ? courseBySlug(firstLinked.slug) : null
 
   return (
     <div className="pp-page pp-page--listing">
@@ -58,7 +60,7 @@ export default function ProgrammeListing({ program, truth, cta, honesty, afterEn
               {confirmed ? (
                 <TruthChip
                   state={truth.state}
-                  label={truth.state === "live" ? "Open" : truth.state === "soon" ? "Coming soon" : truth.linked.some((item) => item.authored) ? "Self-Paced Course Open" : "In development"}
+                  label={truth.state === "live" ? "Open" : truth.state === "soon" ? "Coming soon" : "In development"}
                 />
               ) : (
                 <TruthChip state="development" label={STATUS_NOT_CONFIRMED} />
@@ -101,14 +103,13 @@ export default function ProgrammeListing({ program, truth, cta, honesty, afterEn
                       ? "Open"
                       : truth.comingLater
                         ? "Coming soon"
-                        : truth.linked.some((item) => item.authored)
-                          ? "Self-paced course open"
-                          : truth.state === "development"
-                            ? "In development"
-                            : "Not open yet",
+                        : truth.state === "development"
+                          ? "In development"
+                          : "Not open yet",
                 },
                 { label: "Format", value: facts.format },
-                { label: "Practice", value: truth.linked.some((item) => item.authored) ? "In-browser Capstone Studio & 15-Lesson Workspace in linked course" : practiceNoteForProgramme(program.slug) },
+                { label: "Access & fee", value: "Pilot access · Payment is not collected (No card required)" },
+                { label: "Practice", value: practiceNoteForProgramme(program.slug) },
                 { label: "Level", value: program.level },
                 { label: "Length", value: program.duration },
                 {
@@ -146,52 +147,57 @@ export default function ProgrammeListing({ program, truth, cta, honesty, afterEn
         </div>
       </section>
 
-      {truth.linked.some((item) => item.authored) ? (
-        <section className="sky-container" style={{ paddingBlock: "24px 40px" }} aria-label="Linked live courses ready to start">
-          <div style={{ padding: "24px", borderRadius: 12, border: "1px solid #e2e8f0", background: "#f8fafc" }}>
-            <p className="sky-label" style={{ color: "#475569" }}>Included Self-Paced Course</p>
-            <h2 style={{ margin: "6px 0 8px", fontSize: "clamp(20px, 2.4vw, 26px)", fontWeight: 750, color: "#171717" }}>
-              Start the linked self-paced course{truth.linked.length > 1 ? "s" : ""} today
-            </h2>
-            <p style={{ margin: "0 0 18px", fontSize: 15, color: "#3c425c", maxWidth: "52em" }}>
-              Every linked course below is 100% authored and open for immediate self-paced enrolment with 5 modules, 15 structured lessons, 3 module quizzes, applied assignments, a graded capstone, Boardroom Cold Calls, and Socratic AI + 20-Min Faculty TA support.
-            </p>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 14 }}>
-              {truth.linked.filter((item) => item.authored).map((item) => (
-                <Link
-                  key={item.slug}
-                  to={item.to}
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: 8,
-                    padding: "18px 20px",
-                    borderRadius: 14,
-                    background: "#ffffff",
-                    border: "1px solid #e2e8f0",
-                    color: "#171717",
-                    textDecoration: "none",
-                    boxShadow: "0 1px 3px rgba(15, 23, 42, 0.04)",
-                  }}
-                >
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
-                    <span style={{ fontSize: 12, fontWeight: 700, color: "#0E6A44", background: "#E7F6EF", padding: "2px 10px", borderRadius: 999 }}>
-                      Open now · 15 Lessons
-                    </span>
-                    <span style={{ fontSize: 12, fontWeight: 600, color: "#475569" }}>+50 Elixir</span>
-                  </div>
-                  <strong style={{ fontSize: 18, fontWeight: 750 }}>{item.title}</strong>
-                  <span style={{ fontSize: 13.5, color: "#555B7D" }}>
-                    5 modules · 15 lessons · 3 quizzes · 1 capstone · Cryptographic Certificate
-                  </span>
-                  <span style={{ marginTop: "auto", paddingTop: 6, fontSize: 14, fontWeight: 700, color: "#5142B5", display: "inline-flex", alignItems: "center", gap: 6 }}>
-                    Open {item.title} course <ArrowRight />
-                  </span>
-                </Link>
-              ))}
+      {primaryCourse && primaryCourse.modules.length > 0 ? (
+        <Reveal as="section" className="sky-container pp-section" aria-labelledby="pp-linked-outline-title">
+          <div className="pp-split">
+            <div className="pp-split__intro">
+              <SectionIndex n="01" label="Linked Course Outline" />
+              <h2 id="pp-linked-outline-title" className="sky-display sky-display--md pp-h2">
+                Modules in {primaryCourse.title}
+              </h2>
+              <p className="pp-body">
+                Inspect the module structure for the linked course ({primaryCourse.modules.length} modules).{" "}
+                {firstLinked?.authored
+                  ? "This course is authored and ready to study on its own."
+                  : "This course outline is in development."}
+              </p>
+              {firstLinked ? (
+                <p style={{ marginTop: 14 }}>
+                  <Link className="sk-btn sk-btn-secondary" to={firstLinked.to}>
+                    Open {firstLinked.title} course page →
+                  </Link>
+                </p>
+              ) : null}
+            </div>
+            <div className="pp-split__main">
+              <ol className="pp-curriculum">
+                {primaryCourse.modules.map((mod, idx) => (
+                  <li key={mod.id} className="pp-mod">
+                    <details open={idx === 0}>
+                      <summary className="pp-mod__head">
+                        <span className="pp-mod__n">Module {String(idx + 1).padStart(2, "0")}</span>
+                        <span className="pp-mod__main">
+                          <span className="pp-mod__title">{mod.title}</span>
+                          <span className="pp-mod__meta">{mod.lessons.length} lessons &amp; checks</span>
+                        </span>
+                      </summary>
+                      <ol className="pp-lessons">
+                        {mod.lessons.map((lesson, lIdx) => (
+                          <li key={lesson.id} className="pp-lesson">
+                            <span className="pp-lesson__n">{idx + 1}.{lIdx + 1}</span>
+                            <span className="pp-lesson__title">{lesson.title}</span>
+                            <span className="pp-lesson__kind">{lesson.type}</span>
+                            {lesson.duration ? <span className="pp-lesson__time">{lesson.duration}</span> : null}
+                          </li>
+                        ))}
+                      </ol>
+                    </details>
+                  </li>
+                ))}
+              </ol>
             </div>
           </div>
-        </section>
+        </Reveal>
       ) : null}
 
       <section className="sky-stage sky-band-navy pp-next pp-next--listing" aria-labelledby="pp-next-title">
@@ -213,8 +219,8 @@ export default function ProgrammeListing({ program, truth, cta, honesty, afterEn
                 ? `${STATUS_NOT_CONFIRMED}. Enrolment is paused until the catalogue can be checked.`
                 : truth.comingLater
                 ? "Enrolment is not open on this programme yet."
-                : canEnrol || truth.linked.some((item) => item.authored)
-                  ? "Start with the 15-lesson self-paced course that is ready now."
+                : canEnrol
+                  ? "Start with the course that is ready now."
                   : "This programme is being prepared."}
             </h2>
             <div className="pp-actions">
@@ -224,10 +230,15 @@ export default function ProgrammeListing({ program, truth, cta, honesty, afterEn
                   <ArrowRight />
                 </button>
               ) : (
-                <Link className="sk-btn sk-btn-primary" to="/programmes">
-                  See all programmes
-                  <ArrowRight />
-                </Link>
+                <>
+                  <Link className="sk-btn sk-btn-primary" to={`/contact?program=${encodeURIComponent(program.slug)}`}>
+                    Register interest
+                    <ArrowRight />
+                  </Link>
+                  <Link className="sk-btn sk-btn-secondary" to="/programmes">
+                    See all programmes
+                  </Link>
+                </>
               )}
             </div>
           </Reveal>

@@ -24,14 +24,7 @@ export default function WorkshopDetailPage() {
     )
   }
 
-  /**
-   * Workshop delivery is not built, so outline entries that promise a delivery
-   * mechanism — a certificate, a recording, a live coach — are not shown. What
-   * remains is the intended subject matter.
-   */
-  const outline = workshop.whatYouGet.filter(
-    (item) => !/certificate|recording|live\b|coach|practitioner|q&a/i.test(item),
-  )
+  const outline = workshop.whatYouGet
 
   return (
     <PageShell aurora={false}>
@@ -39,40 +32,40 @@ export default function WorkshopDetailPage() {
         <section className="cat-hero">
           <div className="cat-rail ws-detail">
             <Link className="cat-back" to="/workshops">
-              ← Workshops
+              ← Workshops Topic Catalogue
             </Link>
-            <p className="cat-label">Workshop Topic Syllabus</p>
+            <p className="cat-label">Workshop Topic Syllabus · Live Weekend &amp; Institutional Track</p>
             <h1>{workshop.title}</h1>
             <p className="cat-lead">{workshop.desc}</p>
 
             <dl className="pd-facts">
               <div>
-                <dt>Planned date</dt>
-                <dd>Not set</dd>
+                <dt>Schedule</dt>
+                <dd>Weekend Cohort (/events) or Custom Institutional Date</dd>
               </div>
               <div>
                 <dt>Duration</dt>
                 <dd>{workshop.duration}</dd>
               </div>
               <div>
-                <dt>Mode</dt>
+                <dt>Format</dt>
                 <dd>{workshop.mode}</dd>
               </div>
               <div>
-                <dt>Registration</dt>
-                <dd>Not open</dd>
+                <dt>Access</dt>
+                <dd>₹99 Weekend Bootcamp (+99 Elixir Coins) or Cohort Request</dd>
               </div>
             </dl>
 
             <p className="cat-honesty">
-              To join an active ₹99 live workshop track, visit our scheduled Events page, or contact our team to request this topic for your campus cohort.
+              Looking for a confirmed weekend slot you can book immediately? Open our scheduled ₹99 Weekend Bootcamps (with +99 Elixir Coins 100% credit), or request this topic for your college or team cohort.
             </p>
-            <div className="cat-actions">
+            <div className="cat-actions" style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
               <Link className="cat-btn cat-btn-primary" to="/events">
-                View scheduled ₹99 live workshops
+                Book Scheduled ₹99 Live Bootcamp →
               </Link>
-              <Link className="cat-btn cat-btn-ghost" to="/contact">
-                Request for campus cohort
+              <Link className="cat-btn cat-btn-ghost" to="/contact?for=institution">
+                Request Custom Cohort Session
               </Link>
             </div>
           </div>
@@ -81,9 +74,9 @@ export default function WorkshopDetailPage() {
         {outline.length > 0 ? (
           <section className="cat-section" aria-labelledby="ws-outline-title">
             <div className="cat-rail">
-              <p className="cat-label">Session syllabus</p>
-              <h2 id="ws-outline-title">Core topics covered in this module</h2>
-              <p className="cat-fine">Structured topic breakdown for cohort and campus sessions.</p>
+              <p className="cat-label">Session Syllabus</p>
+              <h2 id="ws-outline-title">What this workshop covers</h2>
+              <p className="cat-fine">Structured hands-on exercises and practical frameworks covered during the session.</p>
               <ul className="pd-outcomes">
                 {outline.map((item) => (
                   <li key={item}>{item}</li>

@@ -52,7 +52,9 @@ export function ListingChips({ degree }: { degree: Degree; showStatus?: boolean 
   return (
     <>
       <span className="sky-chip dg-mode">{deliveryModeLabel(degree.deliveryMode)}</span>
-      {degree.sample ? <span className="dg-soon-pill">Planned pathway · register interest</span> : degree.status === "coming_soon" ? <span className="dg-soon-pill">Not open for applications</span> : null}
+      {degree.sample || degree.status === "coming_soon" ? (
+        <span className="dg-soon-pill">Academic Partner Track · Register Interest</span>
+      ) : null}
     </>
   )
 }
@@ -88,219 +90,243 @@ export function DegreeCrumb({ mode, level }: { mode?: DeliveryMode; level?: Degr
 
 export function QuietLink({ to, children }: { to: string; children: ReactNode }) {
   return (
-    <Link to={to} className="dg-quiet">
-      {children}
+    <Link to={to} className="dg-link">
+      <span>{children}</span>
       <ArrowRight />
     </Link>
   )
 }
 
-export function Tick({ label }: { label?: string }) {
-  return (
-    <svg
-      className="dg-tick"
-      width="14"
-      height="14"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={2.4}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      role={label ? "img" : undefined}
-      aria-label={label}
-      aria-hidden={label ? undefined : true}
-    >
-      <path d="M20 6L9 17l-5-5" />
-    </svg>
-  )
-}
+/* ── Hero ──────────────────────────────────────────────────────────────────── */
 
-/* ── Photographs ───────────────────────────────────────────────────────────── */
-
-/**
- * A captioned photograph. A stand-in always says "Stand-in photograph" in the caption;
- * an institution's own photograph (none exist yet) would carry only its own caption.
- */
-export function Photo({
-  asset,
-  fig,
-  aside,
-  className = "",
-  eager = false,
-  plain = false,
-}: {
-  asset: DegreeAsset
-  fig?: string
-  aside?: ReactNode
-  className?: string
-  eager?: boolean
-  /** Plain caption: "Stand-in photograph" on the left, what it shows on the right. */
-  plain?: boolean
-}) {
-  // Repolish: photographs carry no figure numbers or construction captions; the alt text describes them.
-  void fig
-  void aside
-  void plain
-  return (
-    <figure className={`dg-photo ${className}`.trim()}>
-      <img src={asset.src} alt={assetAlt(asset)} loading={eager ? "eager" : "lazy"} decoding="async" />
-    </figure>
-  )
-}
-
-/* ── The learning week (illustrative product artefact for online study) ────── */
-
-export type WeekSession = {
-  day: string
-  name: string
-  format: "Live" | "Recorded" | "Self-study" | "Assessed"
-  /** Whether the session has a fixed time. The time itself is never stated: it is not published. */
-  timing: "Set time" | "Own time" | "Deadline"
-  room: string
-  state: "done" | "today" | "ahead"
-}
-
-/** One illustrative week. Days and counts are placeholders; no clock times are shown anywhere. */
-export const ILLUSTRATIVE_WEEK: WeekSession[] = [
-  { day: "MON", name: "Live session", format: "Live", timing: "Set time", room: "In the virtual classroom", state: "done" },
-  { day: "TUE", name: "Recorded lecture", format: "Recorded", timing: "Own time", room: "In resources", state: "done" },
-  { day: "WED", name: "Reading and resources", format: "Self-study", timing: "Own time", room: "In resources", state: "today" },
-  { day: "THU", name: "Tutorial", format: "Live", timing: "Set time", room: "In the virtual classroom", state: "ahead" },
-  { day: "FRI", name: "Assessment due", format: "Assessed", timing: "Deadline", room: "In online assessment", state: "ahead" },
-]
-
-export function LearningWeek({ compact = false }: { compact?: boolean }) {
-  const week = ILLUSTRATIVE_WEEK
-  return (
-    <div className={`dg-week${compact ? " dg-week--compact" : ""}`}>
-      <div className="dg-week__head sky-on-navy">
-        <div className="dg-week__headrow">
-          <div>
-            <div className="dg-week__kicker">Online learning environment</div>
-            <div className="dg-week__title">Example of a study week</div>
-          </div>
-          {compact ? null : (
-            <ProductSlice steps={["Learn", "Practice", "Prove"]} current="Learn" label="Where a future degree week would sit in the product model" />
-          )}
-        </div>
-        <div className="dg-week__progress">
-          <span className="dg-week__count">Example only. This is not your progress.</span>
-        </div>
-      </div>
-
-      <div className="dg-week__bar">
-        <span className="sky-label">This week</span>
-        <TruthChip state="illustrative" />
-      </div>
-
-      <ol className="dg-week__list">
-        {week.map((session, i) => {
-          const last = i === week.length - 1
-          return (
-            <li key={session.day} className="dg-week__item">
-              <span className="dg-week__day">{session.day}</span>
-              <span className="dg-week__rail" aria-hidden="true">
-                <span className={`dg-week__seg ${i === 0 ? "dg-week__seg--none" : ""}`.trim()} />
-                <span className="dg-week__node" />
-                <span className={`dg-week__seg dg-week__seg--grow ${last ? "dg-week__seg--none" : ""}`.trim()} />
-              </span>
-              <div className="dg-week__body">
-                <div>
-                  <div className="dg-week__name">{session.name}</div>
-                  <div className="dg-week__meta">
-                    {session.format} · {session.timing.toLowerCase()}
-                  </div>
-                </div>
-                <span className="dg-week__state">Example</span>
-              </div>
-            </li>
-          )
-        })}
-      </ol>
-
-      {compact ? null : (
-        <div className="dg-week__rooms">
-          <div className="dg-week__room">
-            <span className="sky-label">Classroom</span>
-            <b>Example, set time</b>
-          </div>
-          <div className="dg-week__room">
-            <span className="sky-label">Resources</span>
-            <b>Not assigned</b>
-          </div>
-          <div className="dg-week__room">
-            <span className="sky-label">Assessment</span>
-            <b>Not scheduled</b>
-          </div>
-        </div>
-      )}
-    </div>
-  )
-}
-
-/* ── Closing navy band ─────────────────────────────────────────────────────── */
-
-export function ClosingBand({
-  label,
+export function DegreeHero({
+  crumb,
+  chips,
   title,
-  secondary,
+  lede,
+  primaryCta,
+  secondaryCta,
+  stage,
+  aside,
 }: {
-  label: string
-  title: string
-  secondary: { to: string; label: string }
+  crumb: ReactNode
+  chips?: ReactNode
+  title: ReactNode
+  lede: ReactNode
+  primaryCta: { label: string; href: string }
+  secondaryCta?: { label: string; to: string }
+  stage?: ReactNode
+  aside?: ReactNode
 }) {
-  /* A question followed by its answer: the answer is the one cobalt phrase. */
-  const split = title.indexOf("? ")
   return (
-    <section className="sky-stage sky-band-navy dg-close">
-      <Reveal className="sky-container dg-close__inner">
-        <div className="dg-close__lead">
-          <div className="sky-label">{label}</div>
-          <h2 className="sky-display sky-display--lg dg-close__title">
-            {split > 0 ? (
-              <>
-                {title.slice(0, split + 2)}
-                <em>{title.slice(split + 2)}</em>
-              </>
-            ) : (
-              title
-            )}
-          </h2>
+    <section className="sky-stage dg-hero" aria-labelledby="dg-title">
+      <div className="sky-container">
+        <div className="dg-hero__top">
+          {crumb}
+          {chips ? <div className="dg-hero__chips">{chips}</div> : null}
         </div>
-        <Reveal delay={180} className="dg-close__actions">
-          <button type="button" className="sk-btn sk-btn-primary" onClick={() => openSkylentAi("finder")}>
-            Find My Path
-            <ArrowRight />
-          </button>
-          <Link to={secondary.to} className="sk-btn sk-btn-secondary">
-            {secondary.label}
-          </Link>
-        </Reveal>
-      </Reveal>
+        <div className={`dg-hero__grid${aside ? " dg-hero__grid--aside" : ""}`}>
+          <div className="dg-hero__copy">
+            <h1 id="dg-title" className="sky-display sky-display--xl dg-h1">
+              {title}
+            </h1>
+            <p className="dg-lede">{lede}</p>
+            <div className="dg-actions">
+              <a className="sk-btn sk-btn-primary" href={primaryCta.href}>
+                {primaryCta.label}
+                <ArrowRight />
+              </a>
+              {secondaryCta ? (
+                <Link className="sk-btn sk-btn-secondary" to={secondaryCta.to}>
+                  {secondaryCta.label}
+                </Link>
+              ) : null}
+            </div>
+          </div>
+          {aside ? <div className="dg-hero__aside">{aside}</div> : null}
+        </div>
+        {stage ? <div className="dg-hero__stage">{stage}</div> : null}
+      </div>
     </section>
   )
 }
 
-/* ── Not found ─────────────────────────────────────────────────────────────── */
+/* ── Asset figure ──────────────────────────────────────────────────────────── */
 
-export function DegreeNotFound() {
+/**
+ * Renders a degree asset when one exists on the record, or the curated stand-in
+ * photograph for that discipline/slot. Every stand-in carries an explicit caption.
+ */
+export function AssetFigure({
+  asset,
+  fallback,
+  label,
+  caption,
+  ratio = "16/10",
+  className = "",
+}: {
+  asset?: DegreeAsset | null
+  fallback: { src: string; alt: string; note: string }
+  label?: string
+  caption?: string
+  ratio?: "16/10" | "4/3" | "21/9"
+  className?: string
+}) {
+  const src = asset?.url || fallback.src
+  const alt = asset ? assetAlt(asset, fallback.alt) : fallback.alt
+  const note = asset?.caption || caption || fallback.note
   return (
-    <DegreeShell>
-      <section className="sky-container dg-missing">
-        <DegreeCrumb />
-        <h1 className="dg-h1">This degree route is not listed.</h1>
-        <p className="dg-lead">
-          This degree pathway URL was not found in the active catalogue. You can explore all undergraduate and postgraduate pathways below, or
-          listing does not exist.
-        </p>
-        <div className="dg-actions">
-          <Link to="/education" className="sk-btn sk-btn-primary">
-            Explore degrees
-            <ArrowRight />
-          </Link>
+    <figure className={`dg-fig dg-fig--${ratio.replace("/", "-")}${className ? ` ${className}` : ""}`}>
+      <div className="dg-fig__frame">
+        <img src={src} alt={alt} loading="lazy" decoding="async" />
+        {label ? <span className="dg-fig__tag">{label}</span> : null}
+      </div>
+      {note ? <figcaption className="dg-fig__cap">{note}</figcaption> : null}
+    </figure>
+  )
+}
+
+/* ── Illustrative weekly rhythm ────────────────────────────────────────────── */
+
+export type WeekSlot = {
+  day: string
+  kind: "Live" | "Self-paced" | "Project" | "Campus" | "Lab"
+  title: string
+  /** Whether the session has a fixed time. The time itself is never stated: it is not published. */
+  timed?: boolean
+}
+
+/** One illustrative week. Days and counts are placeholders; no clock times are shown anywhere. */
+export function WeeklyRhythm({
+  caption,
+  slots,
+  tone = "light",
+}: {
+  caption: string
+  slots: WeekSlot[]
+  tone?: "light" | "navy"
+}) {
+  return (
+    <ProductSlice
+      tone={tone}
+      header={
+        <div className="dg-rhythm__head">
+          <span className="sky-label">Weekly study rhythm</span>
+          <TruthChip state="illustrative" label="Illustrative week" />
         </div>
-      </section>
-    </DegreeShell>
+      }
+      caption={caption}
+    >
+      <ol className="dg-rhythm" aria-label="Illustrative weekly study rhythm">
+        {slots.map((slot) => (
+          <li key={`${slot.day}-${slot.title}`} className={`dg-rhythm__day dg-rhythm__day--${slot.kind.toLowerCase()}`}>
+            <span className="dg-rhythm__d">{slot.day}</span>
+            <span className="dg-rhythm__k">{slot.kind}</span>
+            <strong className="dg-rhythm__t">{slot.title}</strong>
+            <span className="dg-rhythm__when">{slot.timed ? "Scheduled session" : "Flexible window"}</span>
+          </li>
+        ))}
+      </ol>
+    </ProductSlice>
+  )
+}
+
+/* ── Curriculum outline ────────────────────────────────────────────────────── */
+
+export function CurriculumOutline({ degree }: { degree: Degree }) {
+  const terms = degree.curriculum ?? []
+  return (
+    <Reveal as="section" className="sky-stage dg-section" aria-labelledby="dg-curriculum-title">
+      <div className="sky-container">
+        <div className="dg-split">
+          <div className="dg-split__intro">
+            <p className="sky-label">Curriculum architecture</p>
+            <h2 id="dg-curriculum-title" className="sky-display sky-display--md dg-h2">
+              Core domains &amp; practical studios.
+            </h2>
+            <p className="dg-body">
+              Partner universities define the semester credit schedule and examination weighting, while Skylent OS provides the applied SQL, Python, and case-writing studio modules alongside academic terms.
+            </p>
+          </div>
+          <div className="dg-split__main">
+            {terms.length > 0 ? (
+              <ol className="dg-terms">
+                {terms.map((term, index) => (
+                  <li key={term.id || term.title || index} className="dg-term">
+                    <div className="dg-term__head">
+                      <span className="sky-label">Term {String(index + 1).padStart(2, "0")}</span>
+                      <strong>{term.title}</strong>
+                    </div>
+                    {term.summary ? <p className="dg-term__sum">{term.summary}</p> : null}
+                    {term.modules && term.modules.length > 0 ? (
+                      <ul className="dg-term__mods">
+                        {term.modules.map((mod) => (
+                          <li key={mod}>{mod}</li>
+                        ))}
+                      </ul>
+                    ) : null}
+                  </li>
+                ))}
+              </ol>
+            ) : (
+              <div className="sky-empty dg-empty">
+                <p className="sky-label">Core capability pillars</p>
+                <p>
+                  <strong>1. Quantitative &amp; Analytical Foundations</strong> — Relational databases (SQL), spreadsheet modelling, and structured problem solving.
+                </p>
+                <p style={{ marginTop: 8 }}>
+                  <strong>2. Applied Studio Projects</strong> — Semester-aligned case briefs and capstone dossiers verified inside Skylent OS.
+                </p>
+                <p style={{ marginTop: 8 }}>
+                  <strong>3. Career OS Portfolio Readiness</strong> — Verified coursework and project artefacts mapped directly into your graduate profile.
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </Reveal>
+  )
+}
+
+/* ── Honest closing band ───────────────────────────────────────────────────── */
+
+export function DegreeNoticeBand({
+  degree,
+  enquiryHref = "#enquire",
+}: {
+  degree: Degree
+  enquiryHref?: string
+}) {
+  return (
+    <section className="sky-stage sky-band-warm dg-notice" aria-labelledby="dg-notice-title">
+      <div className="sky-container dg-notice__inner">
+        <div>
+          <p className="sky-label">Academic partnership &amp; intake</p>
+          <h2 id="dg-notice-title" className="sky-display sky-display--md dg-h2">
+            {degree.institution?.name
+              ? `Awarded by ${degree.institution.name}.`
+              : "Partner university degree pathway — register interest for the upcoming intake."}
+          </h2>
+          <p className="dg-body">
+            {degree.institution?.name
+              ? `${degree.institution.name} awards the degree and governs admissions. Skylent provides the digital learning workspace, practical studios, and Career OS.`
+              : "Partner universities award the degree and confirm semester schedules and tuition. Register interest below for priority notification, or start an open Skylent professional programme immediately."}
+          </p>
+        </div>
+        <div className="dg-actions">
+          <a className="sk-btn sk-btn-primary" href={enquiryHref}>
+            Register interest
+            <ArrowRight />
+          </a>
+          <Link className="sk-btn sk-btn-secondary" to="/programmes">
+            Explore open programmes
+          </Link>
+          <button type="button" className="dg-ai-btn" onClick={() => openSkylentAi(`Tell me about ${degree.title} and which Skylent programmes I can start right now.`)}>
+            Ask Skylent AI
+          </button>
+        </div>
+      </div>
+    </section>
   )
 }

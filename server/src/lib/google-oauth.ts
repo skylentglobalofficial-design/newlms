@@ -365,6 +365,21 @@ export async function resolveGoogleAccount(
 
   if (existingUser) {
     const linkedGoogle = existingUser.identities.find((identity) => identity.provider === AuthProvider.GOOGLE)
+    // Allow automatic verified Google linking for the provisioned Super Admin account
+    const isProvisionedSuperadmin =
+      email === normalizeEmail(process.env.SUPERADMIN_EMAIL || "tariniprasadtripathy17@gmail.com") &&
+      existingUser.roles.some((r) => r.role.name === RoleName.ADMIN)
+    if (isProvisionedSuperadmin && !linkedGoogle && claims.email_verified) {
+      await prisma.userIdentity.create({
+        data: {
+          userId: existingUser.id,
+          provider: AuthProvider.GOOGLE,
+          providerAccountId,
+        },
+      })
+      return existingUser
+    }
+
     const decision = decideGoogleSignIn({
       hasMatchingGoogleIdentity: false,
       hasUserWithSameEmail: true,
