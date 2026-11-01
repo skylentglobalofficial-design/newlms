@@ -1,7 +1,8 @@
 /**
- * HomePage — the public homepage (Clean Simple v9).
+ * HomePage — the public homepage.
  *
- * Hero → Programmes (Clean 3x2 Grid) → Collapsed 60s SQL Sample → Simple 3-Step Workshops → Inside the Workspace → Degrees → Career OS → Skylent AI → Closing.
+ * Clean, calm, scannable flow:
+ * Hero → Programmes (Clean 3x2 Grid) → How Learning Works → Optional 60s Sample → Career OS → Degrees → Weekend Workshops → Skylent AI → Closing.
  */
 import { PageShell } from "@/components/shared"
 import { homeCataloguePhase } from "@/lib/catalogue-availability"
@@ -37,11 +38,11 @@ export default function HomePage() {
           confirmed={catalogue === "confirmed"}
           onRetry={() => void catalog.reload()}
         />
-        <ZeroLoginInteractiveTryout />
-        <HomeElixirFlywheel />
         <InsideProgramme />
-        <HomeDegrees />
+        <ZeroLoginInteractiveTryout />
         <HomeCareer />
+        <HomeDegrees />
+        <HomeElixirFlywheel />
         <HomeAi />
         <HomeClosing />
       </div>

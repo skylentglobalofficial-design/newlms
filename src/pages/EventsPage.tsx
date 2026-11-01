@@ -4,7 +4,7 @@ import { PageShell } from "../components/shared"
 import { LearnPillarSubnav } from "../components/product/Architecture"
 import "./Catalog.css"
 
-type EventData = {
+export type EventData = {
   id: string
   slug: string
   title: string
@@ -16,12 +16,12 @@ type EventData = {
   endTime: string
   timezone: string
   capacity: number | null
+  meetingUrl?: string | null
   isOnline: boolean
   location: string | null
   registrationCount: number
   spotsRemaining: number | null
 }
-
 
 function upcomingWeekendIso(daysAhead: number, hourIst: number, durationMinutes = 90): { start: string; end: string } {
   const now = new Date()
@@ -51,6 +51,7 @@ export const CURATED_UPCOMING_WORKSHOPS: EventData[] = [
     endTime: slot1.end,
     timezone: "Asia/Kolkata",
     capacity: 60,
+    meetingUrl: "https://skylent.live/os/labs/data-analytics/northwind",
     isOnline: true,
     location: "Online · Browser SQL Sandbox",
     registrationCount: 42,
@@ -69,6 +70,7 @@ export const CURATED_UPCOMING_WORKSHOPS: EventData[] = [
     endTime: slot2.end,
     timezone: "Asia/Kolkata",
     capacity: 50,
+    meetingUrl: "https://skylent.live/os/projects/product-management/harbor-desk-case",
     isOnline: true,
     location: "Online · Harbor Desk Case Studio",
     registrationCount: 28,
@@ -86,11 +88,12 @@ export const CURATED_UPCOMING_WORKSHOPS: EventData[] = [
     startTime: slot3.start,
     endTime: slot3.end,
     timezone: "Asia/Kolkata",
-    capacity: 80,
+    capacity: 75,
+    meetingUrl: "https://skylent.live/courses/generative-ai",
     isOnline: true,
-    location: "Online · AI Architecture Studio",
-    registrationCount: 51,
-    spotsRemaining: 29,
+    location: "Online · Live Technical Walkthrough",
+    registrationCount: 50,
+    spotsRemaining: 25,
   },
 ]
 
@@ -118,14 +121,22 @@ export default function EventsPage() {
         }
         if (!controller.signal.aborted) {
           const apiRows = Array.isArray(json?.data) ? json.data : []
-          setEvents(apiRows.length > 0 ? apiRows : CURATED_UPCOMING_WORKSHOPS)
+          if (apiRows.length === 0 && filter !== "past") {
+            setEvents(CURATED_UPCOMING_WORKSHOPS)
+          } else {
+            setEvents(apiRows)
+          }
           setLoading(false)
         }
       })
-      .catch((error: unknown) => {
+      .catch(() => {
         if (controller.signal.aborted) return
-        setEvents(CURATED_UPCOMING_WORKSHOPS)
-        setLoadError(error instanceof Error ? error.message : "Events could not be loaded.")
+        if (filter !== "past") {
+          setEvents(CURATED_UPCOMING_WORKSHOPS)
+          setLoadError(null)
+        } else {
+          setEvents([])
+        }
         setLoading(false)
       })
     return () => controller.abort()
@@ -161,122 +172,22 @@ export default function EventsPage() {
         <section className="cat-hero">
           <div className="cat-rail">
             <p className="cat-label">Events &amp; Webinars · ₹99 Workshop = 99 Elixir Coins (100% Coin Back)</p>
-            <h1 className="cat-h1--display">Events &amp; Webinars</h1>
+            <h1 className="cat-h1--display">Live Weekend Bootcamps &amp; Case Sprints</h1>
             <p className="cat-lead">
               {loading
-                ? "Checking which sessions are published."
-                : loadError
-                  ? "The events list could not be loaded. You can try again below."
-                  : events.length === 0
-                    ? "Explore our 3 Flagship ₹99 Workshop Tracks (with 100% Elixir Coin Back) and the Case Study Store below while new calendar dates are being scheduled."
-                    : "These are the sessions currently published. Open one to see whether you can register."}
+                ? "Loading upcoming weekend workshops and live case sprints..."
+                : events.length === 0
+                  ? "No past sessions in this filter. Switch to Upcoming to view open weekend workshops."
+                  : "Join a 90-minute weekend execution sprint for ₹99 and receive 99 Elixir Coins (100% 1:1 learning credit) to unlock real SQL and Product case studies."}
             </p>
             <div className="cat-actions">
               <Link className="cat-btn cat-btn-primary" to="/programmes">
                 Explore programmes
               </Link>
+              <Link className="cat-btn cat-btn-ghost" to="/dashboard/student">
+                Open Case Study Store
+              </Link>
             </div>
-          </div>
-        </section>
-
-        <section className="cat-section" aria-labelledby="events-launch-tracks-title">
-          <div className="cat-rail">
-            <p className="cat-label">Launch Workshop Tracks · ₹99 Entry = 99 Elixir Coins</p>
-            <h2 id="events-launch-tracks-title">3 Flagship ₹99 Live Workshop Tracks</h2>
-            <p className="cat-lead">
-              Every scheduled ₹99 workshop grants 100% coin cashback (99 Elixir Coins) in your Skylent wallet immediately upon registration.
-            </p>
-            <ul className="ws-list">
-              <li>
-                <Link className="ws-row ws-row--track" to="/courses/data-analytics">
-                  <span className="ws-date">Track 01 · ₹99</span>
-                  <span className="ws-body">
-                    <strong>Northwind SQL Margin &amp; Cohort Live Workshop</strong>
-                    <em>Data Analytics · Diagnose category discount leakage &amp; earn +99 Elixir Coins</em>
-                  </span>
-                  <span className="ws-meta">+99 Elixir Coins</span>
-                  <span className="ws-state">Inspect Track →</span>
-                </Link>
-              </li>
-              <li>
-                <Link className="ws-row ws-row--track" to="/courses/product-management">
-                  <span className="ws-date">Track 02 · ₹99</span>
-                  <span className="ws-body">
-                    <strong>Harbor Desk Product Scoping &amp; PRD Triage Workshop</strong>
-                    <em>Product Management · Scope a 2-engineer, 6-week solution &amp; earn +99 Elixir Coins</em>
-                  </span>
-                  <span className="ws-meta">+99 Elixir Coins</span>
-                  <span className="ws-state">Inspect Track →</span>
-                </Link>
-              </li>
-              <li>
-                <Link className="ws-row ws-row--track" to="/courses/python-programming">
-                  <span className="ws-date">Track 03 · ₹99</span>
-                  <span className="ws-body">
-                    <strong>Applied Python &amp; GenAI Workflow Automation Workshop</strong>
-                    <em>Python &amp; AI · Clean transaction pipelines &amp; earn +99 Elixir Coins</em>
-                  </span>
-                  <span className="ws-meta">+99 Elixir Coins</span>
-                  <span className="ws-state">Inspect Track →</span>
-                </Link>
-              </li>
-            </ul>
-          </div>
-        </section>
-
-        <section className="cat-section" aria-labelledby="events-elixir-store-title">
-          <div className="cat-rail">
-            <p className="cat-label">100% Coin Back Flywheel</p>
-            <h2 id="events-elixir-store-title">Redeemable with your 99 Workshop Elixir Coins</h2>
-            <p className="cat-lead">
-              When you register for a ₹99 session, 99 Elixir Coins are credited to your wallet in My Learning. Use them to unlock these practical case studies and playbooks:
-            </p>
-            <ul className="ws-list">
-              <li>
-                <Link className="ws-row ws-row--track" to="/dashboard/student">
-                  <span className="ws-date">49 Elixir</span>
-                  <span className="ws-body">
-                    <strong>Northwind Margin &amp; Discount Leakage Case Study</strong>
-                    <em>Data Analytics · SQL &amp; commercial margin investigation</em>
-                  </span>
-                  <span className="ws-meta">Case study</span>
-                  <span className="ws-state">Unlock in Dashboard →</span>
-                </Link>
-              </li>
-              <li>
-                <Link className="ws-row ws-row--track" to="/dashboard/student">
-                  <span className="ws-date">49 Elixir</span>
-                  <span className="ws-body">
-                    <strong>Harbor Desk Weekend Exception Queue PRD Case</strong>
-                    <em>Product Management · 2-engineer, 6-week scoping spec</em>
-                  </span>
-                  <span className="ws-meta">Case study</span>
-                  <span className="ws-state">Unlock in Dashboard →</span>
-                </Link>
-              </li>
-              <li>
-                <Link className="ws-row ws-row--track" to="/dashboard/student">
-                  <span className="ws-date">99 Elixir</span>
-                  <span className="ws-body">
-                    <strong>Enterprise B2B SaaS Onboarding &amp; Churn Case Study</strong>
-                    <em>Product Management · Flagship 90-day retention teardown</em>
-                  </span>
-                  <span className="ws-meta">Flagship case</span>
-                  <span className="ws-state">Unlock in Dashboard →</span>
-                </Link>
-              </li>
-              <li>
-                <Link className="ws-row ws-row--track" to="/dashboard/student">
-                  <span className="ws-date">39 Elixir</span>
-                  <span className="ws-body">
-                    <strong>E-Commerce SQL Cohort &amp; Retention Playbook</strong>
-                    <em>Data Analytics · Repeat-purchase SQL patterns</em>
-                  </span>
-                  <span className="ws-meta">Playbook notes</span>
-                  <span className="ws-state">Unlock in Dashboard →</span>
-                </Link>
-              </li>
-            </ul>
           </div>
         </section>
 
@@ -287,7 +198,7 @@ export default function EventsPage() {
                 ? "Loading events..."
                 : loadError
                   ? "Events"
-                  : `${events.length} event${events.length === 1 ? "" : "s"}`}
+                  : `${events.length} scheduled session${events.length === 1 ? "" : "s"}`}
             </h2>
             <div
               className="cat-filters"
@@ -321,7 +232,12 @@ export default function EventsPage() {
                 </button>
               </p>
             ) : events.length === 0 ? (
-              <p className="cat-empty">Live calendar dates are being updated. Review the 3 Flagship ₹99 Workshop Tracks and 4 Redeemable Case Studies below.</p>
+              <p className="cat-empty">
+                No past sessions recorded yet.{" "}
+                <button type="button" className="cat-chip" onClick={() => setFilter("upcoming")}>
+                  Show upcoming workshops
+                </button>
+              </p>
             ) : (
               <ul className="ws-list">
                 {events.map((event) => (
@@ -332,20 +248,20 @@ export default function EventsPage() {
                       </span>
                       <span className="ws-body">
                         <strong>{event.title}</strong>
-                        <em>{event.eventType.replace("_", " ")}</em>
+                        <em>{event.eventType.replace("_", " ")} · ₹99 Entry (100% Coin Back)</em>
                       </span>
                       <span className="ws-meta">
                         {formatTime(event.startTime)}
                       </span>
                       <span className="ws-meta">
-                        {event.isOnline ? "Online" : event.location || "TBD"}
+                        {event.isOnline ? "Online" : event.location || "Online"}
                       </span>
                       <span className="ws-meta">+99 Elixir Coins</span>
                       <span className="ws-state">
                         {event.spotsRemaining === 0
                           ? "Full"
                           : event.spotsRemaining
-                            ? `${event.spotsRemaining} spots`
+                            ? `${event.spotsRemaining} spots left`
                             : "Open"}
                       </span>
                     </Link>
@@ -355,9 +271,65 @@ export default function EventsPage() {
             )}
             {events.length > 0 ? (
               <p className="cat-fine">
-                A published session can change. Registration, when it is open, is on that session’s page.
+                Every ₹99 workshop registration credits 99 Elixir Coins directly to your learner wallet upon confirmation.
               </p>
             ) : null}
+          </div>
+        </section>
+
+        <section className="cat-section" aria-labelledby="events-elixir-store-title">
+          <div className="cat-rail">
+            <p className="cat-label">Why Elixir Credits Exist · 1:1 Learning Credit</p>
+            <h2 id="events-elixir-store-title">Redeemable with your 99 Workshop Elixir Coins</h2>
+            <p className="cat-lead">
+              Your ₹99 workshop fee returns 1:1 as 99 Elixir Coins in My Learning—so you can unlock and solve a real SQL or Product case study before committing to a full programme:
+            </p>
+            <ul className="ws-list">
+              <li>
+                <Link className="ws-row" to="/dashboard/student">
+                  <span className="ws-date">49 Elixir</span>
+                  <span className="ws-body">
+                    <strong>Northwind Margin &amp; Discount Leakage Case Study</strong>
+                    <em>Data Analytics · SQL &amp; commercial margin investigation</em>
+                  </span>
+                  <span className="ws-meta">Case study</span>
+                  <span className="ws-state">Unlock in Dashboard →</span>
+                </Link>
+              </li>
+              <li>
+                <Link className="ws-row" to="/dashboard/student">
+                  <span className="ws-date">49 Elixir</span>
+                  <span className="ws-body">
+                    <strong>Harbor Desk Weekend Exception Queue PRD Case</strong>
+                    <em>Product Management · 2-engineer, 6-week scoping spec</em>
+                  </span>
+                  <span className="ws-meta">Case study</span>
+                  <span className="ws-state">Unlock in Dashboard →</span>
+                </Link>
+              </li>
+              <li>
+                <Link className="ws-row" to="/dashboard/student">
+                  <span className="ws-date">99 Elixir</span>
+                  <span className="ws-body">
+                    <strong>Enterprise B2B SaaS Onboarding &amp; Churn Case Study</strong>
+                    <em>Product Management · Flagship 90-day retention teardown</em>
+                  </span>
+                  <span className="ws-meta">Flagship case</span>
+                  <span className="ws-state">Unlock in Dashboard →</span>
+                </Link>
+              </li>
+              <li>
+                <Link className="ws-row" to="/dashboard/student">
+                  <span className="ws-date">39 Elixir</span>
+                  <span className="ws-body">
+                    <strong>E-Commerce SQL Cohort &amp; Retention Playbook</strong>
+                    <em>Data Analytics · Repeat-purchase SQL patterns</em>
+                  </span>
+                  <span className="ws-meta">Playbook notes</span>
+                  <span className="ws-state">Unlock in Dashboard →</span>
+                </Link>
+              </li>
+            </ul>
           </div>
         </section>
 
