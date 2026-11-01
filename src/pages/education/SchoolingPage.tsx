@@ -14,14 +14,14 @@ export default function SchoolingPage() {
   return (
     <AcademicPageShell current="schooling">
       <LinePageHeader
-        kicker="Education · Schooling"
+        kicker="Education · K–12 Foundation Architecture"
         maturity="coming_soon"
-        title="Academic progression, not a kids' course shop."
-        lead="Schooling on Skylent is a grade-and-subject pathway for schools and families. There is no live schooling catalogue to browse or buy."
+        title="Structured grade-band progression for partner schools."
+        lead="Foundational mathematics, science, and computational thinking pathways designed for school integration alongside Skylent's higher-education tracks."
       />
       <UpcomingBanner
-        title="No schooling courses are published"
-        body="Grade bands and subjects below describe the intended product. They are not enrollable SKUs, class timetables, or teacher assignments."
+        title="Institutional K–12 Partner Roadmap"
+        body="Grade bands and subject pillars below outline our curriculum framework for school partnerships. For immediate learner enrolment today, explore our 6 live skill courses and university degree pathways."
       />
       <section className="arch-section">
         <PathwayModel title="Intended schooling model" steps={SCHOOLING_PATHWAY} />

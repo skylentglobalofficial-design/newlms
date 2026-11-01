@@ -58,7 +58,7 @@ export default function ProgrammeListing({ program, truth, cta, honesty, afterEn
               {confirmed ? (
                 <TruthChip
                   state={truth.state}
-                  label={truth.state === "live" ? "Open" : truth.state === "soon" ? "Coming soon" : "In development"}
+                  label={truth.state === "live" ? "Open" : truth.state === "soon" ? "Coming soon" : truth.linked.some((item) => item.authored) ? "Self-Paced Course Open" : "In development"}
                 />
               ) : (
                 <TruthChip state="development" label={STATUS_NOT_CONFIRMED} />
@@ -101,12 +101,14 @@ export default function ProgrammeListing({ program, truth, cta, honesty, afterEn
                       ? "Open"
                       : truth.comingLater
                         ? "Coming soon"
-                        : truth.state === "development"
-                          ? "In development"
-                          : "Not open yet",
+                        : truth.linked.some((item) => item.authored)
+                          ? "Self-paced course open"
+                          : truth.state === "development"
+                            ? "In development"
+                            : "Not open yet",
                 },
                 { label: "Format", value: facts.format },
-                { label: "Practice", value: practiceNoteForProgramme(program.slug) },
+                { label: "Practice", value: truth.linked.some((item) => item.authored) ? "In-browser Capstone Studio & 15-Lesson Workspace in linked course" : practiceNoteForProgramme(program.slug) },
                 { label: "Level", value: program.level },
                 { label: "Length", value: program.duration },
                 {
@@ -211,8 +213,8 @@ export default function ProgrammeListing({ program, truth, cta, honesty, afterEn
                 ? `${STATUS_NOT_CONFIRMED}. Enrolment is paused until the catalogue can be checked.`
                 : truth.comingLater
                 ? "Enrolment is not open on this programme yet."
-                : canEnrol
-                  ? "Start with the course that is ready now."
+                : canEnrol || truth.linked.some((item) => item.authored)
+                  ? "Start with the 15-lesson self-paced course that is ready now."
                   : "This programme is being prepared."}
             </h2>
             <div className="pp-actions">

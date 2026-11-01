@@ -112,6 +112,7 @@ const AboutPage = lazy(() => import("./pages/AboutPage"))
 const ProgramPage = lazy(() => import("./pages/ProgramPage"))
 const ProgramsPage = lazy(() => import("./pages/ProgramsPage"))
 const SkillsPage = lazy(() => import("./pages/SkillsPage"))
+const CoursesPage = lazy(() => import("./pages/CoursesPage"))
 const CourseDetailPage = lazy(() => import("./pages/CourseDetailPage"))
 const WorkshopsPage = lazy(() => import("./pages/WorkshopsPage"))
 const WorkshopDetailPage = lazy(() => import("./pages/WorkshopDetailPage"))
@@ -271,7 +272,7 @@ function AppRoutes() {
         <Route path="/universities" element={<UniversitiesPage />} />
         <Route path="/labs" element={<LabsPage />} />
         <Route path="/os" element={<OSPage />} />
-        <Route path="/courses" element={<CoursesIndexRedirect />} />
+        <Route path="/courses" element={<CoursesPage />} />
         <Route path="/courses/:slug" element={<CourseDetailPage />} />
         <Route path="/workshops" element={<WorkshopsPage />} />
         <Route path="/workshops/:slug" element={<WorkshopDetailPage />} />

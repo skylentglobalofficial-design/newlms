@@ -145,13 +145,14 @@ function statusText(row: Row, confirmed: boolean): string {
   const state = publicCatalogueState(confirmed, presentedOpen(row))
   if (state === "unknown" || state === "open") return confirmed ? "Open for enrolment" : STATUS_NOT_CONFIRMED
   if (row.truth.state === "soon") return "Coming soon"
+  if (confirmed && row.truth.linked.some((l) => l.authored)) return "Self-paced course open"
   return publicCatalogueStatus("closed")
 }
 
 function ProgrammeCard({ row, confirmed }: { row: Row; confirmed: boolean }) {
   const to = `/programmes/${row.program.slug}`
   const status = statusText(row, confirmed)
-  const live = presentedOpen(row) && confirmed
+  const live = (presentedOpen(row) || row.truth.linked.some((l) => l.authored)) && confirmed
   const showStatus = status !== STATUS_NOT_CONFIRMED
   const face = (
     <>

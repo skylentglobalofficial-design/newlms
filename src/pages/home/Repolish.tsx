@@ -115,6 +115,15 @@ export function HomeHero({
                 fetchPriority="high"
               />
             </div>
+            <div className="hxw-ws" aria-label="Skylent OS workspace summary">
+              <div className="hxw-ws__top">
+                <span className="hxw-ws__mark" aria-hidden="true">OS</span>
+                <div>
+                  <span className="hxw-ws__title">Skylent OS Live Workspace</span>
+                  <span className="hxw-ws__note">6 Authored Tracks · 90 Lessons · Browser SQL, Python &amp; Case Studios</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -930,20 +939,100 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
             )}
             <ul className="hx-live-courses-grid" aria-label="All 6 programmes and courses">
               {[
-                { slug: "data-analytics", to: "/programmes/data-analytics-pro", title: "Data Analytics", desc: "Query the 166-row Northwind retail dataset in SQL and defend commercial margin findings.", meta: "5 modules · 15 lessons" },
-                { slug: "product-management", to: "/programmes/product-management", title: "Product Management", desc: "Scope engineering bets and write a defensible PRD on the Harbor Desk operations case.", meta: "5 modules · 15 lessons" },
-                { slug: "python-programming", to: "/courses/python-programming", title: "Python Programming & Automation", desc: "Build resilient ETL pipelines, schema validators, and automated settlement audits.", meta: "5 modules · 15 lessons" },
-                { slug: "data-science-ai", to: "/programmes/data-science-ai", title: "Data Science & AI", desc: "Combine SQL analytics and Python pipelines with cohort validation and churn modelling.", meta: "5 modules · 15 lessons" },
-                { slug: "generative-ai", to: "/programmes/generative-ai-program", title: "Generative AI & LLM Systems", desc: "Design grounded RAG architectures, citation guardrails, and evaluation harnesses.", meta: "5 modules · 15 lessons" },
-                { slug: "full-stack-web", to: "/programmes/full-stack", title: "Full Stack Development", desc: "Ship transactional APIs, idempotent ledgers, and production web interfaces.", meta: "5 modules · 15 lessons" },
+                {
+                  slug: "data-analytics",
+                  to: "/programmes/data-analytics-pro",
+                  category: "Data & SQL",
+                  status: "Open · 15 Lessons",
+                  title: "Data Analytics",
+                  desc: "Query the 166-row Northwind retail dataset in SQL and defend commercial margin findings.",
+                  skills: ["SQL Joins", "Northwind Lab", "Margin Audit"],
+                  meta: "5 modules · 15 lessons · 1 capstone",
+                  img: photoAnalytics,
+                  alt: "Data Analytics workspace preview",
+                },
+                {
+                  slug: "product-management",
+                  to: "/programmes/product-management",
+                  category: "Product Strategy",
+                  status: "Open · 15 Lessons",
+                  title: "Product Management",
+                  desc: "Scope engineering bets and write a defensible PRD on the Harbor Desk operations case.",
+                  skills: ["PRD Scoping", "Harbor Desk Case", "Triage Specs"],
+                  meta: "5 modules · 15 lessons · 1 capstone",
+                  img: photoProduct,
+                  alt: "Product Management studio preview",
+                },
+                {
+                  slug: "python-programming",
+                  to: "/courses/python-programming",
+                  category: "Python & Automation",
+                  status: "Open · 15 Lessons",
+                  title: "Python Programming & Automation",
+                  desc: "Build resilient ETL pipelines, schema validators, and automated settlement audits.",
+                  skills: ["Python 3", "ETL Pipelines", "Pytest Suite"],
+                  meta: "5 modules · 15 lessons · 1 capstone",
+                  img: photoScience,
+                  alt: "Python engineering workspace preview",
+                },
+                {
+                  slug: "data-science-ai",
+                  to: "/courses/data-science-ai",
+                  category: "Data Science & AI",
+                  status: "Open · 15 Lessons",
+                  title: "Data Science & Applied AI",
+                  desc: "Combine SQL analytics and Python pipelines with cohort validation and churn modelling.",
+                  skills: ["Cohort Validation", "Feature Hygiene", "Churn Audit"],
+                  meta: "5 modules · 15 lessons · 1 capstone",
+                  img: photoAnalytics,
+                  alt: "Data Science cohort analysis preview",
+                },
+                {
+                  slug: "generative-ai",
+                  to: "/courses/generative-ai",
+                  category: "GenAI & LLM Systems",
+                  status: "Open · 15 Lessons",
+                  title: "Generative AI & LLM Systems",
+                  desc: "Design grounded RAG architectures, citation guardrails, and evaluation harnesses.",
+                  skills: ["Grounded RAG", "Citation Policy", "ReAct Agents"],
+                  meta: "5 modules · 15 lessons · 1 capstone",
+                  img: photoProduct,
+                  alt: "Generative AI evaluation preview",
+                },
+                {
+                  slug: "full-stack-web",
+                  to: "/courses/full-stack-web",
+                  category: "Full-Stack Web",
+                  status: "Open · 15 Lessons",
+                  title: "Full Stack Web Engineering",
+                  desc: "Ship transactional REST APIs, idempotent payment ledgers, and production React UIs.",
+                  skills: ["React & TypeScript", "Node APIs", "PostgreSQL"],
+                  meta: "5 modules · 15 lessons · 1 capstone",
+                  img: photoScience,
+                  alt: "Full-stack engineering preview",
+                },
               ].map((item) => (
                 <li key={item.slug}>
                   <Link to={item.to} className="hx-live-course-card">
-                    <strong className="hx-live-course-card__title">{item.title}</strong>
-                    <span className="hx-live-course-card__meta" style={{ color: "#334155", lineHeight: 1.5 }}>{item.desc}</span>
-                    <span className="hx-live-course-card__meta">{item.meta}</span>
-                    <span className="hx-live-course-card__cta">
-                      Explore programme <ArrowRight />
+                    <span className="hx-live-course-card__media">
+                      <img src={item.img} alt={item.alt} width={800} height={530} loading="lazy" decoding="async" />
+                      <span className="hx-live-course-card__badge">{item.status}</span>
+                    </span>
+                    <span className="hx-live-course-card__body">
+                      <span className="hx-live-course-card__cat">{item.category}</span>
+                      <strong className="hx-live-course-card__title">{item.title}</strong>
+                      <span className="hx-live-course-card__desc">{item.desc}</span>
+                      <span className="hx-live-course-card__skills">
+                        {item.skills.map((s) => (
+                          <span key={s} className="hx-live-course-card__skill">{s}</span>
+                        ))}
+                      </span>
+                      <span className="hx-live-course-card__foot">
+                        <span className="hx-live-course-card__meta">{item.meta}</span>
+                        <span className="hx-live-course-card__cta">
+                          Explore track <ArrowRight />
+                        </span>
+                      </span>
                     </span>
                   </Link>
                 </li>
