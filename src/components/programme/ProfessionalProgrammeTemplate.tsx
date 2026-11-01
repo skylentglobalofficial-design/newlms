@@ -271,8 +271,9 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
               </a>
             </div>
             <p className="pp-note">
-              {confirmed && courseUnconfirmed ? `${STATUS_NOT_CONFIRMED}. Enrolment is paused until the catalogue can be checked. ` : ""}
-              {afterEnrol}
+              {!verified
+                ? `${confirmed && courseUnconfirmed ? `${STATUS_NOT_CONFIRMED}. Enrolment is paused until the catalogue can be checked. ` : ""}${afterEnrol}`
+                : `Instant access in Skylent OS · Includes ${moduleCount} modules, ${lessonCount} structured lessons, interactive lab workspace, and graded capstone (+50 Elixir bonus).`}
             </p>
             <p className="pp-note">{practiceCopy}</p>
           </div>

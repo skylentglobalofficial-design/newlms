@@ -330,7 +330,7 @@ export default function ProgramsPage() {
                 {professional.length ? (
                   confirmed ? (
                     <>
-                      {professional.filter((row) => presentedOpen(row)).length ? (
+                      {professional.filter((row) => presentedOpen(row) || row.truth.enrollable).length ? (
                         <section id="professional" className="pgx-section" aria-labelledby="pgx-professional">
                           <div className="sky-container">
                             <header className="pgx-section__head">
@@ -338,14 +338,14 @@ export default function ProgramsPage() {
                               <p>These programmes are open for enrolment and have a linked course.</p>
                             </header>
                             <ul className="pgx-grid">
-                              {professional.filter((row) => presentedOpen(row)).map((row) => (
+                              {professional.filter((row) => presentedOpen(row) || row.truth.enrollable).map((row) => (
                                 <ProgrammeCard key={row.program.slug} row={row} confirmed />
                               ))}
                             </ul>
                           </div>
                         </section>
                       ) : null}
-                      {professional.filter((row) => !presentedOpen(row)).length ? (
+                      {professional.filter((row) => !presentedOpen(row) && !row.truth.enrollable).length ? (
                         <section id="professional-later" className="pgx-section" aria-labelledby="pgx-professional-later">
                           <div className="sky-container">
                             <header className="pgx-section__head">
@@ -353,7 +353,7 @@ export default function ProgramsPage() {
                               <p>Open any pathway below to start its linked 15-lesson self-paced course in Skylent OS immediately (+50 Elixir Bonus).</p>
                             </header>
                             <ul className="pgx-grid">
-                              {professional.filter((row) => !presentedOpen(row)).map((row) => (
+                              {professional.filter((row) => !presentedOpen(row) && !row.truth.enrollable).map((row) => (
                                 <ProgrammeCard key={row.program.slug} row={row} confirmed />
                               ))}
                             </ul>

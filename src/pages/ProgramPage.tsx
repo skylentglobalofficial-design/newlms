@@ -104,13 +104,13 @@ export default function ProgramPage() {
 
   function openEnrol() {
     if (!confirmed || comingLater || !enrollable) return
-    if (!truth.authored) return
+    if (!truth.authored && !truth.enrollable) return
     setEnrollOpen(true)
   }
 
   // The authored template needs the programme's own material and the API link to its course.
   const content = authoredProgrammeContent(program.slug)
-  const authored = content && truth.authored && program.linkedCourseSlugs.includes(content.courseSlug) ? content : null
+  const authored = content && (truth.authored || truth.enrollable) && program.linkedCourseSlugs.includes(content.courseSlug) ? content : null
 
   return (
     <Shell>

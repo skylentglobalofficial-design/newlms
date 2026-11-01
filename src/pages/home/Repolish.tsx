@@ -977,7 +977,7 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
                 },
                 {
                   slug: "data-science-ai",
-                  to: "/courses/data-science-ai",
+                  to: "/programmes/data-science-ai",
                   category: "Data Science & AI",
                   status: "Open · 15 Lessons",
                   title: "Data Science & Applied AI",
@@ -989,7 +989,7 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
                 },
                 {
                   slug: "generative-ai",
-                  to: "/courses/generative-ai",
+                  to: "/programmes/generative-ai-program",
                   category: "GenAI & LLM Systems",
                   status: "Open · 15 Lessons",
                   title: "Generative AI & LLM Systems",
@@ -1001,7 +1001,7 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
                 },
                 {
                   slug: "full-stack-web",
-                  to: "/courses/full-stack-web",
+                  to: "/programmes/full-stack",
                   category: "Full-Stack Web",
                   status: "Open · 15 Lessons",
                   title: "Full Stack Web Engineering",
