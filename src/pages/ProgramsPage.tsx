@@ -1,5 +1,5 @@
 /**
- * /programmes — unified 3x2 photo-card catalogue index with visual presentation hero.
+ * /programmes — catalogue-first index.
  *
  * Rows come from GET /catalog/programs (or the published list when that request fails,
  * see useCatalogPrograms). Readiness uses programmeTruth, the same helper as the programme page.
@@ -20,11 +20,7 @@ import { catalogueProgrammeIsOpen, isPublicProgrammeIndexRow } from "../lib/prog
 import { programmeDiscoveryFor } from "../lib/programme-discovery"
 import analyticsVisual from "@/assets/site/program-analytics.jpg"
 import productVisual from "@/assets/site/program-product.jpg"
-import scienceVisual from "@/assets/site/degree-computing.jpg"
-import webVisual from "@/assets/site/program-web.jpg"
-import aiVisual from "@/assets/site/program-ai.jpg"
-import sqlVisual from "@/assets/site/program-library.jpg"
-import heroClassroomVisual from "@/assets/site/home/hero-classroom-960.webp"
+import scienceVisual from "@/assets/site/program-web.jpg"
 import "./ProgramsIndex.css"
 
 type Kind = "certification" | "professional"
@@ -35,115 +31,75 @@ type Row = {
   title: string
   line: string
   category: string
-  image: string
+  image: string | null
   alt: string
-  lab: string
-  meta: string
-  skills: string[]
   search: string
 }
 
-const PROGRAMME_ORDER = [
-  "data-analytics-pro",
-  "product-management",
-  "data-science-ai",
-  "full-stack",
-  "generative-ai-program",
-  "sql-certificate",
-] as const
+const PROFESSIONAL_ORDER = ["data-analytics-pro", "product-management", "data-science-ai", "full-stack", "generative-ai-program"] as const
 
-const CARD_FACE: Record<
-  string,
-  {
-    title: string
-    line: string
-    category: string
-    image: string
-    alt: string
-    lab: string
-    meta: string
-    skills: string[]
-  }
-> = {
+const CARD_FACE: Record<string, { title: string; line: string; category: string; image: string; alt: string }> = {
   "data-analytics-pro": {
     title: "Data Analytics",
-    line: "Audit 166 Northwind retail rows, write SQL joins and CTEs, and defend a Q3 commercial margin review.",
+    line: "Take a messy sales extract to a finding and a recommendation someone can act on in the Northwind SQL Lab.",
     category: "Data",
     image: analyticsVisual,
-    alt: "Analytics charts and notebook on a desk.",
-    lab: "Northwind SQL Lab · 166 Rows",
-    meta: "5 modules · 15 lessons · 3 quizzes · 1 capstone",
-    skills: ["SQL & CTEs", "Northwind Lab", "Margin Audit"],
+    alt: "Illustrative analytics charts on a desk.",
   },
   "product-management": {
     title: "Product Management",
-    line: "Diagnose 9 weekend store exceptions on the Harbor Desk case and ship a 6-week engineering-constrained PRD.",
+    line: "Frame one retail operations problem on the Harbor Desk case and write a constrained product specification.",
     category: "Product",
     image: productVisual,
-    alt: "Product working session around a table.",
-    lab: "Harbor Desk Studio · 18 Interviews",
-    meta: "5 modules · 15 lessons · 3 quizzes · 1 capstone",
-    skills: ["PRD Scoping", "Harbor Desk Case", "Triage Specs"],
+    alt: "Illustrative product working session around a table.",
   },
   "data-science-ai": {
     title: "Data Science & AI",
-    line: "Dual-track pathway combining Data Analytics (SQL & cohorts) and Python Programming & Automation (ETL & pytest).",
+    line: "Pathway linking our authored Data Analytics and Python Programming & Automation courses in Skylent OS.",
     category: "Data",
     image: scienceVisual,
-    alt: "Data science code and cohort analysis on screens.",
-    lab: "SQL + Python Dual Track · 30 Lessons",
-    meta: "10 modules · 30 lessons · 6 quizzes · 2 capstones",
-    skills: ["SQL & Python", "Cohort Validation", "Leakage Audit"],
+    alt: "Illustrative code on a laptop and monitors.",
   },
   "full-stack": {
     title: "Full Stack Development",
-    line: "Build type-safe React 18 interfaces, Node/Express APIs, PostgreSQL schemas, and idempotent payment ledgers.",
+    line: "Pathway linking the 15-lesson Full Stack Web Engineering course (REST APIs, PostgreSQL, React, and security).",
     category: "Engineering",
-    image: webVisual,
+    image: scienceVisual,
     alt: "Full-stack engineering workspace on a laptop.",
-    lab: "React, Node & PostgreSQL Stack",
-    meta: "5 modules · 15 lessons · 3 quizzes · 1 capstone",
-    skills: ["React & TS", "Node & Express", "PostgreSQL"],
   },
   "generative-ai-program": {
     title: "Generative AI",
-    line: "Architect grounded RAG pipelines, vector retrieval, ReAct tool agents, and adversarial LLM evaluation suites.",
+    line: "Pathway linking the 15-lesson Generative AI & LLM Systems course (embeddings, grounded RAG, and ReAct agents).",
     category: "AI",
-    image: aiVisual,
-    alt: "Generative AI system architecture and evaluation studio.",
-    lab: "Grounded RAG · LLM Eval Suite",
-    meta: "5 modules · 15 lessons · 3 quizzes · 1 capstone",
-    skills: ["Prompt Systems", "Grounded RAG", "ReAct Agents"],
+    image: productVisual,
+    alt: "AI system architecture and evaluation session.",
   },
   "sql-certificate": {
     title: "SQL for Business Analytics",
-    line: "Write defensible multi-table SQL joins, CTEs, window functions, and category revenue audits on retail order data.",
+    line: "A focused SQL certificate outline. For live SQL lab practice today, start the Data Analytics programme.",
     category: "SQL",
-    image: sqlVisual,
-    alt: "SQL query and analytics workspace.",
-    lab: "Northwind SQL Query Workbench",
-    meta: "5 SQL modules · 15 lessons · Live SQL practice",
-    skills: ["Joins & CTEs", "Window Functions", "Data Hygiene"],
+    image: analyticsVisual,
+    alt: "SQL query and analytics chart preview.",
   },
 }
 
 const KIND_COPY: Record<Kind, { title: string; lead: string; label: string }> = {
   certification: {
     title: "Certification programmes",
-    lead: "Focused single-skill syllabus tracks backed by Skylent OS labs.",
+    lead: "Shorter listings aimed at one skill. A certificate is not issued from a listing that is not open.",
     label: "Certification",
   },
   professional: {
     title: "Professional programmes",
-    lead: "Structured programmes combining interactive lessons, live sandboxes, and a graded capstone.",
+    lead: "Longer directions that combine lessons, practice, and a project you can keep.",
     label: "Professional",
   },
 }
 
 const LEARNING_STEPS = [
-  { title: "Learn", text: "Concise written lessons with concept checks." },
-  { title: "Practise", text: "In-browser SQL, Python, and product case sandboxes." },
-  { title: "Prove it", text: "Graded capstone and verifiable Career OS dossier." },
+  { title: "Learn", text: "Short written lessons with checks, taken one step at a time." },
+  { title: "Practise", text: "A lab or case opened from the lesson, on a realistic piece of work." },
+  { title: "Keep the work", text: "Finished work can stay in your Career OS profile." },
 ] as const
 
 function kindOf(program: CatalogProgramSummary): Kind | null {
@@ -166,13 +122,8 @@ function toRow(program: CatalogProgramSummary): Row | null {
   const content = truth.state === "live" ? authoredProgrammeContent(program.slug) : null
   const discovery = content ? programmeDiscoveryFor(program.slug) : null
   const title = face?.title || discovery?.courseTitle || program.name
-  const line = face?.line || content?.cardLine || program.desc || "Interactive lessons, sandbox labs, and graded capstone work."
+  const line = face?.line || content?.cardLine || program.desc || (truth.comingLater ? "This programme is not open yet." : "A catalogue direction. A full taught pathway is not open yet.")
   const category = face?.category || KIND_COPY[kind].label
-  const image = face?.image || analyticsVisual
-  const alt = face?.alt || `${title} workspace preview`
-  const lab = face?.lab || "Skylent OS Interactive Workspace"
-  const meta = face?.meta || "5 modules · 15 lessons · 3 quizzes · 1 capstone"
-  const skills = face?.skills || ["Written Lessons", "Sandbox Lab", "Capstone"]
   return {
     program,
     truth,
@@ -180,12 +131,9 @@ function toRow(program: CatalogProgramSummary): Row | null {
     title,
     line,
     category,
-    image,
-    alt,
-    lab,
-    meta,
-    skills,
-    search: `${title} ${program.name} ${line} ${category} ${lab} ${skills.join(" ")} ${outcomeFor(program.slug)}`.toLowerCase(),
+    image: face?.image || null,
+    alt: face?.alt ?? "",
+    search: `${title} ${program.name} ${line} ${category} ${outcomeFor(program.slug)}`.toLowerCase(),
   }
 }
 
@@ -196,47 +144,43 @@ function presentedOpen(row: Row): boolean {
 function statusText(row: Row, confirmed: boolean): string {
   const state = publicCatalogueState(confirmed, presentedOpen(row))
   if (state === "unknown" || state === "open") return confirmed ? "Open for enrolment" : STATUS_NOT_CONFIRMED
-  if (row.truth.linked.some((l) => l.authored)) return "Open for enrolment"
-  if (row.program.slug === "sql-certificate" || row.truth.state === "soon") return "Open via SQL Lab"
+  if (row.truth.state === "soon") return "Coming soon"
   return publicCatalogueStatus("closed")
 }
 
 function ProgrammeCard({ row, confirmed }: { row: Row; confirmed: boolean }) {
   const to = `/programmes/${row.program.slug}`
   const status = statusText(row, confirmed)
-  const hasAuthoredTrack = row.truth.linked.some((l) => l.authored)
-  const live = (presentedOpen(row) || hasAuthoredTrack || row.program.slug === "sql-certificate") && confirmed
+  const live = presentedOpen(row) && confirmed
   const showStatus = status !== STATUS_NOT_CONFIRMED
-  return (
-    <li className="pgx-card">
-      <Link to={to} className="pgx-card__link" data-clear-launcher>
-        <span className="pgx-card__media">
-          <img src={row.image} alt={row.alt} loading="lazy" decoding="async" />
-          {showStatus ? (
-            <span className={live ? "pgx-status pgx-status--open" : "pgx-status"}>
-              {status}
+  const face = (
+    <>
+      <span className="pgx-card__media">
+        {row.image ? <img src={row.image} alt={row.alt} /> : <span className="pgx-card__fallback" aria-hidden="true" />}
+        {showStatus ? <span className={live ? "pgx-status pgx-status--open" : "pgx-status"}>{status}</span> : null}
+      </span>
+      <span className="pgx-card__body">
+        <span style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
+          <span className="pgx-card__kicker">{row.category}</span>
+          {confirmed && row.truth.linked.some((l) => l.authored) ? (
+            <span style={{ fontSize: 11, fontWeight: 600, color: "#64748b" }}>
+              15 lessons
             </span>
           ) : null}
         </span>
-        <span className="pgx-card__body">
-          <span style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-            <span className="pgx-card__kicker">{row.category}</span>
-            <span style={{ fontSize: 11, fontWeight: 700, color: "#4338ca", background: "#eef2ff", padding: "2px 9px", borderRadius: 999 }}>
-              {row.lab}
-            </span>
-          </span>
-          <span className="pgx-card__title">{row.title}</span>
-          <span style={{ fontSize: 12.5, fontWeight: 600, color: "#475569" }}>{row.meta}</span>
-          <span className="pgx-card__line">{row.line}</span>
-          <span className="pgx-skill-tags">
-            {row.skills.map((skill) => (
-              <span key={skill} className="pgx-skill-tag">{skill}</span>
-            ))}
-          </span>
-          <span className="pgx-card__go">
-            Explore programme <ArrowRight />
-          </span>
+        <span className="pgx-card__title">{row.title}</span>
+        <span className="pgx-card__line">{row.line}</span>
+        <span className="pgx-card__go">
+          {live ? "View programme" : row.truth.linked.some((l) => l.authored) ? "View pathway & linked courses" : "View details"}
+          <ArrowRight />
         </span>
+      </span>
+    </>
+  )
+  return (
+    <li className="pgx-card">
+      <Link to={to} className="pgx-card__link" data-clear-launcher>
+        {face}
       </Link>
     </li>
   )
@@ -265,26 +209,25 @@ export default function ProgramsPage() {
   const rows = useMemo(() => (catalog.data ?? []).map(toRow).filter((row): row is Row => row !== null), [catalog.data])
   const categories = useMemo(() => ["All", ...Array.from(new Set(rows.map((row) => row.category)))], [rows])
   const needle = query.trim().toLowerCase()
-  const shown = rows
-    .filter((row) => {
-      if (kind !== "all" && row.kind !== kind) return false
-      if (category !== "All" && row.category !== category) return false
-      return !needle || row.search.includes(needle)
-    })
-    .sort((a, b) => {
-      const rank = (slug: string) => {
-        const index = PROGRAMME_ORDER.indexOf(slug as (typeof PROGRAMME_ORDER)[number])
-        return index === -1 ? PROGRAMME_ORDER.length : index
-      }
-      return rank(a.program.slug) - rank(b.program.slug)
-    })
-
+  const shown = rows.filter((row) => {
+    if (kind !== "all" && row.kind !== kind) return false
+    if (category !== "All" && row.category !== category) return false
+    return !needle || row.search.includes(needle)
+  })
   const confirmed = !catalog.offline
   const catalogueKnown = confirmed && !catalog.loading
   const openTitles = catalogueKnown
     ? rows.filter((row) => row.kind === "professional" && presentedOpen(row)).map((row) => row.title)
     : []
   const intro = catalog.loading ? "Checking which programmes are open." : programmesIndexIntro(catalogueKnown, openTitles)
+  const professional = shown.filter((row) => row.kind === "professional").sort((a, b) => {
+    const rank = (slug: string) => {
+      const index = PROFESSIONAL_ORDER.indexOf(slug as (typeof PROFESSIONAL_ORDER)[number])
+      return index === -1 ? PROFESSIONAL_ORDER.length : index
+    }
+    return rank(a.program.slug) - rank(b.program.slug)
+  })
+  const certification = shown.filter((row) => row.kind === "certification")
   const filtersActive = Boolean(needle) || kind !== "all" || category !== "All"
 
   function clearFilters() {
@@ -302,44 +245,10 @@ export default function ProgramsPage() {
     <PageShell aurora={false}>
       <div className="site-light pgx">
         <section className="pgx-intro" aria-labelledby="pgx-title">
-          <div className="sky-container pgx-intro__split">
-            <div className="pgx-intro__inner">
-              <p className="pgx-eyebrow">Skylent programmes</p>
-              <h1 id="pgx-title">Find the right programme for your next step.</h1>
-              <p className="pgx-lede">{intro}</p>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 16 }}>
-                <span className="pgx-skill-tag">In-Browser SQL &amp; Python Workbenches</span>
-                <span className="pgx-skill-tag">25% · 35% · 40% Grading Rubric</span>
-                <span className="pgx-skill-tag">Verifiable Proof-of-Work Dossiers</span>
-              </div>
-            </div>
-            <div className="pgx-intro__visual" aria-label="Skylent OS live workspace preview">
-              <div className="pgx-intro__photo-wrap">
-                <img
-                  src={heroClassroomVisual}
-                  alt="Learners collaborating on practical case studies and SQL labs"
-                  width={960}
-                  height={640}
-                  decoding="async"
-                />
-                <div className="pgx-intro__hud">
-                  <div className="pgx-intro__hud-top">
-                    <span className="pgx-intro__hud-badge">SKYLENT OS · LIVE WORKBENCH</span>
-                    <span className="pgx-intro__hud-status">6 Tracks Open</span>
-                  </div>
-                  <div className="pgx-intro__hud-grid">
-                    <div>
-                      <strong>Northwind SQL Lab</strong>
-                      <span>166 validated retail order rows</span>
-                    </div>
-                    <div>
-                      <strong>Harbor Desk Studio</strong>
-                      <span>18 interviews · 6-week PRD scope</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div className="sky-container pgx-intro__inner">
+            <p className="pgx-eyebrow">Skylent programmes</p>
+            <h1 id="pgx-title">Find the right programme for your next step.</h1>
+            <p className="pgx-lede">{intro}</p>
           </div>
         </section>
 
@@ -351,28 +260,28 @@ export default function ProgramsPage() {
                 <circle cx="11" cy="11" r="7" />
                 <line x1="20" y1="20" x2="16.5" y2="16.5" />
               </svg>
-              <input id="programme-search" type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search by skill, tool, or track (e.g. SQL, Product, Python, RAG)..." />
+              <input id="programme-search" type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search programmes" />
             </label>
             <div className="pgx-filters">
               <div className="pgx-filter">
-                <span className="pgx-filter__label">Type</span>
-                <div className="pgx-chips" role="group" aria-label="Programme type">
-                  {(["all", "professional", "certification"] as const).map((item) => (
-                    <button key={item} type="button" aria-pressed={kind === item} className={kind === item ? "is-on" : undefined} onClick={() => setKind(item)}>
-                      {item === "all" ? "All" : KIND_COPY[item].label}
-                    </button>
-                  ))}
-                </div>
+              <span className="pgx-filter__label">Type</span>
+              <div className="pgx-chips" role="group" aria-label="Programme type">
+                {(["all", "professional", "certification"] as const).map((item) => (
+                  <button key={item} type="button" aria-pressed={kind === item} className={kind === item ? "is-on" : undefined} onClick={() => setKind(item)}>
+                    {item === "all" ? "All" : KIND_COPY[item].label}
+                  </button>
+                ))}
+              </div>
               </div>
               <div className="pgx-filter">
-                <span className="pgx-filter__label">Subject</span>
-                <div className="pgx-chips" role="group" aria-label="Subject">
-                  {categories.map((item) => (
-                    <button key={item} type="button" aria-pressed={category === item} className={category === item ? "is-on" : undefined} onClick={() => setCategory(item)}>
-                      {item}
-                    </button>
-                  ))}
-                </div>
+              <span className="pgx-filter__label">Subject</span>
+              <div className="pgx-chips" role="group" aria-label="Subject">
+                {categories.map((item) => (
+                  <button key={item} type="button" aria-pressed={category === item} className={category === item ? "is-on" : undefined} onClick={() => setCategory(item)}>
+                    {item}
+                  </button>
+                ))}
+              </div>
               </div>
               {filtersActive ? (
                 <button type="button" className="pgx-clear" onClick={clearFilters}>
@@ -416,37 +325,185 @@ export default function ProgramsPage() {
                 </button>
               </div>
             ) : (
-              <section id="live-courses" className="pgx-section" aria-labelledby="pgx-professional">
-                <div className="sky-container">
-                  <header className="pgx-section__head">
-                    <div>
-                      <p className="pgx-eyebrow">All 6 Flagship Tracks</p>
-                      <h2 id="pgx-professional">
-                        {confirmed ? "Open now" : "Availability could not be confirmed"}
-                      </h2>
+              <>
+                {professional.length ? (
+                  confirmed ? (
+                    <>
+                      {professional.filter((row) => presentedOpen(row)).length ? (
+                        <section id="professional" className="pgx-section" aria-labelledby="pgx-professional">
+                          <div className="sky-container">
+                            <header className="pgx-section__head">
+                              <h2 id="pgx-professional">Open now</h2>
+                              <p>These programmes are open for enrolment and have a linked course.</p>
+                            </header>
+                            <ul className="pgx-grid">
+                              {professional.filter((row) => presentedOpen(row)).map((row) => (
+                                <ProgrammeCard key={row.program.slug} row={row} confirmed />
+                              ))}
+                            </ul>
+                          </div>
+                        </section>
+                      ) : null}
+                      {professional.filter((row) => !presentedOpen(row)).length ? (
+                        <section id="professional-later" className="pgx-section" aria-labelledby="pgx-professional-later">
+                          <div className="sky-container">
+                            <header className="pgx-section__head">
+                              <h2 id="pgx-professional-later">Pathways with linked self-paced courses</h2>
+                              <p>Open any pathway below to start its linked 15-lesson self-paced course in Skylent OS immediately (+50 Elixir Bonus).</p>
+                            </header>
+                            <ul className="pgx-grid">
+                              {professional.filter((row) => !presentedOpen(row)).map((row) => (
+                                <ProgrammeCard key={row.program.slug} row={row} confirmed />
+                              ))}
+                            </ul>
+                          </div>
+                        </section>
+                      ) : null}
+                    </>
+                  ) : (
+                    <section id="professional" className="pgx-section" aria-labelledby="pgx-professional">
+                      <div className="sky-container">
+                        <header className="pgx-section__head">
+                          <h2 id="pgx-professional">Availability could not be confirmed</h2>
+                          <p>{AVAILABILITY_UNKNOWN}</p>
+                        </header>
+                        <ul className="pgx-grid">
+                          {professional.map((row) => (
+                            <ProgrammeCard key={row.program.slug} row={row} confirmed={false} />
+                          ))}
+                        </ul>
+                      </div>
+                    </section>
+                  )
+                ) : null}
+                {certification.length ? (
+                  <section id="certification" className="pgx-section" aria-labelledby="pgx-certification">
+                    <div className="sky-container">
+                      <header className="pgx-section__head">
+                        <h2 id="pgx-certification">{KIND_COPY.certification.title}</h2>
+                        <p>{KIND_COPY.certification.lead}</p>
+                      </header>
+                      <ul className="pgx-grid">
+                        {certification.map((row) => (
+                          <ProgrammeCard key={row.program.slug} row={row} confirmed={!catalog.offline} />
+                        ))}
+                      </ul>
                     </div>
-                    <p>
-                      {confirmed
-                        ? "Select any programme below to open its interactive workbench, 5-module syllabus, and capstone studio."
-                        : AVAILABILITY_UNKNOWN}
-                    </p>
-                  </header>
-                  <ul className="pgx-grid">
-                    {shown.map((row) => (
-                      <ProgrammeCard key={row.program.slug} row={row} confirmed={!catalog.offline} />
-                    ))}
-                  </ul>
-                </div>
-              </section>
+                  </section>
+                ) : null}
+              </>
             )}
           </div>
         )}
+
+
+        <section id="live-courses" className="pgx-section" aria-labelledby="pgx-live-courses-title">
+          <div className="sky-container">
+            <header className="pgx-section__head">
+              <div>
+                <p className="pgx-eyebrow">Self-paced curriculum</p>
+                <h2 id="pgx-live-courses-title">Individual courses</h2>
+              </div>
+              <p>Every course below is 100% authored with 5 modules, 15 structured lessons, 3 module quizzes, applied assignments, a graded capstone, Boardroom Cold Calls, and Socratic AI + 20-Min Faculty TA support.</p>
+            </header>
+            <ul className="pgx-grid">
+              {[
+                {
+                  href: "/courses/data-analytics",
+                  badge: "Northwind SQL Lab · 166 Rows",
+                  meta: "5 modules · 15 lessons · 3 quizzes · 1 capstone",
+                  category: "Commercial & SQL Analytics",
+                  title: "Data Analytics",
+                  line: "Master spreadsheet auditing, SQL joins, CTEs, and commercial margin analysis in the live Northwind SQL Lab.",
+                  skills: ["SQL Joins", "Northwind Lab", "Margin Audit"],
+                  cta: "Start this course",
+                },
+                {
+                  href: "/courses/product-management",
+                  badge: "Harbor Desk Studio · 18 Interviews",
+                  meta: "5 modules · 15 lessons · 3 quizzes · 1 capstone",
+                  category: "Product Strategy & Discovery",
+                  title: "Product Management",
+                  line: "Conduct user research, diagnose the Harbor Desk weekend exception queue, and write a constrained 6-week PRD.",
+                  skills: ["PRD Scoping", "Harbor Desk Case", "Triage Specs"],
+                  cta: "Start this course",
+                },
+                {
+                  href: "/courses/python-programming",
+                  badge: "Python 3 · ETL & Pytest Suite",
+                  meta: "5 modules · 15 lessons · 3 quizzes · 1 capstone",
+                  category: "Software & Data Automation",
+                  title: "Python Programming & Automation",
+                  line: "Build clean data pipelines, automated ETL validators, CLI tools, and pytest suites for production workflows.",
+                  skills: ["Python 3", "ETL Pipelines", "Pytest Suite"],
+                  cta: "Start this course",
+                },
+                {
+                  href: "/courses/generative-ai",
+                  badge: "Grounded RAG · LLM Eval Suite",
+                  meta: "5 modules · 15 lessons · 3 quizzes · 1 capstone",
+                  category: "Applied AI Engineering",
+                  title: "Generative AI & LLM Systems",
+                  line: "Architect structured prompt systems, grounded RAG retrieval pipelines, ReAct tool agents, and LLM evaluation suites.",
+                  skills: ["Prompt Systems", "Grounded RAG", "ReAct Agents"],
+                  cta: "Start this course",
+                },
+                {
+                  href: "/courses/full-stack-web",
+                  badge: "React, Node & PostgreSQL Stack",
+                  meta: "5 modules · 15 lessons · 3 quizzes · 1 capstone",
+                  category: "Full-Stack Web Systems",
+                  title: "Full Stack Web Engineering",
+                  line: "Ship end-to-end TypeScript applications with React state architecture, Node/Express REST APIs, and PostgreSQL.",
+                  skills: ["React & TS", "Node & Express", "PostgreSQL"],
+                  cta: "Start this course",
+                },
+                {
+                  href: "/programmes/data-science-ai",
+                  badge: "Combined 2-Course Track · 30 Lessons",
+                  meta: "Links Data Analytics + Python Programming",
+                  category: "Data Science & AI Pathway",
+                  title: "Data Science & AI (Dual Track)",
+                  line: "Combine our authored Data Analytics (SQL & Commercial Review) and Python Programming & Automation courses in one track.",
+                  skills: ["SQL + Python", "Data Hygiene", "Pipeline Evals"],
+                  cta: "Open 2-course pathway",
+                },
+              ].map((course) => (
+                <li key={course.href} className="pgx-card">
+                  <Link to={course.href} className="pgx-card__link" data-clear-launcher>
+                    <span className="pgx-course-banner">
+                      <span className="pgx-course-banner__top">
+                        <span className="pgx-course-banner__brand">Self-paced course</span>
+                        <span className="pgx-course-banner__elixir">Open now</span>
+                      </span>
+                      <span className="pgx-course-banner__title">{course.badge}</span>
+                      <span className="pgx-course-banner__meta">{course.meta}</span>
+                    </span>
+                    <span className="pgx-card__body">
+                      <span className="pgx-card__kicker">{course.category}</span>
+                      <span className="pgx-card__title">{course.title}</span>
+                      <span className="pgx-card__line">{course.line}</span>
+                      <span className="pgx-skill-tags">
+                        {course.skills.map((skill) => (
+                          <span key={skill} className="pgx-skill-tag">{skill}</span>
+                        ))}
+                      </span>
+                      <span className="pgx-card__go">
+                        {course.cta} <ArrowRight />
+                      </span>
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
 
         <section className="pgx-how" aria-labelledby="pgx-how-title">
           <div className="sky-container">
             <header className="pgx-section__head">
               <h2 id="pgx-how-title">How learning works</h2>
-              <p>Every track moves from concept reading to in-browser lab execution and a verifiable portfolio artifact.</p>
+              <p>Where a programme is open, study moves from a lesson to practice, and the finished work can stay with you.</p>
             </header>
             <ol className="pgx-steps">
               {LEARNING_STEPS.map((step, index) => (
@@ -463,13 +520,13 @@ export default function ProgramsPage() {
         <section className="pgx-close" aria-labelledby="pgx-close-title">
           <div className="sky-container pgx-close__inner">
             <div>
-              <h2 id="pgx-close-title">Not sure where to begin?</h2>
-              <p>Take the 90-second skill check to match your current SQL, Python, or Product level to the right starting module.</p>
+              <h2 id="pgx-close-title">Not sure where to start?</h2>
+              <p>Explore the available learning directions and discover what fits your goals.</p>
             </div>
-            <Link className="sk-btn sk-btn-primary" to="/path">
-              Find My Path
+            <button type="button" className="sk-btn sk-btn-primary" onClick={() => document.getElementById("programme-search")?.focus()}>
+              Search programmes
               <ArrowRight />
-            </Link>
+            </button>
           </div>
         </section>
       </div>

@@ -1,7 +1,7 @@
 /**
- * HomePage — the public homepage.
+ * HomePage — the public homepage (Clean Simple v9).
  *
- * Hero → Programmes (Unified 3x2 Grid) → 60s Interactive Tryout → Elixir Credit Flywheel → Inside the Workspace → Career OS → Degrees → Skylent AI → Closing.
+ * Hero → Programmes (Clean 3x2 Grid) → Collapsed 60s SQL Sample → Simple 3-Step Workshops → Inside the Workspace → Degrees → Career OS → Skylent AI → Closing.
  */
 import { PageShell } from "@/components/shared"
 import { homeCataloguePhase } from "@/lib/catalogue-availability"
@@ -40,8 +40,8 @@ export default function HomePage() {
         <ZeroLoginInteractiveTryout />
         <HomeElixirFlywheel />
         <InsideProgramme />
-        <HomeCareer />
         <HomeDegrees />
+        <HomeCareer />
         <HomeAi />
         <HomeClosing />
       </div>
