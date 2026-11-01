@@ -79,6 +79,18 @@ export default function AboutPage() {
           </div>
         </section>
 
+        <section className="abx-section abx-section--tint" aria-labelledby="abx-founder">
+          <div className="sky-container">
+            <p className="hx-eyebrow hx-eyebrow--dark">Why We Built Skylent in Bhubaneswar</p>
+            <h2 id="abx-founder" className="hx-h2 hx-h2--sm">
+              Tired of passive video courses and ₹2,00,000 bootcamp debt traps.
+            </h2>
+            <p style={{ maxWidth: "68ch", fontSize: 16.5, lineHeight: 1.65, color: "#334155", marginTop: 12 }}>
+              Across colleges in Odisha and India, we saw bright students graduate with stacks of attendance certificates that recruiters ignored—or get pushed into ₹2 Lakh loans for generic Zoom lectures. We started Skylent Global Pvt. Ltd. in Bhubaneswar with one rule: <strong>you learn by executing real work in the browser</strong> (querying 166-row retail databases, scoping engineering PRDs, and defending RAG pipelines), and you graduate with a <strong>cryptographically verifiable dossier (/verify)</strong> that proves what you built.
+            </p>
+          </div>
+        </section>
+
         <section className="abx-section" aria-labelledby="abx-trust">
           <div className="sky-container">
             <p className="hx-eyebrow hx-eyebrow--dark">Company &amp; Academic Standards</p>

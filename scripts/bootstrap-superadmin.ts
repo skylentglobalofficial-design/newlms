@@ -7,15 +7,15 @@ import { classifyDatabaseTarget } from "../server/src/lib/database-target.js"
 const prisma = new PrismaClient()
 
 /**
- * Provisions the real Super Admin from environment variables.
+ * Provisions or updates the Super Admin from environment variables.
  *
  * SUPERADMIN_EMAIL              required
- * SUPERADMIN_PASSWORD           required only when the account does not exist yet (min 12)
+ * SUPERADMIN_PASSWORD           required for creation or password reset (min 12)
  * SUPERADMIN_NAME               optional display name
  * SUPERADMIN_ALLOW_ELEVATION    must be "yes" to add ADMIN to an existing non-admin account
  * SUPERADMIN_ALLOW_PRODUCTION   must be "yes" before this script will touch a non-local database
+ * SUPERADMIN_RESET_PASSWORD     set to "yes" to update password if account already exists
  *
- * An existing ADMIN account is left unchanged, including its password.
  * The script never prints the password or the password hash.
  */
 export async function provisionSuperadmin(env: NodeJS.ProcessEnv = process.env) {
@@ -49,7 +49,7 @@ export async function provisionSuperadmin(env: NodeJS.ProcessEnv = process.env) 
         email,
         displayName: env.SUPERADMIN_NAME?.trim() || email.split("@")[0],
         passwordHash,
-        mustChangePassword: true,
+        mustChangePassword: false,
         roles: { create: { roleId: adminRole.id } },
       },
     })
@@ -62,12 +62,36 @@ export async function provisionSuperadmin(env: NodeJS.ProcessEnv = process.env) 
         summary: `Provisioned superadmin ${created.email}`,
       },
     }).catch(() => undefined)
-    return { status: "created" as const, email: created.email, id: created.id, mustChangePassword: true }
+    return { status: "created" as const, email: created.email, id: created.id, mustChangePassword: false }
   }
 
   const roleNames = existing.roles.map((entry) => entry.role.name)
   const alreadyAdmin = roleNames.includes(RoleName.ADMIN)
+
   if (alreadyAdmin) {
+    if (env.SUPERADMIN_RESET_PASSWORD === "yes" && env.SUPERADMIN_PASSWORD) {
+      if (env.SUPERADMIN_PASSWORD.length < 12) throw new Error("SUPERADMIN_PASSWORD must be at least 12 characters")
+      const passwordHash = await bcrypt.hash(env.SUPERADMIN_PASSWORD, BCRYPT_ROUNDS)
+      await prisma.user.update({
+        where: { id: existing.id },
+        data: {
+          passwordHash,
+          mustChangePassword: false,
+          displayName: env.SUPERADMIN_NAME?.trim() || existing.displayName,
+        },
+      })
+      await prisma.adminAuditLog.create({
+        data: {
+          actorId: existing.id,
+          action: "auth.superadmin.password_reset",
+          targetType: "User",
+          targetId: existing.id,
+          summary: `Superadmin password updated for ${existing.email}`,
+        },
+      }).catch(() => undefined)
+      return { status: "password_reset" as const, email: existing.email, id: existing.id, mustChangePassword: false }
+    }
+
     await prisma.adminAuditLog.create({
       data: {
         actorId: existing.id,
@@ -87,6 +111,16 @@ export async function provisionSuperadmin(env: NodeJS.ProcessEnv = process.env) 
   await prisma.$transaction(async (tx) => {
     await tx.userRole.deleteMany({ where: { userId: existing.id, roleId: { not: adminRole.id } } })
     await tx.userRole.create({ data: { userId: existing.id, roleId: adminRole.id } })
+    const updateData: { displayName?: string; passwordHash?: string; mustChangePassword?: boolean } = {}
+    if (env.SUPERADMIN_NAME) updateData.displayName = env.SUPERADMIN_NAME.trim()
+    if (env.SUPERADMIN_PASSWORD) {
+      if (env.SUPERADMIN_PASSWORD.length < 12) throw new Error("SUPERADMIN_PASSWORD must be at least 12 characters")
+      updateData.passwordHash = await bcrypt.hash(env.SUPERADMIN_PASSWORD, BCRYPT_ROUNDS)
+      updateData.mustChangePassword = false
+    }
+    if (Object.keys(updateData).length > 0) {
+      await tx.user.update({ where: { id: existing.id }, data: updateData })
+    }
     await tx.adminAuditLog.create({
       data: {
         actorId: existing.id,
@@ -97,7 +131,7 @@ export async function provisionSuperadmin(env: NodeJS.ProcessEnv = process.env) 
       },
     })
   })
-  return { status: "elevated" as const, email: existing.email, id: existing.id, mustChangePassword: existing.mustChangePassword }
+  return { status: "elevated" as const, email: existing.email, id: existing.id, mustChangePassword: false }
 }
 
 async function main() {

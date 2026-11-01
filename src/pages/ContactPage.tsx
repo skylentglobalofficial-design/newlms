@@ -292,12 +292,20 @@ export default function ContactPage() {
             <div className="sky-label">Reach the team directly</div>
             <dl className="sky-spec ctc-details">
               <div className="sky-spec__row">
-                <dt className="sky-spec__label">Support</dt>
+                <dt className="sky-spec__label">Support Email</dt>
                 <dd className="sky-spec__value"><a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a></dd>
               </div>
               <div className="sky-spec__row">
-                <dt className="sky-spec__label">Phone</dt>
-                <dd className="sky-spec__value"><a href={`tel:${SUPPORT_PHONE}`}>{SUPPORT_PHONE}</a></dd>
+                <dt className="sky-spec__label">Phone &amp; WhatsApp</dt>
+                <dd className="sky-spec__value"><a href={`tel:+91${SUPPORT_PHONE}`}>+91 {SUPPORT_PHONE}</a></dd>
+              </div>
+              <div className="sky-spec__row">
+                <dt className="sky-spec__label">Headquarters</dt>
+                <dd className="sky-spec__value">Skylent Global Pvt. Ltd.<br />Bhubaneswar, Odisha, India</dd>
+              </div>
+              <div className="sky-spec__row">
+                <dt className="sky-spec__label">Office Hours &amp; SLA</dt>
+                <dd className="sky-spec__value">Mon – Sat · 9:30 AM – 6:30 PM IST<br />Replies within 4 business hours</dd>
               </div>
             </dl>
           </aside>

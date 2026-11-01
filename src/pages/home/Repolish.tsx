@@ -1598,9 +1598,14 @@ ORDER BY net_revenue DESC;`
                 </div>
                 <div className="hx-tryout__foot">
                   <span>Finding: Apparel discounts averaged 14.5% in April, eroding ₹28,400 in net margin.</span>
-                  <Link to="/events" className="sk-btn sk-btn-primary">
-                    Claim +50 Elixir Bonus →
-                  </Link>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+                    <Link to="/programmes/data-analytics-pro" className="sk-btn sk-btn-primary">
+                      Start Data Analytics (₹0 Pilot) →
+                    </Link>
+                    <Link to="/events" className="sk-btn sk-btn-secondary">
+                      Claim +50 Elixir Bonus →
+                    </Link>
+                  </div>
                 </div>
               </div>
             ) : null}
