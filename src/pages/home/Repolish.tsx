@@ -54,6 +54,49 @@ function OfferingIcon({ type }: { type: string }) {
   }
 }
 
+const HERO_INTERACTIVE_ROLES = [
+  {
+    id: "da",
+    label: "Data Analyst",
+    badge: "Live Browser SQL Lab",
+    title: "Audit 166 Northwind Retail Orders",
+    metric: "14.5% Apparel Margin Leak Isolated",
+    snippet: "SELECT category, ROUND(AVG(discount_pct),1) FROM northwind_sales GROUP BY 1;",
+    deliverable: "Executive SQL Margin Dossier (SKL-2026-DA)",
+    to: "/programmes/data-analytics-pro",
+  },
+  {
+    id: "pm",
+    label: "Product Manager",
+    badge: "Harbor Desk PRD Studio",
+    title: "Scope a 6-Week Bet for 12 Retail Stores",
+    metric: "2 Engineers · 18 Store Interviews Synthesised",
+    snippet: "Target: Cut weekend exception backlog by 62% without an ERP rewrite.",
+    deliverable: "Graded Product Spec & Triage Memo (SKL-2026-PM)",
+    to: "/programmes/product-management",
+  },
+  {
+    id: "ai",
+    label: "GenAI Engineer",
+    badge: "Grounded RAG Studio",
+    title: "Enforce Citation Policy & Catch Hallucinations",
+    metric: "98/100 Groundedness Benchmark Passed",
+    snippet: "Verify chunk provenance before emitting financial or policy claims.",
+    deliverable: "RAG Evaluation & Guardrail Dossier (SKL-2026-AI)",
+    to: "/programmes/generative-ai-program",
+  },
+  {
+    id: "fs",
+    label: "Full-Stack Dev",
+    badge: "Node + Postgres Ledger",
+    title: "Build Idempotent Wallet & Webhook APIs",
+    metric: "Zero Double-Spend Under Concurrent Load",
+    snippet: "BEGIN; INSERT INTO elixir_ledger ... ON CONFLICT (idempotency_key) DO NOTHING;",
+    deliverable: "Transactional Full-Stack System Dossier",
+    to: "/programmes/full-stack",
+  },
+] as const
+
 export function HomeHero({
   catalogue = "confirmed",
   openTitles = [],
@@ -61,6 +104,8 @@ export function HomeHero({
   catalogue?: "loading" | "confirmed" | "unknown"
   openTitles?: readonly string[]
 }) {
+  const [selectedRole, setSelectedRole] = useState<(typeof HERO_INTERACTIVE_ROLES)[number]["id"]>("da")
+  const activeRole = HERO_INTERACTIVE_ROLES.find((r) => r.id === selectedRole) ?? HERO_INTERACTIVE_ROLES[0]
   const dataAnalyticsOpen = catalogue === "confirmed" && openTitles.includes("Data Analytics")
   const productManagementOpen = catalogue === "confirmed" && openTitles.includes("Product Management")
   const availability = catalogue === "loading"
@@ -75,29 +120,65 @@ export function HomeHero({
       <div className="hxw-hero__bg" aria-hidden="true" />
       <div className="sky-container hxw-hero__grid">
         <div className="hxw-hero__copy">
+          <div className="hx-live-pulse hx-rise">
+            <span className="hx-live-pulse__dot" aria-hidden="true" />
+            <span>Interactive Execution Platform · Try Live Sandboxes Below (Zero Login)</span>
+          </div>
           <h1 id="hx-hero-title" className="hxw-hero__title hx-rise">
             Your education is just <em>the beginning.</em>
           </h1>
           <p className="hxw-hero__lead hx-rise">Learn something useful. Put it to work. Build a record of what you can do.</p>
           <p className="hxw-hero__today hx-rise">{availability}</p>
+
+          <div className="hx-hero-switcher hx-rise" role="region" aria-label="Interactive career track preview">
+            <p className="hx-hero-switcher__label">Click a role to preview what you will build inside Skylent OS:</p>
+            <div className="hx-hero-switcher__tabs" role="tablist">
+              {HERO_INTERACTIVE_ROLES.map((role) => (
+                <button
+                  key={role.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={selectedRole === role.id}
+                  className={`hx-hero-switcher__tab${selectedRole === role.id ? " is-on" : ""}`}
+                  onClick={() => setSelectedRole(role.id)}
+                >
+                  {role.label}
+                </button>
+              ))}
+            </div>
+            <div className="hx-hero-switcher__card" role="tabpanel">
+              <div className="hx-hero-switcher__top">
+                <span className="hx-hero-switcher__badge">{activeRole.badge}</span>
+                <span className="hx-hero-switcher__metric">{activeRole.metric}</span>
+              </div>
+              <strong className="hx-hero-switcher__title">{activeRole.title}</strong>
+              <code className="hx-hero-switcher__code">{activeRole.snippet}</code>
+              <div className="hx-hero-switcher__foot">
+                <span>Proof of Work: <b>{activeRole.deliverable}</b></span>
+                <Link to={activeRole.to} className="hx-hero-switcher__go">
+                  Open {activeRole.label} Track →
+                </Link>
+              </div>
+            </div>
+          </div>
+
           <div className="hxw-hero__actions hx-rise">
             <Link className="sk-btn sk-btn-primary hx-btn" to="/programmes">
               Explore programmes
               <ArrowRight />
             </Link>
-            <a className="sk-btn sk-btn-secondary hx-btn" href="#how-it-works">
-              See how Skylent works
+            <a className="sk-btn sk-btn-secondary hx-btn" href="#interactive-playground">
+              Try 60s Live Sandbox
             </a>
             <Link className="hxw-hero__path" to="/path">
               Find My Path
             </Link>
           </div>
-          <div className="hx-elixir-pills hx-rise" style={{ marginTop: 18 }} aria-label="Platform access and pricing summary">
+          <div className="hx-elixir-pills hx-rise" style={{ marginTop: 16 }} aria-label="Platform access and pricing summary">
             <span className="hx-elixir-pill">Pilot Enrolment: ₹0 Free Access (No Card Needed)</span>
             <span className="hx-elixir-pill">₹99 Weekend Bootcamps = 99 Elixir Coins</span>
             <span className="hx-elixir-pill">Verified SKL Dossiers (/verify)</span>
           </div>
-          
         </div>
         <div className="hxw-hero__visual hx-rise">
           <div className="hxw-stage">
@@ -112,6 +193,16 @@ export function HomeHero({
                 decoding="async"
                 fetchPriority="high"
               />
+            </div>
+            <div className="hx-hero-float hx-hero-float--top">
+              <span className="hx-hero-float__kicker">Live Studio Preview</span>
+              <strong>{activeRole.badge}</strong>
+              <span>{activeRole.metric}</span>
+            </div>
+            <div className="hx-hero-float hx-hero-float--bottom">
+              <span className="hx-hero-float__kicker">Verified Credential</span>
+              <strong>{activeRole.deliverable}</strong>
+              <Link to="/verify">Inspect sample on /verify →</Link>
             </div>
           </div>
         </div>
@@ -699,63 +790,92 @@ export function confirmedOpenTitles(programmes: CatalogProgramSummary[]): string
 const UNIFIED_HOME_TRACKS = [
   {
     kicker: "DATA",
+    group: "Data & SQL",
     badge: "Self-paced · ₹0 Pilot",
     title: "Data Analytics",
     meta: "5 modules · 15 lessons · Northwind SQL Lab",
     summary: "Query 166 order lines in the browser SQL lab, isolate 14.5% discount leakage, and write an executive margin brief.",
+    capstone: "Northwind Commercial Margin & Discount Leakage Audit",
+    rubric: "25% SQL Checks · 35% Written Briefs · 40% Capstone Defense",
+    skills: ["SQL Joins & Window Functions", "Spreadsheet Cleaning", "Margin Analysis"],
     to: "/programmes/data-analytics-pro",
     cta: "Start course",
   },
   {
     kicker: "PRODUCT",
+    group: "Product & Strategy",
     badge: "Self-paced · ₹0 Pilot",
     title: "Product Management",
     meta: "5 modules · 15 lessons · Harbor Desk Case",
     summary: "Synthesise 18 store-manager interviews, triage weekend exceptions, and scope a 6-week engineering PRD.",
+    capstone: "Harbor Desk 12-Store Operations Exception PRD",
+    rubric: "25% Framing Checks · 35% Trade-Off Memos · 40% PRD Spec",
+    skills: ["Problem Framing", "Engineering Scoping", "PRD Specification"],
     to: "/programmes/product-management",
     cta: "Start course",
   },
   {
     kicker: "ENGINEERING",
+    group: "AI & Engineering",
     badge: "Self-paced · ₹0 Pilot",
     title: "Python Programming & Automation",
     meta: "5 modules · 15 lessons · ETL & Pytest",
     summary: "Build resilient data ingestion scripts, automate schema validation, and verify edge cases with pytest.",
+    capstone: "Automated Order CSV Sanitizer & Pytest Suite",
+    rubric: "25% Syntax Checks · 35% ETL Scripts · 40% Test Harness",
+    skills: ["Python 3", "Data Cleaning & ETL", "Automated Testing"],
     to: "/courses/python-programming",
     cta: "Start course",
   },
   {
     kicker: "DATA & AI PATHWAY",
+    group: "Data & SQL",
     badge: "Self-paced · ₹0 Pilot",
     title: "Data Science & AI (Dual Track)",
     meta: "10 modules · 30 lessons · SQL + Python Dual Track",
     summary: "Combine relational SQL commercial audits with Python exploratory analysis and cohort retention workflows.",
+    capstone: "Multi-Quarter Customer Churn & Revenue Retention Model",
+    rubric: "25% Cohort Checks · 35% SQL+Python Notebooks · 40% Dossier",
+    skills: ["SQL + Python", "Exploratory Data Analysis", "Cohort Modelling"],
     to: "/programmes/data-science-ai",
     cta: "Start course",
   },
   {
     kicker: "AI SYSTEMS",
+    group: "AI & Engineering",
     badge: "Self-paced · ₹0 Pilot",
     title: "Generative AI & LLM Systems",
     meta: "5 modules · 15 lessons · Grounded RAG & Agents",
     summary: "Engineer citation-grounded RAG pipelines, run hallucination audits, and evaluate latency trade-offs.",
+    capstone: "Citation-Enforced Enterprise RAG & Guardrail Suite",
+    rubric: "25% Prompt Checks · 35% Eval Harnesses · 40% RAG Defense",
+    skills: ["Grounded RAG", "Hallucination Auditing", "Prompt Security"],
     to: "/programmes/generative-ai-program",
     cta: "Start course",
   },
   {
     kicker: "WEB",
+    group: "AI & Engineering",
     badge: "Self-paced · ₹0 Pilot",
     title: "Full Stack Web Engineering",
     meta: "5 modules · 15 lessons · React, Node & Postgres",
     summary: "Ship type-safe React interfaces, idempotent REST endpoints, and transactional PostgreSQL ledgers.",
+    capstone: "Idempotent Elixir Wallet & Transactional Ledger API",
+    rubric: "25% Architecture Checks · 35% API Specs · 40% Full-Stack Build",
+    skills: ["React & TypeScript", "Node & Express", "PostgreSQL Transactions"],
     to: "/programmes/full-stack",
     cta: "Start course",
   },
 ] as const
 
+const HOME_TRACK_FILTERS = ["All Tracks", "Data & SQL", "Product & Strategy", "AI & Engineering"] as const
+
 export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { programmes: CatalogProgramSummary[]; loading: boolean; confirmed: boolean; onRetry?: () => void }) {
+  const [activeFilter, setActiveFilter] = useState<(typeof HOME_TRACK_FILTERS)[number]>("All Tracks")
+  const [expandedTrack, setExpandedTrack] = useState<string | null>("Data Analytics")
   const rows = homeRows(programmes).filter((row) => FOCUS_SLUGS.includes(row.program.slug as (typeof FOCUS_SLUGS)[number]))
   const ordered = [...rows].sort((a, b) => FOCUS_SLUGS.indexOf(a.program.slug as (typeof FOCUS_SLUGS)[number]) - FOCUS_SLUGS.indexOf(b.program.slug as (typeof FOCUS_SLUGS)[number]))
+  const visibleTracks = UNIFIED_HOME_TRACKS.filter((t) => activeFilter === "All Tracks" || t.group === activeFilter)
   return (
     <section id="programmes" className="hx-programmes" aria-labelledby="hx-programmes-title">
       <div className="sky-container">
@@ -796,24 +916,64 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
                 <Link to="/programmes">See programmes</Link>
               </p>
             )}
-            <ul className="hx-unified-tracks" aria-label="Programmes and self-paced courses">
-              {UNIFIED_HOME_TRACKS.map((track) => (
-                <li key={track.title} className="hx-ut-card">
-                  <Link to={track.to} className="hx-ut-card__link" data-clear-launcher>
-                    <span className="hx-ut-card__top">
-                      <span className="hx-ut-card__kicker">{track.kicker}</span>
-                      <span className="hx-ut-card__badge">{track.badge}</span>
-                    </span>
-                    <strong className="hx-ut-card__title">{track.title}</strong>
-                    <span className="hx-ut-card__meta">{track.meta}</span>
-                    <span className="hx-ut-card__summary">{track.summary}</span>
-                    <span className="hx-ut-card__cta">
-                      {track.cta}
-                      <ArrowRight />
-                    </span>
-                  </Link>
-                </li>
+            <div className="hx-ut-filters" role="tablist" aria-label="Filter tracks by domain">
+              {HOME_TRACK_FILTERS.map((f) => (
+                <button
+                  key={f}
+                  type="button"
+                  role="tab"
+                  aria-selected={activeFilter === f}
+                  className={`hx-ut-filter${activeFilter === f ? " is-on" : ""}`}
+                  onClick={() => setActiveFilter(f)}
+                >
+                  {f}
+                </button>
               ))}
+            </div>
+            <ul className="hx-unified-tracks" aria-label="Programmes and self-paced courses">
+              {visibleTracks.map((track) => {
+                const isExpanded = expandedTrack === track.title
+                return (
+                  <li key={track.title} className={`hx-ut-card${isExpanded ? " is-expanded" : ""}`}>
+                    <div className="hx-ut-card__link">
+                      <span className="hx-ut-card__top">
+                        <span className="hx-ut-card__kicker">{track.kicker}</span>
+                        <span className="hx-ut-card__badge">{track.badge}</span>
+                      </span>
+                      <Link to={track.to} className="hx-ut-card__title-link" data-clear-launcher>
+                        <strong className="hx-ut-card__title">{track.title}</strong>
+                      </Link>
+                      <span className="hx-ut-card__meta">{track.meta}</span>
+                      <span className="hx-ut-card__summary">{track.summary}</span>
+                      <div className="hx-ut-card__skills">
+                        {track.skills.map((s) => (
+                          <span key={s} className="hx-ut-card__skill">{s}</span>
+                        ))}
+                      </div>
+                      {isExpanded ? (
+                        <div className="hx-ut-card__peek">
+                          <div><span>Capstone Project:</span> <b>{track.capstone}</b></div>
+                          <div><span>Grading Rubric:</span> <b>{track.rubric}</b></div>
+                        </div>
+                      ) : null}
+                      <div className="hx-ut-card__actions">
+                        <Link to={track.to} className="hx-ut-card__cta" data-clear-launcher>
+                          {track.cta}
+                          <ArrowRight />
+                        </Link>
+                        <button
+                          type="button"
+                          className="hx-ut-card__peek-btn"
+                          aria-expanded={isExpanded}
+                          onClick={() => setExpandedTrack(isExpanded ? null : track.title)}
+                        >
+                          {isExpanded ? "Hide Rubric ▲" : "Peek Lab & Rubric ▼"}
+                        </button>
+                      </div>
+                    </div>
+                  </li>
+                )
+              })}
             </ul>
             <div className="hx-sr" aria-hidden="true">
               <ProgrammeGroup
@@ -1423,7 +1583,35 @@ export function HomeClosing() {
 }
 
 
+const ELIXIR_EARN_ACTIONS = [
+  { id: "workshop", label: "Join ₹99 Weekend Bootcamp (100% Cashback)", coins: 99, defaultOn: true },
+  { id: "sandbox", label: "Complete 60s Browser SQL / Cold-Call Tryout", coins: 50, defaultOn: false },
+  { id: "streak", label: "Maintain 7-Day Execution Streak (+5/day)", coins: 35, defaultOn: false },
+] as const
+
+const ELIXIR_STORE_CASES = [
+  { title: "E-Commerce Cohort & Retention Playbook", cost: 39, track: "Data Analytics" },
+  { title: "Northwind Margin & Discount Leakage Audit", cost: 49, track: "Data Analytics" },
+  { title: "Harbor Desk Weekend Exception PRD Case", cost: 49, track: "Product Management" },
+  { title: "Enterprise B2B SaaS 90-Day Churn Teardown", cost: 99, track: "Product & Strategy" },
+] as const
+
 export function HomeElixirFlywheel() {
+  const [selectedActions, setSelectedActions] = useState<Record<string, boolean>>({
+    workshop: true,
+    sandbox: false,
+    streak: false,
+  })
+
+  const totalCoins = ELIXIR_EARN_ACTIONS.reduce(
+    (sum, item) => sum + (selectedActions[item.id] ? item.coins : 0),
+    0,
+  )
+
+  function toggleAction(id: string) {
+    setSelectedActions((prev) => ({ ...prev, [id]: !prev[id] }))
+  }
+
   const steps = [
     {
       step: "01 · Start Small",
@@ -1459,7 +1647,55 @@ export function HomeElixirFlywheel() {
           <span className="hx-elixir-pill">1 Case Study = 49–99 Elixir</span>
           <span className="hx-elixir-pill">+5 Elixir / Day Execution Streak</span>
         </div>
-        <div className="hxw-goals__grid">
+
+        <div className="hx-elixir-sim" role="region" aria-label="Interactive Elixir Wallet Simulator">
+          <div className="hx-elixir-sim__left">
+            <span className="hx-elixir-sim__kicker">Interactive Wallet Simulator · Click to toggle</span>
+            <h3>Simulate your Elixir Coin balance</h3>
+            <div className="hx-elixir-sim__toggles">
+              {ELIXIR_EARN_ACTIONS.map((act) => {
+                const active = Boolean(selectedActions[act.id])
+                return (
+                  <button
+                    key={act.id}
+                    type="button"
+                    aria-pressed={active}
+                    className={`hx-elixir-sim__btn${active ? " is-on" : ""}`}
+                    onClick={() => toggleAction(act.id)}
+                  >
+                    <span className="hx-elixir-sim__check">{active ? "✓" : "+"}</span>
+                    <span className="hx-elixir-sim__label">{act.label}</span>
+                    <strong className="hx-elixir-sim__coins">+{act.coins} Elixir</strong>
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+          <div className="hx-elixir-sim__right">
+            <div className="hx-elixir-sim__balance">
+              <span>Simulated Wallet Balance</span>
+              <strong>{totalCoins} Elixir Coins</strong>
+            </div>
+            <ul className="hx-elixir-sim__cases">
+              {ELIXIR_STORE_CASES.map((c) => {
+                const unlocked = totalCoins >= c.cost
+                return (
+                  <li key={c.title} className={unlocked ? "is-unlocked" : "is-locked"}>
+                    <div>
+                      <strong>{c.title}</strong>
+                      <span>{c.track}</span>
+                    </div>
+                    <span className="hx-elixir-sim__status">
+                      {unlocked ? `✓ Unlocked (${c.cost} Elixir)` : `Needs ${c.cost} Elixir`}
+                    </span>
+                  </li>
+                )
+              })}
+            </ul>
+          </div>
+        </div>
+
+        <div className="hxw-goals__grid" style={{ marginTop: 20 }}>
           {steps.map((item) => (
             <div key={item.step} className="hxw-goal">
               <span className="hxw-goal__content">
@@ -1484,30 +1720,116 @@ export function HomeElixirFlywheel() {
   )
 }
 
-export function ZeroLoginInteractiveTryout() {
-  const [activeTab, setActiveTab] = useState<"sql" | "coldcall">("sql")
-  const [sqlExecuted, setSqlExecuted] = useState(false)
-  const [selectedDecision, setSelectedDecision] = useState<string | null>(null)
-
-  const sqlCode = `SELECT category,
+const SQL_PRESETS = [
+  {
+    id: "category",
+    label: "Query 1 · Category Margin Audit",
+    sql: `SELECT category,
        COUNT(*) AS order_lines,
        ROUND(AVG(discount_pct), 1) AS avg_discount_pct,
        ROUND(SUM(units * unit_price * (1.0 - discount_pct / 100.0)), 0) AS net_revenue
 FROM northwind_sales
-WHERE units > 0 AND unit_price > 0 AND returned = 'no'
+WHERE units > 0 AND unit_price > 0 AND returned = no
 GROUP BY category
-ORDER BY net_revenue DESC;`
+ORDER BY net_revenue DESC;`,
+    summary: "✓ 4 categories aggregated across 166 valid rows · Total net revenue: ₹8,12,020",
+    rows: [
+      { col1: "Electronics", col2: "58", col3: "3.2%", col4: "₹2,78,140", col5: "Healthy margin floor", leak: false },
+      { col1: "Grocery", col2: "44", col3: "2.1%", col4: "₹2,21,390", col5: "Steady repeat orders", leak: false },
+      { col1: "Apparel", col2: "36", col3: "14.5%", col4: "₹1,58,420", col5: "⚠ Unapproved discount leakage", leak: true },
+      { col1: "Home Goods", col2: "28", col3: "4.0%", col4: "₹1,54,070", col5: "Within target band", leak: false },
+    ],
+  },
+  {
+    id: "apparel-leak",
+    label: "Query 2 · Isolate Apparel >10% Promo Leak",
+    sql: `SELECT region,
+       COUNT(*) AS promo_orders,
+       ROUND(AVG(discount_pct), 1) AS avg_discount_pct,
+       ROUND(SUM(units * unit_price * (discount_pct / 100.0)), 0) AS margin_lost
+FROM northwind_sales
+WHERE category = Apparel AND discount_pct > 10 AND returned = no
+GROUP BY region
+ORDER BY margin_lost DESC;`,
+    summary: "✓ Isolated 22 unapproved Apparel promo orders · ₹28,400 margin lost to stacked regional codes",
+    rows: [
+      { col1: "West Region", col2: "12", col3: "16.8%", col4: "₹16,920 lost", col5: "⚠ Stacked weekend coupon codes", leak: true },
+      { col1: "North Region", col2: "7", col3: "13.4%", col4: "₹8,110 lost", col5: "⚠ Manual override above 10%", leak: true },
+      { col1: "South Region", col2: "3", col3: "11.2%", col4: "₹3,370 lost", col5: "Clearance bundle overlap", leak: false },
+    ],
+  },
+  {
+    id: "channel",
+    label: "Query 3 · Store vs. Online Channel Split",
+    sql: `SELECT channel,
+       COUNT(*) AS valid_orders,
+       ROUND(AVG(discount_pct), 1) AS avg_discount_pct,
+       ROUND(SUM(units * unit_price * (1.0 - discount_pct / 100.0)), 0) AS net_revenue
+FROM northwind_sales
+WHERE units > 0 AND unit_price > 0 AND returned = no
+GROUP BY channel
+ORDER BY net_revenue DESC;`,
+    summary: "✓ Channel comparison complete across 166 valid rows · Online discounts run 2.6x higher than store",
+    rows: [
+      { col1: "Store POS", col2: "96", col3: "3.1%", col4: "₹4,86,510", col5: "Strict POS discount cap active", leak: false },
+      { col1: "Online Checkout", col2: "70", col3: "8.2%", col4: "₹3,25,510", col5: "⚠ Missing promo-stacking guardrail", leak: true },
+    ],
+  },
+] as const
+
+const PRD_BACKLOG_ITEMS = [
+  { id: "queue", title: "Automated Weekend Exception Queue & Store Owner Tag", weeks: 6, impact: "High: Cuts Monday backlog by 62%", recommended: true },
+  { id: "sla", title: "4-Hour Store Manager SLA Escalation Alert", weeks: 4, impact: "High: Prevents unowned customer refunds", recommended: true },
+  { id: "audit", title: "Shift Handoff Note & Reason-Code Picker", weeks: 2, impact: "Medium: Gives ops clean root-cause tags", recommended: true },
+  { id: "erp", title: "Full Legacy Warehouse ERP Database Rewrite", weeks: 14, impact: "Trap: Blows past 6-week, 2-engineer constraint", recommended: false },
+] as const
+
+const RAG_SENTENCES = [
+  {
+    id: "s1",
+    text: "1. Per Policy Doc §4.2, Apparel promotional discounts are capped at 10% unless approved by the Regional Director.",
+    isHallucination: false,
+    feedback: "✓ Grounded Citation: Directly verified against Policy Doc §4.2.",
+  },
+  {
+    id: "s2",
+    text: "2. Northwind automatically refunds 25% of shipping fees in crypto tokens whenever a package is delayed by 12 hours.",
+    isHallucination: true,
+    feedback: "🎯 Caught the Hallucination! Neither shipping crypto refunds nor a 12-hour clause exists in the source context.",
+  },
+  {
+    id: "s3",
+    text: "3. Across 166 validated order lines in Q1, Electronics generated ₹2,78,140 in net revenue at a 3.2% average discount.",
+    isHallucination: false,
+    feedback: "✓ Grounded Citation: Matches exact SQL aggregation on northwind_sales.csv.",
+  },
+] as const
+
+export function ZeroLoginInteractiveTryout() {
+  const [activeTab, setActiveTab] = useState<"sql" | "prd" | "rag" | "coldcall">("sql")
+  const [presetId, setPresetId] = useState<(typeof SQL_PRESETS)[number]["id"]>("category")
+  const [sqlExecuted, setSqlExecuted] = useState(true)
+  const [selectedDecision, setSelectedDecision] = useState<string | null>(null)
+  const [selectedPrd, setSelectedPrd] = useState<Record<string, boolean>>({ queue: true, sla: true, audit: false, erp: false })
+  const [pickedRag, setPickedRag] = useState<string | null>(null)
+
+  const currentPreset = SQL_PRESETS.find((p) => p.id === presetId) ?? SQL_PRESETS[0]
+  const totalPrdWeeks = PRD_BACKLOG_ITEMS.reduce((sum, item) => sum + (selectedPrd[item.id] ? item.weeks : 0), 0)
+
+  function togglePrdItem(id: string) {
+    setSelectedPrd((prev) => ({ ...prev, [id]: !prev[id] }))
+  }
 
   return (
-    <section className="hxw-tryout" aria-labelledby="hx-tryout-title">
+    <section id="interactive-playground" className="hxw-tryout" aria-labelledby="hx-tryout-title">
       <div className="sky-container">
         <div className="hx-tryout__head">
           <div>
             <p className="hxw-goals__eyebrow">Try Skylent in 60 seconds · No login needed</p>
-            <h2 id="hx-tryout-title" className="hxw-goals__title">Run a real SQL audit or answer a case cold call.</h2>
+            <h2 id="hx-tryout-title" className="hxw-goals__title">Run a real SQL audit, scope a PRD, or spot an AI hallucination.</h2>
           </div>
           <p className="hxw-goals__aside">
-            Every Skylent course is built around real datasets and written decisions. Try a live query from Data Analytics or a 60-second decision from Product Management below.
+            Don’t just read a syllabus—test-drive 4 live interactive studios from Data Analytics, Product Management, and GenAI right here in your browser.
           </p>
         </div>
 
@@ -1524,11 +1846,29 @@ ORDER BY net_revenue DESC;`
           <button
             type="button"
             role="tab"
+            aria-selected={activeTab === "prd"}
+            className={`hx-tryout__tab${activeTab === "prd" ? " is-on" : ""}`}
+            onClick={() => setActiveTab("prd")}
+          >
+            02 · Product PRD Scope Simulator
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={activeTab === "rag"}
+            className={`hx-tryout__tab${activeTab === "rag" ? " is-on" : ""}`}
+            onClick={() => setActiveTab("rag")}
+          >
+            03 · GenAI Hallucination Spotter
+          </button>
+          <button
+            type="button"
+            role="tab"
             aria-selected={activeTab === "coldcall"}
             className={`hx-tryout__tab${activeTab === "coldcall" ? " is-on" : ""}`}
             onClick={() => setActiveTab("coldcall")}
           >
-            02 · 60-Second Case Cold Call
+            04 · 60-Second Case Cold Call
           </button>
         </div>
 
@@ -1537,62 +1877,58 @@ ORDER BY net_revenue DESC;`
             <div className="hx-tryout__bar">
               <div>
                 <strong className="hx-tryout__file">northwind_sales.csv (166 valid rows · ₹812,020 net revenue)</strong>
-                <span className="hx-tryout__sub">Task: Spot which category is losing margin to unapproved discounting</span>
+                <span className="hx-tryout__sub">Click any query preset below and run it live against the dataset:</span>
               </div>
               <button
                 type="button"
                 className="sk-btn sk-btn-primary"
                 onClick={() => setSqlExecuted(true)}
               >
-                {sqlExecuted ? "Run Again" : "Run Query ▶"}
+                {sqlExecuted ? "Re-Run Query ▶" : "Run Query ▶"}
               </button>
             </div>
-            <pre className="hx-tryout__code">{sqlCode}</pre>
+            <div className="hx-sql-presets" role="group" aria-label="SQL query presets">
+              {SQL_PRESETS.map((p) => (
+                <button
+                  key={p.id}
+                  type="button"
+                  className={`hx-sql-preset${presetId === p.id ? " is-on" : ""}`}
+                  onClick={() => {
+                    setPresetId(p.id)
+                    setSqlExecuted(true)
+                  }}
+                >
+                  {p.label}
+                </button>
+              ))}
+            </div>
+            <pre className="hx-tryout__code">{currentPreset.sql}</pre>
             {sqlExecuted ? (
               <div className="hx-tryout__result">
                 <div className="hx-tryout__ok">
-                  ✓ 4 categories aggregated across 166 valid rows · Total net revenue: ₹8,12,020
+                  {currentPreset.summary}
                 </div>
                 <div style={{ overflowX: "auto" }}>
                   <table className="hx-tryout__table">
                     <thead>
                       <tr>
-                        <th>category</th>
+                        <th>group / dimension</th>
                         <th>order_lines</th>
                         <th>avg_discount_pct</th>
-                        <th>net_revenue</th>
-                        <th>finding</th>
+                        <th>revenue / impact</th>
+                        <th>diagnostic finding</th>
                       </tr>
                     </thead>
                     <tbody>
-                      <tr>
-                        <td>Electronics</td>
-                        <td>58</td>
-                        <td>3.2%</td>
-                        <td>₹2,78,140</td>
-                        <td>Healthy margin floor</td>
-                      </tr>
-                      <tr>
-                        <td>Grocery</td>
-                        <td>44</td>
-                        <td>2.1%</td>
-                        <td>₹2,21,390</td>
-                        <td>Steady repeat orders</td>
-                      </tr>
-                      <tr className="is-leak">
-                        <td>Apparel</td>
-                        <td>36</td>
-                        <td>14.5%</td>
-                        <td>₹1,58,420</td>
-                        <td>⚠ Unapproved discount leakage</td>
-                      </tr>
-                      <tr>
-                        <td>Home Goods</td>
-                        <td>28</td>
-                        <td>4.0%</td>
-                        <td>₹1,54,070</td>
-                        <td>Within target band</td>
-                      </tr>
+                      {currentPreset.rows.map((r) => (
+                        <tr key={r.col1} className={r.leak ? "is-leak" : undefined}>
+                          <td>{r.col1}</td>
+                          <td>{r.col2}</td>
+                          <td>{r.col3}</td>
+                          <td>{r.col4}</td>
+                          <td>{r.col5}</td>
+                        </tr>
+                      ))}
                     </tbody>
                   </table>
                 </div>
@@ -1609,6 +1945,97 @@ ORDER BY net_revenue DESC;`
                 </div>
               </div>
             ) : null}
+          </div>
+        ) : activeTab === "prd" ? (
+          <div className="hx-tryout__coldcall">
+            <div className="hx-tryout__bar">
+              <div>
+                <span className="sky-label">Harbor Desk Operations Case · Interactive Sprint Scope Simulator</span>
+                <p style={{ margin: "4px 0 0", fontSize: 13.5, color: "#cbd5e1" }}>
+                  Constraint: You have <strong>2 engineers for 6 weeks (12 engineer-weeks max)</strong>. Toggle backlog items below to build a shippable sprint without exceeding capacity:
+                </p>
+              </div>
+              <span
+                className="sky-mono"
+                style={{
+                  padding: "6px 12px",
+                  borderRadius: 999,
+                  fontSize: 12.5,
+                  fontWeight: 700,
+                  background: totalPrdWeeks > 12 ? "rgba(239, 68, 68, 0.2)" : "rgba(16, 185, 129, 0.2)",
+                  color: totalPrdWeeks > 12 ? "#fca5a5" : "#6ee7b7",
+                  border: `1px solid ${totalPrdWeeks > 12 ? "rgba(239,68,68,0.45)" : "rgba(16,185,129,0.45)"}`,
+                }}
+              >
+                Capacity Used: {totalPrdWeeks} / 12 Engineer-Weeks
+              </span>
+            </div>
+            <div className="hx-tryout__options" style={{ marginTop: 14 }}>
+              {PRD_BACKLOG_ITEMS.map((item) => {
+                const checked = Boolean(selectedPrd[item.id])
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => togglePrdItem(item.id)}
+                    className={`hx-tryout__opt${checked ? " is-selected" : ""}`}
+                  >
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
+                      <strong>{checked ? "✓ " : "+ "}{item.title}</strong>
+                      <span className="sky-mono" style={{ fontSize: 12, color: "#93c5fd" }}>{item.weeks} eng-wks</span>
+                    </div>
+                    <div style={{ fontSize: 12.5, color: "#94a3b8", marginTop: 4 }}>{item.impact}</div>
+                  </button>
+                )
+              })}
+            </div>
+            <div className="hx-tryout__foot">
+              <span>
+                {totalPrdWeeks > 12
+                  ? `⚠ Over Capacity (${totalPrdWeeks}/12 eng-wks): Uncheck the 14-week ERP rewrite so your 2 engineers can ship on time!`
+                  : totalPrdWeeks === 12 && !selectedPrd.erp
+                    ? "✓ Optimal 12/12 Eng-Week Scope! You solved weekend exception ownership for all 12 stores within budget."
+                    : `Sprint has ${12 - totalPrdWeeks} engineer-weeks remaining. Select the highest-impact items up to 12 weeks.`}
+              </span>
+              <Link to="/programmes/product-management" className="sk-btn sk-btn-primary">
+                Open Product Management Track →
+              </Link>
+            </div>
+          </div>
+        ) : activeTab === "rag" ? (
+          <div className="hx-tryout__coldcall">
+            <div className="hx-tryout__bar">
+              <div>
+                <span className="sky-label">GenAI &amp; LLM Systems · Grounded RAG Hallucination Audit</span>
+                <p style={{ margin: "4px 0 0", fontSize: 13.5, color: "#cbd5e1" }}>
+                  An LLM agent generated the 3 statements below. <strong>Click the statement that is an ungrounded hallucination:</strong>
+                </p>
+              </div>
+              <span className="sky-mono" style={{ fontSize: 12 }}>Citation Guardrail Lab</span>
+            </div>
+            <div className="hx-tryout__options" style={{ marginTop: 14 }}>
+              {RAG_SENTENCES.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => setPickedRag(item.id)}
+                  className={`hx-tryout__opt${pickedRag === item.id ? " is-selected" : ""}`}
+                >
+                  <div>{item.text}</div>
+                  {pickedRag === item.id ? (
+                    <div className={`hx-tryout__peer${item.isHallucination ? " is-optimal" : ""}`}>
+                      {item.feedback}
+                    </div>
+                  ) : null}
+                </button>
+              ))}
+            </div>
+            <div className="hx-tryout__foot">
+              <span>In Skylent’s GenAI track, you build automated citation harnesses that block ungrounded claims before production.</span>
+              <Link to="/programmes/generative-ai-program" className="sk-btn sk-btn-primary">
+                Explore GenAI &amp; LLM Track →
+              </Link>
+            </div>
           </div>
         ) : (
           <div className="hx-tryout__coldcall">

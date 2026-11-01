@@ -1194,3 +1194,420 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* ── Interactive Hero Switcher, Floating Studio Badges & Elixir Simulator ── */
+.hx-live-pulse {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: #ede9fe;
+  border: 1px solid #ddd6fe;
+  color: #43349f;
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+.hx-live-pulse__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.22);
+}
+.hx-hero-switcher {
+  margin: 18px 0 20px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 10px 28px -14px rgba(15, 23, 42, 0.12);
+}
+.hx-hero-switcher__label {
+  margin: 0 0 10px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748b;
+}
+.hx-hero-switcher__tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.hx-hero-switcher__tab {
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  color: #334155;
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 650;
+  cursor: pointer;
+  transition: all 140ms ease;
+}
+.hx-hero-switcher__tab:hover {
+  border-color: #c4b5fd;
+}
+.hx-hero-switcher__tab.is-on {
+  background: #5142b5;
+  border-color: #5142b5;
+  color: #ffffff;
+}
+.hx-hero-switcher__card {
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #0f172a;
+  color: #f8fafc;
+  display: grid;
+  gap: 6px;
+}
+.hx-hero-switcher__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.hx-hero-switcher__badge {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #a5b4fc;
+}
+.hx-hero-switcher__metric {
+  font-size: 11.5px;
+  font-weight: 650;
+  color: #6ee7b7;
+}
+.hx-hero-switcher__title {
+  font-size: 15px;
+  font-weight: 750;
+  color: #ffffff;
+}
+.hx-hero-switcher__code {
+  display: block;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  font-family: var(--sk-font-mono);
+  font-size: 11.5px;
+  color: #e2e8f0;
+  overflow-x: auto;
+}
+.hx-hero-switcher__foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 12px;
+  color: #cbd5e1;
+}
+.hx-hero-switcher__go {
+  color: #fbbf24;
+  font-weight: 700;
+  text-decoration: none;
+}
+.hx-hero-switcher__go:hover {
+  text-decoration: underline;
+}
+
+.hxw-stage {
+  position: relative;
+}
+.hx-hero-float {
+  position: absolute;
+  z-index: 2;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: rgba(15, 23, 42, 0.92);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: #f8fafc;
+  display: grid;
+  gap: 2px;
+  max-width: 240px;
+  box-shadow: 0 14px 32px -12px rgba(15, 23, 42, 0.45);
+}
+.hx-hero-float--top {
+  top: 16px;
+  left: -14px;
+}
+.hx-hero-float--bottom {
+  bottom: 18px;
+  right: -12px;
+}
+.hx-hero-float__kicker {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #fbbf24;
+}
+.hx-hero-float strong {
+  font-size: 13px;
+  color: #ffffff;
+}
+.hx-hero-float span,
+.hx-hero-float a {
+  font-size: 11.5px;
+  color: #93c5fd;
+  text-decoration: none;
+}
+@media (max-width: 900px) {
+  .hx-hero-float {
+    position: static;
+    max-width: none;
+    margin-top: 10px;
+  }
+}
+
+/* Interactive Track Filters & Quick Peek */
+.hx-ut-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 18px;
+}
+.hx-ut-filter {
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  color: #334155;
+  font: inherit;
+  font-size: 13.5px;
+  font-weight: 650;
+  cursor: pointer;
+  transition: all 140ms ease;
+}
+.hx-ut-filter.is-on {
+  background: #5142b5;
+  border-color: #5142b5;
+  color: #ffffff;
+}
+.hx-ut-card__title-link {
+  color: inherit;
+  text-decoration: none;
+}
+.hx-ut-card__skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+.hx-ut-card__skill {
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: #f1f5f9;
+  color: #475569;
+  font-size: 11.5px;
+  font-weight: 600;
+}
+.hx-ut-card__peek {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #faf9ff;
+  border: 1px solid #ddd6fe;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #334155;
+  display: grid;
+  gap: 4px;
+}
+.hx-ut-card__peek span {
+  color: #5142b5;
+  font-weight: 700;
+}
+.hx-ut-card__actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-top: auto;
+  padding-top: 14px;
+}
+.hx-ut-card__actions .hx-ut-card__cta {
+  margin-top: 0;
+  padding-top: 0;
+}
+.hx-ut-card__peek-btn {
+  padding: 4px 10px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  color: #475569;
+  font: inherit;
+  font-size: 11.5px;
+  font-weight: 650;
+  cursor: pointer;
+}
+.hx-ut-card__peek-btn:hover {
+  border-color: #c4b5fd;
+  color: #5142b5;
+}
+
+/* SQL Query Presets */
+.hx-sql-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 10px 18px 0;
+}
+.hx-sql-preset {
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.05);
+  color: #cbd5e1;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.hx-sql-preset.is-on {
+  background: rgba(99, 102, 241, 0.28);
+  border-color: #818cf8;
+  color: #ffffff;
+}
+
+/* Interactive Elixir Simulator */
+.hx-elixir-sim {
+  margin-top: 18px;
+  padding: 20px 22px;
+  border-radius: 18px;
+  background: #ffffff;
+  border: 1px solid #ddd6fe;
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  gap: 22px;
+  align-items: start;
+}
+.hx-elixir-sim__kicker {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #5142b5;
+}
+.hx-elixir-sim__left h3 {
+  margin: 4px 0 12px;
+  font-family: var(--sk-font-heading);
+  font-size: 19px;
+  font-weight: 750;
+}
+.hx-elixir-sim__toggles {
+  display: grid;
+  gap: 8px;
+}
+.hx-elixir-sim__btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  color: #1e293b;
+  font: inherit;
+  font-size: 13.5px;
+  text-align: left;
+  cursor: pointer;
+  transition: all 140ms ease;
+}
+.hx-elixir-sim__btn.is-on {
+  border-color: #5142b5;
+  background: #f5f3ff;
+}
+.hx-elixir-sim__check {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  background: #e2e8f0;
+  font-weight: 800;
+  font-size: 12px;
+}
+.hx-elixir-sim__btn.is-on .hx-elixir-sim__check {
+  background: #5142b5;
+  color: #ffffff;
+}
+.hx-elixir-sim__label {
+  flex: 1;
+  font-weight: 600;
+}
+.hx-elixir-sim__coins {
+  color: #5142b5;
+  font-weight: 750;
+}
+.hx-elixir-sim__right {
+  padding: 16px;
+  border-radius: 14px;
+  background: #0f172a;
+  color: #f8fafc;
+}
+.hx-elixir-sim__balance {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+.hx-elixir-sim__balance span {
+  font-size: 12px;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.hx-elixir-sim__balance strong {
+  font-size: 20px;
+  font-weight: 800;
+  color: #fbbf24;
+}
+.hx-elixir-sim__cases {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.hx-elixir-sim__cases li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  font-size: 12.5px;
+}
+.hx-elixir-sim__cases li strong {
+  display: block;
+  color: #f8fafc;
+}
+.hx-elixir-sim__cases li span {
+  font-size: 11px;
+  color: #94a3b8;
+}
+.hx-elixir-sim__cases li.is-unlocked .hx-elixir-sim__status {
+  color: #6ee7b7;
+  font-weight: 700;
+}
+.hx-elixir-sim__cases li.is-locked .hx-elixir-sim__status {
+  color: #fca5a5;
+}
+@media (max-width: 900px) {
+  .hx-elixir-sim {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
