@@ -1,8 +1,7 @@
 /**
  * HomePage — the public homepage.
  *
- * Hero → How learning works → Programmes → Degrees → Career OS → Skylent AI → Closing.
- * Navigation and footer come from PageShell. Career OS and institutions stay on their own pages.
+ * Hero → Programmes (Unified 3x2 Grid) → 60s Interactive Tryout → Elixir Credit Flywheel → Inside the Workspace → Career OS → Degrees → Skylent AI → Closing.
  */
 import { PageShell } from "@/components/shared"
 import { homeCataloguePhase } from "@/lib/catalogue-availability"
@@ -32,17 +31,17 @@ export default function HomePage() {
           catalogue={catalogue}
           openTitles={catalogue === "confirmed" ? confirmedOpenTitles(catalog.data ?? []) : []}
         />
-        <ZeroLoginInteractiveTryout />
-        <InsideProgramme />
         <HomeProgrammes
           programmes={catalog.data ?? []}
           loading={catalogue === "loading"}
           confirmed={catalogue === "confirmed"}
           onRetry={() => void catalog.reload()}
         />
+        <ZeroLoginInteractiveTryout />
         <HomeElixirFlywheel />
-        <HomeDegrees />
+        <InsideProgramme />
         <HomeCareer />
+        <HomeDegrees />
         <HomeAi />
         <HomeClosing />
       </div>
