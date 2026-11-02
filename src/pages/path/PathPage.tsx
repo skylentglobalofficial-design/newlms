@@ -208,7 +208,8 @@ export default function PathPage() {
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
   const [diagAnswers, setDiagAnswers] = useState<Record<string, string>>({})
-  const [diagOpen, setDiagOpen] = useState(false)
+  const [mode, setMode] = useState<"guided" | "benchmark">("guided")
+  const [diagOpen, setDiagOpen] = useState(true)
   const [stageVisible, setStageVisible] = useState(true)
 
   useEffect(() => {
@@ -312,8 +313,44 @@ export default function PathPage() {
       <main className="path-v2" onKeyDown={handleMainKeyDown}>
         <div className="site-light path-v2__shell">
           <header className="path-v2__top cine-in cine-in--fade">
-            <p className="sky-label">Find my path</p>
+            <p className="sky-label">Find my path · Choose your diagnostic mode</p>
             <PathTruthNote />
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 12, marginTop: 16 }} role="tablist" aria-label="Diagnostic mode">
+              <button
+                type="button"
+                role="tab"
+                aria-selected={mode === "guided"}
+                onClick={() => setMode("guided")}
+                style={{
+                  textAlign: "left",
+                  padding: "14px 16px",
+                  borderRadius: 12,
+                  border: mode === "guided" ? "1.5px solid #0f172a" : "1px solid #e2e8f0",
+                  background: mode === "guided" ? "#f8fafc" : "#ffffff",
+                  cursor: "pointer",
+                }}
+              >
+                <strong style={{ display: "block", fontSize: 14, color: "#0f172a" }}>01 · 7-Step Guided Path Finder</strong>
+                <span style={{ fontSize: 12.5, color: "#475569" }}>Choose between Data, Product, AI, or Degree tracks</span>
+              </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={mode === "benchmark"}
+                onClick={() => { setMode("benchmark"); setDiagOpen(true); }}
+                style={{
+                  textAlign: "left",
+                  padding: "14px 16px",
+                  borderRadius: 12,
+                  border: mode === "benchmark" ? "1.5px solid #0f172a" : "1px solid #e2e8f0",
+                  background: mode === "benchmark" ? "#f8fafc" : "#ffffff",
+                  cursor: "pointer",
+                }}
+              >
+                <strong style={{ display: "block", fontSize: 14, color: "#0f172a" }}>02 · 90-Second Skill Test (3 Scenarios)</strong>
+                <span style={{ fontSize: 12.5, color: "#475569" }}>Test your SQL, Product &amp; GenAI readiness score</span>
+              </button>
+            </div>
           </header>
 
           {hasSavedResult ? (

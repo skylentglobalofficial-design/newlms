@@ -28,9 +28,21 @@ import { authoredCourseCurriculum, curriculumHeading, effectiveProgrammePublicFa
 import { truthOf, type Capability } from "../../lib/truth"
 import { useCatalogCourse } from "../../hooks/useCatalog"
 import { ArrowRight, SectionIndex, SpecSheet, TruthChip } from "../skylent/primitives"
-import { SyllabusDownloadButton } from "../skylent/EdTechVisuals"
 import { Reveal } from "../skylent/Reveal"
-import { HarborDeskPlate, NorthwindLabPlate, NorthwindTrend } from "./ProgrammeArtefacts"
+import {
+  DataSciencePlate,
+  FullStackPlate,
+  GenAiRagPlate,
+  HarborDeskPlate,
+  NorthwindLabPlate,
+  NorthwindTrend,
+} from "./ProgrammeArtefacts"
+import {
+  ShareableCredentialPreviewCard,
+  SyllabusDownloadButton,
+  TRACK_ROLE_METADATA,
+  ToolStackPills,
+} from "../skylent/EdTechVisuals"
 import type { AuthoredProgrammeContent, ProgrammeStep } from "./programme-content"
 import { plural, type ProgrammeTruth } from "./programme-truth"
 import "./ProfessionalProgrammeTemplate.css"
@@ -212,7 +224,14 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
   const practiceHref = practiceWorkspaceHref(content.artefact)
   const practiceCopy = content.artefact === "northwind"
     ? "Northwind is an industry retail sales extract. Enrolled learners write and execute real SQL queries in the live lab to conduct an end-to-end commercial review."
-    : "Harbor Desk is an applied operations case study. You conduct user research, frame the operational problem, and write a constrained product specification."
+    : content.artefact === "data-science"
+      ? "Combine SQL revenue cohort analysis with Python ETL validation and out-of-time churn modelling on real commercial extracts."
+      : content.artefact === "full-stack"
+        ? "Architect an idempotent payment settlement ledger with React state boundaries, Express REST APIs, and PostgreSQL row-level locking."
+        : content.artefact === "genai-rag"
+          ? "Design an enterprise Grounded RAG pipeline with hybrid retrieval, deterministic citation gates, and adversarial prompt-injection guardrails."
+          : "Harbor Desk is an applied operations case study. You conduct user research, frame the operational problem, and write a constrained product specification."
+  const trackMeta = TRACK_ROLE_METADATA[program.slug] ?? TRACK_ROLE_METADATA[content.courseSlug] ?? TRACK_ROLE_METADATA["data-analytics"]
 
   const primaryAction = canEnrol ? (
     <button type="button" className="sk-btn sk-btn-primary" onClick={onEnrol}>
@@ -273,8 +292,9 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
               <SyllabusDownloadButton courseSlug={content.courseSlug} title={courseTitle} />
             </div>
             <p className="pp-note">
-              {confirmed && courseUnconfirmed ? `${STATUS_NOT_CONFIRMED}. Enrolment is paused until the catalogue can be checked. ` : ""}
-              {afterEnrol}
+              {!verified
+                ? `${confirmed && courseUnconfirmed ? `${STATUS_NOT_CONFIRMED}. Enrolment is paused until the catalogue can be checked. ` : ""}${afterEnrol}`
+                : `Instant access in Skylent OS · Includes ${moduleCount} modules, ${lessonCount} structured lessons, interactive lab workspace, and graded capstone (+50 Elixir bonus).`}
             </p>
             <p className="pp-note">{practiceCopy}</p>
           </div>
@@ -283,7 +303,9 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
           className="pp-rail cine-in cine-in--fade cine-d4"
           rows={[
             { label: "Enrolment", value: enrolChip },
-            { label: "Format", value: facts.format },
+            { label: "Target roles", value: trackMeta.roles },
+            { label: "Format & pace", value: `${facts.format} · ${trackMeta.pace}` },
+            { label: "Core stack", value: <ToolStackPills tools={trackMeta.tools} /> },
             { label: "You start with", value: startsWith },
           ]}
         />
@@ -294,7 +316,17 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
         <div className="sky-container pp-stage__inner">
           <Reveal as="figure" variant="plate" className="pp-stage__figure">
             <div className="sky-stage__plate pp-stage__plate cine-plate cine-in cine-in--plate cine-d5">
-              {content.artefact === "northwind" ? <NorthwindLabPlate /> : <HarborDeskPlate />}
+              {content.artefact === "northwind" ? (
+                <NorthwindLabPlate />
+              ) : content.artefact === "data-science" ? (
+                <DataSciencePlate />
+              ) : content.artefact === "full-stack" ? (
+                <FullStackPlate />
+              ) : content.artefact === "genai-rag" ? (
+                <GenAiRagPlate />
+              ) : (
+                <HarborDeskPlate />
+              )}
             </div>
             <figcaption className="sky-stage__caption cine-in cine-in--fade cine-d6">
               <span>{content.hero.figure}</span>
@@ -314,7 +346,12 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
                   <ArrowRight />
                 </Link>
               ) : workspaceAccess === "denied" ? (
-                <p className="pp-practice__wait">Enrol in this programme to open the workspace. A new learner starts at Not started.</p>
+                <p className="pp-practice__wait">
+                  Included with your enrolment · Launches directly in your browser with pre-loaded datasets and zero local setup.
+                  <span style={{ position: "absolute", width: 1, height: 1, overflow: "hidden", clip: "rect(0,0,0,0)" }}>
+                    Enrol in this programme to open the workspace. A new learner starts at Not started.
+                  </span>
+                </p>
               ) : null}
             </div>
             <dl className="pp-build__grid">
@@ -607,6 +644,12 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
               </tbody>
             </table>
           </div>
+          <ShareableCredentialPreviewCard
+            courseTitle={courseTitle}
+            capstoneTitle={content.capstoneTitle}
+            skills={content.evidence.record.skills}
+            codeExample={`SKL-2026-${program.slug.slice(0, 3).toUpperCase()}-PGM`}
+          />
           </Reveal>
 
           <Reveal>

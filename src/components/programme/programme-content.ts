@@ -119,7 +119,7 @@ export const HARBOR = {
 
 /* ── Template slots ───────────────────────────────────────────────────────── */
 
-export type ProgrammeArtefactId = "northwind" | "harbor-desk"
+export type ProgrammeArtefactId = "northwind" | "harbor-desk" | "data-science" | "full-stack" | "genai-rag"
 
 export type ProgrammeStepNote =
   | { kind: "fact"; text: string }
@@ -236,7 +236,7 @@ const DATA_ANALYTICS: AuthoredProgrammeContent = {
     label: "The capstone",
     heading: "One dataset, six steps, one recommendation.",
     intro:
-      "The Northwind Commercial Review asks you to review the sales extract and produce a concise, evidence-based commercial summary. The brief does not contain the answer.",
+      "The Northwind Commercial Review walks you through cleaning a 180-row retail extract, isolating category margin leakage in SQL, and defending an executive recommendation.",
     disclaimer:
       "Completed capstone work is evaluated against our 4-criterion rubric and links directly to your Career OS portfolio and verified credential record.",
     steps: [
@@ -353,7 +353,7 @@ const PRODUCT_MANAGEMENT: AuthoredProgrammeContent = {
     label: "The capstone",
     heading: "One case, six steps, one bet.",
     intro:
-      "The Harbor Desk product case asks you to frame the Harbor Retail operations problem and recommend one constrained product bet, with a spec someone could implement. The brief does not contain the answer.",
+      "The Harbor Desk product case challenges you to diagnose weekend delivery failures across 12 retail stores and scope a shippable 6-week engineering specification.",
     disclaimer:
       "Completed Harbor Desk specifications are evaluated against our product rubric and link directly to your Career OS portfolio.",
     photo: {
@@ -367,14 +367,14 @@ const PRODUCT_MANAGEMENT: AuthoredProgrammeContent = {
       {
         number: "01",
         title: "Read the case",
-        summary: "Open the Harbor Desk notes. Do not invent interviews.",
+        summary: "Synthesise the 4 store-manager interviews and 9 weekend delivery exception logs.",
         worked: true,
         note: { kind: "fact", text: `${HARBOR.interviews} interviews, ${HARBOR.exceptions} exceptions` },
       },
       {
         number: "02",
         title: "Frame the problem",
-        summary: "Separate store jobs from the requested Gmail solution.",
+        summary: "Distinguish the underlying store workflow breakdown from surface-level feature requests.",
         worked: true,
         note: { kind: "fact", text: "store jobs, not Gmail" },
       },
@@ -460,9 +460,333 @@ const PRODUCT_MANAGEMENT: AuthoredProgrammeContent = {
   closing: { line: "Begin with one question: whose problem are you choosing?" },
 }
 
+
+const DATA_SCIENCE_AI: AuthoredProgrammeContent = {
+  programmeSlug: "data-science-ai",
+  courseSlug: "data-analytics",
+  artefact: "data-science",
+  cardLine: "Combine SQL commercial analytics and Python data pipelines with cohort validation and churn modelling.",
+  capstoneTitle: "Cohort Retention & Revenue Leakage Audit",
+  hero: {
+    headline: "Combine SQL analytics and Python pipelines to validate real commercial cohorts.",
+    signal: "validate real commercial cohorts.",
+    summary: dataAnalyticsModuleSummary,
+    figure: "Northwind SQL & Cohort Validation Lab",
+    figureNote: "Dual-track pathway linking Data Analytics (SQL) and Python Programming & Automation",
+  },
+  specSheet: {
+    material: {
+      label: "Datasets",
+      value: "Northwind & Churn Cohorts",
+      note: "180 retail rows + retention cohorts",
+    },
+    tools: { label: "You work in" },
+  },
+  project: {
+    label: "The capstone",
+    heading: "Two linked tracks, six steps, one defensible model brief.",
+    intro:
+      "You combine SQL commercial aggregation on Northwind with Python pipeline validation and out-of-time cohort evaluation to isolate retention and margin drivers.",
+    disclaimer:
+      "Completed capstone work is evaluated against our 4-criterion rubric and links directly to your Career OS portfolio and verified credential record.",
+    steps: [
+      {
+        number: "01",
+        title: "Audit raw transaction grain",
+        summary: "Filter invalid returns and duplicate order rows across the commercial extract.",
+        worked: true,
+        note: { kind: "fact", text: `valid_rows = ${NORTHWIND.validRows} of ${NORTHWIND.rows}` },
+      },
+      {
+        number: "02",
+        title: "Build cohort retention matrices",
+        summary: "Group customer repeat behaviour and category margin by acquisition window.",
+        worked: true,
+        note: { kind: "fact", text: `${NORTHWIND.categories.length} categories, ${NORTHWIND.netRevenueLabel}` },
+      },
+      {
+        number: "03",
+        title: "Check temporal feature leakage",
+        summary: "Enforce strict out-of-time train/validation splits before scoring churn risk.",
+        worked: true,
+        note: { kind: "trend" },
+      },
+      { number: "04", title: "Quantify precision-recall lift", summary: "Evaluate model calibration against baseline heuristics.", worked: false, note: { kind: "own" } },
+      { number: "05", title: "Translate to commercial impact", summary: "Estimate net revenue retained under targeted intervention.", worked: false, note: { kind: "own" } },
+      { number: "06", title: "Author the executive memo", summary: "Present your SQL queries, validation checks, and deployment recommendation.", worked: false, note: { kind: "own" } },
+    ],
+  },
+  curriculum: {
+    note: "This pathway links both Data Analytics (15 lessons) and Python Programming & Automation (15 lessons) in Skylent OS.",
+    openModuleId: "m3",
+  },
+  practice: {
+    heading: "You practise in the SQL Lab and Python Cohort Sandbox.",
+    intro:
+      "Execute read-only SQL queries on Northwind and run automated cohort leakage checks in the interactive Data Science sandbox.",
+    rows: [
+      { label: "Primary datasets", value: "northwind_sales.csv · churn_cohort_splits.json", mono: true },
+      { label: "Validation rule", value: "Out-of-time split · Zero post-event feature leakage", mono: true },
+      { label: "What you write", value: "SQL cohort aggregations, Python schema validators, and calibration diagnostics." },
+      { label: "What you keep", value: "Verified query outputs, cohort evaluation metrics, and an executive decision brief." },
+    ],
+    disclaimer:
+      "Every saved SQL query and cohort validation report attaches directly to your Career OS portfolio.",
+    link: { label: "Explore interactive sandboxes", to: "/labs" },
+  },
+  evidence: {
+    heading: "Four pieces of work a reviewer can check.",
+    lede: "Hiring teams evaluate how you clean data, prevent feature leakage, and defend commercial trade-offs.",
+    record: {
+      title: "Cohort Retention & Revenue Leakage Audit",
+      context: "Capstone · Data Science & AI · your own work",
+      workShown: "SQL data hygiene, Python ETL validation, out-of-time cohort splitting, precision-recall evaluation, executive memo",
+      skills: ["SQL", "Python", "Cohort validation", "Commercial analytics"],
+      reflection: "Finding, validation proof, business recommendation. Written by you.",
+      footnote: "Verified capstone record · Backed by Northwind SQL queries and Python cohort validation checks.",
+    },
+    rows: DATA_ANALYTICS.evidence.rows,
+  },
+  closing: { line: "Begin with one question: is your validation split truly out-of-time?" },
+}
+
+const FULL_STACK: AuthoredProgrammeContent = {
+  programmeSlug: "full-stack",
+  courseSlug: "full-stack-web",
+  artefact: "full-stack",
+  cardLine: "Ship transactional REST APIs, PostgreSQL schemas, idempotent ledgers, and React interfaces.",
+  capstoneTitle: "Idempotent Payment Ledger & Full-Stack Studio",
+  hero: {
+    headline: "Build transactional APIs, resilient database schemas, and production web interfaces.",
+    signal: "production web interfaces.",
+    summary: dataAnalyticsModuleSummary,
+    figure: "Full-Stack Architecture & Ledger Workspace",
+    figureNote: "15-lesson Full Stack Web Engineering curriculum with React, Node, and PostgreSQL",
+  },
+  specSheet: {
+    material: {
+      label: "Architecture",
+      value: "Payment Ledger & REST API",
+      note: "6-task capstone studio",
+    },
+    tools: { label: "You work in" },
+  },
+  project: {
+    label: "The capstone",
+    heading: "One transactional system, six steps, zero double-spends.",
+    intro:
+      "You architect an idempotent payment settlement service with React state boundaries, Express REST endpoints, and PostgreSQL row-level locking.",
+    disclaimer:
+      "Completed architecture specs and sandbox verification logs link directly to your Career OS portfolio and verified credential record.",
+    steps: [
+      {
+        number: "01",
+        title: "Model the relational schema",
+        summary: "Define normalized PostgreSQL tables with strict foreign keys and composite unique constraints.",
+        worked: true,
+        note: { kind: "fact", text: "ACID + unique (gateway_tx_id, epoch)" },
+      },
+      {
+        number: "02",
+        title: "Enforce API idempotency",
+        summary: "Handle concurrent webhook retries safely without double-crediting merchant balances.",
+        worked: true,
+        note: { kind: "fact", text: "SELECT ... FOR UPDATE SKIP LOCKED" },
+      },
+      {
+        number: "03",
+        title: "Wire transactional outbox",
+        summary: "Guarantee atomic state transitions between ledger entries and downstream events.",
+        worked: true,
+        note: { kind: "fact", text: "Zero lost settlement events" },
+      },
+      { number: "04", title: "Harden auth & RBAC boundaries", summary: "Prevent horizontal privilege escalation across tenant routes.", worked: false, note: { kind: "own" } },
+      { number: "05", title: "Build resilient React UI states", summary: "Handle optimistic updates, loading skeletons, and retry states cleanly.", worked: false, note: { kind: "own" } },
+      { number: "06", title: "Defend the system architecture", summary: "Document failure modes, latency budgets, and rollback procedures.", worked: false, note: { kind: "own" } },
+    ],
+  },
+  curriculum: {
+    note: "Each module ends in a concept check or engineering assignment, culminating in the 6-task Idempotent Ledger Capstone.",
+    openModuleId: "m3",
+  },
+  practice: {
+    heading: "You practise in the Full-Stack Ledger Sandbox.",
+    intro:
+      "Test your idempotency keys, row-level locking strategy, and transactional outbox design against concurrent webhook retry vectors in the browser.",
+    rows: [
+      { label: "Sandbox preset", value: "idempotent-ledger-architecture · 15 lessons", mono: true },
+      { label: "Concurrency check", value: "Composite idempotency key + row-level lock verification", mono: true },
+      { label: "What you write", value: "API route contracts, PostgreSQL transaction guards, and architecture decision records." },
+      { label: "What you keep", value: "Verified architecture dossier and cryptographic completion credential." },
+    ],
+    disclaimer:
+      "Every verified sandbox check and architecture brief can be attached directly to your Career OS portfolio.",
+    link: { label: "Try the Full-Stack Sandbox", to: "/labs" },
+  },
+  evidence: {
+    heading: "Three engineering deliverables a reviewer can check.",
+    lede: "Engineering leads evaluate how you handle race conditions, schema constraints, and API security boundaries.",
+    record: {
+      title: "Idempotent Payment Ledger Architecture",
+      context: "Capstone · Full Stack Web Engineering · your own work",
+      workShown: "Relational schema design, idempotent API handlers, transactional outbox pattern, RBAC security audit",
+      skills: ["React & TypeScript", "Node & Express", "PostgreSQL", "System design"],
+      reflection: "Failure mode analysis, concurrency guarantees, production trade-offs. Written by you.",
+      footnote: "Verified capstone record · Backed by Full-Stack Ledger Sandbox verification and architecture memo.",
+    },
+    rows: [
+      {
+        lessonId: "l6",
+        produce: "Component state & API contract specification",
+        reviewer: "How client state, validation errors, and network retries are isolated",
+      },
+      {
+        lessonId: "l12",
+        produce: "PostgreSQL schema & indexing migration plan",
+        reviewer: "Composite keys, foreign-key integrity, and query execution bounds",
+      },
+      {
+        lessonId: "l14",
+        produce: "Idempotent Payment Ledger & Outbox Architecture Dossier",
+        reviewer: "A complete, end-to-end engineering specification ready for technical interview walkthroughs.",
+        capstone: true,
+      },
+    ],
+  },
+  closing: { line: "Begin with one question: what happens when the same webhook arrives twice?" },
+}
+
+const GENERATIVE_AI: AuthoredProgrammeContent = {
+  programmeSlug: "generative-ai-program",
+  courseSlug: "generative-ai",
+  artefact: "genai-rag",
+  cardLine: "Design grounded RAG retrieval pipelines, citation guardrails, ReAct tool agents, and LLM evaluations.",
+  capstoneTitle: "Enterprise Grounded RAG & Citation Evaluation Suite",
+  hero: {
+    headline: "Architect grounded LLM systems with deterministic citations and refusal guardrails.",
+    signal: "deterministic citations and refusal guardrails.",
+    summary: productManagementModuleSummary,
+    figure: "Grounded RAG & Citation Guardrail Studio",
+    figureNote: "15-lesson Generative AI & LLM Systems curriculum with RAG and evaluation harnesses",
+  },
+  specSheet: {
+    material: {
+      label: "Evaluation Suite",
+      value: "Enterprise RAG Corpus",
+      note: "Citation & refusal guardrails",
+    },
+    tools: { label: "You work in" },
+  },
+  project: {
+    label: "The capstone",
+    heading: "One RAG pipeline, six steps, zero ungrounded claims.",
+    intro:
+      "You design an enterprise retrieval-augmented generation pipeline with hybrid chunking, metadata citation enforcement, and adversarial prompt-injection refusal guardrails.",
+    disclaimer:
+      "Completed RAG evaluation harnesses and architecture specs link directly to your Career OS portfolio and verified credential record.",
+    photo: PRODUCT_MANAGEMENT.project.photo,
+    steps: [
+      {
+        number: "01",
+        title: "Audit retrieval chunk boundaries",
+        summary: "Configure semantic + token-window chunking so policy clauses never split mid-condition.",
+        worked: true,
+        note: { kind: "fact", text: "Hybrid BM25 + dense retrieval" },
+      },
+      {
+        number: "02",
+        title: "Enforce deterministic citations",
+        summary: "Require every generated claim to cite an exact source chunk ID from the retrieved context.",
+        worked: true,
+        note: { kind: "fact", text: "100% citation attribution" },
+      },
+      {
+        number: "03",
+        title: "Configure refusal thresholds",
+        summary: "Abstain cleanly when retrieval similarity falls below the confidence floor.",
+        worked: false,
+        note: { kind: "own" },
+      },
+      {
+        number: "04",
+        title: "Harden against prompt injection",
+        summary: "Isolate untrusted document text from system instructions and tool-call schemas.",
+        worked: false,
+        note: { kind: "own" },
+      },
+      {
+        number: "05",
+        title: "Benchmark latency & token cost",
+        summary: "Balance reranker depth against p95 response latency budgets.",
+        worked: false,
+        note: { kind: "fact", text: "p95 < 1,800 ms budget" },
+      },
+      {
+        number: "06",
+        title: "Write the production deployment spec",
+        summary: "Document evaluation metrics, fallback routing, and monitoring alerts.",
+        worked: false,
+        note: { kind: "own" },
+      },
+    ],
+  },
+  curriculum: {
+    note: "Each module ends in a check or applied AI assignment, culminating in the Enterprise Grounded RAG Capstone.",
+    openModuleId: "m3",
+  },
+  practice: {
+    heading: "You practise in the GenAI RAG Evaluation Lab.",
+    intro:
+      "Test chunking strategies, citation grounding rules, and adversarial refusal thresholds directly in the browser evaluator.",
+    rows: [
+      { label: "Sandbox preset", value: "enterprise-rag-evaluation · 15 lessons", mono: true },
+      { label: "Guardrail policy", value: "Mandatory [chunk_id] citation + low-confidence abstention", mono: true },
+      { label: "What you write", value: "System prompts, retrieval evaluation rubrics, and agent tool-calling schemas." },
+      { label: "What you keep", value: "Verified RAG evaluation dossier and cryptographic completion credential." },
+    ],
+    disclaimer:
+      "Every RAG evaluation report and guardrail specification attaches directly to your Career OS evidence record.",
+    link: { label: "Try the GenAI RAG Sandbox", to: "/labs" },
+  },
+  evidence: {
+    heading: "Three AI engineering deliverables a reviewer can check.",
+    lede: "AI engineering teams evaluate how you measure hallucinations, enforce citations, and bound latency and cost.",
+    record: {
+      title: "Enterprise Grounded RAG Evaluation Suite",
+      context: "Capstone · Generative AI & LLM Systems · your own work",
+      workShown: "Hybrid retrieval design, citation enforcement, prompt-injection defense, golden-dataset evaluation",
+      skills: ["Grounded RAG", "LLM evaluation", "Prompt architecture", "Agent guardrails"],
+      reflection: "Grounding metrics, refusal trade-offs, production rollout plan. Written by you.",
+      footnote: "Verified capstone record · Backed by GenAI RAG Sandbox evaluation metrics and system specification.",
+    },
+    rows: [
+      {
+        lessonId: "l6",
+        produce: "Structured JSON schema & prompt evaluation harness",
+        reviewer: "Deterministic output parsing and edge-case refusal handling",
+      },
+      {
+        lessonId: "l12",
+        produce: "Hybrid RAG retrieval & reranking benchmark",
+        reviewer: "Recall@K lift and citation faithfulness across adversarial queries",
+      },
+      {
+        lessonId: "l14",
+        produce: "Enterprise Grounded RAG & Guardrail Production Spec",
+        reviewer: "A complete, end-to-end AI system specification ready for technical interview walkthroughs.",
+        capstone: true,
+      },
+    ],
+  },
+  closing: { line: "Begin with one question: how do you prove the model did not hallucinate?" },
+}
+
 const AUTHORED: Record<string, AuthoredProgrammeContent> = {
   [DATA_ANALYTICS.programmeSlug]: DATA_ANALYTICS,
   [PRODUCT_MANAGEMENT.programmeSlug]: PRODUCT_MANAGEMENT,
+  [DATA_SCIENCE_AI.programmeSlug]: DATA_SCIENCE_AI,
+  [FULL_STACK.programmeSlug]: FULL_STACK,
+  [GENERATIVE_AI.programmeSlug]: GENERATIVE_AI,
 }
 
 export function authoredProgrammeContent(slug: string | undefined): AuthoredProgrammeContent | null {

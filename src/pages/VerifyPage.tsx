@@ -119,6 +119,62 @@ function formatIssued(iso: string): string {
   return Number.isNaN(date.getTime()) ? iso : dateFormat.format(date)
 }
 
+
+function VisualDiplomaPreview({
+  learnerName,
+  courseTitle,
+  code,
+  issuedAt,
+  evidenceSummary,
+}: {
+  learnerName: string
+  courseTitle: string
+  code: string
+  issuedAt: string
+  evidenceSummary?: string
+}) {
+  return (
+    <div className="vfy-diploma" aria-label="Visual Certificate Preview" style={{ marginBottom: 20 }}>
+      <div className="vfy-diploma__frame">
+        <div className="vfy-diploma__top">
+          <div>
+            <span className="vfy-diploma__brand">SKYLENT GLOBAL PVT. LTD.</span>
+            <span className="vfy-diploma__sub">Execution &amp; Proof-of-Work Credential</span>
+          </div>
+          <span className="vfy-diploma__seal">CRYPTOGRAPHICALLY VERIFIED</span>
+        </div>
+        <div className="vfy-diploma__body">
+          <p className="vfy-diploma__certifies">This certifies that</p>
+          <h3 className="vfy-diploma__name">{learnerName}</h3>
+          <p className="vfy-diploma__completed">
+            has completed all modules, browser lab evaluations, and the graded capstone defense for
+          </p>
+          <p className="vfy-diploma__course">{courseTitle}</p>
+          {evidenceSummary ? (
+            <p className="vfy-diploma__evidence">
+              <strong>Verified Capstone Artifact:</strong> {evidenceSummary}
+            </p>
+          ) : null}
+        </div>
+        <div className="vfy-diploma__foot">
+          <div>
+            <span className="vfy-diploma__meta-k">Credential ID</span>
+            <strong className="vfy-diploma__meta-v sky-mono">{code}</strong>
+          </div>
+          <div>
+            <span className="vfy-diploma__meta-k">Evaluation Standing</span>
+            <strong className="vfy-diploma__meta-v">Rubric Passed (100% Modules)</strong>
+          </div>
+          <div>
+            <span className="vfy-diploma__meta-k">Issued</span>
+            <strong className="vfy-diploma__meta-v">{issuedAt}</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function VerifyPage() {
   const { code: routeCode } = useParams<{ code?: string }>()
   const navigate = useNavigate()

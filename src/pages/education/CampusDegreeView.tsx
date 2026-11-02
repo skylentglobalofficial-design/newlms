@@ -223,20 +223,10 @@ export default function CampusDegreeView({ degree }: { degree: Degree }) {
               <dl className="dg-taught__facts dg-rows">
                 <div>
                   <dt>Calendar</dt>
-                  <dd><b>Odd Sem (Jul–Dec) · Even Sem (Jan–May) · Summer Industry Capstone</b></dd>
+                  <dd>
+                    <Unpublished />
+                  </dd>
                 </div>
-                {degree.tools?.length ? (
-                  <div>
-                    <dt>Lab stack</dt>
-                    <dd>{degree.tools.join(" · ")}</dd>
-                  </div>
-                ) : null}
-                {degree.careerRoles?.length ? (
-                  <div>
-                    <dt>Target roles</dt>
-                    <dd>{degree.careerRoles.join(" · ")}</dd>
-                  </div>
-                ) : null}
                 <div>
                   <dt>Assessment</dt>
                   <dd>{degree.assessments?.length ? degree.assessments.join(", ") : <Unpublished />}</dd>

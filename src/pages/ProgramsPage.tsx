@@ -9,7 +9,7 @@ import { useEffect, useMemo, useState } from "react"
 import { Link, useSearchParams } from "react-router-dom"
 import { PageShell } from "../components/shared"
 import { ArrowRight } from "../components/skylent/primitives"
-import { BrandTrustRibbon, RoleOutcomeStrip, TrackWorkbenchStrip } from "../components/skylent/EdTechVisuals"
+import { BrandTrustRibbon, CertificateTrophyShowcase, FacultyTaShowcaseStrip, RoleOutcomeStrip, TRACK_ROLE_METADATA, TargetRolesBadge, ToolStackPills, TrackWorkbenchStrip } from "../components/skylent/EdTechVisuals"
 import { authoredProgrammeContent } from "../components/programme/programme-content"
 import { programmeTruth, type ProgrammeTruth } from "../components/programme/programme-truth"
 import { programs as publishedProgrammes } from "../data"
@@ -230,11 +230,16 @@ function ProgrammeCard({ row, confirmed }: { row: Row; confirmed: boolean }) {
           <span className="pgx-card__title">{row.title}</span>
           <span style={{ fontSize: 12.5, fontWeight: 600, color: "#475569" }}>{row.meta}</span>
           <span className="pgx-card__line">{row.line}</span>
-          <span className="pgx-skill-tags">
-            {row.skills.map((skill) => (
-              <span key={skill} className="pgx-skill-tag">{skill}</span>
-            ))}
-          </span>
+          <TargetRolesBadge slug={row.program.slug} />
+          {TRACK_ROLE_METADATA[row.program.slug] ? (
+            <ToolStackPills tools={TRACK_ROLE_METADATA[row.program.slug].tools} />
+          ) : (
+            <span className="pgx-skill-tags">
+              {row.skills.map((skill) => (
+                <span key={skill} className="pgx-skill-tag">{skill}</span>
+              ))}
+            </span>
+          )}
           <span className="pgx-card__go">
             Explore programme <ArrowRight />
           </span>
@@ -435,6 +440,8 @@ export default function ProgramsPage() {
                       <ProgrammeCard key={row.program.slug} row={row} confirmed={!catalog.offline} />
                     ))}
                   </ul>
+                  <CertificateTrophyShowcase />
+                  <FacultyTaShowcaseStrip />
                 </div>
               </section>
             )}

@@ -21,7 +21,7 @@ import type { CatalogCurriculumModule } from "../lib/catalog-api"
 import { effectiveAuthoredCourseCopy } from "../lib/public-catalogue-copy"
 import { useCatalogCourse } from "../hooks/useCatalog"
 import { TruthChip } from "../components/skylent/primitives"
-import { SyllabusDownloadButton } from "../components/skylent/EdTechVisuals"
+import { CertificateTrophyShowcase, FacultyTaShowcaseStrip, SyllabusDownloadButton } from "../components/skylent/EdTechVisuals"
 import { HarborDeskPlate, NorthwindLabPlate } from "../components/programme/ProgrammeArtefacts"
 import TrackInteractiveSandbox from "../components/labs/TrackInteractiveSandbox"
 import CatalogueNotice, {
@@ -361,6 +361,12 @@ export default function CourseDetailPage() {
                 : "These are the planned modules. Lessons are added as they are ready."}
             </p>
             <ModuleLane modules={modules} />
+            {showLiveCurriculum ? (
+              <>
+                <FacultyTaShowcaseStrip />
+                <CertificateTrophyShowcase />
+              </>
+            ) : null}
           </div>
         </section>
 
