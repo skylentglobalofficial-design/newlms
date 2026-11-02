@@ -3,7 +3,6 @@ import { useParams, Link } from "react-router-dom"
 import { PageShell } from "../components/shared"
 import { useAuth } from "../context/AuthContext"
 import { ensureCsrfToken } from "../lib/auth-api"
-import { CURATED_UPCOMING_WORKSHOPS } from "./EventsPage"
 import "./Catalog.css"
 
 type EventDetail = {
@@ -29,18 +28,10 @@ type EventDetail = {
   } | null
 }
 
-function findCuratedWorkshopBySlug(slug: string | undefined): EventDetail | null {
-  if (!slug) return null
-  const found = CURATED_UPCOMING_WORKSHOPS.find((item) => item.slug === slug)
-  if (!found) return null
-  return { ...found, meetingUrl: null, userRegistration: null }
-}
-
 export default function EventDetailPage() {
   const { slug } = useParams<{ slug: string }>()
   const { user } = useAuth()
-  const curated = findCuratedWorkshopBySlug(slug)
-  const [event, setEvent] = useState<EventDetail | null>(curated)
+  const [event, setEvent] = useState<EventDetail | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [registering, setRegistering] = useState(false)
@@ -56,8 +47,7 @@ export default function EventDetailPage() {
         setLoading(false)
       })
       .catch((err) => {
-        const fallback = findCuratedWorkshopBySlug(slug)
-        if (fallback) { setEvent(fallback); setError(null); } else { setError(err.message); }
+        setError(err.message)
         setLoading(false)
       })
   }, [slug])

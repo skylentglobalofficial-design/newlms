@@ -55,7 +55,7 @@ export default function LabsPage() {
             <p className="cat-label">Skylent Labs · Browser Workspaces across All 6 Courses</p>
             <h1>Labs live inside the learning path.</h1>
             <p className="cat-lead">
-              Every flagship course pairs written lessons with an interactive workspace where you execute queries, audit code pipelines, or defend product specifications before submitting your capstone.
+              Run live SQL queries, Python ETL pipelines, and product case defences in your browser — zero local setup.
             </p>
             <div className="cat-actions">
               <Link className="cat-btn cat-btn-primary" to="/courses/data-analytics">Open Data Analytics (Northwind SQL Lab)</Link>

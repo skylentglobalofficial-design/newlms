@@ -10,6 +10,7 @@
 import { Link } from "react-router-dom"
 import { PageShell } from "../../components/shared"
 import { ArrowRight } from "../../components/skylent/primitives"
+import { BrandTrustRibbon, RoleOutcomeStrip } from "../../components/skylent/EdTechVisuals"
 import { CAREER_OS_FEATURES, publicFeatures, type ProductFeature } from "../../lib/product-manifest"
 import { CareerJourney } from "../home/Repolish"
 import "../HomePage.v2.css"
@@ -72,6 +73,8 @@ export default function CareerOSPublicPage() {
                 Sign in
               </Link>
             </div>
+            <RoleOutcomeStrip roles={["Data Analyst", "Associate PM", "Python ETL Engineer", "Applied AI Engineer", "Full-Stack SDE-1"]} />
+            <BrandTrustRibbon compact />
             <div className="cpx-pillars" aria-label="Career OS 3-Pillar Architecture">
               <div className="cpx-pillar">
                 <span>01 · Build in Skylent OS</span>

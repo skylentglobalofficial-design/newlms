@@ -67,20 +67,39 @@ function levelFromParam(value: string | null): Level | null {
 function DegreeRow({ degree }: { degree: Degree }) {
   return (
     <li>
-      <Link to={degreePath(degree)} className="edx-degree">
-        <span className="edx-degree__title">{degree.title}</span>
-        <span className="edx-degree__meta">
-          {degree.sample ? (
-            <span className="edx-soon">Planned pathway · register interest</span>
-          ) : degree.institution?.name ? (
-            <span>{degree.institution.name}</span>
-          ) : (
-            <span>Published degree</span>
-          )}
-          <span>{degree.discipline}</span>
-        </span>
-        <span className="edx-degree__go">
-          {degree.sample ? "See planned area" : "View degree"}
+      <Link to={degreePath(degree)} className="edx-degree" style={{ alignItems: "flex-start", gap: 10 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 6, flex: 1 }}>
+          <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 8 }}>
+            <span className="edx-degree__title">{degree.title}</span>
+            {degree.duration ? (
+              <span style={{ fontSize: 11.5, fontWeight: 700, padding: "2px 8px", borderRadius: 999, background: "#eef2ff", color: "#4338ca" }}>
+                {degree.duration}
+              </span>
+            ) : null}
+          </div>
+          <span className="edx-degree__meta">
+            {degree.sample ? (
+              <span className="edx-soon">University pathway · NEP 2020 credit-aligned</span>
+            ) : degree.institution?.name ? (
+              <span>{degree.institution.name}</span>
+            ) : (
+              <span>Published degree</span>
+            )}
+            <span>{degree.discipline}</span>
+            {degree.intake ? <span>{degree.intake}</span> : null}
+          </span>
+          {degree.skills && degree.skills.length > 0 ? (
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 2 }}>
+              {degree.skills.slice(0, 4).map((skill) => (
+                <span key={skill} style={{ fontSize: 11, fontWeight: 600, padding: "2px 8px", borderRadius: 6, background: "#f8fafc", border: "1px solid #e2e8f0", color: "#334155" }}>
+                  {skill}
+                </span>
+              ))}
+            </div>
+          ) : null}
+        </div>
+        <span className="edx-degree__go" style={{ alignSelf: "center" }}>
+          View curriculum &amp; labs
           <ArrowRight />
         </span>
       </Link>
@@ -175,7 +194,7 @@ export default function EducationPage() {
               <h1 id="edx-title" className="edx-h1">
                 Academic pathways &amp; <em>institutional integration.</em>
               </h1>
-              <p className="edx-lede">Explore undergraduate and postgraduate curriculum tracks built for university collaboration and campus integration. Partner universities confer the academic degree while Skylent powers the execution labs and Career OS portfolio. Learners and colleges can register interest below, or start one of our 6 live self-paced courses immediately.</p>
+              <p className="edx-lede">UG and PG degree tracks built with partner universities. Partner institutions award the degree; Skylent powers the in-browser SQL, Python, AI, and case studios.</p>
               {settled && unavailable ? (
                 <p className="edx-lede" role="status">The pathway catalogue could not be checked just now. The areas below remain planned pathways, and direct applications are not open. <button type="button" className="edx-link" onClick={reload}>Try again</button></p>
               ) : null}

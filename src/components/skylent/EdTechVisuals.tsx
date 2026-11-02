@@ -1,491 +1,328 @@
-import type { ReactNode } from "react"
+/**
+ * Unified Skylent Brand & Visual System (EdTechVisuals.tsx)
+ *
+ * Provides shared visual components across all public and catalogue surfaces:
+ * - TrackWorkbenchOverlay / TrackWorkbenchStrip: Non-overlapping dark terminal strip below card photos
+ * - HeroProofStrip: Non-overlapping dark-gold proof bar below hero photography
+ * - BrandTrustRibbon / EdTechTrustBar: Industry stack & execution SLA strip
+ * - SyllabusDownloadButton: 1-click printable HTML/Markdown syllabus brochure download
+ * - RoleOutcomeStrip: Target career roles and verifiable portfolio deliverables
+ */
+import type { MouseEvent } from "react"
 import { Link } from "react-router-dom"
+import { courses } from "../../data"
 
-export type ToolBadgeId =
-  | "sql"
-  | "python"
-  | "react"
-  | "node"
-  | "postgres"
-  | "genai"
-  | "prd"
-  | "sheets"
-  | "cohort"
-  | "pytest"
-  | "rag"
-  | "typescript"
-
-const TOOL_META: Record<
-  ToolBadgeId,
-  { label: string; bg: string; border: string; text: string; dot: string; icon: ReactNode }
-> = {
-  sql: {
-    label: "SQL & Joins",
-    bg: "#eff6ff",
-    border: "#bfdbfe",
-    text: "#1d4ed8",
-    dot: "#2563eb",
-    icon: (
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-        <ellipse cx="12" cy="5" rx="9" ry="3" />
-        <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" />
-        <path d="M3 12c0 1.66 4 3 9 3s9-1.34 9-3" />
-      </svg>
-    ),
-  },
-  postgres: {
-    label: "PostgreSQL",
-    bg: "#eef2ff",
-    border: "#c7d2fe",
-    text: "#3730a3",
-    dot: "#4f46e5",
-    icon: (
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-        <ellipse cx="12" cy="5" rx="9" ry="3" />
-        <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3" />
-        <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" />
-      </svg>
-    ),
-  },
-  python: {
-    label: "Python 3",
-    bg: "#fefce8",
-    border: "#fde047",
-    text: "#854d0e",
-    dot: "#ca8a04",
-    icon: (
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#ca8a04" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-        <polyline points="16 18 22 12 16 6" />
-        <polyline points="8 6 2 12 8 18" />
-      </svg>
-    ),
-  },
-  pytest: {
-    label: "ETL & Pytest",
-    bg: "#ecfdf5",
-    border: "#a7f3d0",
-    text: "#065f46",
-    dot: "#10b981",
-    icon: (
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-        <path d="M9 11l3 3L22 4" />
-        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
-      </svg>
-    ),
-  },
-  react: {
-    label: "React 19",
-    bg: "#ecfeff",
-    border: "#a5f3fc",
-    text: "#155e75",
-    dot: "#06b6d4",
-    icon: (
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#0891b2" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-        <circle cx="12" cy="12" r="2.5" />
-        <ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(30 12 12)" />
-        <ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(-30 12 12)" />
-      </svg>
-    ),
-  },
-  typescript: {
-    label: "TypeScript",
-    bg: "#eff6ff",
-    border: "#93c5fd",
-    text: "#1e40af",
-    dot: "#2563eb",
-    icon: (
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-        <rect x="3" y="3" width="18" height="18" rx="3" />
-        <path d="M8 10h6M11 10v7" />
-      </svg>
-    ),
-  },
-  node: {
-    label: "Node & Express",
-    bg: "#f0fdf4",
-    border: "#bbf7d0",
-    text: "#166534",
-    dot: "#16a34a",
-    icon: (
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-        <rect x="2" y="3" width="20" height="7" rx="2" />
-        <rect x="2" y="14" width="20" height="7" rx="2" />
-        <circle cx="6" cy="6.5" r="1" />
-        <circle cx="6" cy="17.5" r="1" />
-      </svg>
-    ),
-  },
-  genai: {
-    label: "LLM Architecture",
-    bg: "#f5f3ff",
-    border: "#ddd6fe",
-    text: "#5b21b6",
-    dot: "#7c3aed",
-    icon: (
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-        <path d="M12 3l1.9 5.8a2 2 0 0 0 1.3 1.3L21 12l-5.8 1.9a2 2 0 0 0-1.3 1.3L12 21l-1.9-5.8a2 2 0 0 0-1.3-1.3L3 12l5.8-1.9a2 2 0 0 0 1.3-1.3z" />
-      </svg>
-    ),
-  },
-  rag: {
-    label: "Grounded RAG",
-    bg: "#faf5ff",
-    border: "#e9d5ff",
-    text: "#6b21a8",
-    dot: "#9333ea",
-    icon: (
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9333ea" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-        <polyline points="14 2 14 8 20 8" />
-        <line x1="9" y1="15" x2="15" y2="15" />
-      </svg>
-    ),
-  },
-  prd: {
-    label: "PRD & Roadmaps",
-    bg: "#fffbeb",
-    border: "#fde68a",
-    text: "#92400e",
-    dot: "#d97706",
-    icon: (
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-        <rect x="3" y="4" width="18" height="16" rx="2" />
-        <line x1="7" y1="9" x2="17" y2="9" />
-        <line x1="7" y1="13" x2="14" y2="13" />
-      </svg>
-    ),
-  },
-  sheets: {
-    label: "Spreadsheets & BI",
-    bg: "#f0fdfa",
-    border: "#99f6e4",
-    text: "#115e59",
-    dot: "#0d9488",
-    icon: (
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#0d9488" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-        <line x1="18" y1="20" x2="18" y2="10" />
-        <line x1="12" y1="20" x2="12" y2="4" />
-        <line x1="6" y1="20" x2="6" y2="14" />
-      </svg>
-    ),
-  },
-  cohort: {
-    label: "Cohort & Churn ML",
-    bg: "#fdf2f8",
-    border: "#fbcfe8",
-    text: "#9d174d",
-    dot: "#db2777",
-    icon: (
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#db2777" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-      </svg>
-    ),
-  },
+export type WorkbenchSnippet = {
+  env: string
+  cmd: string
+  metric: string
 }
 
-export function ToolStackPills({ tools }: { tools: readonly ToolBadgeId[] }) {
-  return (
-    <span style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 8 }}>
-      {tools.map((id) => {
-        const meta = TOOL_META[id]
-        if (!meta) return null
-        return (
-          <span
-            key={id}
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 5,
-              padding: "3px 9px",
-              borderRadius: 999,
-              fontSize: 11.5,
-              fontWeight: 600,
-              background: meta.bg,
-              border: `1px solid ${meta.border}`,
-              color: meta.text,
-              lineHeight: 1.3,
-            }}
-          >
-            {meta.icon}
-            <span>{meta.label}</span>
-          </span>
-        )
-      })}
-    </span>
-  )
-}
-
-export const TRACK_ROLE_METADATA: Record<
-  string,
-  {
-    roles: string
-    pace: string
-    tools: readonly ToolBadgeId[]
-    accent: string
-    workbenchTag: string
-    codePreview: string
-    metricBadge: string
-  }
-> = {
+const WORKBENCH_BY_SLUG: Record<string, WorkbenchSnippet> = {
   "data-analytics": {
-    roles: "Data Analyst · BI Analyst · Commercial Analyst",
-    pace: "4–6 Weeks · Self-Paced",
-    tools: ["sql", "sheets", "postgres"],
-    accent: "linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%)",
-    workbenchTag: "SQL WORKBENCH · 166 VALID ROWS",
-    codePreview: "SELECT category, ROUND(SUM(net_rev)) FROM northwind_sales GROUP BY 1;",
-    metricBadge: "₹8,12,020 Net Revenue Audited",
+    env: "NORTHWIND SQL LAB",
+    cmd: "SELECT category, ROUND(SUM(net_revenue)) FROM northwind_sales WHERE returned = 'no'",
+    metric: "166 rows · 14ms",
   },
   "data-analytics-pro": {
-    roles: "Data Analyst · BI Analyst · Commercial Analyst",
-    pace: "4–6 Weeks · Self-Paced",
-    tools: ["sql", "sheets", "postgres"],
-    accent: "linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%)",
-    workbenchTag: "SQL WORKBENCH · 166 VALID ROWS",
-    codePreview: "SELECT category, ROUND(SUM(net_rev)) FROM northwind_sales GROUP BY 1;",
-    metricBadge: "₹8,12,020 Net Revenue Audited",
+    env: "NORTHWIND SQL LAB",
+    cmd: "SELECT category, ROUND(SUM(net_revenue)) FROM northwind_sales WHERE returned = 'no'",
+    metric: "166 rows · 14ms",
   },
   "product-management": {
-    roles: "Product Manager · Associate PM · Growth PM",
-    pace: "4–6 Weeks · Self-Paced",
-    tools: ["prd", "sheets", "cohort"],
-    accent: "linear-gradient(135deg, #1e1b4b 0%, #4c1d95 100%)",
-    workbenchTag: "HARBOR DESK STUDIO · 18 INTERVIEWS",
-    codePreview: "PRD Bet: 2 Engineers · 6 Weeks · Weekend Exception Triage Queue",
-    metricBadge: "12 Retail Stores Scoped",
+    env: "HARBOR DESK STUDIO",
+    cmd: "prd-scope --engineers=2 --weeks=6 --triage=weekend_delivery_exceptions",
+    metric: "18 interviews · 6w PRD",
   },
   "python-programming": {
-    roles: "Python Developer · Data Engineer · Automation Engineer",
-    pace: "4–6 Weeks · Self-Paced",
-    tools: ["python", "pytest", "sql"],
-    accent: "linear-gradient(135deg, #064e3b 0%, #0f766e 100%)",
-    workbenchTag: "PYTHON 3 ETL · PYTEST HARNESS",
-    codePreview: "def reconcile_settlements(rows: list[Tx]) -> AuditReport:",
-    metricBadge: "100% Schema & Pytest Verified",
+    env: "PYTHON 3 · PYTEST",
+    cmd: "pytest tests/test_settlement_pipeline.py --maxfail=1 -q",
+    metric: "18 passed · 0.08s",
   },
   "data-science-ai": {
-    roles: "Data Scientist · Decision Scientist · ML Analyst",
-    pace: "6–8 Weeks · Dual Track (30 Lessons)",
-    tools: ["python", "sql", "cohort"],
-    accent: "linear-gradient(135deg, #311042 0%, #701a75 100%)",
-    workbenchTag: "COHORT & CHURN LAB · OUT-OF-TIME SPLIT",
-    codePreview: "split_out_of_time(df, cutoff='2026-04-01', zero_leakage=True)",
-    metricBadge: "SQL + Python Dual Pathway",
+    env: "SQL + PYTHON COHORT LAB",
+    cmd: "audit_temporal_split(cohort_df, cutoff='2026-04-01', leakage_guard=True)",
+    metric: "30 lessons · 0 leakage",
   },
   "generative-ai": {
-    roles: "AI Engineer · LLM Systems Developer · Applied AI Lead",
-    pace: "4–6 Weeks · Self-Paced",
-    tools: ["genai", "rag", "python"],
-    accent: "linear-gradient(135deg, #2e1065 0%, #5b21b6 100%)",
-    workbenchTag: "GROUNDED RAG · CITATION GATE",
-    codePreview: "enforce_citations(chunks, min_similarity=0.82, abstain_on_miss=True)",
-    metricBadge: "0% Ungrounded Refund Claims",
+    env: "GROUNDED RAG EVAL",
+    cmd: "evaluate_rag(chunks=12, citation_strict=True, hallucination_guard='on')",
+    metric: "98.4% grounded",
   },
   "generative-ai-program": {
-    roles: "AI Engineer · LLM Systems Developer · Applied AI Lead",
-    pace: "4–6 Weeks · Self-Paced",
-    tools: ["genai", "rag", "python"],
-    accent: "linear-gradient(135deg, #2e1065 0%, #5b21b6 100%)",
-    workbenchTag: "GROUNDED RAG · CITATION GATE",
-    codePreview: "enforce_citations(chunks, min_similarity=0.82, abstain_on_miss=True)",
-    metricBadge: "0% Ungrounded Refund Claims",
-  },
-  "full-stack": {
-    roles: "Full-Stack Developer · Backend Engineer · Product Engineer",
-    pace: "5–7 Weeks · Self-Paced",
-    tools: ["react", "typescript", "node", "postgres"],
-    accent: "linear-gradient(135deg, #0c4a6e 0%, #0369a1 100%)",
-    workbenchTag: "IDEMPOTENT LEDGER · ACID API",
-    codePreview: "SELECT * FROM ledger_tx WHERE idempotency_key = $1 FOR UPDATE;",
-    metricBadge: "Zero Double-Spend Race Conditions",
+    env: "GROUNDED RAG EVAL",
+    cmd: "evaluate_rag(chunks=12, citation_strict=True, hallucination_guard='on')",
+    metric: "98.4% grounded",
   },
   "full-stack-web": {
-    roles: "Full-Stack Developer · Backend Engineer · Product Engineer",
-    pace: "5–7 Weeks · Self-Paced",
-    tools: ["react", "typescript", "node", "postgres"],
-    accent: "linear-gradient(135deg, #0c4a6e 0%, #0369a1 100%)",
-    workbenchTag: "IDEMPOTENT LEDGER · ACID API",
-    codePreview: "SELECT * FROM ledger_tx WHERE idempotency_key = $1 FOR UPDATE;",
-    metricBadge: "Zero Double-Spend Race Conditions",
+    env: "TS · EXPRESS · POSTGRES",
+    cmd: "POST /api/v1/ledger/transfer [Idempotency-Key: tx_904a] -> 200 OK",
+    metric: "ACID · Outbox verified",
+  },
+  "full-stack": {
+    env: "TS · EXPRESS · POSTGRES",
+    cmd: "POST /api/v1/ledger/transfer [Idempotency-Key: tx_904a] -> 200 OK",
+    metric: "ACID · Outbox verified",
+  },
+  "sql-certificate": {
+    env: "SQL QUERY WORKBENCH",
+    cmd: "SELECT store, RANK() OVER (ORDER BY net_margin DESC) FROM retail_orders",
+    metric: "5 SQL modules · Live",
   },
 }
 
 /**
- * Distinct discipline visual banner rendered inside track cards so 6 cards never look like duplicate stock photos.
+ * Non-overlapping dark-mode terminal strip rendered directly below card images.
+ * Exported as both TrackWorkbenchStrip and TrackWorkbenchOverlay for full compatibility.
  */
-export function TrackWorkbenchOverlay({ slug }: { slug: string }) {
-  const meta = TRACK_ROLE_METADATA[slug] ?? TRACK_ROLE_METADATA["data-analytics"]
+export function TrackWorkbenchStrip({ slug }: { slug: string }) {
+  const item = WORKBENCH_BY_SLUG[slug] ?? WORKBENCH_BY_SLUG["data-analytics"]
   return (
     <span
       style={{
         display: "flex",
         flexDirection: "column",
-        gap: 2,
-        padding: "8px 14px",
+        gap: 4,
+        padding: "10px 14px",
         background: "#0f172a",
-        borderTop: "1px solid rgba(255, 255, 255, 0.12)",
-        color: "#f8fafc",
+        color: "#e2e8f0",
+        borderBottom: "1px solid #1e293b",
+        fontFamily: "var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace)",
+        fontSize: 11,
+        lineHeight: 1.4,
       }}
+      aria-label={`${item.env} preview`}
     >
+      <span style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
+        <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.07em", color: "#a5b4fc", textTransform: "uppercase" }}>
+          {item.env}
+        </span>
+        <span style={{ fontSize: 10, fontWeight: 700, color: "#6ee7b7", background: "rgba(16, 185, 129, 0.16)", padding: "1px 7px", borderRadius: 999 }}>
+          {item.metric}
+        </span>
+      </span>
       <span
         style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          fontSize: 10,
-          fontWeight: 700,
-          letterSpacing: "0.06em",
-          color: "#a5b4fc",
-          textTransform: "uppercase",
-        }}
-      >
-        <span>{meta.workbenchTag}</span>
-        <span style={{ color: "#34d399" }}>● LIVE LAB</span>
-      </span>
-      <code
-        style={{
-          fontSize: 11,
-          fontFamily: "var(--font-mono, monospace)",
-          color: "#e2e8f0",
+          display: "block",
           whiteSpace: "nowrap",
           overflow: "hidden",
           textOverflow: "ellipsis",
+          color: "#cbd5e1",
+          fontSize: 11,
         }}
       >
-        {meta.codePreview}
-      </code>
+        $ {item.cmd}
+      </span>
     </span>
   )
 }
 
-export function TargetRolesBadge({ slug }: { slug: string }) {
-  const meta = TRACK_ROLE_METADATA[slug]
-  if (!meta) return null
-  return (
-    <span
-      style={{
-        display: "block",
-        fontSize: 12,
-        fontWeight: 600,
-        color: "#334155",
-        background: "#f8fafc",
-        border: "1px solid #e2e8f0",
-        borderRadius: 6,
-        padding: "5px 9px",
-        marginTop: 6,
-      }}
-    >
-      <strong style={{ color: "#4f46e5" }}>Target Roles:</strong> {meta.roles}
-    </span>
-  )
-}
+export const TrackWorkbenchOverlay = TrackWorkbenchStrip
 
 /**
- * Shareable Cryptographic Diploma & Proof-of-Work Preview Card used on Programme and Course pages.
+ * Non-overlapping dark-gold proof bar placed cleanly below hero photography.
  */
-export function ShareableCredentialPreviewCard({
-  courseTitle,
-  capstoneTitle,
-  skills,
-  codeExample = "SKL-2026-PGM-VERIFIED",
-}: {
-  courseTitle: string
-  capstoneTitle: string
-  skills: readonly string[]
-  codeExample?: string
-}) {
+export function HeroProofStrip() {
   return (
     <div
       style={{
-        marginTop: 28,
-        borderRadius: 16,
-        border: "2px solid #fbbf24",
-        background: "linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)",
+        display: "flex",
+        flexWrap: "wrap",
+        justifyContent: "space-between",
+        alignItems: "center",
+        gap: 10,
+        padding: "12px 16px",
+        borderRadius: 12,
+        background: "#0f172a",
         color: "#f8fafc",
-        padding: "24px 28px",
-        boxShadow: "0 18px 40px rgba(15, 23, 42, 0.22)",
+        border: "1px solid #1e293b",
+        marginTop: 10,
+        fontSize: 12,
       }}
-      aria-label="Verifiable Proof-of-Work Credential Preview"
+      aria-label="Proof-of-Work verification standard"
     >
-      <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: 12, borderBottom: "1px solid rgba(255,255,255,0.14)", paddingBottom: 14 }}>
-        <div>
-          <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: "#fbbf24", textTransform: "uppercase", display: "block" }}>
-            SKYLENT GLOBAL PVT. LTD. · CRYPTOGRAPHIC CREDENTIAL
-          </span>
-          <strong style={{ fontSize: 18, color: "#ffffff" }}>
-            {courseTitle} — Master Proof-of-Work Diploma
-          </strong>
-        </div>
+      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
         <span
           style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: 6,
-            padding: "5px 12px",
-            borderRadius: 999,
-            background: "rgba(16, 185, 129, 0.18)",
-            border: "1px solid #34d399",
-            color: "#6ee7b7",
-            fontSize: 11.5,
-            fontWeight: 700,
+            display: "inline-block",
+            width: 8,
+            height: 8,
+            borderRadius: "50%",
+            background: "#10b981",
           }}
-        >
-          ✓ PUBLICLY VERIFIABLE AT /VERIFY
+          aria-hidden="true"
+        />
+        <strong style={{ color: "#ffffff", fontWeight: 700 }}>Cryptographic Proof-of-Work Standard</strong>
+      </div>
+      <span style={{ color: "#cbd5e1", fontSize: 11.5 }}>
+        25% Checks · 35% Briefs · 40% Capstone ·{" "}
+        <Link to="/verify?code=SKL-2026-DA-EXEMPLAR" style={{ color: "#a5b4fc", fontWeight: 700, textDecoration: "none" }}>
+          Inspect Exemplar Dossier →
+        </Link>
+      </span>
+    </div>
+  )
+}
+
+const STACK_STANDARDS = [
+  { name: "PostgreSQL 16", role: "Northwind 166-Row Lab" },
+  { name: "Python 3.12 & Pytest", role: "ETL & Pipeline Audits" },
+  { name: "React 18 & TypeScript", role: "Full-Stack Systems" },
+  { name: "Node.js & Express", role: "Idempotent Ledger APIs" },
+  { name: "Grounded RAG & Evals", role: "Citation-Checked LLMs" },
+  { name: "Harbor Desk Studio", role: "6-Week PRD & Cold Calls" },
+] as const
+
+/**
+ * Unified Brand & Tech-Stack Trust Ribbon mounted across public surfaces.
+ */
+export function BrandTrustRibbon({ compact = false }: { compact?: boolean }) {
+  return (
+    <div
+      style={{
+        padding: compact ? "14px 18px" : "18px 22px",
+        borderRadius: 14,
+        background: "#f8fafc",
+        border: "1px solid #e2e8f0",
+        marginBlock: compact ? 16 : 24,
+      }}
+      aria-label="Production stack and evaluation standard"
+    >
+      <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: 8, marginBottom: 12 }}>
+        <span style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "#5142B5" }}>
+          Production Stack &amp; Evaluation Standard Across Skylent OS
+        </span>
+        <span style={{ fontSize: 11.5, fontWeight: 600, color: "#475569" }}>
+          Zero passive video bloat · 20-Min Faculty TA Doubt SLA · SHA-256 Verifiable Dossiers
         </span>
       </div>
-
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 18, marginTop: 18, alignItems: "center" }}>
-        <div>
-          <p style={{ margin: 0, fontSize: 12, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.06em" }}>
-            Verified Capstone Attached to Credential
-          </p>
-          <p style={{ margin: "4px 0 10px", fontSize: 15, fontWeight: 700, color: "#f8fafc" }}>
-            {capstoneTitle}
-          </p>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-            {skills.map((skill) => (
-              <span
-                key={skill}
-                style={{
-                  fontSize: 11.5,
-                  padding: "3px 10px",
-                  borderRadius: 999,
-                  background: "rgba(255,255,255,0.1)",
-                  color: "#e2e8f0",
-                  fontWeight: 600,
-                }}
-              >
-                {skill}
-              </span>
-            ))}
-          </div>
-        </div>
-
-        <div style={{ background: "rgba(255,255,255,0.06)", borderRadius: 10, padding: "12px 16px", border: "1px solid rgba(255,255,255,0.12)" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, marginBottom: 6 }}>
-            <span style={{ color: "#cbd5e1" }}>Credential ID</span>
-            <code style={{ color: "#fbbf24", fontWeight: 700 }}>{codeExample}</code>
-          </div>
-          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, marginBottom: 10 }}>
-            <span style={{ color: "#cbd5e1" }}>Rubric Evaluation</span>
-            <strong style={{ color: "#34d399" }}>25% · 35% · 40% Passed</strong>
-          </div>
-          <Link
-            to="/verify"
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(165px, 1fr))", gap: 10 }}>
+        {STACK_STANDARDS.map((item) => (
+          <div
+            key={item.name}
             style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 6,
-              fontSize: 12.5,
-              fontWeight: 700,
-              color: "#fbbf24",
-              textDecoration: "none",
+              padding: "9px 12px",
+              borderRadius: 10,
+              background: "#ffffff",
+              border: "1px solid #e2e8f0",
+              display: "flex",
+              flexDirection: "column",
+              gap: 2,
             }}
           >
-            Inspect live exemplar dossiers at skylent.live/verify →
-          </Link>
-        </div>
+            <strong style={{ fontSize: 12.5, fontWeight: 700, color: "#0f172a" }}>{item.name}</strong>
+            <span style={{ fontSize: 11, color: "#64748b" }}>{item.role}</span>
+          </div>
+        ))}
       </div>
+    </div>
+  )
+}
+
+export const EdTechTrustBar = BrandTrustRibbon
+
+/**
+ * 1-Click Printable Syllabus & Rubric Specification Sheet Download Button.
+ */
+export function SyllabusDownloadButton({
+  courseSlug,
+  title,
+  label = "Download Syllabus",
+}: {
+  courseSlug: string
+  title?: string
+  label?: string
+}) {
+  const handleDownload = (e: MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault()
+    e.stopPropagation()
+    const normalizedSlug =
+      courseSlug === "data-analytics-pro" || courseSlug === "sql-certificate"
+        ? "data-analytics"
+        : courseSlug === "full-stack"
+          ? "full-stack-web"
+          : courseSlug === "generative-ai-program"
+            ? "generative-ai"
+            : courseSlug
+
+    const course = courses.find((c) => c.slug === normalizedSlug) ?? courses[0]
+    const displayTitle = title || course.title
+    const modulesMd = course.modules
+      .map(
+        (m, i) =>
+          `## Module 0${i + 1}: ${m.title}
+` +
+          m.lessons.map((l, j) => `  ${i + 1}.${j + 1} ${l.title} (${l.type.toUpperCase()} · ${l.duration})`).join("
+")
+      )
+      .join("
+
+")
+
+    const docText = `# SKYLENT (skylent.live) — OFFICIAL CURRICULUM & CAPSTONE SPECIFICATION
+Track: ${displayTitle}
+Format: ${course.mode} · ${course.duration} · 5 Modules · 15 Lessons
+Grading Standard: 25% Module Concept Checks · 35% Applied Written Briefs · 40% Capstone & Cold Call Defense
+Support SLA: Socratic AI Coach + 20-Minute Human Faculty TA Escalation
+
+## Overview
+${course.desc}
+
+## Learning Outcomes
+${course.outcomes.map((o) => `- ${o}`).join("
+")}
+
+## Complete 5-Module, 15-Lesson Syllabus
+${modulesMd}
+
+## Verification & Career OS Standard
+Completing 60% of this curriculum unlocks Career Rise (skill-gap role matching & mock defense). Completing 100% issues a cryptographic Proof-of-Work Dossier verifiable at https://skylent.live/verify.
+`
+    const blob = new Blob([docText], { type: "text/markdown;charset=utf-8" })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement("a")
+    a.href = url
+    a.download = `Skylent-${course.slug}-Syllabus.md`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={handleDownload}
+      className="sk-btn sk-btn-secondary"
+      style={{ fontSize: 13.5, fontWeight: 600 }}
+    >
+      {label} ↓
+    </button>
+  )
+}
+
+export function RoleOutcomeStrip({ roles }: { roles: readonly string[] }) {
+  return (
+    <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center", marginTop: 12 }}>
+      <span style={{ fontSize: 11.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "#5142B5" }}>
+        Target Roles:
+      </span>
+      {roles.map((r) => (
+        <span
+          key={r}
+          style={{
+            fontSize: 12,
+            fontWeight: 600,
+            padding: "3px 10px",
+            borderRadius: 999,
+            background: "#eef2ff",
+            color: "#3730a3",
+            border: "1px solid #c7d2fe",
+          }}
+        >
+          {r}
+        </span>
+      ))}
     </div>
   )
 }

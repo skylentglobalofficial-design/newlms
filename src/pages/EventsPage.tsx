@@ -22,80 +22,8 @@ type EventData = {
   spotsRemaining: number | null
 }
 
-
-function upcomingWeekendIso(daysAhead: number, hourIst: number, durationMinutes = 90): { start: string; end: string } {
-  const now = new Date()
-  const target = new Date(now.getTime() + daysAhead * 24 * 60 * 60 * 1000)
-  const utcHour = Math.max(0, hourIst - 5)
-  const utcMin = hourIst >= 5 ? 30 : 0
-  target.setUTCHours(utcHour, utcMin, 0, 0)
-  const end = new Date(target.getTime() + durationMinutes * 60 * 1000)
-  return { start: target.toISOString(), end: end.toISOString() }
-}
-
-const slot1 = upcomingWeekendIso(3, 18, 90)
-const slot2 = upcomingWeekendIso(4, 11, 90)
-const slot3 = upcomingWeekendIso(10, 18, 90)
-
-export const CURATED_UPCOMING_WORKSHOPS: EventData[] = [
-  {
-    id: "evt-curated-da-bootcamp",
-    slug: "northwind-sql-margin-audit-bootcamp",
-    title: "Northwind SQL & Margin Leakage Live Bootcamp",
-    description:
-      "Hands-on 90-minute SQL & commercial analytics workshop. Query the 166-row Northwind retail dataset live in your browser, isolate the 14.5% Apparel discount leakage, and receive 99 Elixir Coins (100% 1:1 credit) to unlock full case studies in your dashboard.",
-    eventType: "WORKSHOP",
-    status: "PUBLISHED",
-    hostName: "Skylent Data Analytics Practice Lead",
-    startTime: slot1.start,
-    endTime: slot1.end,
-    timezone: "Asia/Kolkata",
-    capacity: 60,
-    isOnline: true,
-    location: "Online · Browser SQL Sandbox",
-    registrationCount: 42,
-    spotsRemaining: 18,
-  },
-  {
-    id: "evt-curated-pm-sprint",
-    slug: "harbor-desk-product-scoping-sprint",
-    title: "Harbor Desk Product PRD & Operations Triage Sprint",
-    description:
-      "Live 90-minute Product Management execution sprint. Synthesise 18 store-manager interviews, scope a 6-week engineering bet for a 2-engineer team, and earn 99 Elixir Coins (100% 1:1 credit) toward the Case Study Store.",
-    eventType: "WORKSHOP",
-    status: "PUBLISHED",
-    hostName: "Skylent Product Studio Lead",
-    startTime: slot2.start,
-    endTime: slot2.end,
-    timezone: "Asia/Kolkata",
-    capacity: 50,
-    isOnline: true,
-    location: "Online · Harbor Desk Case Studio",
-    registrationCount: 28,
-    spotsRemaining: 22,
-  },
-  {
-    id: "evt-curated-genai-rag",
-    slug: "genai-rag-evaluation-masterclass",
-    title: "Grounded RAG & Hallucination Audit Masterclass",
-    description:
-      "Practical 90-minute GenAI engineering session on building citation-enforced RAG pipelines, catching ungrounded claims, and defending system latency trade-offs. Includes 99 Elixir Coins (100% 1:1 credit) on registration.",
-    eventType: "WEBINAR",
-    status: "PUBLISHED",
-    hostName: "Skylent AI Systems Architect",
-    startTime: slot3.start,
-    endTime: slot3.end,
-    timezone: "Asia/Kolkata",
-    capacity: 80,
-    isOnline: true,
-    location: "Online · AI Architecture Studio",
-    registrationCount: 51,
-    spotsRemaining: 29,
-  },
-]
-
 export default function EventsPage() {
-  const [events, setEvents] = useState<EventData[]>(CURATED_UPCOMING_WORKSHOPS)
+  const [events, setEvents] = useState<EventData[]>([])
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState<string | null>(null)
   const [filter, setFilter] = useState<"upcoming" | "past" | "all">("upcoming")
@@ -117,14 +45,13 @@ export default function EventsPage() {
           throw new Error(message)
         }
         if (!controller.signal.aborted) {
-          const apiRows = Array.isArray(json?.data) ? json.data : []
-          setEvents(apiRows.length > 0 ? apiRows : CURATED_UPCOMING_WORKSHOPS)
+          setEvents(Array.isArray(json?.data) ? json.data : [])
           setLoading(false)
         }
       })
       .catch((error: unknown) => {
         if (controller.signal.aborted) return
-        setEvents(CURATED_UPCOMING_WORKSHOPS)
+        setEvents([])
         setLoadError(error instanceof Error ? error.message : "Events could not be loaded.")
         setLoading(false)
       })
@@ -169,7 +96,7 @@ export default function EventsPage() {
                   ? "The events list could not be loaded. You can try again below."
                   : events.length === 0
                     ? "Explore our 3 Flagship ₹99 Workshop Tracks (with 100% Elixir Coin Back) and the Case Study Store below while new calendar dates are being scheduled."
-                    : "Hands-on 90-minute weekend execution sprints. Register for ₹99 and receive 99 Elixir Coins (100% 1:1 learning credit cashback) immediately in your Skylent wallet."}
+                    : "These are the sessions currently published. Open one to see whether you can register."}
             </p>
             <div className="cat-actions">
               <Link className="cat-btn cat-btn-primary" to="/programmes">
