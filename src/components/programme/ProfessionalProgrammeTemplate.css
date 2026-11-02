@@ -1139,3 +1139,44 @@
     justify-content: center;
   }
 }
+
+/* ── V18 Signature Royal Midnight Navy + Gold + Emerald Theme Refinement ── */
+.pp-enrol-card {
+  border-color: rgba(251, 191, 36, 0.45);
+  box-shadow:
+    0 6px 16px rgba(17, 21, 44, 0.06),
+    0 24px 48px -20px rgba(17, 21, 44, 0.22);
+}
+
+.pp-enrol-card__top {
+  background: linear-gradient(145deg, #11152c 0%, #1d1849 100%);
+  border-bottom: 1px solid rgba(251, 191, 36, 0.28);
+}
+
+.pp-enrol-card__eyebrow {
+  color: #fbbf24;
+}
+
+.pp-enrol-card__sub {
+  color: #a5b4fc;
+  font-weight: 500;
+}
+
+.pp-enrol-card__jump {
+  color: #fbbf24 !important;
+  font-weight: 700;
+}
+
+.pp-subnav-bar {
+  background: linear-gradient(90deg, #11152c 0%, #1d1849 100%);
+  border-bottom: 1px solid rgba(251, 191, 36, 0.28);
+}
+
+.pp-jump__n {
+  background: rgba(251, 191, 36, 0.16);
+  color: #fbbf24;
+}
+
+.pp-jump a::before {
+  background: #fbbf24;
+}

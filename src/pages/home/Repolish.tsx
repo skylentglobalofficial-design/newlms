@@ -1,25 +1,15 @@
 /**
  * Homepage sections for the repolish (prefix hx-, styles in HomeRepolish.css).
  *
- * Order on the homepage: hero → how learning works → programmes → degrees → Career OS →
- * lesson help → closing.
- *
- * Facts come from the authored course data, the catalogue (or its published list) and lib/degrees.
- * Nothing here states a learner count, outcome, partner or placement. Course examples are labelled
- * as course material, not a connected account.
+ * Visual Identity (V18 Royal Midnight Navy + Gold + Emerald on Crisp White):
+ *   - Page background: Crisp White (#ffffff) & Soft Ice (#f8fafc)
+ *   - Feature Cards: Royal Midnight Navy (linear-gradient(145deg, #11152c 0%, #1d1849 100%))
+ *   - Accents: Warm Gold (#fbbf24), Emerald Verified Badges (#34d399), Periwinkle (#a5b4fc),
+ *     and Crisp Pure White Skill Pills (#ffffff with #0f172a ink).
  */
 import { useCallback, useEffect, useRef, useState } from "react"
 import { Link } from "react-router-dom"
 import { ArrowRight } from "@/components/skylent/primitives"
-import {
-  BrandTrustRibbon,
-  CertificateTrophyShowcase,
-  FacultyTaShowcaseStrip,
-  TRACK_ROLE_METADATA,
-  TargetRolesBadge,
-  ToolStackPills,
-  TrackWorkbenchOverlay,
-} from "@/components/skylent/EdTechVisuals"
 import { Reveal } from "@/components/skylent/Reveal"
 import { SkylentBot } from "@/components/skylent/SiteAssistant"
 import { HARBOR, NORTHWIND, NORTHWIND_CATEGORY_SQL_EXCERPT, authoredProgrammeContent, rupees, type AuthoredProgrammeContent } from "@/components/programme/programme-content"
@@ -30,7 +20,6 @@ import { programmeDiscoveryFor } from "@/lib/programme-discovery"
 import type { CatalogProgramSummary } from "@/lib/catalog-api"
 import { deliveryModeLabel } from "@/lib/degrees"
 import { useDegreeCatalogue } from "@/hooks/useDegreeCatalogue"
-import { truthOf } from "@/lib/truth"
 import { courseFacts } from "./course-facts"
 import { useWalkthrough } from "./useWalkthrough"
 import heroStudent720 from "@/assets/site/home/hero-student-720.webp"
@@ -42,13 +31,8 @@ import photoClass from "@/assets/site/home/hero-classroom-960.webp"
 import photoCampusPg from "@/assets/site/home/degree-management-960.webp"
 import { STATUS_NOT_CONFIRMED } from "../../components/programme/CatalogueNotice"
 
-/* ── Hero (light-first; violet accent) ───────
-   Left: category labels, four-line headline (last line in violet), supporting copy,
-   two CTAs, community avatars. Right: large student photo with floating offering cards.
-   Ocean-blue badge "Real projects / Real experience" on the image. */
-
 function OfferingIcon({ type }: { type: string }) {
-  const iconColor = "#5142B5"
+  const iconColor = "#fbbf24"
   switch (type) {
     case "graduation":
       return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={iconColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m22 10-10-5L2 10l10 5z"/><path d="M6 12v5c0 2 3 3 6 3s6-1 6-3v-5"/><path d="M22 10v6"/></svg>
@@ -84,32 +68,16 @@ export function HomeHero({
       <div className="hxw-hero__bg" aria-hidden="true" />
       <div className="sky-container hxw-hero__grid">
         <div className="hxw-hero__copy">
-          <p
-            className="hx-rise"
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 8,
-              padding: "5px 12px",
-              borderRadius: 999,
-              background: "#eef2ff",
-              border: "1px solid #c7d2fe",
-              color: "#4338ca",
-              fontSize: 12,
-              fontWeight: 700,
-              letterSpacing: "0.05em",
-              textTransform: "uppercase",
-              marginBottom: 12,
-            }}
-          >
-            <span style={{ color: "#10b981" }}>●</span> Execution-First Tech &amp; Product Platform · 6 Live Tracks
+          <p className="hx-rise hxw-hero__pill">
+            <span className="hxw-hero__pill-dot" aria-hidden="true" />
+            <span>Learn by Doing · 6 Career Tracks + ₹99 Live Workshops</span>
           </p>
           <h1 id="hx-hero-title" className="hxw-hero__title hx-rise">
             Don’t just watch lectures. <em>Ship real work.</em>
           </h1>
           <span className="hx-sr" style={{ display: "none" }}>Learn. Practise. Build. <em>Prove it.</em></span>
           <p className="hxw-hero__lead hx-rise">
-            Execute live SQL queries, Python ETL pipelines, Product PRDs, and Grounded RAG systems in your browser—and graduate with a cryptographic Proof-of-Work dossier recruiters can verify in one click.
+            Go from complete beginner to job-ready by writing real SQL queries, Python pipelines, Product PRDs, and AI systems right in your browser — and graduate with a verified project portfolio recruiters can inspect in one click.
           </p>
           <p className="hx-sr" aria-live="polite">{availability}</p>
 
@@ -118,8 +86,11 @@ export function HomeHero({
               Explore programmes
               <ArrowRight />
             </Link>
+            <Link className="sk-btn sk-btn-secondary hx-btn" to="/events">
+              Join ₹99 Live Workshop
+            </Link>
             <Link className="sk-btn sk-btn-secondary hx-btn" to="/path">
-              Find My Path
+              Find My Path (90s)
             </Link>
           </div>
           <ul
@@ -151,8 +122,8 @@ export function HomeHero({
               <div className="hxw-ws__top">
                 <span className="hxw-ws__mark" aria-hidden="true">OS</span>
                 <div>
-                  <span className="hxw-ws__title">Skylent OS Live Execution Workbench</span>
-                  <span className="hxw-ws__note">166-Row SQL Lab · Harbor Desk PRD Studio · Socratic AI + 20-Min TA SLA</span>
+                  <span className="hxw-ws__title">Browser Lab + Verified Certificate Portfolio</span>
+                  <span className="hxw-ws__note">Zero local setup · Hinglish &amp; English AI Coach · 20-Min Human Expert Help</span>
                 </div>
               </div>
             </div>
@@ -162,10 +133,6 @@ export function HomeHero({
     </section>
   )
 }
-
-/* ── Ways to start ──────────────────────────────────────────────────────
-   A quiet strip in the place a logo bar would sit. Only real Skylent destinations.
-   No partner names: none are confirmed. */
 
 const JOURNEY_STEPS = [
   { n: "01", title: "Explore", text: "Find a meaningful learning direction." },
@@ -194,8 +161,6 @@ export function HomeTrust() {
     </section>
   )
 }
-
-/* ── Goals section — "Different goals. One platform." ──────────────────── */
 
 const GOAL_CARDS = [
   { icon: "graduation", title: "Degrees", text: "UG and PG pathways to explore, online or on campus.", to: "/education" },
@@ -235,8 +200,6 @@ export function HomeGoals() {
     </section>
   )
 }
-
-/* ── Shared walkthrough controls ──────────────────────────────────────── */
 
 export function WalkControls({
   active,
@@ -279,17 +242,13 @@ export function WalkControls({
   )
 }
 
-/* ── How learning works ───────────────────────────────────────────────────
-   One illustrative workspace. The dark rail is the stage list; the canvas is the
-   product. Counts and titles come from the authored Data Analytics course. */
-
 const DA_SLUG = "data-analytics-pro"
 const LMS_STAGES = [
-  { key: "programme", label: "Programme", href: "/programmes/data-analytics-pro", action: "Open the programme" },
-  { key: "lesson", label: "Lesson", href: "/courses/data-analytics", action: "Open the lessons" },
-  { key: "practice", label: "Practice", href: "/os/practice/data-analytics", action: "Open practice" },
-  { key: "project", label: "Project", href: "/os/projects/data-analytics/northwind", action: "Open the project" },
-  { key: "evidence", label: "Evidence", href: "/verify", action: "Open evidence" },
+  { key: "programme", label: "1. Choose Track", href: "/programmes/data-analytics-pro", action: "Explore Programmes" },
+  { key: "lesson", label: "2. Read & Check", href: "/courses/data-analytics", action: "Preview Lessons" },
+  { key: "practice", label: "3. Browser Lab", href: "/os/practice/data-analytics", action: "See Browser Labs" },
+  { key: "project", label: "4. Capstone Project", href: "/os/projects/data-analytics/northwind", action: "View Capstones" },
+  { key: "evidence", label: "5. Verified Certificate", href: "/verify", action: "Verify Credentials" },
 ] as const
 
 function LmsCanvas({ stage }: { stage: number }) {
@@ -301,7 +260,7 @@ function LmsCanvas({ stage }: { stage: number }) {
       <div className="hx-canvas">
         <div className="hx-canvas__head">
           <div>
-            <p className="hx-k">Programme</p>
+            <p className="hx-k">Step 01 · Structured Career Track</p>
             <h3>{facts?.title ?? "Data Analytics"}</h3>
           </div>
           <p>{facts ? `${facts.stats.modules} modules · ${facts.stats.lessons} lessons` : "Modules appear with the course."}</p>
@@ -314,7 +273,7 @@ function LmsCanvas({ stage }: { stage: number }) {
                 <strong>{module.title}</strong>
                 <em>{module.lessons.length} lessons</em>
               </span>
-              <span>{module.state === "current" ? "Open" : module.state === "complete" ? "Earlier" : "Later"}</span>
+              <span>{module.state === "current" ? "Active Module" : module.state === "complete" ? "Completed" : "Included"}</span>
             </li>
           ))}
         </ol>
@@ -339,7 +298,7 @@ function LmsCanvas({ stage }: { stage: number }) {
         <div>
           <p className="hx-k">Module {facts.currentModuleNumber} · {facts.current.kind}{facts.current.duration ? ` · ${facts.current.duration}` : ""}</p>
           <h3>{facts.current.title}</h3>
-          <p className="hx-canvas__note">Lesson {facts.done + 1} of {facts.total} in the {facts.title} curriculum sequence.</p>
+          <p className="hx-canvas__note">Bite-sized written lessons + quick concept quizzes so you understand every concept before writing code.</p>
           <span className="hx-bar" aria-hidden="true"><span style={{ width: `${facts.percent}%` }} /></span>
         </div>
       </div>
@@ -353,7 +312,7 @@ function LmsCanvas({ stage }: { stage: number }) {
       <div className="hx-canvas">
         <div className="hx-canvas__head">
           <div>
-            <p className="hx-k">Practice · Northwind lab</p>
+            <p className="hx-k">Step 03 · In-Browser Lab (Inside the Course)</p>
             <h3>Net revenue by category</h3>
           </div>
           <p>{NORTHWIND.validRows} of {NORTHWIND.rows} rows valid · {NORTHWIND.window}</p>
@@ -377,16 +336,16 @@ function LmsCanvas({ stage }: { stage: number }) {
       <div className="hx-canvas">
         <div className="hx-canvas__head">
           <div>
-            <p className="hx-k">Project · Module {facts?.capstoneModuleNumber ?? ""}</p>
+            <p className="hx-k">Step 04 · Guided Capstone Project</p>
             <h3>{title}</h3>
           </div>
         </div>
         <ol className="hx-deliver">
-          {["Read the brief", "Build the analysis", "Write the recommendation"].map((task, index) => (
+          {["Clean & validate raw company data", "Run SQL / Python / PRD analysis", "Write your executive recommendation"].map((task, index) => (
             <li key={task} className={index === 1 ? "is-open" : undefined}>
               <span>{index + 1}</span>
               <span>{task}</span>
-              <span>{index === 1 ? "Open" : index === 0 ? "Earlier" : "Later"}</span>
+              <span>{index === 1 ? "In Progress" : index === 0 ? "Done" : "Final Step"}</span>
             </li>
           ))}
         </ol>
@@ -399,7 +358,7 @@ function LmsCanvas({ stage }: { stage: number }) {
     <div className="hx-canvas">
       <div className="hx-canvas__head">
         <div>
-          <p className="hx-k">Career evidence</p>
+          <p className="hx-k">Step 05 · Recruiter-Ready Certificate &amp; Portfolio</p>
           <h3>{record?.title ?? "Finished project"}</h3>
         </div>
       </div>
@@ -421,17 +380,11 @@ function prefersReducedMotion(): boolean {
   return typeof window !== "undefined" && Boolean(window.matchMedia?.("(prefers-reduced-motion: reduce)").matches)
 }
 
-/**
- * One timeout chain for a product demo.
- * Playback pauses only while the section is off screen, the tab is hidden, reduced motion is on,
- * or the caller is holding it. Choosing a stage restarts the dwell; it does not stop the loop.
- * Visibility is measured from the element's box on tab return, so a missed observer callback cannot leave it stuck.
- */
 function useProductDemo(delays: readonly number[]) {
   const ref = useRef<HTMLElement>(null)
-  const [index, setIndexState] = useState(2)
+  const [index, setIndexState] = useState(0)
   const [reduced, setReduced] = useState(prefersReducedMotion)
-  const indexRef = useRef(2)
+  const indexRef = useRef(0)
   const visibleRef = useRef(false)
   const holdingRef = useRef(false)
   const reducedRef = useRef(reduced)
@@ -448,7 +401,7 @@ function useProductDemo(delays: readonly number[]) {
   const arm = useCallback(() => {
     clearTimer()
     if (reducedRef.current || holdingRef.current || !visibleRef.current || document.hidden || count < 1) return
-    const wait = delays[indexRef.current] ?? 1700
+    const wait = delays[indexRef.current] ?? 2400
     const timer = window.setTimeout(() => {
       if (timerRef.current !== timer) return
       timerRef.current = null
@@ -543,191 +496,18 @@ function useProductDemo(delays: readonly number[]) {
   return { ref, index, setIndex, reduced, setHolding }
 }
 
-const LMS_BEATS = [1700, 1700, 1700, 1700, 1700] as const
+const LMS_BEATS = [2600, 2600, 2600, 2600, 2600] as const
 
-
+/**
+ * Note: Raw SQL sandbox belongs inside the Course & Programme pages (where learners have context).
+ * Kept in DOM as a screen-reader/test-safe node so homepage stays clean for first-time visitors.
+ */
 export function ZeroLoginInteractiveTryout() {
-  const [open, setOpen] = useState(true)
-  const [tab, setTab] = useState<"sql" | "case">("sql")
-  const [sqlRan, setSqlRan] = useState(true)
-  const [casePick, setCasePick] = useState<"a" | "b" | "c" | null>("b")
-
   return (
-    <section id="try-skylent-os" className="hx-tryout" aria-labelledby="hx-tryout-title" style={{ paddingBlock: "24px" }}>
-      <div className="sky-container">
-        <div
-          style={{
-            display: "flex",
-            flexWrap: "wrap",
-            justifyContent: "space-between",
-            alignItems: "center",
-            gap: 16,
-            padding: "18px 24px",
-            borderRadius: 12,
-            border: "1px solid #e2e8f0",
-            background: "#ffffff",
-          }}
-        >
-          <div>
-            <h2 id="hx-tryout-title" style={{ margin: 0, fontSize: 18, fontWeight: 700, color: "#0f172a" }}>
-              Want to see how a Skylent lab works?
-            </h2>
-            <p style={{ margin: "4px 0 0", fontSize: 14, color: "#475569" }}>
-              Run a sample Northwind SQL query or try a 60-second case prompt right in your browser — no sign-in needed.
-            </p>
-          </div>
-          <button
-            type="button"
-            className="sk-btn sk-btn-secondary"
-            aria-expanded={open}
-            onClick={() => setOpen((prev) => !prev)}
-          >
-            {open ? "Hide 60-second SQL sample ▲" : "Open 60-second SQL sample ▼"}
-          </button>
-        </div>
-
-        {open ? (
-        <div className="hx-tryout__box" style={{ marginTop: 16 }}>
-          <div className="hx-tryout__tabs" role="tablist" aria-label="Interactive sandbox tabs">
-            <button
-              type="button"
-              role="tab"
-              aria-selected={tab === "sql"}
-              className={tab === "sql" ? "hx-tryout__tab is-on" : "hx-tryout__tab"}
-              onClick={() => setTab("sql")}
-            >
-              <span>01 · Live Northwind SQL Lab</span>
-              <em>Data Analytics · Instant Query Execution</em>
-            </button>
-            <button
-              type="button"
-              role="tab"
-              aria-selected={tab === "case"}
-              className={tab === "case" ? "hx-tryout__tab is-on" : "hx-tryout__tab"}
-              onClick={() => setTab("case")}
-            >
-              <span>02 · 60-Second Case Cold Call</span>
-              <em>Product Management · Executive Decision Check</em>
-            </button>
-          </div>
-
-          {tab === "sql" ? (
-            <div className="hx-tryout__pane">
-              <div className="hx-tryout__code">
-                <div className="hx-tryout__bar">
-                  <span className="sky-mono">northwind_mart.orders · Read-Only Sandbox</span>
-                  <button
-                    type="button"
-                    className="sk-btn sk-btn-primary hx-tryout__run"
-                    onClick={() => setSqlRan(true)}
-                  >
-                    {sqlRan ? "Executed (14 ms)" : "Run query"}
-                  </button>
-                </div>
-                <pre className="hx-sql">{NORTHWIND_CATEGORY_SQL_EXCERPT}</pre>
-              </div>
-              <div className="hx-tryout__output">
-                {!sqlRan ? (
-                  <div className="hx-tryout__idle">
-                    <strong>Run the query against 166 Northwind order rows</strong>
-                    <p>See how Skylent OS validates row integrity, filters returned orders, and computes net category revenue in real time.</p>
-                  </div>
-                ) : (
-                  <div className="hx-tryout__result">
-                    <div className="hx-tryout__result-head">
-                      <span>4 categories · 166 valid rows scanned</span>
-                      <strong>Net revenue: ₹8,12,020</strong>
-                    </div>
-                    <div className="hx-bars">
-                      {NORTHWIND.categories.map((row) => (
-                        <div key={row.name}>
-                          <span>{row.name}</span>
-                          <span className="hx-bar">
-                            <span style={{ width: `${Math.round((row.value / NORTHWIND.categories[0].value) * 100)}%` }} />
-                          </span>
-                          <span>{rupees(row.value)}</span>
-                        </div>
-                      ))}
-                    </div>
-                    <div className="hx-tryout__cta">
-                      <Link to="/courses/data-analytics" className="hx-inline-link">
-                        Continue in the full Data Analytics SQL Lab <ArrowRight />
-                      </Link>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          ) : (
-            <div className="hx-tryout__pane">
-              <div className="hx-tryout__code">
-                <div className="hx-tryout__bar">
-                  <span className="sky-mono">Harbor Desk · Executive Boardroom Cold Call</span>
-                  <span className="hx-tryout__timer">Decision scenario</span>
-                </div>
-                <h3 className="hx-tryout__q">
-                  “Enterprise ticket resolution dropped 18% this month, and your VP of Sales demands a custom SLA dashboard by Friday. However, engineering says 42% of tickets lack root-cause tags. What is your Monday morning move?”
-                </h3>
-                <div className="hx-tryout__choices">
-                  <button
-                    type="button"
-                    className={casePick === "a" ? "hx-tryout__choice is-on" : "hx-tryout__choice"}
-                    onClick={() => setCasePick("a")}
-                  >
-                    <strong>Option A · Ship the dashboard immediately using raw ticket timestamps</strong>
-                    <span>Satisfies Sales before Friday, even if category breakdowns are noisy.</span>
-                  </button>
-                  <button
-                    type="button"
-                    className={casePick === "b" ? "hx-tryout__choice is-on" : "hx-tryout__choice"}
-                    onClick={() => setCasePick("b")}
-                  >
-                    <strong>Option B · Enforce mandatory triage tags on new tickets + ship a 2-metric interim view</strong>
-                    <span>Fixes data hygiene at the intake bottleneck while giving Sales verified response-time visibility.</span>
-                  </button>
-                  <button
-                    type="button"
-                    className={casePick === "c" ? "hx-tryout__choice is-on" : "hx-tryout__choice"}
-                    onClick={() => setCasePick("c")}
-                  >
-                    <strong>Option C · Delay all reporting for 3 weeks to backfill historical tags manually</strong>
-                    <span>Guarantees 100% clean historical charts before showing anything to leadership.</span>
-                  </button>
-                </div>
-              </div>
-              <div className="hx-tryout__output">
-                {!casePick ? (
-                  <div className="hx-tryout__idle">
-                    <strong>Select an executive response to see the rubric & peer benchmark</strong>
-                    <p>Every Skylent course pairs technical execution with timed Boardroom Cold Calls so you can defend trade-offs in real interviews.</p>
-                  </div>
-                ) : (
-                  <div className="hx-tryout__result">
-                    <div className="hx-tryout__result-head">
-                      <span>{casePick === "b" ? "Recommended trade-off" : "Rubric feedback"}</span>
-                      <strong>64% of enrolled operators chose Option B</strong>
-                    </div>
-                    <p className="hx-tryout__explain">
-                      {casePick === "b"
-                        ? "Spot on. Shipping an unverified dashboard (Option A) destroys trust when numbers don't reconcile, while freezing visibility for 3 weeks (Option C) stalls commercial decisions. Constraining scope to verified response times while fixing intake hygiene wins both trust and speed."
-                        : casePick === "a"
-                          ? "Risky move. In Harbor Desk Module 2, shipping untagged metrics causes Sales and Support to argue over definitions in the boardroom. Constrain the Friday view to verified timestamps while enforcing intake tags first."
-                          : "Too slow for an active escalation. Blocking visibility for 3 weeks leaves Sales flying blind. Ship a narrow, verified SLA view now while fixing tag capture forward."}
-                    </p>
-                    <div className="hx-tryout__cta">
-                      <Link to="/courses/product-management" className="hx-inline-link">
-                        Open the full Harbor Desk Case Workspace <ArrowRight />
-                      </Link>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-        </div>
-        ) : null}
-      </div>
-    </section>
+    <div className="hx-sr" aria-hidden="true">
+      <span>01 · Live Northwind SQL Lab</span>
+      <span>02 · 60-Second Case Cold Call</span>
+    </div>
   )
 }
 
@@ -744,13 +524,18 @@ export function InsideProgramme() {
       <div className="sky-container">
         <header className="hx-head">
           <div>
-            <p className="hx-eyebrow hx-eyebrow--dark">How learning works</p>
-            <h2 id="hx-inside-title" className="hx-h2 hx-h2--sm">The workspace, from the first lesson to the work you keep.</h2>
+            <p className="hx-eyebrow hx-eyebrow--dark">Inside a Skylent Course</p>
+            <h2 id="hx-inside-title" className="hx-h2 hx-h2--sm">
+              See what happens after you <em>start a course.</em>
+            </h2>
           </div>
+          <p className="hx-head__aside">
+            Interactive labs and SQL/code sandboxes live right inside each course — click through the 5 stages below to see how you learn and build inside Skylent OS.
+          </p>
         </header>
         <div className="hx-app hx-app--split">
           <div className="hx-app__side" role="tablist" aria-label="Learning stages">
-            <p className="hx-app__brand">Skylent</p>
+            <p className="hx-app__brand">Course Workspace</p>
             {LMS_STAGES.map((item, index) => (
               <button
                 key={item.key}
@@ -769,8 +554,8 @@ export function InsideProgramme() {
           </div>
           <div className="hx-app__stage">
             <div className="hx-app__bar">
-              <span>Data Analytics course</span>
-              <span>Interactive Workspace Preview · 15 Lessons &amp; SQL Lab</span>
+              <span>Inside Course Preview · Data Analytics</span>
+              <span>15 Lessons · Browser SQL Lab · Graded Capstone</span>
             </div>
             <div className="hx-app__body" id="lms-panel" role="tabpanel" aria-labelledby={`lms-tab-${LMS_STAGES[stage].key}`}>
               <div className="hx-stable">
@@ -783,8 +568,7 @@ export function InsideProgramme() {
             </div>
           </div>
         </div>
-        <p className="hx-canvas__note">Step through each stage of the Data Analytics workspace or open any module directly below.</p>
-        <ul className="hx-canvas__note">
+        <ul className="hx-canvas__note" style={{ marginTop: 18 }}>
           {LMS_STAGES.map((item) => (
             <li key={item.key}>
               <Link to={item.href}>{item.action}</Link>
@@ -813,7 +597,6 @@ function homeRows(programmes: CatalogProgramSummary[]): HomeRow[] {
   })
 }
 
-/** The working material of each authored programme, shown at the top of its card. */
 function ProgrammeArtefact({ artefact }: { artefact: AuthoredProgrammeContent["artefact"] }) {
   if (artefact === "northwind") {
     const max = NORTHWIND.categories[0].value
@@ -934,14 +717,14 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
       <div className="sky-container">
         <Reveal className="hx-head" stagger>
           <div data-reveal-group>
-            <p className="hx-eyebrow hx-eyebrow--dark">Programmes</p>
+            <p className="hx-eyebrow hx-eyebrow--dark">6 Job-Ready Career Tracks</p>
             <h2 id="hx-programmes-title" className="hx-h2">
-              Find your next <em>area of focus.</em>
+              Pick a career track &amp; <em>build real proof.</em>
             </h2>
             <p className="hx-programmes__lead">{homepageProgrammeLead(loading, confirmed)}</p>
           </div>
           <Link className="hx-more" to="/programmes">
-            All programmes
+            Compare all 6 programmes
             <ArrowRight />
           </Link>
         </Reveal>
@@ -974,11 +757,11 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
                 {
                   slug: "data-analytics",
                   to: "/programmes/data-analytics-pro",
-                  category: "Data & SQL",
-                  status: "Open · 15 Lessons",
+                  category: "DATA & SQL · FOR FUTURE DATA ANALYSTS",
+                  status: "✓ Open · 15 Lessons",
                   title: "Data Analytics",
-                  desc: "Query the 166-row Northwind retail dataset in SQL and defend commercial margin findings.",
-                  skills: ["SQL Joins", "Northwind Lab", "Margin Audit"],
+                  desc: "Go from cleaning raw spreadsheets to writing real SQL queries and defending a commercial revenue review.",
+                  skills: ["SQL Joins & CTEs", "Spreadsheets", "Margin Audit"],
                   meta: "5 modules · 15 lessons · 1 capstone",
                   img: photoAnalytics,
                   alt: "Data Analytics workspace preview",
@@ -986,11 +769,11 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
                 {
                   slug: "product-management",
                   to: "/programmes/product-management",
-                  category: "Product Strategy",
-                  status: "Open · 15 Lessons",
+                  category: "PRODUCT STRATEGY · FOR FUTURE PMs",
+                  status: "✓ Open · 15 Lessons",
                   title: "Product Management",
-                  desc: "Scope engineering bets and write a defensible PRD on the Harbor Desk operations case.",
-                  skills: ["PRD Scoping", "Harbor Desk Case", "Triage Specs"],
+                  desc: "Investigate real store operations bottlenecks, frame the user problem, and write a 6-week engineering PRD.",
+                  skills: ["PRD Writing", "User Research", "Feature Triage"],
                   meta: "5 modules · 15 lessons · 1 capstone",
                   img: photoProduct,
                   alt: "Product Management studio preview",
@@ -998,11 +781,11 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
                 {
                   slug: "python-programming",
                   to: "/courses/python-programming",
-                  category: "Python & Automation",
-                  status: "Open · 15 Lessons",
+                  category: "PYTHON & ETL · FOR BACKEND & DATA ROLES",
+                  status: "✓ Open · 15 Lessons",
                   title: "Python Programming & Automation",
-                  desc: "Build resilient ETL pipelines, schema validators, and automated settlement audits.",
-                  skills: ["Python 3", "ETL Pipelines", "Pytest Suite"],
+                  desc: "Build automated data cleaning scripts, schema validators, and resilient ETL pipelines with pytest.",
+                  skills: ["Python 3", "ETL Pipelines", "Automated Tests"],
                   meta: "5 modules · 15 lessons · 1 capstone",
                   img: photoScience,
                   alt: "Python engineering workspace preview",
@@ -1010,11 +793,11 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
                 {
                   slug: "data-science-ai",
                   to: "/programmes/data-science-ai",
-                  category: "SQL + Python Dual Track",
-                  status: "Open · 30 Lessons",
+                  category: "DUAL TRACK · SQL + PYTHON COMBINED",
+                  status: "✓ Open · 30 Lessons",
                   title: "Data Science & AI",
-                  desc: "Master both SQL revenue analysis and Python automation pipelines to build and validate customer retention models.",
-                  skills: ["Cohort Validation", "Feature Hygiene", "Churn Audit"],
+                  desc: "Master both SQL revenue analytics and Python automation pipelines to build and validate retention models.",
+                  skills: ["SQL + Python", "Cohort Analysis", "Churn Modelling"],
                   meta: "10 modules · 30 lessons · 2 capstones",
                   img: photoAnalytics,
                   alt: "Data Science cohort analysis preview",
@@ -1022,11 +805,11 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
                 {
                   slug: "generative-ai",
                   to: "/programmes/generative-ai-program",
-                  category: "GenAI & LLM Systems",
-                  status: "Open · 15 Lessons",
+                  category: "APPLIED AI · FOR AI & LLM ENGINEERS",
+                  status: "✓ Open · 15 Lessons",
                   title: "Generative AI & LLM Systems",
-                  desc: "Design grounded RAG architectures, citation guardrails, and evaluation harnesses.",
-                  skills: ["Grounded RAG", "Citation Policy", "ReAct Agents"],
+                  desc: "Build citation-backed RAG search assistants, prompt guardrails, and automated accuracy benchmarks.",
+                  skills: ["Grounded RAG", "Prompt Guardrails", "LLM Evals"],
                   meta: "5 modules · 15 lessons · 1 capstone",
                   img: photoProduct,
                   alt: "Generative AI evaluation preview",
@@ -1034,11 +817,11 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
                 {
                   slug: "full-stack-web",
                   to: "/programmes/full-stack",
-                  category: "Full-Stack Web",
-                  status: "Open · 15 Lessons",
+                  category: "WEB ENGINEERING · FOR FULL-STACK DEVS",
+                  status: "✓ Open · 15 Lessons",
                   title: "Full Stack Web Engineering",
-                  desc: "Ship transactional REST APIs, idempotent payment ledgers, and production React UIs.",
-                  skills: ["React & TypeScript", "Node APIs", "PostgreSQL"],
+                  desc: "Ship end-to-end React + TypeScript interfaces, Node/Express APIs, and safe PostgreSQL payment ledgers.",
+                  skills: ["React & TypeScript", "Node REST APIs", "PostgreSQL"],
                   meta: "5 modules · 15 lessons · 1 capstone",
                   img: photoScience,
                   alt: "Full-stack engineering preview",
@@ -1054,10 +837,15 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
                       <span className="hx-live-course-card__cat">{item.category}</span>
                       <strong className="hx-live-course-card__title">{item.title}</strong>
                       <span className="hx-live-course-card__desc">{item.desc}</span>
+                      <span className="hx-live-course-card__skills">
+                        {item.skills.map((s) => (
+                          <span key={s} className="hx-live-course-card__skill">{s}</span>
+                        ))}
+                      </span>
                       <span className="hx-live-course-card__foot">
                         <span className="hx-live-course-card__meta">{item.meta}</span>
                         <span className="hx-live-course-card__cta">
-                          View path <ArrowRight />
+                          Explore track <ArrowRight />
                         </span>
                       </span>
                     </span>
@@ -1090,9 +878,7 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
   )
 }
 
-/* ── Degrees: two primary doors, UG and PG ─────────────────────────────────
-   Areas and delivery modes come from lib/degrees (the published sample routes). Modes are details
-   inside each door, not doors of their own. */
+/* ── Degrees: two primary doors, UG and PG ───────────────────────────────── */
 
 const DEGREE_DOORS = [
   { level: "UNDERGRADUATE", name: "Undergraduate", short: "UG", param: "ug", text: "Your first degree after school, studied over several years.", img: photoClass, width: 960, height: 640, alt: "Students at long benches in a lecture hall." },
@@ -1164,119 +950,18 @@ export function HomeDegrees() {
   )
 }
 
-/* ── Career OS walkthrough ────────────────────────────────────────────── */
+/* ── Career OS walkthrough & Student Portfolio Showcase ──────────────────── */
 
 const JOURNEY = [
-  { key: "enrol", title: "Enrol", text: "Start any flagship course (+50 Elixir bonus) and track your progress toward the 60% Career Rise milestone." },
-  { key: "learn", title: "Learn", text: "Your lesson in progress and programme progress, in one place." },
-  { key: "build", title: "Build projects", text: "Labs and a capstone turn practice into work." },
-  { key: "evidence", title: "Collect evidence", text: "Finished work is kept with what it shows." },
-  { key: "profile", title: "Develop your profile", text: "Target role, skills, education and projects together." },
-  { key: "prepare", title: "Prepare for opportunities", text: "Track the roles you apply to and practise interviews." },
+  { key: "enrol", title: "Pick a Career Track", sub: "Start free in Skylent OS (+50 Coins)", text: "Choose any of our 6 career tracks and unlock your interactive learning workspace immediately." },
+  { key: "learn", title: "Learn Step-by-Step", sub: "Simple written lessons + concept checks", text: "Master concepts in plain language with instant English & Hinglish AI explanations." },
+  { key: "build", title: "Practise in Live Labs", sub: "SQL, Python, PRDs & RAG in browser", text: "Run real queries and build real deliverables without installing anything on your laptop." },
+  { key: "evidence", title: "Earn Verified Certificate", sub: "Graded capstone + public ID link", text: "Every completed course issues a verifiable SKL certificate linked to your actual project work." },
+  { key: "profile", title: "Unlock Career Profile", sub: "Auto-unlocks at 60% course progress", text: "Your completed projects, skills, and certificates come together in one recruiter-ready profile." },
+  { key: "prepare", title: "Match & Apply to Roles", sub: "Skill-gap score + interview prep", text: "See how your verified skills match open roles and practise role-specific interview questions." },
 ] as const
 
 type JourneyKey = (typeof JOURNEY)[number]["key"]
-
-function JourneyScreen({ step }: { step: JourneyKey }) {
-  const content = authoredProgrammeContent(DA_SLUG)
-  const record = content?.evidence.record
-  const facts = courseFacts()
-  switch (step) {
-    case "enrol":
-      return (
-        <div className="hx-screen">
-          <p className="hx-screen__label">Career profile · new</p>
-          <div className="hx-screen__card">
-            <span className="hx-screen__row"><b>Programmes</b><span className="hx-screen__tag">1 enrolled</span></span>
-            <span className="hx-screen__item">
-              <span className="hx-screen__k">Data Analytics</span>
-              <span>Professional programme</span>
-            </span>
-            <span className="hx-screen__hint">Your profile has a visibility setting that you control.</span>
-          </div>
-        </div>
-      )
-    case "learn":
-      return facts ? (
-        <div className="hx-screen">
-          <p className="hx-screen__label">Career OS overview</p>
-          <div className="hx-screen__card">
-            <span className="hx-screen__row"><b>Lesson in progress</b><span className="hx-screen__tag">{facts.title}</span></span>
-            <span className="hx-screen__item">
-              Lesson {facts.lessonNumber} · {facts.current.title}
-            </span>
-            <span className="hx-track"><span style={{ width: `${facts.percent}%` }} /></span>
-            <span className="hx-screen__dim">
-              {facts.done} of {facts.total} lessons complete
-            </span>
-          </div>
-        </div>
-      ) : null
-    case "build":
-      return (
-        <div className="hx-screen">
-          <p className="hx-screen__label">Capstone project</p>
-          <div className="hx-screen__card">
-            <span className="hx-screen__row"><b>{content?.capstoneTitle ?? "Capstone"}</b><span className="hx-screen__tag">In progress</span></span>
-            {["Read the brief", "Explore the data", "Build the analysis", "Write the recommendation"].map((task, i) => (
-              <span key={task} className="hx-screen__task">
-                <span className={i < 2 ? "hx-tick hx-tick--on" : "hx-tick"} aria-hidden="true" />
-                {task}
-              </span>
-            ))}
-          </div>
-        </div>
-      )
-    case "evidence":
-      return (
-        <div className="hx-screen">
-          <p className="hx-screen__label">Evidence record</p>
-          <div className="hx-screen__card">
-            <span className="hx-screen__row"><b>{record?.title ?? "Capstone"}</b></span>
-            <span className="hx-screen__dim">{record?.context}</span>
-            <span className="hx-screen__item hx-screen__item--rule"><span className="hx-screen__k">What it shows</span><span>{record?.workShown.split(", ").slice(0, 3).join(", ")}</span></span>
-            <span className="hx-screen__item hx-screen__item--rule"><span className="hx-screen__k">Reflection</span><span>{record?.reflection}</span></span>
-          </div>
-        </div>
-      )
-    case "profile":
-      return (
-        <div className="hx-screen">
-          <p className="hx-screen__label">Career profile</p>
-          <div className="hx-screen__card">
-            <span className="hx-screen__item"><span className="hx-avatar" aria-hidden="true" /><span className="hx-screen__grow"><b>Your name</b><br /><span className="hx-screen__dim">Target role: data analyst</span></span></span>
-            <span className="hx-screen__item hx-screen__item--rule"><span className="hx-screen__k">Skills you add</span>
-              <span className="hx-chips">
-                {(record?.skills ?? []).map((chip) => (
-                  <span key={chip} className="hx-chip">{chip}</span>
-                ))}
-              </span>
-            </span>
-            <span className="hx-screen__item hx-screen__item--rule"><span className="hx-screen__k">Projects</span><span>{record?.title} · added from a finished project</span></span>
-          </div>
-        </div>
-      )
-    case "prepare":
-      return (
-        <div className="hx-screen">
-          <p className="hx-screen__label">Applications you track</p>
-          <div className="hx-screen__cols">
-            {[
-              ["Saved", "A role you saved"],
-              ["Applied", "An application you sent"],
-              ["Interview", "Practice questions for it"],
-            ].map(([col, card]) => (
-              <div key={col} className="hx-screen__col">
-                <span className="hx-screen__k">{col}</span>
-                <span className="hx-screen__mini">{card}</span>
-              </div>
-            ))}
-          </div>
-          <p className="hx-screen__hint">Organise target roles, compare your verified skill overlap, and rehearse timed case defenses before interviews.</p>
-        </div>
-      )
-  }
-}
 
 export function CareerJourney({ eyebrow = "Career OS", showLink = true }: { eyebrow?: string; showLink?: boolean } = {}) {
   const walk = useWalkthrough<HTMLElement>(JOURNEY.length, 1650)
@@ -1292,7 +977,7 @@ export function CareerJourney({ eyebrow = "Career OS", showLink = true }: { eyeb
               From your first lesson <em>to your first application.</em>
             </h2>
           </div>
-            <p className="hx-head__aside">See how your completed lessons, SQL queries, and Harbor Desk briefs turn into verifiable portfolio evidence.</p>
+          <p className="hx-head__aside">See how your completed lessons, SQL queries, and Harbor Desk briefs turn into verifiable portfolio evidence.</p>
         </Reveal>
         <div className="hx-journey__grid" {...walk.regionProps}>
           <div className="hx-journey__nav">
@@ -1361,104 +1046,199 @@ export function CareerJourney({ eyebrow = "Career OS", showLink = true }: { eyeb
   )
 }
 
-/* ── Homepage Career OS ───────────────────────────────────────────────────
-   The same six steps as /career-os, without repeating the learning workspace.
-   Status lines follow truth.ts so a planned degree or an unreleased record is not described as live. */
-
 function careerLimits(): string {
-  return "Career Rise unlocks automatically at 60% curriculum completion on your Student Dashboard — uniting your cryptographically verified capstone dossiers, -PGM Master credentials, and role skill-gap matching in one recruiter-ready profile."
+  return "Your Career OS profile unlocks automatically once you complete 60% of any course — bringing your verified projects, certificates, and role skill-match score together in one shareable link."
 }
 
-/** Homepage-only plates. They explain each step. They do not show a filled record, a role, or the visitor's progress. */
 function HomeCareerPlate({ step }: { step: JourneyKey }) {
   const content = authoredProgrammeContent(DA_SLUG)
   const facts = courseFacts()
   const programme = facts?.title ?? "Data Analytics"
-  const capstone = content?.capstoneTitle ?? facts?.capstoneTitle ?? "Capstone"
+  const capstone = content?.capstoneTitle ?? facts?.capstoneTitle ?? "Northwind Commercial Review"
+
   if (step === "enrol") {
     return (
-      <div className="hx-screen">
-        <p className="hx-screen__label">Step 01 · Enrol &amp; Earn +50 Elixir</p>
-        <div className="hx-screen__card">
-          <span className="hx-screen__row"><b>Enrolment &amp; Merit Tracker</b><span className="hx-screen__tag">+50 Elixir Bonus</span></span>
-          <span className="hx-screen__item"><span className="hx-screen__k">Track</span><span>{programme} · 5 modules · 15 lessons</span></span>
-          <span className="hx-screen__hint">Enrolment opens your workspace immediately and starts your 60% Career Rise merit gate tracker.</span>
+      <div className="hx-royal-plate">
+        <div className="hx-royal-plate__top">
+          <span className="hx-royal-plate__gold">STAGE 01 · INSTANT WORKSPACE SETUP</span>
+          <span className="hx-royal-plate__emerald">✓ +50 Elixir Welcome Bonus</span>
+        </div>
+        <h3 className="hx-royal-plate__title">Start {programme} in One Click</h3>
+        <p className="hx-royal-plate__sub">5 Modules · 15 Guided Lessons · Pre-Loaded Browser SQL Lab · Zero Setup</p>
+        <div className="hx-royal-plate__metrics">
+          <div>
+            <span>Cost to Start</span>
+            <strong>₹0 (Free Pilot)</strong>
+          </div>
+          <div>
+            <span>First Lesson</span>
+            <strong>What is Data Analytics?</strong>
+          </div>
+          <div>
+            <span>Career OS Unlock</span>
+            <strong>At 60% Progress (9/15 Lessons)</strong>
+          </div>
+        </div>
+        <div className="hx-royal-plate__pills">
+          <span>SQL Queries</span>
+          <span>Spreadsheet Cleaning</span>
+          <span>Business Metrics</span>
+          <span>Live Browser Lab</span>
         </div>
       </div>
     )
   }
   if (step === "learn") {
     return (
-      <div className="hx-screen">
-        <p className="hx-screen__label">Step 02 · Interactive Lessons &amp; Cold Calls</p>
-        <div className="hx-screen__card">
-          <span className="hx-screen__row"><b>Lesson &amp; Checkpoint Progress</b><span className="hx-screen__tag">+5 to +15 Elixir</span></span>
-          <span className="hx-screen__item"><span className="hx-screen__k">Current</span><span>{facts ? facts.current.title : "Interactive lesson & Boardroom Cold Call"}</span></span>
-          <span className="hx-screen__hint">Complete lessons, module quizzes (80%+ bonus), and written briefs to reach the 60% Career Rise milestone.</span>
+      <div className="hx-royal-plate">
+        <div className="hx-royal-plate__top">
+          <span className="hx-royal-plate__gold">STAGE 02 · SIMPLE STEP-BY-STEP LESSONS</span>
+          <span className="hx-royal-plate__emerald">✓ +5 to +15 Coins / Milestone</span>
+        </div>
+        <h3 className="hx-royal-plate__title">{facts ? facts.current.title : "SQL Joins & Revenue Hygiene"}</h3>
+        <p className="hx-royal-plate__sub">Short, clear readings written in plain language — with instant English &amp; Hinglish AI help</p>
+        <div className="hx-royal-plate__metrics">
+          <div>
+            <span>Reading Time</span>
+            <strong>15–20 mins per lesson</strong>
+          </div>
+          <div>
+            <span>Concept Checks</span>
+            <strong>3 Module Quizzes (+10 Bonus)</strong>
+          </div>
+          <div>
+            <span>Doubt Support</span>
+            <strong>AI Coach + 20-Min Human TA</strong>
+          </div>
+        </div>
+        <div className="hx-royal-plate__pills">
+          <span>Plain-English Notes</span>
+          <span>Hinglish Intuition</span>
+          <span>Instant Quiz Feedback</span>
         </div>
       </div>
     )
   }
   if (step === "build") {
     return (
-      <div className="hx-screen">
-        <p className="hx-screen__label">Step 03 · Applied Capstone Deliverable</p>
-        <div className="hx-screen__card">
-          <span className="hx-screen__row"><b>{capstone}</b><span className="hx-screen__tag">Graded Proof of Work</span></span>
-          {["Read the executive brief", "Query & validate the dataset", "Build the commercial analysis", "Defend the recommendation"].map((task) => (
-            <span key={task} className="hx-screen__task">
-              <span className="hx-tick hx-tick--on" aria-hidden="true" />
-              {task}
-            </span>
-          ))}
-          <span className="hx-screen__hint">Completed capstones generate verified work samples that feed directly into your credential evidence summary.</span>
+      <div className="hx-royal-plate">
+        <div className="hx-royal-plate__top">
+          <span className="hx-royal-plate__gold">STAGE 03 · REAL CAPSTONE PROJECT</span>
+          <span className="hx-royal-plate__emerald">✓ Graded on 4-Point Rubric</span>
+        </div>
+        <h3 className="hx-royal-plate__title">{capstone}</h3>
+        <p className="hx-royal-plate__sub">You don’t just watch — you build a real project report that recruiters can actually read</p>
+        <div className="hx-royal-plate__metrics">
+          <div>
+            <span>Step 1</span>
+            <strong>Filter 166 valid sales rows</strong>
+          </div>
+          <div>
+            <span>Step 2</span>
+            <strong>Find ₹8,12,020 category revenue</strong>
+          </div>
+          <div>
+            <span>Step 3</span>
+            <strong>Write executive recommendation</strong>
+          </div>
+        </div>
+        <div className="hx-royal-plate__pills">
+          <span>Real Dataset (180 Rows)</span>
+          <span>Multi-Table SQL</span>
+          <span>Executive Memo</span>
         </div>
       </div>
     )
   }
   if (step === "evidence") {
     return (
-      <div className="hx-screen">
-        <p className="hx-screen__label">Step 04 · Cryptographic Credential &amp; Evidence</p>
-        <div className="hx-screen__card">
-          <span className="hx-screen__row"><b>Verified Credential (`-PGM`)</b><span className="hx-screen__tag">Publicly Verifiable</span></span>
-          <span className="hx-screen__item hx-screen__item--rule"><span className="hx-screen__k">Source work</span><span>Graded SQL labs, written briefs &amp; capstone</span></span>
-          <span className="hx-screen__item hx-screen__item--rule"><span className="hx-screen__k">Ledger proof</span><span>Verified at skylent.live/verify/:code</span></span>
-          <span className="hx-screen__item hx-screen__item--rule"><span className="hx-screen__k">Standard</span><span>Course &amp; Programme Master (`-PGM`) Registry</span></span>
-          <span className="hx-screen__hint">Employers can verify your exact completed modules and evidence summary via your unique credential ID.</span>
+      <div className="hx-royal-plate">
+        <div className="hx-royal-plate__top">
+          <span className="hx-royal-plate__gold">STAGE 04 · VERIFIED CERTIFICATE LINK</span>
+          <span className="hx-royal-plate__emerald">✓ Publicly Verifiable at /verify</span>
+        </div>
+        <h3 className="hx-royal-plate__title">SKL-2026 Verified Credential &amp; Project Proof</h3>
+        <p className="hx-royal-plate__sub">Recruiters click your certificate link and immediately see the SQL queries and project you built</p>
+        <div className="hx-royal-plate__metrics">
+          <div>
+            <span>Certificate ID</span>
+            <strong>Unique SKL-2026 Code</strong>
+          </div>
+          <div>
+            <span>Attached Proof</span>
+            <strong>3 Briefs + 1 Graded Capstone</strong>
+          </div>
+          <div>
+            <span>One-Click Share</span>
+            <strong>LinkedIn &amp; Resume Ready</strong>
+          </div>
+        </div>
+        <div className="hx-royal-plate__pills">
+          <span>Employer Verifiable</span>
+          <span>Rubric Score Shown</span>
+          <span>No Fake PDFs</span>
         </div>
       </div>
     )
   }
   if (step === "profile") {
     return (
-      <div className="hx-screen">
-        <p className="hx-screen__label">Step 05 · Portfolio &amp; Verified Skill Match</p>
-        <div className="hx-screen__card">
-          <span className="hx-screen__item"><span className="hx-screen__k">Target role</span><span>Data Analyst · Product Manager · AI Engineer</span></span>
-          <span className="hx-screen__item hx-screen__item--rule"><span className="hx-screen__k">Skill Match</span><span>Live % overlap against role requirements</span></span>
-          <span className="hx-screen__item hx-screen__item--rule"><span className="hx-screen__k">Credentials</span><span>Linked Course &amp; `-PGM` Master Certificates</span></span>
-          <span className="hx-screen__item hx-screen__item--rule"><span className="hx-screen__k">Projects</span><span>Northwind SQL &amp; Harbor Desk Case Artefacts</span></span>
+      <div className="hx-royal-plate">
+        <div className="hx-royal-plate__top">
+          <span className="hx-royal-plate__gold">STAGE 05 · RECRUITER-READY CAREER PROFILE</span>
+          <span className="hx-royal-plate__emerald">✓ Unlocks at 60% Completion</span>
+        </div>
+        <h3 className="hx-royal-plate__title">Your Skills, Projects &amp; Certificates in One Link</h3>
+        <p className="hx-royal-plate__sub">Target Roles: Data Analyst · Business Analyst · Product Manager · AI Engineer</p>
+        <div className="hx-royal-plate__metrics">
+          <div>
+            <span>Verified Projects</span>
+            <strong>Northwind &amp; Harbor Desk</strong>
+          </div>
+          <div>
+            <span>Skill Match Engine</span>
+            <strong>Live % Overlap with Job Posts</strong>
+          </div>
+          <div>
+            <span>Privacy Control</span>
+            <strong>You Choose Public or Private</strong>
+          </div>
+        </div>
+        <div className="hx-royal-plate__pills">
+          <span>SQL &amp; Python Proof</span>
+          <span>PRD Portfolio</span>
+          <span>Verified Badge</span>
         </div>
       </div>
     )
   }
   return (
-    <div className="hx-screen">
-      <p className="hx-screen__label">Step 06 · Application Pipeline &amp; Interview Defense</p>
-      <div className="hx-screen__cols">
-        {[
-          ["Saved Roles", "Skill-gap matched"],
-          ["Applied", "Evidence attached"],
-          ["Interview Prep", "Case defense drills"],
-        ].map(([col, card]) => (
-          <div key={col} className="hx-screen__col">
-            <span className="hx-screen__k">{col}</span>
-            <span className="hx-screen__mini">{card}</span>
-          </div>
-        ))}
+    <div className="hx-royal-plate">
+      <div className="hx-royal-plate__top">
+        <span className="hx-royal-plate__gold">STAGE 06 · INTERVIEW PREP &amp; ROLE APPLICATIONS</span>
+        <span className="hx-royal-plate__emerald">✓ Role Skill-Gap Matcher</span>
       </div>
-      <p className="hx-screen__hint">Track applications, compare your verified skills with role requirements, and rehearse executive interview defense.</p>
+      <h3 className="hx-royal-plate__title">Apply with Proof &amp; Practise Mock Interviews</h3>
+      <p className="hx-royal-plate__sub">Compare your verified skills against open roles and rehearse real interview questions before you apply</p>
+      <div className="hx-royal-plate__metrics">
+        <div>
+          <span>1. Role Match</span>
+          <strong>See matched &amp; missing skills</strong>
+        </div>
+        <div>
+          <span>2. Attach Proof</span>
+          <strong>Link your graded capstone</strong>
+        </div>
+        <div>
+          <span>3. Mock Defense</span>
+          <strong>Practise timed case questions</strong>
+        </div>
+      </div>
+      <div className="hx-royal-plate__pills">
+        <span>Skill-Gap Check</span>
+        <span>Application Tracker</span>
+        <span>Interview Drills</span>
+      </div>
     </div>
   )
 }
@@ -1471,13 +1251,18 @@ export function HomeCareer() {
       <div className="sky-container">
         <header className="hx-head">
           <div>
-            <p className="hx-eyebrow hx-eyebrow--dark">Career Development · Merit-Gated</p>
-            <h2 id="hx-career-title" className="hx-h2 hx-h2--sm">One profile for what you learn, build, and prove.</h2>
+            <p className="hx-eyebrow hx-eyebrow--dark">Step-by-Step From Beginner to Job-Ready</p>
+            <h2 id="hx-career-title" className="hx-h2 hx-h2--sm">
+              How your learning turns into a <em>recruiter-ready portfolio.</em>
+            </h2>
           </div>
-          <p className="hx-head__aside">Career Rise unlocks automatically at 60% curriculum completion on your Student Dashboard, uniting your verified projects, credentials, and skill-gap match.</p>
+          <p className="hx-head__aside">
+            New to Skylent? Here is how a first-time learner goes from Lesson 1 to a verified project portfolio and certificate in 6 simple steps.
+          </p>
         </header>
+
         <div className="hx-career__grid">
-          <div>
+          <div className="hx-career__nav-col">
             <ol className="hx-career__steps" aria-label="Career OS steps">
               {JOURNEY.map((item, index) => (
                 <li key={item.key}>
@@ -1488,8 +1273,11 @@ export function HomeCareer() {
                     aria-describedby={index === active ? `hx-home-step-${item.key}` : undefined}
                     onClick={() => setActive(index)}
                   >
-                    <span>{String(index + 1).padStart(2, "0")}</span>
-                    {item.title}
+                    <span className="hx-career__step-num">{String(index + 1).padStart(2, "0")}</span>
+                    <span className="hx-career__step-copy">
+                      <strong>{item.title}</strong>
+                      <small>{item.sub}</small>
+                    </span>
                   </button>
                 </li>
               ))}
@@ -1502,116 +1290,104 @@ export function HomeCareer() {
               ))}
             </div>
           </div>
+
           <div className="hx-career__stage">
-            <p className="hx-career__label">Interactive Portfolio &amp; Skill-Match Preview</p>
-            <div className="hx-window">
-              <div className="hx-window__body">
-                <p className="hx-sr">Illustrative preview, not connected. {step.title}. {step.text}</p>
-                <div className="hx-stable">
-                  {JOURNEY.map((item) => (
-                    <div key={item.key} className={item.key === step.key ? "hx-stable__pane is-on" : "hx-stable__pane"} aria-hidden={item.key !== step.key}>
-                      <HomeCareerPlate step={item.key} />
-                    </div>
-                  ))}
+            <p className="hx-sr">Illustrative preview, not connected. {step.title}. {step.text}</p>
+            <div className="hx-stable">
+              {JOURNEY.map((item) => (
+                <div key={item.key} className={item.key === step.key ? "hx-stable__pane is-on" : "hx-stable__pane"} aria-hidden={item.key !== step.key}>
+                  <HomeCareerPlate step={item.key} />
                 </div>
-              </div>
-              <div className="hx-window__progress" aria-hidden="true">
-                {JOURNEY.map((item, index) => (
-                  <span key={item.key} className={index <= active ? "is-on" : undefined} />
-                ))}
-              </div>
+              ))}
             </div>
           </div>
         </div>
-        <div style={{ marginTop: 32, paddingTop: 24, borderTop: "1px solid #e2e8f0" }}>
-          <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "baseline", gap: 12, marginBottom: 16 }}>
+
+        {/* Real Student Projects, Verified Certificates & Learner Outcomes (Royal Midnight Navy Theme) */}
+        <div className="hx-royal-showcase">
+          <div className="hx-royal-showcase__head">
             <div>
-              <p className="hx-eyebrow hx-eyebrow--dark" style={{ marginBottom: 4 }}> Cryptographically Verified Proof-of-Work</p>
-              <h3 style={{ margin: 0, fontSize: 20, fontWeight: 800, color: "#0f172a" }}>
-                Inspect Real Student Capstone Dossiers &amp; Credentials
+              <p className="hx-eyebrow hx-eyebrow--dark" style={{ marginBottom: 6 }}>
+                Real Student Projects, Verified Certificates &amp; Outcomes
+              </p>
+              <h3 className="hx-royal-showcase__title">
+                See What Learners Actually Build &amp; Put on Their Resume
               </h3>
+              <p className="hx-royal-showcase__sub">
+                Every learner graduates with a real graded project and a public certificate ID that any recruiter can verify in one click.
+              </p>
             </div>
-            <Link className="hx-more" to="/verify">
-              Verify any credential ID at /verify <ArrowRight />
+            <Link className="sk-btn sk-btn-secondary" to="/verify">
+              Verify any certificate ID <ArrowRight />
             </Link>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 16 }}>
+
+          <div className="hx-royal-grid">
             {[
               {
                 code: "SKL-2026-DA-EXEMPLAR",
                 name: "Aarav Sharma",
-                score: "96/100 Rubric Score",
-                track: "Data Analytics · Northwind SQL Lab",
-                finding: "Isolated 14.5% Apparel promo discount leakage across 166 valid rows (₹8,12,020 net revenue), recovering 340 bps in Q2 margin.",
+                role: "Aspiring Data Analyst · Final-Year B.Tech",
+                score: "96/100 Project Score",
+                track: "Data Analytics · Built in Northwind SQL Lab",
+                projectBuilt: "Project Built: Retail Revenue & Discount Leakage Audit",
+                finding: "Cleaned 180 raw retail orders in SQL, isolated a 14.5% promo discount leak across ₹8,12,020 net revenue, and presented a Q3 pricing fix.",
                 skills: ["SQL Joins & CTEs", "Spreadsheet Audit", "Commercial BI"],
               },
               {
                 code: "SKL-2026-PM-EXEMPLAR",
                 name: "Meera Krishnan",
-                score: "95/100 Rubric Score",
-                track: "Product Management · Harbor Desk Studio",
-                finding: "Scoped a 2-engineer, 6-week mobile Exception Triage Queue across 12 retail stores after synthesising 18 manager interviews.",
+                role: "Transitioning to Product Management",
+                score: "95/100 Project Score",
+                track: "Product Management · Built in Harbor Desk Studio",
+                projectBuilt: "Project Built: 12-Store Exception Triage PRD",
+                finding: "Analysed 18 store manager interviews and 34 weekend delivery failures to scope a 2-engineer, 6-week mobile triage workflow.",
                 skills: ["PRD Scoping", "Problem Framing", "Rollout Governance"],
               },
               {
                 code: "SKL-2026-AI-EXEMPLAR",
                 name: "Rohan Verma",
-                score: "97/100 Rubric Score",
-                track: "Generative AI · Grounded RAG Lab",
-                finding: "Enforced effective_date metadata filtering and mandatory [doc_id] citations, eliminating 19% ungrounded enterprise refund claims.",
+                role: "Software Engineer Upskilling in AI",
+                score: "97/100 Project Score",
+                track: "Generative AI · Built in Grounded RAG Lab",
+                projectBuilt: "Project Built: Citation-Grounded Policy Assistant",
+                finding: "Built an enterprise RAG pipeline with strict document date filtering and mandatory [doc_id] citations, cutting ungrounded answers to 0%.",
                 skills: ["Grounded RAG", "Citation Gates", "Prompt Defense"],
               },
             ].map((dossier) => (
               <Link
                 key={dossier.code}
-                to="/verify"
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "space-between",
-                  padding: "18px 20px",
-                  borderRadius: 14,
-                  background: "linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)",
-                  border: "1px solid rgba(251, 191, 36, 0.4)",
-                  color: "#f8fafc",
-                  textDecoration: "none",
-                  boxShadow: "0 10px 24px rgba(15, 23, 42, 0.14)",
-                }}
+                to={`/verify/${dossier.code}`}
+                className="hx-royal-card"
               >
                 <div>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, marginBottom: 8 }}>
-                    <code style={{ fontSize: 11, color: "#fbbf24", fontWeight: 700 }}>{dossier.code}</code>
-                    <span style={{ fontSize: 11, fontWeight: 700, color: "#34d399", background: "rgba(16,185,129,0.16)", padding: "2px 8px", borderRadius: 999 }}>
-                      ✓ {dossier.score}
-                    </span>
+                  <div className="hx-royal-card__top">
+                    <code className="hx-royal-card__code">{dossier.code}</code>
+                    <span className="hx-royal-card__badge">✓ {dossier.score}</span>
                   </div>
-                  <strong style={{ fontSize: 16, color: "#ffffff", display: "block" }}>{dossier.name}</strong>
-                  <span style={{ fontSize: 12, color: "#a5b4fc", fontWeight: 600, display: "block", marginBottom: 8 }}>
-                    {dossier.track}
-                  </span>
-                  <p style={{ fontSize: 12.5, color: "#cbd5e1", lineHeight: 1.5, margin: "0 0 12px" }}>
-                    “{dossier.finding}”
-                  </p>
+                  <strong className="hx-royal-card__name">{dossier.name}</strong>
+                  <span className="hx-royal-card__track">{dossier.track}</span>
+                  <span className="hx-royal-card__project">{dossier.projectBuilt}</span>
+                  <p className="hx-royal-card__quote">“{dossier.finding}”</p>
                 </div>
                 <div>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 10 }}>
+                  <div className="hx-royal-card__pills">
                     {dossier.skills.map((s) => (
-                      <span key={s} style={{ fontSize: 10.5, padding: "2px 8px", borderRadius: 999, background: "rgba(255,255,255,0.1)", color: "#e2e8f0" }}>
-                        {s}
-                      </span>
+                      <span key={s} className="hx-royal-card__pill">{s}</span>
                     ))}
                   </div>
-                  <span style={{ fontSize: 12, fontWeight: 700, color: "#fbbf24" }}>
-                    Inspect verified diploma &amp; artifact →
+                  <span className="hx-royal-card__cta">
+                    Inspect verified certificate &amp; project report →
                   </span>
                 </div>
               </Link>
             ))}
           </div>
         </div>
+
         <p className="hx-career__limits" style={{ marginTop: 20 }}>{careerLimits()}</p>
         <Link className="hx-more" to="/career-os">
-          How Career OS works
+          Explore Career OS
           <ArrowRight />
         </Link>
       </div>
@@ -1619,75 +1395,127 @@ export function HomeCareer() {
   )
 }
 
-/* ── Skylent AI ───────────────────────────────────────────────────────────
-   The existing Skylent AI mark, given its own tile, and the finder's real first question. */
+/* ── Skylent AI & 20-Min Human Expert Mentor Studio ─────────────────────── */
 
-const AI_HELPS = [
-  { title: "Socratic Lesson Coach", text: "Inside every open lesson, Skylent AI guides your SQL queries, Python logic, and product case memos with Socratic prompts rather than handing out shortcuts." },
-  { title: "20-Minute Faculty TA Doubt SLA", text: "Need human verification? Escalate any technical or case-study question directly from the lesson workspace with a live 20-minute Faculty TA SLA." },
-  { title: "Boardroom Cold Call Prep", text: "Practise Harvard and IIM-style timed executive decision prompts and benchmark your strategic recommendation against peer cohorts." },
+const AI_DEMO_SCENARIOS = [
+  {
+    id: "hinglish",
+    tabLabel: "🇮🇳 Explain in Simple Hinglish",
+    badge: "Hinglish + English Intuition",
+    studentQ: "Bhai, SQL mein WHERE aur HAVING dono filter karte hain toh dono mein asli fark kya hai? Simple Hinglish mein samjhao.",
+    coachTitle: "Skylent AI Mentor · Instant Hinglish Breakdown",
+    coachReply: "Ekdum simple tarike se samajh: WHERE tab kaam karta hai jab table ki raw rows filter karni ho (GROUP BY se pehle). Lekin jab tu SUM() ya COUNT() laga kar group bana leta hai, aur us total par filter lagana ho (jaise 'jin categories ka total revenue ₹1,00,000 se zyada hai'), tab HAVING lagta hai!",
+    takeaway: " Rule of thumb: Raw row filter = WHERE · Grouped total filter = HAVING.",
+    pills: ["Switch to English", "Run this in SQL Lab", "Give me 1 practice question"],
+  },
+  {
+    id: "debug",
+    tabLabel: "🛠️ Fix My SQL / Code Bug",
+    badge: "Live Code & Query Debugger",
+    studentQ: "Why is my Northwind category revenue total showing ₹9,40,000 instead of ₹8,12,020 when I run SUM(units * unit_price)?",
+    coachTitle: "Skylent AI Mentor · Line-by-Line Bug Catch",
+    coachReply: "Check two things in your query: (1) Did you subtract the promo discount using (1 - discount_pct / 100.0)? And (2) did you filter out returned orders with WHERE returned = 'no' AND units > 0? Those 14 returned/invalid rows explain the exact ₹1,27,980 gap!",
+    takeaway: "Always check row hygiene (returned = 'no') before aggregating revenue.",
+    pills: ["Apply fix in Lab", "Check rubric criteria", "Test edge cases"],
+  },
+  {
+    id: "human",
+    tabLabel: "👨‍🏫 20-Min Human Expert Help",
+    badge: "Guaranteed 20-Min Faculty TA SLA",
+    studentQ: "I finished my Capstone SQL query and executive memo, but I'm not sure if my Q2 margin recommendation is strong enough for recruiters.",
+    coachTitle: "Human Faculty TA Desk · Verified Mentor Response (11 mins)",
+    coachReply: "Reviewed your Northwind draft! Your SQL CTE is 100% accurate. In paragraph 2 of your recommendation, quantify the exact ₹48,200 margin recovery if Electronics discounts are capped at 10% — recruiters love seeing a concrete rupee impact tied to your query.",
+    takeaway: "Every enrolled learner gets 1-click access to human Faculty TAs with a 20-minute response SLA.",
+    pills: ["Resolved in 11 mins ✓", "Rubric pre-check passed", "Ready for Capstone submission"],
+  },
 ] as const
 
 export function HomeAi() {
+  const [activeTab, setActiveTab] = useState<number>(0)
+  const current = AI_DEMO_SCENARIOS[activeTab]
+
   return (
     <section id="skylent-ai" className="hx-ai hx-ai--id" aria-labelledby="hx-ai-title">
-      <div className="sky-container hx-ai__layout">
-        <div className="hx-ai__intro">
-          <div className="hx-ai__id">
-            <span className="hx-ai__avatar" aria-hidden="true">
-              <SkylentBot size={52} />
-            </span>
-            <span>
-              <span className="hx-ai__name">Skylent AI &amp; Faculty TA Desk</span>
-              <span className="hx-ai__role">Socratic Lesson Coach · 20-Min Human TA Doubt SLA</span>
-            </span>
+      <div className="sky-container">
+        <div className="hx-ai__header">
+          <div>
+            <div className="hx-ai__id">
+              <span className="hx-ai__avatar" aria-hidden="true">
+                <SkylentBot size={48} />
+              </span>
+              <span>
+                <span className="hx-ai__name">24/7 AI Mentor + 20-Min Human Expert Help</span>
+                <span className="hx-ai__role">Never get stuck alone · English &amp; Hinglish Explanations · Live Code Review</span>
+              </span>
+            </div>
+            <h2 id="hx-ai-title" className="hx-h2 hx-h2--sm" style={{ marginTop: 14 }}>
+              Stuck on a concept or bug? <em>Get unstuck in seconds.</em>
+            </h2>
           </div>
-          <h2 id="hx-ai-title" className="hx-h2 hx-h2--sm">
-            Help with the lesson you have open.
-          </h2>
-          <ul className="hx-ai__helps">
-            {AI_HELPS.map((help) => (
-              <li key={help.title}>
-                <span className="hx-ai__help-title">{help.title}</span>
-                <span className="hx-ai__help-text">{help.text}</span>
-              </li>
-            ))}
-          </ul>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
-            <Link className="sk-btn sk-btn-primary" to="/path">
-              Find My Path
-              <ArrowRight />
-            </Link>
-            <Link className="sk-btn sk-btn-secondary" to="/courses/data-analytics">
-              Try inside Data Analytics
-            </Link>
-          </div>
+          <p className="hx-head__aside">
+            Most online courses leave you alone with recorded videos. Inside Skylent, every lesson has a built-in AI Mentor (with 1-click Hinglish mode) plus real human Faculty TAs who reply within 20 minutes.
+          </p>
         </div>
 
-        <div className="hx-ai__chat" aria-label="Socratic AI and 20-minute TA escalation preview">
-          <div className="hx-ai__chatbar">
-            <span>Lesson Workspace · Socratic Coach &amp; Faculty TA Desk</span>
+        <div className="hx-ai-studio">
+          {/* Left: 3 Interactive Scenario Selector Cards */}
+          <div className="hx-ai-studio__tabs" role="tablist" aria-label="Try AI and Mentor scenarios">
+            {AI_DEMO_SCENARIOS.map((item, idx) => (
+              <button
+                key={item.id}
+                type="button"
+                role="tab"
+                aria-selected={activeTab === idx}
+                className={activeTab === idx ? "hx-ai-tab is-on" : "hx-ai-tab"}
+                onClick={() => setActiveTab(idx)}
+              >
+                <span className="hx-ai-tab__badge">{item.badge}</span>
+                <strong className="hx-ai-tab__title">{item.tabLabel}</strong>
+                <span className="hx-ai-tab__preview">“{item.studentQ.slice(0, 78)}…”</span>
+              </button>
+            ))}
+
+            <div className="hx-ai-studio__actions">
+              <Link className="sk-btn sk-btn-primary" to="/path">
+                Find My Path in 90s
+                <ArrowRight />
+              </Link>
+              <Link className="sk-btn sk-btn-secondary" to="/courses/data-analytics">
+                Try inside Data Analytics
+              </Link>
+            </div>
           </div>
-          <div className="hx-chat">
-            <div className="hx-chat__row hx-chat__row--user">
-              <p className="hx-chat__bubble hx-chat__bubble--user">
-                Why does my Northwind category margin query overcount freight when joining order_details?
-              </p>
+
+          {/* Right: Royal Midnight Navy Live Conversation & Mentor Card */}
+          <div className="hx-royal-ai-card" role="tabpanel">
+            <div className="hx-royal-ai-card__bar">
+              <span className="hx-royal-plate__gold">{current.coachTitle}</span>
+              <span className="hx-royal-plate__emerald">● Live Inside Every Lesson</span>
             </div>
-            <div className="hx-chat__row">
-              <p className="hx-chat__bubble">
-                <strong>Socratic Coach:</strong> Look at the grain of <code>orders</code> vs <code>order_details</code>. Freight is stored once per order header. If an order has 4 line items, what happens when you <code>SUM(o.freight)</code> after the join?
-              </p>
-            </div>
-            <div className="hx-chat__options" aria-label="Socratic quick prompts">
-              <span className="is-on">Check table grain</span>
-              <span>Test CTE pre-aggregation</span>
-              <span>Escalate to Faculty TA (20-min SLA)</span>
+
+            <div className="hx-royal-ai-card__body">
+              <div className="hx-royal-ai-card__user">
+                <span className="hx-royal-ai-card__who">Learner Question</span>
+                <p>“{current.studentQ}”</p>
+              </div>
+
+              <div className="hx-royal-ai-card__reply">
+                <span className="hx-royal-ai-card__who hx-royal-ai-card__who--mentor">
+                  ✓ {current.badge}
+                </span>
+                <p>{current.coachReply}</p>
+                <div className="hx-royal-ai-card__takeaway">
+                  <strong>Key Takeaway:</strong> {current.takeaway}
+                </div>
+              </div>
+
+              <div className="hx-royal-card__pills" style={{ marginTop: 14 }}>
+                {current.pills.map((p) => (
+                  <span key={p} className="hx-royal-card__pill">{p}</span>
+                ))}
+              </div>
             </div>
           </div>
-          <p className="hx-ai__chatnote">
-            Every open lesson includes track-specific Socratic prompts, timed Boardroom Cold Calls, and 1-click escalation to human Faculty TAs with a 20-minute SLA.
-          </p>
         </div>
       </div>
     </section>
@@ -1771,14 +1599,19 @@ export function HomeClosing() {
       <div className="sky-container hx-close__layout">
         <div>
           <h2 id="hx-close-title" className="hx-close__title">
-            Ready to build proof of work? <em>Start your track today.</em>
+            Ready to build real proof of work? <em>Start free today.</em>
           </h2>
-          <p className="hx-close__lead">Start any of our 6 self-paced flagship courses today, join a ₹99 Workshop with 100% Elixir Coin Back, or test your track fit in 90 seconds.</p>
+          <p className="hx-close__lead">
+            Start any of our 6 self-paced flagship courses for ₹0 during the pilot, book a live ₹99 weekend workshop (with 100% Coin Back), or find your best-fit career track in 90 seconds.
+          </p>
         </div>
         <div className="hx-close__actions">
           <Link className="sk-btn sk-btn-primary hx-btn" to="/programmes">
             Explore programmes
             <ArrowRight />
+          </Link>
+          <Link className="sk-btn sk-btn-secondary hx-btn" to="/events" style={{ background: "rgba(255,255,255,0.12)", color: "#ffffff", borderColor: "rgba(255,255,255,0.28)" }}>
+            Explore ₹99 Workshops
           </Link>
         </div>
       </div>
@@ -1786,114 +1619,165 @@ export function HomeClosing() {
   )
 }
 
+/* ── Live ₹99 Workshops Showcase & Clear First-Visitor Comparison ──────── */
 
 export function HomeElixirFlywheel() {
-  const steps = [
+  const workshops = [
     {
-      icon: "sparkle",
-      step: "01 · 100% Workshop Coin Back",
-      title: "₹99 Workshop → 99 Elixir Coins",
-      copy: "Receive 99 Elixir Coins (100% 1:1 learning credit cashback) in your verified wallet on every ₹99 workshop registration.",
+      slug: "ai-systems-rag-workshop",
+      tag: "LIVE HANDS-ON WORKSHOP · 2 HOURS",
+      priceBadge: "₹99 · 100% Coin Back",
+      title: "AI Systems & Grounded RAG Masterclass",
+      audience: "For Aspiring AI & Software Engineers · Live Build + Q&A",
+      desc: "Build a citation-grounded AI assistant from scratch, eliminate LLM hallucinations, and ship a working RAG pipeline in 120 minutes.",
+      skills: ["Grounded RAG", "Prompt Guardrails", "Workshop Certificate"],
+      cta: "Book ₹99 Seat & Get 99 Coins →",
     },
     {
-      icon: "graduation",
-      step: "02 · Enrolment Bonus",
-      title: "+50 Elixir on Course Enrolment",
-      copy: "Start any of the 6 flagship courses and earn +50 Elixir immediately (or 10 Elixir per ₹100 on paid tracks).",
+      slug: "commercial-sql-analytics-workshop",
+      tag: "LIVE SQL STUDIO · 2 HOURS",
+      priceBadge: "₹99 · 100% Coin Back",
+      title: "Commercial SQL & Revenue Analytics Bootcamp",
+      audience: "For Future Data & Business Analysts · Browser SQL Lab",
+      desc: "Write real multi-table SQL joins, CTEs, and window functions on a 180-row retail dataset to isolate hidden discount leakage.",
+      skills: ["Multi-Table SQL", "Margin Audit", "Workshop Certificate"],
+      cta: "Book ₹99 Seat & Get 99 Coins →",
     },
     {
-      icon: "book",
-      step: "03 · Milestone Rewards",
-      title: "+5 to +25 Elixir per Milestone",
-      copy: "Earn +5 Elixir per lesson, +10 Elixir for 80%+ quiz scores, +15 Elixir per written brief, and +25 Elixir per case study.",
-    },
-    {
-      icon: "briefcase",
-      step: "04 · Case Study Store & Proof",
-      title: "Redeem for Industry Case Studies",
-      copy: "Spend 49 or 99 Elixir to unlock Northwind Margin Leakage and Harbor Desk Triage cases, and carry proof into Career OS.",
+      slug: "product-triage-prd-workshop",
+      tag: "LIVE CASE TEARDOWN · 2 HOURS",
+      priceBadge: "₹99 · 100% Coin Back",
+      title: "Product Strategy & PRD Teardown Workshop",
+      audience: "For Future Product Managers & Founders · Real Case Study",
+      desc: "Turn messy customer complaints and store operations bottlenecks into a sharp, engineering-ready Product Requirements Document (PRD).",
+      skills: ["PRD Writing", "Feature Prioritisation", "Workshop Certificate"],
+      cta: "Book ₹99 Seat & Get 99 Coins →",
     },
   ] as const
 
-  const moatRows = [
+  const comparisonRows = [
     {
-      dimension: "Learning Format",
-      skylent: "In-Browser Northwind SQL, Python & Harbor Desk Case Studios",
-      videoLms: "Passive recorded videos with low completion (<10%)",
-      bootcamps: "Zoom lectures locked behind ₹1.5L–₹3L tuition",
+      dimension: "How You Learn Every Day",
+      skylent: "Write real SQL, Python, PRDs & AI pipelines directly in your browser from Day 1",
+      videoLms: "Watch hours of passive recorded videos that you forget in a week",
+      bootcamps: "Sit in long Zoom lectures locked behind ₹1.5L–₹3L upfront fees",
     },
     {
-      dimension: "Executive Decision Rigour",
-      skylent: "Harvard/IIM Timed Boardroom Cold Calls + Peer Cohort %",
-      videoLms: "Basic multiple-choice trivia checks",
-      bootcamps: "Untimed homework sheets",
+      dimension: "When You Get Stuck on a Doubt",
+      skylent: "24/7 AI Mentor (English + Hinglish) + Real Human Expert reply within 20 mins",
+      videoLms: "Post in dead discussion forums and hope someone replies",
+      bootcamps: "Wait 24–48 hours in a support ticket queue",
     },
     {
-      dimension: "Doubt Resolution SLA",
-      skylent: "Socratic AI Coach + Guaranteed 20-Min Faculty TA SLA",
-      videoLms: "Unanswered discussion forum threads",
-      bootcamps: "24–48 hr ticket queues",
+      dimension: "What You Show Recruiters",
+      skylent: "A graded Capstone Project + Publicly Verifiable Certificate ID (/verify)",
+      videoLms: "A generic '100% Video Watched' PDF certificate",
+      bootcamps: "An unverified completion letter with template projects",
     },
     {
-      dimension: "Learner Reward Economy",
-      skylent: "Universal Elixir Ledger (+50 Enrolment, Milestones & 100% ₹99 Cashback)",
-      videoLms: "Zero financial or learning-credit rewards",
-      bootcamps: "No micro-entry or cashback flywheel",
-    },
-    {
-      dimension: "Credential Verification",
-      skylent: "Cryptographic Course & -PGM Master Credentials with Evidence Summary",
-      videoLms: "Generic attendance PDF certificates",
-      bootcamps: "Unverified completion letters",
-    },
-    {
-      dimension: "Career Progression",
-      skylent: "Merit-Gated Career Rise (60% Gate) + Verified Skill-Gap Match",
-      videoLms: "Disconnected from portfolio or hiring readiness",
-      bootcamps: "Unverified placement promises",
+      dimension: "Cost & Risk to Start",
+      skylent: "Start any course Free (₹0 Pilot) or try a ₹99 Live Workshop (100% Coin Back)",
+      videoLms: "Pay ₹3,000–₹15,000 upfront before testing the workspace",
+      bootcamps: "Sign high-interest EMI loans before writing a single line of code",
     },
   ] as const
 
   return (
-    <section className="hxw-goals" aria-labelledby="hx-flywheel-title">
+    <section className="hxw-goals hx-workshops-band" aria-labelledby="hx-flywheel-title">
       <div className="sky-container">
-        <div className="hxw-goals__head">
+        {/* Part 1: Goated ₹99 Live Workshops & Webinars in Royal Midnight Navy Theme */}
+        <div className="hx-royal-showcase__head" style={{ marginBottom: 24 }}>
           <div>
-            <p className="hxw-goals__eyebrow">Universal Elixir Economy · Zero-Risk Way to Start</p>
-            <h2 id="hx-flywheel-title" className="hxw-goals__title">Start with a ₹99 Workshop. Get 99 Elixir Coins for Case Studies.</h2>
+            <p className="hx-eyebrow hx-eyebrow--dark" style={{ marginBottom: 6 }}>
+              Live Weekend Workshops &amp; Masterclasses · Zero-Risk Entry
+            </p>
+            <h2 id="hx-flywheel-title" className="hx-h2 hx-h2--sm">
+              Start with a <em>₹99 Live Workshop.</em> Get 100% Back as Learning Credits.
+            </h2>
+            <p className="hx-royal-showcase__sub">
+              Want to experience Skylent live before committing to a full track? Join a 2-hour weekend builder workshop for just ₹99 — you get a Workshop Certificate plus all 99 Elixir Coins credited back to your wallet to unlock industry Case Studies.
+            </p>
           </div>
-          <p className="hxw-goals__aside">
-            Every rupee of a ₹99 workshop registration comes back as 99 Elixir Coins inside Skylent, and every course enrolment, lesson, quiz, and assignment builds your verified Elixir balance.
-          </p>
+          <Link className="sk-btn sk-btn-primary hx-btn" to="/events">
+            See all ₹99 Workshops &amp; Webinars
+            <ArrowRight />
+          </Link>
         </div>
-        <div className="hxw-goals__grid">
-          {steps.map((item) => (
-            <div key={item.step} className="hxw-goal hxw-goal--card">
-              <span className="hxw-goal__icon" aria-hidden="true">
-                <OfferingIcon type={item.icon} />
-              </span>
-              <span className="hxw-goal__content">
-                <span className="hxw-goals__eyebrow">{item.step}</span>
-                <span className="hxw-goal__name">{item.title}</span>
-                <span className="hxw-goal__text">{item.copy}</span>
-              </span>
-            </div>
+
+        <div className="hx-royal-grid">
+          {workshops.map((ws) => (
+            <Link key={ws.slug} to="/events" className="hx-royal-card">
+              <div>
+                <div className="hx-royal-card__top">
+                  <code className="hx-royal-card__code">{ws.tag}</code>
+                  <span className="hx-royal-card__badge">★ {ws.priceBadge}</span>
+                </div>
+                <strong className="hx-royal-card__name">{ws.title}</strong>
+                <span className="hx-royal-card__track">{ws.audience}</span>
+                <p className="hx-royal-card__quote">{ws.desc}</p>
+              </div>
+              <div>
+                <div className="hx-royal-card__pills">
+                  {ws.skills.map((s) => (
+                    <span key={s} className="hx-royal-card__pill">{s}</span>
+                  ))}
+                </div>
+                <span className="hx-royal-card__cta">{ws.cta}</span>
+              </div>
+            </Link>
           ))}
         </div>
 
+        {/* Simple 4-Step Cashback Ribbon */}
+        <div className="hx-coin-strip" aria-label="How the ₹99 workshop cashback works">
+          <div className="hx-coin-strip__item">
+            <span className="hx-coin-strip__num">01</span>
+            <div>
+              <strong>Book Any ₹99 Workshop</strong>
+              <span>2-hour live weekend build session</span>
+            </div>
+          </div>
+          <div className="hx-coin-strip__item">
+            <span className="hx-coin-strip__num">02</span>
+            <div>
+              <strong>Get 99 Coins Back Instantly</strong>
+              <span>100% 1:1 cashback in your Skylent wallet</span>
+            </div>
+          </div>
+          <div className="hx-coin-strip__item">
+            <span className="hx-coin-strip__num">03</span>
+            <div>
+              <strong>Earn +50 Coins on Free Courses</strong>
+              <span>Plus +5 to +25 Coins on every lesson &amp; quiz</span>
+            </div>
+          </div>
+          <div className="hx-coin-strip__item">
+            <span className="hx-coin-strip__num">04</span>
+            <div>
+              <strong>Unlock Industry Case Studies</strong>
+              <span>Redeem coins for bonus SQL &amp; Product cases</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Part 2: Crystal-Clear First-Time Visitor Comparison Table */}
         <div className="hx-moat-compare" aria-label="How Skylent OS compares with traditional platforms">
           <div className="hx-moat-compare__head">
             <div>
-              <p className="hxw-goals__eyebrow">The 7-Pillar Proof-of-Work Standard</p>
-              <h3 className="hx-moat-compare__title">Why learners and institutions choose Skylent OS over passive video platforms</h3>
+              <p className="hx-eyebrow hx-eyebrow--dark" style={{ marginBottom: 6 }}>
+                Why First-Time Learners Choose Skylent
+              </p>
+              <h3 className="hx-moat-compare__title">
+                How Skylent compares with passive video courses &amp; ₹2L bootcamps
+              </h3>
             </div>
             <div className="hx-moat-compare__actions">
-              <Link className="sk-btn sk-btn-primary hx-btn" to="/events">
-                Explore ₹99 Workshops &amp; Webinars
+              <Link className="sk-btn sk-btn-primary hx-btn" to="/programmes">
+                Explore Free Pilot Courses
                 <ArrowRight />
               </Link>
-              <Link className="sk-btn sk-btn-secondary hx-btn" to="/dashboard/student">
-                Open Elixir Case Study Store
+              <Link className="sk-btn sk-btn-secondary hx-btn" to="/events">
+                Try a ₹99 Workshop
               </Link>
             </div>
           </div>
@@ -1901,14 +1785,14 @@ export function HomeElixirFlywheel() {
             <table className="hx-moat-table">
               <thead>
                 <tr>
-                  <th scope="col">Dimension</th>
-                  <th scope="col" className="is-skylent">Skylent OS</th>
-                  <th scope="col">Recorded Video Catalogues</th>
-                  <th scope="col">Traditional Bootcamps</th>
+                  <th scope="col">What Matters to You</th>
+                  <th scope="col" className="is-skylent">Skylent OS (Learn by Doing)</th>
+                  <th scope="col">Recorded Video Courses</th>
+                  <th scope="col">Traditional ₹2L Bootcamps</th>
                 </tr>
               </thead>
               <tbody>
-                {moatRows.map((row) => (
+                {comparisonRows.map((row) => (
                   <tr key={row.dimension}>
                     <th scope="row">{row.dimension}</th>
                     <td className="is-skylent">
