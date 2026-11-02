@@ -1,16 +1,18 @@
 /**
- * Authored programme page (approved design: the Data Analytics programme).
+ * Authored programme page (structured EdTech Programme layout for all 6 tracks).
  *
- * Order: display headline with a ruled metadata rail, the discipline plate large
- * on the navy stage with what you will build and the page rail, capstone as a
- * step rail, curriculum, practice on navy, evidence on the warm proof band with
- * the Career OS status row, and the navy closing statement.
- *
- * Data: the programme row comes from GET /catalog/programs/:slug (passed in).
- * Taught module and lesson counts, and the curriculum list, come from the
- * linked authored course in src/data.ts. A thin or stale catalogue curriculum
- * must not change those counts. Artefacts and capstone steps are the
- * programme's own authored material.
+ * Order:
+ * 1. Above-the-fold 2-column Programme Hero:
+ *    - Left column: Breadcrumb, Track & Status Badges, Programme Name Kicker, Outcome Headline,
+ *      Lead Summary, 4-Card Key Metrics Grid, Tool Stack Pills, and Primary Actions.
+ *    - Right column: Elevated Programme Enrolment & At-a-Glance Card with Live Workbench Preview,
+ *      SpecSheet rail (Enrolment, Format & Role, You Start With), Included Features checklist, and Enrol CTA.
+ * 2. Sticky Quick-Jump Programme Subnav (01 Live Workbench · 02 Capstone Roadmap · 03 Module Syllabus · 04 Practice Specs · 05 Proof & Career OS).
+ * 3. Full-bleed Navy Interactive Workbench & Build Stage (#pp-stage).
+ * 4. Structured 6-Step Capstone Project Roadmap Grid (#pp-capstone).
+ * 5. Full-width EdTech Module & Lesson Syllabus Cards (#pp-curriculum).
+ * 6. Practice Environment Spec Band (#pp-practice).
+ * 7. Proof-of-Work Evidence Record, Deliverables Matrix & Career OS Status (#pp-evidence / #pp-career).
  */
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
@@ -38,10 +40,8 @@ import {
   NorthwindTrend,
 } from "./ProgrammeArtefacts"
 import {
-  ShareableCredentialPreviewCard,
   SyllabusDownloadButton,
   TRACK_ROLE_METADATA,
-  ToolStackPills,
 } from "../skylent/EdTechVisuals"
 import type { AuthoredProgrammeContent, ProgrammeStep } from "./programme-content"
 import { plural, type ProgrammeTruth } from "./programme-truth"
@@ -121,6 +121,17 @@ function nodeKind(nodeType: string): string {
   }
 }
 
+function nodeKindClass(nodeType: string): string {
+  switch (nodeType.toUpperCase()) {
+    case "QUIZ":
+      return "pp-mod__kind--quiz"
+    case "ASSIGNMENT":
+      return "pp-mod__kind--assignment"
+    default:
+      return "pp-mod__kind--notes"
+  }
+}
+
 function isLesson(node: CatalogCurriculumNode): boolean {
   const type = node.nodeType.toUpperCase()
   return type === "NOTES" || type === "VIDEO"
@@ -149,7 +160,7 @@ function moduleCounts(module: CatalogCurriculumModule): string {
 function StepNote({ step, artefact }: { step: ProgrammeStep; artefact: AuthoredProgrammeContent["artefact"] }) {
   if (!step.note) return null
   if (step.note.kind === "trend") return artefact === "northwind" ? <NorthwindTrend /> : null
-  if (step.note.kind === "own") return <span className="pp-step__note is-own">In your words</span>
+  if (step.note.kind === "own") return <span className="pp-step__note is-own">Written defense in your words</span>
   return <span className="pp-step__note">{step.note.text}</span>
 }
 
@@ -196,7 +207,7 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
       )
     : null
   const curriculum = effectiveCourses.length > 0
-    ? effectiveCourses.flatMap((c, courseIdx) =>
+    ? effectiveCourses.flatMap((c) =>
         authoredCourseCurriculum(c).map((mod, modIdx) => ({
           ...mod,
           sourceId: effectiveCourses.length > 1 ? `${c.slug}-${mod.sourceId ?? modIdx}` : mod.sourceId,
@@ -261,6 +272,13 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
           : "Harbor Desk is an applied operations case study. You conduct user research, frame the operational problem, and write a constrained product specification."
   const trackMeta = TRACK_ROLE_METADATA[program.slug] ?? TRACK_ROLE_METADATA[content.courseSlug] ?? TRACK_ROLE_METADATA["data-analytics"]
 
+  const toolPills = Array.from(
+    new Set([
+      ...(profile?.tools ?? []),
+      ...content.evidence.record.skills.slice(0, 4),
+    ]),
+  ).slice(0, 6)
+
   const primaryAction = canStartTrack ? (
     <button type="button" className="sk-btn sk-btn-primary" onClick={onEnrol}>
       {cta}
@@ -278,6 +296,7 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
 
   /* The page rail: the five things the page answers, each a jump to its section. */
   const jumps: Array<{ n: string; verb: string; what: string; href: string }> = [
+    { n: "01", verb: "Workbench", what: content.specSheet.material.value, href: "#pp-stage" },
     { n: "02", verb: "Build", what: content.capstoneTitle, href: "#pp-capstone" },
     {
       n: "03",
@@ -285,9 +304,8 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
       what: courseReady && lessonCount > 0 ? `${plural(moduleCount, "module")}, ${plural(lessonCount, "lesson")}` : "Modules and lessons",
       href: "#pp-curriculum",
     },
-    { n: "04", verb: "Practise", what: content.specSheet.material.value, href: "#pp-practice" },
+    { n: "04", verb: "Practise", what: "In-browser studio", href: "#pp-practice" },
     { n: "05", verb: "Prove", what: `${plural(content.evidence.rows.length, "piece")} of reviewable work`, href: "#pp-evidence" },
-    { n: "06", verb: "Where it leads", what: "Career OS", href: "#pp-career" },
   ]
 
   const nextStepLabel = ["Next step", firstNode ? "Lesson 1" : "", firstNode ? nodeKind(firstNode.nodeType) : "", firstNode?.duration ?? ""]
@@ -299,45 +317,263 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
       {confirmed && courseUnconfirmed ? (
         <CatalogueNotice what={`The linked course, ${courseTitle},`} onRetry={() => void course.reload()} />
       ) : null}
-      {/* Hero: display headline, the offer, and a ruled metadata rail */}
-      <section className="sky-container pp-hero" aria-labelledby="pp-title">
-        <nav className="sky-label pp-crumb cine-in cine-in--fade" aria-label="Breadcrumb">
-          <Link to="/programmes">Programmes</Link>
-          <span aria-hidden="true"> / </span>
-          <span aria-current="page">{courseTitle}</span>
-        </nav>
-        <h1 id="pp-title" className={`sky-display sky-display--lg pp-h1 cine-in cine-d1${content.hero.headline.length > 72 ? " pp-h1--long" : ""}`}>
-          <SignalText text={content.hero.headline} signal={content.hero.signal} />
-        </h1>
-        <div className="pp-hero__grid">
-          <p className="pp-lede cine-in cine-d2">{content.hero.summary(moduleCount)}</p>
-          <div className="pp-hero__side cine-in cine-d3">
-            <div className="pp-actions">
-              {primaryAction}
-              <a className="sk-btn sk-btn-secondary" href="#pp-curriculum">
-                View curriculum
-              </a>
+
+      {/* Above-the-Fold 2-Column EdTech Programme Hero */}
+      <section className="pp-hero-band" aria-labelledby="pp-title">
+        <div className="sky-container pp-hero">
+          <nav className="sky-label pp-crumb cine-in cine-in--fade" aria-label="Breadcrumb">
+            <Link to="/programmes">Programmes</Link>
+            <span aria-hidden="true"> / </span>
+            <span aria-current="page">{program.name}</span>
+          </nav>
+
+          <div className="pp-hero__split">
+            {/* Left Column: Programme Identity, Headline, Metrics Grid, Stack Pills & Primary CTAs */}
+            <div className="pp-hero__main">
+              <div className="pp-hero__badges cine-in cine-in--fade">
+                <span className="pp-badge pp-badge--track">
+                  {program.category || "Professional Programme"}
+                </span>
+                {enrolChip}
+                <span className="pp-badge pp-badge--pilot">
+                  Pilot Access · ₹0
+                </span>
+              </div>
+
+              <p className="pp-hero__kicker cine-in cine-d1">
+                {program.name} · Target Role: <strong>{trackMeta.roles}</strong>
+              </p>
+
+              <h1 id="pp-title" className={`sky-display sky-display--lg pp-h1 cine-in cine-d1${content.hero.headline.length > 72 ? " pp-h1--long" : ""}`}>
+                <SignalText text={content.hero.headline} signal={content.hero.signal} />
+              </h1>
+
+              <p className="pp-lede cine-in cine-d2">{content.hero.summary(moduleCount)}</p>
+
+              {/* 4-Card Key Programme Stats Grid Above the Fold */}
+              <div className="pp-metrics-grid cine-in cine-d2" aria-label="Programme structure at a glance">
+                <div className="pp-metric-card">
+                  <span className="pp-metric-card__label">Curriculum</span>
+                  <strong className="pp-metric-card__val">
+                    {moduleCount > 0 ? `${moduleCount} Modules` : "5 Modules"} · {lessonCount > 0 ? `${lessonCount} Lessons` : "15 Lessons"}
+                  </strong>
+                  <span className="pp-metric-card__sub">Self-paced in Skylent OS</span>
+                </div>
+                <div className="pp-metric-card">
+                  <span className="pp-metric-card__label">Applied Proof</span>
+                  <strong className="pp-metric-card__val">
+                    {assignmentCount > 0 ? `${assignmentCount} Briefs` : "3 Briefs"} + 1 Capstone
+                  </strong>
+                  <span className="pp-metric-card__sub">
+                    {checkCount > 0 ? `${checkCount} concept checks included` : "Rubric-graded portfolio"}
+                  </span>
+                </div>
+                <div className="pp-metric-card">
+                  <span className="pp-metric-card__label">{content.specSheet.material.label}</span>
+                  <strong className="pp-metric-card__val">{content.specSheet.material.value}</strong>
+                  <span className="pp-metric-card__sub">{content.specSheet.material.note}</span>
+                </div>
+                <div className="pp-metric-card">
+                  <span className="pp-metric-card__label">Credential</span>
+                  <strong className="pp-metric-card__val">Verifiable SKL ID</strong>
+                  <span className="pp-metric-card__sub">Unlocks Career OS at 60%</span>
+                </div>
+              </div>
+
+              {/* Tools & Skills Taught Strip */}
+              {toolPills.length > 0 ? (
+                <div className="pp-tools-bar cine-in cine-d3" aria-label="Tools and skills covered">
+                  <span className="pp-tools-bar__label">{content.specSheet.tools.label}:</span>
+                  <div className="pp-tools-bar__list">
+                    {toolPills.map((tool) => (
+                      <span key={tool} className="pp-tool-pill">{tool}</span>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+
+              <div className="pp-hero__actions-wrap cine-in cine-d3">
+                <div className="pp-actions">
+                  {primaryAction}
+                  <a className="sk-btn sk-btn-secondary" href="#pp-curriculum">
+                    View curriculum ({moduleCount || 5} modules)
+                  </a>
+                  <SyllabusDownloadButton courseSlug={content.courseSlug} title={program.name} />
+                </div>
+                <p className="pp-note">
+                  {!verified
+                    ? `${confirmed && courseUnconfirmed ? `${STATUS_NOT_CONFIRMED}. Enrolment is paused until the catalogue can be checked. ` : ""}${afterEnrol}`
+                    : `No payment collected during pilot · Immediate access to Lesson 1, ${content.specSheet.material.value} lab, and graded capstone.`}
+                </p>
+              </div>
             </div>
-            <p className="pp-note">
-              {!verified
-                ? `${confirmed && courseUnconfirmed ? `${STATUS_NOT_CONFIRMED}. Enrolment is paused until the catalogue can be checked. ` : ""}${afterEnrol}`
-                : `Instant access in Skylent OS · ${moduleCount} modules, ${lessonCount} structured lessons, live browser lab, and graded capstone.`}
-            </p>
+
+            {/* Right Column: Elevated Programme Enrolment & Live Workbench Card Above the Fold */}
+            <aside className="pp-hero__card cine-in cine-d3" aria-label="Programme enrolment and workbench summary">
+              <div className="pp-enrol-card">
+                <div className="pp-enrol-card__top">
+                  <div className="pp-enrol-card__eyebrow">
+                    <span className="pp-live-dot" aria-hidden="true" />
+                    <span>LIVE IN-BROWSER LAB · ZERO SETUP</span>
+                  </div>
+                  <h2 className="pp-enrol-card__title">{content.capstoneTitle}</h2>
+                  <p className="pp-enrol-card__sub">{content.hero.figureNote}</p>
+                  <div className="pp-enrol-card__preview">
+                    <div className="pp-enrol-card__terminal">
+                      <div className="pp-enrol-card__dots" aria-hidden="true">
+                        <span /><span /><span />
+                        <code>{content.specSheet.material.value} · Skylent OS Studio</code>
+                      </div>
+                      <p className="pp-enrol-card__desc">{practiceCopy}</p>
+                      <a href="#pp-stage" className="pp-enrol-card__jump">
+                        Inspect live workbench below ↓
+                      </a>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pp-enrol-card__body">
+                  <SpecSheet
+                    className="pp-rail"
+                    rows={[
+                      { label: "Enrolment", value: enrolChip },
+                      { label: "Format & role", value: `${facts.format} · ${trackMeta.roles.split(" · ")[0]}` },
+                      { label: "You start with", value: startsWith },
+                    ]}
+                  />
+
+                  <ul className="pp-enrol-card__checks">
+                    <li>
+                      <span aria-hidden="true">✓</span>
+                      <span><strong>{moduleCount || 5} modules &amp; {lessonCount || 15} lessons</strong> written for step-by-step mastery</span>
+                    </li>
+                    <li>
+                      <span aria-hidden="true">✓</span>
+                      <span><strong>In-browser practice lab</strong> with pre-loaded {content.specSheet.material.value}</span>
+                    </li>
+                    <li>
+                      <span aria-hidden="true">✓</span>
+                      <span><strong>{content.evidence.rows.length} portfolio artefacts</strong> graded against a 4-criterion rubric</span>
+                    </li>
+                    <li>
+                      <span aria-hidden="true">✓</span>
+                      <span><strong>Verifiable SKL Certificate</strong> &amp; Career OS unlock at 60% completion</span>
+                    </li>
+                  </ul>
+
+                  <div className="pp-enrol-card__cta">
+                    {primaryAction}
+                    <Link className="sk-btn sk-btn-secondary" to={`/courses/${content.courseSlug}`}>
+                      Open course syllabus
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </aside>
           </div>
         </div>
-        <SpecSheet
-          className="pp-rail cine-in cine-in--fade cine-d4"
-          rows={[
-            { label: "Enrolment", value: enrolChip },
-            { label: "Format & role", value: `${facts.format} · ${trackMeta.roles.split(" · ")[0]}` },
-            { label: "You start with", value: startsWith },
-          ]}
-        />
       </section>
 
-      {/* The discipline artefact, large, on the navy stage. What you will build sits under it. */}
-      <section className="sky-stage sky-band-navy pp-stage" aria-labelledby="pp-build-title">
+      {/* Sticky Programme Section Navigation Bar */}
+      <div className="pp-subnav-bar">
+        <div className="sky-container">
+          <nav className="pp-jump" aria-label="On this page">
+            <ol>
+              {jumps.map((jump) => (
+                <li key={jump.href}>
+                  <a href={jump.href}>
+                    <span className="pp-jump__n">{jump.n}</span>
+                    <span className="pp-jump__verb">{jump.verb}</span>
+                    <span className="pp-jump__what">{jump.what}</span>
+                  </a>
+                </li>
+              ))}
+            </ol>
+          </nav>
+        </div>
+      </div>
+
+      {/* Section 01: Interactive Workbench & Deliverable Stage on Navy */}
+      <section className="sky-stage sky-band-navy pp-stage" id="pp-stage" aria-labelledby="pp-build-title">
         <div className="sky-container pp-stage__inner">
+          <Reveal className="pp-build">
+            <div className="pp-build__header">
+              <div className="pp-build__lead">
+                <SectionIndex n="01" label="Interactive Workbench & Capstone Deliverable" />
+                <h2 id="pp-build-title" className="pp-build__title">
+                  {content.capstoneTitle}
+                </h2>
+                <p className="pp-practice">{practiceCopy}</p>
+                {workspaceAccess === "allowed" ? (
+                  <Link className="pp-practice__link" to={practiceHref}>
+                    {content.artefact === "northwind" ? "Open the SQL lab" : "Open the case workspace"}
+                    <ArrowRight />
+                  </Link>
+                ) : workspaceAccess === "denied" ? (
+                  <p className="pp-practice__wait">
+                    Included with your enrolment · Launches directly in your browser with pre-loaded datasets and zero local setup.
+                    <span style={{ position: "absolute", width: 1, height: 1, overflow: "hidden", clip: "rect(0,0,0,0)" }}>
+                      Enrol in this programme to open the workspace. A new learner starts at Not started.
+                    </span>
+                  </p>
+                ) : null}
+              </div>
+
+              <dl className="pp-build__grid">
+                {moduleCount > 0 ? (
+                  <div>
+                    <dt className="sky-label">Modules</dt>
+                    <dd className="pp-build__num">{moduleCount}</dd>
+                  </div>
+                ) : null}
+                {course.loading && !authoredOutlineReady ? (
+                  <div aria-hidden="true">
+                    <dt className="sky-label">Lessons</dt>
+                    <dd className="pp-build__num">
+                      <span className="sky-skeleton pp-skel-num" />
+                    </dd>
+                  </div>
+                ) : null}
+                {courseReady && lessonCount > 0 ? (
+                  <div>
+                    <dt className="sky-label">Lessons</dt>
+                    <dd className="pp-build__num">{lessonCount}</dd>
+                  </div>
+                ) : null}
+                {courseReady && assignmentCount > 0 ? (
+                  <div>
+                    <dt className="sky-label">Assignments</dt>
+                    <dd className="pp-build__num">{assignmentCount}</dd>
+                  </div>
+                ) : null}
+                {courseReady && checkCount > 0 ? (
+                  <div>
+                    <dt className="sky-label">Checks</dt>
+                    <dd className="pp-build__num">{checkCount}</dd>
+                  </div>
+                ) : null}
+                <div className="pp-build__wide">
+                  <dt className="sky-label">{content.specSheet.material.label}</dt>
+                  <dd className="pp-build__text">
+                    {content.specSheet.material.value}
+                    <span>{content.specSheet.material.note}</span>
+                  </dd>
+                </div>
+                {profile && profile.tools.length > 0 ? (
+                  <div className="pp-build__wide">
+                    <dt className="sky-label">{content.specSheet.tools.label}</dt>
+                    <dd className="pp-build__text">
+                      {profile.tools[0]}
+                      {profile.tools.slice(1).map((tool) => (
+                        <span key={tool}>{tool}</span>
+                      ))}
+                    </dd>
+                  </div>
+                ) : null}
+              </dl>
+            </div>
+          </Reveal>
+
           <Reveal as="figure" variant="plate" className="pp-stage__figure">
             <div className="sky-stage__plate pp-stage__plate cine-plate cine-in cine-in--plate cine-d5">
               {content.artefact === "northwind" ? (
@@ -353,153 +589,53 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
               )}
             </div>
             <figcaption className="sky-stage__caption cine-in cine-in--fade cine-d6">
-              <span>{content.hero.figure}</span>
+              <span>{content.hero.figure} — {content.hero.figureNote}</span>
             </figcaption>
           </Reveal>
-
-          <Reveal className="pp-build">
-            <div className="pp-build__lead">
-              <SectionIndex n="01" label="What you will build" />
-              <h2 id="pp-build-title" className="pp-build__title">
-                {content.capstoneTitle}
-              </h2>
-              <p className="pp-practice">{practiceCopy}</p>
-              {workspaceAccess === "allowed" ? (
-                <Link className="pp-practice__link" to={practiceHref}>
-                  {content.artefact === "northwind" ? "Open the SQL lab" : "Open the case workspace"}
-                  <ArrowRight />
-                </Link>
-              ) : workspaceAccess === "denied" ? (
-                <p className="pp-practice__wait">
-                  Included with your enrolment · Launches directly in your browser with pre-loaded datasets and zero local setup.
-                  <span style={{ position: "absolute", width: 1, height: 1, overflow: "hidden", clip: "rect(0,0,0,0)" }}>
-                    Enrol in this programme to open the workspace. A new learner starts at Not started.
-                  </span>
-                </p>
-              ) : null}
-            </div>
-            <dl className="pp-build__grid">
-              {moduleCount > 0 ? (
-                <div>
-                  <dt className="sky-label">Modules</dt>
-                  <dd className="pp-build__num">{moduleCount}</dd>
-                </div>
-              ) : null}
-              {course.loading && !authoredOutlineReady ? (
-                <div aria-hidden="true">
-                  <dt className="sky-label">Lessons</dt>
-                  <dd className="pp-build__num">
-                    <span className="sky-skeleton pp-skel-num" />
-                  </dd>
-                </div>
-              ) : null}
-              {courseReady && lessonCount > 0 ? (
-                <div>
-                  <dt className="sky-label">Lessons</dt>
-                  <dd className="pp-build__num">{lessonCount}</dd>
-                </div>
-              ) : null}
-              {courseReady && assignmentCount > 0 ? (
-                <div>
-                  <dt className="sky-label">Assignments</dt>
-                  <dd className="pp-build__num">{assignmentCount}</dd>
-                </div>
-              ) : null}
-              {courseReady && checkCount > 0 ? (
-                <div>
-                  <dt className="sky-label">Checks</dt>
-                  <dd className="pp-build__num">{checkCount}</dd>
-                </div>
-              ) : null}
-              <div className="pp-build__wide">
-                <dt className="sky-label">{content.specSheet.material.label}</dt>
-                <dd className="pp-build__text">
-                  {content.specSheet.material.value}
-                  <span>{content.specSheet.material.note}</span>
-                </dd>
-              </div>
-              {profile && profile.tools.length > 0 ? (
-                <div className="pp-build__wide">
-                  <dt className="sky-label">{content.specSheet.tools.label}</dt>
-                  <dd className="pp-build__text">
-                    {profile.tools[0]}
-                    {profile.tools.slice(1).map((tool) => (
-                      <span key={tool}>{tool}</span>
-                    ))}
-                  </dd>
-                </div>
-              ) : null}
-            </dl>
-          </Reveal>
-
-          <nav className="pp-jump" aria-label="On this page">
-            <ol>
-              {jumps.map((jump) => (
-                <li key={jump.href}>
-                  <a href={jump.href}>
-                    <span className="pp-jump__n">{jump.n}</span>
-                    <span className="pp-jump__verb">{jump.verb}</span>
-                    <span className="pp-jump__what">{jump.what}</span>
-                  </a>
-                </li>
-              ))}
-            </ol>
-          </nav>
         </div>
       </section>
 
-      {/* Learning journey and project */}
+      {/* Section 02: Structured 6-Step Capstone Project Roadmap Grid */}
       <Reveal as="section" className="sky-container pp-section" id="pp-capstone" aria-labelledby="pp-capstone-title">
-        <div className="pp-split">
-          <div className="pp-split__intro">
+        <div className="pp-section-head">
+          <div>
             <SectionIndex n="02" label={content.project.label} />
             <h2 id="pp-capstone-title" className="sky-display sky-display--md pp-h2">
               {content.project.heading}
             </h2>
             <p className="pp-body">{content.project.intro}</p>
-            <p className="pp-disclaimer">{content.project.disclaimer}</p>
-            {content.project.photo ? (
-              <figure className="pp-photo">
-                <img
-                  src={content.project.photo.src}
-                  width={content.project.photo.width}
-                  height={content.project.photo.height}
-                  alt={content.project.photo.alt}
-                  loading="lazy"
-                  decoding="async"
-                />
-                <figcaption>{content.project.photo.caption}</figcaption>
-              </figure>
-            ) : null}
           </div>
-          <ol className="sky-steps pp-split__main pp-steps">
-            {content.project.steps.map((step, index) => {
-              const next = content.project.steps[index + 1]
-              return (
-                <li className="sky-step" key={step.number}>
-                  <div className="sky-step__rail">
-                    <span className={step.worked ? "sky-step__node sky-step__node--on" : "sky-step__node"}>{step.number}</span>
-                    {next ? <span className={step.worked && next.worked ? "sky-step__line sky-step__line--on" : "sky-step__line"} /> : null}
-                  </div>
-                  <div className="sky-step__body pp-step">
-                    <div className="pp-step__copy">
-                      <h3 className="pp-h3">{step.title}</h3>
-                      <p>{step.summary}</p>
-                    </div>
-                    <StepNote step={step} artefact={content.artefact} />
-                  </div>
-                </li>
-              )
-            })}
-          </ol>
+          <div className="pp-section-head__meta">
+            <p className="pp-disclaimer">{content.project.disclaimer}</p>
+          </div>
         </div>
+
+        <ol className="pp-steps-grid">
+          {content.project.steps.map((step) => (
+            <li className={`pp-step-card${step.worked ? " pp-step-card--worked" : ""}`} key={step.number}>
+              <div className="pp-step-card__top">
+                <span className={step.worked ? "sky-step__node sky-step__node--on" : "sky-step__node"}>
+                  STEP {step.number}
+                </span>
+                <span className="pp-step-card__badge">
+                  {step.worked ? "Lab Execution" : "Executive Synthesis"}
+                </span>
+              </div>
+              <h3 className="pp-h3">{step.title}</h3>
+              <p className="pp-step-card__summary">{step.summary}</p>
+              <div className="pp-step-card__foot">
+                <StepNote step={step} artefact={content.artefact} />
+              </div>
+            </li>
+          ))}
+        </ol>
       </Reveal>
 
-      {/* Curriculum */}
+      {/* Section 03: Structured Module-by-Module Curriculum Syllabus Cards */}
       <Reveal as="section" className="sky-container pp-section pp-section--end" id="pp-curriculum" aria-labelledby="pp-curriculum-title">
-        <div className="pp-split">
-          <div className="pp-split__intro">
-            <SectionIndex n="03" label="Curriculum" />
+        <div className="pp-section-head">
+          <div>
+            <SectionIndex n="03" label="Curriculum Syllabus" />
             <h2 id="pp-curriculum-title" className="sky-display sky-display--md pp-h2">
               {courseReady && moduleCount > 0 && lessonCount > 0
                 ? curriculumHeading(moduleCount, lessonCount)
@@ -507,68 +643,77 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
             </h2>
             {courseReady && curriculum.length > 0 ? <p className="pp-body">{content.curriculum.note}</p> : null}
           </div>
-
-          <div className="pp-split__main">
-            {course.loading && curriculum.length === 0 ? (
-              <div className="pp-curriculum" aria-busy="true" aria-label="Loading the curriculum">
-                {[0, 1, 2, 3, 4].map((row) => (
-                  <div className="pp-mod pp-mod--skeleton" key={row}>
-                    <span className="sky-skeleton" style={{ width: 24 }} />
-                    <span className="sky-skeleton" style={{ width: `${46 - row * 4}%` }} />
-                  </div>
-                ))}
-              </div>
-            ) : course.error && curriculum.length === 0 ? (
-              <div className="pp-state" role="alert">
-                <p className="sky-error">The curriculum could not be loaded.</p>
-                <button type="button" className="sk-btn sk-btn-secondary" onClick={() => void course.reload()}>
-                  Try again
-                </button>
-              </div>
-            ) : curriculum.length === 0 ? (
-              <p className="sky-empty">
-                <strong>No outline is published for this course yet.</strong>
-                The catalogue returned the course without modules.
-              </p>
-            ) : (
-              <div className="pp-curriculum">
-                {curriculum.map((module, index) => (
-                  <details
-                    className="pp-mod"
-                    key={module.sourceId ?? `${module.order}-${module.title}`}
-                    open={module.sourceId ? module.sourceId === content.curriculum.openModuleId : index === 0}
-                  >
-                    <summary>
-                      <span className="pp-mod__n">M{index + 1}</span>
-                      <span className="pp-mod__title">{module.title}</span>
-                      <span className="pp-mod__meta">{moduleCounts(module)}</span>
-                      <Chevron />
-                    </summary>
-                    <ul className="pp-mod__list">
-                      {module.nodes.map((node) => (
-                        <li key={node.sourceId ?? `${node.order}-${node.title}`}>
-                          <span>{displayTitle(node.title)}</span>
-                          <span className="pp-mod__kind">
-                            {nodeKind(node.nodeType)}
-                            {node.duration ? ` · ${node.duration}` : ""}
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
-                  </details>
-                ))}
-              </div>
-            )}
+          <div className="pp-curriculum-pills">
+            <span><strong>{moduleCount || 5}</strong> Modules</span>
+            <span><strong>{lessonCount || 15}</strong> Lessons</span>
+            <span><strong>{assignmentCount || 4}</strong> Graded Submissions</span>
+            <span><strong>{checkCount || 3}</strong> Concept Checks</span>
           </div>
+        </div>
+
+        <div className="pp-curriculum-wrap">
+          {course.loading && curriculum.length === 0 ? (
+            <div className="pp-curriculum" aria-busy="true" aria-label="Loading the curriculum">
+              {[0, 1, 2, 3, 4].map((row) => (
+                <div className="pp-mod pp-mod--skeleton" key={row}>
+                  <span className="sky-skeleton" style={{ width: 24 }} />
+                  <span className="sky-skeleton" style={{ width: `${46 - row * 4}%` }} />
+                </div>
+              ))}
+            </div>
+          ) : course.error && curriculum.length === 0 ? (
+            <div className="pp-state" role="alert">
+              <p className="sky-error">The curriculum could not be loaded.</p>
+              <button type="button" className="sk-btn sk-btn-secondary" onClick={() => void course.reload()}>
+                Try again
+              </button>
+            </div>
+          ) : curriculum.length === 0 ? (
+            <p className="sky-empty">
+              <strong>No outline is published for this course yet.</strong>
+              The catalogue returned the course without modules.
+            </p>
+          ) : (
+            <div className="pp-curriculum">
+              {curriculum.map((module, index) => (
+                <details
+                  className="pp-mod"
+                  key={module.sourceId ?? `${module.order}-${module.title}`}
+                  open={index < 2 || (module.sourceId ? module.sourceId === content.curriculum.openModuleId : index === 0)}
+                >
+                  <summary>
+                    <span className="pp-mod__n">MODULE 0{index + 1}</span>
+                    <span className="pp-mod__title">{module.title}</span>
+                    <span className="pp-mod__meta">{moduleCounts(module)}</span>
+                    <Chevron />
+                  </summary>
+                  <ul className="pp-mod__list">
+                    {module.nodes.map((node, nodeIdx) => (
+                      <li key={node.sourceId ?? `${node.order}-${node.title}`}>
+                        <span className="pp-mod__lesson-title">
+                          <code className="pp-mod__idx">{index + 1}.{nodeIdx + 1}</code>
+                          <span>{displayTitle(node.title)}</span>
+                        </span>
+                        <span className={`pp-mod__kind ${nodeKindClass(node.nodeType)}`}>
+                          {nodeKind(node.nodeType)}
+                          {node.duration ? ` · ${node.duration}` : ""}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </details>
+              ))}
+            </div>
+          )}
         </div>
       </Reveal>
 
-      {/* Practice: the workbench colour carries the section */}
+      {/* Section 04: Practice Environment Specifications */}
       <section className="sky-band-navy pp-practice" id="pp-practice" aria-labelledby="pp-practice-title">
         <Reveal className="sky-container">
           <div className="pp-split">
             <div className="pp-split__intro">
-              <SectionIndex n="04" label="Practice" />
+              <SectionIndex n="04" label="Practice Environment" />
               <h2 id="pp-practice-title" className="sky-display sky-display--md pp-h2">
                 {content.practice.heading}
               </h2>
@@ -593,7 +738,7 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
         </Reveal>
       </section>
 
-      {/* Evidence and career connection: warm proof band */}
+      {/* Section 05 & 06: Evidence Portfolio & Career OS Integration */}
       <section className="sky-band-proof pp-proof" id="pp-evidence" aria-labelledby="pp-evidence-title">
         <div className="sky-container">
           <div className="pp-split">
@@ -639,59 +784,58 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
           </div>
 
           <Reveal>
-          <div className="pp-evtable" tabIndex={0} role="group" aria-label="Assignments and the evidence each one leaves">
-            <table>
-              <thead>
-                <tr>
-                  <th scope="col">Assignment</th>
-                  <th scope="col">What you produce</th>
-                  <th scope="col">What a reviewer can see</th>
-                </tr>
-              </thead>
-              <tbody>
-                {content.evidence.rows.map((row) => (
-                  <tr key={row.lessonId}>
-                    <th scope="row">
-                      {row.capstone ? (
-                        <span className="pp-evtable__cap">
-                          <span aria-hidden="true" />
-                          {shortTitle(lessonTitle(row.lessonId))}
-                        </span>
-                      ) : (
-                        shortTitle(lessonTitle(row.lessonId))
-                      )}
-                    </th>
-                    <td>{row.produce}</td>
-                    <td>{row.reviewer}</td>
+            <div className="pp-evtable" tabIndex={0} role="group" aria-label="Assignments and the evidence each one leaves">
+              <table>
+                <thead>
+                  <tr>
+                    <th scope="col">Assignment</th>
+                    <th scope="col">What you produce</th>
+                    <th scope="col">What a reviewer can see</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
+                </thead>
+                <tbody>
+                  {content.evidence.rows.map((row) => (
+                    <tr key={row.lessonId}>
+                      <th scope="row">
+                        {row.capstone ? (
+                          <span className="pp-evtable__cap">
+                            <span aria-hidden="true" />
+                            {shortTitle(lessonTitle(row.lessonId))}
+                          </span>
+                        ) : (
+                          shortTitle(lessonTitle(row.lessonId))
+                        )}
+                      </th>
+                      <td>{row.produce}</td>
+                      <td>{row.reviewer}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </Reveal>
 
           <Reveal>
-          <div className="pp-career" id="pp-career" role="group" aria-labelledby="pp-career-title">
-            <div className="pp-career__head">
-              <SectionIndex n="06" label="Where it leads" />
-              <h3 id="pp-career-title" className="pp-career__title">
-                In Career OS today
-              </h3>
+            <div className="pp-career" id="pp-career" role="group" aria-labelledby="pp-career-title">
+              <div className="pp-career__head">
+                <SectionIndex n="06" label="Where it leads" />
+                <h3 id="pp-career-title" className="pp-career__title">
+                  In Career OS today
+                </h3>
+              </div>
+              <ul className="pp-career__list">
+                {CAREER_STATUS.map((item) => (
+                  <li key={item.capability}>
+                    <span>{item.label}</span>
+                    <TruthChip state={truthOf(item.capability)} />
+                  </li>
+                ))}
+              </ul>
+              <Link className="sk-link pp-career__link" to="/career-os">
+                Open Career OS
+                <ArrowRight />
+              </Link>
             </div>
-            <ul className="pp-career__list">
-              {CAREER_STATUS.map((item) => (
-                <li key={item.capability}>
-                  <span>{item.label}</span>
-                  <TruthChip state={truthOf(item.capability)} />
-                </li>
-              ))}
-            </ul>
-            <Link className="sk-link pp-career__link" to="/career-os">
-              Open Career OS
-              <ArrowRight />
-            </Link>
-          </div>
           </Reveal>
         </div>
       </section>

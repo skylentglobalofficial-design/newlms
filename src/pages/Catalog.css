@@ -2700,3 +2700,65 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ── V17 EdTech Course Hero Card & Rubric Strip Polish ────────────────────── */
+.cat-page .cat-hero {
+  padding: 28px 0 32px;
+  background:
+    radial-gradient(840px 360px at 82% 10%, rgba(81, 66, 181, 0.08), transparent 70%),
+    linear-gradient(180deg, #f6f8fc 0%, #ffffff 100%);
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.cat-page .cat-intro-meta {
+  padding: 18px 20px;
+  border-radius: 16px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  box-shadow:
+    0 4px 12px rgba(15, 23, 42, 0.04),
+    0 18px 36px -18px rgba(15, 23, 42, 0.12);
+}
+
+.cat-page .cat-rubric-strip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.cat-page .cat-rubric-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.03);
+}
+
+.cat-page .cat-rubric-weight {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #4335a7;
+}
+
+.cat-page .cat-rubric-item strong {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.cat-page .cat-rubric-item > span:last-child {
+  font-size: 12.5px;
+  color: #475569;
+}
+
+@media (max-width: 768px) {
+  .cat-page .cat-rubric-strip {
+    grid-template-columns: 1fr;
+  }
+}
