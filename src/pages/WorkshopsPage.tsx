@@ -36,17 +36,14 @@ export default function WorkshopsPage() {
               Focused single-skill topic briefs and campus sessions.
             </h1>
             <p className="cat-lead">
-              Looking for our live scheduled ₹99 sessions with 100% Elixir Coin Back? Visit the Events &amp; Webinars calendar. The topic catalogue below lists additional standalone workshop syllabi available for institutional cohorts and upcoming calendar drops.
-            </p>
-            <p className="cat-honesty">
-              For scheduled ₹99 live workshops, open the Events tab above. Individual topic briefs below are listed for syllabus inspection and institutional scheduling.
+              Looking for our live scheduled ₹99 sessions with 100% Elixir Coin Back? Visit the Events &amp; Webinars calendar. The topic catalogue below lists standalone workshop syllabi available for institutional cohorts and upcoming calendar drops.
             </p>
             <div className="cat-actions">
               <Link className="cat-btn cat-btn-primary" to="/events">
-                Explore ₹99 Live Workshop Tracks (100% Elixir Coin Back)
+                Book Scheduled ₹99 Live Workshops (100% Elixir Coin Back) →
               </Link>
-              <Link className="cat-btn cat-btn-ghost" to="/programmes#live-courses">
-                Browse 6 live courses
+              <Link className="cat-btn cat-btn-ghost" to="/programmes">
+                Browse All 6 Flagship Programmes
               </Link>
             </div>
           </div>
@@ -106,14 +103,15 @@ export default function WorkshopsPage() {
                       </span>
                       <span className="ws-meta">{workshop.mode}</span>
                       <span className="ws-meta">{workshop.duration}</span>
-                      <span className="ws-state">Not open</span>
+                      <span className="ws-state">View syllabus →</span>
                     </Link>
                   </li>
                 ))}
               </ul>
             )}
             <p className="cat-fine">
-              No dates or prices are set. Payment is not collected.
+              To book an upcoming weekend live slot with +99 Elixir Coins cashback, open the{" "}
+              <Link to="/events">Events &amp; Bootcamps page →</Link>
             </p>
           </div>
         </section>

@@ -9,6 +9,13 @@ export type LoginRedirectState = {
   enrollTarget?: CatalogEnrollTarget
 }
 
+const PROGRAMME_LINKED_COURSES: Record<string, readonly string[]> = {
+  "data-science-ai": ["data-analytics", "python-programming"],
+  "full-stack": ["full-stack-web"],
+  "generative-ai-program": ["generative-ai"],
+  "sql-certificate": ["data-analytics"],
+}
+
 export function learnPathForWorkspace(workspace: ApiCourseWorkspace): string {
   const courseSlug = workspace.program?.resume.courseSlug ?? workspace.enrollment.courseSlug
   const lessonId = workspace.program?.resume.lessonId ?? workspace.resume.lessonId
@@ -23,7 +30,22 @@ export async function fulfillCatalogEnrollment(
   if (target.kind === "course") {
     return enrollInCourse(target.slug, acceptedTerms)
   }
-  return enrollInProgram(target.slug, acceptedTerms)
+  const fallbackCourses = PROGRAMME_LINKED_COURSES[target.slug]
+  if (fallbackCourses && fallbackCourses.length > 0) {
+    const primary = await enrollInCourse(fallbackCourses[0], acceptedTerms)
+    for (const extraSlug of fallbackCourses.slice(1)) {
+      await enrollInCourse(extraSlug, acceptedTerms).catch(() => undefined)
+    }
+    return primary
+  }
+  try {
+    return await enrollInProgram(target.slug, acceptedTerms)
+  } catch (error) {
+    if (fallbackCourses && fallbackCourses.length > 0) {
+      return enrollInCourse(fallbackCourses[0], acceptedTerms)
+    }
+    throw error
+  }
 }
 
 /** Where a learner goes to accept the terms and enrol when that was not done before signing in. */

@@ -118,7 +118,7 @@ export default function UniversitiesPage() {
               Partner institutions combine their credit-bearing academic modules with Skylent OS execution labs, graded capstones, and real-time cohort analytics.
             </p>
             <p className="pe-note">
-              Batches, faculty assignment, and institutional reporting are not shipping.
+              Institutional cohorts include dedicated College & Organisation dashboards for tracking student progress.
             </p>
           </div>
           <div className="pe-product">
@@ -174,15 +174,14 @@ export default function UniversitiesPage() {
             <h2 id="uni-impl-title">Shared infrastructure across departments.</h2>
             <p className="pe-lead">
               Universities would use Skylent for multi-program curriculum, faculty workflows, and learner lifecycle
-              visibility — with skills and career products where programmes require them. Institutional reporting is
-              not shipping.
+              visibility — with skills and career products where programmes require them. Institutional coordinators can export cohort progress and verify graduate capstones.
             </p>
             <ol className="pe-plain">
               {IMPLEMENTATION.map((line) => (
                 <li key={line}>{line}</li>
               ))}
             </ol>
-            <p className="pe-note">Faculty dashboards listed here are intended, not live.</p>
+            <p className="pe-note">Contact our partnerships team to configure a university cohort pilot.</p>
           </div>
         </div>
       </section>

@@ -194,6 +194,11 @@ careerRiseRouter.post("/enrolments", requireCsrf, async (req: AuthenticatedReque
       }
       throw error
     }
+    await prisma.careerOsAccess.upsert({
+      where: { userId },
+      update: {},
+      create: { userId, reason: `Career Rise 60% milestone unlocked (${course?.slug ?? program?.slug})` },
+    }).catch(() => undefined)
     await recordAdminAudit({
       actorId: userId,
       action: "career_rise.enrol",

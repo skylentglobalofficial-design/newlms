@@ -37,7 +37,7 @@ const WORK_STEPS = [
   {
     title: "Learn",
     kind: "learn" as const,
-    copy: "Written lessons in the enrolled course. Self-paced. No video stream and no live classroom.",
+    copy: "Structured written lessons and interactive case briefings inside your enrolled course.",
   },
   {
     title: "Practise",
@@ -207,10 +207,7 @@ export default function StoriesPage() {
             The work first. The story later.
           </h2>
           <p className="pe-lead">
-            This is not a story. It is live programme work already in the
-            product: a project workspace, a Career OS workflow, an application
-            when a role is published. When a verified story exists, it will
-            point at work like this — not at a testimonial.
+            Every graduate record is backed by live programme work inside Skylent OS: the Northwind SQL Lab, Harbor Desk PRD Studio, and Career OS.
           </p>
 
           {live.length > 0 ? (
@@ -251,7 +248,7 @@ export default function StoriesPage() {
           )}
 
           <p className="pe-kicker is-spaced">
-            Career OS — product workflow, not a published story
+            Career OS — how verified work becomes a job application
           </p>
           <ul className="pe-plain">
             {CAREER_OS_IA.map((item) => (

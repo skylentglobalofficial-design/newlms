@@ -1,12 +1,14 @@
-import { registerHooks } from "node:module"
-registerHooks({
-  load(url, context, nextLoad) {
-    if (url.endsWith(".css")) {
-      return { format: "module", shortCircuit: true, source: "export default {}" }
-    }
-    return nextLoad(url, context)
-  },
-})
+import * as nodeModule from "node:module"
+if (typeof (nodeModule as { registerHooks?: unknown }).registerHooks === "function") {
+  ;(nodeModule as { registerHooks: (hooks: unknown) => void }).registerHooks({
+    load(url: string, context: unknown, nextLoad: (u: string, c: unknown) => unknown) {
+      if (url.endsWith(".css")) {
+        return { format: "module", shortCircuit: true, source: "export default {}" }
+      }
+      return nextLoad(url, context)
+    },
+  })
+}
 process.env.DATABASE_URL ||= "postgresql://unused:unused@127.0.0.1:1/unused"
 process.env.DIRECT_URL ||= process.env.DATABASE_URL
 process.env.SESSION_SECRET ||= "test-only-session-secret-0123456789abcdef"

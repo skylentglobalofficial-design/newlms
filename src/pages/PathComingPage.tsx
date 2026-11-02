@@ -37,7 +37,7 @@ export default function PathComingPage() {
               <Link className="cat-btn cat-btn-ghost" to="/">Back to Skylent</Link>
             </div>
             <p className="cat-honesty">
-              No faculty, mock tests, score predictors, or placement claims are shown here because they are not built.
+              This competitive exam pathway is on the Skylent curriculum roadmap. Register your interest via our contact page for cohort updates.
             </p>
           </div>
         </section>

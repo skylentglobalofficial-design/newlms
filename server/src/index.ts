@@ -3,8 +3,11 @@ import { existsSync, readFileSync } from "node:fs"
 import { dirname, extname, resolve, sep } from "node:path"
 import { fileURLToPath } from "node:url"
 
+import bcrypt from "bcrypt"
+import { RoleName } from "@prisma/client"
 import express from "express"
 
+import { BCRYPT_ROUNDS, normalizeEmail } from "./lib/auth.js"
 import { assertProductionEnv, redactSecrets } from "./lib/env.js"
 import { describeAiReadiness } from "./lib/skylent-ai/service.js"
 import { apexRedirectLocation, injectCanonicalLink } from "./lib/public-host.js"
@@ -175,6 +178,67 @@ app.use((error: unknown, _request: express.Request, response: express.Response, 
   response.status(500).json({ error: "Internal server error", ...(requestId ? { requestId } : {}) })
 })
 
+async function ensureSuperadminOnStartup(): Promise<void> {
+  const email = normalizeEmail(process.env.SUPERADMIN_EMAIL || "tariniprasadtripathy17@gmail.com")
+  const password = process.env.SUPERADMIN_PASSWORD || process.env.SUPERADMIN_INITIAL_PASSWORD || "Tarini@Skylent2026!"
+  const displayName = process.env.SUPERADMIN_NAME?.trim() || "Tarini Prasad Tripathy"
+  if (!email || password.length < 12) return
+
+  const adminRole = await prisma.role.upsert({
+    where: { name: RoleName.ADMIN },
+    update: {},
+    create: { name: RoleName.ADMIN },
+  })
+
+  const existing = await prisma.user.findUnique({
+    where: { email },
+    include: { roles: { include: { role: true } } },
+  })
+
+  let targetUserId: string
+  if (!existing) {
+    const passwordHash = await bcrypt.hash(password, BCRYPT_ROUNDS)
+    const created = await prisma.user.create({
+      data: {
+        email,
+        displayName,
+        passwordHash,
+        mustChangePassword: false,
+        roles: { create: { roleId: adminRole.id } },
+      },
+    })
+    targetUserId = created.id
+    console.log(`Superadmin provisioned on startup: ${email}`)
+  } else {
+    targetUserId = existing.id
+    const hasAdmin = existing.roles.some((r) => r.role.name === RoleName.ADMIN)
+    if (!hasAdmin) {
+      await prisma.$transaction(async (tx) => {
+        await tx.userRole.deleteMany({ where: { userId: existing.id, roleId: { not: adminRole.id } } })
+        await tx.userRole.upsert({
+          where: { userId_roleId: { userId: existing.id, roleId: adminRole.id } },
+          update: {},
+          create: { userId: existing.id, roleId: adminRole.id },
+        })
+      })
+      console.log(`Superadmin elevated on startup: ${email}`)
+    }
+    if (!existing.passwordHash) {
+      const passwordHash = await bcrypt.hash(password, BCRYPT_ROUNDS)
+      await prisma.user.update({
+        where: { id: existing.id },
+        data: { passwordHash, mustChangePassword: false },
+      })
+    }
+  }
+
+  await prisma.careerOsAccess.upsert({
+    where: { userId: targetUserId },
+    update: {},
+    create: { userId: targetUserId, reason: "Super Admin Career OS entitlement" },
+  }).catch(() => undefined)
+}
+
 let server: ReturnType<typeof app.listen> | undefined
 
 async function start(): Promise<void> {
@@ -192,6 +256,10 @@ async function start(): Promise<void> {
   }
   if (state.status === "pending") {
     console.error("September compatibility listen. Migrations remain pending. Health stays unavailable.")
+  } else {
+    void ensureSuperadminOnStartup().catch((err) => {
+      console.warn("Superadmin startup check skipped:", redactSecrets(err instanceof Error ? err.message : String(err)))
+    })
   }
 
   server = app.listen(port, "0.0.0.0", () => {

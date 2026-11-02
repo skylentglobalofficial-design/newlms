@@ -88,7 +88,9 @@ export default function ProgramPage() {
   const maturity = comingLater ? "coming_later" as const : "listing" as const
   const enrolSummary = programmeAfterEnrolCopy({ maturity, linked })
   const authoredLinked = linked.filter((item) => item.authored)
-  const cta = comingLater
+  const cta = program.slug === "sql-certificate"
+    ? "Start SQL Track"
+    : comingLater
     ? "Coming later"
     : enrollable
       ? authoredLinked.length > 0 && authoredLinked.length === linked.length
@@ -122,7 +124,7 @@ export default function ProgramPage() {
           truth={truth}
           cta={cta}
           afterEnrol={afterEnrol}
-          onEnrol={openEnrol}
+          onEnrol={program.slug === "sql-certificate" ? () => { if (confirmed) setEnrollOpen(true) } : openEnrol}
           confirmed={confirmed}
         />
       ) : (
@@ -145,7 +147,7 @@ export default function ProgramPage() {
             title: program.name,
             price: lowestProgramPrice(program) ?? 0,
             enrollmentStatus: program.enrollmentStatus ?? undefined,
-            enrollable,
+            enrollable: enrollable || program.slug === "sql-certificate",
             linkedCourseSlugs: program.linkedCourseSlugs,
           }}
           onClose={() => setEnrollOpen(false)}

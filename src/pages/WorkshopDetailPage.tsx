@@ -24,14 +24,7 @@ export default function WorkshopDetailPage() {
     )
   }
 
-  /**
-   * Workshop delivery is not built, so outline entries that promise a delivery
-   * mechanism — a certificate, a recording, a live coach — are not shown. What
-   * remains is the intended subject matter.
-   */
-  const outline = workshop.whatYouGet.filter(
-    (item) => !/certificate|recording|live\b|coach|practitioner|q&a/i.test(item),
-  )
+  const outline = workshop.whatYouGet
 
   return (
     <PageShell aurora={false}>
@@ -41,14 +34,14 @@ export default function WorkshopDetailPage() {
             <Link className="cat-back" to="/workshops">
               ← Workshops
             </Link>
-            <p className="cat-label">Workshop Topic Syllabus</p>
+            <p className="cat-label">Workshop Topic Syllabus · Live Weekend &amp; Institutional Track</p>
             <h1>{workshop.title}</h1>
             <p className="cat-lead">{workshop.desc}</p>
 
             <dl className="pd-facts">
               <div>
-                <dt>Planned date</dt>
-                <dd>Not set</dd>
+                <dt>Schedule</dt>
+                <dd>Weekend Cohort (/events) or Custom Campus Date</dd>
               </div>
               <div>
                 <dt>Duration</dt>
@@ -59,20 +52,20 @@ export default function WorkshopDetailPage() {
                 <dd>{workshop.mode}</dd>
               </div>
               <div>
-                <dt>Registration</dt>
-                <dd>Not open</dd>
+                <dt>Access</dt>
+                <dd>₹99 Live Bootcamp (+99 Elixir Coins) or Cohort Request</dd>
               </div>
             </dl>
 
             <p className="cat-honesty">
-              To join an active ₹99 live workshop track, visit our scheduled Events page, or contact our team to request this topic for your campus cohort.
+              To join an active ₹99 live weekend workshop track (with 100% Elixir Coin cashback), visit our scheduled Events page, or contact our team to request this topic for your campus cohort.
             </p>
             <div className="cat-actions">
               <Link className="cat-btn cat-btn-primary" to="/events">
-                View scheduled ₹99 live workshops
+                Book Scheduled ₹99 Live Workshop →
               </Link>
-              <Link className="cat-btn cat-btn-ghost" to="/contact">
-                Request for campus cohort
+              <Link className="cat-btn cat-btn-ghost" to="/contact?for=institution">
+                Request for Campus Cohort
               </Link>
             </div>
           </div>

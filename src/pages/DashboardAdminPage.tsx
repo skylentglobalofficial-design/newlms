@@ -42,6 +42,8 @@ const NAV_ITEMS: AuthNavItem[] = [
   { id: 'courses', label: 'Lesson video', short: 'Video', sectionId: 'admin-courses' },
   { id: 'payments', label: 'Payments', short: 'Pay', sectionId: 'admin-payments' },
   { id: 'system', label: 'System', short: 'System', sectionId: 'admin-system' },
+  { id: 'curriculum', label: 'Course Builder', short: 'Builder', href: '/dashboard/curriculum' },
+  { id: 'student-view', label: 'Learner View', short: 'Learner', href: '/dashboard/student' },
 ]
 
 const accent = getRoleAccent('superadmin')
@@ -69,8 +71,14 @@ function AdminOverview() {
       <div style={{ position: 'relative', zIndex: 1, padding: 'clamp(24px, 3.5vw, 36px)' }}>
         <h1 className="skylent-display-sm" style={{ color: C.ink, margin: '0 0 8px' }}>Platform overview</h1>
         <p style={{ color: C.slate, fontSize: 14, lineHeight: 1.6, margin: 0, maxWidth: 640 }}>
-          Platform metrics appear here only when backed by connected admin APIs.
+          Manage users, organisations, employers, practice labs, and Elixir unit economics, or jump directly into any workspace below.
         </p>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, marginTop: 16 }}>
+          <a href="/dashboard/curriculum" className="os-btn os-btn-primary" style={{ textDecoration: 'none' }}>Open Course Builder →</a>
+          <a href="/dashboard/student" className="os-btn os-btn-ghost" style={{ textDecoration: 'none' }}>Open Learner Dashboard</a>
+          <a href="/os/labs/data-analytics/northwind" className="os-btn os-btn-ghost" style={{ textDecoration: 'none' }}>Open Northwind SQL Lab</a>
+          <a href="/career-os" className="os-btn os-btn-ghost" style={{ textDecoration: 'none' }}>Open Career OS</a>
+        </div>
       </div>
     </GlassSurface>
   )

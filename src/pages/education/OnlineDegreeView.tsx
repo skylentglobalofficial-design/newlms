@@ -336,11 +336,11 @@ export default function OnlineDegreeView({ degree }: { degree: Degree }) {
                   <span>Timed checkpoint preview</span>
                 </div>
                 <div className="dg-exam__progress">
-                  <span>Placeholder question</span>
+                  <span>Module check · 2 of 5</span>
                 </div>
               </div>
               <div className="dg-exam__body">
-                <div className="sky-label">Question 2 · Placeholder</div>
+                <div className="sky-label">Question 2 · Commercial Margin Analysis</div>
                 <p className="dg-exam__q">The question set by the institution appears here.</p>
                 <ul className="dg-exam__opts" aria-label="Answer options">
                   {["A", "B", "C", "D"].map((letter) => (

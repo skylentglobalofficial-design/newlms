@@ -218,9 +218,12 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
   const courseUnconfirmed = !course.loading && (course.offline || Boolean(course.error))
   const verified = confirmed && !courseUnconfirmed
   const canEnrol = verified && truth.enrollable && !truth.comingLater
+  const canStartTrack = canEnrol || (verified && program.slug === "sql-certificate")
 
   const enrolChip = !verified ? (
     <TruthChip state="development" label={STATUS_NOT_CONFIRMED} />
+  ) : program.slug === "sql-certificate" ? (
+    <TruthChip state="live" label="Open via SQL Lab" />
   ) : truth.comingLater ? (
     <TruthChip state="soon" label={truth.enrolment || "Coming soon"} />
   ) : truth.enrollable ? (
@@ -258,14 +261,14 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
           : "Harbor Desk is an applied operations case study. You conduct user research, frame the operational problem, and write a constrained product specification."
   const trackMeta = TRACK_ROLE_METADATA[program.slug] ?? TRACK_ROLE_METADATA[content.courseSlug] ?? TRACK_ROLE_METADATA["data-analytics"]
 
-  const primaryAction = canEnrol ? (
+  const primaryAction = canStartTrack ? (
     <button type="button" className="sk-btn sk-btn-primary" onClick={onEnrol}>
       {cta}
       <ArrowRight />
     </button>
   ) : null
 
-  const closingLine = canEnrol
+  const closingLine = canStartTrack
     ? content.closing.line
     : !verified
       ? `${STATUS_NOT_CONFIRMED}. Enrolment is paused until the catalogue can be checked.`
