@@ -318,18 +318,13 @@ export function TrackWorkbenchOverlay({ slug }: { slug: string }) {
   return (
     <span
       style={{
-        position: "absolute",
-        inset: "auto 10px 10px 10px",
-        padding: "8px 10px",
-        borderRadius: 8,
-        background: "rgba(15, 23, 42, 0.88)",
-        backdropFilter: "blur(6px)",
-        border: "1px solid rgba(255, 255, 255, 0.16)",
-        color: "#f8fafc",
         display: "flex",
         flexDirection: "column",
-        gap: 3,
-        boxShadow: "0 8px 20px rgba(2, 6, 23, 0.35)",
+        gap: 2,
+        padding: "8px 14px",
+        background: "#0f172a",
+        borderTop: "1px solid rgba(255, 255, 255, 0.12)",
+        color: "#f8fafc",
       }}
     >
       <span

@@ -103,8 +103,8 @@ export function HomeHero({
           </p>
           <h1 id="hx-hero-title" className="hxw-hero__title hx-rise">
             Don’t just watch lectures. <em>Ship real work.</em>
-            <span className="hx-sr">Learn. Practise. Build. <em>Prove it.</em></span>
           </h1>
+          <span className="hx-sr" style={{ display: "none" }}>Learn. Practise. Build. <em>Prove it.</em></span>
           <p className="hxw-hero__lead hx-rise">
             Execute live SQL queries, Python ETL pipelines, Product PRDs, and Grounded RAG systems in your browser—and graduate with a cryptographic Proof-of-Work dossier recruiters can verify in one click.
           </p>
@@ -174,29 +174,28 @@ export function HomeHero({
             </div>
             <div
               style={{
-                position: "absolute",
-                top: 16,
-                left: 16,
-                padding: "10px 14px",
-                borderRadius: 12,
-                background: "rgba(15, 23, 42, 0.9)",
-                backdropFilter: "blur(8px)",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                gap: 12,
+                padding: "12px 16px",
+                borderRadius: 14,
+                background: "linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)",
                 border: "1px solid rgba(251, 191, 36, 0.45)",
                 color: "#f8fafc",
-                boxShadow: "0 12px 28px rgba(2, 6, 23, 0.32)",
-                maxWidth: 260,
-                zIndex: 2,
               }}
               aria-hidden="true"
             >
-              <span style={{ display: "block", fontSize: 10, fontWeight: 700, color: "#fbbf24", letterSpacing: "0.08em", textTransform: "uppercase" }}>
-                ✓ Cryptographic Proof-of-Work
-              </span>
-              <strong style={{ display: "block", fontSize: 12.5, marginTop: 2, color: "#ffffff" }}>
-                SKL-2026-DA · 96/100 Rubric Passed
-              </strong>
-              <span style={{ display: "block", fontSize: 11, color: "#cbd5e1", marginTop: 2 }}>
-                Northwind SQL Audit + Executive Memo
+              <div>
+                <span style={{ display: "block", fontSize: 10, fontWeight: 700, color: "#fbbf24", letterSpacing: "0.08em", textTransform: "uppercase" }}>
+                  ✓ Cryptographic Proof-of-Work Dossier
+                </span>
+                <strong style={{ display: "block", fontSize: 13, marginTop: 2, color: "#ffffff" }}>
+                  SKL-2026-DA · 96/100 Rubric Passed
+                </strong>
+              </div>
+              <span style={{ fontSize: 11, fontWeight: 700, color: "#34d399", background: "rgba(16,185,129,0.16)", padding: "4px 10px", borderRadius: 999, whiteSpace: "nowrap" }}>
+                Verified at /verify
               </span>
             </div>
             <div className="hxw-ws" aria-label="Skylent OS workspace summary">
@@ -1101,8 +1100,8 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
                     <span className="hx-live-course-card__media" style={{ position: "relative" }}>
                       <img src={item.img} alt={item.alt} width={800} height={530} loading="lazy" decoding="async" />
                       <span className="hx-live-course-card__badge">{item.status}</span>
-                      <TrackWorkbenchOverlay slug={item.slug} />
                     </span>
+                    <TrackWorkbenchOverlay slug={item.slug} />
                     <span className="hx-live-course-card__body">
                       <span className="hx-live-course-card__cat">{item.category}</span>
                       <strong className="hx-live-course-card__title">{item.title}</strong>

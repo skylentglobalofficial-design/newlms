@@ -166,8 +166,8 @@ function ProgrammeCard({ row, confirmed }: { row: Row; confirmed: boolean }) {
       <span className="pgx-card__media" style={{ position: "relative" }}>
         {row.image ? <img src={row.image} alt={row.alt} /> : <span className="pgx-card__fallback" aria-hidden="true" />}
         {showStatus ? <span className={live ? "pgx-status pgx-status--open" : "pgx-status"}>{status}</span> : null}
-        {roleMeta ? <TrackWorkbenchOverlay slug={row.program.slug} /> : null}
       </span>
+      {roleMeta ? <TrackWorkbenchOverlay slug={row.program.slug} /> : null}
       <span className="pgx-card__body">
         <span style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
           <span className="pgx-card__kicker">{row.category}</span>
