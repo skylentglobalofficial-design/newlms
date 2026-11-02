@@ -177,8 +177,33 @@ function Chevron() {
 export default function ProfessionalProgrammeTemplate({ program, content, truth, cta, afterEnrol, onEnrol, confirmed = true }: Props) {
   const course = useCatalogCourse(content.courseSlug)
   const authoredCourse = courseBySlug(content.courseSlug)
-  const taught = authoredCourse ? courseLessonStats(authoredCourse) : null
-  const curriculum = authoredCourse ? authoredCourseCurriculum(authoredCourse) : (course.data?.curriculum ?? [])
+  const linkedAuthoredCourses = (program.linkedCourseSlugs ?? [])
+    .map((slug) => courseBySlug(slug))
+    .filter((c): c is NonNullable<ReturnType<typeof courseBySlug>> => Boolean(c))
+  const effectiveCourses = linkedAuthoredCourses.length > 1 ? linkedAuthoredCourses : authoredCourse ? [authoredCourse] : []
+  const taught = effectiveCourses.length > 0
+    ? effectiveCourses.reduce(
+        (acc, c) => {
+          const s = courseLessonStats(c)
+          return {
+            moduleCount: acc.moduleCount + s.moduleCount,
+            lessonCount: acc.lessonCount + s.lessonCount,
+            quizCount: acc.quizCount + s.quizCount,
+            assignmentCount: acc.assignmentCount + s.assignmentCount,
+          }
+        },
+        { moduleCount: 0, lessonCount: 0, quizCount: 0, assignmentCount: 0 },
+      )
+    : null
+  const curriculum = effectiveCourses.length > 0
+    ? effectiveCourses.flatMap((c, courseIdx) =>
+        authoredCourseCurriculum(c).map((mod, modIdx) => ({
+          ...mod,
+          sourceId: effectiveCourses.length > 1 ? `${c.slug}-${mod.sourceId ?? modIdx}` : mod.sourceId,
+          title: effectiveCourses.length > 1 ? `${c.title}: ${mod.title}` : mod.title,
+        })),
+      )
+    : (course.data?.curriculum ?? [])
   const courseReady = taught != null || (!course.loading && !course.error && course.data != null)
   const courseTitle = course.data?.title || authoredCourse?.title || program.name
   const profile = courseProductProfile(content.courseSlug)
@@ -289,23 +314,19 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
               <a className="sk-btn sk-btn-secondary" href="#pp-curriculum">
                 View curriculum
               </a>
-              <SyllabusDownloadButton courseSlug={content.courseSlug} title={courseTitle} />
             </div>
             <p className="pp-note">
               {!verified
                 ? `${confirmed && courseUnconfirmed ? `${STATUS_NOT_CONFIRMED}. Enrolment is paused until the catalogue can be checked. ` : ""}${afterEnrol}`
-                : `Instant access in Skylent OS · Includes ${moduleCount} modules, ${lessonCount} structured lessons, interactive lab workspace, and graded capstone (+50 Elixir bonus).`}
+                : `Instant access in Skylent OS · ${moduleCount} modules, ${lessonCount} structured lessons, live browser lab, and graded capstone.`}
             </p>
-            <p className="pp-note">{practiceCopy}</p>
           </div>
         </div>
         <SpecSheet
           className="pp-rail cine-in cine-in--fade cine-d4"
           rows={[
             { label: "Enrolment", value: enrolChip },
-            { label: "Target roles", value: trackMeta.roles },
-            { label: "Format & pace", value: `${facts.format} · ${trackMeta.pace}` },
-            { label: "Core stack", value: <ToolStackPills tools={trackMeta.tools} /> },
+            { label: "Format & role", value: `${facts.format} · ${trackMeta.roles.split(" · ")[0]}` },
             { label: "You start with", value: startsWith },
           ]}
         />
@@ -644,12 +665,7 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
               </tbody>
             </table>
           </div>
-          <ShareableCredentialPreviewCard
-            courseTitle={courseTitle}
-            capstoneTitle={content.capstoneTitle}
-            skills={content.evidence.record.skills}
-            codeExample={`SKL-2026-${program.slug.slice(0, 3).toUpperCase()}-PGM`}
-          />
+
           </Reveal>
 
           <Reveal>

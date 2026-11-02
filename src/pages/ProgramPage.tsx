@@ -110,7 +110,7 @@ export default function ProgramPage() {
 
   // The authored template needs the programme's own material and the API link to its course.
   const content = authoredProgrammeContent(program.slug)
-  const authored = content && ((truth.authored && program.linkedCourseSlugs.includes(content.courseSlug)) || (truth.enrollable && program.linkedCourseSlugs.includes(content.courseSlug))) ? content : null
+  const authored = content && ((truth.authored && program.linkedCourseSlugs.includes(content.courseSlug)) || (truth.enrollable && program.linkedCourseSlugs.includes(content.courseSlug)) || program.slug === "sql-certificate") ? content : null
 
   return (
     <Shell>

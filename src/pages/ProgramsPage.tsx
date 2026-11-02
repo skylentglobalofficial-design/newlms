@@ -1,5 +1,5 @@
 /**
- * /programmes — unified 3x2 photo-card catalogue index with visual presentation hero.
+ * /programmes — clean 3x2 catalogue index.
  *
  * Rows come from GET /catalog/programs (or the published list when that request fails,
  * see useCatalogPrograms). Readiness uses programmeTruth, the same helper as the programme page.
@@ -9,7 +9,6 @@ import { useEffect, useMemo, useState } from "react"
 import { Link, useSearchParams } from "react-router-dom"
 import { PageShell } from "../components/shared"
 import { ArrowRight } from "../components/skylent/primitives"
-import { BrandTrustRibbon, CertificateTrophyShowcase, FacultyTaShowcaseStrip, RoleOutcomeStrip, TRACK_ROLE_METADATA, TargetRolesBadge, ToolStackPills, TrackWorkbenchStrip } from "../components/skylent/EdTechVisuals"
 import { authoredProgrammeContent } from "../components/programme/programme-content"
 import { programmeTruth, type ProgrammeTruth } from "../components/programme/programme-truth"
 import { programs as publishedProgrammes } from "../data"
@@ -25,7 +24,6 @@ import scienceVisual from "@/assets/site/degree-computing.jpg"
 import webVisual from "@/assets/site/program-web.jpg"
 import aiVisual from "@/assets/site/program-ai.jpg"
 import sqlVisual from "@/assets/site/program-library.jpg"
-import heroClassroomVisual from "@/assets/site/home/hero-classroom-960.webp"
 import "./ProgramsIndex.css"
 
 type Kind = "certification" | "professional"
@@ -34,13 +32,12 @@ type Row = {
   truth: ProgrammeTruth
   kind: Kind
   title: string
+  role: string
   line: string
   category: string
   image: string
   alt: string
-  lab: string
   meta: string
-  skills: string[]
   search: string
 }
 
@@ -57,94 +54,87 @@ const CARD_FACE: Record<
   string,
   {
     title: string
+    role: string
     line: string
     category: string
     image: string
     alt: string
-    lab: string
     meta: string
-    skills: string[]
   }
 > = {
   "data-analytics-pro": {
     title: "Data Analytics",
-    line: "Audit 166 Northwind retail rows, write SQL joins and CTEs, and defend a Q3 commercial margin review.",
-    category: "Data",
+    role: "For future Data & Business Analysts",
+    line: "Go from cleaning raw spreadsheets to writing real SQL queries and defending a commercial revenue review.",
+    category: "Data & SQL",
     image: analyticsVisual,
     alt: "Analytics charts and notebook on a desk.",
-    lab: "Northwind SQL Lab · 166 Rows",
-    meta: "5 modules · 15 lessons · 3 quizzes · 1 capstone",
-    skills: ["SQL & CTEs", "Northwind Lab", "Margin Audit"],
+    meta: "5 modules · 15 lessons · 1 graded capstone",
   },
   "product-management": {
     title: "Product Management",
-    line: "Diagnose 9 weekend store exceptions on the Harbor Desk case and ship a 6-week engineering-constrained PRD.",
-    category: "Product",
+    role: "For future Product Managers & APMs",
+    line: "Learn how to interview users, isolate operational bottlenecks, and write a clear 6-week engineering spec.",
+    category: "Product Strategy",
     image: productVisual,
     alt: "Product working session around a table.",
-    lab: "Harbor Desk Studio · 18 Interviews",
-    meta: "5 modules · 15 lessons · 3 quizzes · 1 capstone",
-    skills: ["PRD Scoping", "Harbor Desk Case", "Triage Specs"],
+    meta: "5 modules · 15 lessons · 1 graded capstone",
   },
   "data-science-ai": {
     title: "Data Science & AI",
-    line: "Dual-track pathway combining Data Analytics (SQL & cohorts) and Python Programming & Automation (ETL & pytest).",
-    category: "Data",
+    role: "For future Data Scientists & Analytics Engineers",
+    line: "Master both SQL revenue analysis and Python automation pipelines to build and validate customer retention models.",
+    category: "SQL + Python Dual Track",
     image: scienceVisual,
     alt: "Data science code and cohort analysis on screens.",
-    lab: "SQL + Python Dual Track · 30 Lessons",
-    meta: "10 modules · 30 lessons · 6 quizzes · 2 capstones",
-    skills: ["SQL & Python", "Cohort Validation", "Leakage Audit"],
+    meta: "10 modules · 30 lessons · 2 capstones",
   },
   "full-stack": {
     title: "Full Stack Development",
-    line: "Build type-safe React 18 interfaces, Node/Express APIs, PostgreSQL schemas, and idempotent payment ledgers.",
-    category: "Engineering",
+    role: "For future Full-Stack & Backend Engineers",
+    line: "Build complete web applications from scratch using React, TypeScript, Node/Express APIs, and PostgreSQL databases.",
+    category: "Web Engineering",
     image: webVisual,
     alt: "Full-stack engineering workspace on a laptop.",
-    lab: "React, Node & PostgreSQL Stack",
-    meta: "5 modules · 15 lessons · 3 quizzes · 1 capstone",
-    skills: ["React & TS", "Node & Express", "PostgreSQL"],
+    meta: "5 modules · 15 lessons · 1 graded capstone",
   },
   "generative-ai-program": {
     title: "Generative AI",
-    line: "Architect grounded RAG pipelines, vector retrieval, ReAct tool agents, and adversarial LLM evaluation suites.",
-    category: "AI",
+    role: "For future AI & LLM Engineers",
+    line: "Build reliable AI assistants that search real company documents, cite their sources, and refuse to hallucinate.",
+    category: "Applied AI Systems",
     image: aiVisual,
     alt: "Generative AI system architecture and evaluation studio.",
-    lab: "Grounded RAG · LLM Eval Suite",
-    meta: "5 modules · 15 lessons · 3 quizzes · 1 capstone",
-    skills: ["Prompt Systems", "Grounded RAG", "ReAct Agents"],
+    meta: "5 modules · 15 lessons · 1 graded capstone",
   },
   "sql-certificate": {
     title: "SQL for Business Analytics",
-    line: "Write defensible multi-table SQL joins, CTEs, window functions, and category revenue audits on retail order data.",
-    category: "SQL",
+    role: "Focused single-skill SQL track",
+    line: "Learn to filter, join, and aggregate multi-table retail data directly in the browser SQL workbench.",
+    category: "SQL Foundation",
     image: sqlVisual,
     alt: "SQL query and analytics workspace.",
-    lab: "Northwind SQL Query Workbench",
-    meta: "5 SQL modules · 15 lessons · Live SQL practice",
-    skills: ["Joins & CTEs", "Window Functions", "Data Hygiene"],
+    meta: "5 modules · 15 lessons · Live SQL lab",
   },
 }
 
 const KIND_COPY: Record<Kind, { title: string; lead: string; label: string }> = {
   certification: {
     title: "Certification programmes",
-    lead: "Focused single-skill syllabus tracks backed by Skylent OS labs.",
+    lead: "Focused single-skill tracks backed by in-browser practice.",
     label: "Certification",
   },
   professional: {
     title: "Professional programmes",
-    lead: "Structured programmes combining interactive lessons, live sandboxes, and a graded capstone.",
+    lead: "Step-by-step career tracks combining lessons, live labs, and a final capstone project you can show employers.",
     label: "Professional",
   },
 }
 
 const LEARNING_STEPS = [
-  { title: "Learn", text: "Concise written lessons with concept checks." },
-  { title: "Practise", text: "In-browser SQL, Python, and product case sandboxes." },
-  { title: "Prove it", text: "Graded capstone and verifiable Career OS dossier." },
+  { title: "1. Understand the concept", text: "Short, clear written lessons that explain the 'why' in plain language before you write a single line of code or spec." },
+  { title: "2. Practise in your browser", text: "Run real SQL queries, Python scripts, or product case decisions right inside Skylent OS — with Socratic AI and human TA support." },
+  { title: "3. Build proof you keep", text: "Graduate with a graded capstone project and a verifiable credential link (/verify) that shows employers exactly what you built." },
 ] as const
 
 function kindOf(program: CatalogProgramSummary): Kind | null {
@@ -167,26 +157,24 @@ function toRow(program: CatalogProgramSummary): Row | null {
   const content = truth.state === "live" ? authoredProgrammeContent(program.slug) : null
   const discovery = content ? programmeDiscoveryFor(program.slug) : null
   const title = face?.title || discovery?.courseTitle || program.name
-  const line = face?.line || content?.cardLine || program.desc || "Interactive lessons, sandbox labs, and graded capstone work."
+  const role = face?.role || "Structured skill pathway"
+  const line = face?.line || content?.cardLine || program.desc || "Interactive lessons, browser labs, and graded project work."
   const category = face?.category || KIND_COPY[kind].label
   const image = face?.image || analyticsVisual
   const alt = face?.alt || `${title} workspace preview`
-  const lab = face?.lab || "Skylent OS Interactive Workspace"
-  const meta = face?.meta || "5 modules · 15 lessons · 3 quizzes · 1 capstone"
-  const skills = face?.skills || ["Written Lessons", "Sandbox Lab", "Capstone"]
+  const meta = face?.meta || "5 modules · 15 lessons · 1 capstone"
   return {
     program,
     truth,
     kind,
     title,
+    role,
     line,
     category,
     image,
     alt,
-    lab,
     meta,
-    skills,
-    search: `${title} ${program.name} ${line} ${category} ${lab} ${skills.join(" ")} ${outcomeFor(program.slug)}`.toLowerCase(),
+    search: `${title} ${program.name} ${role} ${line} ${category} ${outcomeFor(program.slug)}`.toLowerCase(),
   }
 }
 
@@ -219,29 +207,27 @@ function ProgrammeCard({ row, confirmed }: { row: Row; confirmed: boolean }) {
             </span>
           ) : null}
         </span>
-        <TrackWorkbenchStrip slug={row.program.slug} />
         <span className="pgx-card__body">
-          <span style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-            <span className="pgx-card__kicker">{row.category}</span>
-            <span style={{ fontSize: 11, fontWeight: 700, color: "#4338ca", background: "#eef2ff", padding: "2px 9px", borderRadius: 999 }}>
-              {row.lab}
-            </span>
+          <span className="pgx-card__kicker">
+            {row.category} · <span style={{ textTransform: "none", fontWeight: 500, color: "#64748b" }}>{row.role}</span>
           </span>
           <span className="pgx-card__title">{row.title}</span>
-          <span style={{ fontSize: 12.5, fontWeight: 600, color: "#475569" }}>{row.meta}</span>
           <span className="pgx-card__line">{row.line}</span>
-          <TargetRolesBadge slug={row.program.slug} />
-          {TRACK_ROLE_METADATA[row.program.slug] ? (
-            <ToolStackPills tools={TRACK_ROLE_METADATA[row.program.slug].tools} />
-          ) : (
-            <span className="pgx-skill-tags">
-              {row.skills.map((skill) => (
-                <span key={skill} className="pgx-skill-tag">{skill}</span>
-              ))}
+          <span
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              gap: 8,
+              marginTop: "auto",
+              paddingTop: 14,
+              borderTop: "1px solid #f1f5f9",
+            }}
+          >
+            <span style={{ fontSize: 12.5, fontWeight: 600, color: "#475569" }}>{row.meta}</span>
+            <span className="pgx-card__go" style={{ marginTop: 0, paddingTop: 0 }}>
+              View path <ArrowRight />
             </span>
-          )}
-          <span className="pgx-card__go">
-            Explore programme <ArrowRight />
           </span>
         </span>
       </Link>
@@ -309,53 +295,25 @@ export default function ProgramsPage() {
     <PageShell aurora={false}>
       <div className="site-light pgx">
         <section className="pgx-intro" aria-labelledby="pgx-title">
-          <div className="sky-container pgx-intro__split">
-            <div className="pgx-intro__inner">
-              <p className="pgx-eyebrow">Skylent programmes</p>
-              <h1 id="pgx-title">Find the right programme for your next step.</h1>
-              <p className="pgx-lede">{intro}</p>
-              <RoleOutcomeStrip roles={["Data Analyst", "Product Manager", "Python Engineer", "Applied AI Engineer", "Full-Stack Developer"]} />
-            </div>
-            <div className="pgx-intro__visual" aria-label="Skylent OS live workspace preview">
-              <div className="pgx-intro__photo-wrap">
-                <img
-                  src={heroClassroomVisual}
-                  alt="Learners collaborating on practical case studies and SQL labs"
-                  width={960}
-                  height={640}
-                  decoding="async"
-                />
-                <div className="pgx-intro__hud">
-                  <div className="pgx-intro__hud-top">
-                    <span className="pgx-intro__hud-badge">SKYLENT OS · LIVE WORKBENCH</span>
-                    <span className="pgx-intro__hud-status">6 Tracks Open</span>
-                  </div>
-                  <div className="pgx-intro__hud-grid">
-                    <div>
-                      <strong>Northwind SQL Lab</strong>
-                      <span>166 validated retail order rows</span>
-                    </div>
-                    <div>
-                      <strong>Harbor Desk Studio</strong>
-                      <span>18 interviews · 6-week PRD scope</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div className="sky-container pgx-intro__inner">
+            <p className="pgx-eyebrow">Skylent programmes</p>
+            <h1 id="pgx-title">Choose the skill you want to build and prove.</h1>
+            <p className="pgx-lede">
+              Every programme takes you from first principles to a real capstone project inside your browser — no prior job experience or local setup required.
+            </p>
+            <p className="pgx-sr">{intro}</p>
           </div>
         </section>
 
         <section className="pgx-tools" aria-label="Search and filters">
           <div className="sky-container">
-            <BrandTrustRibbon compact />
             <label className="pgx-search">
               <span className="pgx-sr">Search programmes</span>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
                 <circle cx="11" cy="11" r="7" />
                 <line x1="20" y1="20" x2="16.5" y2="16.5" />
               </svg>
-              <input id="programme-search" type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search by skill, tool, or track (e.g. SQL, Product, Python, RAG)..." />
+              <input id="programme-search" type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search by role or skill (e.g. Data Analyst, SQL, Product, Python, AI)..." />
             </label>
             <div className="pgx-filters">
               <div className="pgx-filter">
@@ -424,14 +382,13 @@ export default function ProgramsPage() {
                 <div className="sky-container">
                   <header className="pgx-section__head">
                     <div>
-                      <p className="pgx-eyebrow">All 6 Flagship Tracks</p>
                       <h2 id="pgx-professional">
                         {confirmed ? "Open now" : "Availability could not be confirmed"}
                       </h2>
                     </div>
                     <p>
                       {confirmed
-                        ? "Select any programme below to open its interactive workbench, 5-module syllabus, and capstone studio."
+                        ? "Open any track to see the exact step-by-step projects you will build and the full module syllabus."
                         : AVAILABILITY_UNKNOWN}
                     </p>
                   </header>
@@ -440,8 +397,6 @@ export default function ProgramsPage() {
                       <ProgrammeCard key={row.program.slug} row={row} confirmed={!catalog.offline} />
                     ))}
                   </ul>
-                  <CertificateTrophyShowcase />
-                  <FacultyTaShowcaseStrip />
                 </div>
               </section>
             )}
@@ -451,8 +406,8 @@ export default function ProgramsPage() {
         <section className="pgx-how" aria-labelledby="pgx-how-title">
           <div className="sky-container">
             <header className="pgx-section__head">
-              <h2 id="pgx-how-title">How learning works</h2>
-              <p>Every track moves from concept reading to in-browser lab execution and a verifiable portfolio artifact.</p>
+              <h2 id="pgx-how-title">How you go from beginner to job-ready</h2>
+              <p>You do not need prior work experience. Every programme builds your capability in three clear stages.</p>
             </header>
             <ol className="pgx-steps">
               {LEARNING_STEPS.map((step, index) => (
@@ -469,11 +424,11 @@ export default function ProgramsPage() {
         <section className="pgx-close" aria-labelledby="pgx-close-title">
           <div className="sky-container pgx-close__inner">
             <div>
-              <h2 id="pgx-close-title">Not sure where to begin?</h2>
-              <p>Take the 90-second skill check to match your current SQL, Python, or Product level to the right starting module.</p>
+              <h2 id="pgx-close-title">Not sure which track fits you best?</h2>
+              <p>Answer 3 quick questions in our 90-second path finder to see which programme matches your background and goal.</p>
             </div>
             <Link className="sk-btn sk-btn-primary" to="/path">
-              Find My Path
+              Find My Path in 90 Seconds
               <ArrowRight />
             </Link>
           </div>

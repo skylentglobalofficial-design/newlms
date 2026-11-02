@@ -361,12 +361,7 @@ export default function CourseDetailPage() {
                 : "These are the planned modules. Lessons are added as they are ready."}
             </p>
             <ModuleLane modules={modules} />
-            {showLiveCurriculum ? (
-              <>
-                <FacultyTaShowcaseStrip />
-                <CertificateTrophyShowcase />
-              </>
-            ) : null}
+
           </div>
         </section>
 

@@ -112,36 +112,7 @@ export function HomeHero({
             Execute live SQL queries, Python ETL pipelines, Product PRDs, and Grounded RAG systems in your browser—and graduate with a cryptographic Proof-of-Work dossier recruiters can verify in one click.
           </p>
           <p className="hx-sr" aria-live="polite">{availability}</p>
-          <div
-            className="hx-rise"
-            style={{
-              display: "flex",
-              flexWrap: "wrap",
-              gap: 8,
-              margin: "12px 0 18px",
-            }}
-          >
-            {[
-              "6 Authored Tracks · 90 Interactive Lessons",
-              "In-Browser SQL, Python & Case Studios",
-              "Cryptographic Dossier (/verify) + 20-Min TA SLA",
-            ].map((pill) => (
-              <span
-                key={pill}
-                style={{
-                  fontSize: 12.5,
-                  fontWeight: 600,
-                  padding: "6px 12px",
-                  borderRadius: 8,
-                  background: "#f8fafc",
-                  border: "1px solid #cbd5e1",
-                  color: "#0f172a",
-                }}
-              >
-                ✓ {pill}
-              </span>
-            ))}
-          </div>
+
           <div className="hxw-hero__actions hx-rise">
             <Link className="sk-btn sk-btn-primary hx-btn" to="/programmes">
               Explore programmes
@@ -175,32 +146,7 @@ export function HomeHero({
                 fetchPriority="high"
               />
             </div>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                gap: 12,
-                padding: "12px 16px",
-                borderRadius: 14,
-                background: "linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)",
-                border: "1px solid rgba(251, 191, 36, 0.45)",
-                color: "#f8fafc",
-              }}
-              aria-hidden="true"
-            >
-              <div>
-                <span style={{ display: "block", fontSize: 10, fontWeight: 700, color: "#fbbf24", letterSpacing: "0.08em", textTransform: "uppercase" }}>
-                  ✓ Cryptographic Proof-of-Work Dossier
-                </span>
-                <strong style={{ display: "block", fontSize: 13, marginTop: 2, color: "#ffffff" }}>
-                  SKL-2026-DA · 96/100 Rubric Passed
-                </strong>
-              </div>
-              <span style={{ fontSize: 11, fontWeight: 700, color: "#34d399", background: "rgba(16,185,129,0.16)", padding: "4px 10px", borderRadius: 999, whiteSpace: "nowrap" }}>
-                Verified at /verify
-              </span>
-            </div>
+
             <div className="hxw-ws" aria-label="Skylent OS workspace summary">
               <div className="hxw-ws__top">
                 <span className="hxw-ws__mark" aria-hidden="true">OS</span>
@@ -1100,21 +1046,18 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
               ].map((item) => (
                 <li key={item.slug}>
                   <Link to={item.to} className="hx-live-course-card">
-                    <span className="hx-live-course-card__media" style={{ position: "relative" }}>
+                    <span className="hx-live-course-card__media">
                       <img src={item.img} alt={item.alt} width={800} height={530} loading="lazy" decoding="async" />
                       <span className="hx-live-course-card__badge">{item.status}</span>
                     </span>
-                    <TrackWorkbenchOverlay slug={item.slug} />
                     <span className="hx-live-course-card__body">
                       <span className="hx-live-course-card__cat">{item.category}</span>
                       <strong className="hx-live-course-card__title">{item.title}</strong>
                       <span className="hx-live-course-card__desc">{item.desc}</span>
-                      <TargetRolesBadge slug={item.slug} />
-                      <ToolStackPills tools={(TRACK_ROLE_METADATA[item.slug] ?? TRACK_ROLE_METADATA["data-analytics"]).tools} />
-                      <span className="hx-live-course-card__foot" style={{ marginTop: 10 }}>
+                      <span className="hx-live-course-card__foot">
                         <span className="hx-live-course-card__meta">{item.meta}</span>
                         <span className="hx-live-course-card__cta">
-                          Explore track <ArrowRight />
+                          View path <ArrowRight />
                         </span>
                       </span>
                     </span>
@@ -1122,9 +1065,7 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
                 </li>
               ))}
             </ul>
-            <BrandTrustRibbon />
-            <CertificateTrophyShowcase />
-            <FacultyTaShowcaseStrip />
+
             <div className="hx-sr" aria-hidden="true" style={{ display: "none" }}>
               <ProgrammeGroup
                 title="Open now"
