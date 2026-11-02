@@ -513,12 +513,9 @@ export function SyllabusDownloadButton({
         (m, i) =>
           `## Module 0${i + 1}: ${m.title}
 ` +
-          m.lessons.map((l, j) => `  ${i + 1}.${j + 1} ${l.title} (${l.type.toUpperCase()} · ${l.duration})`).join("
-")
+          m.lessons.map((l, j) => `  ${i + 1}.${j + 1} ${l.title} (${l.type.toUpperCase()} · ${l.duration})`).join("\n")
       )
-      .join("
-
-")
+      .join("\n\n")
 
     const docText = `# SKYLENT (skylent.live) — OFFICIAL CURRICULUM & CAPSTONE SPECIFICATION
 Track: ${displayTitle}
@@ -530,8 +527,7 @@ Support SLA: Socratic AI Coach + 20-Minute Human Faculty TA Escalation
 ${course.desc}
 
 ## Learning Outcomes
-${course.outcomes.map((o) => `- ${o}`).join("
-")}
+${course.outcomes.map((o) => `- ${o}`).join("\n")}
 
 ## Complete 5-Module, 15-Lesson Syllabus
 ${modulesMd}
