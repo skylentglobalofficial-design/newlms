@@ -31,19 +31,22 @@ export default function WorkshopsPage() {
         </div>
         <section className="cat-hero">
           <div className="cat-rail">
-            <p className="cat-label">Focused Skill Sessions · Live Weekend Bootcamps on /events</p>
+            <p className="cat-label">Workshops &amp; Topic Intensives</p>
             <h1 className="cat-h1--display">
-              Focused single-topic workshop outlines.
+              Focused single-skill topic briefs and campus sessions.
             </h1>
             <p className="cat-lead">
-              Browse our single-topic workshop curriculum below. Looking to book a scheduled weekend live session with 99 Elixir Coins (100% learning credit)? Open the live events calendar.
+              Looking for our live scheduled ₹99 sessions with 100% Elixir Coin Back? Visit the Events &amp; Webinars calendar. The topic catalogue below lists additional standalone workshop syllabi available for institutional cohorts and upcoming calendar drops.
+            </p>
+            <p className="cat-honesty">
+              For scheduled ₹99 live workshops, open the Events tab above. Individual topic briefs below are listed for syllabus inspection and institutional scheduling.
             </p>
             <div className="cat-actions">
               <Link className="cat-btn cat-btn-primary" to="/events">
-                Book Scheduled ₹99 Live Bootcamps →
+                Explore ₹99 Live Workshop Tracks (100% Elixir Coin Back)
               </Link>
-              <Link className="cat-btn cat-btn-ghost" to="/programmes">
-                Browse programmes
+              <Link className="cat-btn cat-btn-ghost" to="/programmes#live-courses">
+                Browse 6 live courses
               </Link>
             </div>
           </div>
@@ -52,7 +55,7 @@ export default function WorkshopsPage() {
         <section className="cat-section" aria-labelledby="ws-list-title">
           <div className="cat-rail">
             <h2 id="ws-list-title">
-              {filtered.length} workshop topic{filtered.length === 1 ? "" : "s"}
+              {filtered.length} workshop topic syllabus{filtered.length === 1 ? "" : "es"}
             </h2>
             <div
               className="cat-filters"
@@ -103,14 +106,14 @@ export default function WorkshopsPage() {
                       </span>
                       <span className="ws-meta">{workshop.mode}</span>
                       <span className="ws-meta">{workshop.duration}</span>
-                      <span className="ws-state">Topic outline →</span>
+                      <span className="ws-state">Not open</span>
                     </Link>
                   </li>
                 ))}
               </ul>
             )}
             <p className="cat-fine">
-              Scheduled weekend sessions open for registration on the <Link to="/events">Events &amp; Bootcamps</Link> page.
+              No dates or prices are set. Payment is not collected.
             </p>
           </div>
         </section>

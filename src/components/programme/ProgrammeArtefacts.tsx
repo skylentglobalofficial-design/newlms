@@ -458,3 +458,261 @@ export function ProgrammeThumb({
   const entry = THUMBS[program.slug]
   return <>{entry ? entry.render() : <RecordThumb program={program} />}</>
 }
+
+
+/* ── Additional Authored Discipline Plates (Data Science, Full-Stack, GenAI) ── */
+
+export function DataSciencePlate() {
+  const cohorts = [
+    { cohort: "2026-Q1 · Enterprise", accounts: 420, retention90d: "88.4%", leakage: "0.0% (Verified)" },
+    { cohort: "2026-Q1 · Mid-Market", accounts: 510, retention90d: "74.2%", leakage: "0.0% (Verified)" },
+    { cohort: "2026-Q2 · SMB Promo", accounts: 310, retention90d: "51.6%", leakage: "Flagged: 14.5% discount" },
+  ]
+  return (
+    <div className="pa-lab">
+      <div className="sky-workbench__bar pa-lab__bar">
+        <div className="pa-lab__tabs" aria-hidden="true">
+          <span className="is-on">Cohort Pipeline (Python + SQL)</span>
+          <span>Out-of-Time Split</span>
+          <span>Brief</span>
+        </div>
+        <div className="pa-lab__meta">
+          <span className="sky-mono">churn_cohort_audit.py · 1,240 accounts</span>
+          <span className="pa-lab__run" aria-hidden="true"> Verified Split</span>
+        </div>
+      </div>
+
+      <div className="pa-lab__code">
+        <div className="pa-lab__codehead">
+          <span>Python 3 + SQL · Out-of-Time Cohort Validator</span>
+          <span>Zero Target Leakage</span>
+        </div>
+        <pre className="sky-workbench pa-lab__sql" tabIndex={0} aria-label="Out-of-time cohort retention validation">
+{`def validate_cohort_split(df, cutoff="2026-04-01"):
+    train = df[df["order_date"] < cutoff].query("returned == 'no'")
+    holdout = df[df["order_date"] >= cutoff]
+    assert set(train["tx_id"]).isdisjoint(holdout["tx_id"]), "Leakage blocked"
+    return compute_net_retention_by_tier(train, holdout)`}
+        </pre>
+      </div>
+
+      <div className="pa-lab__out">
+        <div className="pa-lab__result">
+          <p className="sky-label">Cohort Validation Output</p>
+          <table className="pa-table">
+            <thead>
+              <tr>
+                <th scope="col">cohort_segment</th>
+                <th scope="col" className="is-num">90d_retention</th>
+              </tr>
+            </thead>
+            <tbody>
+              {cohorts.map((row) => (
+                <tr key={row.cohort}>
+                  <td>{row.cohort}</td>
+                  <td className="is-num">{row.retention90d}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <p className="pa-lab__rows">3 segments · Out-of-time boundary verified · 0 post-event features</p>
+        </div>
+
+        <div className="pa-lab__chart">
+          <p className="pa-lab__charttitle">90-Day Net Revenue Retention by Acquisition Tier</p>
+          <div className="pa-bars">
+            {[
+              { name: "Enterprise", pct: 88.4, on: true },
+              { name: "Mid-Market", pct: 74.2, on: false },
+              { name: "SMB Promo", pct: 51.6, on: false },
+            ].map((item) => (
+              <div className="pa-bars__row" key={item.name}>
+                <span className={item.on ? "pa-bars__name is-on" : "pa-bars__name"}>{item.name}</span>
+                <span className="pa-bars__track">
+                  <span className={item.on ? "sky-bar sky-bar--on" : "sky-bar"} style={{ width: `${item.pct}%` }} />
+                </span>
+              </div>
+            ))}
+          </div>
+          <p className="pa-finding">
+            <span className="pa-finding__mark" aria-hidden="true" />
+            <span>
+              <strong>SMB Promo retention drops to 51.6% when discount_pct exceeds 12%.</strong> Your capstone combines SQL margin joins with Python cohort validation.
+            </span>
+          </p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export function FullStackPlate() {
+  return (
+    <div className="pa-lab">
+      <div className="sky-workbench__bar pa-lab__bar">
+        <div className="pa-lab__tabs" aria-hidden="true">
+          <span className="is-on">Ledger Transaction</span>
+          <span>Outbox Worker</span>
+          <span>RBAC Audit</span>
+        </div>
+        <div className="pa-lab__meta">
+          <span className="sky-mono">ledger_service.ts · PostgreSQL ACID</span>
+          <span className="pa-lab__run" aria-hidden="true">0 Double-Spends</span>
+        </div>
+      </div>
+
+      <div className="pa-lab__code">
+        <div className="pa-lab__codehead">
+          <span>TypeScript + PostgreSQL · Idempotent Webhook Settlement</span>
+          <span>Serializable Isolation</span>
+        </div>
+        <pre className="sky-workbench pa-lab__sql" tabIndex={0} aria-label="Idempotent payment ledger SQL transaction">
+{`BEGIN ISOLATION LEVEL SERIALIZABLE;
+INSERT INTO payment_ledger (gateway_tx_id, account_id, amount_paise, status)
+VALUES ($1, $2, $3, 'SETTLED')
+ON CONFLICT (gateway_tx_id) DO NOTHING
+RETURNING ledger_id, created_at;
+COMMIT;`}
+        </pre>
+      </div>
+
+      <div className="pa-lab__out">
+        <div className="pa-lab__result">
+          <p className="sky-label">Concurrency Stress Suite (50 Parallel Retries)</p>
+          <table className="pa-table">
+            <thead>
+              <tr>
+                <th scope="col">invariant_check</th>
+                <th scope="col" className="is-num">status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Duplicate webhook replay (x50)</td>
+                <td className="is-num">1 Settled · 49 Ignored</td>
+              </tr>
+              <tr>
+                <td>Transactional outbox dispatch</td>
+                <td className="is-num">Atomic (p95: 18 ms)</td>
+              </tr>
+              <tr>
+                <td>Cross-tenant IDOR guard</td>
+                <td className="is-num">403 Blocked</td>
+              </tr>
+            </tbody>
+          </table>
+          <p className="pa-lab__rows">All 6 production architecture invariants verified in sandbox</p>
+        </div>
+
+        <div className="pa-lab__chart">
+          <p className="pa-lab__charttitle">System Throughput &amp; Idempotency Guarantees</p>
+          <div className="pa-bars">
+            {[
+              { name: "Ledger ACID", pct: 100, on: true },
+              { name: "Outbox Sync", pct: 98, on: false },
+              { name: "RBAC Guard", pct: 100, on: false },
+            ].map((item) => (
+              <div className="pa-bars__row" key={item.name}>
+                <span className={item.on ? "pa-bars__name is-on" : "pa-bars__name"}>{item.name}</span>
+                <span className="pa-bars__track">
+                  <span className={item.on ? "sky-bar sky-bar--on" : "sky-bar"} style={{ width: `${item.pct}%` }} />
+                </span>
+              </div>
+            ))}
+          </div>
+          <p className="pa-finding">
+            <span className="pa-finding__mark" aria-hidden="true" />
+            <span>
+              <strong>Composite unique keys + row-level locking prevent duplicate payouts.</strong> You architect the schema, API route, and React state flow.
+            </span>
+          </p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export function GenAiRagPlate() {
+  return (
+    <div className="pa-lab">
+      <div className="sky-workbench__bar pa-lab__bar">
+        <div className="pa-lab__tabs" aria-hidden="true">
+          <span className="is-on">Grounded RAG Evaluator</span>
+          <span>Citation Gate</span>
+          <span>Refusal Policy</span>
+        </div>
+        <div className="pa-lab__meta">
+          <span className="sky-mono">rag_eval_harness.ts · Hybrid BM25 + Vector</span>
+          <span className="pa-lab__run" aria-hidden="true">98.2% Faithfulness</span>
+        </div>
+      </div>
+
+      <div className="pa-lab__code">
+        <div className="pa-lab__codehead">
+          <span>Enterprise RAG · Metadata Filter &amp; Citation Gate</span>
+          <span>Strict Grounding</span>
+        </div>
+        <pre className="sky-workbench pa-lab__sql" tabIndex={0} aria-label="Grounded RAG retrieval and citation verification">
+{`SELECT chunk_id, doc_title, effective_date, cosine_sim(embedding, $1) AS score
+FROM policy_chunks
+WHERE status = 'ACTIVE' AND effective_date >= '2026-01-01'
+  AND cosine_sim(embedding, $1) >= 0.82
+ORDER BY score DESC LIMIT 4;`}
+        </pre>
+      </div>
+
+      <div className="pa-lab__out">
+        <div className="pa-lab__result">
+          <p className="sky-label">Golden Dataset Evaluation (120 Adversarial Prompts)</p>
+          <table className="pa-table">
+            <thead>
+              <tr>
+                <th scope="col">evaluation_metric</th>
+                <th scope="col" className="is-num">verified_score</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Citation Attribution ([chunk_id])</td>
+                <td className="is-num">100.0%</td>
+              </tr>
+              <tr>
+                <td>Deprecated 2023 Policy Leakage</td>
+                <td className="is-num">0.0% (Filtered)</td>
+              </tr>
+              <tr>
+                <td>Prompt-Injection Refusal Rate</td>
+                <td className="is-num">99.2%</td>
+              </tr>
+            </tbody>
+          </table>
+          <p className="pa-lab__rows">p95 latency: 1,140 ms · Low-confidence queries cleanly abstain</p>
+        </div>
+
+        <div className="pa-lab__chart">
+          <p className="pa-lab__charttitle">Faithfulness Before vs After Metadata Citation Gate</p>
+          <div className="pa-bars">
+            {[
+              { name: "Grounded RAG", pct: 98.2, on: true },
+              { name: "Naive Vector", pct: 64.0, on: false },
+              { name: "Raw Prompt", pct: 41.5, on: false },
+            ].map((item) => (
+              <div className="pa-bars__row" key={item.name}>
+                <span className={item.on ? "pa-bars__name is-on" : "pa-bars__name"}>{item.name}</span>
+                <span className="pa-bars__track">
+                  <span className={item.on ? "sky-bar sky-bar--on" : "sky-bar"} style={{ width: `${item.pct}%` }} />
+                </span>
+              </div>
+            ))}
+          </div>
+          <p className="pa-finding">
+            <span className="pa-finding__mark" aria-hidden="true" />
+            <span>
+              <strong>Filtering deprecated chunks eliminated 19% ungrounded refund claims.</strong> You design the retrieval schema, refusal gate, and evaluation rubric.
+            </span>
+          </p>
+        </div>
+      </div>
+    </div>
+  )
+}

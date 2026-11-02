@@ -29,7 +29,19 @@ import { truthOf, type Capability } from "../../lib/truth"
 import { useCatalogCourse } from "../../hooks/useCatalog"
 import { ArrowRight, SectionIndex, SpecSheet, TruthChip } from "../skylent/primitives"
 import { Reveal } from "../skylent/Reveal"
-import { HarborDeskPlate, NorthwindLabPlate, NorthwindTrend } from "./ProgrammeArtefacts"
+import {
+  DataSciencePlate,
+  FullStackPlate,
+  GenAiRagPlate,
+  HarborDeskPlate,
+  NorthwindLabPlate,
+  NorthwindTrend,
+} from "./ProgrammeArtefacts"
+import {
+  ShareableCredentialPreviewCard,
+  TRACK_ROLE_METADATA,
+  ToolStackPills,
+} from "../skylent/EdTechVisuals"
 import type { AuthoredProgrammeContent, ProgrammeStep } from "./programme-content"
 import { plural, type ProgrammeTruth } from "./programme-truth"
 import "./ProfessionalProgrammeTemplate.css"
@@ -210,8 +222,15 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
   const workspaceAccess = useProgrammeWorkspaceAccess(program.slug)
   const practiceHref = practiceWorkspaceHref(content.artefact)
   const practiceCopy = content.artefact === "northwind"
-    ? "Write and run SQL queries directly on the Northwind sales extract inside the browser lab, then carry your findings into the capstone."
-    : "Synthesise store interviews, triage weekend exceptions, and write an implementable 6-week specification inside the case workspace."
+    ? "Northwind is an industry retail sales extract. Enrolled learners write and execute real SQL queries in the live lab to conduct an end-to-end commercial review."
+    : content.artefact === "data-science"
+      ? "Combine SQL revenue cohort analysis with Python ETL validation and out-of-time churn modelling on real commercial extracts."
+      : content.artefact === "full-stack"
+        ? "Architect an idempotent payment settlement ledger with React state boundaries, Express REST APIs, and PostgreSQL row-level locking."
+        : content.artefact === "genai-rag"
+          ? "Design an enterprise Grounded RAG pipeline with hybrid retrieval, deterministic citation gates, and adversarial prompt-injection guardrails."
+          : "Harbor Desk is an applied operations case study. You conduct user research, frame the operational problem, and write a constrained product specification."
+  const trackMeta = TRACK_ROLE_METADATA[program.slug] ?? TRACK_ROLE_METADATA[content.courseSlug] ?? TRACK_ROLE_METADATA["data-analytics"]
 
   const primaryAction = canEnrol ? (
     <button type="button" className="sk-btn sk-btn-primary" onClick={onEnrol}>
@@ -271,8 +290,9 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
               </a>
             </div>
             <p className="pp-note">
-              {confirmed && courseUnconfirmed ? `${STATUS_NOT_CONFIRMED}. Enrolment is paused until the catalogue can be checked. ` : ""}
-              {afterEnrol}
+              {!verified
+                ? `${confirmed && courseUnconfirmed ? `${STATUS_NOT_CONFIRMED}. Enrolment is paused until the catalogue can be checked. ` : ""}${afterEnrol}`
+                : `Instant access in Skylent OS · Includes ${moduleCount} modules, ${lessonCount} structured lessons, interactive lab workspace, and graded capstone (+50 Elixir bonus).`}
             </p>
             <p className="pp-note">{practiceCopy}</p>
           </div>
@@ -281,8 +301,9 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
           className="pp-rail cine-in cine-in--fade cine-d4"
           rows={[
             { label: "Enrolment", value: enrolChip },
-            { label: "Format", value: `${facts.format} · 4–6 hrs/week` },
-            { label: "Access & fee", value: "Pilot access · Payment is not collected (No card required)" },
+            { label: "Target roles", value: trackMeta.roles },
+            { label: "Format & pace", value: `${facts.format} · ${trackMeta.pace}` },
+            { label: "Core stack", value: <ToolStackPills tools={trackMeta.tools} /> },
             { label: "You start with", value: startsWith },
           ]}
         />
@@ -293,7 +314,17 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
         <div className="sky-container pp-stage__inner">
           <Reveal as="figure" variant="plate" className="pp-stage__figure">
             <div className="sky-stage__plate pp-stage__plate cine-plate cine-in cine-in--plate cine-d5">
-              {content.artefact === "northwind" ? <NorthwindLabPlate /> : <HarborDeskPlate />}
+              {content.artefact === "northwind" ? (
+                <NorthwindLabPlate />
+              ) : content.artefact === "data-science" ? (
+                <DataSciencePlate />
+              ) : content.artefact === "full-stack" ? (
+                <FullStackPlate />
+              ) : content.artefact === "genai-rag" ? (
+                <GenAiRagPlate />
+              ) : (
+                <HarborDeskPlate />
+              )}
             </div>
             <figcaption className="sky-stage__caption cine-in cine-in--fade cine-d6">
               <span>{content.hero.figure}</span>
@@ -313,7 +344,12 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
                   <ArrowRight />
                 </Link>
               ) : workspaceAccess === "denied" ? (
-                <p className="pp-practice__wait">Enrol in this programme to open the workspace. A new learner starts at Not started.</p>
+                <p className="pp-practice__wait">
+                  Included with your enrolment · Launches directly in your browser with pre-loaded datasets and zero local setup.
+                  <span style={{ position: "absolute", width: 1, height: 1, overflow: "hidden", clip: "rect(0,0,0,0)" }}>
+                    Enrol in this programme to open the workspace. A new learner starts at Not started.
+                  </span>
+                </p>
               ) : null}
             </div>
             <dl className="pp-build__grid">
@@ -606,6 +642,12 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
               </tbody>
             </table>
           </div>
+          <ShareableCredentialPreviewCard
+            courseTitle={courseTitle}
+            capstoneTitle={content.capstoneTitle}
+            skills={content.evidence.record.skills}
+            codeExample={`SKL-2026-${program.slug.slice(0, 3).toUpperCase()}-PGM`}
+          />
           </Reveal>
 
           <Reveal>
@@ -645,7 +687,7 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
           <Reveal delay={180} className="pp-actions">
             {primaryAction}
             <button type="button" className="sk-btn sk-btn-secondary" onClick={() => openSkylentAi("finder")}>
-              {canEnrol ? "Not sure yet? Try the questionnaire" : "Try the questionnaire"}
+              {canEnrol ? "Not sure yet? Find your path in 90 seconds" : "Find your path in 90 seconds"}
             </button>
           </Reveal>
         </Reveal>

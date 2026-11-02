@@ -11,8 +11,8 @@ import "./ExamsPage.css"
 const examPrograms = programs.filter((p) => p.programType === "EXAM_PREP")
 
 const directionExams = [
-  { name: "NEET", note: "Planned biology, chemistry, and physics diagnostic track — register interest for cohort updates." },
-  { name: "CUET / CLAT / GATE", note: "Planned undergraduate and postgraduate entrance tracks on the Skylent roadmap." },
+  { name: "NEET", note: "No Skylent NEET programme is in the catalogue yet." },
+  { name: "CUET / CLAT / others", note: "Named as future coverage, not as live prep engines." },
 ]
 
 const EXAM_SCENES: {
@@ -30,7 +30,7 @@ const EXAM_SCENES: {
     themeId: "jee",
     name: "JEE",
     full: "Joint Entrance Examination",
-    note: "Structured subject map covering Physics, Chemistry, and Mathematics problem sets.",
+    note: "Intended subject map for engineering prep. No live question bank or mock engine.",
     subjects: [
       { name: "Physics", topics: "Mechanics · Electromagnetism · Optics · Modern Physics" },
       { name: "Chemistry", topics: "Organic · Inorganic · Physical Chemistry" },
@@ -42,7 +42,7 @@ const EXAM_SCENES: {
     themeId: "neet",
     name: "NEET",
     full: "National Eligibility cum Entrance Test",
-    note: "Structured syllabus taxonomy for Biology, Chemistry, and Physics preparation.",
+    note: "Named coverage, not a built programme. No live NEET engine or diagnostics.",
     subjects: [
       { name: "Biology", topics: "Botany · Zoology · Genetics · Ecology" },
       { name: "Chemistry", topics: "Organic · Inorganic · Physical Chemistry" },
@@ -55,7 +55,7 @@ const EXAM_SCENES: {
     name: "CAT",
     full: "Common Admission Test",
     wide: true,
-    note: "Three-section management entrance architecture across VARC, DILR, and Quantitative Aptitude.",
+    note: "Intended paper structure for MBA entrance. No live mocks, sectional timers, or score predictor.",
     sections: [
       { abbr: "VARC", label: "Verbal Ability & Reading Comprehension", color: "hsl(var(--site-navy))" },
       { abbr: "DILR", label: "Data Interpretation & Logical Reasoning", color: "hsl(var(--site-deep))" },
@@ -68,24 +68,24 @@ export default function ExamsPage() {
   return (
     <AcademicPageShell current="exams">
       <LinePageHeader
-        kicker="Education · Competitive Exams"
+        kicker="Education · Entrance Pathways"
         maturity="coming_soon"
-        title="Structured exam preparation architecture."
-        lead="Competitive exam tracks on Skylent combine topic-level diagnostics, timed practice sets, and error-log reviews. Register interest below to be notified when JEE and CAT cohorts open."
+        title="Entrance syllabus architecture & subject maps."
+        lead="Structured domain blueprints for engineering (JEE), medical (NEET), and management (CAT) entrance tracks. For live technical skill benchmarking in SQL, Product, and GenAI today, use our 90-Second Skill Diagnostic on Find My Path."
       />
       <UpcomingBanner
-        title="Register interest for upcoming JEE & CAT preparation cohorts"
-        body="JEE Advanced and CAT tracks are currently in curriculum preparation. Explore the syllabus architecture below or start an open Skylent skill programme today."
+        title="Entrance prep tracks open by cohort registration"
+        body="Explore the subject and section weightage maps for JEE, NEET, and CAT below, or register interest on the linked programme pages for upcoming batch schedules."
       />
       <section className="arch-section exam-scenes" aria-labelledby="exam-scenes-title">
         <div className="skylent-label" style={{ color: C.slate, marginBottom: 12 }}>
-          Syllabus &amp; section architecture
+          Syllabus &amp; section weightage
         </div>
         <h2 id="exam-scenes-title" className="skylent-display-sm" style={{ color: C.ink, margin: "0 0 10px" }}>
-          Subject and section maps across JEE, NEET, and CAT.
+          Core subject and section architecture.
         </h2>
         <p className="exam-scenes-lead">
-          Each exam pathway breaks preparation into topic-level foundations, timed section practice, and structured mistake review.
+          Each entrance track is organised around foundational subject pillars, sectional weightages, and structured problem-solving progressions.
         </p>
         <div className="exam-scene-grid">
           {EXAM_SCENES.map((scene) => (
@@ -141,10 +141,10 @@ export default function ExamsPage() {
         </div>
       </section>
       <section className="arch-section">
-        <PathwayModel title="Preparation workflow" steps={EXAM_PATHWAY} />
+        <PathwayModel title="Intended exam product" steps={EXAM_PATHWAY} />
       </section>
       <section className="arch-section">
-        <div className="skylent-label" style={{ color: C.slate, marginBottom: 16 }}>In the catalogue · Register interest</div>
+        <div className="skylent-label" style={{ color: C.slate, marginBottom: 16 }}>In the catalogue · coming soon</div>
         <div>
           {examPrograms.map((program) => (
             <Link
@@ -158,12 +158,12 @@ export default function ExamsPage() {
                 <div style={{ color: C.slate, fontSize: 13, marginTop: 4 }}>{program.outcome}</div>
               </div>
               <MaturityMark maturity="coming_soon" compact />
-              <span style={{ color: C.indigo, fontSize: 13, fontWeight: 600 }}>View syllabus &amp; register interest →</span>
+              <span style={{ color: C.indigo, fontSize: 13, fontWeight: 600 }}>View programme →</span>
             </Link>
           ))}
         </div>
         <div style={{ marginTop: 28 }}>
-          <div className="skylent-label" style={{ color: C.slate, marginBottom: 12 }}>Additional roadmap tracks</div>
+          <div className="skylent-label" style={{ color: C.slate, marginBottom: 12 }}>Additional entrance tracks under evaluation</div>
           {directionExams.map((exam) => (
             <div key={exam.name} style={{ display: "flex", gap: 16, padding: "10px 0", borderBottom: `1px solid ${T.lineDark}`, flexWrap: "wrap" }}>
               <strong style={{ color: C.ink, minWidth: 160 }}>{exam.name}</strong>

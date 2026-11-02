@@ -21,6 +21,12 @@ import type { CatalogCurriculumModule } from "../lib/catalog-api"
 import { effectiveAuthoredCourseCopy } from "../lib/public-catalogue-copy"
 import { useCatalogCourse } from "../hooks/useCatalog"
 import { TruthChip } from "../components/skylent/primitives"
+import {
+  ShareableCredentialPreviewCard,
+  TRACK_ROLE_METADATA,
+  TargetRolesBadge,
+  ToolStackPills,
+} from "../components/skylent/EdTechVisuals"
 import CatalogueNotice, {
   STATUS_NOT_CONFIRMED,
 } from "../components/programme/CatalogueNotice"
@@ -183,6 +189,12 @@ export default function CourseDetailPage() {
                   )}
                 </div>
                 <p className="cat-lead">{summary}</p>
+                {authored && TRACK_ROLE_METADATA[course.slug] ? (
+                  <div style={{ marginTop: 12 }}>
+                    <TargetRolesBadge slug={course.slug} />
+                    <ToolStackPills tools={TRACK_ROLE_METADATA[course.slug].tools} />
+                  </div>
+                ) : null}
               </div>
               <aside className="cat-intro-meta" aria-label="Course details">
                 <div className="cat-metrics">

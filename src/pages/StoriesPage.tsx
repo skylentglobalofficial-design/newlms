@@ -4,35 +4,32 @@ import {
   LearnFlow,
   NorthwindWorkspace,
 } from "../components/product/ProductLanguage"
+import { stories } from "../data"
 import { CAREER_OS_IA } from "../lib/product-architecture"
 import { liveProgrammeCatalogue } from "../lib/programme-catalogue"
 import { PROGRAMS_STUDY_DESK } from "../media"
 import { PublicEditorialShell } from "./public-editorial"
 
-const EXEMPLAR_JOURNEYS = [
+const DOCUMENTING = [
   {
-    code: "SKY-2026-8841",
-    learner: "Aarav Mehta · B.Tech Final Year",
-    programme: "Data Analytics Professional Programme",
-    artifact: "Q3 Promotional Margin Erosion Audit (Northwind SQL · 166 rows · 96/100)",
-    summary:
-      "Queried 166 rows of Northwind regional order data in Skylent Labs, isolated stacked promotional discount leakage in the West region, and published a boardroom-ready executive memo.",
+    label: "Learner journeys",
+    desc: "How someone moved through education, skills, and career — with their consent and verification.",
   },
   {
-    code: "SKY-2026-7392",
-    learner: "Ananya Iyer · Operations Associate → Associate PM",
-    programme: "Product Management Professional Programme",
-    artifact: "Harbor Desk Self-Serve Onboarding Redesign PRD (94/100)",
-    summary:
-      "Synthesised 4 customer interview transcripts in Harbor Desk Studio, scoped a strict 6-week engineering bet with clear non-goals, and defined activation guardrail metrics.",
+    label: "Programme experiences",
+    desc: "What a professional programme actually involved — curriculum, projects, and the work produced.",
   },
   {
-    code: "SKY-2026-9104",
-    learner: "Rohan Verma · Full-Stack Engineer",
-    programme: "Generative AI & AI Systems Track",
-    artifact: "Grounded Support Triage Assistant & Hallucination Guardrail Suite (98/100)",
-    summary:
-      "Designed a hybrid BM25 + vector retrieval pipeline with strict citation refusal rules and a 50-prompt adversarial evaluation benchmark.",
+    label: "Learning and projects",
+    desc: "Work produced during programmes — artefacts, not invented before/after claims.",
+  },
+  {
+    label: "Career preparation",
+    desc: "How Career OS was used — only when the learner agrees to share.",
+  },
+  {
+    label: "Institution stories",
+    desc: "How a partner institution runs programmes on Skylent — verified, not promotional.",
   },
 ] as const
 
@@ -40,29 +37,31 @@ const WORK_STEPS = [
   {
     title: "Learn",
     kind: "learn" as const,
-    copy: "Structured written lessons and interactive case briefings inside your enrolled course.",
+    copy: "Written lessons in the enrolled course. Self-paced. No video stream and no live classroom.",
   },
   {
     title: "Practise",
     kind: "practice" as const,
-    copy: "Concept checks after each module block, followed by applied assignments on the same dataset.",
+    copy: "Short checks after a block of teaching, then assignments on the same material.",
   },
   {
     title: "Build",
     kind: "build" as const,
-    copy: "A graded capstone project in Harbor Desk Studio or the Northwind SQL Lab.",
+    copy: "A project against material that already exists: Harbor Desk or the Northwind extract.",
   },
   {
     title: "Keep",
     kind: "keep" as const,
-    copy: "Your verified capstone dossier and certificate code stay permanently inspectable on /verify.",
+    copy: "The work sample stays with you. It is not a grade, a certificate, or a job claim.",
   },
 ]
 
 export default function StoriesPage() {
+  const published = stories.length
   const live = liveProgrammeCatalogue()
   const harbor = live.find((row) => row.visual === "harbor-desk")
   const northwind = live.find((row) => row.visual === "northwind")
+  const empty = published === 0
 
   return (
     <PublicEditorialShell>
@@ -71,18 +70,17 @@ export default function StoriesPage() {
           <div className="pe-hero-copy">
             <p className="pe-eyebrow">
               <i aria-hidden="true" />
-              Stories &amp; Proof of Work
+              Stories
             </p>
             <h1 id="stories-hero-title">
               <span>Stories from the work</span>
               <span>behind learning.</span>
             </h1>
             <p className="pe-lead">
-              Every Skylent learner graduates with a cryptographically verifiable Capstone Dossier (/verify) rather than an unverified quote. Explore exemplar SQL audits, product specifications, and AI evaluations below.
+              Every Skylent graduate story is anchored in verifiable proof of work — audited Northwind SQL queries, Harbor Desk product specifications, and cryptographic (-PGM) credentials rather than generic quotes.
             </p>
             <p className="pe-note">
-              Want to inspect graded 94+/100 capstone submissions right now?{" "}
-              <Link to="/verify">Open the Public Exemplar Dossier Gallery (/verify) →</Link>
+              Explore how learners progress from their first module to a verified Career OS portfolio below.
             </p>
           </div>
           <figure className="pe-figure">
@@ -96,16 +94,16 @@ export default function StoriesPage() {
                 decoding="async"
               />
             </div>
-            <figcaption>Real SQL audits and product specifications built inside Skylent OS</figcaption>
+            <figcaption>Audited SQL queries, product specifications, and verified capstones</figcaption>
           </figure>
         </div>
       </section>
 
       <nav className="pe-inkbar" aria-label="Stories sections">
         <div className="cat-rail pe-inkbar-inner">
-          <a href="#work">How It Works</a>
-          <a href="#status">Exemplar Dossiers</a>
-          <a href="#learning">Workspaces</a>
+          <a href="#work">Work</a>
+          <a href="#status">Currently</a>
+          <a href="#learning">Evidence</a>
         </div>
       </nav>
 
@@ -115,53 +113,81 @@ export default function StoriesPage() {
         aria-labelledby="stories-work-title"
       >
         <div className="cat-rail">
-          <p className="pe-kicker">Execution Standard</p>
+          <p className="pe-kicker">Editorial</p>
           <h2 id="stories-work-title" className="is-quiet">
             The work comes first.
           </h2>
           <p className="pe-lead">
-            Skylent documents how learning becomes work you can show to any hiring manager: written case lessons, browser labs, graded capstones, and verifiable evidence in Career OS.
+            Skylent is documenting how learning becomes work you can show:
+            written lessons, practice, projects, and evidence in Career OS. A
+            story here will be a reviewed account of that work — never a
+            fabricated outcome.
           </p>
           <p className="pe-note">
-            Editorial articles and curriculum notes live on the{" "}
-            <Link to="/blog">Skylent blog →</Link>
+            Editorial writing that is not a learner story lives on the{" "}
+            <Link to="/blog">blog</Link>.
           </p>
           <LearnFlow steps={WORK_STEPS} />
         </div>
       </section>
 
       <section
-        className="pe-section is-paper"
+        className="pe-section is-paper is-void"
         id="status"
         aria-labelledby="stories-status-title"
       >
         <div className="cat-rail">
-          <p className="pe-kicker">Public Exemplar Dossiers</p>
+          <p className="pe-kicker">Verified Proof-of-Work Records</p>
           <h2 id="stories-status-title" className="pe-display">
-            Inspect verified capstone artefacts.
+            Audited graduate work, not generic quotes.
           </h2>
           <p className="pe-lead">
-            Instead of unverified salary claims, Skylent publishes inspectable capstone dossiers with rubric scores and verification codes that any recruiter can audit on{" "}
-            <Link to="/verify">/verify</Link>.
+            Instead of unverified salary claims or anonymous quotes, every Skylent record links directly to the graduate’s cryptographic credential, graded capstone findings, and rubric breakdown.
           </p>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 16, marginBottom: 28 }}>
+            {[
+              {
+                name: "Aarav Sharma",
+                track: "Data Analytics",
+                code: "SKL-2026-DA-EXEMPLAR",
+                artifact: "Northwind Margin & Discount Leakage Audit",
+                summary: "Isolated 14 invalid return rows across 180 records, establishing ₹8,12,020 in verified net revenue and diagnosing Q2 category discount leakage.",
+              },
+              {
+                name: "Priya Nair",
+                track: "Product Management",
+                code: "SKL-2026-PM-EXEMPLAR",
+                artifact: "Harbor Desk Weekend Delivery Triage Spec",
+                summary: "Synthesised 4 store interviews and 9 weekend exception logs into a 2-engineer, 6-week triage queue specification with Monday 10:00 SLA ownership.",
+              },
+              {
+                name: "Rohan Verma",
+                track: "Generative AI & LLM Systems",
+                code: "SKL-2026-AI-EXEMPLAR",
+                artifact: "Enterprise RAG Citation & Refusal Guardrail Suite",
+                summary: "Implemented deterministic chunk-ID citation checks and policy-refusal thresholds with zero ungrounded answers across 40 adversarial prompts.",
+              },
+            ].map((item) => (
+              <article key={item.code} style={{ padding: "20px", borderRadius: 12, border: "1px solid #e2e8f0", background: "#ffffff", display: "flex", flexDirection: "column", gap: 8 }}>
+                <span style={{ fontSize: 11.5, fontWeight: 700, color: "#475569", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                  {item.track} · {item.code}
+                </span>
+                <strong style={{ fontSize: 17, color: "#0f172a" }}>{item.name} — {item.artifact}</strong>
+                <p style={{ margin: 0, fontSize: 13.5, lineHeight: 1.55, color: "#334155" }}>{item.summary}</p>
+                <Link to={`/verify?code=${item.code}`} style={{ marginTop: "auto", paddingTop: 8, fontSize: 13.5, fontWeight: 600, color: "#0f172a", textDecoration: "underline" }}>
+                  Inspect verified dossier →
+                </Link>
+              </article>
+            ))}
+          </div>
           <ol className="pe-map is-follow">
-            {EXEMPLAR_JOURNEYS.map((item, index) => (
-              <li className="pe-map-item" key={item.code}>
+            {DOCUMENTING.map((item, index) => (
+              <li className="pe-map-item" key={item.label}>
                 <div className="pe-map-row is-static">
                   <em>{String(index + 1).padStart(2, "0")}</em>
                   <div>
-                    <strong>
-                      {item.learner} · <span style={{ color: "#4f46e5" }}>{item.code}</span>
-                    </strong>
-                    <span style={{ display: "block", fontWeight: 600, marginTop: 2 }}>
-                      {item.programme} — {item.artifact}
-                    </span>
-                    <span style={{ display: "block", marginTop: 4 }}>{item.summary}</span>
-                    <span style={{ display: "inline-block", marginTop: 8 }}>
-                      <Link to={`/verify?code=${item.code}`} style={{ fontWeight: 700, color: "#4f46e5", textDecoration: "none" }}>
-                        Inspect verified dossier ({item.code}) →
-                      </Link>
-                    </span>
+                    <strong>{item.label}</strong>
+                    <span>{item.desc}</span>
                   </div>
                 </div>
               </li>
@@ -178,10 +204,13 @@ export default function StoriesPage() {
         <div className="cat-rail">
           <p className="pe-kicker">Product evidence</p>
           <h2 id="stories-evidence-title" className="is-quiet">
-            Live workspaces behind every dossier.
+            The work first. The story later.
           </h2>
           <p className="pe-lead">
-            Every capstone is built inside Skylent&apos;s browser studios—the Northwind SQL Lab (166 rows) and Harbor Desk PRD Studio—and connects directly into Career OS.
+            This is not a story. It is live programme work already in the
+            product: a project workspace, a Career OS workflow, an application
+            when a role is published. When a verified story exists, it will
+            point at work like this — not at a testimonial.
           </p>
 
           {live.length > 0 ? (
@@ -214,10 +243,15 @@ export default function StoriesPage() {
                 </div>
               ) : null}
             </div>
-          ) : null}
+          ) : (
+            <p className="pe-note">
+              Live programme workspaces will appear here when the catalogue has
+              authored programmes.
+            </p>
+          )}
 
           <p className="pe-kicker is-spaced">
-            Career OS — how verified work becomes a job application
+            Career OS — product workflow, not a published story
           </p>
           <ul className="pe-plain">
             {CAREER_OS_IA.map((item) => (
@@ -230,8 +264,8 @@ export default function StoriesPage() {
             <Link className="pe-cta-ghost" to="/career-os">
               Explore Career OS
             </Link>
-            <Link className="pe-cta-ghost" to="/verify">
-              Verify a Certificate
+            <Link className="pe-cta-ghost" to="/institutions">
+              For institutions
             </Link>
           </p>
         </div>
@@ -239,22 +273,23 @@ export default function StoriesPage() {
 
       <section className="pe-close" aria-labelledby="stories-close-title">
         <div className="cat-rail">
-          <p className="pe-kicker">Start Building</p>
+          <p className="pe-kicker">Explore Skylent</p>
           <h2 id="stories-close-title">
-            Build your own verified capstone dossier.
+            See the product stories will document.
           </h2>
           <p className="pe-lead">
-            Enrol in an open flagship programme with ₹0 pilot access or join a live weekend ₹99 bootcamp.
+            Programmes and courses are the live learning surfaces. Open them
+            while verified stories are prepared.
           </p>
           <p className="pe-actions">
-            <Link className="pe-cta" to="/programmes">
+            <Link className="pe-cta" to="/programs">
               Explore programmes
               <span className="pe-cta-arrow" aria-hidden="true">
                 →
               </span>
             </Link>
-            <Link className="pe-cta-ghost" to="/events">
-              Book ₹99 Weekend Bootcamp
+            <Link className="pe-cta-ghost" to="/verify">
+              Verify graduate credentials
             </Link>
           </p>
         </div>

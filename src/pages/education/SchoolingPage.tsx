@@ -4,30 +4,30 @@ import { SCHOOLING_PATHWAY } from "../../lib/product-architecture"
 import { C, T } from "../../tokens"
 
 const bands = [
-  { band: "Primary", grades: "1–5", subjects: "Mathematics, science, language, and foundational logic" },
-  { band: "Middle", grades: "6–8", subjects: "Mathematics, sciences, structured writing, and computing basics" },
-  { band: "Secondary", grades: "9–10", subjects: "Board-aligned core subjects plus applied data & IT" },
-  { band: "Senior", grades: "11–12", subjects: "Stream subjects, electives, and practical lab portfolios" },
+  { band: "Primary", grades: "1–5", subjects: "Mathematics, science, language, socials" },
+  { band: "Middle", grades: "6–8", subjects: "Mathematics, sciences, language" },
+  { band: "Secondary", grades: "9–10", subjects: "Board-aligned core plus IT" },
+  { band: "Senior", grades: "11–12", subjects: "Stream subjects, electives, practicals" },
 ]
 
 export default function SchoolingPage() {
   return (
     <AcademicPageShell current="schooling">
       <LinePageHeader
-        kicker="Education · Schooling (Grades 1–12)"
+        kicker="Education · K–12 Foundation Architecture"
         maturity="coming_soon"
-        title="Structured K–12 academic progression for partner schools."
-        lead="Schooling on Skylent is designed as a grade-and-subject progression for partner schools and academic cohorts—focused on concept mastery, structured practice, and clear academic foundations."
+        title="Structured grade-band progression for partner schools."
+        lead="Foundational mathematics, science, and computational thinking pathways designed for school integration alongside Skylent's higher-education tracks."
       />
       <UpcomingBanner
-        title="Partner school & institutional cohort track"
-        body="Grade bands below outline our K–12 curriculum architecture for school partnerships. Contact our partnerships team to discuss a school pilot."
+        title="Institutional K–12 Partner Roadmap"
+        body="Grade bands and subject pillars below outline our curriculum framework for school partnerships. For immediate learner enrolment today, explore our 6 live skill courses and university degree pathways."
       />
       <section className="arch-section">
-        <PathwayModel title="Schooling progression model" steps={SCHOOLING_PATHWAY} />
+        <PathwayModel title="Intended schooling model" steps={SCHOOLING_PATHWAY} />
       </section>
       <section className="arch-section">
-        <div className="skylent-label" style={{ color: C.slate, marginBottom: 16 }}>Grade bands · Curriculum architecture</div>
+        <div className="skylent-label" style={{ color: C.slate, marginBottom: 16 }}>Grade bands · direction</div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: 0 }} className="arch-grade-grid">
           {bands.map((row, i) => (
             <div key={row.band} style={{ padding: "16px 16px 16px 0", borderTop: `1px solid ${T.lineDark}`, borderBottom: `1px solid ${T.lineDark}`, borderRight: i < 3 ? `1px solid ${T.lineDark}` : "none", minWidth: 0 }}>

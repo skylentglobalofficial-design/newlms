@@ -1,4 +1,3 @@
-import { computeLearnerExecutionStreak } from '../lib/execution-streak'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate, Link } from 'react-router-dom'
 import { AuthDashboardShell } from '../components/AuthDashboardShell'
@@ -17,6 +16,7 @@ import { findProjectForCourse, listLearnerProjects, learnerProjectPath, projectS
 import { fetchMyCertificates, issueCertificate, issueProgrammeCertificate, type SkylentCertificate } from '../lib/skylent-api'
 import { fetchSkylentAiStatus } from '../lib/skylent-ai-api'
 import ElixirWalletPanel from '../components/learner/ElixirWallet'
+import { computeLearnerExecutionStreak } from '../lib/execution-streak'
 import { truthOf } from '../lib/truth'
 import { courseProductProfile } from '../lib/course-product'
 import { dashboardSqlLabHref, practiceEnvironmentForCourse } from '../lib/practice-environments'
@@ -361,7 +361,7 @@ export default function DashboardStudentPage() {
         authoredLinked.length > 0 &&
         authoredLinked.every((courseRow) => courseRow.progress.allComplete) &&
         !seenProgrammeClaims.has(item.programSlug) &&
-        !certificateRows.some((cert) => cert.code.includes('-PRG-') && cert.courseTitle === (item.programName ?? item.programSlug))
+        !certificateRows.some((cert) => (cert.code.includes('-PGM') || cert.code.includes('-PRG-')) && cert.courseTitle === (item.programName ?? item.programSlug))
       ) {
         seenProgrammeClaims.add(item.programSlug)
         claimableProgrammes.push({
@@ -408,19 +408,19 @@ export default function DashboardStudentPage() {
                   {cert.revoked ? (
                     <span className="os-status is-idle">Revoked</span>
                   ) : (
-                    <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                    <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
                       <a
-                        href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(typeof window !== 'undefined' ? window.location.origin + '/verify/' + cert.code : 'https://skylent.live/verify/' + cert.code)}`}
+                        className="os-link sh-row-link"
+                        href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(`https://skylent.live/verify/${cert.code}`)}`}
                         target="_blank"
-                        rel="noreferrer"
-                        className="os-link"
-                        style={{ fontSize: 12 }}
+                        rel="noopener noreferrer"
+                        aria-label={`Share ${cert.courseTitle} certificate on LinkedIn`}
                       >
                         Share on LinkedIn ↗
                       </a>
                       <Link className="os-link sh-row-link" to={`/verify/${cert.code}`} aria-label={`Verify the ${cert.courseTitle} certificate`}>
-                      Verify <ArrowRight />
-                    </Link>
+                        Verify <ArrowRight />
+                      </Link>
                     </div>
                   )}
                 </li>
@@ -491,19 +491,6 @@ export default function DashboardStudentPage() {
     </section>
   )
 
-  
-  const projectRows = projects.status === 'ready' ? projects.data : []
-  const currentProject = course ? findProjectForCourse(projectRows, course.slug) : null
-
-  const activityTimestamps = [
-    ...enrolmentRows.map((e) => e.createdAt),
-    ...projectRows.map((p) => p.updatedAt),
-    ...certificateRows.map((c) => c.issuedAt),
-    ...(workspace && workspace.progress && workspace.progress.completedCount > 0 ? [new Date().toISOString()] : []),
-  ]
-  const executionStreak = computeLearnerExecutionStreak(activityTimestamps)
-
-
   /* ── Empty learner: no primary enrolment workspace ── */
 
   if (!course || !workspace) {
@@ -513,44 +500,6 @@ export default function DashboardStudentPage() {
           <p className="os-eyebrow">My Courses</p>
           <h1>Start with a course</h1>
           <section className="sh-card" aria-label="Elixir wallet"><ElixirWalletPanel /></section>
-        
-        <div className="sh-card sh-streak" style={{ padding: "14px 18px", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <span style={{ fontSize: 24 }} aria-hidden="true">🔥</span>
-            <div>
-              <strong style={{ fontSize: 16 }}>{executionStreak.currentStreakDays}-Day Execution Streak</strong>
-              <span style={{ fontSize: 12, display: "block", color: "var(--skylent-muted, #71717a)" }}>
-                {executionStreak.streakBonusElixir > 0
-                  ? `+${executionStreak.streakBonusElixir} Elixir Momentum Bonus active · Longest streak: ${executionStreak.longestStreakDays} days`
-                  : `Complete an action today to start your momentum streak · Longest: ${executionStreak.longestStreakDays} days`}
-              </span>
-            </div>
-          </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-            <div style={{ fontSize: 12, textAlign: "right" }}>
-              <strong>Weekly Goal</strong>: {executionStreak.weeklyActionsCount} / 5 actions
-            </div>
-            <div style={{ display: "flex", gap: 3 }} aria-label="14-Day Activity Heatmap">
-              {executionStreak.activityHeatmap.map((p) => (
-                <span
-                  key={p.date}
-                  title={`${p.date}: ${p.count} actions`}
-                  style={{
-                    width: 8,
-                    height: 18,
-                    borderRadius: 2,
-                    background: p.active ? "#16a34a" : "var(--skylent-line, #e4e4e7)",
-                    display: "inline-block",
-                  }}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-
-          
-
-
           <div className="sh-next">
             <p className="sh-next-label"><span aria-hidden="true" />Next step</p>
             <h2>Choose what to learn first</h2>
@@ -608,47 +557,65 @@ export default function DashboardStudentPage() {
   )
   const attention = [...primaryAttention, ...otherAttention]
 
+  const projectRows = projects.status === 'ready' ? projects.data : []
+  const currentProject = findProjectForCourse(projectRows, course.slug)
+
   return (
     <AuthDashboardShell {...shell}>
       <div className="sh">
         <p className="os-eyebrow">My Courses</p>
         <h1>What to do next</h1>
         <section className="sh-card" aria-label="Elixir wallet"><ElixirWalletPanel /></section>
-        
-        <div className="sh-card sh-streak" style={{ padding: "14px 18px", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <span style={{ fontSize: 24 }} aria-hidden="true">🔥</span>
-            <div>
-              <strong style={{ fontSize: 16 }}>{executionStreak.currentStreakDays}-Day Execution Streak</strong>
-              <span style={{ fontSize: 12, display: "block", color: "var(--skylent-muted, #71717a)" }}>
-                {executionStreak.streakBonusElixir > 0
-                  ? `+${executionStreak.streakBonusElixir} Elixir Momentum Bonus active · Longest streak: ${executionStreak.longestStreakDays} days`
-                  : `Complete an action today to start your momentum streak · Longest: ${executionStreak.longestStreakDays} days`}
-              </span>
-            </div>
-          </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-            <div style={{ fontSize: 12, textAlign: "right" }}>
-              <strong>Weekly Goal</strong>: {executionStreak.weeklyActionsCount} / 5 actions
-            </div>
-            <div style={{ display: "flex", gap: 3 }} aria-label="14-Day Activity Heatmap">
-              {executionStreak.activityHeatmap.map((p) => (
-                <span
-                  key={p.date}
-                  title={`${p.date}: ${p.count} actions`}
-                  style={{
-                    width: 8,
-                    height: 18,
-                    borderRadius: 2,
-                    background: p.active ? "#16a34a" : "var(--skylent-line, #e4e4e7)",
-                    display: "inline-block",
-                  }}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-
+        {(() => {
+          const activityDates: string[] = [
+            ...projectRows.map((p) => p.updatedAt),
+            ...certificateRows.map((c) => c.issuedAt),
+          ]
+          if (completedCount > 0 || resumeStarted) {
+            activityDates.push(new Date().toISOString())
+          }
+          const streak = computeLearnerExecutionStreak(activityDates)
+          return (
+            <section className="sh-card" aria-label="Daily Execution Streak and 14-Day Proof-of-Work Activity Heatmap" style={{ marginBottom: 16 }}>
+              <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: 12, marginBottom: 12 }}>
+                <div>
+                  <strong style={{ fontSize: 15, display: "block" }}>
+                    {streak.currentStreakDays}-Day Execution Streak · 14-Day Proof-of-Work Activity Grid
+                  </strong>
+                  <span className="sh-note">
+                    Weekly Goal: {streak.weeklyActionsCount} / {streak.weeklyGoalTarget} verified actions ({streak.weeklyGoalPercent}%) · Longest streak: {streak.longestStreakDays}d
+                  </span>
+                </div>
+                <span style={{ fontSize: 12, fontWeight: 700, padding: "4px 10px", borderRadius: 999, background: "rgba(81, 66, 181, 0.12)", color: "#43349F" }}>
+                  +{streak.streakBonusElixir} Elixir Streak Momentum
+                </span>
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(14, minmax(0, 1fr))", gap: 6 }} role="list" aria-label="Last 14 days activity heatmap">
+                {streak.heatmapDays.map((day) => (
+                  <div
+                    key={day.date}
+                    role="listitem"
+                    title={`${day.label}: ${day.count} verified action(s)`}
+                    style={{
+                      height: 26,
+                      borderRadius: 6,
+                      background: day.active ? "#5142B5" : "rgba(15, 23, 42, 0.06)",
+                      border: day.active ? "1px solid #43349F" : "1px solid rgba(15, 23, 42, 0.1)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: 9.5,
+                      fontWeight: 700,
+                      color: day.active ? "#ffffff" : "#64748B",
+                    }}
+                  >
+                    {day.date.slice(8)}
+                  </div>
+                ))}
+              </div>
+            </section>
+          )
+        })()}
         <ul className="sh-facts">
           <li>
             {enrollments.status === 'ready' ? (

@@ -119,7 +119,7 @@ export const HARBOR = {
 
 /* ── Template slots ───────────────────────────────────────────────────────── */
 
-export type ProgrammeArtefactId = "northwind" | "harbor-desk"
+export type ProgrammeArtefactId = "northwind" | "harbor-desk" | "data-science" | "full-stack" | "genai-rag"
 
 export type ProgrammeStepNote =
   | { kind: "fact"; text: string }
@@ -464,7 +464,7 @@ const PRODUCT_MANAGEMENT: AuthoredProgrammeContent = {
 const DATA_SCIENCE_AI: AuthoredProgrammeContent = {
   programmeSlug: "data-science-ai",
   courseSlug: "data-analytics",
-  artefact: "northwind",
+  artefact: "data-science",
   cardLine: "Combine SQL commercial analytics and Python data pipelines with cohort validation and churn modelling.",
   capstoneTitle: "Cohort Retention & Revenue Leakage Audit",
   hero: {
@@ -553,7 +553,7 @@ const DATA_SCIENCE_AI: AuthoredProgrammeContent = {
 const FULL_STACK: AuthoredProgrammeContent = {
   programmeSlug: "full-stack",
   courseSlug: "full-stack-web",
-  artefact: "northwind",
+  artefact: "full-stack",
   cardLine: "Ship transactional REST APIs, PostgreSQL schemas, idempotent ledgers, and React interfaces.",
   capstoneTitle: "Idempotent Payment Ledger & Full-Stack Studio",
   hero: {
@@ -659,7 +659,7 @@ const FULL_STACK: AuthoredProgrammeContent = {
 const GENERATIVE_AI: AuthoredProgrammeContent = {
   programmeSlug: "generative-ai-program",
   courseSlug: "generative-ai",
-  artefact: "harbor-desk",
+  artefact: "genai-rag",
   cardLine: "Design grounded RAG retrieval pipelines, citation guardrails, ReAct tool agents, and LLM evaluations.",
   capstoneTitle: "Enterprise Grounded RAG & Citation Evaluation Suite",
   hero: {

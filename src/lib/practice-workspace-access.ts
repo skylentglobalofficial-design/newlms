@@ -10,8 +10,13 @@ import { harborDeskProjectPath } from "./projects-api"
 export const DATA_ANALYTICS_SQL_LAB = northwindLabPath()
 export const HARBOR_DESK_WORKSPACE = harborDeskProjectPath()
 
-export function practiceWorkspaceHref(artefact: "northwind" | "harbor-desk"): string {
-  return artefact === "northwind" ? DATA_ANALYTICS_SQL_LAB : HARBOR_DESK_WORKSPACE
+export function practiceWorkspaceHref(
+  artefact: "northwind" | "harbor-desk" | "data-science" | "full-stack" | "genai-rag",
+): string {
+  if (artefact === "northwind") return DATA_ANALYTICS_SQL_LAB
+  if (artefact === "harbor-desk") return HARBOR_DESK_WORKSPACE
+  if (artefact === "data-science") return DATA_ANALYTICS_SQL_LAB
+  return "/labs"
 }
 
 export type ProgrammeWorkspaceAccess = {

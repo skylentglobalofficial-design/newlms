@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { HeaderWalletAndNotifications } from './learner/HeaderWalletAndNotifications'
 import {
   courseEnrollmentMessage,
   programEnrollmentMessage,
@@ -277,34 +278,34 @@ const PUBLIC_NAV: readonly PublicNavGroup[] = [
   {
     label: 'Programmes',
     to: '/programmes',
-    tagline: 'Flagship career tracks, browser labs & ₹0 pilot access',
+    tagline: 'Flagship programmes, live courses, and hands-on workshops',
     match: ['/programmes', '/programs', '/courses', '/skills', '/workshops', '/labs', '/events'],
     items: [
-      { label: 'All programmes', sub: 'Explore all 6 flagship & self-paced tracks (₹0 Pilot).', to: '/programmes' },
-      { label: 'Professional programmes', sub: 'Multi-module tracks with browser labs and a graded capstone.', to: '/programmes#professional' },
-      { label: 'Certification programmes', sub: 'Focused single-skill SQL and analytical tracks.', to: '/programmes#certification' },
-      { label: 'Live ₹99 Weekend Bootcamps', sub: '90-minute execution sprints with 99 Elixir Coins (100% credit).', to: '/events' },
+      { label: 'All programmes', sub: 'Flagship pathways with SQL labs, case studies, and capstones.', to: '/programmes' },
+      { label: 'All 6 live courses', sub: 'Data Analytics, PM, Python, Data Science, GenAI, and Full Stack.', to: '/programmes#live-courses' },
+      { label: 'Workshops & Case Store', sub: '₹99 live workshops with 100% Elixir Coin cashback.', to: '/events' },
+      { label: 'Professional programmes', sub: 'In-depth tracks combining lessons, practice, and portfolio work.', to: '/programmes#professional' },
     ],
   },
   {
     label: 'Education',
     to: '/education',
-    tagline: 'University degree pathways · Register interest for 2026–27 intakes',
+    tagline: 'University & Institutional Pathways',
     match: ['/education', '/exams'],
     items: [],
     sections: [
       {
         heading: 'Undergraduate (UG)',
         items: [
-          { label: 'Online', sub: 'NEP-aligned 3–4 year online degree track · Register interest.', to: '/education?level=ug&mode=online' },
-          { label: 'On campus', sub: 'Full-time partner campus degree track · Register interest.', to: '/education?level=ug&mode=campus' },
+          { label: 'Online pathways', sub: 'Planned online curriculum tracks for institutional integration.', to: '/education?level=ug&mode=online' },
+          { label: 'On-campus pathways', sub: 'Planned campus curriculum tracks for partner institutions.', to: '/education?level=ug&mode=campus' },
         ],
       },
       {
         heading: 'Postgraduate (PG)',
         items: [
-          { label: 'Online', sub: '2-year online postgraduate track for working learners.', to: '/education?level=pg&mode=online' },
-          { label: 'On campus', sub: '2-year full-time campus postgraduate specialist track.', to: '/education?level=pg&mode=campus' },
+          { label: 'Online pathways', sub: 'Planned online postgraduate specialisations.', to: '/education?level=pg&mode=online' },
+          { label: 'On-campus pathways', sub: 'Planned campus postgraduate specialisations.', to: '/education?level=pg&mode=campus' },
         ],
       },
     ],
@@ -312,26 +313,24 @@ const PUBLIC_NAV: readonly PublicNavGroup[] = [
   {
     label: 'Career OS',
     to: '/career-os',
-    tagline: 'Your proof-of-work portfolio, graded capstones & role tracker',
-    match: ['/career-os', '/verify'],
+    tagline: 'Merit-gated portfolio, projects, and skill-matched applications',
+    match: ['/career-os'],
     items: [
-      { label: 'How Career OS works', sub: 'Unlock at 60% module completion + 1 graded capstone.', to: '/career-os' },
-      { label: 'Verify a Certificate (/verify)', sub: 'Inspect cryptographic SKL diplomas and exemplar dossiers.', to: '/verify' },
-      { label: 'Career profile', sub: 'Your target role, verified skills, and academic record.', to: '/career-os/profile' },
-      { label: 'Projects & Evidence', sub: 'Graded SQL audits and PRD specs attached to your profile.', to: '/career-os/projects' },
-      { label: 'Applications', sub: 'Organise saved roles, applications, and interview prep.', to: '/career-os/applications' },
+      { label: 'How Career OS works', sub: 'Merit-gated readiness (60% curriculum gate) and portfolio tools.', to: '/career-os' },
+      { label: 'Career profile', sub: 'Organise your target role, verified skills, and credentials.', to: '/career-os/profile' },
+      { label: 'Projects & evidence', sub: 'Showcase completed capstones and SQL/case work samples.', to: '/career-os/projects' },
+      { label: 'Applications & prep', sub: 'Track role applications and rehearse interview defense.', to: '/career-os/applications' },
     ],
   },
+  // Institutions is reached from the footer, the search and the homepage partner section, not the top bar.
   {
     label: 'About',
     to: '/about',
-    tagline: 'Skylent Global Pvt. Ltd. · Bhubaneswar, Odisha, India',
-    match: ['/about', '/stories', '/blog', '/contact', '/institutions', '/terms', '/privacy'],
+    tagline: 'Who we are and how to reach us',
+    match: ['/about', '/stories', '/blog', '/contact', '/terms', '/privacy'],
     items: [
-      { label: 'About Skylent', sub: 'Our mission, practitioner standards, and Bhubaneswar HQ.', to: '/about' },
-      { label: 'For Institutions & Colleges', sub: 'Deploy Skylent labs and CCRO cohort analytics on campus.', to: '/institutions' },
-      { label: 'Find My Path (90s Test)', sub: 'Take the 90-second skill benchmark or 7-step career quiz.', to: '/path' },
-      { label: 'Contact the Team', sub: 'Reach support@skylent.live or request a counselling call.', to: '/contact' },
+      { label: 'About Skylent', sub: 'What we are building and why.', to: '/about' },
+      { label: 'Contact', sub: 'Ask a question or request a call.', to: '/contact' },
     ],
   },
 ]
@@ -384,8 +383,13 @@ function dashRoute(role: UserRole): string {
    no such data exists. */
 type SearchEntry = { label: string; to: string; group: 'Courses' | 'Programmes' | 'Degrees' | 'Explore'; keywords?: string }
 const SEARCH_INDEX: readonly SearchEntry[] = [
-  { label: 'Data Analytics', to: '/courses/data-analytics', group: 'Courses', keywords: 'sql excel dashboards analyst data' },
-  { label: 'Product Management', to: '/courses/product-management', group: 'Courses', keywords: 'product pm roadmap discovery' },
+  { label: 'Data Analytics', to: '/courses/data-analytics', group: 'Courses', keywords: 'sql excel dashboards analyst data northwind' },
+  { label: 'Product Management', to: '/courses/product-management', group: 'Courses', keywords: 'product pm roadmap discovery harbor desk' },
+  { label: 'Python Programming & Automation', to: '/courses/python-programming', group: 'Courses', keywords: 'python coding automation scripts etl pytest' },
+  { label: 'Data Science & AI (Dual Track)', to: '/programmes/data-science-ai', group: 'Programmes', keywords: 'data science machine learning python sql analytics' },
+  { label: 'Generative AI & LLM Systems', to: '/courses/generative-ai', group: 'Courses', keywords: 'genai llm rag embeddings agents prompt engineering' },
+  { label: 'Full Stack Web Engineering', to: '/courses/full-stack-web', group: 'Courses', keywords: 'full stack web react node express postgres typescript' },
+  { label: 'Workshops & Elixir Case Store', to: '/events', group: 'Explore', keywords: 'workshop webinar elixir coins case study cashback' },
   { label: 'All programmes', to: '/programmes', group: 'Programmes', keywords: 'courses certification professional' },
   { label: 'Certification programmes', to: '/programmes#certification', group: 'Programmes', keywords: 'certificate short' },
   { label: 'Professional programmes', to: '/programmes#professional', group: 'Programmes', keywords: 'capstone career' },
@@ -713,6 +717,8 @@ export function Nav() {
           </div>
 
           {user ? (
+            <>
+            <HeaderWalletAndNotifications variant="public" />
             <div className="skn__account">
               <button
                 type="button"
@@ -749,10 +755,14 @@ export function Nav() {
                 </div>
               ) : null}
             </div>
+            </>
           ) : (
-            <Link to="/login" className="skn__signin">
-              Sign in
-            </Link>
+            <>
+
+              <Link to="/login" className="skn__signin">
+                Sign in
+              </Link>
+            </>
           )}
 
           <Link to={pathCta.to} className="skn__cta sk-btn sk-btn-primary">
@@ -857,6 +867,9 @@ export function Nav() {
             </Link>
             {user ? (
               <>
+                <Link to="/dashboard/student" onClick={closeSheet} className="sk-btn sk-btn-secondary">
+                  Elixir Wallet &amp; Case Store
+                </Link>
                 <Link to={accountPath} onClick={closeSheet} className="sk-btn sk-btn-secondary">
                   Your account
                 </Link>
@@ -873,9 +886,14 @@ export function Nav() {
                 </button>
               </>
             ) : (
-              <Link to="/login" onClick={closeSheet} className="sk-btn sk-btn-secondary">
-                Sign in
-              </Link>
+              <>
+                <Link to="/events" onClick={closeSheet} className="sk-btn sk-btn-secondary">
+                  ₹99 Workshops &amp; Webinars
+                </Link>
+                <Link to="/login" onClick={closeSheet} className="sk-btn sk-btn-secondary">
+                  Sign in
+                </Link>
+              </>
             )}
           </div>
         </div>
@@ -904,7 +922,7 @@ export function Footer() {
           <Link to="/" className="skf__mark" aria-label="Skylent home">
             Skylent
           </Link>
-          <p className="skf__line">Execution-first programmes, browser labs, and verifiable proof-of-work dossiers. Headquartered in Bhubaneswar, Odisha, India.</p>
+          <p className="skf__line">Programmes you can start, and a place to keep the work you do.</p>
         </div>
         <nav aria-label="Footer" className="skf__nav">
           {FOOTER_COLUMNS.map((column) => (
