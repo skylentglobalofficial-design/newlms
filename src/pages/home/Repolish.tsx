@@ -103,6 +103,7 @@ export function HomeHero({
           </p>
           <h1 id="hx-hero-title" className="hxw-hero__title hx-rise">
             Don’t just watch lectures. <em>Ship real work.</em>
+            <span className="hx-sr">Learn. Practise. Build. <em>Prove it.</em></span>
           </h1>
           <p className="hxw-hero__lead hx-rise">
             Execute live SQL queries, Python ETL pipelines, Product PRDs, and Grounded RAG systems in your browser—and graduate with a cryptographic Proof-of-Work dossier recruiters can verify in one click.

@@ -100,38 +100,20 @@ export type Degree = {
 }
 
 /** The one wording used wherever a fact is not published yet. */
-export const PUBLISHED_BY_INSTITUTION = "Published once an institution is confirmed"
+export const PUBLISHED_BY_INSTITUTION = "Shared in the partner university syllabus"
 
 const STATIC_STATUS: Record<DegreeRoute["status"], DegreeStatus> = { "coming-soon": "coming_soon" }
 
 function fromStaticRoute(route: DegreeRoute): Degree {
-  const isUg = route.level === "UG"
-  const isOnline = route.studyMode === "online"
   return {
     slug: route.slug,
     title: route.title,
-    deliveryMode: isOnline ? "ONLINE" : "CAMPUS",
+    deliveryMode: route.studyMode === "online" ? "ONLINE" : "CAMPUS",
     programmeType: "DEGREE",
-    level: isUg ? "UNDERGRADUATE" : "POSTGRADUATE",
+    level: route.level === "UG" ? "UNDERGRADUATE" : "POSTGRADUATE",
     discipline: route.field,
     status: STATIC_STATUS[route.status],
     sample: route.sample,
-    duration: isUg ? "3–4 Years (6–8 Semesters · NEP-Aligned)" : "2 Years (4 Semesters)",
-    intake: "2026–27 Academic Partner Intake (Register Interest)",
-    eligibility: isUg
-      ? "10+2 (Higher Secondary) from a recognised board"
-      : "Recognised undergraduate degree in any discipline",
-    learningMode: {
-      pacing: isOnline ? "Weekly live tutorials + self-paced recorded lectures (12–15 hrs/week)" : "Full-time on-campus weekday timetable",
-      liveSessions: isOnline ? "Weekend & evening faculty tutorials with Q&A" : "In-person lectures, studio labs, and seminar groups",
-      support: "Academic advisor + Skylent OS practical workspace access",
-    },
-    tools: ["SQL & Relational Databases", "Spreadsheets & Financial Modelling", "Python Analytics", "Case Writing Studio"],
-    assessments: ["Semester examinations", "Graded case briefs", "Capstone project defense"],
-    careerRoles: isUg
-      ? ["Business & Operations Analyst", "Junior Data Analyst", "Associate Product Coordinator"]
-      : ["Product Manager", "Commercial Strategy Lead", "Senior Analytics Manager"],
-    skills: ["Quantitative Analysis", "Commercial Problem Framing", "SQL & Data Literacy", "Structured Written Communication"],
   }
 }
 

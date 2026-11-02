@@ -4,10 +4,10 @@ import { PG_PATHWAY } from "../../lib/product-architecture"
 import { C, T } from "../../tokens"
 
 const specialisations = [
-  { name: "Technology & systems", role: "Depth in applied software architecture, data systems, and cloud engineering." },
-  { name: "Data & decision science", role: "Statistical modelling, SQL analytics, and commercial judgement under uncertainty." },
-  { name: "Business & product leadership", role: "Case briefs, product trade-offs, and operating decisions." },
-  { name: "Applied research", role: "Thesis-shaped inquiry with faculty-defined assessment and reproducible artefacts." },
+  { name: "Technology & systems", role: "Depth in applied systems, not a bootcamp syllabus." },
+  { name: "Data & decision", role: "Analytics and judgement under incomplete information." },
+  { name: "Business & leadership", role: "Cases, trade-offs, and operating decisions." },
+  { name: "Research", role: "Thesis-shaped inquiry with faculty-defined assessment — when an institution runs it." },
 ]
 
 export default function PostgraduatePage() {
@@ -16,33 +16,33 @@ export default function PostgraduatePage() {
       <LinePageHeader
         kicker="Education · Postgraduate"
         maturity="coming_soon"
-        title="Specialisation with a term structure and capstone depth."
-        lead="Postgraduate pathways on Skylent are organised around terms, domain specialisations, case studios, and graded capstone defenses in partnership with degree-granting universities."
+        title="Specialisation with a term structure — not UG rewritten."
+        lead="A postgraduate programme on Skylent is organised as term, specialisation, module, case, project, and assessment. There is no PG catalogue to enroll in yet."
       />
       <UpcomingBanner
-        title="Academic partner postgraduate tracks — Register interest"
-        body="Explore our planned postgraduate specialisation domains below, or register interest on the Education page for upcoming partner university intakes."
+        title="No postgraduate programmes are published"
+        body="Tracks below are conceptual domains for the product, not live specialisations, faculty lists, or guaranteed career outcomes."
       />
       <section className="arch-section">
-        <PathwayModel title="Postgraduate academic model" steps={PG_PATHWAY} />
+        <PathwayModel title="Intended postgraduate model" steps={PG_PATHWAY} />
       </section>
       <section className="arch-section">
-        <div className="skylent-label" style={{ color: C.slate, marginBottom: 16 }}>Undergraduate vs. Postgraduate structure</div>
+        <div className="skylent-label" style={{ color: C.slate, marginBottom: 16 }}>Why this is not undergraduate</div>
         <CompareTable
           leftTitle="Undergraduate"
           rightTitle="Postgraduate"
           rows={[
-            { aspect: "Core question", left: "What are the foundational disciplines?", right: "What will you specialise in, build, and defend?" },
-            { aspect: "Academic spine", left: "Degree → semester → core subject", right: "Programme → term → domain specialisation" },
-            { aspect: "Studio work", left: "Foundational labs and guided projects", right: "Industry cases, thesis-grade capstone, assessed judgement" },
-            { aspect: "Graduate proof", left: "Academic progression and skill portfolio", right: "Verifiable domain capstone dossier in Career OS" },
+            { aspect: "Question", left: "What is the degree made of?", right: "What will you specialise in, and prove?" },
+            { aspect: "Spine", left: "Degree → semester → subject", right: "Programme → term → specialisation" },
+            { aspect: "Work", left: "Taught modules and projects", right: "Cases, a substantial project, assessed judgement" },
+            { aspect: "Outcome language", left: "Progression and portfolio", right: "Readiness in the specialisation — not a placement rate" },
           ]}
         />
       </section>
       <section className="arch-section">
-        <div className="skylent-label" style={{ color: C.slate, marginBottom: 8 }}>Specialisation domains · Academic partner roadmap</div>
+        <div className="skylent-label" style={{ color: C.slate, marginBottom: 8 }}>Specialisation domains · not enrollable</div>
         <p style={{ color: C.slate, fontSize: 13.5, lineHeight: 1.6, maxWidth: 560, margin: "0 0 18px" }}>
-          Core postgraduate domains designed for co-delivery with partner universities, combining academic seminars with Skylent OS practical studios.
+          These names describe how a university might cut a PG programme on Skylent. They are not courses you can start today.
         </p>
         <div>
           {specialisations.map((item, i) => (
