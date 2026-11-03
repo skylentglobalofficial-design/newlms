@@ -10,7 +10,7 @@ import express from "express"
 import { BCRYPT_ROUNDS, normalizeEmail } from "./lib/auth.js"
 import { assertProductionEnv, redactSecrets } from "./lib/env.js"
 import { describeAiReadiness } from "./lib/skylent-ai/service.js"
-import { apexRedirectLocation, injectCanonicalLink } from "./lib/public-host.js"
+import { apexRedirectLocation, injectCanonicalLink, injectOpenGraphMeta } from "./lib/public-host.js"
 import { checkMigrationState, decideStartup } from "./lib/migration-guard.js"
 import { prisma } from "./lib/prisma.js"
 import { isDatabaseUnavailableError, isMissingSchemaError } from "./lib/schema-capabilities.js"
@@ -103,9 +103,8 @@ app.use("/api", (_request, response) => {
   response.status(404).json({ error: "Not found" })
 })
 
-if (process.env.NODE_ENV === "production") {
-  const clientDist = resolve(dirname(fileURLToPath(import.meta.url)), "../../dist")
-
+const clientDist = resolve(dirname(fileURLToPath(import.meta.url)), "../../dist")
+if (process.env.NODE_ENV === "production" || existsSync(clientDist)) {
   app.use(
     express.static(clientDist, {
       index: false,
@@ -144,7 +143,8 @@ if (process.env.NODE_ENV === "production") {
       return
     }
     response.setHeader("Cache-Control", "no-cache")
-    response.type("html").send(injectCanonicalLink(html, request.path))
+    const enrichedHtml = injectOpenGraphMeta(injectCanonicalLink(html, request.path), request.path)
+    response.type("html").send(enrichedHtml)
   })
 }
 

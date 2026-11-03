@@ -383,3 +383,27 @@
     transition: none;
   }
 }
+
+/* ── V19 Royal Midnight Navy + Gold + Emerald Socratic AI Coach Drawer ── */
+.os-ai .os-ai-head {
+  background: linear-gradient(145deg, #11152c 0%, #1d1849 100%);
+  border-bottom: 1px solid rgba(251, 191, 36, 0.36);
+}
+
+.os-ai .os-ai-head .os-ai-label {
+  color: #fbbf24;
+  font-weight: 700;
+}
+
+.os-ai .os-ai-chips li {
+  background: rgba(16, 185, 129, 0.16);
+  border-color: rgba(52, 211, 153, 0.38);
+  color: #34d399;
+  font-weight: 700;
+}
+
+.os-ai .os-ai-code {
+  background: linear-gradient(145deg, #11152c 0%, #1d1849 100%);
+  border: 1px solid rgba(251, 191, 36, 0.32);
+  color: #f8fafc;
+}

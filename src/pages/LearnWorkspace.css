@@ -1535,3 +1535,52 @@
   .os-slide__frame { border-radius: 12px; min-height: 0; }
 }
 .os-slide + .os-lesson-head h1 { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; margin: 0; }
+
+/* ── V19 Royal Midnight Navy + Warm Gold + Emerald Course Player Header ── */
+.os-shell .os-top {
+  background: linear-gradient(145deg, #11152c 0%, #1d1849 100%);
+  border-bottom: 1px solid rgba(251, 191, 36, 0.34);
+  box-shadow: 0 8px 24px -12px rgba(17, 21, 44, 0.45);
+}
+
+.os-shell .os-top-module {
+  color: #fbbf24;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.os-shell .os-top-course {
+  color: #ffffff;
+  font-weight: 800;
+}
+
+.os-shell .os-top-progress > span {
+  color: #a5b4fc;
+  font-weight: 600;
+}
+
+.os-shell .os-top .os-progress-bar {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.os-shell .os-top .os-progress-bar > span {
+  background: #34d399;
+}
+
+.os-shell .os-slide__frame {
+  background: linear-gradient(145deg, #11152c 0%, #1d1849 100%);
+  border: 1px solid rgba(251, 191, 36, 0.38);
+}
+
+.os-shell .os-slide__kicker {
+  color: #fbbf24;
+  font-weight: 700;
+}
+
+.os-shell .os-slide__concepts li {
+  background: #ffffff;
+  border-color: #ffffff;
+  color: #0f172a;
+  font-weight: 700;
+}

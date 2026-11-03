@@ -1,5 +1,5 @@
 /**
- * /programmes — clean 3x2 catalogue index.
+ * /programmes — clean 3x2 catalogue index in the Skylent Royal Midnight Navy + Crisp White theme.
  *
  * Rows come from GET /catalog/programs (or the published list when that request fails,
  * see useCatalogPrograms). Readiness uses programmeTruth, the same helper as the programme page.
@@ -18,10 +18,10 @@ import type { CatalogProgramSummary } from "../lib/catalog-api"
 import { AVAILABILITY_UNKNOWN, programmesIndexIntro, publicCatalogueState, publicCatalogueStatus } from "../lib/catalogue-availability"
 import { catalogueProgrammeIsOpen, isPublicProgrammeIndexRow } from "../lib/programme-catalogue"
 import { programmeDiscoveryFor } from "../lib/programme-discovery"
-import analyticsVisual from "@/assets/site/program-analytics.jpg"
-import productVisual from "@/assets/site/program-product.jpg"
+import analyticsVisual from "@/assets/site/home/program-analytics-800.webp"
+import productVisual from "@/assets/site/home/program-product-800.webp"
 import scienceVisual from "@/assets/site/degree-computing.jpg"
-import webVisual from "@/assets/site/program-web.jpg"
+import webVisual from "@/assets/site/home/program-web-800.webp"
 import aiVisual from "@/assets/site/program-ai.jpg"
 import sqlVisual from "@/assets/site/program-library.jpg"
 import "./ProgramsIndex.css"
@@ -38,6 +38,8 @@ type Row = {
   image: string
   alt: string
   meta: string
+  labBadge: string
+  skills: readonly string[]
   search: string
 }
 
@@ -60,6 +62,8 @@ const CARD_FACE: Record<
     image: string
     alt: string
     meta: string
+    labBadge: string
+    skills: readonly string[]
   }
 > = {
   "data-analytics-pro": {
@@ -70,6 +74,8 @@ const CARD_FACE: Record<
     image: analyticsVisual,
     alt: "Analytics charts and notebook on a desk.",
     meta: "5 modules · 15 lessons · 1 graded capstone",
+    labBadge: "Northwind SQL Lab · 166 Rows",
+    skills: ["SQL Joins & CTEs", "Spreadsheets", "Margin Audit"],
   },
   "product-management": {
     title: "Product Management",
@@ -79,6 +85,8 @@ const CARD_FACE: Record<
     image: productVisual,
     alt: "Product working session around a table.",
     meta: "5 modules · 15 lessons · 1 graded capstone",
+    labBadge: "Harbor Desk PRD Studio",
+    skills: ["PRD Scoping", "User Research", "Feature Triage"],
   },
   "data-science-ai": {
     title: "Data Science & AI",
@@ -88,6 +96,8 @@ const CARD_FACE: Record<
     image: scienceVisual,
     alt: "Data science code and cohort analysis on screens.",
     meta: "10 modules · 30 lessons · 2 capstones",
+    labBadge: "SQL + Python Dual Sandbox",
+    skills: ["SQL + Python", "Cohort Analysis", "Churn Modelling"],
   },
   "full-stack": {
     title: "Full Stack Development",
@@ -97,6 +107,8 @@ const CARD_FACE: Record<
     image: webVisual,
     alt: "Full-stack engineering workspace on a laptop.",
     meta: "5 modules · 15 lessons · 1 graded capstone",
+    labBadge: "React, Node & PostgreSQL Lab",
+    skills: ["React & TypeScript", "Node REST APIs", "PostgreSQL"],
   },
   "generative-ai-program": {
     title: "Generative AI",
@@ -106,6 +118,8 @@ const CARD_FACE: Record<
     image: aiVisual,
     alt: "Generative AI system architecture and evaluation studio.",
     meta: "5 modules · 15 lessons · 1 graded capstone",
+    labBadge: "Grounded RAG & Eval Studio",
+    skills: ["Grounded RAG", "Prompt Guardrails", "LLM Evals"],
   },
   "sql-certificate": {
     title: "SQL for Business Analytics",
@@ -115,6 +129,8 @@ const CARD_FACE: Record<
     image: sqlVisual,
     alt: "SQL query and analytics workspace.",
     meta: "5 modules · 15 lessons · Live SQL lab",
+    labBadge: "Browser SQL Workbench",
+    skills: ["Multi-Table Joins", "Aggregations", "Data Quality"],
   },
 }
 
@@ -132,9 +148,27 @@ const KIND_COPY: Record<Kind, { title: string; lead: string; label: string }> = 
 }
 
 const LEARNING_STEPS = [
-  { title: "1. Understand the concept", text: "Short, clear written lessons that explain the 'why' in plain language before you write a single line of code or spec." },
-  { title: "2. Practise in your browser", text: "Run real SQL queries, Python scripts, or product case decisions right inside Skylent OS — with Socratic AI and human TA support." },
-  { title: "3. Build proof you keep", text: "Graduate with a graded capstone project and a verifiable credential link (/verify) that shows employers exactly what you built." },
+  {
+    code: "STAGE 01 · CONCEPT & INTUITION",
+    badge: "✓ English + Hinglish AI",
+    title: "1. Understand the concept",
+    text: "Short, clear written lessons that explain the 'why' in plain language before you write a single line of code or spec.",
+    pills: ["Plain-English Notes", "Hinglish AI Mode", "Concept Checks"],
+  },
+  {
+    code: "STAGE 02 · IN-BROWSER WORKBENCH",
+    badge: "✓ Zero Local Setup",
+    title: "2. Practise in your browser",
+    text: "Run real SQL queries, Python scripts, or product case decisions right inside Skylent OS — with Socratic AI and human TA support.",
+    pills: ["Live SQL & Python", "Harbor Desk PRD", "20-Min TA Help"],
+  },
+  {
+    code: "STAGE 03 · VERIFIED PROOF OF WORK",
+    badge: "✓ Public /verify Link",
+    title: "3. Build proof you keep",
+    text: "Graduate with a graded capstone project and a verifiable credential link (/verify) that shows employers exactly what you built.",
+    pills: ["Graded Capstone", "Rubric Breakdown", "Career OS Unlock"],
+  },
 ] as const
 
 function kindOf(program: CatalogProgramSummary): Kind | null {
@@ -163,6 +197,8 @@ function toRow(program: CatalogProgramSummary): Row | null {
   const image = face?.image || analyticsVisual
   const alt = face?.alt || `${title} workspace preview`
   const meta = face?.meta || "5 modules · 15 lessons · 1 capstone"
+  const labBadge = face?.labBadge || "In-Browser Lab Studio"
+  const skills = face?.skills || ["Guided Lessons", "Browser Lab", "Capstone Project"]
   return {
     program,
     truth,
@@ -174,7 +210,9 @@ function toRow(program: CatalogProgramSummary): Row | null {
     image,
     alt,
     meta,
-    search: `${title} ${program.name} ${role} ${line} ${category} ${outcomeFor(program.slug)}`.toLowerCase(),
+    labBadge,
+    skills,
+    search: `${title} ${program.name} ${role} ${line} ${category} ${skills.join(" ")} ${outcomeFor(program.slug)}`.toLowerCase(),
   }
 }
 
@@ -200,33 +238,31 @@ function ProgrammeCard({ row, confirmed }: { row: Row; confirmed: boolean }) {
     <li className="pgx-card">
       <Link to={to} className="pgx-card__link" data-clear-launcher>
         <span className="pgx-card__media">
-          <img src={row.image} alt={row.alt} loading="lazy" decoding="async" />
+          <img src={row.image} alt={row.alt} width={800} height={500} loading="lazy" decoding="async" />
           {showStatus ? (
             <span className={live ? "pgx-status pgx-status--open" : "pgx-status"}>
-              {status}
+              {live ? `✓ ${status}` : status}
             </span>
           ) : null}
+          <span className="pgx-card__lab-pill">{row.labBadge}</span>
         </span>
         <span className="pgx-card__body">
           <span className="pgx-card__kicker">
-            {row.category} · <span style={{ textTransform: "none", fontWeight: 500, color: "#64748b" }}>{row.role}</span>
+            {row.category} · <span className="pgx-card__role">{row.role}</span>
           </span>
           <span className="pgx-card__title">{row.title}</span>
           <span className="pgx-card__line">{row.line}</span>
-          <span
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              gap: 8,
-              marginTop: "auto",
-              paddingTop: 14,
-              borderTop: "1px solid #f1f5f9",
-            }}
-          >
-            <span style={{ fontSize: 12.5, fontWeight: 600, color: "#475569" }}>{row.meta}</span>
-            <span className="pgx-card__go" style={{ marginTop: 0, paddingTop: 0 }}>
-              View path <ArrowRight />
+          <span className="pgx-skill-tags">
+            {row.skills.map((skill) => (
+              <span key={skill} className="pgx-skill-tag">
+                {skill}
+              </span>
+            ))}
+          </span>
+          <span className="pgx-card__footer">
+            <span className="pgx-card__meta">{row.meta}</span>
+            <span className="pgx-card__go">
+              Explore track <ArrowRight />
             </span>
           </span>
         </span>
@@ -295,13 +331,53 @@ export default function ProgramsPage() {
     <PageShell aurora={false}>
       <div className="site-light pgx">
         <section className="pgx-intro" aria-labelledby="pgx-title">
-          <div className="sky-container pgx-intro__inner">
-            <p className="pgx-eyebrow">Skylent programmes</p>
-            <h1 id="pgx-title">Choose the skill you want to build and prove.</h1>
-            <p className="pgx-lede">
-              Every programme takes you from first principles to a real capstone project inside your browser — no prior job experience or local setup required.
-            </p>
-            <p className="pgx-sr">{intro}</p>
+          <div className="sky-container pgx-intro__split">
+            <div className="pgx-intro__inner">
+              <p className="pgx-eyebrow">Skylent programmes · 6 Career Tracks</p>
+              <h1 id="pgx-title">Choose the skill you want to build and prove.</h1>
+              <p className="pgx-lede">
+                Every programme takes you from first principles to a real capstone project inside your browser — no prior job experience or local setup required.
+              </p>
+              <div className="pgx-intro__actions">
+                <Link className="sk-btn sk-btn-primary" to="/path">
+                  Find My Path in 90 Seconds
+                  <ArrowRight />
+                </Link>
+                <Link className="sk-btn sk-btn-secondary" to="/events">
+                  Try a ₹99 Live Workshop (100% Coin Back)
+                </Link>
+              </div>
+              <p className="pgx-sr">{intro}</p>
+            </div>
+
+            <aside className="pgx-royal-hero-card" aria-label="Skylent Execution Standard">
+              <div className="pgx-royal-hero-card__top">
+                <code className="pgx-royal-hero-card__code">SKYLENT OS · EXECUTION STANDARD</code>
+                <span className="pgx-royal-hero-card__badge">✓ 6 Live Tracks</span>
+              </div>
+              <strong className="pgx-royal-hero-card__title">Every Track Includes a Browser Lab &amp; Verified Capstone</strong>
+              <span className="pgx-royal-hero-card__sub">Zero local setup · Hinglish + English AI Coach · 20-Min Human TA Help</span>
+              <div className="pgx-royal-hero-card__metrics">
+                <div>
+                  <span>ENTRY COST</span>
+                  <strong>₹0 Free Pilot</strong>
+                </div>
+                <div>
+                  <span>WORKSHOP CREDITS</span>
+                  <strong>₹99 = 99 Coins</strong>
+                </div>
+                <div>
+                  <span>CAREER OS GATE</span>
+                  <strong>Unlocks at 60%</strong>
+                </div>
+              </div>
+              <div className="pgx-royal-hero-card__pills">
+                <span>Northwind SQL Lab</span>
+                <span>Harbor Desk PRD</span>
+                <span>Python &amp; RAG</span>
+                <span>Public /verify ID</span>
+              </div>
+            </aside>
           </div>
         </section>
 
@@ -406,15 +482,26 @@ export default function ProgramsPage() {
         <section className="pgx-how" aria-labelledby="pgx-how-title">
           <div className="sky-container">
             <header className="pgx-section__head">
-              <h2 id="pgx-how-title">How you go from beginner to job-ready</h2>
+              <div>
+                <p className="pgx-eyebrow">Step-by-Step Execution</p>
+                <h2 id="pgx-how-title">How you go from beginner to job-ready</h2>
+              </div>
               <p>You do not need prior work experience. Every programme builds your capability in three clear stages.</p>
             </header>
             <ol className="pgx-steps">
-              {LEARNING_STEPS.map((step, index) => (
-                <li key={step.title}>
-                  <span className="pgx-steps__n" aria-hidden="true">{index + 1}</span>
+              {LEARNING_STEPS.map((step) => (
+                <li key={step.title} className="pgx-royal-step">
+                  <div className="pgx-royal-step__top">
+                    <code className="pgx-royal-step__code">{step.code}</code>
+                    <span className="pgx-royal-step__badge">{step.badge}</span>
+                  </div>
                   <span className="pgx-steps__title">{step.title}</span>
                   <span className="pgx-steps__text">{step.text}</span>
+                  <div className="pgx-royal-step__pills">
+                    {step.pills.map((pill) => (
+                      <span key={pill}>{pill}</span>
+                    ))}
+                  </div>
                 </li>
               ))}
             </ol>
@@ -424,13 +511,19 @@ export default function ProgramsPage() {
         <section className="pgx-close" aria-labelledby="pgx-close-title">
           <div className="sky-container pgx-close__inner">
             <div>
+              <code className="pgx-close__eyebrow">90-SECOND SKILL &amp; TRACK DIAGNOSTIC</code>
               <h2 id="pgx-close-title">Not sure which track fits you best?</h2>
               <p>Answer 3 quick questions in our 90-second path finder to see which programme matches your background and goal.</p>
             </div>
-            <Link className="sk-btn sk-btn-primary" to="/path">
-              Find My Path in 90 Seconds
-              <ArrowRight />
-            </Link>
+            <div className="pgx-close__actions">
+              <Link className="sk-btn sk-btn-primary" to="/path">
+                Find My Path in 90 Seconds
+                <ArrowRight />
+              </Link>
+              <Link className="sk-btn sk-btn-secondary pgx-close__secondary" to="/events">
+                Explore ₹99 Live Workshops
+              </Link>
+            </div>
           </div>
         </section>
       </div>
