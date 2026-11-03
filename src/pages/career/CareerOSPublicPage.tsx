@@ -38,13 +38,13 @@ function FeatureCard({ feature }: { feature: ProductFeature }) {
 const SOURCES = [
   { title: "6 Live Courses & Programmes", text: "Complete 60% of any authored course to unlock Career Rise and carry graded capstones into your portfolio.", to: "/courses" },
   { title: "Verified Skill-Gap Match", text: "Compare your verified skills against target roles with live match percentages and missing-skill badges.", to: "/career-os/profile" },
-  { title: "Cryptographic Credentials", text: "Attach publicly verifiable Course and Programme Master (-PGM) certificates with evidence summaries.", to: "/verify" },
+  { title: "Verifiable Project Certificates", text: "Attach publicly verifiable Course and Programme Master certificates (/verify) with project summaries.", to: "/verify" },
 ]
 
 const FEATURES = publicFeatures(CAREER_OS_FEATURES).filter((feature) => feature.id !== "next-step")
 
 function statusLabel(status: ProductFeature["status"]): string {
-  if (status === "live") return "Merit-Gated (60% Curriculum Gate)"
+  if (status === "live") return "Unlocks at 60% Course Progress"
   if (status === "soon") return "Coming soon"
   if (status === "sample") return "Interactive Preview"
   return "In development"
@@ -56,12 +56,12 @@ export default function CareerOSPublicPage() {
       <div className="site-light hm-page hx-page cpx">
         <section className="cpx-hero" aria-labelledby="cpx-title">
           <div className="sky-container cpx-hero__inner">
-            <p className="hx-eyebrow hx-eyebrow--dark">Career OS</p>
+            <p className="hx-eyebrow hx-eyebrow--dark">Career OS · Verified Portfolio &amp; Role Matching</p>
             <h1 id="cpx-title" className="cpx-h1">
               Your learning, projects and profile, <em>in one place.</em>
             </h1>
             <p className="cpx-lead">
-              Career OS is a dedicated workspace for verified portfolio matching, mock interview defense, and direct skill match. Career Rise unlocks through verified merit at 60% curriculum completion in your enrolled course.
+              Career OS is your workspace for building a recruiter-ready project portfolio, checking how your skills match open roles, and practising mock interview questions. It unlocks automatically once you complete 60% of any course.
             </p>
             <div className="hx-hero__actions">
               <Link className="sk-btn sk-btn-primary hx-btn" to="/signup">
@@ -75,21 +75,21 @@ export default function CareerOSPublicPage() {
             <div className="cpx-pillars" aria-label="Career OS 3-Pillar Architecture">
               <div className="cpx-pillar">
                 <span>01 · Build in Skylent OS</span>
-                <p>Execute SQL queries, Python scripts, and Harbor Desk product specs inside graded course sandboxes.</p>
+                <p>Write real SQL queries, Python scripts, and Harbor Desk product specs inside graded browser labs.</p>
               </div>
               <div className="cpx-pillar">
-                <span>02 · Keep Verified Evidence</span>
-                <p>Unlock Career Rise at 60% curriculum completion and attach cryptographic (-PGM) proof-of-work records.</p>
+                <span>02 · Keep Verified Proof</span>
+                <p>Unlock Career Rise at 60% course progress and attach publicly verifiable project certificates (/verify).</p>
               </div>
               <div className="cpx-pillar">
-                <span>03 · Prepare for Roles</span>
-                <p>Benchmark skill-gap match against target roles and rehearse timed Boardroom Cold Calls before interviews.</p>
+                <span>03 · Apply with Confidence</span>
+                <p>Check your skill-gap match against target roles and rehearse timed mock interview questions before you apply.</p>
               </div>
             </div>
           </div>
         </section>
 
-        <CareerJourney eyebrow="How it works" showLink={false} />
+        <CareerJourney eyebrow="Step-by-step career journey" showLink={false} />
 
         <section className="cpx-parts" aria-labelledby="cpx-parts-title">
           <div className="sky-container">
@@ -112,7 +112,7 @@ export default function CareerOSPublicPage() {
         <section className="cpx-flow" aria-labelledby="cpx-flow-title">
           <div className="sky-container">
             <h2 id="cpx-flow-title" className="hx-h2 hx-h2--sm">
-              What can sit beside <em>the profile you write.</em>
+              What sits beside <em>the profile you build.</em>
             </h2>
             <div className="cpx-flow__row">
               <ul className="cpx-sources">
@@ -130,7 +130,7 @@ export default function CareerOSPublicPage() {
               </div>
               <div className="cpx-hub">
                 <b>Career OS</b>
-                <span>Profile · Learning · The work you record</span>
+                <span>Profile · Verified Projects · Role Skill-Gap Match</span>
               </div>
             </div>
             <p className="cpx-note">Career Rise unlocks automatically at 60% course completion so every role application is backed by verified work.</p>
@@ -141,7 +141,7 @@ export default function CareerOSPublicPage() {
           <div className="hx-hero__glow" aria-hidden="true" />
           <div className="sky-container hx-close__inner">
             <h2 id="cpx-close-title" className="hx-close__title">
-              Sign in to write <em>your profile.</em>
+              Sign in to build <em>your profile.</em>
             </h2>
             <div className="hx-hero__actions">
               <Link className="sk-btn sk-btn-primary hx-btn" to="/programmes">

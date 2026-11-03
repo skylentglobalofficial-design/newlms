@@ -1,10 +1,10 @@
-# SKYLENT (`skylent.live`) — COMPLETE AI & FOUNDER CONTINUITY HANDOFF MASTER (V19)
+# SKYLENT (`skylent.live`) — COMPLETE AI & FOUNDER CONTINUITY HANDOFF MASTER (V20.1)
 
 * **Last Updated:** November 3, 2026
 * **Production Domain:** [https://skylent.live](https://skylent.live)
 * **GitHub Repository:** `https://github.com/skylentglobalofficial-design/newlms` (`main` branch)
 * **Local Windows Path:** `C:\Users\Chandan\Documents\newlms`
-* **Latest Verified Release Package:** `skylent-v19-complete-handoff-master.zip` (built on top of V16 commit `0884c92`, V17 commit `ee9d2df`, and V18 Homepage Royal Theme release)
+* **Latest Verified Release Package:** `skylent-v20-1-zero-ai-build-verified.zip` (built on top of V16 commit `0884c92`, V17 commit `ee9d2df`, and V18 Homepage Royal Theme release)
 
 ---
 

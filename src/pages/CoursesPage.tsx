@@ -1,30 +1,41 @@
-/**
- * /courses — public course index.
- *
- * Rows come from GET /catalog/courses (or the published list when that request fails).
- * Readiness uses coursePublicView, the same helper as the course detail page.
- * Nothing here states a fee, a learner count, or a placement outcome.
- */
-import { Link } from "react-router-dom"
+import { useEffect, useMemo, useState } from "react"
+import { Link, useSearchParams } from "react-router-dom"
 import { PageShell } from "../components/shared"
 import { LearnPillarSubnav } from "../components/product/Architecture"
+import { CourseThumb } from "../components/product/ProductLanguage"
 import { TruthChip } from "../components/skylent/primitives"
-import { STATUS_NOT_CONFIRMED } from "../components/programme/CatalogueNotice"
+import { catalogCourseListView, type CatalogCourseListView } from "../lib/catalog-maturity"
 import { useCatalogCourses } from "../hooks/useCatalog"
-import { coursePublicView, type CoursePublicView } from "../lib/catalog-maturity"
-import { isPublicCourseRow } from "../lib/course-catalogue"
+import CatalogueNotice, { STATUS_NOT_CONFIRMED } from "../components/programme/CatalogueNotice"
 import "./Catalog.css"
 
 export default function CoursesPage() {
+  const [searchParams] = useSearchParams()
+  const [search, setSearch] = useState(searchParams.get("q") ?? "")
+  const [category, setCategory] = useState("All")
   const catalog = useCatalogCourses()
-  const confirmed = !catalog.offline
 
-  const views = (catalog.data ?? [])
-    .filter(isPublicCourseRow)
-    .map(coursePublicView)
+  useEffect(() => {
+    const q = searchParams.get("q")
+    if (q) setSearch(q)
+  }, [searchParams])
 
-  const ready = views.filter((view) => view.authored)
-  const listings = views.filter((view) => !view.authored)
+  const courses = catalog.data ?? []
+  const views = useMemo(() => courses.map(catalogCourseListView), [courses])
+  const categories = useMemo(
+    () => ["All", ...Array.from(new Set(courses.map((course) => course.category)))],
+    [courses],
+  )
+
+  const filtered = views.filter((view) => {
+    const haystack = `${view.title} ${view.course.category} ${view.course.level}`.toLowerCase()
+    const matchSearch = haystack.includes(search.trim().toLowerCase())
+    const matchCat = category === "All" || view.course.category === category
+    return matchSearch && matchCat
+  })
+
+  const ready = filtered.filter((view) => view.maturity === "ready")
+  const listings = filtered.filter((view) => view.maturity !== "ready")
 
   return (
     <PageShell aurora={false}>
@@ -40,37 +51,47 @@ export default function CoursesPage() {
             <h1>{catalog.offline ? "Skylent courses." : "Courses you can start this week."}</h1>
             <p className="cat-lead">
               {catalog.offline
-                ? `${STATUS_NOT_CONFIRMED}. The live course catalogue could not be reached just now, so availability is not confirmed. You can browse courses below or retry before starting.`
-                : "Every self-paced course includes 5 modules, 15 written lessons, an interactive in-browser SQL/code/PRD sandbox, a graded capstone project, and a verifiable SKL certificate."}
+                ? `Focused courses with lessons, checks and practice. ${STATUS_NOT_CONFIRMED}: the catalogue could not be checked just now, so enrolment is paused.`
+                : "Focused self-paced courses with written lessons, concept checks, in-browser labs, and a graded capstone project. All six flagship courses — Data Analytics, Product Management, Python Programming, Data Science & AI, Generative AI, and Full Stack Web — are open now."}
             </p>
-            <div className="cat-actions">
-              <Link className="cat-btn cat-btn-primary" to="/programmes">
-                Compare full career programmes
-              </Link>
-              <Link className="cat-btn cat-btn-ghost" to="/path">
-                Find My Path in 90 Seconds
-              </Link>
+            <Link className="cat-text-link" to="/programmes">Looking for a structured career pathway? Compare all 6 programmes →</Link>
+            <input
+              className="cat-search"
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+              placeholder="Search courses by skill or role (e.g. SQL, Python, Product, AI)..."
+              aria-label="Search courses"
+            />
+            <div className="cat-filters" role="group" aria-label="Course category">
+              {categories.map((item) => (
+                <button
+                  key={item}
+                  type="button"
+                  className={category === item ? "cat-chip is-on" : "cat-chip"}
+                  aria-pressed={category === item}
+                  onClick={() => setCategory(item)}
+                >
+                  {item}
+                </button>
+              ))}
             </div>
           </div>
         </section>
 
+        {catalog.offline ? <CatalogueNotice what="This list" onRetry={() => void catalog.reload()} /> : null}
         <section className="cat-section">
           <div className="cat-rail">
             {catalog.loading ? (
-              <p className="cat-empty">Loading courses...</p>
-            ) : catalog.offline ? (
-              <div className="cat-notice" role="status">
-                <p>
-                  <strong>{STATUS_NOT_CONFIRMED}.</strong> Course availability could not be checked right now.{" "}
-                  <button type="button" className="cat-chip" onClick={() => void catalog.reload()}>
-                    Try again
-                  </button>
-                </p>
+              <p className="cat-empty">Loading the current catalogue…</p>
+            ) : catalog.error ? (
+              <div className="cat-empty">
+                <p>The course catalogue could not be loaded.</p>
+                <button type="button" className="cat-btn cat-btn-ghost" onClick={() => void catalog.reload()}>
+                  Try again
+                </button>
               </div>
-            ) : null}
-
-            {!catalog.loading && views.length === 0 ? (
-              <p className="cat-empty">No courses are published yet.</p>
+            ) : filtered.length === 0 ? (
+              <p className="cat-empty">No courses match these filters.</p>
             ) : (
               <>
                 {ready.length > 0 ? (
@@ -78,19 +99,18 @@ export default function CoursesPage() {
                     <h2>{catalog.offline ? "Full courses" : "Open now"}</h2>
                     <div className="cat-ready">
                       {ready.map((view) => (
-                        <ReadyCourseCard key={view.course.slug} view={view} confirmed={confirmed} />
+                        <CourseCard key={view.slug} view={view} featured confirmed={!catalog.offline} />
                       ))}
                     </div>
                   </div>
                 ) : null}
-
                 {listings.length > 0 ? (
                   <div className="cat-group">
                     <h2>{catalog.offline ? "Course outlines" : "Opening soon"}</h2>
                     <p className="cat-fine">Outlines are published; enrolment opens when the lessons are ready.</p>
                     <div className="cat-grid">
                       {listings.map((view) => (
-                        <ListingCourseCard key={view.course.slug} view={view} confirmed={confirmed} />
+                        <CourseCard key={view.slug} view={view} confirmed={!catalog.offline} />
                       ))}
                     </div>
                   </div>
@@ -105,72 +125,59 @@ export default function CoursesPage() {
 }
 
 const COURSE_SKILL_TAGS: Record<string, readonly string[]> = {
-  "data-analytics": ["SQL Joins & CTEs", "Northwind Lab (166 Rows)", "Margin Audit", "Capstone Report"],
-  "product-management": ["PRD Scoping", "Harbor Desk Case", "Feature Triage", "6-Week Roadmap"],
-  "python-programming": ["Python 3", "ETL Pipelines", "Pytest Suite", "Automation"],
-  "data-science-ai": ["SQL + Python", "Cohort Retention", "Churn Validation", "Dual Capstone"],
+  "data-analytics": ["SQL Joins & CTEs", "Northwind Lab", "Margin Audit", "Capstone Report"],
+  "product-management": ["PRD Scoping", "Harbor Desk Case", "Feature Triage", "6-Week Spec"],
+  "python-programming": ["Python 3", "Data Pipelines", "Pytest Suite", "Automation"],
+  "data-science-ai": ["SQL + Python", "Cohort Retention", "Model Validation", "Dual Capstone"],
   "generative-ai": ["Grounded RAG", "Vector Search", "Prompt Guardrails", "LLM Accuracy Evals"],
   "full-stack-web": ["React & TypeScript", "Node & Express", "PostgreSQL", "API Security"],
 }
 
-function ReadyCourseCard({ view, confirmed }: { view: CoursePublicView; confirmed: boolean }) {
-  const { course } = view
-  const tags = COURSE_SKILL_TAGS[course.slug] ?? ["Interactive Lessons", "Browser Lab", "Graded Capstone"]
+function CourseUnitChrome({ view }: { view: CatalogCourseListView }) {
   return (
-    <Link to={`/courses/${course.slug}`} className="cat-ready-card">
-      <div className="cat-ready-head">
-        <span className="cat-label">{course.category}</span>
-        {confirmed ? (
-          <TruthChip state="live" label="Open · ₹0 Pilot" />
-        ) : (
-          <TruthChip state="development" label={STATUS_NOT_CONFIRMED} />
-        )}
+    <div className="cat-unit" aria-hidden="true">
+      <div className="cat-unit-top">
+        <p className="cat-unit-brand">SKYLENT OS · IN-BROWSER LAB</p>
+        <span className="cat-unit-elixir">✓ Open · ₹0 Pilot</span>
       </div>
-      <h3>{course.title}</h3>
-      <p>{view.summary}</p>
-      <div className="cat-skill-pills" style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 10 }}>
-        {tags.map((tag) => (
-          <span
-            key={tag}
-            style={{
-              fontSize: 11.5,
-              fontWeight: 700,
-              padding: "4px 10px",
-              borderRadius: 999,
-              background: "#ffffff",
-              color: "#0f172a",
-            }}
-          >
-            {tag}
-          </span>
-        ))}
-      </div>
-      <dl className="cat-ready-facts">
-        <div>
-          <dt>Structure</dt>
-          <dd>{view.structureLabel}</dd>
-        </div>
-        <div>
-          <dt>Practice</dt>
-          <dd>{view.practiceLabel}</dd>
-        </div>
-      </dl>
-      <span className="cat-card-cta">{confirmed ? "Start course free →" : "See course outline →"}</span>
-    </Link>
+      <p className="cat-unit-kicker">{view.course.category} · {view.course.level}</p>
+      <p className="cat-unit-title">{view.countLabel}</p>
+      <p className="cat-unit-meta">
+        3 module quizzes · Applied briefs · 1 graded capstone
+      </p>
+    </div>
   )
 }
 
-function ListingCourseCard({ view, confirmed }: { view: CoursePublicView; confirmed: boolean }) {
-  const { course } = view
+function CourseCard({ view, featured = false, confirmed = true }: { view: CatalogCourseListView; featured?: boolean; confirmed?: boolean }) {
+  const tags = COURSE_SKILL_TAGS[view.slug] ?? []
   return (
-    <Link to={`/courses/${course.slug}`} className="cat-card">
-      <div className="cat-card-top">
-        <span className="cat-label">{course.category}</span>
-        <TruthChip state="development" label={confirmed ? view.maturityLabel : STATUS_NOT_CONFIRMED} />
+    <Link className={featured ? "cat-tile is-ready" : "cat-tile is-listing"} to={`/courses/${view.slug}`}>
+      {view.maturity === "ready" ? <CourseUnitChrome view={view} /> : <CourseThumb authored={false} />}
+      <div className="cat-tile-copy">
+        {confirmed ? <TruthChip state={view.maturity === "ready" ? "live" : "development"} /> : <TruthChip state="development" label={STATUS_NOT_CONFIRMED} />}
+        <h3>{view.title}</h3>
+        <div className="cat-card-stats">
+          <span>{view.duration}</span>
+          <span>{view.lessonLabel}</span>
+          <span>{view.course.level}</span>
+        </div>
+        {view.maturity === "ready" && tags.length > 0 ? (
+          <div className="cat-card-tags" aria-label="Skills practised">
+            {tags.map((tag) => (
+              <span key={tag} className="cat-card-tag">{tag}</span>
+            ))}
+          </div>
+        ) : null}
+        {view.maturity === "ready" ? (
+          <p className="cat-card-moat">
+            Written lessons · In-browser lab · Graded capstone
+          </p>
+        ) : null}
+        <span className={view.maturity === "ready" ? "cat-btn cat-btn-primary cat-card-cta" : "cat-btn cat-btn-ghost cat-card-cta"}>
+          {confirmed ? view.ctaLabel : "View course"}
+        </span>
       </div>
-      <h3>{course.title}</h3>
-      <p>{view.summary}</p>
-      <span className="cat-card-cta">See outline →</span>
     </Link>
   )
 }
