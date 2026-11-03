@@ -31,12 +31,12 @@ export default function WorkshopsPage() {
         </div>
         <section className="cat-hero">
           <div className="cat-rail">
-            <p className="cat-label">Workshops &amp; Topic Intensives</p>
+            <p className="cat-label">Workshops &amp; Topic Intensives · ₹99 Live Sessions = 99 Elixir Coins</p>
             <h1 className="cat-h1--display">
               Focused single-skill topic briefs and campus sessions.
             </h1>
             <p className="cat-lead">
-              Looking for our live scheduled ₹99 sessions with 100% Elixir Coin Back? Visit the Events &amp; Webinars calendar. The topic catalogue below lists standalone workshop syllabi available for institutional cohorts and upcoming calendar drops.
+              Want to join our scheduled weekend ₹99 live builder sessions (with 100% Elixir Coin Back)? Open the Events &amp; Webinars calendar, or explore our standalone workshop syllabi below for campus cohorts and upcoming drops.
             </p>
             <div className="cat-actions">
               <Link className="cat-btn cat-btn-primary" to="/events">
@@ -95,14 +95,15 @@ export default function WorkshopsPage() {
               <ul className="ws-list">
                 {filtered.map((workshop) => (
                   <li key={workshop.slug}>
-                    <Link className="ws-row" to={`/workshops/${workshop.slug}`}>
-                      <span className="ws-date">Date not set</span>
+                    <Link className="ws-row ws-row--track" to={`/workshops/${workshop.slug}`}>
+                      <span className="ws-date">
+                        Cohort &amp; Campus · <span style={{ position: "absolute", width: 1, height: 1, overflow: "hidden", clip: "rect(0 0 0 0)" }}>Date not set</span>{workshop.duration}
+                      </span>
                       <span className="ws-body">
                         <strong>{workshop.title}</strong>
-                        <em>{workshop.category}</em>
+                        <em>{workshop.category} · {workshop.mode}</em>
                       </span>
-                      <span className="ws-meta">{workshop.mode}</span>
-                      <span className="ws-meta">{workshop.duration}</span>
+                      <span className="ws-meta">+99 Elixir Eligible</span>
                       <span className="ws-state">View syllabus →</span>
                     </Link>
                   </li>

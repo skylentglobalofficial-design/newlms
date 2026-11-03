@@ -1,12 +1,11 @@
 /**
  * Programme detail page for multi-track & specialist programmes (`data-science-ai`, `full-stack`, `generative-ai-program`, `sql-certificate`).
  *
- * Matches the visual architecture of `ProfessionalProgrammeTemplate.tsx` (Screenshots 4 & 5):
- * 1. Display Hero with violet signal phrase + 3-column ruled SpecSheet (`ENROLMENT | FORMAT | YOU START WITH`)
- * 2. Full-bleed Dark-Violet Workbench Stage (`.sky-stage.sky-band-navy.pp-stage`) with interactive code/SQL sandbox
- * 3. 01 Capstone Studio (4 steps)
- * 4. 02 Complete Curriculum (All 5 modules & 15 lessons per linked course)
- * 5. 03 Target Career Roles & Proof-of-Work Dossier
+ * Unified with the 2-Column Royal Midnight Navy + Gold architecture of `ProfessionalProgrammeTemplate.tsx`:
+ * 1. 2-Column Hero with 4-Card Key Metrics Grid, Tools & Skills Stack Bar, and Elevated Royal Midnight Navy Enrolment Card (`.pp-enrol-card`)
+ * 2. Sticky Sub-Navigation Bar (`.pp-subnav-bar`)
+ * 3. Full-bleed Royal Workbench Stage (`.sky-stage.sky-band-navy.pp-stage`) with interactive code/SQL sandbox
+ * 4. Included Self-Paced Coursework & Complete 5-Module / 15-Lesson Curriculum
  */
 import { Link } from "react-router-dom"
 import type { CatalogProgramDetail } from "../../lib/catalog-api"
@@ -44,6 +43,7 @@ const PATHWAY_CAPSTONES: Record<
     capstoneTitle: string
     summary: string
     roles: string[]
+    tools: string[]
     steps: Array<{ num: string; title: string; detail: string }>
   }
 > = {
@@ -56,43 +56,46 @@ const PATHWAY_CAPSTONES: Record<
     capstoneTitle: "Dual Capstone: Commercial Margin Audit & Out-of-Time Churn Pipeline",
     summary: "Complete both the 15-lesson Data Analytics course and the 15-lesson Python Programming & Automation course, plus the Churn Cohort Leakage validator.",
     roles: ["Data Analyst", "Data Science Associate", "Analytics Engineer", "BI & Python Developer"],
+    tools: ["PostgreSQL & CTEs", "Python 3 & Pandas", "Pytest Validators", "Cohort Retention", "Executive Memo"],
     steps: [
       { num: "01", title: "Audit Commercial SQL Grain", detail: "Validate 166 Northwind order rows, remove returned/invalid units, and compute category net revenue." },
-      { num: "02", title: "Build Python ETL & Pytest Validators", detail: "Quarantine malformed settlement records, enforce composite idempotency keys, and pass automated pytest suites." },
+      { num: "02", title: "Build Python ETL & Pytest Validators", detail: "Quarantine malformed settlement records, enforce unique transaction keys, and pass automated pytest suites." },
       { num: "03", title: "Verify Cohort Split & Leakage Guards", detail: "Enforce chronological train/test splits and audit precision-recall lift without future data leakage." },
-      { num: "04", title: "Defend Executive Cold Call & Dossier", detail: "Submit both capstones to unlock your cryptographic Proof-of-Work Dossier and Career OS profile." },
+      { num: "04", title: "Publish Verified Project & Certificate", detail: "Submit both capstones to unlock your verified project report (/verify) and Career OS profile." },
     ],
   },
   "full-stack": {
     headlinePrefix: "Ship end-to-end TypeScript applications with ",
-    headlineSignal: "idempotent PostgreSQL ledgers.",
+    headlineSignal: "safe PostgreSQL payment ledgers.",
     sandboxType: "idempotent-ledger-architecture",
     figureCaption: "Skylent OS · Full-Stack Transactional Outbox & Ledger Sandbox",
     studio: "Full-Stack TypeScript, Express & PostgreSQL Ledger Sandbox",
-    capstoneTitle: "Capstone: Idempotent Financial Settlement & Transactional Ledger API",
-    summary: "Master end-to-end web engineering across 5 modules and 15 lessons: React 18 state architecture, Node/Express REST APIs, PostgreSQL indexing, and transactional outbox guarantees.",
+    capstoneTitle: "Capstone: Safe Financial Settlement & Transactional Ledger API",
+    summary: "Master end-to-end web engineering across 5 modules and 15 lessons: React 18 state architecture, Node/Express REST APIs, PostgreSQL indexing, and safe transaction handling.",
     roles: ["Full-Stack Developer", "Backend Node.js Engineer", "Frontend React Engineer", "Software Development Engineer (SDE-1)"],
+    tools: ["React 18 & TypeScript", "Node.js & Express", "PostgreSQL & Prisma", "REST API Security", "Automated Testing"],
     steps: [
       { num: "01", title: "Design Relational Schema & Constraints", detail: "Model normalized PostgreSQL tables with foreign keys, composite unique indexes, and migration safety." },
-      { num: "02", title: "Implement Idempotent REST Endpoints", detail: "Enforce request validation, row-level locking, and idempotency keys under concurrent webhook retries." },
+      { num: "02", title: "Build Safe REST API Endpoints", detail: "Enforce request validation, row-level locking, and duplicate-payment protection under webhook retries." },
       { num: "03", title: "Wire React 18 State & Error Boundaries", detail: "Build resilient client views that handle loading, optimistic updates, and 503 fallback states cleanly." },
-      { num: "04", title: "Pass Security Audit & Capstone Defense", detail: "Defend your architecture decisions in a timed Cold Call and publish your verified code dossier." },
+      { num: "04", title: "Pass Security Audit & Capstone Review", detail: "Defend your architecture decisions and publish your verified project portfolio (/verify)." },
     ],
   },
   "generative-ai-program": {
     headlinePrefix: "Architect citation-grounded RAG pipelines and ",
-    headlineSignal: "adversarial LLM evaluation suites.",
+    headlineSignal: "reliable LLM evaluation suites.",
     sandboxType: "enterprise-rag-evaluation",
     figureCaption: "Skylent OS · Citation-Grounded Enterprise RAG & Guardrail Evaluator",
     studio: "Grounded RAG, Vector Retrieval & LLM Evaluation Sandbox",
-    capstoneTitle: "Capstone: Citation-Grounded Enterprise RAG & Adversarial Eval Suite",
-    summary: "Build production LLM systems across 5 modules and 15 lessons: structured JSON prompting, chunking & embeddings, hybrid RAG retrieval, ReAct tool agents, and hallucination guardrails.",
+    capstoneTitle: "Capstone: Citation-Grounded Enterprise RAG & Accuracy Eval Suite",
+    summary: "Build production LLM systems across 5 modules and 15 lessons: structured JSON prompting, chunking & embeddings, hybrid RAG retrieval, tool-calling agents, and hallucination guardrails.",
     roles: ["Applied AI Engineer", "LLM Systems Developer", "RAG & Knowledge Engineer", "AI Product Engineer"],
+    tools: ["Grounded RAG", "Vector Embeddings", "JSON Prompt Contracts", "Tool-Calling Agents", "LLM Accuracy Evals"],
     steps: [
-      { num: "01", title: "Engineer Deterministic Prompt Contracts", detail: "Enforce strict JSON schemas, system boundaries, and prompt-injection refusal guardrails." },
+      { num: "01", title: "Engineer Structured Prompt Contracts", detail: "Enforce strict JSON schemas, system boundaries, and prompt-injection refusal guardrails." },
       { num: "02", title: "Build Hybrid Chunking & Vector Retrieval", detail: "Index enterprise documents with semantic + keyword retrieval and strict citation grounding." },
-      { num: "03", title: "Orchestrate Safe ReAct Tool Agents", detail: "Bind read-only tools with loop caps, latency budgets, and deterministic fallback handlers." },
-      { num: "04", title: "Run Golden-Dataset LLM Evals", detail: "Benchmark faithfulness, answer relevance, and p95 latency to earn your cryptographic AI dossier." },
+      { num: "03", title: "Orchestrate Safe Tool-Calling Agents", detail: "Bind read-only tools with loop caps, latency budgets, and deterministic fallback handlers." },
+      { num: "04", title: "Run Golden-Dataset LLM Evals", detail: "Benchmark faithfulness, answer relevance, and p95 latency to earn your verified AI certificate." },
     ],
   },
   "sql-certificate": {
@@ -104,6 +107,7 @@ const PATHWAY_CAPSTONES: Record<
     capstoneTitle: "Capstone: Multi-Table Revenue & Discount Leakage Audit",
     summary: "Master practical business SQL from foundational filtering to multi-table joins, CTEs, window functions, and executive margin reporting via our live Data Analytics track.",
     roles: ["Business Analyst", "SQL Data Analyst", "Operations Analyst", "Reporting Specialist"],
+    tools: ["SQL SELECT & WHERE", "Multi-Table JOINs", "CTEs & Window Functions", "Data Cleaning", "Revenue Reporting"],
     steps: [
       { num: "01", title: "Inspect Schema & Row Hygiene", detail: "Audit raw order lines for negative quantities, zero prices, and returned shipments before aggregating." },
       { num: "02", title: "Write Multi-Table Joins & CTEs", detail: "Combine orders, line items, and category mappings without grain-mismatch fanout." },
@@ -134,77 +138,230 @@ export default function ProgrammeListing({ program, truth, cta, honesty, afterEn
       : [courseBySlug("data-analytics")].filter((c): c is NonNullable<typeof c> => Boolean(c))
   )
   const firstLessonTitle = linkedCoursesData[0]?.modules[0]?.lessons[0]?.title ?? "Foundations & Workspace Setup"
+  const moduleCount = facts.taughtModuleCount > 0 ? facts.taughtModuleCount : 5
+  const lessonCount = moduleCount * 3
   const moduleSummaryText =
     facts.taughtModuleCount > 0
       ? `${plural(facts.taughtModuleCount, "module")} (${facts.taughtModuleCount * 3} lessons)`
       : "5 modules (15 lessons)"
 
+  const enrolChip = !confirmed ? (
+    <TruthChip state="development" label={STATUS_NOT_CONFIRMED} />
+  ) : (
+    <TruthChip state="live" label="Open" />
+  )
+
+  const primaryActionBtn = canEnrol ? (
+    <button type="button" className="sk-btn sk-btn-primary" onClick={onEnrol}>
+      {cta}
+      <ArrowRight />
+    </button>
+  ) : firstLinked ? (
+    <Link className="sk-btn sk-btn-primary" to={firstLinked.to}>
+      Start {firstLinked.title === program.name ? `${firstLinked.title} course` : firstLinked.title}
+      <ArrowRight />
+    </Link>
+  ) : (
+    <Link className="sk-btn sk-btn-primary" to="/courses/data-analytics">
+      Start SQL in Data Analytics
+      <ArrowRight />
+    </Link>
+  )
+
   return (
     <div className="pp-page">
-      {/* Screenshot 4 Style Hero: Giant 2-Tone Headline + Offer + 3-Col Ruled SpecSheet */}
-      <section className="sky-container pp-hero" aria-labelledby="pp-title">
-        <nav className="sky-label pp-crumb cine-in cine-in--fade" aria-label="Breadcrumb">
-          <Link to="/programmes">Programmes</Link>
-          <span aria-hidden="true"> / </span>
-          <span aria-current="page">{program.name}</span>
-        </nav>
-        <h1 id="pp-title" className="sky-display sky-display--lg pp-h1 cine-in cine-d1">
-          {pathwaySpec.headlinePrefix}
-          <span className="sky-signal">{pathwaySpec.headlineSignal}</span>
-        </h1>
-        <div className="pp-hero__grid">
-          <div>
-            {description ? <p className="pp-lede">{description}</p> : null}
-            <p className="pp-note" style={{ marginTop: 10 }}>
-              {pathwaySpec.summary}
-            </p>
-          </div>
-          <div className="pp-hero__side cine-in cine-d3">
-            <div className="pp-actions">
-              {canEnrol ? (
-                <button type="button" className="sk-btn sk-btn-primary" onClick={onEnrol}>
-                  {cta}
-                  <ArrowRight />
-                </button>
-              ) : firstLinked ? (
-                <Link className="sk-btn sk-btn-primary" to={firstLinked.to}>
-                  Start {firstLinked.title === program.name ? `${firstLinked.title} course` : firstLinked.title}
-                  <ArrowRight />
-                </Link>
-              ) : (
-                <Link className="sk-btn sk-btn-primary" to="/courses/data-analytics">
-                  Start SQL in Data Analytics
-                  <ArrowRight />
-                </Link>
-              )}
-              <a className="sk-btn sk-btn-secondary" href="#pp-curriculum">
-                View curriculum
-              </a>
-              <SyllabusDownloadButton courseSlug={program.slug} title={program.name} />
+      {/* Unified 2-Column EdTech Hero with Royal Midnight Navy Enrolment Card */}
+      <section className="pp-hero" aria-labelledby="pp-title">
+        <div className="sky-container">
+          <nav className="sky-label pp-crumb cine-in cine-in--fade" aria-label="Breadcrumb">
+            <Link to="/programmes">Programmes</Link>
+            <span aria-hidden="true"> / </span>
+            <span aria-current="page">{program.name}</span>
+          </nav>
+
+          <div className="pp-hero__split">
+            <div className="pp-hero__main">
+              <div className="pp-hero__badges cine-in cine-in--fade">
+                <span className="pp-badge pp-badge--track">
+                  {program.category || "Professional Programme"}
+                </span>
+                {enrolChip}
+                <span className="pp-badge pp-badge--pilot">
+                  Pilot Access · ₹0
+                </span>
+              </div>
+
+              <p className="pp-hero__kicker cine-in cine-d1">
+                {program.name} · Target Roles: <strong>{pathwaySpec.roles.slice(0, 3).join(" · ")}</strong>
+              </p>
+
+              <h1 id="pp-title" className="sky-display sky-display--lg pp-h1 cine-in cine-d1">
+                {pathwaySpec.headlinePrefix}
+                <span className="sky-signal">{pathwaySpec.headlineSignal}</span>
+              </h1>
+
+              {description ? <p className="pp-lede">{description}</p> : null}
+              <p className="pp-note" style={{ marginTop: 8 }}>
+                {pathwaySpec.summary}
+              </p>
+
+              {/* 4-Card Key Programme Stats Grid Above the Fold */}
+              <div className="pp-metrics-grid cine-in cine-d2" aria-label="Programme structure at a glance">
+                <div className="pp-metric-card">
+                  <span className="pp-metric-card__label">Curriculum</span>
+                  <strong className="pp-metric-card__val">
+                    {moduleCount} Modules · {lessonCount} Lessons
+                  </strong>
+                  <span className="pp-metric-card__sub">Self-paced in Skylent OS</span>
+                </div>
+                <div className="pp-metric-card">
+                  <span className="pp-metric-card__label">Applied Proof</span>
+                  <strong className="pp-metric-card__val">
+                    3 Briefs + Graded Capstone
+                  </strong>
+                  <span className="pp-metric-card__sub">Rubric-graded portfolio</span>
+                </div>
+                <div className="pp-metric-card">
+                  <span className="pp-metric-card__label">Browser Sandbox</span>
+                  <strong className="pp-metric-card__val">{pathwaySpec.studio.split(" (")[0]}</strong>
+                  <span className="pp-metric-card__sub">Zero local setup required</span>
+                </div>
+                <div className="pp-metric-card">
+                  <span className="pp-metric-card__label">Credential</span>
+                  <strong className="pp-metric-card__val">Verifiable SKL ID</strong>
+                  <span className="pp-metric-card__sub">Unlocks Career OS at 60%</span>
+                </div>
+              </div>
+
+              {/* Tools & Skills Stack Bar */}
+              <div className="pp-tools-bar cine-in cine-d3" aria-label="Tools and skills covered">
+                <span className="pp-tools-bar__label">Skills &amp; Stack:</span>
+                <div className="pp-tools-bar__list">
+                  {pathwaySpec.tools.map((tool) => (
+                    <span key={tool} className="pp-tool-pill">{tool}</span>
+                  ))}
+                </div>
+              </div>
+
+              <div className="pp-hero__actions-wrap cine-in cine-d3">
+                <div className="pp-actions">
+                  {primaryActionBtn}
+                  <a className="sk-btn sk-btn-secondary" href="#pp-curriculum">
+                    View curriculum ({moduleCount} modules)
+                  </a>
+                  <SyllabusDownloadButton courseSlug={program.slug} title={program.name} />
+                </div>
+                <p className="pp-note">{honesty}</p>
+                <p className="pp-note">{afterEnrol}</p>
+              </div>
             </div>
-            <p className="pp-note">{honesty}</p>
-            <p className="pp-note">{afterEnrol}</p>
+
+            {/* Right Column: Royal Midnight Navy Enrolment & Workbench Card Above the Fold */}
+            <aside className="pp-hero__card cine-in cine-d3" aria-label="Programme enrolment and workbench summary">
+              <div className="pp-enrol-card">
+                <div className="pp-enrol-card__top">
+                  <div className="pp-enrol-card__eyebrow">
+                    <span className="pp-live-dot" aria-hidden="true" />
+                    <span>LIVE IN-BROWSER LAB · ZERO SETUP</span>
+                  </div>
+                  <h2 className="pp-enrol-card__title">{pathwaySpec.capstoneTitle}</h2>
+                  <p className="pp-enrol-card__sub">{pathwaySpec.figureCaption}</p>
+                  <div className="pp-enrol-card__preview">
+                    <div className="pp-enrol-card__terminal">
+                      <div className="pp-enrol-card__dots" aria-hidden="true">
+                        <span /><span /><span />
+                        <code>{pathwaySpec.studio}</code>
+                      </div>
+                      <p className="pp-enrol-card__desc">{pathwaySpec.summary}</p>
+                      <a href="#pp-stage" className="pp-enrol-card__jump">
+                        Inspect live workbench below ↓
+                      </a>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pp-enrol-card__body">
+                  <SpecSheet
+                    className="pp-rail"
+                    rows={[
+                      { label: "Enrolment", value: enrolChip },
+                      { label: "Format", value: `${facts.format} · ${moduleSummaryText}` },
+                      { label: "You start with", value: `Lesson 1, ${firstLessonTitle.replace(/\s+[—–]\s+/g, ", ")}` },
+                    ]}
+                  />
+
+                  <ul className="pp-enrol-card__checks">
+                    <li>
+                      <span aria-hidden="true">✓</span>
+                      <span><strong>{moduleCount} modules &amp; {lessonCount} lessons</strong> written in clear, plain language</span>
+                    </li>
+                    <li>
+                      <span aria-hidden="true">✓</span>
+                      <span><strong>In-browser practice lab</strong> ({pathwaySpec.studio})</span>
+                    </li>
+                    <li>
+                      <span aria-hidden="true">✓</span>
+                      <span><strong>24/7 Hinglish + English AI Coach</strong> &amp; 20-Min Human TA Help</span>
+                    </li>
+                    <li>
+                      <span aria-hidden="true">✓</span>
+                      <span><strong>Verifiable SKL Certificate</strong> &amp; Career OS unlock at 60% completion</span>
+                    </li>
+                  </ul>
+
+                  <div className="pp-enrol-card__cta">
+                    {primaryActionBtn}
+                    <a className="sk-btn sk-btn-secondary" href="#pp-curriculum">
+                      Open syllabus
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </aside>
           </div>
         </div>
-        <SpecSheet
-          className="pp-rail cine-in cine-in--fade cine-d4"
-          rows={[
-            {
-              label: "Enrolment",
-              value: !confirmed ? (
-                <TruthChip state="development" label={STATUS_NOT_CONFIRMED} />
-              ) : (
-                <TruthChip state="live" label="Open" />
-              ),
-            },
-            { label: "Format", value: `${facts.format} · ${moduleSummaryText}` },
-            { label: "You start with", value: `Lesson 1, ${firstLessonTitle.replace(/\s+[—–]\s+/g, ", ")}` },
-          ]}
-        />
       </section>
 
-      {/* Screenshot 5 Style Full-Bleed Dark-Violet Workbench Stage */}
-      <section className="sky-stage sky-band-navy pp-stage" aria-labelledby="pp-build-title">
+      {/* Sticky Sub-Navigation Bar */}
+      <div className="pp-subnav-bar">
+        <div className="sky-container">
+          <nav className="pp-jump" aria-label="On this page">
+            <ol>
+              <li>
+                <a href="#pp-stage">
+                  <span className="pp-jump__n">01</span>
+                  <span className="pp-jump__verb">Workbench</span>
+                  <span className="pp-jump__what">Live browser lab</span>
+                </a>
+              </li>
+              <li>
+                <a href="#pp-courses">
+                  <span className="pp-jump__n">02</span>
+                  <span className="pp-jump__verb">Courses</span>
+                  <span className="pp-jump__what">Included self-paced tracks</span>
+                </a>
+              </li>
+              <li>
+                <a href="#pp-curriculum">
+                  <span className="pp-jump__n">03</span>
+                  <span className="pp-jump__verb">Syllabus</span>
+                  <span className="pp-jump__what">{moduleCount} modules · {lessonCount} lessons</span>
+                </a>
+              </li>
+              <li>
+                <a href="#pp-next-title">
+                  <span className="pp-jump__n">04</span>
+                  <span className="pp-jump__verb">Start</span>
+                  <span className="pp-jump__what">Begin Lesson 1 free</span>
+                </a>
+              </li>
+            </ol>
+          </nav>
+        </div>
+      </div>
+
+      {/* Full-Bleed Dark-Violet Workbench Stage */}
+      <section id="pp-stage" className="sky-stage sky-band-navy pp-stage" aria-labelledby="pp-build-title">
         <div className="sky-container pp-stage__inner">
           <Reveal as="figure" variant="plate" className="pp-stage__figure">
             <div className="sky-stage__plate pp-stage__plate cine-plate cine-in cine-in--plate cine-d5">
@@ -233,8 +390,8 @@ export default function ProgrammeListing({ program, truth, cta, honesty, afterEn
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))", gap: 14, marginTop: 20 }}>
               {pathwaySpec.steps.map((step) => (
-                <div key={step.num} style={{ padding: "16px", borderRadius: 10, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.14)" }}>
-                  <span style={{ fontSize: 11.5, fontWeight: 700, color: "#a5b4fc", fontFamily: "var(--font-mono)" }}>
+                <div key={step.num} style={{ padding: "16px", borderRadius: 12, background: "linear-gradient(145deg, #11152c 0%, #1d1849 100%)", border: "1px solid rgba(251, 191, 36, 0.36)" }}>
+                  <span style={{ fontSize: 11.5, fontWeight: 700, color: "#fbbf24", fontFamily: "var(--font-mono)" }}>
                     STEP {step.num}
                   </span>
                   <strong style={{ display: "block", margin: "6px 0", fontSize: 15, fontWeight: 700, color: "#ffffff" }}>
@@ -249,8 +406,8 @@ export default function ProgrammeListing({ program, truth, cta, honesty, afterEn
       </section>
 
       {/* Section 02: Included Self-Paced Coursework Cards */}
-      <section className="sky-container" style={{ paddingBlock: "36px 24px" }} aria-label="Included self-paced courses">
-        <div style={{ padding: "24px", borderRadius: 14, border: "1px solid #e2e8f0", background: "#f8fafc" }}>
+      <section id="pp-courses" className="sky-container" style={{ paddingBlock: "36px 24px" }} aria-label="Included self-paced courses">
+        <div style={{ padding: "24px", borderRadius: 16, border: "1px solid #e2e8f0", background: "#f8fafc" }}>
           <SectionIndex n="02" label="Included Flagship Coursework" />
           <h2 style={{ margin: "8px 0 6px", fontSize: "clamp(20px, 2.4vw, 26px)", fontWeight: 750, color: "#0f172a" }}>
             Start the linked self-paced course immediately
@@ -270,25 +427,25 @@ export default function ProgrammeListing({ program, truth, cta, honesty, afterEn
                   display: "flex",
                   flexDirection: "column",
                   gap: 8,
-                  padding: "18px 20px",
-                  borderRadius: 12,
-                  background: "#ffffff",
-                  border: "1px solid #cbd5e1",
-                  color: "#0f172a",
+                  padding: "20px 22px",
+                  borderRadius: 16,
+                  background: "linear-gradient(145deg, #11152c 0%, #1d1849 100%)",
+                  border: "1px solid rgba(251, 191, 36, 0.38)",
+                  color: "#ffffff",
                   textDecoration: "none",
                 }}
               >
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
-                  <span style={{ fontSize: 12, fontWeight: 700, color: "#0E6A44", background: "#E7F6EF", padding: "2px 10px", borderRadius: 999 }}>
-                    Open now · 5 Modules · 15 Lessons
+                  <span style={{ fontSize: 11.5, fontWeight: 700, color: "#34d399", background: "rgba(16, 185, 129, 0.16)", border: "1px solid rgba(52, 211, 153, 0.35)", padding: "3px 10px", borderRadius: 999 }}>
+                    ✓ Open now · 5 Modules · 15 Lessons
                   </span>
-                  <span style={{ fontSize: 12, fontWeight: 600, color: "#475569" }}>Self-paced</span>
+                  <span style={{ fontSize: 11.5, fontWeight: 700, color: "#fbbf24", fontFamily: "var(--font-mono)" }}>₹0 Pilot</span>
                 </div>
-                <strong style={{ fontSize: 18, fontWeight: 750 }}>{item.title}</strong>
-                <span style={{ fontSize: 13.5, color: "#475569" }}>
+                <strong style={{ fontSize: 19, fontWeight: 800, color: "#ffffff" }}>{item.title}</strong>
+                <span style={{ fontSize: 13.5, color: "#cbd5e1" }}>
                   3 module quizzes · 3 applied briefs · 1 graded capstone · Verifiable Certificate
                 </span>
-                <span style={{ marginTop: "auto", paddingTop: 6, fontSize: 14, fontWeight: 700, color: "#5142B5", display: "inline-flex", alignItems: "center", gap: 6 }}>
+                <span style={{ marginTop: "auto", paddingTop: 8, fontSize: 14, fontWeight: 700, color: "#fbbf24", display: "inline-flex", alignItems: "center", gap: 6 }}>
                   Start {item.title} <ArrowRight />
                 </span>
               </Link>
@@ -308,13 +465,13 @@ export default function ProgrammeListing({ program, truth, cta, honesty, afterEn
         </p>
         <div style={{ display: "grid", gap: 24 }}>
           {linkedCoursesData.map((course) => (
-            <div key={course.slug} style={{ border: "1px solid #e2e8f0", borderRadius: 14, padding: "20px 22px", background: "#ffffff" }}>
+            <div key={course.slug} style={{ border: "1px solid #e2e8f0", borderRadius: 16, padding: "22px 24px", background: "#ffffff" }}>
               <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: 10, marginBottom: 16, paddingBottom: 12, borderBottom: "1px solid #f1f5f9" }}>
                 <div>
-                  <span style={{ fontSize: 11.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "#5142B5" }}>
+                  <span style={{ fontSize: 11.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "#4f46e5" }}>
                     {course.category} · {course.duration}
                   </span>
-                  <h3 style={{ margin: "2px 0 0", fontSize: 20, fontWeight: 750, color: "#0f172a" }}>{course.title}</h3>
+                  <h3 style={{ margin: "2px 0 0", fontSize: 20, fontWeight: 800, color: "#0f172a" }}>{course.title}</h3>
                 </div>
                 <Link to={`/courses/${course.slug}`} className="sk-btn sk-btn-secondary" style={{ fontSize: 13 }}>
                   Open full course workspace <ArrowRight />
@@ -322,8 +479,8 @@ export default function ProgrammeListing({ program, truth, cta, honesty, afterEn
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 14 }}>
                 {course.modules.map((mod, idx) => (
-                  <div key={mod.id} style={{ padding: "14px 16px", borderRadius: 10, background: "#f8fafc", border: "1px solid #e2e8f0" }}>
-                    <span style={{ fontSize: 11, fontWeight: 700, color: "#5142B5", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                  <div key={mod.id} style={{ padding: "14px 16px", borderRadius: 12, background: "#f8fafc", border: "1px solid #e2e8f0" }}>
+                    <span style={{ fontSize: 11, fontWeight: 700, color: "#4f46e5", textTransform: "uppercase", letterSpacing: "0.05em" }}>
                       Module 0{idx + 1} · {mod.lessons.length} Lessons
                     </span>
                     <strong style={{ display: "block", margin: "4px 0 8px", fontSize: 15, fontWeight: 700, color: "#0f172a" }}>
