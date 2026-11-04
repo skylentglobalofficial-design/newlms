@@ -746,7 +746,7 @@ export default function DashboardStudentPage() {
               <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: 12, marginBottom: 10 }}>
                 <div>
                   <strong style={{ fontSize: 15, display: "block", color: "#0f172a" }}>
-                    🔥 {streak.currentStreakDays}-Day Learning Streak · 14-Day Activity Tracker
+                    🔥 {streak.currentStreakDays}-Day Learning Streak · 14-Day Proof-of-Work Activity Grid
                   </strong>
                   <span className="sh-note">
                     Weekly Goal: {streak.weeklyActionsCount} / {streak.weeklyGoalTarget} lessons &amp; lab actions ({streak.weeklyGoalPercent}%) · Best streak: {streak.longestStreakDays}d

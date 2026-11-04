@@ -158,14 +158,25 @@ export function serializeInterviewQuestion(q: InterviewQuestion) {
   }
 }
 
-export function serializeInterviewPractice(p: InterviewPractice & { question?: InterviewQuestion }) {
+export function serializeInterviewPractice(
+  p: InterviewPractice & {
+    question?: InterviewQuestion | null
+    responseText?: string | null
+    selfRating?: number | null
+    status?: string | null
+  },
+) {
   return {
     id: p.id,
     userId: p.userId,
     questionId: p.questionId,
-    responseText: p.responseText,
-    selfRating: p.selfRating,
-    status: p.status,
+    interviewRoundId: p.interviewRoundId,
+    answer: p.answer,
+    score: p.score,
+    feedback: p.feedback,
+    responseText: p.responseText ?? p.answer ?? null,
+    selfRating: p.selfRating ?? p.score ?? null,
+    status: p.status ?? "COMPLETED",
     practicedAt: isoDateTime(p.practicedAt),
     question: p.question ? serializeInterviewQuestion(p.question) : undefined,
     createdAt: p.createdAt.toISOString(),
@@ -173,31 +184,49 @@ export function serializeInterviewPractice(p: InterviewPractice & { question?: I
   }
 }
 
-export function serializeSupportTask(task: CareerSupportTask) {
+export function serializeSupportTask(
+  task: CareerSupportTask & {
+    dueDate?: Date | null
+    sortOrder?: number | null
+  },
+) {
   return {
     id: task.id,
     requestId: task.requestId,
     title: task.title,
     description: task.description,
     status: task.status,
-    dueDate: isoDate(task.dueDate),
+    dueAt: isoDateTime(task.dueAt),
+    dueDate: isoDate(task.dueDate ?? task.dueAt),
     completedAt: isoDateTime(task.completedAt),
-    sortOrder: task.sortOrder,
+    sortOrder: task.sortOrder ?? 0,
     createdAt: task.createdAt.toISOString(),
     updatedAt: task.updatedAt.toISOString(),
   }
 }
 
-export function serializeSupportRequest(req: CareerSupportRequest & { tasks?: CareerSupportTask[] }) {
+export function serializeSupportRequest(
+  req: CareerSupportRequest & {
+    tasks?: CareerSupportTask[]
+    category?: string | null
+    details?: string | null
+    targetRole?: string | null
+    mentorNotes?: string | null
+  },
+) {
   return {
     id: req.id,
     userId: req.userId,
-    category: req.category,
+    type: req.type,
+    category: req.category ?? req.type,
     subject: req.subject,
-    details: req.details,
-    targetRole: req.targetRole,
+    description: req.description,
+    details: req.details ?? req.description,
+    priority: req.priority,
+    assignedTo: req.assignedTo,
+    targetRole: req.targetRole ?? null,
     status: req.status,
-    mentorNotes: req.mentorNotes,
+    mentorNotes: req.mentorNotes ?? null,
     tasks: (req.tasks ?? []).map(serializeSupportTask),
     createdAt: req.createdAt.toISOString(),
     updatedAt: req.updatedAt.toISOString(),
