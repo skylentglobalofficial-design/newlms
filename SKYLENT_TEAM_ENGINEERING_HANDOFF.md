@@ -146,4 +146,28 @@ git push origin main
 | **Faculty TA** | `/dashboard/faculty` | View live 20-minute Doubt SLA queue, answer learner doubts, grade submitted assignments & capstones against rubrics. | 
 | **College Partner (HoD / TPO)** | `/dashboard/college` | Track campus cohort completion, Elixir balances, and download NEP-aligned CSV progress reports. | 
 | **Recruiter** | `/dashboard/recruiter` | Browse verified student Proof-of-Work dossiers, inspect SQL/PRD artifacts, and post/manage job roles. | 
-| **Organisation (L&D)** | `/dashboard/organisation` | Manage enterprise team seats, track employee skill progression, and review capstone completions. | 
+| **Organisation (L&D)** | `/dashboard/organisation` | Manage enterprise team seats, track employee skill progression, and review capstone completions. |
+
+---
+
+## 9. V21 Signed-In Student Dashboard, Live Socratic AI Coach, Career OS & Superadmin Switcher (Locked in V21)
+
+Following founder visual review of the signed-in `/dashboard/student` and `/career-os` experience (4 screenshots), V21 resolves all 6 signed-in learner & admin UX gaps:
+
+1. **Above-the-Fold `Continue Learning` Royal Midnight Navy Hero (`src/pages/DashboardStudentPage.tsx`, `src/pages/StudentHome.css`, `src/components/learner/ElixirWallet.tsx`)**:
+   - Moved the **`Continue Learning` Card (`.sh-next.sh-royal-hero`)** and **14-Day Learning Streak Card (`.sh-streak-card`)** to the very top right under `<h1>What to do next</h1>` so the learner's active lesson (`Lesson 2 · The Analytics Mindset`) is immediately visible above the fold.
+   - Styled `.sh-next.sh-royal-hero` in the signature **Royal Midnight Navy (`linear-gradient(145deg, #11152c 0%, #1d1849 100%)`) + Warm Gold (`#fbbf24`) + Emerald (`#34d399`) + Crisp White Pill** theme.
+   - Moved `<ElixirWalletPanel />` below the main learning grid and redesigned `src/components/learner/ElixirWallet.tsx` into a sleek Royal Midnight Navy wallet banner with a collapsible `"Open Case Study Store (4) ▼"` toggle so the 4 earning boxes and 4 case studies no longer push the active course off-screen.
+2. **Eliminated Dead `SKYLENT AI: [NOT AVAILABLE]` Card & Upgraded Lesson Socratic Coach (`src/pages/DashboardStudentPage.tsx`, `src/components/lms/SkylentAI.tsx`)**:
+   - Replaced the dead `SKYLENT AI: NOT AVAILABLE — Skylent AI is not switched on yet` box on `/dashboard/student` with a **Royal Midnight Navy + Gold + Emerald `.sh-royal-ai` Card** (`✓ Live in Lesson`, `🇮🇳 Simple Hinglish Mode`, `🛠️ SQL & Code Debugger`, `👨‍🏫 20-Min Human TA SLA`) linking directly to the active lesson (`resumeHref`).
+   - Upgraded `src/components/lms/SkylentAI.tsx` with `buildLocalGroundedFallback()` so that inside any lesson (`/learn/:courseSlug/:lessonId`), even when `SKYLENT_AI_API_KEY` is not yet configured in production `.env`, `SkylentAI` stays `ready` and delivers instant Lesson-Grounded Socratic & Hinglish explanations + 20-min Faculty TA escalation.
+3. **Typography & `Career Rise` Copy Cleanup (`src/pages/StudentHome.css`, `src/components/learner/CareerRiseCard.tsx`)**:
+   - Replaced raw monospace typewriter font (`var(--font-mono)`) on `.sh .sh-note` body descriptions in `StudentHome.css` with clean sans-serif `var(--font-body)`.
+   - Removed the negative/conflicting `"It does not unlock Career OS"` sentence in `CareerRiseCard.tsx` and added a clear 60% progress bar + human explanation.
+4. **Dynamic Sidebar Tab Switching (`Dashboard`, `My Courses`, `Projects`) (`src/pages/DashboardStudentPage.tsx`, `src/pages/StudentHome.css`)**:
+   - Clicking `My Courses` (`/dashboard/student#sh-my-learning`) or `Projects` (`/dashboard/student#student-projects`) in the left sidebar dynamically reorders that section to the top of the main grid, highlights it with `.sh-card--focused` (Royal Midnight Navy header + Warm Gold title), and updates the top breadcrumb (`My Courses / Active Courses` or `My Courses / Projects & Labs`).
+5. **Signed-In `/career-os` Royal Theme & `(Demo)` Label Sanitization (`src/pages/career/CareerOSHome.css`, `src/pages/career/CareerOSOverviewPage.tsx`, `server/src/lib/career/serializers.ts`)**:
+   - Sanitized `(Demo)` from job titles (`ML Engineer (Demo)` → `ML Engineer`) and replaced `Skylent Demo Employer` with `Skylent Hiring Network` in both server serializers (`server/src/lib/career/serializers.ts`) and client overview (`src/pages/career/CareerOSOverviewPage.tsx`).
+   - Styled `.cosh-intro` and `.cosh-action--primary` in `src/pages/career/CareerOSHome.css` in the Royal Midnight Navy + Warm Gold + Emerald theme.
+6. **1-Click Superadmin Multi-Role Dashboard Switcher (`src/components/AuthDashboardShell.tsx`, `src/components/AuthDashboardShell.css`)**:
+   - When signed in as `superadmin` / `admin` (or founder email `tariniprasadtripathy17@gmail.com`), the left sidebar renders a **`★ SUPERADMIN · SWITCH VIEW`** 6-pill grid (`Student`, `Faculty TA`, `College`, `Recruiter`, `Org L&D`, `Admin OS`) and labels the user `SUPERADMIN · ALL ACCESS`.

@@ -392,3 +392,60 @@
     display: none;
   }
 }
+
+/* ── V21 Superadmin Role Switcher & Royal Midnight Navy Sidebar Polish ── */
+.auth-shell-rail {
+  background: linear-gradient(180deg, #11152c 0%, #191640 100%) !important;
+}
+
+.auth-shell-switcher {
+  margin: 0 12px 12px;
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(251, 191, 36, 0.35);
+}
+
+.auth-shell-switcher__label {
+  display: block;
+  font-family: var(--font-mono, monospace);
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #fbbf24;
+  margin-bottom: 8px;
+}
+
+.auth-shell-switcher__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.auth-shell-switcher__pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px 8px;
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: #e2e8f0;
+  font-size: 11px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 150ms ease;
+}
+
+.auth-shell-switcher__pill:hover {
+  background: rgba(251, 191, 36, 0.18);
+  border-color: rgba(251, 191, 36, 0.55);
+  color: #ffffff;
+}
+
+.auth-shell-switcher__pill.is-active {
+  background: #fbbf24;
+  border-color: #fbbf24;
+  color: #0f172a;
+  font-weight: 800;
+}

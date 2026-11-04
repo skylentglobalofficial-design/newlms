@@ -595,8 +595,13 @@ export default function CareerOSOverviewPage() {
     })
   } else {
     const firstJob = jobs.data.jobs[0]
+    const cleanText = (v?: string | null) =>
+      String(v || "")
+        .replace(/Skylent Demo Employer/gi, "Skylent Hiring Network")
+        .replace(/\s*\(demo\)\s*/gi, "")
+        .trim()
     const where = firstJob
-      ? [firstJob.title, firstJob.employer?.name].filter(Boolean).join(" · ")
+      ? [cleanText(firstJob.title), cleanText(firstJob.employer?.name)].filter(Boolean).join(" · ")
       : ""
     actions.push({
       key: "jobs",

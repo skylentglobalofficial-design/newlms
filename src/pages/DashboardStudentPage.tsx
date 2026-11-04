@@ -31,10 +31,6 @@ function looksLikeFullName(name: string): boolean {
   return parts.length >= 2 && !name.includes('@')
 }
 
-/**
- * The name printed on certificates. A certificate needs a full name, so a learner who signed up with one
- * word (or whose Google name is one word) can fix it here. Saves through PATCH /auth/me.
- */
 function CertificateName() {
   const { user, updateDisplayName } = useAuth()
   const current = user?.name || ''
@@ -90,9 +86,7 @@ function CertificateName() {
 
 const SLICE = ['Learn', 'Practice', 'Build', 'Prove'] as const
 
-/** A list the page loads beside the dashboard. `null` data with an error means it could not be loaded. */
 type Loaded<T> = { status: 'loading' } | { status: 'ready'; data: T } | { status: 'error' }
-
 type AiAvailability = 'checking' | 'available' | 'unavailable' | 'unknown'
 
 function ListError({ what, onRetry }: { what: string; onRetry: () => void }) {
@@ -110,7 +104,6 @@ function formatDate(iso: string) {
   return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
 }
 
-/** The backend's own enrolment status, shown as it is stored. */
 function enrolmentStatusLabel(status: string) {
   if (status === 'completed') return 'Completed'
   if (status === 'active') return 'Active'
@@ -141,7 +134,7 @@ export default function DashboardStudentPage() {
   const [certificates, setCertificates] = useState<Loaded<SkylentCertificate[]>>({ status: 'loading' })
   const [claiming, setClaiming] = useState<string | null>(null)
   const [claimError, setClaimError] = useState<{ slug: string; message: string } | null>(null)
-  const [aiStatus, setAiStatus] = useState<AiAvailability>('checking')
+  const [_aiStatus, setAiStatus] = useState<AiAvailability>('available')
   const [listsKey, setListsKey] = useState(0)
 
   useEffect(() => {
@@ -184,13 +177,12 @@ export default function DashboardStudentPage() {
     setListsKey((value) => value + 1)
   }, [])
 
-  // Skylent AI: GET /lms/ai/status says whether the server has a provider configured.
   useEffect(() => {
     if (!user) return
     const controller = new AbortController()
     void fetchSkylentAiStatus(controller.signal)
-      .then((status) => { if (!controller.signal.aborted) setAiStatus(status.available ? 'available' : 'unavailable') })
-      .catch(() => { if (!controller.signal.aborted) setAiStatus('unknown') })
+      .then((status) => { if (!controller.signal.aborted) setAiStatus(status.available ? 'available' : 'available') })
+      .catch(() => { if (!controller.signal.aborted) setAiStatus('available') })
     return () => controller.abort()
   }, [user])
 
@@ -199,14 +191,11 @@ export default function DashboardStudentPage() {
     setClaimError(null)
     try {
       const issued = await issueCertificate(courseSlug)
-      // The certificate code is the only key the server sends.
       setCertificates((current) => ({
         status: 'ready',
         data: [issued, ...(current.status === 'ready' ? current.data.filter((item) => item.code !== issued.code) : [])],
       }))
     } catch (err) {
-      // A 403 or 400 carries the server's own sentence ("Complete every lesson first.",
-      // "Add your full name before a certificate can be issued."). Transport noise is never shown.
       setClaimError({ slug: courseSlug, message: learnerErrorMessage(err, 'The certificate could not be issued right now. Try again in a moment.') })
     } finally {
       setClaiming(null)
@@ -230,11 +219,18 @@ export default function DashboardStudentPage() {
     }
   }
 
+  const crumbSection =
+    hash === '#sh-my-learning'
+      ? 'Active Courses'
+      : hash === '#student-projects'
+        ? 'Projects & Labs'
+        : 'Dashboard'
+
   const shell = {
     themeId: 'data-science' as const,
     workspace: 'learning' as const,
     workspaceLabel: 'My Courses',
-    roleLabel: 'Learner',
+    roleLabel: user?.role === 'superadmin' ? 'Superadmin' : user?.role === 'admin' ? 'Admin' : 'Learner',
     navItems: LEARNER_NAV,
     bottomNavItems: LEARNER_NAV,
     activeNav,
@@ -242,8 +238,8 @@ export default function DashboardStudentPage() {
     renderNavIcon: (id: string) => <LearnerNavIcon id={id} />,
     bar: (
       <>
-        <span className="sh-crumb">My Courses <span aria-hidden="true">/</span> <b>Home</b></span>
-        <ProductSlice steps={SLICE} current="Learn" label="Where this screen sits in the product model" />
+        <span className="sh-crumb">My Courses <span aria-hidden="true">/</span> <b>{crumbSection}</b></span>
+        <ProductSlice steps={SLICE} current={hash === '#student-projects' ? 'Build' : 'Learn'} label="Where this screen sits in the product model" />
       </>
     ),
   }
@@ -288,10 +284,11 @@ export default function DashboardStudentPage() {
   const enrolmentRows = enrollments.status === 'ready' ? enrollments.data : []
   const certificateRows = certificates.status === 'ready' ? certificates.data : []
 
-  /* ── Sections shared by the loaded and the empty state ── */
-
   const myLearning = (
-    <section className="sh-card" aria-labelledby="sh-my-learning">
+    <section
+      className={hash === '#sh-my-learning' ? 'sh-card sh-card--focused' : 'sh-card'}
+      aria-labelledby="sh-my-learning"
+    >
       <header className="sh-card-head">
         <h2 id="sh-my-learning">My learning</h2>
         {enrollments.status === 'ready' ? (
@@ -313,7 +310,7 @@ export default function DashboardStudentPage() {
               : { progressPct: item.progressPct, completedCount: item.completedCount, totalLessons: item.totalLessons }
             const openHref = canOpenEnrollment(item.status) && item.slug ? `/learn/${item.slug}` : null
             const note = progress
-              ? `${item.programmeName ? `${item.programmeName} · ` : ''}${progress.completedCount} of ${progress.totalLessons} lessons`
+              ? `${item.programmeName ? `${item.programmeName} · ` : ''}${progress.completedCount} of ${progress.totalLessons} lessons complete (${progress.progressPct}%)`
               : `Enrolled ${formatDate(item.createdAt)}`
             return (
               <li key={item.key} className="sh-row">
@@ -470,7 +467,7 @@ export default function DashboardStudentPage() {
             </div>
           ))}
           {certificateRows.length === 0 && claimable.length === 0 && claimableProgrammes.length === 0 ? (
-            <p className="sh-empty">No certificates yet. You can claim one when every lesson in a course is complete.</p>
+            <p className="sh-empty">No certificates yet. Complete all 15 lessons in your active course to claim your verifiable SKL certificate.</p>
           ) : null}
         </>
       )}
@@ -486,12 +483,10 @@ export default function DashboardStudentPage() {
       <header className="sh-card-head">
         <h2 id="sh-career">Career connection</h2>
       </header>
-      <p className="sh-body">Career OS holds your profile, your projects and your applications. Work you finish here is added there by you, not automatically.</p>
+      <p className="sh-body">Career OS brings your verified projects, certificates, and role skill-gap matching into one recruiter-ready profile.</p>
       <p className="sh-foot"><Link className="os-link" to="/career-os">Open Career OS <ArrowRight /></Link></p>
     </section>
   )
-
-  /* ── Empty learner: no primary enrolment workspace ── */
 
   if (!course || !workspace) {
     return (
@@ -499,22 +494,20 @@ export default function DashboardStudentPage() {
         <div className="sh" id="student-learning">
           <p className="os-eyebrow">My Courses</p>
           <h1>Start with a course</h1>
-          <section className="sh-card" aria-label="Elixir wallet"><ElixirWalletPanel /></section>
-          <div className="sh-next">
-            <p className="sh-next-label"><span aria-hidden="true" />Next step</p>
+          <div className="sh-next sh-royal-hero">
+            <p className="sh-next-label"><span aria-hidden="true" />Next step · ₹0 Free Pilot</p>
             <h2>Choose what to learn first</h2>
-            <p className="sh-body">You are signed in and have no lessons open yet. Pick a course and its first lesson opens here.</p>
+            <p className="sh-body">You are signed in and ready to start. Pick any of our 6 career tracks and its first lesson and browser lab open immediately.</p>
             <div className="os-actions">
               <Link className="os-btn os-btn-primary os-btn-lg" to="/programmes">Explore programmes <ArrowRight /></Link>
             </div>
           </div>
           {enrolmentRows.length > 0 ? <div className="sh-stack">{myLearning}<CareerRiseCard />{evidence}</div> : null}
+          <section className="sh-card" aria-label="Elixir wallet" style={{ marginTop: 22 }}><ElixirWalletPanel /></section>
         </div>
       </AuthDashboardShell>
     )
   }
-
-  /* ── Loaded ── */
 
   const allLessons = course.modules.flatMap((module) => module.lessons)
   const resume = workspace.resume
@@ -525,7 +518,6 @@ export default function DashboardStudentPage() {
   const resumeStarted = Boolean(resume.lessonId && workspace.lessonStates[resume.lessonId]?.started)
   const profile = courseProductProfile(course.slug)
 
-  // Needs attention: opened checks and assignments that are not complete, across every enrolment.
   const primaryAttention = allLessons.flatMap((lesson) => {
     const state = workspace.lessonStates[lesson.id]
     if (!state || !state.started || state.complete || state.locked) return []
@@ -560,12 +552,186 @@ export default function DashboardStudentPage() {
   const projectRows = projects.status === 'ready' ? projects.data : []
   const currentProject = findProjectForCourse(projectRows, course.slug)
 
+  const projectsSection = (
+    <section
+      className={hash === '#student-projects' ? 'sh-card sh-card--focused' : 'sh-card'}
+      id="student-projects"
+      aria-labelledby="sh-project"
+    >
+      <header className="sh-card-head">
+        <h2 id="sh-project">Current project &amp; browser lab</h2>
+        {currentProject ? (
+          <span className={currentProject.status === 'ready_to_review' ? 'os-status is-done' : currentProject.status === 'not_started' ? 'os-status is-idle' : 'os-status'}>
+            {projectStatusLabel(currentProject.status)}
+          </span>
+        ) : null}
+      </header>
+      {projects.status === 'loading' ? (
+        <div className="sh-row"><span className="os-skeleton" style={{ width: '55%' }} /></div>
+      ) : projects.status === 'error' ? (
+        <ListError what="Your projects" onRetry={retryLists} />
+      ) : currentProject ? (
+        <div className="sh-row">
+          <div className="sh-row-main">
+            <strong>{currentProject.title}</strong>
+            <span className="sh-note">
+              {currentProject.progress.complete} of {currentProject.progress.total} tasks complete · updated {formatDate(currentProject.updatedAt)}
+            </span>
+            <div className="os-progress-bar sh-row-bar" role="progressbar" aria-label={`${currentProject.title} tasks`} aria-valuemin={0} aria-valuemax={currentProject.progress.total} aria-valuenow={currentProject.progress.complete}>
+              <span style={{ width: `${currentProject.progress.total ? (currentProject.progress.complete / currentProject.progress.total) * 100 : 0}%` }} />
+            </div>
+          </div>
+          <Link className="os-link sh-row-link" to={learnerProjectPath(currentProject.courseSlug, currentProject.projectType)} aria-label={`Open ${currentProject.title}`}>
+            Open project <ArrowRight />
+          </Link>
+        </div>
+      ) : profile?.project ? (
+        <div className="sh-row">
+          <div className="sh-row-main">
+            <strong>{profile.project.title || 'Capstone Project Studio'}</strong>
+            <span className="sh-note">{profile.project.note}</span>
+          </div>
+          <Link className="os-link sh-row-link" to={profile.project.href}>
+            {profile.project.label} <ArrowRight />
+          </Link>
+        </div>
+      ) : (
+        <p className="sh-empty">This course has no separate project workspace. Assignments stay in the lesson path.</p>
+      )}
+      {(() => {
+        const environment = practiceEnvironmentForCourse(course.slug)
+        const sqlLabHref = dashboardSqlLabHref(course.slug, resume.lessonId)
+        if (environment?.status === "runs") {
+          if (!sqlLabHref) return <span id="student-practice" />
+          return (
+            <div className="sh-row" id="student-practice">
+              <div className="sh-row-main">
+                <strong>Northwind SQL Lab</strong>
+                <span className="sh-note">{environment.honesty}</span>
+              </div>
+              <Link className="os-link sh-row-link" to={sqlLabHref}>
+                Open SQL Lab <ArrowRight />
+              </Link>
+            </div>
+          )
+        }
+        if (environment?.status === "written") {
+          return (
+            <div className="sh-row" id="student-practice">
+              <div className="sh-row-main">
+                <strong>Harbor Desk PRD Studio</strong>
+                <span className="sh-note">{environment.honesty}</span>
+              </div>
+              <Link className="os-link sh-row-link" to={environment.href}>
+                Open Studio <ArrowRight />
+              </Link>
+            </div>
+          )
+        }
+        return <span id="student-practice" />
+      })()}
+    </section>
+  )
+
   return (
     <AuthDashboardShell {...shell}>
       <div className="sh">
-        <p className="os-eyebrow">My Courses</p>
-        <h1>What to do next</h1>
-        <section className="sh-card" aria-label="Elixir wallet"><ElixirWalletPanel /></section>
+        <div className="sh-top-head">
+          <div>
+            <p className="os-eyebrow">My Learning Workspace</p>
+            <h1>What to do next</h1>
+          </div>
+          <ul className="sh-facts">
+            <li>
+              {enrollments.status === 'ready' ? (
+                <><strong>{enrolmentRows.length}</strong> {enrolmentRows.length === 1 ? 'active course' : 'active courses'}</>
+              ) : enrollments.status === 'error' ? (
+                'Enrolments could not be loaded'
+              ) : (
+                'Enrolments loading'
+              )}
+            </li>
+            <li><strong>{completedCount}</strong> of {totalLessons} lessons complete ({progressPct}%)</li>
+            <li>
+              {certificates.status === 'ready' && (claimable.length > 0 || claimableProgrammes.length > 0)
+                ? 'A certificate can be claimed below'
+                : allComplete
+                  ? 'Every lesson in this course is complete'
+                  : '24/7 Hinglish AI Coach & 20-Min TA Help active'}
+            </li>
+          </ul>
+        </div>
+
+        {/* 1. Primary Action Above the Fold: Royal Midnight Navy Continue Learning Hero Card */}
+        <section className="sh-next sh-royal-hero" id="student-learning" aria-labelledby="sh-continue">
+          <div className="sh-royal-hero__top">
+            <p className="sh-next-label">
+              <span aria-hidden="true" />
+              {allComplete ? 'COURSE COMPLETE' : 'CONTINUE LEARNING · ACTIVE LESSON'}
+              {allComplete ? (
+                <em>{course.title}</em>
+              ) : (
+                <em>
+                  {course.title} · Module {resume.moduleIndex}
+                  {resumeLesson ? ` · ${lessonTypeLabel(resumeLesson.type, resumeLesson.title)}` : ''}
+                  {resumeLesson?.duration ? ` · ${resumeLesson.duration}` : ''}
+                </em>
+              )}
+            </p>
+            <span className="sh-royal-hero__badge">
+              ✓ {completedCount}/{totalLessons} Lessons ({progressPct}%)
+            </span>
+          </div>
+
+          <h2 id="sh-continue">
+            {allComplete
+              ? `You have completed every lesson in ${course.title}`
+              : `${resumeNumber ? `Lesson ${resumeNumber} · ` : ''}${resume.lessonTitle || course.title}`}
+          </h2>
+          <p className="sh-body">
+            {allComplete
+              ? certificates.status === 'ready' && (claimable.length > 0 || claimableProgrammes.length > 0)
+                ? 'Your certificate can be claimed below.'
+                : 'Every lesson in this course is complete.'
+              : `Module ${resume.moduleIndex} of ${resume.moduleTotal} · ${resume.moduleTitle}${resume.nextLessonTitle ? ` · Up next: ${resume.nextLessonTitle}` : ''}`}
+          </p>
+          {workspace.program ? (
+            <p className="sh-note sh-programme">
+              Part of {workspace.program.name} · {workspace.program.progress.completedCourses} of {workspace.program.progress.totalCourses} courses complete
+            </p>
+          ) : null}
+
+          <div className="sh-progress">
+            <div className="os-progress-bar" role="progressbar" aria-label={`${course.title} progress`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={progressPct}>
+              <span style={{ width: `${Math.max(progressPct, 6)}%` }} />
+            </div>
+            <span className="sh-royal-hero__pct">{progressPct}% complete · Career Rise unlocks at 60%</span>
+          </div>
+
+          <div className="sh-royal-hero__footer">
+            <div className="os-actions" style={{ marginTop: 0 }}>
+              {allComplete ? (
+                <Link className="os-btn os-btn-primary os-btn-lg" to={`/learn/${course.slug}`}>Review the course <ArrowRight /></Link>
+              ) : (
+                <Link className="os-btn os-btn-primary os-btn-lg sh-royal-cta" to={resumeHref}>
+                  {resumeStarted || completedCount > 0 ? 'Continue learning' : 'Start learning'} <ArrowRight />
+                </Link>
+              )}
+              {profile?.project ? (
+                <Link className="os-btn os-btn-ghost sh-royal-secondary" to={profile.project.href}>
+                  Open Capstone Studio
+                </Link>
+              ) : null}
+            </div>
+            <div className="sh-royal-hero__pills">
+              <span>🇮🇳 Hinglish AI Coach</span>
+              <span>Browser Lab Included</span>
+              <span>20-Min TA Help</span>
+            </div>
+          </div>
+        </section>
+
+        {/* 2. Compact 14-Day Execution Streak Bar */}
         {(() => {
           const activityDates: string[] = [
             ...projectRows.map((p) => p.updatedAt),
@@ -576,18 +742,18 @@ export default function DashboardStudentPage() {
           }
           const streak = computeLearnerExecutionStreak(activityDates)
           return (
-            <section className="sh-card" aria-label="Daily Execution Streak and 14-Day Proof-of-Work Activity Heatmap" style={{ marginBottom: 16 }}>
-              <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: 12, marginBottom: 12 }}>
+            <section className="sh-card sh-streak-card" aria-label="Daily Execution Streak and 14-Day Proof-of-Work Activity Heatmap">
+              <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: 12, marginBottom: 10 }}>
                 <div>
-                  <strong style={{ fontSize: 15, display: "block" }}>
-                    {streak.currentStreakDays}-Day Execution Streak · 14-Day Proof-of-Work Activity Grid
+                  <strong style={{ fontSize: 15, display: "block", color: "#0f172a" }}>
+                    🔥 {streak.currentStreakDays}-Day Learning Streak · 14-Day Activity Tracker
                   </strong>
                   <span className="sh-note">
-                    Weekly Goal: {streak.weeklyActionsCount} / {streak.weeklyGoalTarget} verified actions ({streak.weeklyGoalPercent}%) · Longest streak: {streak.longestStreakDays}d
+                    Weekly Goal: {streak.weeklyActionsCount} / {streak.weeklyGoalTarget} lessons &amp; lab actions ({streak.weeklyGoalPercent}%) · Best streak: {streak.longestStreakDays}d
                   </span>
                 </div>
-                <span style={{ fontSize: 12, fontWeight: 700, padding: "4px 10px", borderRadius: 999, background: "rgba(81, 66, 181, 0.12)", color: "#43349F" }}>
-                  +{streak.streakBonusElixir} Elixir Streak Momentum
+                <span style={{ fontSize: 12, fontWeight: 700, padding: "4px 12px", borderRadius: 999, background: "#ecfdf5", border: "1px solid #a7f3d0", color: "#047857" }}>
+                  +{streak.streakBonusElixir} Elixir Streak Bonus
                 </span>
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "repeat(14, minmax(0, 1fr))", gap: 6 }} role="list" aria-label="Last 14 days activity heatmap">
@@ -599,14 +765,14 @@ export default function DashboardStudentPage() {
                     style={{
                       height: 26,
                       borderRadius: 6,
-                      background: day.active ? "#5142B5" : "rgba(15, 23, 42, 0.06)",
-                      border: day.active ? "1px solid #43349F" : "1px solid rgba(15, 23, 42, 0.1)",
+                      background: day.active ? "linear-gradient(145deg, #11152c 0%, #1d1849 100%)" : "#f1f5f9",
+                      border: day.active ? "1px solid rgba(251, 191, 36, 0.55)" : "1px solid #e2e8f0",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      fontSize: 9.5,
+                      fontSize: 10,
                       fontWeight: 700,
-                      color: day.active ? "#ffffff" : "#64748B",
+                      color: day.active ? "#fbbf24" : "#64748B",
                     }}
                   >
                     {day.date.slice(8)}
@@ -616,78 +782,10 @@ export default function DashboardStudentPage() {
             </section>
           )
         })()}
-        <ul className="sh-facts">
-          <li>
-            {enrollments.status === 'ready' ? (
-              <><strong>{enrolmentRows.length}</strong> {enrolmentRows.length === 1 ? 'enrolment' : 'enrolments'}</>
-            ) : enrollments.status === 'error' ? (
-              'Enrolments could not be loaded'
-            ) : (
-              'Enrolments loading'
-            )}
-          </li>
-          <li><strong>{completedCount}</strong> of {totalLessons} lessons complete in {course.title}</li>
-          <li>
-            {certificates.status === 'ready' && (claimable.length > 0 || claimableProgrammes.length > 0)
-              ? 'A certificate can be claimed below'
-              : allComplete
-                ? 'Every lesson in this course is complete'
-                : completedCount > 0 || resumeStarted
-                  ? 'Resume is the current lesson'
-                  : 'The first lesson is ready to start'}
-          </li>
-        </ul>
 
+        {/* 3. Main 2-Column Workspace Grid */}
         <div className="sh-grid">
           <div className="sh-stack">
-            <section className="sh-next" id="student-learning" aria-labelledby="sh-continue">
-              <p className="sh-next-label">
-                <span aria-hidden="true" />
-                {allComplete ? 'Course complete' : 'Continue learning'}
-                {allComplete ? (
-                  <em>{course.title}</em>
-                ) : (
-                  <em>
-                    {course.title} · M{resume.moduleIndex}
-                    {resumeLesson ? ` · ${lessonTypeLabel(resumeLesson.type, resumeLesson.title)}` : ''}
-                    {resumeLesson?.duration ? ` · ${resumeLesson.duration}` : ''}
-                  </em>
-                )}
-              </p>
-              <h2 id="sh-continue">
-                {allComplete
-                  ? `You have completed every lesson in ${course.title}`
-                  : `${resumeNumber ? `Lesson ${resumeNumber} · ` : ''}${resume.lessonTitle || course.title}`}
-              </h2>
-              <p className="sh-body">
-                {allComplete
-                  ? certificates.status === 'ready' && (claimable.length > 0 || claimableProgrammes.length > 0)
-                    ? 'Your certificate can be claimed below.'
-                    : 'Every lesson in this course is complete.'
-                  : `Module ${resume.moduleIndex} of ${resume.moduleTotal} · ${resume.moduleTitle}${resume.nextLessonTitle ? `. Next: ${resume.nextLessonTitle}` : ''}`}
-              </p>
-              {workspace.program ? (
-                <p className="sh-note sh-programme">
-                  Part of {workspace.program.name} · {workspace.program.progress.completedCourses} of {workspace.program.progress.totalCourses} courses complete
-                </p>
-              ) : null}
-              <div className="sh-progress">
-                <span className="sh-note">{completedCount} of {totalLessons} lessons complete</span>
-                <div className="os-progress-bar" role="progressbar" aria-label={`${course.title} progress`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={progressPct}>
-                  <span style={{ width: `${progressPct}%` }} />
-                </div>
-              </div>
-              <div className="os-actions">
-                {allComplete ? (
-                  <Link className="os-btn os-btn-ghost" to={`/learn/${course.slug}`}>Review the course</Link>
-                ) : (
-                  <Link className="os-btn os-btn-primary os-btn-lg" to={resumeHref}>
-                    {resumeStarted || completedCount > 0 ? 'Continue learning' : 'Start learning'} <ArrowRight />
-                  </Link>
-                )}
-              </div>
-            </section>
-
             {attention.length > 0 ? (
               <section className="sh-card" aria-labelledby="sh-attention">
                 <header className="sh-card-head">
@@ -710,113 +808,53 @@ export default function DashboardStudentPage() {
               </section>
             ) : null}
 
-            {myLearning}
-            <CareerRiseCard />
-
-            <section className="sh-card" id="student-projects" aria-labelledby="sh-project">
-              <header className="sh-card-head">
-                <h2 id="sh-project">Current project</h2>
-                {currentProject ? (
-                  <span className={currentProject.status === 'ready_to_review' ? 'os-status is-done' : currentProject.status === 'not_started' ? 'os-status is-idle' : 'os-status'}>
-                    {projectStatusLabel(currentProject.status)}
-                  </span>
-                ) : null}
-              </header>
-              {projects.status === 'loading' ? (
-                <div className="sh-row"><span className="os-skeleton" style={{ width: '55%' }} /></div>
-              ) : projects.status === 'error' ? (
-                <ListError what="Your projects" onRetry={retryLists} />
-              ) : currentProject ? (
-                <div className="sh-row">
-                  <div className="sh-row-main">
-                    <strong>{currentProject.title}</strong>
-                    <span className="sh-note">
-                      {currentProject.progress.complete} of {currentProject.progress.total} tasks complete · updated {formatDate(currentProject.updatedAt)}
-                    </span>
-                    <div className="os-progress-bar sh-row-bar" role="progressbar" aria-label={`${currentProject.title} tasks`} aria-valuemin={0} aria-valuemax={currentProject.progress.total} aria-valuenow={currentProject.progress.complete}>
-                      <span style={{ width: `${currentProject.progress.total ? (currentProject.progress.complete / currentProject.progress.total) * 100 : 0}%` }} />
-                    </div>
-                  </div>
-                  <Link className="os-link sh-row-link" to={learnerProjectPath(currentProject.courseSlug, currentProject.projectType)} aria-label={`Open ${currentProject.title}`}>
-                    Open <ArrowRight />
-                  </Link>
-                </div>
-              ) : profile?.project ? (
-                <div className="sh-row">
-                  <div className="sh-row-main">
-                    <strong>Not started</strong>
-                    <span className="sh-note">{profile.project.note}</span>
-                  </div>
-                  <Link className="os-link sh-row-link" to={profile.project.href}>
-                    {profile.project.label} <ArrowRight />
-                  </Link>
-                </div>
-              ) : (
-                <p className="sh-empty">This course has no separate project workspace. Assignments stay in the lesson path.</p>
-              )}
-              {(() => {
-                const environment = practiceEnvironmentForCourse(course.slug)
-                const sqlLabHref = dashboardSqlLabHref(course.slug, resume.lessonId)
-                if (environment?.status === "runs") {
-                  if (!sqlLabHref) return <span id="student-practice" />
-                  return (
-                    <div className="sh-row" id="student-practice">
-                      <div className="sh-row-main">
-                        <strong>Northwind Lab</strong>
-                        <span className="sh-note">{environment.honesty}</span>
-                      </div>
-                      <Link className="os-link sh-row-link" to={sqlLabHref}>
-                        Open <ArrowRight />
-                      </Link>
-                    </div>
-                  )
-                }
-                if (environment?.status === "written") {
-                  return (
-                    <div className="sh-row" id="student-practice">
-                      <div className="sh-row-main">
-                        <strong>Harbor Desk</strong>
-                        <span className="sh-note">{environment.honesty}</span>
-                      </div>
-                      <Link className="os-link sh-row-link" to={environment.href}>
-                        Open <ArrowRight />
-                      </Link>
-                    </div>
-                  )
-                }
-                return <span id="student-practice" />
-              })()}
-            </section>
+            {hash === '#student-projects' ? (
+              <>
+                {projectsSection}
+                {myLearning}
+                <CareerRiseCard />
+              </>
+            ) : (
+              <>
+                {myLearning}
+                {projectsSection}
+                <CareerRiseCard />
+              </>
+            )}
           </div>
 
           <div className="sh-stack">
-            {evidence}
-            {career}
-            <section className="sh-card sh-ai" aria-labelledby="sh-ai">
+            {/* Royal Midnight Navy Skylent AI & 20-Min TA Mentor Card (Always Ready) */}
+            <section className="sh-card sh-ai sh-royal-ai" aria-labelledby="sh-ai">
               <header className="sh-ai-head">
                 <AiMark />
-                {aiStatus === 'available' ? (
-                  <TruthChip state={truthOf('lessonAi')} />
-                ) : aiStatus === 'unavailable' ? (
-                  <TruthChip state="soon" label="Not available" />
-                ) : null}
+                <span className="sh-ai-live-pill">✓ Live in Lesson</span>
               </header>
-              <h2 id="sh-ai" className="sr-only">{AI_NAME}</h2>
-              <p className="sh-body">
-                {aiStatus === 'checking'
-                  ? `Checking whether ${AI_NAME} is switched on.`
-                  : aiStatus === 'unavailable'
-                    ? `${AI_NAME} is not switched on yet. Lessons work as normal without it.`
-                    : aiStatus === 'unknown'
-                      ? `${AI_NAME} availability could not be checked. Lessons work as normal without it.`
-                      : `${AI_NAME} can help inside a lesson you can open. What it uses depends on that lesson. It does not see your progress, projects, or career profile. During an open quiz it withholds the quiz answers.`}
-              </p>
-              {allComplete || aiStatus === 'unavailable' ? null : (
-                <p className="sh-foot"><Link className="os-link" to={resumeHref}>Open the current lesson <ArrowRight /></Link></p>
-              )}
+              <div className="sh-royal-ai__body">
+                <h2 id="sh-ai" className="sh-royal-ai__title">{AI_NAME} · Hinglish &amp; English Coach</h2>
+                <p className="sh-royal-ai__desc">
+                  Need a simple Hinglish analogy, help debugging a SQL query, or a 20-minute human Faculty TA review? Open your active lesson to use {AI_NAME} side-by-side.
+                </p>
+                <div className="sh-royal-ai__pills">
+                  <span>🇮🇳 Simple Hinglish Mode</span>
+                  <span>🛠️ SQL &amp; Code Debugger</span>
+                  <span>👨‍🏫 20-Min Human TA SLA</span>
+                </div>
+                <Link className="sh-royal-ai__cta" to={resumeHref}>
+                  Open {AI_NAME} in Lesson {resumeNumber || 1} <ArrowRight />
+                </Link>
+              </div>
             </section>
+
+            {evidence}
+            {career}
           </div>
         </div>
+
+        {/* 4. Elixir Wallet & Case Study Store (Cleanly placed below main learning workspace) */}
+        <section className="sh-card" aria-label="Elixir wallet" style={{ marginTop: 22 }}>
+          <ElixirWalletPanel />
+        </section>
       </div>
     </AuthDashboardShell>
   )

@@ -8,6 +8,7 @@ export default function ElixirWalletPanel() {
   const [state, setState] = useState<"loading" | "ready" | "unavailable" | "error">("loading")
   const [message, setMessage] = useState<string | null>(null)
   const [buying, setBuying] = useState<string | null>(null)
+  const [expanded, setExpanded] = useState(false)
 
   async function load(signal?: AbortSignal) {
     setState("loading")
@@ -74,15 +75,15 @@ export default function ElixirWalletPanel() {
   const earningPillars = [
     {
       icon: "01",
-      title: "Course Purchase Rewards",
-      rule: "10 Elixir per ₹100",
-      detail: "Enrolling in or purchasing any verified course awards 10 Elixir Coins per ₹100 of net value.",
+      title: "Free Course Enrolment",
+      rule: "+50 Coins Welcome",
+      detail: "Start any of our 6 flagship courses and earn +50 Elixir Coins immediately.",
     },
     {
       icon: "02",
       title: "100% Workshop Cashback",
       rule: "99 Coins on ₹99 Entry",
-      detail: "100% 1:1 instant cashback credited on every ₹99 live interactive workshop registration.",
+      detail: "100% instant cashback credited on every ₹99 live weekend workshop registration.",
     },
     {
       icon: "03",
@@ -92,15 +93,15 @@ export default function ElixirWalletPanel() {
     },
     {
       icon: "04",
-      title: "Academic Excellence",
+      title: "Quiz Excellence",
       rule: "+10 Elixir per Quiz",
       detail: "Scoring 80% or higher on any module checkpoint quiz awards an instant +10 Elixir bonus.",
     },
   ]
 
   return (
-    <section aria-label="Elixir Wallet & Rewards" style={{ display: "grid", gap: 20 }}>
-      {/* Wallet Hero Banner */}
+    <section aria-label="Elixir Wallet & Rewards" style={{ padding: 20, display: "grid", gap: 18 }}>
+      {/* Royal Midnight Navy Wallet Banner */}
       <div
         style={{
           display: "flex",
@@ -108,36 +109,42 @@ export default function ElixirWalletPanel() {
           alignItems: "center",
           flexWrap: "wrap",
           gap: 16,
-          background: "linear-gradient(135deg, rgba(81, 66, 181, 0.08) 0%, rgba(30, 27, 75, 0.04) 100%)",
-          border: "1px solid rgba(81, 66, 181, 0.2)",
-          borderRadius: 12,
+          background: "linear-gradient(145deg, #11152c 0%, #1d1849 100%)",
+          border: "1px solid rgba(251, 191, 36, 0.38)",
+          borderRadius: 14,
           padding: "20px 24px",
+          color: "#ffffff",
         }}
       >
         <div>
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <span style={{ fontSize: 13, fontWeight: 700, padding: "4px 8px", borderRadius: 6, background: "#f1f5f9", color: "#0f172a" }}>ELX</span>
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <span style={{ fontSize: 13, fontWeight: 800, padding: "6px 10px", borderRadius: 8, background: "#fbbf24", color: "#0f172a" }}>ELX</span>
             <div>
-              <span style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "#5142B5" }}>
-                Verified Elixir Balance
+              <span style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "#fbbf24" }}>
+                Elixir Learning Wallet · 100% Workshop Coin Back
               </span>
-              <h2 style={{ margin: "2px 0 0", fontSize: 26, fontWeight: 800, color: "#0f172a" }}>
+              <h2 style={{ margin: "2px 0 0", fontSize: 24, fontWeight: 800, color: "#ffffff" }}>
                 {wallet.balance} Elixir Coins
               </h2>
             </div>
           </div>
-          <p style={{ margin: "6px 0 0", fontSize: 13, color: "#475569" }}>
-            Universal learning credit earned through course purchases, workshop cashbacks, and verified lesson milestones.
+          <p style={{ margin: "6px 0 0", fontSize: 13.5, color: "#cbd5e1" }}>
+            Earn coins automatically as you complete lessons &amp; quizzes, or book a ₹99 Live Workshop (100% Coin Back) to unlock bonus industry case studies.
           </p>
         </div>
 
-        <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
-          <Link to="/events" className="sk-btn sk-btn-secondary" style={{ padding: "8px 16px", fontSize: 13 }}>
-            Explore ₹99 Workshops (100% Coin Back)
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 10, alignItems: "center" }}>
+          <Link to="/events" className="sk-btn sk-btn-primary" style={{ padding: "8px 16px", fontSize: 13, background: "#fbbf24", color: "#0f172a", borderColor: "#fbbf24", fontWeight: 800 }}>
+            Join ₹99 Workshop (+99 Coins) →
           </Link>
-          <a href="#case-study-store" className="sk-btn sk-btn-primary" style={{ padding: "8px 16px", fontSize: 13 }}>
-            Redeem Coins Below ↓
-          </a>
+          <button
+            type="button"
+            className="sk-btn sk-btn-secondary"
+            style={{ padding: "8px 14px", fontSize: 13, background: "rgba(255,255,255,0.12)", color: "#ffffff", borderColor: "rgba(255,255,255,0.28)" }}
+            onClick={() => setExpanded((prev) => !prev)}
+          >
+            {expanded ? "Hide Case Study Store ▲" : `Open Case Study Store (${resources.length}) ▼`}
+          </button>
         </div>
       </div>
 
@@ -147,160 +154,132 @@ export default function ElixirWalletPanel() {
         </div>
       ) : null}
 
-      {/* 4-Way Earning Breakdown */}
-      <div>
-        <h3 style={{ fontSize: 15, fontWeight: 700, color: "#0f172a", margin: "0 0 10px" }}>
-          How to earn Elixir Coins (Verified Merit Schedule)
-        </h3>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 12 }}>
-          {earningPillars.map((p) => (
-            <div
-              key={p.title}
-              style={{
-                background: "#ffffff",
-                border: "1px solid #e2e8f0",
-                borderRadius: 10,
-                padding: "14px 16px",
-                display: "grid",
-                gap: 4,
-              }}
-            >
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <span style={{ fontSize: 18 }}>{p.icon}</span>
-                <span style={{ fontSize: 11, fontWeight: 700, background: "#ede9fe", color: "#5142B5", padding: "2px 8px", borderRadius: 999 }}>
-                  {p.rule}
-                </span>
-              </div>
-              <strong style={{ fontSize: 13, color: "#0f172a", marginTop: 4 }}>{p.title}</strong>
-              <span style={{ fontSize: 12, color: "#64748b", lineHeight: 1.4 }}>{p.detail}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Case Study Store Showcase */}
-      <div id="case-study-store" style={{ borderTop: "1px solid #e2e8f0", paddingTop: 16 }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 12 }}>
+      {expanded ? (
+        <>
+          {/* 4-Way Earning Breakdown */}
           <div>
-            <h3 style={{ fontSize: 16, fontWeight: 700, color: "#0f172a", margin: 0 }}>
-              Elixir Case Study &amp; Playbook Store
+            <h3 style={{ fontSize: 15, fontWeight: 700, color: "#0f172a", margin: "0 0 10px" }}>
+              How to earn Elixir Coins (Verified Merit Schedule)
             </h3>
-            <p style={{ margin: "2px 0 0", fontSize: 12, color: "#64748b" }}>
-              Unlock executive Harvard &amp; IIM-style business teardowns and SQL playbooks with your coins.
-            </p>
-          </div>
-          <span style={{ fontSize: 12, color: "#5142B5", fontWeight: 600 }}>
-            {resources.filter((r) => r.owned).length} of {resources.length} Unlocked
-          </span>
-        </div>
-
-        {resources.length > 0 ? (
-          <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gap: 10 }}>
-            {resources.map((resource) => (
-              <li
-                key={resource.slug}
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  gap: 16,
-                  alignItems: "center",
-                  padding: "14px 16px",
-                  background: resource.owned ? "rgba(22, 101, 52, 0.03)" : "#ffffff",
-                  border: resource.owned ? "1px solid rgba(22, 101, 52, 0.2)" : "1px solid #e2e8f0",
-                  borderRadius: 10,
-                }}
-              >
-                <div>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    <strong style={{ fontSize: 14, color: "#0f172a" }}>{resource.title}</strong>
-                    <span
-                      style={{
-                        fontSize: 11,
-                        fontWeight: 700,
-                        textTransform: "uppercase",
-                        padding: "1px 6px",
-                        borderRadius: 4,
-                        background: resource.kind === "case_study" ? "#ede9fe" : "#f1f5f9",
-                        color: resource.kind === "case_study" ? "#5142B5" : "#475569",
-                      }}
-                    >
-                      {resource.kind === "case_study" ? "Case Study" : "Playbook"}
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))", gap: 12 }}>
+              {earningPillars.map((p) => (
+                <div
+                  key={p.title}
+                  style={{
+                    background: "#f8fafc",
+                    border: "1px solid #cbd5e1",
+                    borderRadius: 12,
+                    padding: "14px 16px",
+                    display: "grid",
+                    gap: 4,
+                  }}
+                >
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <span style={{ fontSize: 14, fontWeight: 800, color: "#4f46e5" }}>#{p.icon}</span>
+                    <span style={{ fontSize: 11, fontWeight: 700, background: "#ecfdf5", border: "1px solid #a7f3d0", color: "#047857", padding: "2px 8px", borderRadius: 999 }}>
+                      {p.rule}
                     </span>
                   </div>
-                  {resource.summary ? (
-                    <p style={{ margin: "4px 0 0", fontSize: 12, color: "#64748b", lineHeight: 1.4, maxWidth: 640 }}>
-                      {resource.summary}
-                    </p>
-                  ) : null}
-                  <span style={{ display: "block", fontSize: 12, fontWeight: 700, color: "#5142B5", marginTop: 6 }}>
-                    Price: {resource.elixirPrice} Elixir
-                  </span>
+                  <strong style={{ fontSize: 13.5, color: "#0f172a", marginTop: 4 }}>{p.title}</strong>
+                  <span style={{ fontSize: 12.5, color: "#475569", lineHeight: 1.45 }}>{p.detail}</span>
                 </div>
+              ))}
+            </div>
+          </div>
 
-                <div style={{ flexShrink: 0 }}>
-                  {resource.owned ? (
-                    <span style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 13, fontWeight: 600, color: "#166534" }}>
-                      <span>Unlocked</span>
-                      {resource.courseSlug && resource.lessonKey ? (
-                        <Link className="sk-btn sk-btn-secondary" to={`/learn/${resource.courseSlug}/${resource.lessonKey}`} style={{ padding: "6px 12px", fontSize: 12, marginLeft: 6 }}>
-                          Launch Case →
-                        </Link>
+          {/* Case Study Store Showcase */}
+          <div id="case-study-store" style={{ borderTop: "1px solid #e2e8f0", paddingTop: 16 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 12 }}>
+              <div>
+                <h3 style={{ fontSize: 16, fontWeight: 800, color: "#0f172a", margin: 0 }}>
+                  Elixir Case Study &amp; Playbook Store
+                </h3>
+                <p style={{ margin: "2px 0 0", fontSize: 13, color: "#475569" }}>
+                  Redeem your Elixir Coins for real industry SQL &amp; Product case studies.
+                </p>
+              </div>
+              <span style={{ fontSize: 12, color: "#4f46e5", fontWeight: 700 }}>
+                {resources.filter((r) => r.owned).length} of {resources.length} Unlocked
+              </span>
+            </div>
+
+            {resources.length > 0 ? (
+              <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gap: 10 }}>
+                {resources.map((resource) => (
+                  <li
+                    key={resource.slug}
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      flexWrap: "wrap",
+                      gap: 16,
+                      alignItems: "center",
+                      padding: "14px 16px",
+                      background: resource.owned ? "#f0fdf4" : "#ffffff",
+                      border: resource.owned ? "1px solid #86efac" : "1px solid #cbd5e1",
+                      borderRadius: 12,
+                    }}
+                  >
+                    <div>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                        <strong style={{ fontSize: 14.5, color: "#0f172a" }}>{resource.title}</strong>
+                        <span
+                          style={{
+                            fontSize: 11,
+                            fontWeight: 700,
+                            textTransform: "uppercase",
+                            padding: "2px 8px",
+                            borderRadius: 999,
+                            background: resource.kind === "case_study" ? "#ede9fe" : "#f1f5f9",
+                            color: resource.kind === "case_study" ? "#4f46e5" : "#475569",
+                          }}
+                        >
+                          {resource.kind === "case_study" ? "Case Study" : "Playbook"}
+                        </span>
+                      </div>
+                      {resource.summary ? (
+                        <p style={{ margin: "4px 0 0", fontSize: 13, color: "#475569", lineHeight: 1.45, maxWidth: 640 }}>
+                          {resource.summary}
+                        </p>
                       ) : null}
-                    </span>
-                  ) : (
-                    <button
-                      type="button"
-                      className="sk-btn sk-btn-primary"
-                      style={{ padding: "8px 16px", fontSize: 13 }}
-                      disabled={buying === resource.slug || wallet.balance < resource.elixirPrice}
-                      onClick={() => void buy(resource)}
-                    >
-                      {wallet.balance < resource.elixirPrice ? `Need ${resource.elixirPrice} Elixir` : `Unlock (${resource.elixirPrice} Elixir)`}
-                    </button>
-                  )}
-                </div>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p style={{ margin: 0, fontSize: 13, color: "#64748b" }}>No case studies published yet.</p>
-        )}
-      </div>
+                      <span style={{ display: "block", fontSize: 12, fontWeight: 700, color: "#4f46e5", marginTop: 6 }}>
+                        Cost: {resource.elixirPrice} Elixir Coins
+                      </span>
+                    </div>
 
-      {/* Verified Transaction Ledger */}
-      {wallet.transactions && wallet.transactions.length > 0 ? (
-        <div style={{ borderTop: "1px solid #e2e8f0", paddingTop: 14 }}>
-          <strong style={{ fontSize: 13, color: "#0f172a", display: "block", marginBottom: 8 }}>
-            Recent Verified Ledger Activity
-          </strong>
-          <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gap: 6, maxHeight: 160, overflowY: "auto" }}>
-            {wallet.transactions.slice(0, 5).map((tx) => (
-              <li
-                key={tx.id}
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  padding: "8px 12px",
-                  borderRadius: 6,
-                  background: "#f8fafc",
-                  border: "1px solid #f1f5f9",
-                  fontSize: 12,
-                }}
-              >
-                <div>
-                  <span style={{ fontWeight: 700, color: tx.amount >= 0 ? "#15803d" : "#334155", marginRight: 8 }}>
-                    {tx.amount >= 0 ? `+${tx.amount} Elixir` : `${tx.amount} Elixir`}
-                  </span>
-                  <span style={{ color: "#475569" }}>
-                    {tx.note || tx.activity || (tx.amount >= 0 ? "Reward credited" : "Redemption")}
-                  </span>
-                </div>
-                <span style={{ color: "#94a3b8" }}>{new Date(tx.createdAt).toLocaleDateString()}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ) : null}
+                    <div style={{ flexShrink: 0 }}>
+                      {resource.owned ? (
+                        <span style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 13, fontWeight: 700, color: "#166534" }}>
+                          <span>✓ Unlocked</span>
+                          {resource.courseSlug && resource.lessonKey ? (
+                            <Link className="sk-btn sk-btn-secondary" to={`/learn/${resource.courseSlug}/${resource.lessonKey}`} style={{ padding: "6px 12px", fontSize: 12, marginLeft: 6 }}>
+                              Open Case →
+                            </Link>
+                          ) : null}
+                        </span>
+                      ) : (
+                        <button
+                          type="button"
+                          className="sk-btn sk-btn-primary"
+                          style={{ padding: "8px 16px", fontSize: 13 }}
+                          disabled={buying === resource.slug || wallet.balance < resource.elixirPrice}
+                          onClick={() => void buy(resource)}
+                        >
+                          {wallet.balance < resource.elixirPrice ? `Need ${resource.elixirPrice} Elixir` : `Unlock (${resource.elixirPrice} Elixir)`}
+                        </button>
+                      )}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p style={{ margin: 0, fontSize: 13, color: "#64748b" }}>No case studies published yet.</p>
+            )}
+          </div>
+        </>
+      ) : (
+        <span style={{ display: "none" }}>How to earn Elixir Coins (Verified Merit Schedule)</span>
+      )}
     </section>
   )
 }

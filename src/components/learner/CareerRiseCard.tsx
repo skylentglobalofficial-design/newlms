@@ -60,11 +60,16 @@ export default function CareerRiseCard() {
   return (
     <section className="sh-card" aria-labelledby="career-rise-title">
       <header className="sh-card-head">
-        <h2 id="career-rise-title">Career Rise</h2>
+        <h2 id="career-rise-title">Career Rise · 60% Milestone Tracker</h2>
+        <span style={{ fontSize: 11.5, fontWeight: 700, padding: "3px 10px", borderRadius: 999, background: "#ede9fe", color: "#4f46e5" }}>
+          Merit Gate: 60%
+        </span>
       </header>
-      <p className="sh-note">Career Rise opens after you complete 60% of a course or programme and choose to enrol. It does not unlock Career OS.</p>
+      <p className="sh-empty" style={{ paddingBottom: 8 }}>
+        Complete 60% of your active course (3 of 5 modules) to unlock Career Rise — including mock interview practice, verified project linking, and role skill-gap matching in Career OS.
+      </p>
       {error ? <p className="sh-empty">{error}</p> : null}
-      {rows == null ? <p className="sh-note">Checking eligibility…</p> : rows.length === 0 ? (
+      {rows == null ? <p className="sh-empty">Checking eligibility…</p> : rows.length === 0 ? (
         <p className="sh-empty">No enrolled curriculum yet, so Career Rise is not available.</p>
       ) : (
         <ul className="sh-rows">
@@ -72,16 +77,19 @@ export default function CareerRiseCard() {
             <li key={`${row.kind}:${row.slug}`} className="sh-row">
               <div className="sh-row-main">
                 <strong>{row.title}</strong>
-                <span className="sh-note">{row.completedModules} of {row.totalModules} modules · {row.percent}%</span>
+                <span className="sh-note">{row.completedModules} of {row.totalModules} modules complete · {row.percent}% progress</span>
+                <div className="os-progress-bar sh-row-bar" role="progressbar" aria-label={`${row.title} Career Rise progress`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={row.percent}>
+                  <span style={{ width: `${row.percent}%` }} />
+                </div>
                 {row.enrolled ? (
-                  <span className="sh-note" style={{ display: "block", marginTop: 4 }}>
+                  <span className="sh-note" style={{ display: "block", marginTop: 4, color: "#047857", fontWeight: 600 }}>
                     ✓ 60% Curriculum Gate · ✓ Case Evidence · ✓ Mock Interview Defense
                   </span>
                 ) : null}
               </div>
               {row.enrolled ? (
                 <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
-                  <span className="os-status is-done">Enrolled</span>
+                  <span className="os-status is-done">Unlocked</span>
                   <Link
                     className="os-link"
                     to={row.mockDefenseHref ?? `/career-os/interviews?track=${encodeURIComponent(row.slug)}`}
@@ -90,10 +98,14 @@ export default function CareerRiseCard() {
                   </Link>
                 </div>
               ) : row.eligible ? (
-                <button type="button" className="os-link" disabled={pending === row.slug} onClick={() => void enrol(row)}>
-                  {pending === row.slug ? "Enrolling…" : "Enrol in Career Rise"}
+                <button type="button" className="os-btn os-btn-primary" disabled={pending === row.slug} onClick={() => void enrol(row)}>
+                  {pending === row.slug ? "Unlocking…" : "Unlock Career Rise →"}
                 </button>
-              ) : <span className="sh-note">Available at {row.thresholdPercent}%</span>}
+              ) : (
+                <span style={{ fontSize: 12, fontWeight: 700, padding: "4px 10px", borderRadius: 999, background: "#f1f5f9", color: "#475569" }}>
+                  Unlocks at {row.thresholdPercent}%
+                </span>
+              )}
             </li>
           ))}
         </ul>

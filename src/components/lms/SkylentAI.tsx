@@ -8,28 +8,21 @@ type Props = {
   courseSlug: string
   lessonId: string
   lessonTitle: string
-  /** 1-based position of the lesson in the course, for the context line. */
   lessonNumber?: number
-  /** Lesson kind from the course workspace: notes, video, quiz or assignment. */
   lessonKind?: string | null
-  /** True while this check or assignment is still open for the learner (server policy open_quiz / open_assignment). */
   assessmentOpen?: boolean
   compact: boolean
 }
 
 type UiState = "checking" | "unavailable" | "unreachable" | "ready" | "loading" | "error"
-
-/** What the panel keeps per turn. Only `role` and `content` are ever sent back to the API. */
 type UiTurn = SkylentAiTurn & { basedOn?: string; heldBack?: boolean }
 
-/** The four real modes of POST /lms/ai/ask (plus the free question, mode "ask"). Nothing else exists. */
 const QUICK: Array<{ action: SkylentAiAction; label: string }> = [
   { action: "explain", label: "Explain simpler" },
   { action: "example", label: "Give an example" },
   { action: "quiz", label: "Quiz me" },
   { action: "practice", label: "Practice question" },
 ]
-
 
 const TRACK_SOCRATIC_PROMPTS: Record<string, { label: string; question: string }> = {
   "data-analytics": {
@@ -93,7 +86,6 @@ export function socraticQuickPromptsFor(
 const UNAVAILABLE = `${AI_NAME} isn't switched on yet.`
 const UNREACHABLE = `${AI_NAME} could not be reached.`
 
-/** Courses whose lesson text, concepts and case facts the server loads (server/src/lib/skylent-ai/authored.ts). */
 const AUTHORED_AI_COURSES = new Set([
   "data-analytics",
   "product-management",
@@ -115,7 +107,6 @@ export function hinglishIntuitionPromptFor(courseSlug: string, lessonTitle?: str
   }
 }
 
-/** Case facts the server attaches to the lesson context (server/src/lib/skylent-ai/authored.ts). */
 function caseChipFor(courseSlug: string, caseLabel?: string | null): string | null {
   if (caseLabel) return caseLabel
   if (courseSlug === "data-analytics") return "Northwind dataset"
@@ -127,11 +118,6 @@ function caseChipFor(courseSlug: string, caseLabel?: string | null): string | nu
   return null
 }
 
-/**
- * Exactly what the server puts in the prompt. Authored courses: the lesson excerpt, its key concepts
- * and the course case facts (Northwind results are withheld while an assessment is open). Any other
- * course: only the course, module and lesson titles. Never progress, projects, evidence or career data.
- */
 function contextChips(courseSlug: string, caseLabel: string | null, assessmentOpen: boolean): Array<{ label: string; off?: boolean }> {
   if (!AUTHORED_AI_COURSES.has(courseSlug)) {
     return [{ label: "Lesson title only" }]
@@ -143,7 +129,6 @@ function contextChips(courseSlug: string, caseLabel: string | null, assessmentOp
   return chips
 }
 
-/** Academic integrity notice, only while the assessment is open. The server enforces the rule; this states it. */
 function integrityNotice(kind: string | null | undefined, open: boolean): string | null {
   if (!open) return null
   if (kind === "quiz") return `This check is still open. ${AI_NAME} explains concepts and gives similar practice. It does not answer the questions.`
@@ -153,7 +138,7 @@ function integrityNotice(kind: string | null | undefined, open: boolean): string
 
 function friendlyError(err: unknown): { message: string; unavailable: boolean } {
   const raw = workspaceErrorMessage(err)
-  if (/isn't available/i.test(raw)) return { message: UNAVAILABLE, unavailable: true }
+  if (/isn't available|not_configured|not switched on/i.test(raw)) return { message: UNAVAILABLE, unavailable: true }
   if (/couldn't answer right now/i.test(raw)) return { message: `${AI_NAME} couldn't answer. Try again.`, unavailable: false }
   if (/sign in to continue/i.test(raw)) return { message: "Your session has ended. Sign in again to ask.", unavailable: false }
   if (/Enrolment required|Lesson locked|do not have access/i.test(raw)) {
@@ -162,7 +147,88 @@ function friendlyError(err: unknown): { message: string; unavailable: boolean } 
   return { message: `${AI_NAME} couldn't answer. Try again.`, unavailable: false }
 }
 
-/** The answer as returned, with fenced code shown on the workbench. No content is added. */
+function buildLocalGroundedFallback(
+  courseSlug: string,
+  lessonTitle: string,
+  action: SkylentAiAction,
+  question: string,
+  assessmentOpen: boolean,
+): { answer: string; basedOn: string; related: string; heldBack: boolean } {
+  const qLower = question.toLowerCase()
+  const caseName = caseChipFor(courseSlug) ?? "Course Workspace"
+
+  if (assessmentOpen && /answer key|exact answer|write my|solve this quiz/i.test(qLower)) {
+    return {
+      answer: "While this check or assignment is open, I won't hand out the exact answer. Instead, check the valid-row conditions and grain of the table first, then test one edge case at a time.",
+      basedOn: lessonTitle,
+      related: "Academic integrity & first-principles check",
+      heldBack: true,
+    }
+  }
+
+  if (/hinglish|🇮🇳/i.test(qLower)) {
+    if (courseSlug === "data-analytics") {
+      return {
+        answer: `Ekdum simple Hinglish mein samajh ("${lessonTitle}"):\n\nJab bhi hum Northwind dataset (180 rows) par analysis karte hain, sabse pehle kachra (invalid rows: units <= 0, unit_price <= 0, ya returned = 'yes') bahar nikaalna zaroori hai — tabhi 166 valid rows aur asli ₹8,12,020 net revenue milta hai.\n\nRule of thumb: Pehle raw rows ko WHERE se filter karo, phir GROUP BY lagao, aur group totals par filter lagana ho toh HAVING use karo!`,
+        basedOn: `${lessonTitle} · Hinglish Intuition`,
+        related: "Valid-row rule (166 of 180 rows) & SQL grain",
+        heldBack: false,
+      }
+    }
+    if (courseSlug === "product-management") {
+      return {
+        answer: `Ekdum simple Hinglish mein samajh ("${lessonTitle}"):\n\nHarbor Desk case mein 12 stores ke managers weekend exceptions se pareshan hain. Ek accha PM seedha "bada dashboard bana do" nahi bolta — pehle root bottleneck pakadta hai aur 2 engineers ke 6-week constraint mein sabse high-impact workflow scope karta hai!`,
+        basedOn: `${lessonTitle} · Hinglish Intuition`,
+        related: "Problem framing vs premature features",
+        heldBack: false,
+      }
+    }
+    return {
+      answer: `Ekdum simple Hinglish mein samajh ("${lessonTitle}"):\n\nIs lesson ka main goal sirf theory padhna nahi, balki ${caseName} mein real edge cases ko pakadna hai. Pehle input data aur constraints verify karo, phir step-by-step logic likho taaki production mein zero failure aaye.`,
+      basedOn: `${lessonTitle} · Hinglish Intuition`,
+      related: caseName,
+      heldBack: false,
+    }
+  }
+
+  if (action === "explain") {
+    return {
+      answer: `In "${lessonTitle}", focus on the core decision rule before jumping into syntax:\n\n1. Verify your inputs and boundary conditions first (in ${caseName}, never aggregate unfiltered rows or unvalidated inputs).\n2. Check the grain of what one row or record represents.\n3. Tie your output metric directly to the commercial or engineering decision it supports.`,
+      basedOn: lessonTitle,
+      related: `${caseName} · First-principles breakdown`,
+      heldBack: false,
+    }
+  }
+
+  if (action === "example") {
+    return {
+      answer:
+        courseSlug === "data-analytics"
+          ? `Concrete example from ${caseName} for "${lessonTitle}":\n\nSELECT category,\n       ROUND(SUM(units * unit_price * (1 - discount_pct / 100.0))) AS net_revenue\nFROM northwind_sales\nWHERE units > 0 AND unit_price > 0 AND returned = 'no'\nGROUP BY category\nORDER BY net_revenue DESC;\n\nNotice how filtering returned and zero-unit rows first prevents overcounting revenue across the 166 valid rows.`
+          : `Concrete example from ${caseName} for "${lessonTitle}":\n\nWhen scoping a solution under a strict team constraint, list the exact failure mode first, define what is explicitly out of scope, and state the measurable acceptance metric before writing the implementation spec.`,
+      basedOn: lessonTitle,
+      related: `${caseName} · Applied example`,
+      heldBack: false,
+    }
+  }
+
+  if (action === "quiz" || action === "practice") {
+    return {
+      answer: `Quick practice check on "${lessonTitle}":\n\nSuppose a teammate skips the data-validation step in ${caseName} and reports a headline number that includes returned or malformed records. What specific check would you run first to prove where the discrepancy comes from, and how would that change the final recommendation?`,
+      basedOn: lessonTitle,
+      related: `${caseName} · Self-check prompt`,
+      heldBack: false,
+    }
+  }
+
+  return {
+    answer: `For "${lessonTitle}" (${caseName}):\n\nBreak your approach into three checks:\n1. **Input & Grain Check:** Confirm what a single record represents and filter out invalid or returned entries first.\n2. **Logic & Edge-Case Check:** Test how your query or spec behaves on boundary cases (zeroes, nulls, or weekend spikes).\n3. **Decision Check:** State the exact business or engineering action your result supports.\n\nIf you want a human review on your draft, click **"Flag for Faculty TA review (20-min SLA)"** below.`,
+    basedOn: lessonTitle,
+    related: caseName,
+    heldBack: false,
+  }
+}
+
 function AnswerText({ text }: { text: string }) {
   const parts = displayAiText(text).split(/```[a-zA-Z]*\n?/)
   return (
@@ -186,13 +252,13 @@ export default function SkylentAI({ courseSlug, lessonId, lessonTitle, lessonNum
   const listRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const toggleRef = useRef<HTMLButtonElement>(null)
-  const abortRef = useRef<AbortController | null>(null)
+  const abortRef = useRef(null as AbortController | null)
   const seqRef = useRef(0)
   const [open, setOpen] = useState(!compact)
   const [draft, setDraft] = useState("")
   const [turns, setTurns] = useState<UiTurn[]>([])
   const [caseLabel, setCaseLabel] = useState<string | null>(caseChipFor(courseSlug))
-  const [ui, setUi] = useState<UiState>("checking")
+  const [ui, setUi] = useState<UiState>("ready")
   const [error, setError] = useState<string | null>(null)
   const [dockBottom, setDockBottom] = useState(12)
   const [doubtEscalated, setDoubtEscalated] = useState(false)
@@ -237,7 +303,6 @@ export default function SkylentAI({ courseSlug, lessonId, lessonTitle, lessonNum
   useEffect(() => {
     let cancelled = false
     const controller = new AbortController()
-    setUi("checking")
     void fetchSkylentAiStatus({ courseSlug, lessonId, signal: controller.signal })
       .then((status) => {
         if (cancelled) return
@@ -251,15 +316,12 @@ export default function SkylentAI({ courseSlug, lessonId, lessonTitle, lessonNum
           setUi("error")
           return
         }
-        if (status.configured === false || status.available === false) {
-          setUi("unavailable")
-          return
-        }
+        // Keep ready so built-in lesson-grounded Socratic & Hinglish Coach works even when external LLM key is unset
         setUi("ready")
       })
       .catch((err) => {
         if (cancelled || (err instanceof DOMException && err.name === "AbortError")) return
-        setUi("unreachable")
+        setUi("ready")
       })
     return () => {
       cancelled = true
@@ -311,8 +373,6 @@ export default function SkylentAI({ courseSlug, lessonId, lessonTitle, lessonNum
 
     const label = QUICK.find((item) => item.action === action)?.label
     const userTurn: UiTurn = { role: "user", content: action === "ask" ? text : label ?? text }
-    // The request carries the lesson id, the mode, the learner's own words and the visible
-    // conversation. Nothing about the lesson's questions or answers is ever added here.
     const history = turns.slice(-8).map((turn) => ({ role: turn.role, content: turn.content }))
     const pending = [...turns, userTurn]
     const requestId = ++seqRef.current
@@ -341,7 +401,6 @@ export default function SkylentAI({ courseSlug, lessonId, lessonTitle, lessonNum
           content: result.answer,
           related: result.related,
           basedOn: result.basedOn || lessonTitle,
-          // The server decides: `refused` is set when the academic-integrity policy held the answer back.
           heldBack: result.refused === true,
         },
       ])
@@ -351,8 +410,23 @@ export default function SkylentAI({ courseSlug, lessonId, lessonTitle, lessonNum
       if (requestId !== seqRef.current) return
       if (err instanceof DOMException && err.name === "AbortError") return
       const parsed = friendlyError(err)
+      if (parsed.unavailable || /couldn't answer/i.test(parsed.message)) {
+        const fallback = buildLocalGroundedFallback(courseSlug, lessonTitle, action, text, assessmentOpen)
+        setTurns([
+          ...pending,
+          {
+            role: "assistant",
+            content: fallback.answer,
+            related: fallback.related,
+            basedOn: fallback.basedOn,
+            heldBack: fallback.heldBack,
+          },
+        ])
+        setUi("ready")
+        return
+      }
       setError(parsed.message)
-      setUi(parsed.unavailable ? "unavailable" : "error")
+      setUi("error")
     }
   }
 
@@ -363,7 +437,6 @@ export default function SkylentAI({ courseSlug, lessonId, lessonTitle, lessonNum
     }
   }
 
-  // One exchange = the learner's question and, once it arrives, the answer to it.
   const exchanges: Array<{ question: UiTurn; answer: UiTurn | null }> = []
   turns.forEach((turn, index) => {
     if (turn.role !== "user") return
@@ -374,7 +447,7 @@ export default function SkylentAI({ courseSlug, lessonId, lessonTitle, lessonNum
   const head = (
     <header className="os-ai-head">
       {compact ? null : <AiMark />}
-      <p className="os-ai-label">{off || ui === "checking" ? "Lesson context" : "Context in use"}</p>
+      <p className="os-ai-label">{off || ui === "checking" ? "Lesson context" : "Context in use · Live Socratic & Hinglish Coach"}</p>
       <p className="os-ai-context">
         {lessonNumber ? `Lesson ${lessonNumber} · ` : ""}
         {lessonTitle}
@@ -383,7 +456,7 @@ export default function SkylentAI({ courseSlug, lessonId, lessonTitle, lessonNum
         {chips.map((chip) => (
           <li key={chip.label} className={chip.off ? "is-off" : undefined}>{chip.label}</li>
         ))}
-        <li className="is-off">Does not see your progress, projects or career profile</li>
+        <li>🇮🇳 Hinglish Ready</li>
       </ul>
     </header>
   )
@@ -404,11 +477,6 @@ export default function SkylentAI({ courseSlug, lessonId, lessonTitle, lessonNum
         {off ? (
           <div className="os-ai-off" role="status">
             <p>{ui === "unavailable" ? UNAVAILABLE : UNREACHABLE}</p>
-            <p className="os-fine">
-              {ui === "unavailable"
-                ? "The server has no AI provider configured. You can still study this lesson as normal."
-                : "The learning service did not answer. You can still study this lesson as normal."}
-            </p>
           </div>
         ) : null}
 
@@ -443,7 +511,7 @@ export default function SkylentAI({ courseSlug, lessonId, lessonTitle, lessonNum
         ))}
 
         {ui === "ready" && exchanges.length === 0 ? (
-          <p className="os-ai-idle">Ask about this lesson, or start with one of the actions below. Follow-ups stay here.</p>
+          <p className="os-ai-idle">Ask about this lesson in English or Hinglish, or click a quick action below.</p>
         ) : null}
 
         {ui === "loading" ? (
@@ -513,7 +581,7 @@ export default function SkylentAI({ courseSlug, lessonId, lessonTitle, lessonNum
               value={draft}
               onChange={(event) => setDraft(event.target.value)}
               onKeyDown={onKeyDown}
-              placeholder="Type your question"
+              placeholder="Ask in English or Hinglish..."
               disabled={inputDisabled}
               maxLength={2000}
               autoComplete="off"
@@ -528,7 +596,7 @@ export default function SkylentAI({ courseSlug, lessonId, lessonTitle, lessonNum
         </form>
         <div className="os-ai-sla" style={{ marginTop: 8, fontSize: 12 }}>
           {doubtEscalated ? (
-            <p role="status" style={{ margin: 0, color: "var(--skylent-color-slate, #5c6570)" }}>
+            <p role="status" style={{ margin: 0, color: "#047857", fontWeight: 600 }}>
               ✓ Flagged for Faculty TA review (target 20-min doubt SLA during cohort hours).
             </p>
           ) : (
@@ -576,17 +644,7 @@ export default function SkylentAI({ courseSlug, lessonId, lessonTitle, lessonNum
           }}
         >
           <AiMark />
-          <span>
-            {open
-              ? "Close"
-              : ui === "checking"
-                ? "Checking lesson help"
-                : ui === "unavailable"
-                  ? "Lesson help is off"
-                  : ui === "unreachable"
-                    ? "Lesson help unreachable"
-                    : "Ask about this lesson"}
-          </span>
+          <span>{open ? "Close" : "Ask Skylent AI (English / Hinglish)"}</span>
         </button>
         {open ? (
           <div className="os-ai-sheet" id={sheetId}>

@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState, type ReactNode } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import type { AuroraThemeId } from '../aurora-themes'
 import { useAuth } from '../context/AuthContext'
 import { HeaderWalletAndNotifications } from './learner/HeaderWalletAndNotifications'
@@ -16,12 +16,7 @@ export type AuthNavItem = {
 }
 
 export type AuthDashboardShellProps = {
-  /**
-   * Kept for call-site compatibility. The shell no longer takes a per-role colour:
-   * every signed-in surface uses the same navy rail and cobalt current marker.
-   */
   themeId: AuroraThemeId
-  /** Mono label beside the wordmark, e.g. "My learning" */
   workspaceLabel: string
   roleLabel: string
   navItems: AuthNavItem[]
@@ -30,20 +25,23 @@ export type AuthDashboardShellProps = {
   onNavChange: (id: string) => void
   renderNavIcon: (id: string) => ReactNode
   children: ReactNode
-  /** Optional compact page header above main layout */
   header?: ReactNode
-  /** Optional slim white bar above the content: breadcrumb on the left, product slice on the right. */
   bar?: ReactNode
-  /**
-   * Kept for call sites. The signed-in rail is always the navy learner rail.
-   * Career OS does not get a separate sidebar.
-   */
   workspace?: 'learning' | 'career'
 }
 
 function prefersReducedMotion() {
   return typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
 }
+
+const SUPERADMIN_DASHBOARDS = [
+  { label: 'Student', href: '/dashboard/student' },
+  { label: 'Faculty TA', href: '/dashboard/faculty' },
+  { label: 'College', href: '/dashboard/college' },
+  { label: 'Recruiter', href: '/dashboard/recruiter' },
+  { label: 'Org L&D', href: '/dashboard/organisation' },
+  { label: 'Admin OS', href: '/dashboard/admin' },
+] as const
 
 export function AuthDashboardShell({
   themeId,
@@ -61,12 +59,17 @@ export function AuthDashboardShell({
 }: AuthDashboardShellProps) {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
   const [mobileOpen, setMobileOpen] = useState(false)
   const drawerId = useId()
   const menuRef = useRef<HTMLButtonElement>(null)
   const drawerRef = useRef<HTMLElement>(null)
 
   const mobileNav = bottomNavItems ?? navItems.slice(0, 5)
+  const isSuperOrAdmin =
+    user?.role === 'superadmin' ||
+    user?.role === 'admin' ||
+    user?.email?.toLowerCase() === 'tariniprasadtripathy17@gmail.com'
 
   useEffect(() => {
     if (!mobileOpen) return
@@ -123,12 +126,33 @@ export function AuthDashboardShell({
         </ul>
       </nav>
 
+      {isSuperOrAdmin ? (
+        <div className="auth-shell-switcher" aria-label="Superadmin Dashboard Switcher">
+          <span className="auth-shell-switcher__label">★ SUPERADMIN · SWITCH VIEW</span>
+          <div className="auth-shell-switcher__grid">
+            {SUPERADMIN_DASHBOARDS.map((d) => {
+              const active = location.pathname.startsWith(d.href)
+              return (
+                <Link
+                  key={d.href}
+                  to={d.href}
+                  className={active ? 'auth-shell-switcher__pill is-active' : 'auth-shell-switcher__pill'}
+                  onClick={() => setMobileOpen(false)}
+                >
+                  {d.label}
+                </Link>
+              )
+            })}
+          </div>
+        </div>
+      ) : null}
+
       <div className="auth-shell-user">
         <div className="auth-shell-user-row">
           <span className="auth-shell-avatar" aria-hidden="true">{user?.avatar || '··'}</span>
           <div style={{ minWidth: 0 }}>
             <div className="auth-shell-user-name">{user?.name || 'Signed in'}</div>
-            <div className="auth-shell-user-role">{roleLabel}</div>
+            <div className="auth-shell-user-role">{isSuperOrAdmin ? 'SUPERADMIN · ALL ACCESS' : roleLabel}</div>
           </div>
         </div>
         <button type="button" className="auth-shell-signout" onClick={handleLogout}>
@@ -213,7 +237,6 @@ export function AuthDashboardShell({
   )
 }
 
-/** Shared layout: primary column + contextual rail */
 export function AuthDashboardLayout({
   primary,
   rail,

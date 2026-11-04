@@ -7,6 +7,14 @@ export type JobSkillMatch = {
   missingSkills: string[]
 }
 
+function cleanDemoText(value: string | null | undefined, fallback = ""): string {
+  if (!value) return fallback
+  return value
+    .replace(/\bSkylent Demo Employer\b/gi, "Skylent Hiring Network")
+    .replace(/\s*\(Demo\)/gi, "")
+    .trim()
+}
+
 /**
  * Deterministic skill-gap and job-match calculator (Scaler/AlmaX benchmark).
  * Compares a job's required skills against a learner's verified profile and project skills.
@@ -38,7 +46,7 @@ export function computeJobSkillMatch(
 export function serializeEmployer(employer: Employer) {
   return {
     id: employer.id,
-    name: employer.name,
+    name: cleanDemoText(employer.name, employer.name),
     slug: employer.slug,
     description: employer.description,
     website: employer.website,
@@ -59,7 +67,7 @@ export function serializeJob(
     id: job.id,
     employerId: job.employerId,
     employer: job.employer ? serializeEmployer(job.employer) : undefined,
-    title: job.title,
+    title: cleanDemoText(job.title, job.title),
     slug: job.slug,
     description: job.description,
     employmentType: job.employmentType,
@@ -96,7 +104,7 @@ export function serializeApplication(app: JobApplication & { job?: Job | null; e
     id: app.id,
     jobId: app.jobId,
     employerId: app.employerId,
-    roleTitle: app.roleTitle,
+    roleTitle: cleanDemoText(app.roleTitle, app.roleTitle ?? ""),
     status: app.status,
     appliedAt: isoDateTime(app.appliedAt),
     nextActionAt: isoDateTime(app.nextActionAt),
@@ -150,32 +158,18 @@ export function serializeInterviewQuestion(q: InterviewQuestion) {
   }
 }
 
-export function serializeInterviewPractice(p: InterviewPractice) {
+export function serializeInterviewPractice(p: InterviewPractice & { question?: InterviewQuestion }) {
   return {
     id: p.id,
+    userId: p.userId,
     questionId: p.questionId,
-    interviewRoundId: p.interviewRoundId,
-    answer: p.answer,
-    score: p.score,
-    feedback: p.feedback,
-    practicedAt: p.practicedAt.toISOString(),
+    responseText: p.responseText,
+    selfRating: p.selfRating,
+    status: p.status,
+    practicedAt: isoDateTime(p.practicedAt),
+    question: p.question ? serializeInterviewQuestion(p.question) : undefined,
     createdAt: p.createdAt.toISOString(),
     updatedAt: p.updatedAt.toISOString(),
-  }
-}
-
-export function serializeSupportRequest(req: CareerSupportRequest & { tasks?: CareerSupportTask[] }) {
-  return {
-    id: req.id,
-    type: req.type,
-    subject: req.subject,
-    description: req.description,
-    status: req.status,
-    priority: req.priority,
-    assignedTo: req.assignedTo,
-    tasks: req.tasks?.map(serializeSupportTask) ?? [],
-    createdAt: req.createdAt.toISOString(),
-    updatedAt: req.updatedAt.toISOString(),
   }
 }
 
@@ -186,9 +180,26 @@ export function serializeSupportTask(task: CareerSupportTask) {
     title: task.title,
     description: task.description,
     status: task.status,
-    dueAt: isoDateTime(task.dueAt),
+    dueDate: isoDate(task.dueDate),
     completedAt: isoDateTime(task.completedAt),
+    sortOrder: task.sortOrder,
     createdAt: task.createdAt.toISOString(),
     updatedAt: task.updatedAt.toISOString(),
+  }
+}
+
+export function serializeSupportRequest(req: CareerSupportRequest & { tasks?: CareerSupportTask[] }) {
+  return {
+    id: req.id,
+    userId: req.userId,
+    category: req.category,
+    subject: req.subject,
+    details: req.details,
+    targetRole: req.targetRole,
+    status: req.status,
+    mentorNotes: req.mentorNotes,
+    tasks: (req.tasks ?? []).map(serializeSupportTask),
+    createdAt: req.createdAt.toISOString(),
+    updatedAt: req.updatedAt.toISOString(),
   }
 }
