@@ -97,28 +97,62 @@ npm run build
 
 
 
-```
 
----
+```
 
 ## V32 Complete 10-Screenshot UI/UX & Programme Architecture Overhaul (`skylent-v32-complete-10point-ux-master.zip`)
 
 1. **Screenshot 1 Fix (`#pp-practice` 50% Half-Width Layout Bug on `/programmes/data-analytics-pro`):**
-   - Fixed the duplicate `.pp-practice` rule in `src/components/programme/ProfessionalProgrammeTemplate.css` where `.pp-practice` had `max-width: 44em`, constraining `<section className="sky-band-navy pp-practice" id="pp-practice">` to the left half of the viewport. Scoped `.pp-build .pp-practice` to the lead paragraph and set `section.pp-practice` to `width: 100%; max-width: none;`.
+
+   * Fixed the duplicate `.pp-practice` rule in `src/components/programme/ProfessionalProgrammeTemplate.css` where `.pp-practice` had `max-width: 44em`, constraining `<section className="sky-band-navy pp-practice" id="pp-practice">` to the left half of the viewport. Scoped `.pp-build .pp-practice` to the lead paragraph and set `section.pp-practice` to `width: 100%; max-width: none;`.
+
 2. **Screenshot 2 Fix (`#pp-evidence` Portfolio & Deliverables Clarity on `/programmes/:slug`):**
-   - Added a 4-card visual Portfolio Deliverables Grid (`.pp-portfolio-cards`) above `.pp-evtable` in `src/components/programme/ProfessionalProgrammeTemplate.tsx` showing what each module brief and capstone builds and what hiring managers verify.
+
+   * Added a 4-card visual Portfolio Deliverables Grid (`.pp-portfolio-cards`) above `.pp-evtable` in `src/components/programme/ProfessionalProgrammeTemplate.tsx` showing what each module brief and capstone builds and what hiring managers verify.
+
 3. **Screenshot 3 Fix (`Programmes` Navbar Mega-Dropdown in `src/components/shared.tsx`):**
-   - Replaced the abstract 4-item list with a 2-column categorized Mega-Dropdown (`Data, AI & Software Tracks` and `Product, Coding & Live Sprints`) listing all 6 concrete programmes (`Data Analytics`, `Data Science & AI`, `Generative AI & LLM Systems`, `Full-Stack Web Development`, `Product Management`, `Python Programming & Automation`), `₹99 Weekend Live Workshops`, and `Explore All Programmes & Goal Finder →`.
+
+   * Replaced the abstract 4-item list with a 2-column categorized Mega-Dropdown (`Data, AI & Software Tracks` and `Product, Coding & Live Sprints`) listing all 6 concrete programmes (`Data Analytics`, `Data Science & AI`, `Generative AI & LLM Systems`, `Full-Stack Web Development`, `Product Management`, `Python Programming & Automation`), `₹99 Weekend Live Workshops`, and `Explore All Programmes & Goal Finder →`.
+
 4. **Screenshots 4, 5, 6 Fix (`LearnPillarSubnav` Removal & Unified Goal + Masterclass Hub):**
-   - Hid the redundant `LEARN | Programmes | Skills | Workshops | Events` strip in `src/components/product/Architecture.tsx`.
-   - Integrated the interactive 4-Card Career Goal Picker (*"What do you want to be able to do?"*) directly into `/programmes` (`src/pages/ProgramsPage.tsx`).
-   - Upgraded `/events` (`src/pages/EventsPage.tsx`) and `/skills` (`src/pages/SkillsPage.tsx`, `src/pages/SkillsPage.css`) into Royal Purple (`#5142B5`) + Soft Lavender (`#F6F4FF`) + Crisp White (`#FFFFFF`) card hubs, with `/skills` defaulting to the active Data track instead of an empty state.
+
+   * Hid the redundant `LEARN | Programmes | Skills | Workshops | Events` strip in `src/components/product/Architecture.tsx`.
+
+   * Integrated the interactive 4-Card Career Goal Picker (*"What do you want to be able to do?"*) directly into `/programmes` (`src/pages/ProgramsPage.tsx`).
+
+   * Upgraded `/events` (`src/pages/EventsPage.tsx`) and `/skills` (`src/pages/SkillsPage.tsx`, `src/pages/SkillsPage.css`) into Royal Purple (`#5142B5`) + Soft Lavender (`#F6F4FF`) + Crisp White (`#FFFFFF`) card hubs, with `/skills` defaulting to the active Data track instead of an empty state.
+
 5. **Screenshot 7 Fix (`Education` Navbar Dropdown in `src/components/shared.tsx`):**
-   - Simplified the `Education` navbar dropdown to display **only** `Undergraduate (UG)` and `Postgraduate (PG)`.
+
+   * Simplified the `Education` navbar dropdown to display **only** `Undergraduate (UG)` and `Postgraduate (PG)`.
+
 6. **Screenshot 8 Fix (`/career-os` 9-Module Showcase & `/about` Institutional Dossier):**
-   - Redesigned `src/pages/career/CareerOSPublicPage.tsx` and `CareerOSPublicRepolish.css` with an Exemplar Proof-of-Work Dossier card in the hero and 9 differentiated Crisp White + Royal Purple module cards (each with custom SVG icon, numbered step badge, and concrete artifact preview).
-   - Redesigned `src/pages/AboutPage.tsx` and `AboutRepolish.css` with a 2-column Institutional Charter hero, Founder story, 3 Operating Environments (`Env A`, `Env B`, `Env C`), Old EdTech vs. Skylent comparison table, and 4 connected platform pillars.
+
+   * Redesigned `src/pages/career/CareerOSPublicPage.tsx` and `CareerOSPublicRepolish.css` with an Exemplar Proof-of-Work Dossier card in the hero and 9 differentiated Crisp White + Royal Purple module cards (each with custom SVG icon, numbered step badge, and concrete artifact preview).
+
+   * Redesigned `src/pages/AboutPage.tsx` and `AboutRepolish.css` with a 2-column Institutional Charter hero, Founder story, 3 Operating Environments (`Env A`, `Env B`, `Env C`), Old EdTech vs. Skylent comparison table, and 4 connected platform pillars.
+
 7. **Screenshot 9 Fix (Homepage `See what happens after you start a course` Inside-LMS Replica in `src/pages/home/Repolish.tsx`):**
-   - Replaced the old sparse dark box with a 5-stage high-density **Inside-LMS Replica** (`1. Course Syllabus`, `2. Lesson & AI Coach`, `3. Live SQL Lab`, `4. Capstone Grader`, `5. Verified Dossier`) styled in Skylent Royal Purple (`#3B2D96 -> #5142B5`) + Soft Lavender (`#F6F4FF`) + Crisp White (`#FFFFFF`).
+
+   * Replaced the old sparse dark box with a 5-stage high-density **Inside-LMS Replica** (`1. Course Syllabus`, `2. Lesson & AI Coach`, `3. Live SQL Lab`, `4. Capstone Grader`, `5. Verified Dossier`) styled in Skylent Royal Purple (`#3B2D96 -> #5142B5`) + Soft Lavender (`#F6F4FF`) + Crisp White (`#FFFFFF`).
+
 8. **Screenshot 10 Fix (PW-Skills-Style 3-Tier Pricing Plans + `Online | Offline` Toggle + Floating Bottom Navigation Dock):**
-   - Created `src/components/programme/ProgrammePricingAndDock.tsx` and mounted it in both `ProfessionalProgrammeTemplate.tsx` and `ProgrammeListing.tsx` to provide an interactive `Online | Offline` mode switcher, 3 side-by-side plan cards (`Basic`, `Premium`, `Pro [Recommended]`), FAQs, and a sleek floating bottom section navigation bar (`↑ | Overview | Offerings | Curriculum | Lab & Mentors | Career OS | Plans | Certifications | FAQs | [Buy now]`).
+
+   * Created `src/components/programme/ProgrammePricingAndDock.tsx` and mounted it in both `ProfessionalProgrammeTemplate.tsx` and `ProgrammeListing.tsx` to provide an interactive `Online | Offline` mode switcher, 3 side-by-side plan cards (`Basic`, `Premium`, `Pro [Recommended]`), FAQs, and a sleek floating bottom section navigation bar (`↑ | Overview | Offerings | Curriculum | Lab & Mentors | Career OS | Plans | Certifications | FAQs | [Buy now]`).
+
+---
+
+## V33 Complete 7-Gap Platform & 6-Role Dashboard Polish (`skylent-v33-complete-dashboard-and-lms-polish-master.zip`)
+
+1. **Universal Desktop Top Bar + Elixir Wallet & Notification Bell (`src/components/AuthDashboardShell.tsx`):**
+   - Mounted `<HeaderWalletAndNotifications variant="dashboard" />` inside `.auth-shell-bar` on desktop and ensured `.auth-shell-bar` always renders across all 6 role dashboards (`Student`, `Faculty TA`, `College`, `Recruiter`, `Org L&D`, `Admin OS`) and `Career OS`.
+2. **Student Dashboard Hierarchy & High-Contrast CTA (`src/pages/DashboardStudentPage.tsx`, `src/pages/StudentHome.css`):**
+   - Styled `.sh-royal-cta` (`Continue learning →`) in Crisp White (`#FFFFFF`) with bold `#5142B5` Royal Purple text so it stands out immediately on the hero card.
+   - Moved the 2-Column Main Workspace Grid (`My learning`, `Current project & browser lab`, `Career Rise`, `Skylent AI`, `Evidence and certificates`) directly below the compact 14-day streak bar (above the `L1 → L5 Progression` card).
+   - Converted the `L1 → L5 Progression` card and `.sh-royal-ai` card into Soft Lavender (`#F6F4FF`) + Crisp White (`#FFFFFF`) + `4px solid #5142B5` top accent cards.
+3. **Superadmin & All 5 Role Dashboards Redesign (`DashboardAdminPage.tsx`, `AdminPlatform.tsx`, `DashboardFacultyPage.tsx`, `DashboardCollegePage.tsx`, `DashboardRecruiterPage.tsx`, `DashboardOrgPage.tsx`):**
+   - Redesigned `/dashboard/admin` and `AdminPlatform.tsx` into a structured 2-column command center with elevated Crisp White (`#FFFFFF`) + `4px solid #5142B5` cards for C-Suite Unit Economics, Real-Time Telemetry, Learning Reward Rules, Users & Roles, Organisations, Employers, Enquiries, Practice Studios, Lesson Media, Payments, Wallet Adjustments, Case Store Publishing, and Audit Log.
+   - Upgraded `Faculty TA`, `College`, `Recruiter`, and `Org L&D` dashboards with Crisp White + `4px solid #5142B5` cards and high-contrast Crisp White primary buttons on Royal Purple headers.
+4. **Inside-LMS Player, Multi-Track Listings, Catalogue & Signed-In Career OS (`LearnPage.tsx`, `ProgrammeListing.tsx`, `Catalog.css`, `CareerOSHome.css`, `ElixirWallet.tsx`):**
+   - Added `<HeaderWalletAndNotifications variant="dashboard" />` to the `.os-top` course player header in `LearnPage.tsx`.
+   - Unified `ProgrammeListing.tsx`, `Catalog.css`, `CareerOSHome.css`, and `ElixirWallet.tsx` onto the Soft Lavender (`#F6F4FF`) + Crisp White (`#FFFFFF`) + `4px solid #5142B5` Royal Purple + Mint Emerald (`#DCFCE7`) card system.

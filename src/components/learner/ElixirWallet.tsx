@@ -109,18 +109,20 @@ export default function ElixirWalletPanel() {
           alignItems: "center",
           flexWrap: "wrap",
           gap: 16,
-          background: "linear-gradient(135deg, #3B2D96 0%, #5142B5 100%)",
-          border: "1px solid rgba(196, 184, 255, 0.38)",
-          borderRadius: 14,
+          background: "linear-gradient(180deg, #F6F4FF 0%, #FFFFFF 100%)",
+          border: "1.5px solid #DDD7FF",
+          borderTop: "4px solid #5142B5",
+          borderRadius: 16,
           padding: "20px 24px",
-          color: "#ffffff",
+          color: "#0F172A",
+          boxShadow: "0 10px 26px -14px rgba(81, 66, 181, 0.14)",
         }}
       >
         <div>
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <span style={{ fontSize: 13, fontWeight: 800, padding: "6px 10px", borderRadius: 8, background: "#5142b5", color: "#ffffff", border: "1px solid rgba(196, 184, 255, 0.45)" }}>ELX</span>
+            <span style={{ fontSize: 13, fontWeight: 800, padding: "6px 10px", borderRadius: 8, background: "#5142b5", color: "#0F172A", border: "1px solid rgba(196, 184, 255, 0.45)" }}>ELX</span>
             <div>
-              <span style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "#c4b8ff" }}>
+              <span style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "#5142B5" }}>
                 Elixir Learning Wallet · 100% Workshop Coin Back
               </span>
               <h2 style={{ margin: "2px 0 0", fontSize: 24, fontWeight: 800, color: "#ffffff" }}>
@@ -128,7 +130,7 @@ export default function ElixirWalletPanel() {
               </h2>
             </div>
           </div>
-          <p style={{ margin: "6px 0 0", fontSize: 13.5, color: "#cbd5e1" }}>
+          <p style={{ margin: "6px 0 0", fontSize: 13.5, color: "#475569" }}>
             Earn coins automatically as you complete lessons &amp; quizzes, or book a ₹99 Live Workshop (100% Coin Back) to unlock bonus industry case studies.
           </p>
         </div>
@@ -140,7 +142,7 @@ export default function ElixirWalletPanel() {
           <button
             type="button"
             className="sk-btn sk-btn-secondary"
-            style={{ padding: "8px 14px", fontSize: 13, background: "rgba(255,255,255,0.12)", color: "#ffffff", borderColor: "rgba(255,255,255,0.28)" }}
+            style={{ padding: "8px 14px", fontSize: 13, background: "#F5F3FF", color: "#5142B5", border: "1.5px solid #DDD7FF", fontWeight: 700 }}
             onClick={() => setExpanded((prev) => !prev)}
           >
             {expanded ? "Hide Case Study Store ▲" : `Open Case Study Store (${resources.length}) ▼`}

@@ -351,3 +351,40 @@
   color: #ffffff !important;
   font-weight: 800 !important;
 }
+
+/* V33 Signed-In Career OS Soft Lavender + Crisp White + Royal Purple Polish */
+.cosh .cosh-intro {
+  background: linear-gradient(180deg, #F6F4FF 0%, #FFFFFF 100%) !important;
+  border: 1.5px solid #DDD7FF !important;
+  border-top: 4px solid #5142B5 !important;
+  box-shadow: 0 12px 28px -16px rgba(81, 66, 181, 0.16) !important;
+  color: #0F172A !important;
+}
+.cosh .cosh-kicker {
+  color: #5142B5 !important;
+}
+.cosh .cosh-intro h1 {
+  color: #0F172A !important;
+}
+.cosh .cosh-intro__meta {
+  color: #475569 !important;
+}
+.cosh .cosh-intro__meta a {
+  color: #5142B5 !important;
+  font-weight: 700;
+}
+.cosh .cosh-action--primary {
+  background: linear-gradient(180deg, #F6F4FF 0%, #FFFFFF 100%) !important;
+  border: 1.5px solid #DDD7FF !important;
+  border-top: 4px solid #5142B5 !important;
+  box-shadow: 0 12px 28px -16px rgba(81, 66, 181, 0.16) !important;
+  color: #0F172A !important;
+}
+.cosh .cosh-action--primary .cosh-action__kicker {
+  background: #DCFCE7 !important;
+  border: 1px solid #86EFAC !important;
+  color: #15803D !important;
+}
+.cosh .cosh-action--primary h3 {
+  color: #0F172A !important;
+}

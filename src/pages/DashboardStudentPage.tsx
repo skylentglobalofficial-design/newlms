@@ -783,64 +783,6 @@ export default function DashboardStudentPage() {
           )
         })()}
 
-        {/* 2B. L1-L5 Institutional Competency & Work Assignment Exchange (Env B) */}
-        <section
-          aria-label="L1 to L5 Competency Progression and Work Assignment Exchange"
-          style={{
-            background: "linear-gradient(135deg, #3B2D96 0%, #5142B5 100%)",
-            border: "1px solid rgba(196, 184, 255, 0.42)",
-            borderRadius: 16,
-            padding: "20px 24px",
-            color: "#ffffff",
-            boxShadow: "0 16px 36px rgba(10, 14, 34, 0.2)",
-          }}
-        >
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 16, flexWrap: "wrap", marginBottom: 14 }}>
-            <div>
-              <span style={{ color: "#c4b8ff", font: "700 11px/1.4 var(--font-mono)", letterSpacing: "0.14em", textTransform: "uppercase", display: "block", marginBottom: 4 }}>
-                ★ SKYLENT INSTITUTE OF APPLIED LEARNING · L1 → L5 PROGRESSION &amp; WORK ASSIGNMENT EXCHANGE
-              </span>
-              <strong style={{ fontSize: 18, color: "#ffffff", fontFamily: "var(--font-display)", display: "block" }}>
-                Current Stage: L2 Guided Practice → Unlocking Env B Partner Fieldwork Exchange
-              </strong>
-              <span style={{ fontSize: 13, color: "rgba(255,255,255,0.82)", display: "block", marginTop: 4 }}>
-                Complete your Environment A Simulated Enterprise Sprint (Northwind / Harbor Desk) with a V1 → V2 Faculty Red-Line pass to unlock supervised real-world MSME &amp; startup assignments.
-              </span>
-            </div>
-            <Link
-              to="/verify"
-              style={{
-                padding: "8px 14px",
-                borderRadius: 999,
-                background: "rgba(16, 185, 129, 0.18)",
-                border: "1px solid rgba(52, 211, 153, 0.45)",
-                color: "#34d399",
-                fontSize: 12,
-                fontFamily: "var(--font-mono)",
-                fontWeight: 700,
-                textDecoration: "none",
-                whiteSpace: "nowrap",
-              }}
-            >
-              ✓ View Flight Recorder Standard →
-            </Link>
-          </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 10 }}>
-            {[
-              ["15% Knowledge", "First-Principles Checks", "#c4b8ff"],
-              ["30% Execution", "Env A Browser Sandbox", "#c4b8ff"],
-              ["20% Judgement", "Trade-Off Decisions", "#c4b8ff"],
-              ["15% Oral Defence", "Boardroom Cold Call", "#c4b8ff"],
-              ["20% V1 → V2 Diff", "Faculty Red-Line Review", "#c4b8ff"],
-            ].map(([title, sub, col]) => (
-              <div key={title} style={{ background: "rgba(255, 255, 255, 0.14)", border: "1px solid rgba(255,255,255,0.14)", borderRadius: 10, padding: "10px 12px" }}>
-                <strong style={{ color: col, fontSize: 13, fontFamily: "var(--font-mono)", display: "block" }}>{title}</strong>
-                <span style={{ color: "rgba(255,255,255,0.8)", fontSize: 12 }}>{sub}</span>
-              </div>
-            ))}
-          </div>
-        </section>
-
         {/* 3. Main 2-Column Workspace Grid */}
         <div className="sh-grid">
           <div className="sh-stack">
@@ -908,6 +850,66 @@ export default function DashboardStudentPage() {
             {career}
           </div>
         </div>
+
+        {/* 3B. L1-L5 Institutional Competency & Work Assignment Exchange (Env B) — Crisp Daylight Card */}
+        <section
+          aria-label="L1 to L5 Competency Progression and Work Assignment Exchange"
+          style={{
+            marginTop: 22,
+            background: "linear-gradient(180deg, #F6F4FF 0%, #FFFFFF 100%)",
+            border: "1.5px solid #DDD7FF",
+            borderTop: "4px solid #5142B5",
+            borderRadius: 16,
+            padding: "20px 24px",
+            color: "#0F172A",
+            boxShadow: "0 10px 26px -14px rgba(81, 66, 181, 0.14)",
+          }}
+        >
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 16, flexWrap: "wrap", marginBottom: 14 }}>
+            <div>
+              <span style={{ color: "#5142B5", font: "700 11px/1.4 var(--font-mono)", letterSpacing: "0.14em", textTransform: "uppercase", display: "block", marginBottom: 4 }}>
+                ★ SKYLENT INSTITUTE OF APPLIED LEARNING · L1 → L5 PROGRESSION &amp; WORK ASSIGNMENT EXCHANGE
+              </span>
+              <strong style={{ fontSize: 18, color: "#0F172A", fontFamily: "var(--font-display)", fontWeight: 800, display: "block" }}>
+                Current Stage: L2 Guided Practice → Unlocking Env B Partner Fieldwork Exchange
+              </strong>
+              <span style={{ fontSize: 13.5, color: "#334155", display: "block", marginTop: 4 }}>
+                Complete your Environment A Simulated Enterprise Sprint (Northwind / Harbor Desk) with a V1 → V2 Faculty Red-Line pass to unlock supervised real-world MSME &amp; startup assignments.
+              </span>
+            </div>
+            <Link
+              to="/verify"
+              style={{
+                padding: "8px 14px",
+                borderRadius: 999,
+                background: "#DCFCE7",
+                border: "1px solid #86EFAC",
+                color: "#15803D",
+                fontSize: 12,
+                fontFamily: "var(--font-mono)",
+                fontWeight: 700,
+                textDecoration: "none",
+                whiteSpace: "nowrap",
+              }}
+            >
+              ✓ View Flight Recorder Standard →
+            </Link>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 10 }}>
+            {[
+              ["15% Knowledge", "First-Principles Checks"],
+              ["30% Execution", "Env A Browser Sandbox"],
+              ["20% Judgement", "Trade-Off Decisions"],
+              ["15% Oral Defence", "Boardroom Cold Call"],
+              ["20% V1 → V2 Diff", "Faculty Red-Line Review"],
+            ].map(([title, sub]) => (
+              <div key={title} style={{ background: "#FFFFFF", border: "1.5px solid #DDD7FF", borderTop: "3px solid #5142B5", borderRadius: 10, padding: "10px 12px" }}>
+                <strong style={{ color: "#5142B5", fontSize: 13, fontFamily: "var(--font-mono)", fontWeight: 800, display: "block" }}>{title}</strong>
+                <span style={{ color: "#334155", fontSize: 12 }}>{sub}</span>
+              </div>
+            ))}
+          </div>
+        </section>
 
         {/* 4. Elixir Wallet & Case Study Store (Cleanly placed below main learning workspace) */}
         <section className="sh-card" aria-label="Elixir wallet" style={{ marginTop: 22 }}>

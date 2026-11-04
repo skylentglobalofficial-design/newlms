@@ -24,10 +24,12 @@ const NAV_ITEMS: AuthNavItem[] = [
 const accent = getRoleAccent('recruiter')
 
 const panelStyle = {
-  padding: 16,
-  background: 'var(--skylent-surface-elevated)',
-  border: `1px solid ${T.lineLight}`,
-  borderRadius: T.rCard,
+  padding: '20px 22px',
+  background: '#FFFFFF',
+  border: '1.5px solid #DDD7FF',
+  borderTop: '4px solid #5142B5',
+  borderRadius: 18,
+  boxShadow: '0 10px 26px -14px rgba(81, 66, 181, 0.14)',
 } as const
 
 const fieldStyle = {
@@ -269,10 +271,25 @@ export default function DashboardRecruiterPage() {
         {status === 'error' ? <button type="button" className="os-btn os-btn-ghost" onClick={() => void load()}>Try again</button> : null}
 
         {status === 'ready' && !linked ? (
-          <div style={{ ...panelStyle, borderLeft: `3px solid ${accent.primary}` }}>
-            <p style={{ color: C.ink, margin: '0 0 8px', fontWeight: 600 }}>No employer is linked to this account.</p>
-            <p style={{ color: C.slate, margin: 0, lineHeight: 1.6 }}>
-              An admin has to create an employer and link your user before you can post jobs. The recruiter role alone does not open another employer&apos;s roles.
+          <div style={{ ...panelStyle, display: "grid", gap: 14 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+              <div>
+                <span style={{ fontFamily: "var(--font-mono)", fontSize: 10.5, fontWeight: 800, color: "#5142B5", letterSpacing: "0.08em" }}>
+                  EMPLOYER SEAT LINKING &amp; CANDIDATE DOSSIER VERIFICATION
+                </span>
+                <p style={{ color: "#0F172A", margin: "4px 0 0", fontSize: 18, fontWeight: 800 }}>No employer is linked to this account yet — Verify Candidate Dossiers or Link Seat</p>
+              </div>
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                <a href="/verify/SKL-2026-DA-EXEMPLAR" className="os-btn os-btn-primary" style={{ background: "#5142B5", color: "#FFFFFF", textDecoration: "none", fontWeight: 700 }}>
+                  Inspect Exemplar Candidate Dossier →
+                </a>
+                <a href="/dashboard/admin#admin-employers" className="os-btn os-btn-ghost" style={{ background: "#F5F3FF", border: "1.5px solid #DDD7FF", color: "#5142B5", textDecoration: "none", fontWeight: 700 }}>
+                  Link Employer in Admin OS →
+                </a>
+              </div>
+            </div>
+            <p style={{ color: "#475569", margin: 0, lineHeight: 1.6, fontSize: 13.5 }}>
+              To publish new job openings under a hiring partner, link your user ID to an employer profile inside <strong>Admin OS → Employers</strong>. Meanwhile, you can verify any Skylent graduate’s cryptographic Proof-of-Work Dossier (`SKL-2026-...`) immediately.
             </p>
           </div>
         ) : null}

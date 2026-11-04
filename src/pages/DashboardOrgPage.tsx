@@ -218,7 +218,7 @@ function BatchOperations({ programs }: { programs: OrganisationDashboard['progra
         </span>
       </div>
 
-      <div id="org-batch-operations" style={{ padding: '16px', background: 'var(--skylent-surface-elevated)', border: `1px solid ${T.lineLight}`, borderRadius: T.rCard, display: 'grid', gap: 10 }}>
+      <div id="org-batch-operations" style={{ padding: '16px', background: '#FFFFFF', border: '1.5px solid #DDD7FF', borderTop: '4px solid #5142B5', borderRadius: 16, boxShadow: '0 10px 26px -14px rgba(81, 66, 181, 0.14)', display: 'grid', gap: 10 }}>
         {[
           { label: 'Guided Instruction & First-Principles Readings', hours: '12 Hours (15 Lessons / Track)' },
           { label: 'Simulated Enterprise Lab Execution (Env A)', hours: '18 Hours (SQL, Python, PRD, RAG)' },
@@ -242,7 +242,7 @@ function LearnerProgress({ enrollmentCount }: { enrollmentCount: number }) {
         Learner operations &amp; merit progression
       </div>
 
-      <div style={{ padding: '18px', background: 'var(--skylent-surface-elevated)', border: `1px solid ${T.lineLight}`, borderRadius: T.rCard }}>
+      <div style={{ padding: '18px', background: '#FFFFFF', border: '1.5px solid #DDD7FF', borderTop: '4px solid #5142B5', borderRadius: 16, boxShadow: '0 10px 26px -14px rgba(81, 66, 181, 0.14)' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 12, marginBottom: 14 }}>
           <div>
             <div style={{ color: C.slate, fontSize: 11 }}>Total enrollments</div>
@@ -271,7 +271,7 @@ function FacultyOperations() {
       <div className="skylent-label" style={{ color: C.slate, marginBottom: 18, fontSize: 10, letterSpacing: '0.12em' }}>
         Faculty &amp; Two-Tier Review SLA
       </div>
-      <div style={{ padding: '18px', background: 'var(--skylent-surface-elevated)', border: `1px solid ${T.lineLight}`, borderRadius: T.rCard }}>
+      <div style={{ padding: '18px', background: '#FFFFFF', border: '1.5px solid #DDD7FF', borderTop: '4px solid #5142B5', borderRadius: 16, boxShadow: '0 10px 26px -14px rgba(81, 66, 181, 0.14)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
           <strong style={{ fontSize: 14, color: C.ink }}>20-Minute Human Faculty TA Doubt SLA</strong>
           <span style={{ fontSize: 11, fontWeight: 700, color: '#0E6A44', background: '#E7F6EF', padding: '2px 8px', borderRadius: 999 }}>Active</span>

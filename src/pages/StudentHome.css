@@ -510,15 +510,16 @@
 }
 
 .sh .sh-royal-cta {
-  background: #5142b5 !important;
-  color: #ffffff !important;
+  background: #ffffff !important;
+  color: #5142B5 !important;
   font-weight: 800 !important;
-  border-color: #c4b8ff !important;
+  border: 2px solid #ffffff !important;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.22);
 }
 
 .sh .sh-royal-cta:hover {
-  background: #fcd34d !important;
-  color: #0f172a !important;
+  background: #F5F3FF !important;
+  color: #3B2D96 !important;
 }
 
 .sh .sh-royal-secondary {
@@ -649,4 +650,49 @@
 
 .sh .sh-royal-ai__cta:hover {
   text-decoration: underline;
+}
+
+/* V33 Student Dashboard Soft Lavender + Crisp White Card Refinements */
+.sh .sh-ai.sh-royal-ai {
+  background: linear-gradient(180deg, #F6F4FF 0%, #FFFFFF 100%) !important;
+  border: 1.5px solid #DDD7FF !important;
+  border-top: 4px solid #5142B5 !important;
+  box-shadow: 0 12px 28px -16px rgba(81, 66, 181, 0.16) !important;
+  color: #0F172A !important;
+}
+.sh .sh-royal-ai .sh-ai-head {
+  background: #F5F3FF !important;
+  border-bottom: 1px solid #E2DCFF !important;
+  color: #5142B5 !important;
+}
+.sh .sh-ai-live-pill {
+  background: #DCFCE7 !important;
+  border: 1px solid #86EFAC !important;
+  color: #15803D !important;
+}
+.sh .sh-royal-ai__title {
+  color: #0F172A !important;
+}
+.sh .sh-royal-ai__desc {
+  color: #334155 !important;
+}
+.sh .sh-royal-ai__pills span {
+  background: #FFFFFF !important;
+  border: 1px solid #DDD7FF !important;
+  color: #5142B5 !important;
+}
+.sh .sh-royal-ai__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 14px;
+  border-radius: 10px;
+  background: #5142B5 !important;
+  color: #FFFFFF !important;
+  font-weight: 700 !important;
+  align-self: flex-start;
+}
+.sh .sh-royal-ai__cta:hover {
+  background: #43349F !important;
+  text-decoration: none;
 }

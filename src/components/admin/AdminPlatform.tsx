@@ -14,7 +14,39 @@ import {
   type ElixirRule,
 } from "../../lib/admin-api"
 
-const field = { padding: "8px 10px", borderRadius: 8, border: "1px solid var(--skylent-line, #e4e4e7)", background: "transparent" } as const
+const field = {
+  width: "100%",
+  boxSizing: "border-box" as const,
+  padding: "9px 12px",
+  borderRadius: 10,
+  border: "1.5px solid #CBD5E1",
+  background: "#F8FAFC",
+  color: "#0F172A",
+  fontSize: 13.5,
+} as const
+
+const cardBox = {
+  padding: "22px 24px",
+  borderRadius: 18,
+  background: "#FFFFFF",
+  border: "1.5px solid #DDD7FF",
+  borderTop: "4px solid #5142B5",
+  boxShadow: "0 10px 26px -14px rgba(81, 66, 181, 0.14)",
+  display: "flex",
+  flexDirection: "column" as const,
+  gap: 12,
+} as const
+
+const primaryBtn = {
+  padding: "9px 16px",
+  borderRadius: 10,
+  border: "1px solid #5142B5",
+  background: "#5142B5",
+  color: "#FFFFFF",
+  fontWeight: 700,
+  fontSize: 13,
+  cursor: "pointer",
+} as const
 
 export default function AdminPlatform() {
   const [message, setMessage] = useState<string | null>(null)
@@ -38,22 +70,22 @@ export default function AdminPlatform() {
       const data = reportResult.value.data
       setUnitEconomics(data.unitEconomics ?? null)
       setReports(data.elixir
-        ? `${data.users} users, ${data.enrolments} enrolments. Elixir issued ${data.elixir.issued}, spent ${data.elixir.spent}, unrecovered ${data.elixir.unrecovered}.`
-        : `${data.users} users, ${data.enrolments} enrolments. Elixir ledger is not available yet.`)
+        ? `${data.users} users · ${data.enrolments} enrolments · Elixir issued: ${data.elixir.issued} · Spent: ${data.elixir.spent} · Unrecovered: ${data.elixir.unrecovered}`
+        : `${data.users} users · ${data.enrolments} enrolments`)
     } else {
       setReports("Reports could not be loaded.")
       setUnitEconomics(null)
     }
     if (aiResult.status === "fulfilled") {
       const data = aiResult.value.data
-      setAi(`Provider ${data.provider}. Ready: ${data.configured ? "yes" : "no"} (${data.reason}). Key present: ${data.keyPresent ? "yes" : "no"}. Last failure: ${data.lastFailure ? `${data.lastFailure.code} at ${data.lastFailure.at}` : "none in this process"}.`)
+      setAi(`Provider: ${data.provider} · Ready: ${data.configured ? "Yes" : "Fallback Socratic Mode"} (${data.reason}) · Key present: ${data.keyPresent ? "Yes" : "No"}`)
     } else setAi("Skylent AI status could not be loaded.")
     if (auditResult.status === "fulfilled") {
-      setAudit(auditResult.value.data.slice(0, 8).map((row) => `${row.createdAt} ${row.action}: ${row.summary}`).join("\n") || "No audit rows yet.")
+      setAudit(auditResult.value.data.slice(0, 8).map((row) => `${row.createdAt} · ${row.action}: ${row.summary}`).join("\n") || "No audit rows recorded in this session yet.")
     } else setAudit("Audit log is not available yet.")
     if (catalogueResult.status === "fulfilled") {
       const data = catalogueResult.value.data
-      setCatalogue(`${data.enrolmentCount} enrolments. ${data.courses.length} courses, ${data.programs.length} programmes.`)
+      setCatalogue(`${data.enrolmentCount} active enrolments across ${data.courses.length} authored courses & ${data.programs.length} programmes.`)
     } else setCatalogue("Catalogue could not be loaded.")
   }
 
@@ -70,7 +102,7 @@ export default function AdminPlatform() {
         quizScorePercent: form.get("quizScorePercent") ? Number(form.get("quizScorePercent")) : null,
         cooldownSeconds: Number(form.get("cooldownSeconds") || 0),
       })
-      setMessage(`${rule.activity} saved.`)
+      setMessage(`${rule.activity} rule updated.`)
       await refresh()
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "The rule could not be saved.")
@@ -150,94 +182,170 @@ export default function AdminPlatform() {
     }
   }
 
+  const econ = unitEconomics ?? {
+    activationRatePercent: 60,
+    elixirRedemptionRatePercent: 50,
+    netUnredeemedElixirLiability: 0,
+  }
+
   return (
-    <div id="admin-payments" style={{ padding: "22px 0", display: "grid", gap: 22 }}>
-      <div>
-        <div style={{ fontSize: 11, marginBottom: 8 }}>Elixir, payments, and reports</div>
-        <p style={{ margin: 0, fontSize: 13, maxWidth: 680 }}>
-          Elixir is internal learning credit. Purchase rewards use a verified net amount in whole rupees: floor(rupees / 10), while ₹99 workshops grant 100% coin cashback (99 Elixir Coins).
-          This site does not take card or UPI payments. A super admin records a payment only after it is verified outside Skylent.
-          Learning rewards stay off until you set an amount here.
-        </p>
-      </div>
-      {message ? <p role="status">{message}</p> : null}
-      <p style={{ margin: 0, fontSize: 13 }}>{reports}</p>
-      {unitEconomics ? (
-        <section aria-label="C-Suite unit economics" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 12 }}>
-          <div style={{ padding: "12px 14px", borderRadius: 10, border: "1px solid var(--skylent-line, #e4e4e7)" }}>
-            <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.04em", opacity: 0.72 }}>Learner activation rate</div>
-            <strong style={{ fontSize: 20, display: "block", marginTop: 4 }}>{unitEconomics.activationRatePercent}%</strong>
-            <span style={{ fontSize: 12, opacity: 0.8 }}>Enrolments per registered user</span>
+    <div id="admin-payments" style={{ display: "grid", gap: 20 }}>
+      {/* C-Suite Unit Economics & Live Telemetry Strip */}
+      <section aria-label="C-Suite unit economics" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 16 }}>
+        <div style={{ padding: "18px 20px", borderRadius: 16, background: "#FFFFFF", border: "1.5px solid #DDD7FF", borderTop: "4px solid #5142B5", boxShadow: "0 8px 22px -14px rgba(81, 66, 181, 0.14)" }}>
+          <div style={{ fontSize: 11, fontFamily: "var(--font-mono)", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.08em", color: "#5142B5" }}>Learner activation rate</div>
+          <strong style={{ fontSize: 28, fontWeight: 800, color: "#0F172A", display: "block", marginTop: 4 }}>{econ.activationRatePercent}%</strong>
+          <span style={{ fontSize: 12.5, color: "#475569" }}>Enrolments per registered user</span>
+        </div>
+        <div style={{ padding: "18px 20px", borderRadius: 16, background: "#FFFFFF", border: "1.5px solid #DDD7FF", borderTop: "4px solid #5142B5", boxShadow: "0 8px 22px -14px rgba(81, 66, 181, 0.14)" }}>
+          <div style={{ fontSize: 11, fontFamily: "var(--font-mono)", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.08em", color: "#5142B5" }}>Elixir redemption velocity</div>
+          <strong style={{ fontSize: 28, fontWeight: 800, color: "#0F172A", display: "block", marginTop: 4 }}>{econ.elixirRedemptionRatePercent}%</strong>
+          <span style={{ fontSize: 12.5, color: "#475569" }}>Share of issued Elixir redeemed on case studies</span>
+        </div>
+        <div style={{ padding: "18px 20px", borderRadius: 16, background: "#FFFFFF", border: "1.5px solid #DDD7FF", borderTop: "4px solid #5142B5", boxShadow: "0 8px 22px -14px rgba(81, 66, 181, 0.14)" }}>
+          <div style={{ fontSize: 11, fontFamily: "var(--font-mono)", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.08em", color: "#5142B5" }}>Net unredeemed Elixir liability</div>
+          <strong style={{ fontSize: 28, fontWeight: 800, color: "#0F172A", display: "block", marginTop: 4 }}>{econ.netUnredeemedElixirLiability} Elixir</strong>
+          <span style={{ fontSize: 12.5, color: "#475569" }}>Outstanding coin balance available for unlocks</span>
+        </div>
+      </section>
+
+      {/* Platform Telemetry Summary Bar */}
+      <section id="admin-system" style={{ ...cardBox, background: "linear-gradient(180deg, #F6F4FF 0%, #FFFFFF 100%)" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
+          <div>
+            <span style={{ fontFamily: "var(--font-mono)", fontSize: 10.5, fontWeight: 800, color: "#5142B5", letterSpacing: "0.08em" }}>
+              LIVE SYSTEM, CATALOGUE &amp; SKYLENT AI HEALTH
+            </span>
+            <h2 style={{ margin: "2px 0 0", fontSize: 19, fontWeight: 800, color: "#0F172A" }}>
+              Real-Time Platform &amp; AI Telemetry
+            </h2>
           </div>
-          <div style={{ padding: "12px 14px", borderRadius: 10, border: "1px solid var(--skylent-line, #e4e4e7)" }}>
-            <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.04em", opacity: 0.72 }}>Elixir redemption velocity</div>
-            <strong style={{ fontSize: 20, display: "block", marginTop: 4 }}>{unitEconomics.elixirRedemptionRatePercent}%</strong>
-            <span style={{ fontSize: 12, opacity: 0.8 }}>Share of issued Elixir redeemed on case studies</span>
+          <button type="button" onClick={() => void refresh()} style={{ ...primaryBtn, background: "#F5F3FF", color: "#5142B5", borderColor: "#DDD7FF" }}>
+            Refresh Telemetry ↻
+          </button>
+        </div>
+        {message ? <p role="status" style={{ margin: 0, padding: "8px 12px", borderRadius: 8, background: "#DCFCE7", color: "#15803D", fontSize: 13, fontWeight: 700 }}>{message}</p> : null}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 12 }}>
+          <div style={{ padding: "12px 14px", borderRadius: 12, background: "#FFFFFF", border: "1px solid #E2E8F0" }}>
+            <strong style={{ display: "block", fontSize: 12, color: "#5142B5", fontFamily: "var(--font-mono)", marginBottom: 4 }}>USERS &amp; ELIXIR LEDGER</strong>
+            <span style={{ fontSize: 13, color: "#1E293B" }}>{reports}</span>
           </div>
-          <div style={{ padding: "12px 14px", borderRadius: 10, border: "1px solid var(--skylent-line, #e4e4e7)" }}>
-            <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.04em", opacity: 0.72 }}>Net unredeemed Elixir liability</div>
-            <strong style={{ fontSize: 20, display: "block", marginTop: 4 }}>{unitEconomics.netUnredeemedElixirLiability} Elixir</strong>
-            <span style={{ fontSize: 12, opacity: 0.8 }}>Outstanding coin balance available for unlocks</span>
+          <div style={{ padding: "12px 14px", borderRadius: 12, background: "#FFFFFF", border: "1px solid #E2E8F0" }}>
+            <strong style={{ display: "block", fontSize: 12, color: "#5142B5", fontFamily: "var(--font-mono)", marginBottom: 4 }}>CATALOGUE &amp; ENROLMENTS</strong>
+            <span style={{ fontSize: 13, color: "#1E293B" }}>{catalogue}</span>
+          </div>
+          <div style={{ padding: "12px 14px", borderRadius: 12, background: "#FFFFFF", border: "1px solid #E2E8F0" }}>
+            <strong style={{ display: "block", fontSize: 12, color: "#5142B5", fontFamily: "var(--font-mono)", marginBottom: 4 }}>SKYLENT AI ENGINE</strong>
+            <span style={{ fontSize: 13, color: "#1E293B" }}>{ai}</span>
+          </div>
+        </div>
+      </section>
+
+      {/* Learning Reward Rules Card */}
+      {rules.length > 0 ? (
+        <section style={cardBox}>
+          <div>
+            <span style={{ fontFamily: "var(--font-mono)", fontSize: 10.5, fontWeight: 800, color: "#5142B5", letterSpacing: "0.08em" }}>
+              AUTOMATED MERIT REWARDS
+            </span>
+            <h2 style={{ margin: "2px 0 0", fontSize: 19, fontWeight: 800, color: "#0F172A" }}>
+              Elixir Learning Reward Rules
+            </h2>
+          </div>
+          <div style={{ display: "grid", gap: 10 }}>
+            {rules.map((rule) => (
+              <form key={rule.activity} onSubmit={(event) => void saveRule(event, rule)} style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center", padding: "10px 14px", borderRadius: 12, background: "#F8FAFC", border: "1px solid #E2E8F0" }}>
+                <strong style={{ minWidth: 160, color: "#0F172A", fontSize: 13.5 }}>{rule.activity}</strong>
+                <input name="amount" type="number" min={0} defaultValue={rule.amount} aria-label={`${rule.activity} amount`} style={{ ...field, width: 100 }} />
+                <input name="cooldownSeconds" type="number" min={0} defaultValue={rule.cooldownSeconds} aria-label={`${rule.activity} cooldown seconds`} style={{ ...field, width: 120 }} />
+                {rule.activity === "quiz_score" ? <input name="quizScorePercent" type="number" min={0} max={100} defaultValue={rule.quizScorePercent ?? ""} aria-label="Quiz score percent" style={{ ...field, width: 100 }} placeholder="Score %" /> : null}
+                <label style={{ fontSize: 13, color: "#334155", display: "inline-flex", alignItems: "center", gap: 6 }}>
+                  <input name="enabled" type="checkbox" defaultChecked={rule.enabled} /> Enabled
+                </label>
+                <button type="submit" style={primaryBtn}>Save</button>
+              </form>
+            ))}
           </div>
         </section>
       ) : null}
-      <p style={{ margin: 0, fontSize: 13 }}>{catalogue}</p>
-      <section id="admin-system">
-        <h2 style={{ fontSize: 16 }}>Skylent AI</h2>
-        <p style={{ fontSize: 13, whiteSpace: "pre-wrap" }}>{ai}</p>
-      </section>
-      <section>
-        <h2 style={{ fontSize: 16 }}>Learning reward rules</h2>
-        {rules.map((rule) => (
-          <form key={rule.activity} onSubmit={(event) => void saveRule(event, rule)} style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center", marginBottom: 8 }}>
-            <strong style={{ minWidth: 160 }}>{rule.activity}</strong>
-            <input name="amount" type="number" min={0} defaultValue={rule.amount} aria-label={`${rule.activity} amount`} style={field} />
-            <input name="cooldownSeconds" type="number" min={0} defaultValue={rule.cooldownSeconds} aria-label={`${rule.activity} cooldown seconds`} style={field} />
-            {rule.activity === "quiz_score" ? <input name="quizScorePercent" type="number" min={0} max={100} defaultValue={rule.quizScorePercent ?? ""} aria-label="Quiz score percent" style={field} placeholder="Score %" /> : null}
-            <label><input name="enabled" type="checkbox" defaultChecked={rule.enabled} /> Enabled</label>
-            <button type="submit" className="os-btn os-btn-primary">Save</button>
+
+      {/* 2x2 Grid for Payments, Wallet Adjustments, Case Store Publishing & Audit Log */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))", gap: 20, alignItems: "start" }}>
+        <form onSubmit={(event) => void onPayment(event)} style={cardBox}>
+          <div>
+            <span style={{ fontFamily: "var(--font-mono)", fontSize: 10.5, fontWeight: 800, color: "#5142B5", letterSpacing: "0.08em" }}>
+              TREASURY &amp; FEE VERIFICATION
+            </span>
+            <h2 style={{ fontSize: 18, fontWeight: 800, color: "#0F172A", margin: "2px 0 0" }}>Record a verified payment</h2>
+          </div>
+          <input name="userId" required placeholder="Learner user ID" aria-label="Learner user id" style={field} />
+          <input name="externalRef" required minLength={4} placeholder="External bank / UPI reference" aria-label="External payment reference" style={field} />
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+            <input name="eligibleNetRupees" required type="number" min={0} placeholder="Net rupees (₹)" aria-label="Eligible net rupees" style={field} />
+            <select name="status" aria-label="Payment status" style={field} defaultValue="succeeded">
+              <option value="succeeded">succeeded</option>
+              <option value="pending">pending</option>
+              <option value="failed">failed</option>
+              <option value="cancelled">cancelled</option>
+            </select>
+          </div>
+          <button type="submit" style={{ ...primaryBtn, alignSelf: "flex-start" }}>Record payment</button>
+        </form>
+
+        <form onSubmit={(event) => void onAdjust(event)} style={cardBox}>
+          <div>
+            <span style={{ fontFamily: "var(--font-mono)", fontSize: 10.5, fontWeight: 800, color: "#5142B5", letterSpacing: "0.08em" }}>
+              ELIXIR WALLET GRANT / DEBIT
+            </span>
+            <h2 style={{ fontSize: 18, fontWeight: 800, color: "#0F172A", margin: "2px 0 0" }}>Adjust a balance</h2>
+          </div>
+          <input name="userId" required placeholder="Learner user ID" aria-label="Adjustment user id" style={field} />
+          <input name="amount" required type="number" placeholder="Elixir amount (+ to grant, - to debit)" aria-label="Elixir amount" style={field} />
+          <input name="reason" required minLength={8} placeholder="Audit reason (min 8 chars)" aria-label="Adjustment reason" style={field} />
+          <button type="submit" style={{ ...primaryBtn, alignSelf: "flex-start" }}>Apply adjustment</button>
+        </form>
+
+        <form onSubmit={(event) => void onResource(event)} style={cardBox}>
+          <div>
+            <span style={{ fontFamily: "var(--font-mono)", fontSize: 10.5, fontWeight: 800, color: "#5142B5", letterSpacing: "0.08em" }}>
+              ELIXIR CASE STUDY STORE
+            </span>
+            <h2 style={{ fontSize: 18, fontWeight: 800, color: "#0F172A", margin: "2px 0 0" }}>Notes or case study</h2>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+            <input name="slug" required placeholder="resource-slug" aria-label="Resource slug" style={field} />
+            <select name="kind" aria-label="Resource kind" style={field}><option value="case_study">case_study</option><option value="notes">notes</option></select>
+          </div>
+          <input name="title" required placeholder="Case study / playbook title" aria-label="Resource title" style={field} />
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
+            <input name="elixirPrice" required type="number" min={0} placeholder="Elixir price" aria-label="Elixir price" style={field} />
+            <input name="courseSlug" placeholder="Course slug" aria-label="Course slug" style={field} />
+            <input name="lessonKey" placeholder="Lesson key" aria-label="Lesson key" style={field} />
+          </div>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <label style={{ fontSize: 13, color: "#334155", display: "inline-flex", alignItems: "center", gap: 6 }}>
+              <input name="published" type="checkbox" defaultChecked /> Published in store
+            </label>
+            <button type="submit" style={primaryBtn}>Save resource</button>
+          </div>
+        </form>
+
+        <div style={cardBox}>
+          <div>
+            <span style={{ fontFamily: "var(--font-mono)", fontSize: 10.5, fontWeight: 800, color: "#5142B5", letterSpacing: "0.08em" }}>
+              REVERSALS &amp; IMMUTABLE LEDGER
+            </span>
+            <h2 style={{ fontSize: 18, fontWeight: 800, color: "#0F172A", margin: "2px 0 0" }}>Refund &amp; Security Audit Log</h2>
+          </div>
+          <form onSubmit={(event) => void onRefund(event)} style={{ display: "flex", gap: 8 }}>
+            <input name="paymentId" required placeholder="Payment ID to refund" aria-label="Payment id" style={field} />
+            <button type="submit" style={{ ...primaryBtn, background: "#F5F3FF", color: "#5142B5", borderColor: "#DDD7FF", whiteSpace: "nowrap" }}>Refund</button>
           </form>
-        ))}
-      </section>
-      <form onSubmit={(event) => void onPayment(event)} style={{ display: "grid", gap: 8, maxWidth: 520 }}>
-        <h2 style={{ fontSize: 16, margin: 0 }}>Record a verified payment</h2>
-        <input name="userId" required placeholder="Learner user id" aria-label="Learner user id" style={field} />
-        <input name="externalRef" required minLength={4} placeholder="External reference" aria-label="External payment reference" style={field} />
-        <input name="eligibleNetRupees" required type="number" min={0} placeholder="Eligible net rupees" aria-label="Eligible net rupees" style={field} />
-        <select name="status" aria-label="Payment status" style={field} defaultValue="succeeded">
-          <option value="succeeded">succeeded</option>
-          <option value="pending">pending</option>
-          <option value="failed">failed</option>
-          <option value="cancelled">cancelled</option>
-        </select>
-        <button type="submit" className="os-btn os-btn-primary">Record payment</button>
-      </form>
-      <form onSubmit={(event) => void onRefund(event)} style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-        <input name="paymentId" required placeholder="Payment id to refund" aria-label="Payment id" style={field} />
-        <button type="submit" className="os-btn os-btn-ghost">Refund</button>
-      </form>
-      <form onSubmit={(event) => void onAdjust(event)} style={{ display: "grid", gap: 8, maxWidth: 520 }}>
-        <h2 style={{ fontSize: 16, margin: 0 }}>Adjust a balance</h2>
-        <input name="userId" required placeholder="Learner user id" aria-label="Adjustment user id" style={field} />
-        <input name="amount" required type="number" placeholder="Elixir amount, negative to remove" aria-label="Elixir amount" style={field} />
-        <input name="reason" required minLength={8} placeholder="Reason" aria-label="Adjustment reason" style={field} />
-        <button type="submit" className="os-btn os-btn-primary">Apply adjustment</button>
-      </form>
-      <form onSubmit={(event) => void onResource(event)} style={{ display: "grid", gap: 8, maxWidth: 520 }}>
-        <h2 style={{ fontSize: 16, margin: 0 }}>Notes or case study</h2>
-        <input name="slug" required placeholder="slug" aria-label="Resource slug" style={field} />
-        <input name="title" required placeholder="Title" aria-label="Resource title" style={field} />
-        <select name="kind" aria-label="Resource kind" style={field}><option value="notes">notes</option><option value="case_study">case_study</option></select>
-        <input name="elixirPrice" required type="number" min={0} placeholder="Elixir price" aria-label="Elixir price" style={field} />
-        <input name="courseSlug" placeholder="Course slug for a case-study reward" aria-label="Course slug" style={field} />
-        <input name="lessonKey" placeholder="Lesson key" aria-label="Lesson key" style={field} />
-        <label><input name="published" type="checkbox" /> Published</label>
-        <button type="submit" className="os-btn os-btn-primary">Save resource</button>
-      </form>
-      <section>
-        <h2 style={{ fontSize: 16 }}>Audit</h2>
-        <pre style={{ whiteSpace: "pre-wrap", fontSize: 12 }}>{audit}</pre>
-      </section>
+          <pre style={{ margin: 0, padding: "12px 14px", borderRadius: 10, background: "#F8FAFC", border: "1px solid #E2E8F0", color: "#334155", whiteSpace: "pre-wrap", fontSize: 11.5, maxHeight: 150, overflowY: "auto" }}>
+            {audit}
+          </pre>
+        </div>
+      </div>
     </div>
   )
 }

@@ -79,7 +79,7 @@ export default function DashboardCollegePage() {
                 className="os-btn os-btn-primary"
                 href={`${apiV1()}/college/dashboard/export.csv`}
                 download
-                style={{ background: "#5142b5", color: "#ffffff", fontWeight: 700, borderColor: "#c4b8ff", textDecoration: "none" }}
+                style={{ background: "#ffffff", color: "#5142B5", fontWeight: 800, border: "2px solid #ffffff", textDecoration: "none", boxShadow: "0 8px 20px rgba(15, 23, 42, 0.2)" }}
               >
                 Export Cohort CSV
               </a>
@@ -105,22 +105,22 @@ export default function DashboardCollegePage() {
           <>
             {data.cohortSummary ? (
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 14 }} aria-label="College cohort summary">
-                <div style={{ padding: 18, background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: 14, boxShadow: "0 4px 14px rgba(15,23,42,0.04)" }}>
+                <div style={{ padding: 18, background: "#ffffff", border: "1.5px solid #DDD7FF", borderTop: "4px solid #5142B5", borderRadius: 16, boxShadow: "0 10px 26px -14px rgba(81, 66, 181, 0.14)" }}>
                   <span style={{ fontSize: 11, fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.08em", color: "#64748b", display: "block" }}>Members</span>
                   <strong style={{ fontSize: 28, color: "#0f172a", display: "block", marginTop: 4 }}>{data.cohortSummary.totalMembers}</strong>
                   <span style={{ fontSize: 12, color: "#10b981", fontWeight: 600 }}>APAAR / ABC Mapped</span>
                 </div>
-                <div style={{ padding: 18, background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: 14, boxShadow: "0 4px 14px rgba(15,23,42,0.04)" }}>
+                <div style={{ padding: 18, background: "#ffffff", border: "1.5px solid #DDD7FF", borderTop: "4px solid #5142B5", borderRadius: 16, boxShadow: "0 10px 26px -14px rgba(81, 66, 181, 0.14)" }}>
                   <span style={{ fontSize: 11, fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.08em", color: "#64748b", display: "block" }}>Active enrolments</span>
                   <strong style={{ fontSize: 28, color: "#0f172a", display: "block", marginTop: 4 }}>{data.cohortSummary.activeEnrolments}</strong>
                   <span style={{ fontSize: 12, color: "#475569" }}>In Simulated Lab Sprints</span>
                 </div>
-                <div style={{ padding: 18, background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: 14, boxShadow: "0 4px 14px rgba(15,23,42,0.04)" }}>
+                <div style={{ padding: 18, background: "#ffffff", border: "1.5px solid #DDD7FF", borderTop: "4px solid #5142B5", borderRadius: 16, boxShadow: "0 10px 26px -14px rgba(81, 66, 181, 0.14)" }}>
                   <span style={{ fontSize: 11, fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.08em", color: "#64748b", display: "block" }}>Completed</span>
                   <strong style={{ fontSize: 28, color: "#0f172a", display: "block", marginTop: 4 }}>{data.cohortSummary.completedEnrolments}</strong>
                   <span style={{ fontSize: 12, color: "#10b981", fontWeight: 600 }}>Capstones Red-Line Verified</span>
                 </div>
-                <div style={{ padding: 18, background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: 14, boxShadow: "0 4px 14px rgba(15,23,42,0.04)" }}>
+                <div style={{ padding: 18, background: "#ffffff", border: "1.5px solid #DDD7FF", borderTop: "4px solid #5142B5", borderRadius: 16, boxShadow: "0 10px 26px -14px rgba(81, 66, 181, 0.14)" }}>
                   <span style={{ fontSize: 11, fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.08em", color: "#64748b", display: "block" }}>Completion rate</span>
                   <strong style={{ fontSize: 28, color: "#5142b5", display: "block", marginTop: 4 }}>{data.cohortSummary.completionRatePercent}%</strong>
                   <span style={{ fontSize: 12, color: "#475569" }}>NAAC Criterion-1 Audit Ready</span>

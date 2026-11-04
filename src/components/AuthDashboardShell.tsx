@@ -212,7 +212,18 @@ export function AuthDashboardShell({
           </div>
         </header>
 
-        {bar ? <div className="auth-shell-bar">{bar}</div> : null}
+        <div className="auth-shell-bar">
+          <div style={{ display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap", flex: "1 1 auto", minWidth: 0 }}>
+            {bar ?? (
+              <span className="sh-crumb" style={{ fontFamily: "var(--font-mono)", fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "#64748B" }}>
+                Skylent OS <span aria-hidden="true">/</span> <b style={{ color: "#0F172A", fontWeight: 700 }}>{workspaceLabel} · {roleLabel}</b>
+              </span>
+            )}
+          </div>
+          <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 12 }}>
+            <HeaderWalletAndNotifications variant="dashboard" />
+          </div>
+        </div>
 
         <div className="auth-shell-content">
           {header}

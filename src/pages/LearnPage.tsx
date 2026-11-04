@@ -6,6 +6,7 @@ import CurriculumRail from '../components/lms/CurriculumRail'
 import { LessonContentView, LessonNavigation } from '../components/lms/LessonContent'
 import { LessonContextPanel } from '../components/product/ProductLanguage'
 import { AiMark, ProductSlice } from '../components/skylent/primitives'
+import { HeaderWalletAndNotifications } from '../components/learner/HeaderWalletAndNotifications'
 import { getLessonMeta } from '../content/course-lookups'
 import { isAuthoredCourse } from '../lib/live-intents'
 import { isMultiTrackAuthoredCourse } from '../content/multi-track-packs'
@@ -616,18 +617,21 @@ export default function LearnPage() {
             label="Where this lesson sits"
           />
         </div>
-        <div className="os-top-progress">
-          <span>{completedCount} of {totalLessons} complete · {progressPct}%</span>
-          <div
-            className="os-progress-bar"
-            role="progressbar"
-            aria-label="Course progress"
-            aria-valuemin={0}
-            aria-valuemax={100}
-            aria-valuenow={progressPct}
-          >
-            <span style={{ width: `${progressPct}%` }} />
+        <div style={{ display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap" }}>
+          <div className="os-top-progress">
+            <span>{completedCount} of {totalLessons} complete · {progressPct}%</span>
+            <div
+              className="os-progress-bar"
+              role="progressbar"
+              aria-label="Course progress"
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={progressPct}
+            >
+              <span style={{ width: `${progressPct}%` }} />
+            </div>
           </div>
+          <HeaderWalletAndNotifications variant="dashboard" />
         </div>
       </header>
 

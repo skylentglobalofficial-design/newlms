@@ -21,8 +21,11 @@ const accent = getRoleAccent('faculty')
 
 const canvasSectionStyle = {
   padding: '22px 24px',
-  border: '1px solid rgba(8, 9, 9, 0.1)',
-  borderRadius: T.rCard,
+  background: '#FFFFFF',
+  border: '1.5px solid #DDD7FF',
+  borderTop: '4px solid #5142B5',
+  borderRadius: 18,
+  boxShadow: '0 10px 26px -14px rgba(81, 66, 181, 0.14)',
 } as const
 
 function NavIcon({ id }: { id: string }) {
@@ -131,7 +134,7 @@ function CatalogOverview({
         onClick={onReview}
         style={{
           display: 'inline-flex', alignItems: 'center', gap: 8,
-          background: '#5142b5', color: '#ffffff', border: '1px solid #c4b8ff',
+          background: '#ffffff', color: '#5142B5', border: '2px solid #ffffff', boxShadow: '0 8px 20px rgba(15, 23, 42, 0.2)',
           padding: '12px 22px', borderRadius: 999,
           fontSize: 14, fontWeight: 700, fontFamily: 'var(--font-body)',
           cursor: 'pointer',

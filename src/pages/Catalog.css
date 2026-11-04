@@ -2994,3 +2994,69 @@
   border-radius: 999px;
   padding: 4px 10px;
 }
+
+/* V33 Course Detail & Catalogue Soft Lavender + Crisp White + Royal Purple Polish */
+.cat-page .ws-row--track {
+  background: #FFFFFF !important;
+  border: 1.5px solid #DDD7FF !important;
+  border-left: 5px solid #5142B5 !important;
+  box-shadow: 0 10px 26px -14px rgba(81, 66, 181, 0.14) !important;
+  color: #0F172A !important;
+}
+.cat-page .ws-row--track .ws-date {
+  background: #F5F3FF !important;
+  border-color: #DDD7FF !important;
+  color: #5142B5 !important;
+}
+.cat-page .ws-row--track .ws-body strong {
+  color: #0F172A !important;
+}
+.cat-page .ws-row--track .ws-body em {
+  color: #475569 !important;
+}
+.cat-page .ws-row--track .ws-meta {
+  background: #DCFCE7 !important;
+  border-color: #86EFAC !important;
+  color: #15803D !important;
+}
+.cat-page .ws-row--track .ws-state {
+  background: #5142B5 !important;
+  color: #FFFFFF !important;
+}
+.cat-page .cat-ready-card {
+  background: #FFFFFF !important;
+  border: 1.5px solid #DDD7FF !important;
+  border-top: 4px solid #5142B5 !important;
+  box-shadow: 0 12px 28px -16px rgba(81, 66, 181, 0.16) !important;
+  color: #0F172A !important;
+}
+.cat-page .cat-ready-card .cat-label,
+.cat-page .cat-ready-card .cat-ready-facts dt,
+.cat-page .cat-ready-card .cat-card-cta {
+  color: #5142B5 !important;
+}
+.cat-page .cat-ready-card h3,
+.cat-page .cat-ready-card .cat-ready-facts dd {
+  color: #0F172A !important;
+}
+.cat-page .cat-ready-card > p {
+  color: #475569 !important;
+}
+.cat-page .cat-ready-card .cat-ready-facts {
+  border-top-color: #E2E8F0 !important;
+}
+.cat-page .cat-intro-meta {
+  background: linear-gradient(180deg, #F6F4FF 0%, #FFFFFF 100%) !important;
+  border: 1.5px solid #DDD7FF !important;
+  border-top: 4px solid #5142B5 !important;
+  color: #0F172A !important;
+  box-shadow: 0 12px 28px -16px rgba(81, 66, 181, 0.16) !important;
+}
+.cat-page .cat-intro-meta .cat-metrics dt,
+.cat-page .cat-intro-meta .cat-stat-label {
+  color: #5142B5 !important;
+}
+.cat-page .cat-intro-meta .cat-metrics dd,
+.cat-page .cat-intro-meta .cat-stat-value {
+  color: #0F172A !important;
+}

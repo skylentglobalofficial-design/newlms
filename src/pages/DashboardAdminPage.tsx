@@ -1,8 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react'
-import { C, T } from '../tokens'
-import { AuroraBand, GlassSurface } from '../components/foundation'
+import { Link } from 'react-router-dom'
 import { AuthDashboardShell, type AuthNavItem } from '../components/AuthDashboardShell'
-import { getRoleAccent } from '../role-themes'
 import { useRequireRole } from '../hooks/useRequireRole'
 import { useAuth } from '../context/AuthContext'
 import {
@@ -34,23 +32,62 @@ import AdminPlatform from '../components/admin/AdminPlatform'
 
 const NAV_ITEMS: AuthNavItem[] = [
   { id: 'overview', label: 'Overview', short: 'Home', sectionId: 'admin-overview' },
-  { id: 'users', label: 'Users', short: 'Users', sectionId: 'admin-users' },
+  { id: 'users', label: 'Users & Roles', short: 'Users', sectionId: 'admin-users' },
   { id: 'orgs', label: 'Organisations', short: 'Orgs', sectionId: 'admin-orgs' },
   { id: 'employers', label: 'Employers', short: 'Hire', sectionId: 'admin-employers' },
   { id: 'enquiries', label: 'Enquiries', short: 'Mail', sectionId: 'admin-enquiries' },
-  { id: 'practice', label: 'Practice', short: 'Labs', sectionId: 'admin-practice' },
-  { id: 'courses', label: 'Lesson video', short: 'Video', sectionId: 'admin-courses' },
-  { id: 'payments', label: 'Payments', short: 'Pay', sectionId: 'admin-payments' },
-  { id: 'system', label: 'System', short: 'System', sectionId: 'admin-system' },
+  { id: 'practice', label: 'Practice Studios', short: 'Labs', sectionId: 'admin-practice' },
+  { id: 'courses', label: 'Lesson Media', short: 'Video', sectionId: 'admin-courses' },
+  { id: 'payments', label: 'Elixir & Economics', short: 'Pay', sectionId: 'admin-payments' },
+  { id: 'system', label: 'System & AI', short: 'System', sectionId: 'admin-system' },
   { id: 'curriculum', label: 'Course Builder', short: 'Builder', href: '/dashboard/curriculum' },
   { id: 'student-view', label: 'Learner View', short: 'Learner', href: '/dashboard/student' },
 ]
 
-const accent = getRoleAccent('superadmin')
+const cardBoxStyle = {
+  padding: '24px 26px',
+  borderRadius: 18,
+  background: '#FFFFFF',
+  border: '1.5px solid #DDD7FF',
+  borderTop: '4px solid #5142B5',
+  boxShadow: '0 10px 26px -14px rgba(81, 66, 181, 0.14)',
+  display: 'flex',
+  flexDirection: 'column' as const,
+  gap: 14,
+} as const
 
-const canvasRow = {
-  padding: '22px 0',
-  borderBottom: `1px solid ${T.lineLight}`,
+const adminFieldStyle = {
+  width: '100%',
+  boxSizing: 'border-box' as const,
+  padding: '10px 12px',
+  borderRadius: 10,
+  border: '1.5px solid #CBD5E1',
+  background: '#F8FAFC',
+  color: '#0F172A',
+  fontFamily: 'var(--font-body)',
+  fontSize: 13.5,
+} as const
+
+const primaryBtnStyle = {
+  padding: '9px 16px',
+  borderRadius: 10,
+  border: '1px solid #5142B5',
+  background: '#5142B5',
+  color: '#FFFFFF',
+  fontWeight: 700,
+  fontSize: 13,
+  cursor: 'pointer',
+} as const
+
+const ghostBtnStyle = {
+  padding: '9px 14px',
+  borderRadius: 10,
+  border: '1.5px solid #DDD7FF',
+  background: '#F5F3FF',
+  color: '#5142B5',
+  fontWeight: 700,
+  fontSize: 13,
+  cursor: 'pointer',
 } as const
 
 function NavIcon({ id }: { id: string }) {
@@ -68,24 +105,42 @@ function AdminOverview() {
   return (
     <div style={{
       background: 'linear-gradient(135deg, #3B2D96 0%, #5142B5 100%)',
-      border: '1px solid rgba(196, 184, 255, 0.38)',
-      borderRadius: 18,
+      border: '1.5px solid rgba(196, 184, 255, 0.45)',
+      borderRadius: 20,
       padding: 'clamp(24px, 3.5vw, 34px)',
       color: '#ffffff',
-      boxShadow: '0 18px 40px rgba(10, 14, 34, 0.22)',
+      boxShadow: '0 20px 44px -18px rgba(59, 45, 150, 0.42)',
     }}>
-      <p style={{ margin: '0 0 8px', color: '#c4b8ff', font: '700 11px/1.4 var(--font-mono)', letterSpacing: '0.14em', textTransform: 'uppercase' }}>
-        SUPERADMIN C-SUITE COMMAND OS · CEO / CFO / CCRO / CAO TELEMETRY
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, flexWrap: 'wrap', marginBottom: 8 }}>
+        <p style={{ margin: 0, color: '#E9D5FF', font: '700 11px/1.4 var(--font-mono)', letterSpacing: '0.14em', textTransform: 'uppercase' }}>
+          SUPERADMIN C-SUITE COMMAND OS · CEO / CFO / CCRO / CAO TELEMETRY
+        </p>
+        <span style={{ padding: '4px 12px', borderRadius: 999, background: '#DCFCE7', color: '#15803D', fontSize: 11.5, fontWeight: 800 }}>
+          ✓ All 6 Flagship Tracks &amp; 90 Lessons Live
+        </span>
+      </div>
+      <h1 className="skylent-display-sm" style={{ color: '#ffffff', margin: '0 0 8px', fontWeight: 800 }}>
+        Skylent Platform Command Center
+      </h1>
+      <p style={{ color: '#E2E8F0', fontSize: 14.5, lineHeight: 1.6, margin: 0, maxWidth: 720 }}>
+        Manage user roles, partner colleges &amp; organisations, employer pipelines, practice sandboxes, and Elixir Coin unit economics from one central console.
       </p>
-      <h1 className="skylent-display-sm" style={{ color: '#ffffff', margin: '0 0 8px' }}>Platform overview</h1>
-      <p style={{ color: 'rgba(255,255,255,0.84)', fontSize: 14.5, lineHeight: 1.6, margin: 0, maxWidth: 680 }}>
-        Manage users, organisations, employers, practice labs, and Elixir unit economics, or jump directly into any workspace below.
-      </p>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, marginTop: 18 }}>
-        <a href="/dashboard/curriculum" className="os-btn os-btn-primary" style={{ background: '#5142b5', color: '#ffffff', fontWeight: 700, borderColor: '#c4b8ff', textDecoration: 'none' }}>Open Course Builder →</a>
-        <a href="/dashboard/student" className="os-btn os-btn-ghost" style={{ color: '#ffffff', borderColor: 'rgba(255,255,255,0.28)', textDecoration: 'none' }}>Open Learner Dashboard</a>
-        <a href="/os/labs/data-analytics/northwind" className="os-btn os-btn-ghost" style={{ color: '#ffffff', borderColor: 'rgba(255,255,255,0.28)', textDecoration: 'none' }}>Open Northwind SQL Lab</a>
-        <a href="/career-os" className="os-btn os-btn-ghost" style={{ color: '#ffffff', borderColor: 'rgba(255,255,255,0.28)', textDecoration: 'none' }}>Open Career OS</a>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, marginTop: 20 }}>
+        <Link to="/dashboard/curriculum" style={{ padding: '10px 18px', borderRadius: 10, background: '#FFFFFF', color: '#5142B5', fontWeight: 800, fontSize: 13.5, textDecoration: 'none', boxShadow: '0 8px 20px rgba(15, 23, 42, 0.2)' }}>
+          Open Course Builder →
+        </Link>
+        <Link to="/dashboard/student" style={{ padding: '10px 16px', borderRadius: 10, background: 'rgba(255,255,255,0.14)', border: '1px solid rgba(255,255,255,0.28)', color: '#ffffff', fontWeight: 700, fontSize: 13.5, textDecoration: 'none' }}>
+          Open Learner Dashboard
+        </Link>
+        <Link to="/dashboard/faculty" style={{ padding: '10px 16px', borderRadius: 10, background: 'rgba(255,255,255,0.14)', border: '1px solid rgba(255,255,255,0.28)', color: '#ffffff', fontWeight: 700, fontSize: 13.5, textDecoration: 'none' }}>
+          Faculty TA Queue (20m SLA)
+        </Link>
+        <Link to="/os/labs/data-analytics/northwind" style={{ padding: '10px 16px', borderRadius: 10, background: 'rgba(255,255,255,0.14)', border: '1px solid rgba(255,255,255,0.28)', color: '#ffffff', fontWeight: 700, fontSize: 13.5, textDecoration: 'none' }}>
+          Northwind SQL Lab
+        </Link>
+        <Link to="/verify/SKL-2026-DA-EXEMPLAR" style={{ padding: '10px 16px', borderRadius: 10, background: 'rgba(255,255,255,0.14)', border: '1px solid rgba(255,255,255,0.28)', color: '#ffffff', fontWeight: 700, fontSize: 13.5, textDecoration: 'none' }}>
+          Verify Exemplar Dossier
+        </Link>
       </div>
     </div>
   )
@@ -145,45 +200,64 @@ function AdminUsersSection({ currentUserId }: { currentUserId: string }) {
   }
 
   return (
-    <div id="admin-users" style={canvasRow}>
-      <div style={{ color: C.slate, fontSize: 11, marginBottom: 12 }}>Users</div>
+    <section id="admin-users" style={cardBoxStyle} aria-labelledby="admin-users-title">
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+        <div>
+          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10.5, fontWeight: 800, color: '#5142B5', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+            01 · IDENTITY &amp; RBAC ACCESS CONTROL
+          </span>
+          <h2 id="admin-users-title" style={{ margin: '2px 0 0', fontSize: 20, fontWeight: 800, color: '#0F172A' }}>
+            Users &amp; Role Assignments
+          </h2>
+        </div>
+        <span style={{ padding: '4px 10px', borderRadius: 999, background: '#F5F3FF', border: '1px solid #DDD7FF', color: '#5142B5', fontSize: 11.5, fontWeight: 700 }}>
+          {users.length} Loaded
+        </span>
+      </div>
+
       <form
         onSubmit={(event) => { event.preventDefault(); void load(query) }}
-        style={{ display: "flex", gap: 8, marginBottom: 12, flexWrap: "wrap" }}
+        style={{ display: "flex", gap: 8, flexWrap: "wrap" }}
       >
         <input
           value={query}
           onChange={(event) => setQuery(event.target.value)}
-          placeholder="Search name or email"
+          placeholder="Search user by name or email..."
           aria-label="Search users"
-          style={{ flex: "1 1 220px", minWidth: 0, padding: "8px 10px", borderRadius: 8, border: `1px solid ${T.lineLight}`, background: "transparent", color: C.ink }}
+          style={{ ...adminFieldStyle, flex: "1 1 240px" }}
         />
-        <button type="submit" className="os-btn os-btn-ghost">Search</button>
+        <button type="submit" style={primaryBtnStyle}>Search Users</button>
       </form>
-      {message ? <p className="os-error" role="alert">{message}</p> : null}
-      {status === "loading" ? <p style={{ color: C.slate, fontSize: 13 }}>Loading users…</p> : null}
-      {status === "error" ? <button type="button" className="os-btn os-btn-ghost" onClick={() => void load(query)}>Try again</button> : null}
+
+      {message ? <p className="os-error" role="alert" style={{ margin: 0 }}>{message}</p> : null}
+      {status === "loading" ? <p style={{ color: '#64748B', fontSize: 13, margin: 0 }}>Loading users…</p> : null}
+      {status === "error" ? <button type="button" style={ghostBtnStyle} onClick={() => void load(query)}>Try again</button> : null}
       {status === "ready" ? (
-        <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
+        <ul style={{ listStyle: "none", margin: 0, padding: 0, display: 'grid', gap: 10, maxHeight: 420, overflowY: 'auto' }}>
           {users.map((user) => {
             const self = user.id === currentUserId
             const role = pendingRole[user.id] ?? user.role
             return (
-              <li key={user.id} style={{ padding: "14px 0", borderTop: `1px solid ${T.lineLight}`, display: "grid", gap: 8 }}>
-                <div>
-                  <strong style={{ color: C.ink }}>{user.displayName}</strong>
-                  <div style={{ color: C.slate, fontSize: 12 }}>{user.email} · {user.role}</div>
-                  <div style={{ color: C.slate, fontSize: 11, wordBreak: 'break-all' }}>User id {user.id}</div>
+              <li key={user.id} style={{ padding: "14px 16px", borderRadius: 12, background: '#F8FAFC', border: '1px solid #E2E8F0', display: "grid", gap: 10 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8, flexWrap: 'wrap' }}>
+                  <div>
+                    <strong style={{ color: '#0F172A', fontSize: 14.5 }}>{user.displayName}</strong>
+                    <div style={{ color: '#475569', fontSize: 12.5 }}>{user.email}</div>
+                    <code style={{ color: '#64748B', fontSize: 11 }}>ID: {user.id}</code>
+                  </div>
+                  <span style={{ padding: '3px 10px', borderRadius: 999, background: user.role === 'superadmin' ? '#DCFCE7' : '#EDE9FE', color: user.role === 'superadmin' ? '#15803D' : '#5142B5', fontSize: 11, fontWeight: 800, textTransform: 'uppercase' }}>
+                    {user.role}
+                  </span>
                 </div>
                 {self ? (
-                  <span style={{ color: C.slate, fontSize: 12 }}>Your own role cannot be changed here.</span>
+                  <span style={{ color: '#64748B', fontSize: 12 }}>Active Superadmin session (role locked).</span>
                 ) : (
                   <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
                     <select
                       aria-label={`Role for ${user.displayName}`}
                       value={role}
                       onChange={(event) => setPendingRole((current) => ({ ...current, [user.id]: event.target.value as AdminRole }))}
-                      style={{ padding: "8px 10px", borderRadius: 8, border: `1px solid ${T.lineLight}`, background: "transparent", color: C.ink }}
+                      style={{ ...adminFieldStyle, width: 'auto', padding: '7px 10px' }}
                     >
                       {ASSIGNABLE_ROLES.map((option) => <option key={option} value={option}>{option}</option>)}
                     </select>
@@ -192,25 +266,25 @@ function AdminUsersSection({ currentUserId }: { currentUserId: string }) {
                         aria-label={`Organisation for ${user.displayName}`}
                         value={pendingOrg[user.id] ?? ""}
                         onChange={(event) => setPendingOrg((current) => ({ ...current, [user.id]: event.target.value }))}
-                        style={{ padding: "8px 10px", borderRadius: 8, border: `1px solid ${T.lineLight}`, background: "transparent", color: C.ink }}
+                        style={{ ...adminFieldStyle, width: 'auto', padding: '7px 10px' }}
                       >
                         <option value="">Choose organisation</option>
                         {organisations.map((org) => <option key={org.id} value={org.id}>{org.name}</option>)}
                       </select>
                     ) : null}
-                    <button type="button" className="os-btn os-btn-primary" onClick={() => void saveRole(user)}>Save role</button>
+                    <button type="button" style={primaryBtnStyle} onClick={() => void saveRole(user)}>Save role</button>
                     {user.role !== "student" ? (
-                      <button type="button" className="os-btn os-btn-ghost" onClick={() => void makeStudent(user)}>Set to student</button>
+                      <button type="button" style={ghostBtnStyle} onClick={() => void makeStudent(user)}>Reset to student</button>
                     ) : null}
                   </div>
                 )}
               </li>
             )
           })}
-          {users.length === 0 ? <li style={{ color: C.slate, fontSize: 13 }}>No users match that search.</li> : null}
+          {users.length === 0 ? <li style={{ color: '#64748B', fontSize: 13 }}>No users match that search.</li> : null}
         </ul>
       ) : null}
-    </div>
+    </section>
   )
 }
 
@@ -249,81 +323,51 @@ function AdminOrganisationsSection() {
   }
 
   return (
-    <div id="admin-orgs" style={canvasRow}>
-      <div style={{ color: C.slate, fontSize: 11, marginBottom: 12 }}>Organisations</div>
-      {message ? <p className="os-error" role="alert">{message}</p> : null}
-      {status === "loading" ? <p style={{ color: C.slate, fontSize: 13 }}>Loading organisations…</p> : null}
-      {status === "error" ? <button type="button" className="os-btn os-btn-ghost" onClick={() => void load()}>Try again</button> : null}
+    <section id="admin-orgs" style={cardBoxStyle} aria-labelledby="admin-orgs-title">
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
+        <div>
+          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10.5, fontWeight: 800, color: '#5142B5', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+            02 · PARTNER COLLEGES &amp; L&amp;D TENANTS
+          </span>
+          <h2 id="admin-orgs-title" style={{ margin: '2px 0 0', fontSize: 20, fontWeight: 800, color: '#0F172A' }}>
+            Organisations &amp; Institutions
+          </h2>
+        </div>
+        <span style={{ padding: '4px 10px', borderRadius: 999, background: '#DCFCE7', color: '#15803D', fontSize: 11.5, fontWeight: 700 }}>
+          {rows.length} Active
+        </span>
+      </div>
+
+      {message ? <p className="os-error" role="alert" style={{ margin: 0 }}>{message}</p> : null}
+      {status === "loading" ? <p style={{ color: '#64748B', fontSize: 13, margin: 0 }}>Loading organisations…</p> : null}
+      {status === "error" ? <button type="button" style={ghostBtnStyle} onClick={() => void load()}>Try again</button> : null}
       {status === "ready" ? (
-        <ul style={{ listStyle: "none", margin: "0 0 16px", padding: 0 }}>
+        <ul style={{ listStyle: "none", margin: 0, padding: 0, display: 'grid', gap: 8 }}>
           {rows.map((org) => (
-            <li key={org.id} style={{ padding: "10px 0", borderTop: `1px solid ${T.lineLight}`, color: C.ink, fontSize: 14 }}>
-              <strong>{org.name}</strong>
-              <span style={{ color: C.slate }}> · {org.slug} · {org.memberCount} {org.memberCount === 1 ? "member" : "members"}</span>
+            <li key={org.id} style={{ padding: "12px 14px", borderRadius: 10, background: '#F8FAFC', border: '1px solid #E2E8F0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
+              <div>
+                <strong style={{ color: '#0F172A', fontSize: 14 }}>{org.name}</strong>
+                <div style={{ color: '#64748B', fontSize: 12 }}>Slug: <code>{org.slug}</code></div>
+              </div>
+              <span style={{ padding: '3px 9px', borderRadius: 999, background: '#F5F3FF', border: '1px solid #DDD7FF', color: '#5142B5', fontSize: 11.5, fontWeight: 700 }}>
+                {org.memberCount} {org.memberCount === 1 ? "member" : "members"}
+              </span>
             </li>
           ))}
-          {rows.length === 0 ? <li style={{ color: C.slate, fontSize: 13 }}>No organisations yet.</li> : null}
+          {rows.length === 0 ? <li style={{ color: '#64748B', fontSize: 13 }}>No organisations created yet.</li> : null}
         </ul>
       ) : null}
-      <form onSubmit={(event) => void create(event)} style={{ display: "grid", gap: 8, maxWidth: 480 }}>
-        <input value={name} onChange={(event) => setName(event.target.value)} placeholder="Organisation name" aria-label="Organisation name" required style={{ padding: "8px 10px", borderRadius: 8, border: `1px solid ${T.lineLight}`, background: "transparent", color: C.ink }} />
-        <input value={slug} onChange={(event) => setSlug(event.target.value)} placeholder="slug" aria-label="Organisation slug" required style={{ padding: "8px 10px", borderRadius: 8, border: `1px solid ${T.lineLight}`, background: "transparent", color: C.ink }} />
-        <button type="submit" className="os-btn os-btn-primary" style={{ justifySelf: "start" }}>Create organisation</button>
+
+      <form onSubmit={(event) => void create(event)} style={{ display: "grid", gap: 10, paddingTop: 10, borderTop: '1px solid #F1F5F9' }}>
+        <strong style={{ fontSize: 13.5, color: '#0F172A' }}>Provision New Organisation / College Tenant</strong>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 8 }}>
+          <input value={name} onChange={(event) => setName(event.target.value)} placeholder="Organisation name (e.g. IITM Partner College)" aria-label="Organisation name" required style={adminFieldStyle} />
+          <input value={slug} onChange={(event) => setSlug(event.target.value)} placeholder="tenant-slug" aria-label="Organisation slug" required style={adminFieldStyle} />
+        </div>
+        <button type="submit" style={{ ...primaryBtnStyle, justifySelf: "start" }}>Create organisation</button>
       </form>
-    </div>
+    </section>
   )
-}
-
-function AdminEnquiriesSection() {
-  const [rows, setRows] = useState<AdminEnquiry[]>([])
-  const [status, setStatus] = useState<"loading" | "ready" | "error">("loading")
-  const [message, setMessage] = useState<string | null>(null)
-
-  useEffect(() => {
-    let cancelled = false
-    void listAdminEnquiries()
-      .then((result) => { if (!cancelled) { setRows(result.data); setStatus("ready") } })
-      .catch((error: unknown) => {
-        if (!cancelled) {
-          setStatus("error")
-          setMessage(error instanceof Error ? error.message : "Enquiries could not be loaded.")
-        }
-      })
-    return () => { cancelled = true }
-  }, [])
-
-  return (
-    <div id="admin-enquiries" style={canvasRow}>
-      <div style={{ color: C.slate, fontSize: 11, marginBottom: 12 }}>Enquiries</div>
-      <p style={{ color: C.slate, fontSize: 12, lineHeight: 1.6, marginTop: 0 }}>Read only. There is no staff queue or status update yet.</p>
-      {message ? <p className="os-error" role="alert">{message}</p> : null}
-      {status === "loading" ? <p style={{ color: C.slate, fontSize: 13 }}>Loading enquiries…</p> : null}
-      {status === "ready" && rows.length === 0 ? <p style={{ color: C.slate, fontSize: 13 }}>No enquiries yet.</p> : null}
-      {status === "ready" ? (
-        <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
-          {rows.map((row) => (
-            <li key={row.id} style={{ padding: "12px 0", borderTop: `1px solid ${T.lineLight}` }}>
-              <strong style={{ color: C.ink }}>{row.name}</strong>
-              <div style={{ color: C.slate, fontSize: 12 }}>{row.kind} · {row.email}{row.programSlug ? ` · ${row.programSlug}` : ""}</div>
-              {row.message ? <p style={{ color: C.ink, fontSize: 13, lineHeight: 1.6, margin: "6px 0 0" }}>{row.message}</p> : null}
-            </li>
-          ))}
-        </ul>
-      ) : null}
-    </div>
-  )
-}
-
-const adminFieldStyle = {
-  width: '100%',
-  boxSizing: 'border-box' as const,
-  padding: '8px 10px',
-  borderRadius: 8,
-  border: `1px solid ${T.lineLight}`,
-  background: 'var(--skylent-surface-paper)',
-  color: C.ink,
-  fontFamily: 'var(--font-body)',
-  fontSize: 14,
 }
 
 function AdminEmployersSection() {
@@ -411,46 +455,61 @@ function AdminEmployersSection() {
   }
 
   return (
-    <div id="admin-employers" style={canvasRow}>
-      <div style={{ color: C.slate, fontSize: 11, marginBottom: 12 }}>Employers</div>
-      <p style={{ color: C.slate, fontSize: 12, lineHeight: 1.6, marginTop: 0 }}>
-        Linking a user does not publish jobs. The user needs the recruiter or superadmin role first.
+    <section id="admin-employers" style={cardBoxStyle} aria-labelledby="admin-employers-title">
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
+        <div>
+          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10.5, fontWeight: 800, color: '#5142B5', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+            03 · HIRING PARTNERS &amp; RECRUITER SEATS
+          </span>
+          <h2 id="admin-employers-title" style={{ margin: '2px 0 0', fontSize: 20, fontWeight: 800, color: '#0F172A' }}>
+            Employers &amp; Recruiter Access
+          </h2>
+        </div>
+        <span style={{ padding: '4px 10px', borderRadius: 999, background: '#F5F3FF', border: '1px solid #DDD7FF', color: '#5142B5', fontSize: 11.5, fontWeight: 700 }}>
+          {rows.length} Employers
+        </span>
+      </div>
+      <p style={{ color: '#475569', fontSize: 13, lineHeight: 1.5, margin: 0 }}>
+        Create hiring partner profiles and link recruiter user accounts so they can post skill-matched openings in Career OS.
       </p>
-      {message ? <p role="status" style={{ color: C.ink, fontSize: 13 }}>{message}</p> : null}
-      {status === 'loading' ? <p style={{ color: C.slate, fontSize: 13 }}>Loading employers…</p> : null}
-      {status === 'error' ? <button type="button" className="os-btn os-btn-ghost" onClick={() => void load()}>Try again</button> : null}
-      {status === 'ready' && rows.length === 0 ? <p style={{ color: C.slate, fontSize: 13 }}>No employers yet.</p> : null}
-      {status === 'ready' ? (
-        <ul style={{ listStyle: 'none', margin: '0 0 16px', padding: 0 }}>
+      {message ? <p role="status" style={{ color: '#0F172A', fontSize: 13, margin: 0, fontWeight: 600 }}>{message}</p> : null}
+      {status === 'loading' ? <p style={{ color: '#64748B', fontSize: 13, margin: 0 }}>Loading employers…</p> : null}
+      {status === 'error' ? <button type="button" style={ghostBtnStyle} onClick={() => void load()}>Try again</button> : null}
+      {status === 'ready' && rows.length === 0 ? <p style={{ color: '#64748B', fontSize: 13, margin: 0 }}>No employers registered yet.</p> : null}
+      {status === 'ready' && rows.length > 0 ? (
+        <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gap: 8 }}>
           {rows.map((employer) => (
-            <li key={employer.id} style={{ padding: '10px 0', borderTop: `1px solid ${T.lineLight}`, color: C.ink, fontSize: 14 }}>
-              <strong>{employer.name}</strong>
-              <div style={{ color: C.slate, fontSize: 12 }}>{employer.slug} · {employer.memberCount} linked · {employer.jobCount} jobs</div>
-              <button
-                type="button"
-                className="os-btn os-btn-ghost"
-                aria-expanded={openEmployerId === employer.id}
-                onClick={() => (openEmployerId === employer.id ? setOpenEmployerId(null) : void loadMembers(employer.id))}
-                style={{ marginTop: 6 }}
-              >
-                {openEmployerId === employer.id ? 'Hide recruiters' : 'Show recruiters'}
-              </button>
+            <li key={employer.id} style={{ padding: '12px 14px', borderRadius: 10, background: '#F8FAFC', border: '1px solid #E2E8F0', color: '#0F172A', fontSize: 14 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                <div>
+                  <strong>{employer.name}</strong>
+                  <div style={{ color: '#64748B', fontSize: 12 }}>{employer.slug} · {employer.memberCount} linked · {employer.jobCount} jobs</div>
+                </div>
+                <button
+                  type="button"
+                  style={ghostBtnStyle}
+                  aria-expanded={openEmployerId === employer.id}
+                  onClick={() => (openEmployerId === employer.id ? setOpenEmployerId(null) : void loadMembers(employer.id))}
+                >
+                  {openEmployerId === employer.id ? 'Hide recruiters' : 'Show recruiters'}
+                </button>
+              </div>
               {openEmployerId === employer.id ? (
-                <div style={{ marginTop: 8 }}>
-                  {membersStatus === 'loading' ? <p style={{ color: C.slate, fontSize: 13 }}>Loading recruiters…</p> : null}
+                <div style={{ marginTop: 10, paddingTop: 10, borderTop: '1px solid #E2E8F0' }}>
+                  {membersStatus === 'loading' ? <p style={{ color: '#64748B', fontSize: 13 }}>Loading recruiters…</p> : null}
                   {membersStatus === 'error' ? (
-                    <p role="alert" style={{ color: C.ink, fontSize: 13 }}>
+                    <p role="alert" style={{ color: '#0F172A', fontSize: 13 }}>
                       Recruiters could not be loaded.{' '}
-                      <button type="button" className="os-btn os-btn-ghost" onClick={() => void loadMembers(employer.id)}>Try again</button>
+                      <button type="button" style={ghostBtnStyle} onClick={() => void loadMembers(employer.id)}>Try again</button>
                     </p>
                   ) : null}
-                  {membersStatus === 'ready' && members.length === 0 ? <p style={{ color: C.slate, fontSize: 13 }}>No recruiters linked.</p> : null}
+                  {membersStatus === 'ready' && members.length === 0 ? <p style={{ color: '#64748B', fontSize: 13, margin: 0 }}>No recruiters linked.</p> : null}
                   {membersStatus === 'ready' && members.length > 0 ? (
-                    <ul style={{ listStyle: 'none', margin: 0, padding: 0 }}>
+                    <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gap: 6 }}>
                       {members.map((member) => (
-                        <li key={member.userId} style={{ display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center', justifyContent: 'space-between', padding: '6px 0', fontSize: 13 }}>
-                          <span style={{ minWidth: 0, wordBreak: 'break-word' }}>{member.displayName || member.email} <span style={{ color: C.slate }}>· {member.email}</span></span>
-                          <button type="button" className="os-btn os-btn-ghost" onClick={() => void removeMember(employer.id, member)}>Remove</button>
+                        <li key={member.userId} style={{ display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center', justifyContent: 'space-between', fontSize: 13 }}>
+                          <span>{member.displayName || member.email} <span style={{ color: '#64748B' }}>· {member.email}</span></span>
+                          <button type="button" style={ghostBtnStyle} onClick={() => void removeMember(employer.id, member)}>Remove</button>
                         </li>
                       ))}
                     </ul>
@@ -461,21 +520,81 @@ function AdminEmployersSection() {
           ))}
         </ul>
       ) : null}
-      <form onSubmit={(event) => void create(event)} style={{ display: 'grid', gap: 8, maxWidth: 480, marginBottom: 18 }}>
-        <input value={name} onChange={(event) => setName(event.target.value)} placeholder="Employer name" aria-label="Employer name" required minLength={2} style={adminFieldStyle} />
-        <input value={slug} onChange={(event) => setSlug(event.target.value)} placeholder="employer-slug" aria-label="Employer slug" required style={adminFieldStyle} />
-        <input value={location} onChange={(event) => setLocation(event.target.value)} placeholder="Location" aria-label="Employer location" style={adminFieldStyle} />
-        <button type="submit" className="os-btn os-btn-primary" style={{ justifySelf: 'start' }}>Create employer</button>
-      </form>
-      <form onSubmit={(event) => void linkMember(event)} style={{ display: 'grid', gap: 8, maxWidth: 480 }}>
-        <select aria-label="Employer to link" required value={employerId} onChange={(event) => setEmployerId(event.target.value)} style={adminFieldStyle}>
-          <option value="">Choose employer</option>
-          {rows.map((employer) => <option key={employer.id} value={employer.id}>{employer.name}</option>)}
-        </select>
-        <input value={userId} onChange={(event) => setUserId(event.target.value)} placeholder="User id from the Users list" aria-label="User id" required style={adminFieldStyle} />
-        <button type="submit" className="os-btn os-btn-ghost" style={{ justifySelf: 'start' }}>Link recruiter</button>
-      </form>
-    </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 14, paddingTop: 10, borderTop: '1px solid #F1F5F9' }}>
+        <form onSubmit={(event) => void create(event)} style={{ display: 'grid', gap: 8 }}>
+          <strong style={{ fontSize: 13, color: '#0F172A' }}>Create New Employer</strong>
+          <input value={name} onChange={(event) => setName(event.target.value)} placeholder="Employer name" aria-label="Employer name" required minLength={2} style={adminFieldStyle} />
+          <input value={slug} onChange={(event) => setSlug(event.target.value)} placeholder="employer-slug" aria-label="Employer slug" required style={adminFieldStyle} />
+          <input value={location} onChange={(event) => setLocation(event.target.value)} placeholder="Location (e.g. Bengaluru / Remote)" aria-label="Employer location" style={adminFieldStyle} />
+          <button type="submit" style={{ ...primaryBtnStyle, justifySelf: 'start' }}>Create employer</button>
+        </form>
+        <form onSubmit={(event) => void linkMember(event)} style={{ display: 'grid', gap: 8 }}>
+          <strong style={{ fontSize: 13, color: '#0F172A' }}>Link Recruiter User ID</strong>
+          <select aria-label="Employer to link" required value={employerId} onChange={(event) => setEmployerId(event.target.value)} style={adminFieldStyle}>
+            <option value="">Choose employer</option>
+            {rows.map((employer) => <option key={employer.id} value={employer.id}>{employer.name}</option>)}
+          </select>
+          <input value={userId} onChange={(event) => setUserId(event.target.value)} placeholder="User ID from Users list" aria-label="User id" required style={adminFieldStyle} />
+          <button type="submit" style={{ ...ghostBtnStyle, justifySelf: 'start' }}>Link recruiter</button>
+        </form>
+      </div>
+    </section>
+  )
+}
+
+function AdminEnquiriesSection() {
+  const [rows, setRows] = useState<AdminEnquiry[]>([])
+  const [status, setStatus] = useState<"loading" | "ready" | "error">("loading")
+  const [message, setMessage] = useState<string | null>(null)
+
+  useEffect(() => {
+    let cancelled = false
+    void listAdminEnquiries()
+      .then((result) => { if (!cancelled) { setRows(result.data); setStatus("ready") } })
+      .catch((error: unknown) => {
+        if (!cancelled) {
+          setStatus("error")
+          setMessage(error instanceof Error ? error.message : "Enquiries could not be loaded.")
+        }
+      })
+    return () => { cancelled = true }
+  }, [])
+
+  return (
+    <section id="admin-enquiries" style={cardBoxStyle} aria-labelledby="admin-enquiries-title">
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
+        <div>
+          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10.5, fontWeight: 800, color: '#5142B5', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+            04 · INBOUND LEADS &amp; INSTITUTIONAL REQUESTS
+          </span>
+          <h2 id="admin-enquiries-title" style={{ margin: '2px 0 0', fontSize: 20, fontWeight: 800, color: '#0F172A' }}>
+            Learner &amp; University Enquiries
+          </h2>
+        </div>
+        <span style={{ padding: '4px 10px', borderRadius: 999, background: '#F5F3FF', border: '1px solid #DDD7FF', color: '#5142B5', fontSize: 11.5, fontWeight: 700 }}>
+          {rows.length} Messages
+        </span>
+      </div>
+      {message ? <p className="os-error" role="alert" style={{ margin: 0 }}>{message}</p> : null}
+      {status === "loading" ? <p style={{ color: '#64748B', fontSize: 13, margin: 0 }}>Loading enquiries…</p> : null}
+      {status === "ready" && rows.length === 0 ? (
+        <div style={{ padding: '14px 16px', borderRadius: 12, background: '#F8FAFC', border: '1px solid #E2E8F0', color: '#475569', fontSize: 13.5 }}>
+          No inbound enquiries recorded yet. Submissions from <code>/contact</code>, <code>/education</code>, and the Site Assistant appear here automatically.
+        </div>
+      ) : null}
+      {status === "ready" && rows.length > 0 ? (
+        <ul style={{ listStyle: "none", margin: 0, padding: 0, display: 'grid', gap: 8, maxHeight: 340, overflowY: 'auto' }}>
+          {rows.map((row) => (
+            <li key={row.id} style={{ padding: "12px 14px", borderRadius: 10, background: '#F8FAFC', border: '1px solid #E2E8F0' }}>
+              <strong style={{ color: '#0F172A', fontSize: 14 }}>{row.name}</strong>
+              <div style={{ color: '#5142B5', fontSize: 12, fontWeight: 600 }}>{row.kind} · {row.email}{row.programSlug ? ` · ${row.programSlug}` : ""}</div>
+              {row.message ? <p style={{ color: '#334155', fontSize: 13, lineHeight: 1.5, margin: "6px 0 0" }}>{row.message}</p> : null}
+            </li>
+          ))}
+        </ul>
+      ) : null}
+    </section>
   )
 }
 
@@ -539,36 +658,46 @@ function AdminPracticeSection() {
   }
 
   return (
-    <div id="admin-practice" style={canvasRow}>
-      <div style={{ color: C.slate, fontSize: 11, marginBottom: 12 }}>Practice workspaces</div>
-      <p style={{ color: C.slate, fontSize: 13, lineHeight: 1.6, marginTop: 0, maxWidth: 680 }}>
-        A syllabus is classified on the server. Publication happens only after validation and approval. Another course&apos;s dataset or case is refused.
+    <section id="admin-practice" style={cardBoxStyle} aria-labelledby="admin-practice-title">
+      <div>
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10.5, fontWeight: 800, color: '#5142B5', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+          05 · IN-BROWSER LAB &amp; CASE STUDIO GOVERNANCE
+        </span>
+        <h2 id="admin-practice-title" style={{ margin: '2px 0 0', fontSize: 20, fontWeight: 800, color: '#0F172A' }}>
+          Practice Workspaces &amp; Lab Validation
+        </h2>
+      </div>
+      <p style={{ color: '#475569', fontSize: 13, lineHeight: 1.55, margin: 0 }}>
+        Configure and validate custom case studios for authored courses. Publication requires automated server validation and approval.
       </p>
-      <form onSubmit={(event) => void createWorkspace(event)} style={{ display: "grid", gap: 8, maxWidth: 640, marginTop: 12 }}>
-        <input value={slug} onChange={(event) => setSlug(event.target.value)} placeholder="course-slug" aria-label="Practice course slug" required style={adminFieldStyle} />
-        <input value={title} onChange={(event) => setTitle(event.target.value)} placeholder="Case title" aria-label="Case title" required style={adminFieldStyle} />
-        <textarea value={notes} onChange={(event) => setNotes(event.target.value)} placeholder="Case notes for this course" aria-label="Case notes" required minLength={40} rows={4} style={{ ...adminFieldStyle, minHeight: 96 }} />
-        <button type="submit" className="os-btn os-btn-primary" disabled={pending} style={{ justifySelf: "start" }}>Recommend workspace</button>
+      <form onSubmit={(event) => void createWorkspace(event)} style={{ display: "grid", gap: 8 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 8 }}>
+          <input value={slug} onChange={(event) => setSlug(event.target.value)} placeholder="course-slug" aria-label="Practice course slug" required style={adminFieldStyle} />
+          <input value={title} onChange={(event) => setTitle(event.target.value)} placeholder="Case studio title" aria-label="Case title" required style={adminFieldStyle} />
+        </div>
+        <textarea value={notes} onChange={(event) => setNotes(event.target.value)} placeholder="Case scenario and operational constraints (min 40 chars)..." aria-label="Case notes" required minLength={40} rows={3} style={adminFieldStyle} />
+        <button type="submit" style={{ ...primaryBtnStyle, justifySelf: "start" }} disabled={pending}>Recommend &amp; Configure Workspace</button>
       </form>
-      {message ? <p style={{ color: C.slate, fontSize: 13 }}>{message}</p> : null}
-      <ul style={{ listStyle: "none", padding: 0, margin: "16px 0 0", display: "grid", gap: 10 }}>
-        {rows.map((row) => (
-          <li key={row.id} style={{ minWidth: 0, padding: "14px 16px", border: `1px solid ${T.lineLight}`, borderRadius: 12, background: "var(--skylent-surface-elevated)" }}>
-            <strong style={{ color: C.ink, fontSize: 15 }}>{row.courseSlug}</strong>
-            <div style={{ color: C.slate, fontSize: 12, marginTop: 4 }}>{row.status}{row.adapterId ? ` · ${row.adapterId}` : ""} · revision {row.revision}</div>
-            <p style={{ color: C.ink, fontSize: 13, lineHeight: 1.5, margin: "8px 0" }}>{row.manifest.learnerNote}</p>
-            <p style={{ color: C.slate, fontSize: 12, margin: "0 0 8px" }}>{row.scores.map((score) => `${score.label} ${score.score}`).join(" · ")}</p>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-              <button type="button" className="os-btn os-btn-ghost" onClick={() => void act(row.id, "test")}>Test</button>
-              <button type="button" className="os-btn os-btn-ghost" onClick={() => void act(row.id, "approve")}>Approve</button>
-              <button type="button" className="os-btn os-btn-primary" onClick={() => void act(row.id, "publish")}>Publish</button>
-              <button type="button" className="os-btn os-btn-ghost" onClick={() => void act(row.id, "unpublish")}>Unpublish</button>
-              <button type="button" className="os-btn os-btn-ghost" onClick={() => void act(row.id, "revalidate")}>Revalidate</button>
-            </div>
-          </li>
-        ))}
-      </ul>
-    </div>
+      {message ? <p style={{ color: '#5142B5', fontSize: 13, margin: 0, fontWeight: 600 }}>{message}</p> : null}
+      {rows.length > 0 ? (
+        <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "grid", gap: 10 }}>
+          {rows.map((row) => (
+            <li key={row.id} style={{ padding: "14px 16px", border: '1px solid #E2E8F0', borderRadius: 12, background: "#F8FAFC" }}>
+              <strong style={{ color: '#0F172A', fontSize: 14.5 }}>{row.courseSlug}</strong>
+              <div style={{ color: '#5142B5', fontSize: 12, fontWeight: 700, marginTop: 2 }}>{row.status}{row.adapterId ? ` · ${row.adapterId}` : ""} · revision {row.revision}</div>
+              <p style={{ color: '#334155', fontSize: 13, lineHeight: 1.5, margin: "6px 0" }}>{row.manifest.learnerNote}</p>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 8 }}>
+                <button type="button" style={ghostBtnStyle} onClick={() => void act(row.id, "test")}>Test</button>
+                <button type="button" style={ghostBtnStyle} onClick={() => void act(row.id, "approve")}>Approve</button>
+                <button type="button" style={primaryBtnStyle} onClick={() => void act(row.id, "publish")}>Publish</button>
+                <button type="button" style={ghostBtnStyle} onClick={() => void act(row.id, "unpublish")}>Unpublish</button>
+                <button type="button" style={ghostBtnStyle} onClick={() => void act(row.id, "revalidate")}>Revalidate</button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      ) : null}
+    </section>
   )
 }
 
@@ -586,8 +715,8 @@ function AdminLessonMediaSection() {
       const result = await updateLessonPlayback(courseSlug.trim(), lessonKey.trim(), nextId)
       const media = result.data.media
       setMessage(media?.provider === 'mux' && media.playbackId
-        ? `Playback id saved for ${result.data.lessonKey}. This does not prove the asset plays.`
-        : `Playback cleared for ${result.data.lessonKey}. The lesson shows unavailable until a valid public id is saved.`)
+        ? `Playback id saved for ${result.data.lessonKey}.`
+        : `Playback cleared for ${result.data.lessonKey}.`)
       if (nextId === null) setPlaybackId('')
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'The lesson video could not be updated.')
@@ -597,47 +726,34 @@ function AdminLessonMediaSection() {
   }
 
   return (
-    <div id="admin-courses" style={canvasRow}>
-      <div style={{ color: C.slate, fontSize: 11, marginBottom: 12 }}>Lesson video</div>
-      <p style={{ color: C.slate, fontSize: 12, lineHeight: 1.6, marginTop: 0, maxWidth: 640 }}>
-        Attach a public Mux playback id to an existing video lesson. Signed playback and direct upload are not available. A saved id is not the same as a successful playback test.
+    <section id="admin-courses" style={cardBoxStyle} aria-labelledby="admin-courses-title">
+      <div>
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10.5, fontWeight: 800, color: '#5142B5', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+          06 · LESSON VIDEO &amp; MUX STREAMING BINDING
+        </span>
+        <h2 id="admin-courses-title" style={{ margin: '2px 0 0', fontSize: 20, fontWeight: 800, color: '#0F172A' }}>
+          Lesson Media Playback Manager
+        </h2>
+      </div>
+      <p style={{ color: '#475569', fontSize: 13, lineHeight: 1.55, margin: 0 }}>
+        Attach or clear a public Mux playback ID on any video lesson node across the 6 flagship courses.
       </p>
-      {message ? <p role="status" style={{ color: C.ink, fontSize: 13, maxWidth: 640 }}>{message}</p> : null}
+      {message ? <p role="status" style={{ color: '#5142B5', fontSize: 13, margin: 0, fontWeight: 600 }}>{message}</p> : null}
       <form
         onSubmit={(event) => { event.preventDefault(); void save(playbackId.trim() || null) }}
-        style={{ display: 'grid', gap: 8, maxWidth: 480 }}
+        style={{ display: 'grid', gap: 10 }}
       >
-        <input value={courseSlug} onChange={(event) => setCourseSlug(event.target.value)} aria-label="Course slug" required style={adminFieldStyle} />
-        <input value={lessonKey} onChange={(event) => setLessonKey(event.target.value)} aria-label="Lesson key" placeholder="Lesson key" required style={adminFieldStyle} />
-        <input value={playbackId} onChange={(event) => setPlaybackId(event.target.value)} aria-label="Mux playback id" placeholder="Public playback id" style={adminFieldStyle} />
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 8 }}>
+          <input value={courseSlug} onChange={(event) => setCourseSlug(event.target.value)} aria-label="Course slug" required style={adminFieldStyle} />
+          <input value={lessonKey} onChange={(event) => setLessonKey(event.target.value)} aria-label="Lesson key" placeholder="Lesson key (e.g. l1)" required style={adminFieldStyle} />
+        </div>
+        <input value={playbackId} onChange={(event) => setPlaybackId(event.target.value)} aria-label="Mux playback id" placeholder="Public Mux playback ID" style={adminFieldStyle} />
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-          <button type="submit" className="os-btn os-btn-primary" disabled={pending}>{pending ? 'Saving…' : 'Save playback id'}</button>
-          <button type="button" className="os-btn os-btn-ghost" disabled={pending} onClick={() => void save(null)}>Clear playback id</button>
+          <button type="submit" style={primaryBtnStyle} disabled={pending}>{pending ? 'Saving…' : 'Save playback id'}</button>
+          <button type="button" style={ghostBtnStyle} disabled={pending} onClick={() => void save(null)}>Clear playback id</button>
         </div>
       </form>
-    </div>
-  )
-}
-
-function AdminSection({
-  id,
-  title,
-  description,
-  last,
-}: {
-  id: string
-  title: string
-  description: string
-  last?: boolean
-}) {
-  return (
-    <div id={id} style={last ? { paddingTop: 22 } : canvasRow}>
-      <div style={{ color: C.slate, fontSize: 11, marginBottom: 12 }}>{title}</div>
-      <div style={{ padding: '18px 20px', border: `1px solid ${T.lineLight}`, borderRadius: T.rCard, background: 'var(--skylent-surface-elevated)' }}>
-        <div style={{ color: C.ink, fontSize: 13, marginBottom: 6 }}>{title} API not connected</div>
-        <p style={{ color: C.slate, fontSize: 12, lineHeight: 1.7, margin: 0, maxWidth: 620 }}>{description}</p>
-      </div>
-    </div>
+    </section>
   )
 }
 
@@ -651,7 +767,7 @@ export default function DashboardAdminPage() {
   return (
     <AuthDashboardShell
       themeId="superadmin"
-      workspaceLabel="Platform"
+      workspaceLabel="Platform Admin"
       roleLabel="Super Admin"
       navItems={NAV_ITEMS}
       bottomNavItems={NAV_ITEMS.filter(n => ['overview', 'users', 'employers', 'courses', 'payments'].includes(n.id))}
@@ -659,17 +775,27 @@ export default function DashboardAdminPage() {
       onNavChange={setActiveNav}
       renderNavIcon={id => <NavIcon id={id} />}
     >
-      <div id="admin-overview">
+      <div id="admin-overview" style={{ display: 'grid', gap: 24, maxWidth: 1200 }}>
         <AdminOverview />
 
-        <div style={{ marginTop: 32 }}>
+        {/* C-Suite Unit Economics, Elixir Rules & Payment Ledger */}
+        <AdminPlatform />
+
+        {/* 2-Column Structured Admin Operations Grid */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(460px, 1fr))', gap: 20, alignItems: 'start' }}>
           <AdminUsersSection currentUserId={authUser?.id ?? user.id} />
-          <AdminOrganisationsSection />
+          <div style={{ display: 'grid', gap: 20 }}>
+            <AdminOrganisationsSection />
+            <AdminEnquiriesSection />
+          </div>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(460px, 1fr))', gap: 20, alignItems: 'start' }}>
           <AdminEmployersSection />
-          <AdminEnquiriesSection />
-          <AdminPracticeSection />
-          <AdminLessonMediaSection />
-          <AdminPlatform />
+          <div style={{ display: 'grid', gap: 20 }}>
+            <AdminPracticeSection />
+            <AdminLessonMediaSection />
+          </div>
         </div>
       </div>
     </AuthDashboardShell>

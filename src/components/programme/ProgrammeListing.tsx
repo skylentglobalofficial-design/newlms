@@ -391,14 +391,14 @@ export default function ProgrammeListing({ program, truth, cta, honesty, afterEn
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))", gap: 14, marginTop: 20 }}>
               {pathwaySpec.steps.map((step) => (
-                <div key={step.num} style={{ padding: "16px", borderRadius: 12, background: "linear-gradient(135deg, #3B2D96 0%, #5142B5 100%)", border: "1px solid rgba(196, 184, 255, 0.36)" }}>
-                  <span style={{ fontSize: 11.5, fontWeight: 700, color: "#c4b8ff", fontFamily: "var(--font-mono)" }}>
+                <div key={step.num} style={{ padding: "18px", borderRadius: 14, background: "#FFFFFF", border: "1.5px solid #DDD7FF", borderTop: "4px solid #5142B5", boxShadow: "0 10px 24px -14px rgba(81, 66, 181, 0.25)" }}>
+                  <span style={{ fontSize: 11.5, fontWeight: 800, color: "#5142B5", fontFamily: "var(--font-mono)" }}>
                     STEP {step.num}
                   </span>
-                  <strong style={{ display: "block", margin: "6px 0", fontSize: 15, fontWeight: 700, color: "#ffffff" }}>
+                  <strong style={{ display: "block", margin: "6px 0", fontSize: 15.5, fontWeight: 800, color: "#0F172A" }}>
                     {step.title}
                   </strong>
-                  <p style={{ margin: 0, fontSize: 13, color: "#cbd5e1", lineHeight: 1.5 }}>{step.detail}</p>
+                  <p style={{ margin: 0, fontSize: 13.5, color: "#334155", lineHeight: 1.5 }}>{step.detail}</p>
                 </div>
               ))}
             </div>
@@ -430,23 +430,25 @@ export default function ProgrammeListing({ program, truth, cta, honesty, afterEn
                   gap: 8,
                   padding: "20px 22px",
                   borderRadius: 16,
-                  background: "linear-gradient(135deg, #3B2D96 0%, #5142B5 100%)",
-                  border: "1px solid rgba(196, 184, 255, 0.38)",
-                  color: "#ffffff",
+                  background: "#FFFFFF",
+                  border: "1.5px solid #DDD7FF",
+                  borderTop: "4px solid #5142B5",
+                  color: "#0F172A",
                   textDecoration: "none",
+                  boxShadow: "0 10px 26px -14px rgba(81, 66, 181, 0.14)",
                 }}
               >
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
-                  <span style={{ fontSize: 11.5, fontWeight: 700, color: "#34d399", background: "rgba(16, 185, 129, 0.16)", border: "1px solid rgba(52, 211, 153, 0.35)", padding: "3px 10px", borderRadius: 999 }}>
+                  <span style={{ fontSize: 11.5, fontWeight: 700, color: "#15803D", background: "#DCFCE7", border: "1px solid #86EFAC", padding: "3px 10px", borderRadius: 999 }}>
                     ✓ Open now · 5 Modules · 15 Lessons
                   </span>
-                  <span style={{ fontSize: 11.5, fontWeight: 700, color: "#c4b8ff", fontFamily: "var(--font-mono)" }}>₹0 Pilot</span>
+                  <span style={{ fontSize: 11.5, fontWeight: 800, color: "#5142B5", fontFamily: "var(--font-mono)" }}>₹0 Pilot</span>
                 </div>
-                <strong style={{ fontSize: 19, fontWeight: 800, color: "#ffffff" }}>{item.title}</strong>
-                <span style={{ fontSize: 13.5, color: "#cbd5e1" }}>
+                <strong style={{ fontSize: 19, fontWeight: 800, color: "#0F172A" }}>{item.title}</strong>
+                <span style={{ fontSize: 13.5, color: "#475569" }}>
                   3 module quizzes · 3 applied briefs · 1 graded capstone · Verifiable Certificate
                 </span>
-                <span style={{ marginTop: "auto", paddingTop: 8, fontSize: 14, fontWeight: 700, color: "#c4b8ff", display: "inline-flex", alignItems: "center", gap: 6 }}>
+                <span style={{ marginTop: "auto", paddingTop: 8, fontSize: 14, fontWeight: 800, color: "#5142B5", display: "inline-flex", alignItems: "center", gap: 6 }}>
                   Start {item.title} <ArrowRight />
                 </span>
               </Link>
