@@ -213,15 +213,15 @@ export default function DashboardRecruiterPage() {
     >
       <div className="recruiter-workspace">
         <section style={{
-          background: 'linear-gradient(145deg, #11152c 0%, #1d1849 100%)',
-          border: '1px solid rgba(251, 191, 36, 0.38)',
+          background: 'linear-gradient(145deg, #10263d 0%, #183750 100%)',
+          border: '1px solid rgba(196, 184, 255, 0.38)',
           borderRadius: 18,
           padding: '26px 28px',
           color: '#ffffff',
           marginBottom: 24,
           boxShadow: '0 18px 40px rgba(10, 14, 34, 0.22)',
         }}>
-          <p style={{ margin: '0 0 8px', color: '#fbbf24', font: '700 11px/1.4 var(--font-mono)', letterSpacing: '0.14em', textTransform: 'uppercase' }}>
+          <p style={{ margin: '0 0 8px', color: '#c4b8ff', font: '700 11px/1.4 var(--font-mono)', letterSpacing: '0.14em', textTransform: 'uppercase' }}>
             RECRUITER TALENT TERMINAL · 15-MIN ROLE MICRO-AUDITIONS &amp; FLIGHT RECORDER VERIFIER
           </p>
           <h1 className="skylent-display-md" style={{ color: '#ffffff', margin: '0 0 8px', maxWidth: 680, lineHeight: 1.08 }}>
@@ -244,7 +244,7 @@ export default function DashboardRecruiterPage() {
         >
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12, flexWrap: "wrap" }}>
             <div>
-              <span style={{ display: "inline-block", fontSize: 11, fontFamily: "var(--font-mono)", fontWeight: 700, color: "#1d1849", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 4 }}>
+              <span style={{ display: "inline-block", fontSize: 11, fontFamily: "var(--font-mono)", fontWeight: 700, color: "#5142b5", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 4 }}>
                 ENVIRONMENT B · SKYLENT WORK ASSIGNMENT EXCHANGE (SUPERVISED PARTNER FIELDWORK)
               </span>
               <h2 style={{ margin: "0 0 6px", fontSize: 17.5, color: "#0f172a", fontFamily: "var(--font-display)" }}>

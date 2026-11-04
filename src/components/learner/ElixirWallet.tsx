@@ -109,8 +109,8 @@ export default function ElixirWalletPanel() {
           alignItems: "center",
           flexWrap: "wrap",
           gap: 16,
-          background: "linear-gradient(145deg, #11152c 0%, #1d1849 100%)",
-          border: "1px solid rgba(251, 191, 36, 0.38)",
+          background: "linear-gradient(145deg, #10263d 0%, #183750 100%)",
+          border: "1px solid rgba(196, 184, 255, 0.38)",
           borderRadius: 14,
           padding: "20px 24px",
           color: "#ffffff",
@@ -118,9 +118,9 @@ export default function ElixirWalletPanel() {
       >
         <div>
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <span style={{ fontSize: 13, fontWeight: 800, padding: "6px 10px", borderRadius: 8, background: "#fbbf24", color: "#0f172a" }}>ELX</span>
+            <span style={{ fontSize: 13, fontWeight: 800, padding: "6px 10px", borderRadius: 8, background: "#5142b5", color: "#ffffff", border: "1px solid rgba(196, 184, 255, 0.45)" }}>ELX</span>
             <div>
-              <span style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "#fbbf24" }}>
+              <span style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "#c4b8ff" }}>
                 Elixir Learning Wallet · 100% Workshop Coin Back
               </span>
               <h2 style={{ margin: "2px 0 0", fontSize: 24, fontWeight: 800, color: "#ffffff" }}>
@@ -134,7 +134,7 @@ export default function ElixirWalletPanel() {
         </div>
 
         <div style={{ display: "flex", flexWrap: "wrap", gap: 10, alignItems: "center" }}>
-          <Link to="/events" className="sk-btn sk-btn-primary" style={{ padding: "8px 16px", fontSize: 13, background: "#fbbf24", color: "#0f172a", borderColor: "#fbbf24", fontWeight: 800 }}>
+          <Link to="/events" className="sk-btn sk-btn-primary" style={{ padding: "8px 16px", fontSize: 13, background: "#5142b5", color: "#ffffff", borderColor: "#c4b8ff", fontWeight: 800 }}>
             Join ₹99 Workshop (+99 Coins) →
           </Link>
           <button
@@ -175,7 +175,7 @@ export default function ElixirWalletPanel() {
                   }}
                 >
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <span style={{ fontSize: 14, fontWeight: 800, color: "#4f46e5" }}>#{p.icon}</span>
+                    <span style={{ fontSize: 14, fontWeight: 800, color: "#5142b5" }}>#{p.icon}</span>
                     <span style={{ fontSize: 11, fontWeight: 700, background: "#ecfdf5", border: "1px solid #a7f3d0", color: "#047857", padding: "2px 8px", borderRadius: 999 }}>
                       {p.rule}
                     </span>
@@ -198,7 +198,7 @@ export default function ElixirWalletPanel() {
                   Redeem your Elixir Coins for real industry SQL &amp; Product case studies.
                 </p>
               </div>
-              <span style={{ fontSize: 12, color: "#4f46e5", fontWeight: 700 }}>
+              <span style={{ fontSize: 12, color: "#5142b5", fontWeight: 700 }}>
                 {resources.filter((r) => r.owned).length} of {resources.length} Unlocked
               </span>
             </div>
@@ -230,8 +230,8 @@ export default function ElixirWalletPanel() {
                             textTransform: "uppercase",
                             padding: "2px 8px",
                             borderRadius: 999,
-                            background: resource.kind === "case_study" ? "#ede9fe" : "#f1f5f9",
-                            color: resource.kind === "case_study" ? "#4f46e5" : "#475569",
+                            background: resource.kind === "case_study" ? "#eae6ff" : "#f1f5f9",
+                            color: resource.kind === "case_study" ? "#5142b5" : "#475569",
                           }}
                         >
                           {resource.kind === "case_study" ? "Case Study" : "Playbook"}
@@ -242,7 +242,7 @@ export default function ElixirWalletPanel() {
                           {resource.summary}
                         </p>
                       ) : null}
-                      <span style={{ display: "block", fontSize: 12, fontWeight: 700, color: "#4f46e5", marginTop: 6 }}>
+                      <span style={{ display: "block", fontSize: 12, fontWeight: 700, color: "#5142b5", marginTop: 6 }}>
                         Cost: {resource.elixirPrice} Elixir Coins
                       </span>
                     </div>

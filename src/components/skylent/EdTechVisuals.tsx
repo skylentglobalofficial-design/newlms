@@ -321,7 +321,7 @@ export function CertificateTrophyShowcase() {
       aria-label="Verifiable Proof-of-Work Certificate and Dossier Preview"
     >
       <div>
-        <span style={{ display: "inline-block", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "#fbbf24", background: "rgba(251, 191, 36, 0.14)", padding: "4px 10px", borderRadius: 999, marginBottom: 10 }}>
+        <span style={{ display: "inline-block", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "#c4b8ff", background: "rgba(196, 184, 255, 0.14)", padding: "4px 10px", borderRadius: 999, marginBottom: 10 }}>
           Verifiable Employer Credential · SHA-256 Signed
         </span>
         <h3 style={{ margin: "0 0 8px", fontSize: "clamp(20px, 2.4vw, 26px)", fontWeight: 800, color: "#ffffff", lineHeight: 1.2 }}>
@@ -347,7 +347,7 @@ export function CertificateTrophyShowcase() {
           borderRadius: 12,
           background: "#ffffff",
           color: "#0f172a",
-          border: "2px solid #fbbf24",
+          border: "2px solid #5142b5",
           boxShadow: "0 20px 40px -15px rgba(0,0,0,0.45)",
         }}
       >
@@ -398,7 +398,7 @@ export function FacultyTaShowcaseStrip() {
       role: "Principal SQL & Analytics TA",
       sla: "Avg reply: 9 mins",
       specialty: "Northwind SQL Grain, CTEs & Cohort Margin Audits",
-      color: "#4338ca",
+      color: "#43349f",
     },
     {
       initials: "VK",
@@ -572,7 +572,7 @@ export function RoleOutcomeStrip({ roles }: { roles: readonly string[] }) {
             fontWeight: 600,
             padding: "3px 10px",
             borderRadius: 999,
-            background: "#eef2ff",
+            background: "#eae6ff",
             color: "#3730a3",
             border: "1px solid #c7d2fe",
           }}
@@ -602,7 +602,7 @@ export type ToolBadgeId =
 
 const TOOL_PILL_STYLE: Record<ToolBadgeId, { label: string; bg: string; border: string; text: string; kind: "sql" | "python" | "react" | "node" | "ai" | "product" }> = {
   sql: { label: "SQL & Joins", bg: "#eff6ff", border: "#bfdbfe", text: "#1d4ed8", kind: "sql" },
-  postgres: { label: "PostgreSQL 16", bg: "#eef2ff", border: "#c7d2fe", text: "#3730a3", kind: "sql" },
+  postgres: { label: "PostgreSQL 16", bg: "#eae6ff", border: "#c7d2fe", text: "#3730a3", kind: "sql" },
   python: { label: "Python 3.12", bg: "#fefce8", border: "#fde047", text: "#854d0e", kind: "python" },
   pytest: { label: "ETL & Pytest", bg: "#ecfdf5", border: "#a7f3d0", text: "#065f46", kind: "python" },
   react: { label: "React 18", bg: "#ecfeff", border: "#a5f3fc", text: "#155e75", kind: "react" },
@@ -610,7 +610,7 @@ const TOOL_PILL_STYLE: Record<ToolBadgeId, { label: string; bg: string; border: 
   node: { label: "Node & Express", bg: "#f0fdf4", border: "#bbf7d0", text: "#166534", kind: "node" },
   genai: { label: "LLM Systems", bg: "#f5f3ff", border: "#ddd6fe", text: "#5b21b6", kind: "ai" },
   rag: { label: "Grounded RAG", bg: "#faf5ff", border: "#e9d5ff", text: "#6b21a8", kind: "ai" },
-  prd: { label: "PRD & Roadmaps", bg: "#fffbeb", border: "#fde68a", text: "#92400e", kind: "product" },
+  prd: { label: "PRD & Roadmaps", bg: "#fffbeb", border: "#eae6ff", text: "#92400e", kind: "product" },
   sheets: { label: "Spreadsheets & BI", bg: "#f0fdfa", border: "#99f6e4", text: "#115e59", kind: "sql" },
   cohort: { label: "Cohort & Churn ML", bg: "#fdf2f8", border: "#fbcfe8", text: "#9d174d", kind: "python" },
 }
@@ -684,7 +684,7 @@ export function TargetRolesBadge({ slug }: { slug: string }) {
         marginTop: 4,
       }}
     >
-      <strong style={{ color: "#4f46e5" }}>Target Roles:</strong> {meta.roles}
+      <strong style={{ color: "#5142b5" }}>Target Roles:</strong> {meta.roles}
     </span>
   )
 }

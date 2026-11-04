@@ -61,7 +61,7 @@ export default function CareerRiseCard() {
     <section className="sh-card" aria-labelledby="career-rise-title">
       <header className="sh-card-head">
         <h2 id="career-rise-title">Career Rise · 60% Milestone Tracker</h2>
-        <span style={{ fontSize: 11.5, fontWeight: 700, padding: "3px 10px", borderRadius: 999, background: "#ede9fe", color: "#4f46e5" }}>
+        <span style={{ fontSize: 11.5, fontWeight: 700, padding: "3px 10px", borderRadius: 999, background: "#eae6ff", color: "#5142b5" }}>
           Merit Gate: 60%
         </span>
       </header>

@@ -7,7 +7,7 @@
   --cos-line: rgba(21, 23, 26, 0.08);
   --cos-line-strong: rgba(21, 23, 26, 0.12);
   --cos-wash: #f6f6f7;
-  --cos-accent: #4f46e5;
+  --cos-accent: #5142b5;
   --cos-orange: #f97316;
   background: #ffffff;
   color: var(--cos-ink);
@@ -205,7 +205,7 @@
 }
 
 .hp-cos-shell-nav a.is-active {
-  background: rgba(79, 70, 229, 0.08);
+  background: rgba(81, 66, 181, 0.08);
   color: var(--cos-ink);
 }
 

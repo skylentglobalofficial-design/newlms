@@ -7,7 +7,7 @@
   --depth-line: rgba(21, 23, 26, 0.08);
   --depth-line-strong: rgba(21, 23, 26, 0.12);
   --depth-wash: #f6f6f7;
-  --depth-accent: #4f46e5;
+  --depth-accent: #5142b5;
   --depth-indigo-wash: #eef0fb;
   --depth-indigo-soft: #f7f8fd;
   border-top: 1px solid var(--depth-line);
@@ -192,7 +192,7 @@
   left: 12%;
   right: 4%;
   height: 1px;
-  background: rgba(79, 70, 229, 0.28);
+  background: rgba(81, 66, 181, 0.28);
 }
 
 .hp-depth-mods li {
@@ -208,7 +208,7 @@
   width: 26px;
   height: 26px;
   margin-bottom: 12px;
-  border: 1px solid rgba(79, 70, 229, 0.35);
+  border: 1px solid rgba(81, 66, 181, 0.35);
   border-radius: 50%;
   background: #ffffff;
   color: var(--depth-accent);
@@ -266,7 +266,7 @@
   display: block;
   height: 3px;
   border-radius: 2px;
-  background: rgba(79, 70, 229, 0.28);
+  background: rgba(81, 66, 181, 0.28);
 }
 
 .hp-depth-lines i:nth-child(1) {
@@ -296,12 +296,12 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: rgba(79, 70, 229, 0.55);
+  background: rgba(81, 66, 181, 0.55);
 }
 
 .hp-depth-nodes i:nth-child(2),
 .hp-depth-nodes i:nth-child(5) {
-  background: rgba(79, 70, 229, 0.28);
+  background: rgba(81, 66, 181, 0.28);
 }
 
 .hp-depth-matrix {
@@ -313,7 +313,7 @@
   flex: none;
   margin-top: 2px;
   overflow: hidden;
-  border: 1px solid #4f46e5;
+  border: 1px solid #5142b5;
   border-radius: 4px;
   background: #ffffff;
 }
@@ -325,21 +325,21 @@
   border: 0;
   border-radius: 0;
   background: #ffffff;
-  box-shadow: inset -1px -1px 0 #4f46e5;
+  box-shadow: inset -1px -1px 0 #5142b5;
 }
 
 .hp-depth-matrix i:nth-child(1) {
-  background: #4f46e5;
+  background: #5142b5;
 }
 
 .hp-depth-matrix i:nth-child(4) {
-  background: rgba(79, 70, 229, 0.16);
+  background: rgba(81, 66, 181, 0.16);
 }
 
 .hp-depth-cap {
   min-width: 0;
   padding: 16px 16px 14px;
-  border: 1px solid rgba(79, 70, 229, 0.2);
+  border: 1px solid rgba(81, 66, 181, 0.2);
   border-left: 3px solid var(--depth-accent);
   border-radius: 12px;
   background: var(--depth-indigo-soft);
@@ -373,7 +373,7 @@
 .hp-depth-desk {
   overflow: hidden;
   margin-top: 14px;
-  border: 1px solid rgba(79, 70, 229, 0.16);
+  border: 1px solid rgba(81, 66, 181, 0.16);
   border-radius: 10px;
   background: #ffffff;
 }

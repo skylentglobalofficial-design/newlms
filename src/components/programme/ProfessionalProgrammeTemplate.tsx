@@ -742,15 +742,15 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
             <section className="sky-container pp-section" id="pp-review-standard" aria-labelledby="pp-review-standard-title">
         <div
           style={{
-            background: "linear-gradient(145deg, #11152c 0%, #1d1849 100%)",
-            border: "1px solid rgba(251, 191, 36, 0.38)",
+            background: "linear-gradient(145deg, #10263d 0%, #183750 100%)",
+            border: "1px solid rgba(196, 184, 255, 0.38)",
             borderRadius: 20,
             padding: "clamp(24px, 4vw, 38px)",
             color: "#ffffff",
             boxShadow: "0 20px 44px rgba(10, 14, 34, 0.22)",
           }}
         >
-          <p style={{ margin: "0 0 8px", color: "#fbbf24", font: "700 11px/1.4 var(--font-mono)", letterSpacing: "0.14em", textTransform: "uppercase" }}>
+          <p style={{ margin: "0 0 8px", color: "#c4b8ff", font: "700 11px/1.4 var(--font-mono)", letterSpacing: "0.14em", textTransform: "uppercase" }}>
             SKYLENT INSTITUTE OF APPLIED LEARNING · 5-DIMENSION COMPETENCY &amp; ASSESSMENT STANDARD
           </p>
           <h2 id="pp-review-standard-title" style={{ margin: "0 0 12px", fontSize: "clamp(22px, 2.8vw, 32px)", color: "#ffffff", fontFamily: "var(--font-display)" }}>
@@ -761,23 +761,23 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
           </p>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 12, marginBottom: 20 }}>
             <div style={{ background: "rgba(15, 23, 42, 0.65)", border: "1px solid rgba(255,255,255,0.14)", borderRadius: 12, padding: 14 }}>
-              <strong style={{ color: "#fbbf24", fontSize: 18, display: "block" }}>15% · Knowledge</strong>
+              <strong style={{ color: "#c4b8ff", fontSize: 18, display: "block" }}>15% · Knowledge</strong>
               <span style={{ fontSize: 12.5, color: "rgba(255,255,255,0.8)" }}>Conceptual accuracy &amp; first principles</span>
             </div>
             <div style={{ background: "rgba(15, 23, 42, 0.65)", border: "1px solid rgba(52,211,153,0.38)", borderRadius: 12, padding: 14 }}>
-              <strong style={{ color: "#34d399", fontSize: 18, display: "block" }}>30% · Execution</strong>
+              <strong style={{ color: "#c4b8ff", fontSize: 18, display: "block" }}>30% · Execution</strong>
               <span style={{ fontSize: 12.5, color: "rgba(255,255,255,0.8)" }}>Verified lab tasks &amp; edge-case checks</span>
             </div>
             <div style={{ background: "rgba(15, 23, 42, 0.65)", border: "1px solid rgba(255,255,255,0.14)", borderRadius: 12, padding: 14 }}>
-              <strong style={{ color: "#fbbf24", fontSize: 18, display: "block" }}>20% · Judgement</strong>
+              <strong style={{ color: "#c4b8ff", fontSize: 18, display: "block" }}>20% · Judgement</strong>
               <span style={{ fontSize: 12.5, color: "rgba(255,255,255,0.8)" }}>Trade-offs &amp; decision reasoning</span>
             </div>
             <div style={{ background: "rgba(15, 23, 42, 0.65)", border: "1px solid rgba(255,255,255,0.14)", borderRadius: 12, padding: 14 }}>
-              <strong style={{ color: "#fbbf24", fontSize: 18, display: "block" }}>15% · Oral Defence</strong>
+              <strong style={{ color: "#c4b8ff", fontSize: 18, display: "block" }}>15% · Oral Defence</strong>
               <span style={{ fontSize: 12.5, color: "rgba(255,255,255,0.8)" }}>Boardroom Cold Call &amp; stakeholder clarity</span>
             </div>
             <div style={{ background: "rgba(15, 23, 42, 0.65)", border: "1px solid rgba(52,211,153,0.38)", borderRadius: 12, padding: 14 }}>
-              <strong style={{ color: "#34d399", fontSize: 18, display: "block" }}>20% · V1 → V2 Revision</strong>
+              <strong style={{ color: "#c4b8ff", fontSize: 18, display: "block" }}>20% · V1 → V2 Revision</strong>
               <span style={{ fontSize: 12.5, color: "rgba(255,255,255,0.8)" }}>Capstone improvement after faculty critique</span>
             </div>
           </div>
@@ -791,8 +791,8 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
                 Start on a ₹0 Free Pilot in Northwind Commerce or Harbor Desk SaaS with immediate automated pre-flight feedback and Socratic Hinglish support.
               </p>
             </div>
-            <div style={{ background: "rgba(15, 23, 42, 0.62)", border: "1px solid rgba(251, 191, 36, 0.42)", borderRadius: 14, padding: 18 }}>
-              <span style={{ display: "inline-block", padding: "3px 10px", borderRadius: 999, background: "rgba(251, 191, 36, 0.16)", border: "1px solid rgba(251, 191, 36, 0.45)", color: "#fbbf24", fontSize: 11, fontFamily: "var(--font-mono)", fontWeight: 700, marginBottom: 8 }}>
+            <div style={{ background: "rgba(15, 23, 42, 0.62)", border: "1px solid rgba(196, 184, 255, 0.42)", borderRadius: 14, padding: 18 }}>
+              <span style={{ display: "inline-block", padding: "3px 10px", borderRadius: 999, background: "rgba(196, 184, 255, 0.16)", border: "1px solid rgba(196, 184, 255, 0.45)", color: "#c4b8ff", fontSize: 11, fontFamily: "var(--font-mono)", fontWeight: 700, marginBottom: 8 }}>
                 ENV B · WORK ASSIGNMENT EXCHANGE
               </span>
               <h3 style={{ margin: "0 0 6px", fontSize: 16.5, color: "#ffffff" }}>Supervised Partner Fieldwork &amp; V1 → V2 Review</h3>

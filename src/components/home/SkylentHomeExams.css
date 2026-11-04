@@ -4,7 +4,7 @@
   --ex-ink: #15171a;
   --ex-muted: #8a8f96;
   --ex-line: rgba(21, 23, 26, 0.08);
-  --ex-accent: #4f46e5;
+  --ex-accent: #5142b5;
   --ex-wash: #f7f8fd;
   background: #ffffff;
   border-top: 1px solid var(--ex-line);
@@ -38,7 +38,7 @@
 
 .hp-exam-ring .is-outer {
   fill: none;
-  stroke: rgba(79, 70, 229, 0.38);
+  stroke: rgba(81, 66, 181, 0.38);
   stroke-width: 1.15;
 }
 
@@ -140,7 +140,7 @@
     gap: 10px;
     justify-items: start;
     padding: 0 0 0 18px;
-    border-left: 1px solid rgba(79, 70, 229, 0.28);
+    border-left: 1px solid rgba(81, 66, 181, 0.28);
   }
 
   .hp-exam-ring,

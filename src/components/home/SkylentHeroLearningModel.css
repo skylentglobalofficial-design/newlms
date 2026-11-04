@@ -18,7 +18,7 @@
   --lpb-muted: #8a8f96;
   --lpb-line: rgba(21, 23, 26, 0.08);
   --lpb-line-soft: rgba(21, 23, 26, 0.06);
-  --lpb-accent: #4f46e5;
+  --lpb-accent: #5142b5;
   --lpb-wash: #f6f6f7;
   background: transparent;
   color: var(--lpb-ink);
@@ -78,7 +78,7 @@
 }
 
 .hp-lpb-cta-primary:hover {
-  background: #4338ca;
+  background: #43349f;
 }
 
 .hp-lpb-cta-secondary {
@@ -869,7 +869,7 @@ span.hp-lpb-path-item {
 }
 
 .hp-lpb-primary:hover {
-  background: #4338ca;
+  background: #43349f;
 }
 
 .hp-lpb-skip {

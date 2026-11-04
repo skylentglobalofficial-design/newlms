@@ -4,7 +4,7 @@
   --sch-ink: #15171a;
   --sch-muted: #8a8f96;
   --sch-line: rgba(21, 23, 26, 0.08);
-  --sch-accent: #4f46e5;
+  --sch-accent: #5142b5;
   --sch-top: #f4f5fc;
   --sch-left: #e4e7f7;
   --sch-right: #d7dbf2;
@@ -109,6 +109,6 @@
     flex-direction: column;
     gap: 16px;
     padding-left: 12px;
-    border-left: 1px solid rgba(79, 70, 229, 0.28);
+    border-left: 1px solid rgba(81, 66, 181, 0.28);
   }
 }

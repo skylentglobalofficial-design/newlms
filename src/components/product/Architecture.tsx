@@ -19,7 +19,7 @@ export function MaturityMark({
 }) {
   const palette: Record<ProductMaturity, { color: string; border: string; bg: string }> = {
     live: { color: "#166534", border: "rgba(22,101,52,0.28)", bg: "rgba(22,101,52,0.08)" },
-    coming_soon: { color: C.indigo, border: "rgba(79,70,229,0.28)", bg: "rgba(79,70,229,0.07)" },
+    coming_soon: { color: C.indigo, border: "rgba(81, 66, 181,0.28)", bg: "rgba(81, 66, 181,0.07)" },
     direction: { color: C.slate, border: T.lineStrong, bg: C.cream },
     demo: { color: "#9A3412", border: "rgba(154,52,18,0.28)", bg: "rgba(249,115,22,0.08)" },
   }

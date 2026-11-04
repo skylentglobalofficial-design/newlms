@@ -108,7 +108,7 @@ export default function StoriesPage() {
           <p style={{ color: "rgba(255,255,255,0.84)", maxWidth: 780, margin: "0 0 14px", fontSize: 15, lineHeight: 1.6 }}>
             Skylent does not publish unverified salary claims or fabricated graduate testimonials. Below are three <strong>Illustrative Sample Benchmark Dossiers</strong> demonstrating how our event-based Execution Flight Recorder captures attempts, V1 → V2 faculty red-line revisions, oral defence, and supervised fieldwork.
           </p>
-          <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "6px 14px", borderRadius: 999, background: "rgba(251, 191, 36, 0.16)", border: "1px solid rgba(251, 191, 36, 0.45)", color: "#fbbf24", fontSize: 11.5, fontFamily: "var(--font-mono)", fontWeight: 700, marginBottom: 8 }}>
+          <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "6px 14px", borderRadius: 999, background: "rgba(196, 184, 255, 0.16)", border: "1px solid rgba(196, 184, 255, 0.45)", color: "#c4b8ff", fontSize: 11.5, fontFamily: "var(--font-mono)", fontWeight: 700, marginBottom: 8 }}>
             ⚠️ DISCLOSURE: ILLUSTRATIVE BENCHMARK PREVIEWS · NOT PUBLISHED GRADUATE OUTCOME CLAIMS
           </div>
           <div className="pe-royal-grid">
@@ -119,7 +119,7 @@ export default function StoriesPage() {
                 <strong>5-Dimension Rubric:</strong> Execution (30%) + Judgement (20%) + V1→V2 Revision (20%).<br />
                 <strong>Sample V1 → V2 Revision:</strong> Excluded returned orders and tiered discount rows before computing Q3 gross margin.
               </p>
-              <Link to="/verify?code=SKL-2026-DA-00142" style={{ marginTop: "auto", color: "#fbbf24", fontWeight: 700, fontSize: 13.5, textDecoration: "none" }}>
+              <Link to="/verify?code=SKL-2026-DA-00142" style={{ marginTop: "auto", color: "#c4b8ff", fontWeight: 700, fontSize: 13.5, textDecoration: "none" }}>
                 Inspect Sample Flight Recorder on /verify →
               </Link>
             </article>
@@ -130,7 +130,7 @@ export default function StoriesPage() {
                 <strong>5-Dimension Rubric:</strong> Oral Defence (15%) + Stakeholder Trade-Off Judgement (20%).<br />
                 <strong>Sample V1 → V2 Revision:</strong> Scoped out custom SSO to protect the 2-engineer reliability sprint constraint.
               </p>
-              <Link to="/verify?code=SKL-2026-PM-00089" style={{ marginTop: "auto", color: "#fbbf24", fontWeight: 700, fontSize: 13.5, textDecoration: "none" }}>
+              <Link to="/verify?code=SKL-2026-PM-00089" style={{ marginTop: "auto", color: "#c4b8ff", fontWeight: 700, fontSize: 13.5, textDecoration: "none" }}>
                 Inspect Sample Flight Recorder on /verify →
               </Link>
             </article>

@@ -7,7 +7,7 @@
   --cat-line: rgba(21, 23, 26, 0.08);
   --cat-line-strong: rgba(21, 23, 26, 0.1);
   --cat-wash: #f4f4f5;
-  --cat-accent: #4f46e5;
+  --cat-accent: #5142b5;
   --cat-orange: #f97316;
   --cat-dark: #17181b;
   --cat-dark-2: #222428;
@@ -344,7 +344,7 @@
 .hp-cat-rail-item:hover .hp-cat-go,
 .hp-cat-rail-item:hover .hp-cat-thumb {
   color: var(--cat-accent);
-  border-color: rgba(79, 70, 229, 0.35);
+  border-color: rgba(81, 66, 181, 0.35);
 }
 
 .hp-cat-rail-item:hover .hp-cat-go {

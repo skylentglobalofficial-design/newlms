@@ -6,11 +6,11 @@
   --pe-muted: #475569;
   --pe-faint: #64748b;
   --pe-line: #e2e8f0;
-  --pe-orange: #1d1849;
+  --pe-orange: #5142b5;
   --pe-paper: #ffffff;
   --pe-warm: #f8fafc;
   --pe-soft: #f1f5f9;
-  --pe-accent: #1d1849;
+  --pe-accent: #5142b5;
   --pe-sticky-clear: calc(var(--nav-h) + 20px);
   background: var(--pe-paper);
   color: var(--pe-ink);
@@ -18,10 +18,10 @@
 }
 
 .pe-royal-band {
-  background: linear-gradient(145deg, #11152c 0%, #1d1849 100%);
+  background: linear-gradient(145deg, #10263d 0%, #183750 100%);
   color: #ffffff;
-  border-top: 1px solid rgba(251, 191, 36, 0.34);
-  border-bottom: 1px solid rgba(251, 191, 36, 0.34);
+  border-top: 1px solid rgba(196, 184, 255, 0.34);
+  border-bottom: 1px solid rgba(196, 184, 255, 0.34);
   padding: clamp(48px, 6vh, 80px) 0;
 }
 
@@ -34,7 +34,7 @@
 
 .pe-royal-card {
   background: rgba(15, 23, 42, 0.62);
-  border: 1px solid rgba(251, 191, 36, 0.36);
+  border: 1px solid rgba(196, 184, 255, 0.36);
   border-radius: 16px;
   padding: 24px;
   color: #ffffff;
@@ -45,7 +45,7 @@
 }
 
 .pe-royal-eyebrow {
-  color: #fbbf24;
+  color: #c4b8ff;
   font: 700 11px / 1.4 var(--font-mono);
   letter-spacing: 0.14em;
   text-transform: uppercase;

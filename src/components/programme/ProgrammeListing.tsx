@@ -390,8 +390,8 @@ export default function ProgrammeListing({ program, truth, cta, honesty, afterEn
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))", gap: 14, marginTop: 20 }}>
               {pathwaySpec.steps.map((step) => (
-                <div key={step.num} style={{ padding: "16px", borderRadius: 12, background: "linear-gradient(145deg, #11152c 0%, #1d1849 100%)", border: "1px solid rgba(251, 191, 36, 0.36)" }}>
-                  <span style={{ fontSize: 11.5, fontWeight: 700, color: "#fbbf24", fontFamily: "var(--font-mono)" }}>
+                <div key={step.num} style={{ padding: "16px", borderRadius: 12, background: "linear-gradient(145deg, #10263d 0%, #183750 100%)", border: "1px solid rgba(196, 184, 255, 0.36)" }}>
+                  <span style={{ fontSize: 11.5, fontWeight: 700, color: "#c4b8ff", fontFamily: "var(--font-mono)" }}>
                     STEP {step.num}
                   </span>
                   <strong style={{ display: "block", margin: "6px 0", fontSize: 15, fontWeight: 700, color: "#ffffff" }}>
@@ -429,8 +429,8 @@ export default function ProgrammeListing({ program, truth, cta, honesty, afterEn
                   gap: 8,
                   padding: "20px 22px",
                   borderRadius: 16,
-                  background: "linear-gradient(145deg, #11152c 0%, #1d1849 100%)",
-                  border: "1px solid rgba(251, 191, 36, 0.38)",
+                  background: "linear-gradient(145deg, #10263d 0%, #183750 100%)",
+                  border: "1px solid rgba(196, 184, 255, 0.38)",
                   color: "#ffffff",
                   textDecoration: "none",
                 }}
@@ -439,13 +439,13 @@ export default function ProgrammeListing({ program, truth, cta, honesty, afterEn
                   <span style={{ fontSize: 11.5, fontWeight: 700, color: "#34d399", background: "rgba(16, 185, 129, 0.16)", border: "1px solid rgba(52, 211, 153, 0.35)", padding: "3px 10px", borderRadius: 999 }}>
                     ✓ Open now · 5 Modules · 15 Lessons
                   </span>
-                  <span style={{ fontSize: 11.5, fontWeight: 700, color: "#fbbf24", fontFamily: "var(--font-mono)" }}>₹0 Pilot</span>
+                  <span style={{ fontSize: 11.5, fontWeight: 700, color: "#c4b8ff", fontFamily: "var(--font-mono)" }}>₹0 Pilot</span>
                 </div>
                 <strong style={{ fontSize: 19, fontWeight: 800, color: "#ffffff" }}>{item.title}</strong>
                 <span style={{ fontSize: 13.5, color: "#cbd5e1" }}>
                   3 module quizzes · 3 applied briefs · 1 graded capstone · Verifiable Certificate
                 </span>
-                <span style={{ marginTop: "auto", paddingTop: 8, fontSize: 14, fontWeight: 700, color: "#fbbf24", display: "inline-flex", alignItems: "center", gap: 6 }}>
+                <span style={{ marginTop: "auto", paddingTop: 8, fontSize: 14, fontWeight: 700, color: "#c4b8ff", display: "inline-flex", alignItems: "center", gap: 6 }}>
                   Start {item.title} <ArrowRight />
                 </span>
               </Link>
@@ -468,7 +468,7 @@ export default function ProgrammeListing({ program, truth, cta, honesty, afterEn
             <div key={course.slug} style={{ border: "1px solid #e2e8f0", borderRadius: 16, padding: "22px 24px", background: "#ffffff" }}>
               <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: 10, marginBottom: 16, paddingBottom: 12, borderBottom: "1px solid #f1f5f9" }}>
                 <div>
-                  <span style={{ fontSize: 11.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "#4f46e5" }}>
+                  <span style={{ fontSize: 11.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "#5142b5" }}>
                     {course.category} · {course.duration}
                   </span>
                   <h3 style={{ margin: "2px 0 0", fontSize: 20, fontWeight: 800, color: "#0f172a" }}>{course.title}</h3>
@@ -480,7 +480,7 @@ export default function ProgrammeListing({ program, truth, cta, honesty, afterEn
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 14 }}>
                 {course.modules.map((mod, idx) => (
                   <div key={mod.id} style={{ padding: "14px 16px", borderRadius: 12, background: "#f8fafc", border: "1px solid #e2e8f0" }}>
-                    <span style={{ fontSize: 11, fontWeight: 700, color: "#4f46e5", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                    <span style={{ fontSize: 11, fontWeight: 700, color: "#5142b5", textTransform: "uppercase", letterSpacing: "0.05em" }}>
                       Module 0{idx + 1} · {mod.lessons.length} Lessons
                     </span>
                     <strong style={{ display: "block", margin: "4px 0 8px", fontSize: 15, fontWeight: 700, color: "#0f172a" }}>

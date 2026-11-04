@@ -7,7 +7,7 @@
   --ev-line: rgba(21, 23, 26, 0.08);
   --ev-line-strong: rgba(21, 23, 26, 0.12);
   --ev-wash: #f6f6f7;
-  --ev-accent: #4f46e5;
+  --ev-accent: #5142b5;
   --ev-orange: #f97316;
   background: transparent;
   color: var(--ev-ink);
@@ -441,7 +441,7 @@
   .hp-ev-chain {
     margin-top: 24px;
     border-top: 0;
-    border-left: 2px solid rgba(79, 70, 229, 0.22);
+    border-left: 2px solid rgba(81, 66, 181, 0.22);
     margin-left: 3px;
     padding-left: 14px;
   }

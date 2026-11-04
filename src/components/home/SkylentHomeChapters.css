@@ -5,7 +5,7 @@
   --secondary: #5c6168;
   --muted: #8a8f96;
   --line: rgba(21, 23, 26, 0.08);
-  --accent: #4f46e5;
+  --accent: #5142b5;
   --orange: #f97316;
   --wash: #f6f6f7;
   background: #ffffff;
@@ -86,7 +86,7 @@
   margin-top: 18px;
   min-height: 26px;
   padding: 0 10px;
-  border: 1px solid rgba(79, 70, 229, 0.22);
+  border: 1px solid rgba(81, 66, 181, 0.22);
   border-radius: 999px;
   background: #f7f8fd;
   color: var(--accent);

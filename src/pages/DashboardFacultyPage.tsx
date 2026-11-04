@@ -40,14 +40,14 @@ function NavIcon({ id }: { id: string }) {
 function TeachingEmptyState({ message }: { message?: string | null }) {
   return (
     <div style={{
-      background: 'linear-gradient(145deg, #11152c 0%, #1d1849 100%)',
-      border: '1px solid rgba(251, 191, 36, 0.38)',
+      background: 'linear-gradient(145deg, #10263d 0%, #183750 100%)',
+      border: '1px solid rgba(196, 184, 255, 0.38)',
       borderRadius: 18,
       padding: 'clamp(24px, 4vw, 34px)',
       color: '#ffffff',
       boxShadow: '0 18px 40px rgba(10, 14, 34, 0.22)',
     }}>
-      <p style={{ margin: '0 0 8px', color: '#fbbf24', font: '700 11px/1.4 var(--font-mono)', letterSpacing: '0.14em', textTransform: 'uppercase' }}>
+      <p style={{ margin: '0 0 8px', color: '#c4b8ff', font: '700 11px/1.4 var(--font-mono)', letterSpacing: '0.14em', textTransform: 'uppercase' }}>
         FACULTY TA &amp; RED-LINE REVIEW TERMINAL · 20-MINUTE SLA
       </p>
       <h1 className="skylent-display-sm" style={{ color: '#ffffff', margin: '0 0 8px', lineHeight: 1.1 }}>
@@ -76,14 +76,14 @@ function CatalogOverview({
 }) {
   return (
     <div style={{
-      background: 'linear-gradient(145deg, #11152c 0%, #1d1849 100%)',
-      border: '1px solid rgba(251, 191, 36, 0.38)',
+      background: 'linear-gradient(145deg, #10263d 0%, #183750 100%)',
+      border: '1px solid rgba(196, 184, 255, 0.38)',
       borderRadius: 18,
       padding: 'clamp(24px, 4vw, 34px)',
       color: '#ffffff',
       boxShadow: '0 18px 40px rgba(10, 14, 34, 0.22)',
     }}>
-      <p style={{ margin: '0 0 8px', color: '#fbbf24', font: '700 11px/1.4 var(--font-mono)', letterSpacing: '0.14em', textTransform: 'uppercase' }}>
+      <p style={{ margin: '0 0 8px', color: '#c4b8ff', font: '700 11px/1.4 var(--font-mono)', letterSpacing: '0.14em', textTransform: 'uppercase' }}>
         FACULTY TA &amp; RED-LINE REVIEW TERMINAL · SUPERADMIN ALL-TRACK VIEW
       </p>
       <h1 className="skylent-display-sm" style={{ color: '#ffffff', margin: '0 0 8px', lineHeight: 1.1 }}>
@@ -103,22 +103,22 @@ function CatalogOverview({
           <div style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 700, color: '#ffffff' }}>20 min</div>
           <div style={{ color: 'rgba(255,255,255,0.72)', fontSize: 11, marginTop: 2 }}>20-minute doubt &amp; rubric SLA</div>
         </div>
-        <div style={{ background: 'rgba(15,23,42,0.55)', padding: 14, borderRadius: 12, border: '1px solid rgba(251,191,36,0.34)' }}>
-          <div style={{ color: '#fbbf24', fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 700, marginBottom: 4 }}>Pending reviews</div>
+        <div style={{ background: 'rgba(15,23,42,0.55)', padding: 14, borderRadius: 12, border: '1px solid rgba(196, 184, 255,0.34)' }}>
+          <div style={{ color: '#c4b8ff', fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 700, marginBottom: 4 }}>Pending reviews</div>
           <div style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 700, color: '#ffffff' }}>
             {pendingCount}
           </div>
           <div style={{ color: 'rgba(255,255,255,0.72)', fontSize: 11, marginTop: 2 }}>V1 → V2 submissions waiting</div>
         </div>
         <div style={{ background: 'rgba(15,23,42,0.55)', padding: 14, borderRadius: 12, border: '1px solid rgba(255,255,255,0.14)' }}>
-          <div style={{ color: '#fbbf24', fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 700, marginBottom: 4 }}>Programs in catalog</div>
+          <div style={{ color: '#c4b8ff', fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 700, marginBottom: 4 }}>Programs in catalog</div>
           <div style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 700, color: '#ffffff' }}>
             {programCount}
           </div>
           <div style={{ color: 'rgba(255,255,255,0.72)', fontSize: 11, marginTop: 2 }}>career pathways</div>
         </div>
         <div style={{ background: 'rgba(15,23,42,0.55)', padding: 14, borderRadius: 12, border: '1px solid rgba(255,255,255,0.14)' }}>
-          <div style={{ color: '#fbbf24', fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 700, marginBottom: 4 }}>Courses in catalog</div>
+          <div style={{ color: '#c4b8ff', fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 700, marginBottom: 4 }}>Courses in catalog</div>
           <div style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 700, color: '#ffffff' }}>
             {courseCount}
           </div>
@@ -131,7 +131,7 @@ function CatalogOverview({
         onClick={onReview}
         style={{
           display: 'inline-flex', alignItems: 'center', gap: 8,
-          background: '#fbbf24', color: '#0f172a', border: 'none',
+          background: '#5142b5', color: '#ffffff', border: '1px solid #c4b8ff',
           padding: '12px 22px', borderRadius: 999,
           fontSize: 14, fontWeight: 700, fontFamily: 'var(--font-body)',
           cursor: 'pointer',

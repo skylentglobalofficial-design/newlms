@@ -72,7 +72,7 @@ function DegreeRow({ degree }: { degree: Degree }) {
           <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 8 }}>
             <span className="edx-degree__title">{degree.title}</span>
             {degree.duration ? (
-              <span style={{ fontSize: 11.5, fontWeight: 700, padding: "2px 8px", borderRadius: 999, background: "#eef2ff", color: "#4338ca" }}>
+              <span style={{ fontSize: 11.5, fontWeight: 700, padding: "2px 8px", borderRadius: 999, background: "#eae6ff", color: "#43349f" }}>
                 {degree.duration}
               </span>
             ) : null}

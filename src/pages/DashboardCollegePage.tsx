@@ -54,8 +54,8 @@ export default function DashboardCollegePage() {
       <div className="sh" style={{ display: "grid", gap: 20, maxWidth: 1080 }}>
         <section
           style={{
-            background: "linear-gradient(145deg, #11152c 0%, #1d1849 100%)",
-            border: "1px solid rgba(251, 191, 36, 0.38)",
+            background: "linear-gradient(145deg, #10263d 0%, #183750 100%)",
+            border: "1px solid rgba(196, 184, 255, 0.38)",
             borderRadius: 18,
             padding: "28px 30px",
             color: "#ffffff",
@@ -64,7 +64,7 @@ export default function DashboardCollegePage() {
         >
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 16, flexWrap: "wrap" }}>
             <div>
-              <p style={{ margin: "0 0 8px", color: "#fbbf24", font: "700 11px/1.4 var(--font-mono)", letterSpacing: "0.14em", textTransform: "uppercase" }}>
+              <p style={{ margin: "0 0 8px", color: "#c4b8ff", font: "700 11px/1.4 var(--font-mono)", letterSpacing: "0.14em", textTransform: "uppercase" }}>
                 NEP 2020 · ACADEMIC BANK OF CREDITS (ABC) &amp; NAAC COHORT COMMAND CENTER
               </p>
               <h1 style={{ margin: "0 0 8px", fontSize: "clamp(24px, 3vw, 34px)", color: "#ffffff", fontFamily: "var(--font-display)" }}>
@@ -79,7 +79,7 @@ export default function DashboardCollegePage() {
                 className="os-btn os-btn-primary"
                 href={`${apiV1()}/college/dashboard/export.csv`}
                 download
-                style={{ background: "#fbbf24", color: "#0f172a", fontWeight: 700, borderColor: "#fbbf24", textDecoration: "none" }}
+                style={{ background: "#5142b5", color: "#ffffff", fontWeight: 700, borderColor: "#c4b8ff", textDecoration: "none" }}
               >
                 Export Cohort CSV
               </a>
@@ -122,7 +122,7 @@ export default function DashboardCollegePage() {
                 </div>
                 <div style={{ padding: 18, background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: 14, boxShadow: "0 4px 14px rgba(15,23,42,0.04)" }}>
                   <span style={{ fontSize: 11, fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.08em", color: "#64748b", display: "block" }}>Completion rate</span>
-                  <strong style={{ fontSize: 28, color: "#1d1849", display: "block", marginTop: 4 }}>{data.cohortSummary.completionRatePercent}%</strong>
+                  <strong style={{ fontSize: 28, color: "#5142b5", display: "block", marginTop: 4 }}>{data.cohortSummary.completionRatePercent}%</strong>
                   <span style={{ fontSize: 12, color: "#475569" }}>NAAC Criterion-1 Audit Ready</span>
                 </div>
               </div>

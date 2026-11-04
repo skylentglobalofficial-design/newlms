@@ -3,8 +3,8 @@
  *
  * Visual Identity (V18 Royal Midnight Navy + Gold + Emerald on Crisp White):
  *   - Page background: Crisp White (#ffffff) & Soft Ice (#f8fafc)
- *   - Feature Cards: Royal Midnight Navy (linear-gradient(145deg, #11152c 0%, #1d1849 100%))
- *   - Accents: Warm Gold (#fbbf24), Emerald Verified Badges (#34d399), Periwinkle (#a5b4fc),
+ *   - Feature Cards: Royal Midnight Navy (linear-gradient(145deg, #10263d 0%, #183750 100%))
+ *   - Accents: Warm Gold (#c4b8ff), Emerald Verified Badges (#34d399), Periwinkle (#a5b4fc),
  *     and Crisp Pure White Skill Pills (#ffffff with #0f172a ink).
  */
 import { useCallback, useEffect, useRef, useState } from "react"
@@ -32,7 +32,7 @@ import photoCampusPg from "@/assets/site/home/degree-management-960.webp"
 import { STATUS_NOT_CONFIRMED } from "../../components/programme/CatalogueNotice"
 
 function OfferingIcon({ type }: { type: string }) {
-  const iconColor = "#fbbf24"
+  const iconColor = "#c4b8ff"
   switch (type) {
     case "graduation":
       return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={iconColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m22 10-10-5L2 10l10 5z"/><path d="M6 12v5c0 2 3 3 6 3s6-1 6-3v-5"/><path d="M22 10v6"/></svg>
@@ -1831,9 +1831,9 @@ export function HomeInstitutionalArchitecture() {
     <section
       aria-labelledby="hx-inst-arch-title"
       style={{
-        background: "linear-gradient(145deg, #11152c 0%, #1d1849 100%)",
-        borderTop: "1px solid rgba(251, 191, 36, 0.42)",
-        borderBottom: "1px solid rgba(251, 191, 36, 0.42)",
+        background: "linear-gradient(145deg, #10263d 0%, #183750 100%)",
+        borderTop: "1px solid rgba(196, 184, 255, 0.42)",
+        borderBottom: "1px solid rgba(196, 184, 255, 0.42)",
         padding: "clamp(40px, 5vw, 68px) 0",
         color: "#ffffff",
       }}
@@ -1841,7 +1841,7 @@ export function HomeInstitutionalArchitecture() {
       <div className="sky-container">
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", gap: 20, flexWrap: "wrap", marginBottom: 24 }}>
           <div>
-            <p style={{ margin: "0 0 8px", color: "#fbbf24", font: "700 11.5px/1.4 var(--font-mono)", letterSpacing: "0.14em", textTransform: "uppercase" }}>
+            <p style={{ margin: "0 0 8px", color: "#c4b8ff", font: "700 11.5px/1.4 var(--font-mono)", letterSpacing: "0.14em", textTransform: "uppercase" }}>
               SKYLENT APPLIED WORK MODEL · SIMULATED LABS TO REAL PARTNER FIELDWORK
             </p>
             <h2 id="hx-inst-arch-title" style={{ margin: 0, fontSize: "clamp(24px, 3.2vw, 38px)", color: "#ffffff", fontFamily: "var(--font-display)", lineHeight: 1.12 }}>
@@ -1857,9 +1857,9 @@ export function HomeInstitutionalArchitecture() {
               style={{
                 padding: "10px 16px",
                 borderRadius: 999,
-                border: activeTab === "envB" ? "1px solid #fbbf24" : "1px solid rgba(255,255,255,0.22)",
-                background: activeTab === "envB" ? "#fbbf24" : "rgba(15,23,42,0.65)",
-                color: activeTab === "envB" ? "#0f172a" : "#ffffff",
+                border: activeTab === "envB" ? "1px solid #c4b8ff" : "1px solid rgba(255,255,255,0.22)",
+                background: activeTab === "envB" ? "#5142b5" : "rgba(15,23,42,0.65)",
+                color: "#ffffff",
                 fontWeight: 700,
                 fontSize: 13,
                 cursor: "pointer",
@@ -1875,9 +1875,9 @@ export function HomeInstitutionalArchitecture() {
               style={{
                 padding: "10px 16px",
                 borderRadius: 999,
-                border: activeTab === "envA" ? "1px solid #fbbf24" : "1px solid rgba(255,255,255,0.22)",
-                background: activeTab === "envA" ? "#fbbf24" : "rgba(15,23,42,0.65)",
-                color: activeTab === "envA" ? "#0f172a" : "#ffffff",
+                border: activeTab === "envA" ? "1px solid #c4b8ff" : "1px solid rgba(255,255,255,0.22)",
+                background: activeTab === "envA" ? "#5142b5" : "rgba(15,23,42,0.65)",
+                color: "#ffffff",
                 fontWeight: 700,
                 fontSize: 13,
                 cursor: "pointer",
@@ -1893,9 +1893,9 @@ export function HomeInstitutionalArchitecture() {
               style={{
                 padding: "10px 16px",
                 borderRadius: 999,
-                border: activeTab === "rubric" ? "1px solid #fbbf24" : "1px solid rgba(255,255,255,0.22)",
-                background: activeTab === "rubric" ? "#fbbf24" : "rgba(15,23,42,0.65)",
-                color: activeTab === "rubric" ? "#0f172a" : "#ffffff",
+                border: activeTab === "rubric" ? "1px solid #c4b8ff" : "1px solid rgba(255,255,255,0.22)",
+                background: activeTab === "rubric" ? "#5142b5" : "rgba(15,23,42,0.65)",
+                color: "#ffffff",
                 fontWeight: 700,
                 fontSize: 13,
                 cursor: "pointer",
@@ -1913,7 +1913,7 @@ export function HomeInstitutionalArchitecture() {
                 <span style={{ padding: "4px 12px", borderRadius: 999, background: "rgba(16,185,129,0.18)", border: "1px solid rgba(52,211,153,0.45)", color: "#34d399", fontSize: 11.5, fontFamily: "var(--font-mono)", fontWeight: 700 }}>
                   ENVIRONMENT B · SKYLENT WORK ASSIGNMENT EXCHANGE (CUTTACK–BHUBANESWAR &amp; INDIA-WIDE HYBRID)
                 </span>
-                <Link to="/contact?for=institution" style={{ color: "#fbbf24", fontWeight: 700, fontSize: 13.5, textDecoration: "none" }}>
+                <Link to="/contact?for=institution" style={{ color: "#c4b8ff", fontWeight: 700, fontSize: 13.5, textDecoration: "none" }}>
                   Submit a Partner Organisation Problem →
                 </Link>
               </div>
@@ -1922,22 +1922,22 @@ export function HomeInstitutionalArchitecture() {
               </p>
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 16 }}>
-              <article style={{ background: "rgba(15,23,42,0.62)", border: "1px solid rgba(251,191,36,0.36)", borderRadius: 14, padding: 20 }}>
-                <span style={{ color: "#fbbf24", fontSize: 11, fontFamily: "var(--font-mono)", fontWeight: 700 }}>FIELDWORK ARCHETYPE 01 · MSME &amp; DISTRIBUTION</span>
+              <article style={{ background: "rgba(15,23,42,0.62)", border: "1px solid rgba(196, 184, 255,0.36)", borderRadius: 14, padding: 20 }}>
+                <span style={{ color: "#c4b8ff", fontSize: 11, fontFamily: "var(--font-mono)", fontWeight: 700 }}>FIELDWORK ARCHETYPE 01 · MSME &amp; DISTRIBUTION</span>
                 <h3 style={{ margin: "6px 0 8px", fontSize: 17.5, color: "#ffffff" }}>Regional Distributor Margin &amp; Return Leakage Audit</h3>
                 <p style={{ margin: 0, fontSize: 13.5, color: "rgba(255,255,255,0.8)", lineHeight: 1.55 }}>
                   <strong>Problem Scope:</strong> 4,000+ anonymised invoice rows with falling SKU margins. Learners isolate discount leakage, submit V1 SQL/sheet memo, and incorporate supervisor V2 critique.
                 </p>
               </article>
-              <article style={{ background: "rgba(15,23,42,0.62)", border: "1px solid rgba(251,191,36,0.36)", borderRadius: 14, padding: 20 }}>
-                <span style={{ color: "#fbbf24", fontSize: 11, fontFamily: "var(--font-mono)", fontWeight: 700 }}>FIELDWORK ARCHETYPE 02 · STARTUP &amp; SaaS OPS</span>
+              <article style={{ background: "rgba(15,23,42,0.62)", border: "1px solid rgba(196, 184, 255,0.36)", borderRadius: 14, padding: 20 }}>
+                <span style={{ color: "#c4b8ff", fontSize: 11, fontFamily: "var(--font-mono)", fontWeight: 700 }}>FIELDWORK ARCHETYPE 02 · STARTUP &amp; SaaS OPS</span>
                 <h3 style={{ margin: "6px 0 8px", fontSize: 17.5, color: "#ffffff" }}>Onboarding Drop-Off &amp; Support Ticket Triage</h3>
                 <p style={{ margin: 0, fontSize: 13.5, color: "rgba(255,255,255,0.8)", lineHeight: 1.55 }}>
                   <strong>Problem Scope:</strong> Categorise 150 support escalations, write a 2-week engineering fix PRD, and defend trade-offs before the partner product lead.
                 </p>
               </article>
-              <article style={{ background: "rgba(15,23,42,0.62)", border: "1px solid rgba(251,191,36,0.36)", borderRadius: 14, padding: 20 }}>
-                <span style={{ color: "#fbbf24", fontSize: 11, fontFamily: "var(--font-mono)", fontWeight: 700 }}>FIELDWORK ARCHETYPE 03 · NGO &amp; CLINIC WORKFLOWS</span>
+              <article style={{ background: "rgba(15,23,42,0.62)", border: "1px solid rgba(196, 184, 255,0.36)", borderRadius: 14, padding: 20 }}>
+                <span style={{ color: "#c4b8ff", fontSize: 11, fontFamily: "var(--font-mono)", fontWeight: 700 }}>FIELDWORK ARCHETYPE 03 · NGO &amp; CLINIC WORKFLOWS</span>
                 <h3 style={{ margin: "6px 0 8px", fontSize: 17.5, color: "#ffffff" }}>Non-Clinical Appointment Queue &amp; Impact Reporting</h3>
                 <p style={{ margin: 0, fontSize: 13.5, color: "rgba(255,255,255,0.8)", lineHeight: 1.55 }}>
                   <strong>Problem Scope:</strong> Strict privacy-gated operational reporting on wait-time bottlenecks and field survey data hygiene, signed off by faculty reviewers.
@@ -1957,7 +1957,7 @@ export function HomeInstitutionalArchitecture() {
               ["05 · PulseAI", "AI & Evaluation Lab", "RAG reliability, prompt evaluation rubrics, data hygiene, and hallucination checks."],
               ["06 · Skylent Digital Systems", "Computing & Full-Stack", "API contracts, automated QA assertions, deployment readiness, and security checks."],
             ].map(([title, school, desc]) => (
-              <div key={title} style={{ background: "rgba(15,23,42,0.62)", border: "1px solid rgba(251,191,36,0.34)", borderRadius: 14, padding: 18 }}>
+              <div key={title} style={{ background: "rgba(15,23,42,0.62)", border: "1px solid rgba(196, 184, 255,0.34)", borderRadius: 14, padding: 18 }}>
                 <span style={{ color: "#34d399", fontSize: 11, fontFamily: "var(--font-mono)", fontWeight: 700 }}>{school}</span>
                 <h3 style={{ margin: "6px 0", fontSize: 17, color: "#ffffff" }}>{title}</h3>
                 <p style={{ margin: 0, fontSize: 13, color: "rgba(255,255,255,0.8)", lineHeight: 1.5 }}>{desc}</p>
@@ -1976,8 +1976,8 @@ export function HomeInstitutionalArchitecture() {
                 ["15% · Oral Defence", "Boardroom Cold Call & stakeholder clarity"],
                 ["20% · V1 → V2 Revision", "Measurable improvement after faculty critique"],
               ].map(([k, v]) => (
-                <div key={k} style={{ background: "rgba(15,23,42,0.65)", border: "1px solid rgba(251,191,36,0.38)", borderRadius: 12, padding: 16 }}>
-                  <strong style={{ color: "#fbbf24", fontSize: 17, display: "block", marginBottom: 4 }}>{k}</strong>
+                <div key={k} style={{ background: "rgba(15,23,42,0.65)", border: "1px solid rgba(196, 184, 255,0.38)", borderRadius: 12, padding: 16 }}>
+                  <strong style={{ color: "#c4b8ff", fontSize: 17, display: "block", marginBottom: 4 }}>{k}</strong>
                   <span style={{ fontSize: 12.5, color: "rgba(255,255,255,0.82)" }}>{v}</span>
                 </div>
               ))}
@@ -1986,7 +1986,7 @@ export function HomeInstitutionalArchitecture() {
               <span style={{ fontSize: 13.5, color: "rgba(255,255,255,0.88)" }}>
                 <strong>5 Internal Competency Levels:</strong> L1 Foundation → L2 Guided Practice → L3 Independent Execution → L4 Professional Practice → L5 Advanced Practice
               </span>
-              <Link to="/verify" style={{ padding: "8px 16px", borderRadius: 999, background: "#fbbf24", color: "#0f172a", fontWeight: 700, fontSize: 13, textDecoration: "none" }}>
+              <Link to="/verify" style={{ padding: "8px 16px", borderRadius: 999, background: "#5142b5", color: "#ffffff", border: "1px solid rgba(196, 184, 255, 0.45)", fontWeight: 700, fontSize: 13, textDecoration: "none" }}>
                 Open Public Flight Recorder Registry →
               </Link>
             </div>

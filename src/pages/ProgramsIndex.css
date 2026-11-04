@@ -1,7 +1,7 @@
 /* /programmes catalogue. Scoped to .pgx — Crisp White Canvas + Royal Midnight Navy + Gold + Emerald Theme */
 .pgx {
-  --pgx-violet: #4f46e5;
-  --pgx-ocean: #4338ca;
+  --pgx-violet: #5142b5;
+  --pgx-ocean: #43349f;
   --pgx-lavender: #f8fafc;
   --pgx-paper: #ffffff;
   --pgx-ink: #0f172a;
@@ -55,9 +55,9 @@
   gap: 14px;
   padding: 24px;
   border-radius: 18px;
-  background: linear-gradient(145deg, #11152c 0%, #1d1849 100%);
-  border: 1px solid rgba(251, 191, 36, 0.38);
-  box-shadow: 0 20px 44px -18px rgba(17, 21, 44, 0.45);
+  background: linear-gradient(145deg, #10263d 0%, #183750 100%);
+  border: 1px solid rgba(196, 184, 255, 0.38);
+  box-shadow: 0 20px 44px -18px rgba(16, 38, 61, 0.45);
   color: #ffffff;
 }
 .pgx .pgx-royal-hero-card__top {
@@ -72,7 +72,7 @@
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.06em;
-  color: #fbbf24;
+  color: #c4b8ff;
 }
 .pgx .pgx-royal-hero-card__badge {
   display: inline-flex;
@@ -114,7 +114,7 @@
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.06em;
-  color: #fbbf24;
+  color: #c4b8ff;
   margin-bottom: 3px;
 }
 .pgx .pgx-royal-hero-card__metrics strong {
@@ -151,7 +151,7 @@
   color: #64748b;
   box-shadow: 0 4px 12px -6px rgba(15, 23, 42, 0.06);
 }
-.pgx .pgx-search:focus-within { border-color: var(--pgx-violet); box-shadow: 0 0 0 3px rgba(79, 70, 229, .16); }
+.pgx .pgx-search:focus-within { border-color: var(--pgx-violet); box-shadow: 0 0 0 3px rgba(81, 66, 181, .16); }
 .pgx .pgx-search input {
   flex: 1;
   min-width: 0;
@@ -181,9 +181,9 @@
   transition: all 150ms ease;
 }
 .pgx .pgx-chips button.is-on {
-  background: linear-gradient(145deg, #11152c 0%, #1d1849 100%);
-  border-color: rgba(251, 191, 36, 0.55);
-  color: #fbbf24;
+  background: linear-gradient(145deg, #10263d 0%, #183750 100%);
+  border-color: rgba(196, 184, 255, 0.55);
+  color: #c4b8ff;
 }
 .pgx .pgx-chips button:focus-visible,
 .pgx .pgx-clear:focus-visible,
@@ -220,8 +220,8 @@
 }
 .pgx .pgx-card__link { transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease; }
 .pgx .pgx-card__link:hover {
-  border-color: #4f46e5;
-  box-shadow: 0 18px 36px -16px rgba(17, 21, 44, 0.24);
+  border-color: #5142b5;
+  box-shadow: 0 18px 36px -16px rgba(16, 38, 61, 0.24);
   transform: translateY(-3px);
 }
 .pgx .pgx-card__link:focus-visible { outline: 2px solid var(--pgx-ocean); outline-offset: 3px; }
@@ -229,7 +229,7 @@
   position: relative;
   display: block;
   aspect-ratio: 16 / 10;
-  background: linear-gradient(145deg, #11152c 0%, #1d1849 100%);
+  background: linear-gradient(145deg, #10263d 0%, #183750 100%);
   overflow: hidden;
 }
 .pgx .pgx-card__media::after {
@@ -237,7 +237,7 @@
   position: absolute;
   inset: auto 0 0 0;
   height: 55%;
-  background: linear-gradient(180deg, transparent 0%, rgba(17, 21, 44, 0.84) 100%);
+  background: linear-gradient(180deg, transparent 0%, rgba(16, 38, 61, 0.84) 100%);
   pointer-events: none;
 }
 .pgx .pgx-card__media img { width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -251,7 +251,7 @@
   min-height: 28px;
   padding: 0 11px;
   border-radius: 999px;
-  background: rgba(17, 21, 44, 0.88);
+  background: rgba(16, 38, 61, 0.88);
   border: 1px solid rgba(255, 255, 255, 0.22);
   color: #e2e8f0;
   font-size: 11.5px;
@@ -259,7 +259,7 @@
   backdrop-filter: blur(8px);
 }
 .pgx .pgx-status--open {
-  background: rgba(17, 21, 44, 0.92);
+  background: rgba(16, 38, 61, 0.92);
   border-color: rgba(52, 211, 153, 0.5);
   color: #34d399;
 }
@@ -272,16 +272,16 @@
   align-items: center;
   padding: 4px 10px;
   border-radius: 8px;
-  background: rgba(17, 21, 44, 0.92);
-  border: 1px solid rgba(251, 191, 36, 0.42);
-  color: #fbbf24;
+  background: rgba(16, 38, 61, 0.92);
+  border: 1px solid rgba(196, 184, 255, 0.42);
+  color: #c4b8ff;
   font-family: var(--sk-font-mono, ui-monospace, monospace);
   font-size: 11px;
   font-weight: 700;
 }
 
 .pgx .pgx-card__body { display: flex; flex-direction: column; gap: 6px; padding: 18px 18px 20px; flex: 1; }
-.pgx .pgx-card__kicker { font-size: 11.5px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: #4f46e5; }
+.pgx .pgx-card__kicker { font-size: 11.5px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: #5142b5; }
 .pgx .pgx-card__role { text-transform: none; font-weight: 500; color: #64748b; }
 .pgx .pgx-card__title { font-family: var(--sk-font-heading); font-size: 21px; font-weight: 800; letter-spacing: -0.018em; line-height: 1.2; color: #0f172a; }
 .pgx .pgx-card__line { font-size: 14.5px; line-height: 1.55; color: #475569; margin-top: 2px; }
@@ -313,7 +313,7 @@
   border-top: 1px solid #e2e8f0;
 }
 .pgx .pgx-card__meta { font-size: 12.5px; font-weight: 600; color: #475569; }
-.pgx .pgx-card__go { display: inline-flex; align-items: center; gap: 6px; color: #4f46e5; font-weight: 700; font-size: 13.5px; }
+.pgx .pgx-card__go { display: inline-flex; align-items: center; gap: 6px; color: #5142b5; font-weight: 700; font-size: 13.5px; }
 
 .pgx .pgx-loading, .pgx .pgx-empty { padding: 28px 0 12px; }
 .pgx .pgx-loading { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
@@ -332,9 +332,9 @@
   gap: 10px;
   padding: 22px;
   border-radius: 18px;
-  background: linear-gradient(145deg, #11152c 0%, #1d1849 100%);
-  border: 1px solid rgba(251, 191, 36, 0.34);
-  box-shadow: 0 18px 38px -18px rgba(17, 21, 44, 0.42);
+  background: linear-gradient(145deg, #10263d 0%, #183750 100%);
+  border: 1px solid rgba(196, 184, 255, 0.34);
+  box-shadow: 0 18px 38px -18px rgba(16, 38, 61, 0.42);
   color: #ffffff;
 }
 .pgx .pgx-royal-step__top {
@@ -348,7 +348,7 @@
   font-family: var(--sk-font-mono, ui-monospace, monospace);
   font-size: 10.5px;
   font-weight: 700;
-  color: #fbbf24;
+  color: #c4b8ff;
 }
 .pgx .pgx-royal-step__badge {
   padding: 3px 9px;
@@ -387,9 +387,9 @@
   gap: 20px 32px;
   padding: clamp(26px, 4vw, 40px);
   border-radius: 20px;
-  background: linear-gradient(145deg, #11152c 0%, #1d1849 100%);
-  border: 1px solid rgba(251, 191, 36, 0.4);
-  box-shadow: 0 22px 48px -20px rgba(17, 21, 44, 0.48);
+  background: linear-gradient(145deg, #10263d 0%, #183750 100%);
+  border: 1px solid rgba(196, 184, 255, 0.4);
+  box-shadow: 0 22px 48px -20px rgba(16, 38, 61, 0.48);
   color: #ffffff;
 }
 .pgx .pgx-close__eyebrow {
@@ -398,7 +398,7 @@
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.08em;
-  color: #fbbf24;
+  color: #c4b8ff;
   margin-bottom: 6px;
 }
 .pgx .pgx-close h2 { margin: 0; font-family: var(--sk-font-heading); font-size: clamp(26px, 3vw, 34px); font-weight: 800; letter-spacing: -0.02em; color: #ffffff; }

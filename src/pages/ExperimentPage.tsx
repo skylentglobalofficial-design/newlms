@@ -17,7 +17,7 @@ const labTypeLabels: Record<LabType, string> = {
 }
 
 const labTypeColors: Record<LabType, { bg: string; text: string; border: string }> = {
-  coding: { bg: 'rgba(79,70,229,0.08)', text: '#4F46E5', border: 'rgba(79,70,229,0.28)' },
+  coding: { bg: 'rgba(81, 66, 181,0.08)', text: '#5142b5', border: 'rgba(81, 66, 181,0.28)' },
   data: { bg: 'rgba(81,66,181,0.08)', text: '#5142B5', border: 'rgba(81,66,181,0.28)' },
   business: { bg: 'rgba(21,23,26,0.04)', text: '#15171A', border: 'rgba(21,23,26,0.14)' },
   simulation: { bg: 'rgba(81,66,181,0.08)', text: '#5142B5', border: 'rgba(81,66,181,0.22)' },
@@ -52,7 +52,7 @@ function CodingWorkspace({ title, subject }: { title: string; subject: string })
           <div style={{ color: C.ink, fontSize: 18, fontWeight: 600, fontFamily: 'var(--font-display)' }}>{title}</div>
           <div style={{ color: C.slate, fontSize: 12, fontFamily: 'var(--font-mono)', marginTop: 4 }}>{subject}</div>
         </div>
-        <div style={{ background: 'rgba(79,70,229,0.08)', color: '#4F46E5', border: '1px solid rgba(79,70,229,0.28)', fontSize: 11, fontFamily: 'var(--font-mono)', padding: '4px 12px', borderRadius: 100 }}>Python 3.11</div>
+        <div style={{ background: 'rgba(81, 66, 181,0.08)', color: '#5142b5', border: '1px solid rgba(81, 66, 181,0.28)', fontSize: 11, fontFamily: 'var(--font-mono)', padding: '4px 12px', borderRadius: 100 }}>Python 3.11</div>
       </div>
 
       {/* Editor */}
@@ -250,7 +250,7 @@ function SimulationWorkspace({ title, instructions }: { title: string; instructi
 
       <button
         onClick={() => setRan(true)}
-        style={{ alignSelf: 'flex-start', background: C.indigo, border: '1px solid rgba(79,70,229,0.35)', color: C.white, padding: '10px 24px', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}
+        style={{ alignSelf: 'flex-start', background: C.indigo, border: '1px solid rgba(81, 66, 181,0.35)', color: C.white, padding: '10px 24px', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}
       >Run Simulation</button>
 
       {ran && (
@@ -442,7 +442,7 @@ export default function ExperimentPage() {
                       }}
                       style={{ display: 'flex', gap: 10, alignItems: 'flex-start', background: 'none', border: 'none', cursor: 'pointer', padding: 0, textAlign: 'left' }}
                     >
-                      <div style={{ width: 16, height: 16, borderRadius: 4, border: `1.5px solid ${checked ? C.indigo : 'rgba(21,23,26,0.18)'}`, background: checked ? 'rgba(79,70,229,0.12)' : 'transparent', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: 1 }}>
+                      <div style={{ width: 16, height: 16, borderRadius: 4, border: `1.5px solid ${checked ? C.indigo : 'rgba(21,23,26,0.18)'}`, background: checked ? 'rgba(81, 66, 181,0.12)' : 'transparent', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: 1 }}>
                         {checked && <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke={C.indigo} strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>}
                       </div>
                       <span style={{ color: checked ? C.slate : C.slate, fontSize: 11.5, lineHeight: 1.6, textDecoration: checked ? 'line-through' : 'none' }}>{task}</span>

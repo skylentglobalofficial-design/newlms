@@ -4,7 +4,7 @@
   --uni-ink: #15171a;
   --uni-muted: #8a8f96;
   --uni-line: rgba(21, 23, 26, 0.08);
-  --uni-accent: #4f46e5;
+  --uni-accent: #5142b5;
   --uni-top: #f4f5fc;
   --uni-face: #e8ebf8;
   --uni-side: #d5daf1;
@@ -124,7 +124,7 @@
   .hp-uni-stack {
     gap: 18px;
     padding-left: 12px;
-    border-left: 1px solid rgba(79, 70, 229, 0.28);
+    border-left: 1px solid rgba(81, 66, 181, 0.28);
   }
 
   .hp-uni-stack li {

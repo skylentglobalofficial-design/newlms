@@ -31,7 +31,7 @@ html:has(.home-p3) body {
   z-index: 0;
   background:
     radial-gradient(ellipse 78% 48% at 8% -6%, rgba(249, 115, 22, 0.08), transparent 58%),
-    radial-gradient(ellipse 62% 42% at 92% 2%, rgba(79, 70, 229, 0.06), transparent 52%);
+    radial-gradient(ellipse 62% 42% at 92% 2%, rgba(81, 66, 181, 0.06), transparent 52%);
 }
 
 .home-p3 > * {
@@ -149,19 +149,19 @@ html:has(.home-p3) body {
 }
 
 .hp-btn:focus-visible {
-  outline: 2px solid #4f46e5;
+  outline: 2px solid #5142b5;
   outline-offset: 3px;
 }
 
 .hp-btn-primary {
-  background: #4f46e5;
+  background: #5142b5;
   color: #fffdf8;
-  border: 1px solid #4f46e5;
+  border: 1px solid #5142b5;
 }
 
 .hp-btn-primary:hover {
-  background: #4338ca;
-  border-color: #4338ca;
+  background: #43349f;
+  border-color: #43349f;
 }
 
 .hp-btn-ghost {
@@ -181,7 +181,7 @@ html:has(.home-p3) body {
 }
 
 .hp-text-link {
-  color: #4f46e5;
+  color: #5142b5;
   font-size: 14px;
   font-weight: 600;
   text-decoration: none;
@@ -262,7 +262,7 @@ html:has(.home-p3) body {
 
 .hp-show-main .pl-frame {
   box-shadow: 0 22px 48px rgba(21, 23, 26, 0.12);
-  border-color: rgba(79, 70, 229, 0.22);
+  border-color: rgba(81, 66, 181, 0.22);
 }
 
 .hp-show-main .pl-frame-body {
@@ -417,7 +417,7 @@ html:has(.home-p3) body {
 
 .hp-show-path li.is-done span,
 .hp-show-path li.is-now span {
-  color: #4f46e5;
+  color: #5142b5;
 }
 
 .hp-show-note {
@@ -485,7 +485,7 @@ html:has(.home-p3) body {
 }
 
 .hp-universe-row:hover span {
-  color: #4f46e5;
+  color: #5142b5;
 }
 
 /* ── Loop ── */
@@ -568,9 +568,9 @@ html:has(.home-p3) body {
 }
 
 .hp-os-nav button.is-on {
-  color: #4f46e5;
+  color: #5142b5;
   font-weight: 600;
-  box-shadow: inset 0 -2px 0 #4f46e5;
+  box-shadow: inset 0 -2px 0 #5142b5;
 }
 
 .hp-os-frame .pl-frame {
@@ -708,7 +708,7 @@ html:has(.home-p3) body {
 }
 
 .hp-edu-col a:hover {
-  color: #4f46e5;
+  color: #5142b5;
 }
 
 .hp-edu-exams {
@@ -782,7 +782,7 @@ html:has(.home-p3) body {
 }
 
 .hp-skill-type a:hover {
-  color: #4f46e5;
+  color: #5142b5;
 }
 
 /* ── Close ── */

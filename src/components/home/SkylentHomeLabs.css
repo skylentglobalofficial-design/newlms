@@ -7,7 +7,7 @@
   --lab-line: rgba(21, 23, 26, 0.08);
   --lab-line-strong: rgba(21, 23, 26, 0.12);
   --lab-wash: #f6f6f7;
-  --lab-accent: #4f46e5;
+  --lab-accent: #5142b5;
   --lab-indigo-soft: #f7f8fd;
   --lab-indigo-wash: #eef0fb;
   border-top: 1px solid var(--lab-line);
@@ -318,7 +318,7 @@
 }
 
 .hp-lab-run:hover {
-  background: #4338ca;
+  background: #43349f;
 }
 
 .hp-lab-sql span {
@@ -363,7 +363,7 @@
 }
 
 .hp-lab-examples a:hover {
-  border-color: rgba(79, 70, 229, 0.35);
+  border-color: rgba(81, 66, 181, 0.35);
   color: var(--lab-accent);
 }
 
@@ -489,7 +489,7 @@
   left: 12%;
   right: 12%;
   height: 1px;
-  background: rgba(79, 70, 229, 0.28);
+  background: rgba(81, 66, 181, 0.28);
 }
 
 .hp-lab-loop li {
@@ -506,7 +506,7 @@
   place-items: center;
   width: 32px;
   height: 32px;
-  border: 1px solid rgba(79, 70, 229, 0.22);
+  border: 1px solid rgba(81, 66, 181, 0.22);
   border-radius: 8px;
   background: #ffffff;
   color: var(--lab-accent);

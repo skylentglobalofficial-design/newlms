@@ -4,7 +4,7 @@
   --ws-ink: #15171a;
   --ws-muted: #8a8f96;
   --ws-line: rgba(21, 23, 26, 0.08);
-  --ws-accent: #4f46e5;
+  --ws-accent: #5142b5;
   --ws-top: #f4f5fc;
   --ws-left: #e4e7f7;
   --ws-right: #d7dbf2;
@@ -48,7 +48,7 @@
 
 .hp-ws-ring .is-spin {
   fill: none;
-  stroke: rgba(79, 70, 229, 0.45);
+  stroke: rgba(81, 66, 181, 0.45);
   stroke-width: 1.2;
   stroke-dasharray: 18 92;
   stroke-linecap: square;
@@ -179,7 +179,7 @@
     order: 0;
     gap: 16px;
     padding-left: 18px;
-    border-left: 1px solid rgba(79, 70, 229, 0.28);
+    border-left: 1px solid rgba(81, 66, 181, 0.28);
   }
 
   .hp-ws-orbit li,

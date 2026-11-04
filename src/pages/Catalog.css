@@ -2779,9 +2779,9 @@
   gap: 16px 24px;
   padding: 20px 24px !important;
   border-radius: 16px !important;
-  background: linear-gradient(145deg, #11152c 0%, #1d1849 100%) !important;
-  border: 1px solid rgba(251, 191, 36, 0.36) !important;
-  box-shadow: 0 18px 38px -18px rgba(17, 21, 44, 0.42);
+  background: linear-gradient(145deg, #10263d 0%, #183750 100%) !important;
+  border: 1px solid rgba(196, 184, 255, 0.36) !important;
+  box-shadow: 0 18px 38px -18px rgba(16, 38, 61, 0.42);
   color: #ffffff !important;
   text-decoration: none;
   transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
@@ -2789,8 +2789,8 @@
 
 .cat-page .ws-row--track:hover {
   transform: translateY(-2px);
-  border-color: rgba(251, 191, 36, 0.75) !important;
-  box-shadow: 0 22px 44px -16px rgba(17, 21, 44, 0.55);
+  border-color: rgba(196, 184, 255, 0.75) !important;
+  box-shadow: 0 22px 44px -16px rgba(16, 38, 61, 0.55);
 }
 
 .cat-page .ws-row--track .ws-date {
@@ -2798,9 +2798,9 @@
   align-items: center;
   padding: 5px 12px;
   border-radius: 999px;
-  background: rgba(251, 191, 36, 0.14);
-  border: 1px solid rgba(251, 191, 36, 0.42);
-  color: #fbbf24 !important;
+  background: rgba(196, 184, 255, 0.14);
+  border: 1px solid rgba(196, 184, 255, 0.42);
+  color: #c4b8ff !important;
   font-family: var(--font-mono);
   font-size: 11.5px;
   font-weight: 700;
@@ -2864,22 +2864,22 @@
 
 /* ── V20 Royal Midnight Navy + Gold + Emerald Course Cards on /courses (.cat-ready-card) ── */
 .cat-page .cat-ready-card {
-  background: linear-gradient(145deg, #11152c 0%, #1d1849 100%) !important;
-  border: 1px solid rgba(251, 191, 36, 0.36) !important;
+  background: linear-gradient(145deg, #10263d 0%, #183750 100%) !important;
+  border: 1px solid rgba(196, 184, 255, 0.36) !important;
   border-radius: 18px !important;
-  box-shadow: 0 18px 38px -18px rgba(17, 21, 44, 0.42);
+  box-shadow: 0 18px 38px -18px rgba(16, 38, 61, 0.42);
   color: #ffffff !important;
   transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
 }
 
 .cat-page .cat-ready-card:hover {
   transform: translateY(-3px);
-  border-color: rgba(251, 191, 36, 0.75) !important;
-  box-shadow: 0 22px 44px -16px rgba(17, 21, 44, 0.55);
+  border-color: rgba(196, 184, 255, 0.75) !important;
+  box-shadow: 0 22px 44px -16px rgba(16, 38, 61, 0.55);
 }
 
 .cat-page .cat-ready-card .cat-label {
-  color: #fbbf24 !important;
+  color: #c4b8ff !important;
   font-weight: 700;
 }
 
@@ -2897,7 +2897,7 @@
 }
 
 .cat-page .cat-ready-card .cat-ready-facts dt {
-  color: #fbbf24 !important;
+  color: #c4b8ff !important;
 }
 
 .cat-page .cat-ready-card .cat-ready-facts dd {
@@ -2905,7 +2905,7 @@
 }
 
 .cat-page .cat-ready-card .cat-card-cta {
-  color: #fbbf24 !important;
+  color: #c4b8ff !important;
   font-weight: 800;
 }
 
@@ -2920,19 +2920,19 @@
 
 .cat-page .cat-tile.is-ready:hover {
   transform: translateY(-3px);
-  border-color: #4f46e5 !important;
-  box-shadow: 0 18px 38px -16px rgba(17, 21, 44, 0.25);
+  border-color: #5142b5 !important;
+  box-shadow: 0 18px 38px -16px rgba(16, 38, 61, 0.25);
 }
 
 .cat-page .cat-unit {
-  background: linear-gradient(145deg, #11152c 0%, #1d1849 100%) !important;
-  border-bottom: 1px solid rgba(251, 191, 36, 0.38) !important;
+  background: linear-gradient(145deg, #10263d 0%, #183750 100%) !important;
+  border-bottom: 1px solid rgba(196, 184, 255, 0.38) !important;
   color: #ffffff !important;
   padding: 18px 20px !important;
 }
 
 .cat-page .cat-unit-brand {
-  color: #fbbf24 !important;
+  color: #c4b8ff !important;
   font-weight: 700 !important;
 }
 
@@ -2958,8 +2958,8 @@
 
 /* V22 Royal Midnight Navy Course Workspace Card on /courses/:slug */
 .cat-page .cat-intro-meta {
-  background: linear-gradient(145deg, #11152c 0%, #1d1849 100%);
-  border: 1px solid rgba(251, 191, 36, 0.38);
+  background: linear-gradient(145deg, #10263d 0%, #183750 100%);
+  border: 1px solid rgba(196, 184, 255, 0.38);
   border-radius: 18px;
   padding: 22px 24px;
   color: #ffffff;
@@ -2972,7 +2972,7 @@
 
 .cat-page .cat-intro-meta .cat-metrics dt,
 .cat-page .cat-intro-meta .cat-stat-label {
-  color: #fbbf24 !important;
+  color: #c4b8ff !important;
   font-family: var(--font-mono);
   font-weight: 700;
 }

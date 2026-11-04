@@ -7,7 +7,7 @@
   --proj-line: rgba(21, 23, 26, 0.08);
   --proj-line-strong: rgba(21, 23, 26, 0.12);
   --proj-wash: #f6f6f7;
-  --proj-accent: #4f46e5;
+  --proj-accent: #5142b5;
   --proj-indigo-soft: #f7f8fd;
   --proj-indigo-wash: #eef0fb;
   border-top: 1px solid var(--proj-line);
@@ -447,7 +447,7 @@
   display: block;
   width: 100%;
   min-height: 10px;
-  border: 1px solid rgba(79, 70, 229, 0.28);
+  border: 1px solid rgba(81, 66, 181, 0.28);
   border-radius: 3px 3px 0 0;
   background: var(--proj-indigo-wash);
 }

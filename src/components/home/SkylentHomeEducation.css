@@ -7,7 +7,7 @@
   --edu-line: rgba(21, 23, 26, 0.08);
   --edu-line-strong: rgba(21, 23, 26, 0.12);
   --edu-wash: #f6f6f7;
-  --edu-accent: #4f46e5;
+  --edu-accent: #5142b5;
   --edu-indigo-soft: #f7f8fd;
   --edu-indigo-wash: #eef0fb;
   --edu-indigo-left: #e4e7f7;
@@ -158,7 +158,7 @@
   bottom: 28px;
   left: 17px;
   width: 1px;
-  background: rgba(79, 70, 229, 0.28);
+  background: rgba(81, 66, 181, 0.28);
 }
 
 .hp-edu-levels > li + li {
@@ -183,7 +183,7 @@
   place-items: center;
   width: 34px;
   height: 34px;
-  border: 1px solid rgba(79, 70, 229, 0.28);
+  border: 1px solid rgba(81, 66, 181, 0.28);
   border-radius: 50%;
   background: #ffffff;
   color: var(--edu-accent);
@@ -261,7 +261,7 @@
   align-items: center;
   min-height: 26px;
   padding: 0 10px;
-  border: 1px solid rgba(79, 70, 229, 0.22);
+  border: 1px solid rgba(81, 66, 181, 0.22);
   border-radius: 999px;
   background: var(--edu-indigo-soft);
   color: var(--edu-accent);

@@ -4,7 +4,7 @@
   --osx-ink: #15171a;
   --osx-muted: #8a8f96;
   --osx-line: rgba(21, 23, 26, 0.1);
-  --osx-accent: #4f46e5;
+  --osx-accent: #5142b5;
   background: #ffffff;
   border-top: 1px solid rgba(21, 23, 26, 0.08);
 }
@@ -108,7 +108,7 @@ a.hp-osx-n:hover {
     justify-items: start;
     max-width: 100%;
     padding: 8px 0 8px 18px;
-    border-left: 1px solid rgba(79, 70, 229, 0.28);
+    border-left: 1px solid rgba(81, 66, 181, 0.28);
   }
 
   .hp-osx-wires {

@@ -41,7 +41,7 @@
 .vfy-diploma__frame {
   padding: 22px 24px;
   border-radius: 12px;
-  border: 1px solid rgba(251, 191, 36, 0.38);
+  border: 1px solid rgba(196, 184, 255, 0.38);
   background: radial-gradient(circle at top right, rgba(99, 102, 241, 0.16), transparent 60%);
 }
 .vfy-diploma__top {
@@ -58,7 +58,7 @@
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.14em;
-  color: #fbbf24;
+  color: #c4b8ff;
 }
 .vfy-diploma__sub {
   display: block;
@@ -107,7 +107,7 @@
   font-family: var(--sk-font-heading);
   font-size: 1.15rem;
   font-weight: 700;
-  color: #fbbf24;
+  color: #c4b8ff;
 }
 .vfy-diploma__evidence {
   margin: 12px 0 0;

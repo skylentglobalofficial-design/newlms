@@ -4,7 +4,7 @@
   --end-ink: #15171a;
   --end-secondary: #5c6168;
   --end-line: rgba(21, 23, 26, 0.08);
-  --end-accent: #4f46e5;
+  --end-accent: #5142b5;
   background: #ffffff;
   border-top: 1px solid var(--end-line);
 }

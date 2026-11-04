@@ -75,15 +75,15 @@ function InstitutionWorkspace({
       </div>
 
       <div style={{
-        background: 'linear-gradient(145deg, #11152c 0%, #1d1849 100%)',
-        border: '1px solid rgba(251, 191, 36, 0.38)',
+        background: 'linear-gradient(145deg, #10263d 0%, #183750 100%)',
+        border: '1px solid rgba(196, 184, 255, 0.38)',
         borderRadius: 18,
         padding: '26px 28px',
         color: '#ffffff',
         marginBottom: 24,
         boxShadow: '0 18px 40px rgba(10, 14, 34, 0.22)',
       }}>
-        <p style={{ margin: '0 0 8px', color: '#fbbf24', font: '700 11px/1.4 var(--font-mono)', letterSpacing: '0.14em', textTransform: 'uppercase' }}>
+        <p style={{ margin: '0 0 8px', color: '#c4b8ff', font: '700 11px/1.4 var(--font-mono)', letterSpacing: '0.14em', textTransform: 'uppercase' }}>
           ORGANISATION &amp; ENTERPRISE L&amp;D COMMAND CENTER · MULTI-TENANT WORKSPACE
         </p>
         <h1 className="skylent-display-md" style={{ color: '#ffffff', margin: '0 0 8px', maxWidth: 680, lineHeight: 1.08 }}>

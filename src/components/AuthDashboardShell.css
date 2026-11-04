@@ -395,7 +395,7 @@
 
 /* ── V21 Superadmin Role Switcher & Royal Midnight Navy Sidebar Polish ── */
 .auth-shell-rail {
-  background: linear-gradient(180deg, #11152c 0%, #191640 100%) !important;
+  background: linear-gradient(180deg, #10263d 0%, #183750 100%) !important;
 }
 
 .auth-shell-switcher {
@@ -403,7 +403,7 @@
   padding: 12px;
   border-radius: 12px;
   background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(251, 191, 36, 0.35);
+  border: 1px solid rgba(196, 184, 255, 0.35);
 }
 
 .auth-shell-switcher__label {
@@ -412,7 +412,7 @@
   font-size: 9.5px;
   font-weight: 700;
   letter-spacing: 0.08em;
-  color: #fbbf24;
+  color: #c4b8ff;
   margin-bottom: 8px;
 }
 
@@ -438,14 +438,14 @@
 }
 
 .auth-shell-switcher__pill:hover {
-  background: rgba(251, 191, 36, 0.18);
-  border-color: rgba(251, 191, 36, 0.55);
+  background: rgba(196, 184, 255, 0.18);
+  border-color: rgba(196, 184, 255, 0.55);
   color: #ffffff;
 }
 
 .auth-shell-switcher__pill.is-active {
-  background: #fbbf24;
-  border-color: #fbbf24;
-  color: #0f172a;
+  background: #5142b5;
+  border-color: #c4b8ff;
+  color: #ffffff;
   font-weight: 800;
 }

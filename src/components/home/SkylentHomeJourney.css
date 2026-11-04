@@ -4,7 +4,7 @@
   --line-ink: #15171a;
   --line-muted: #8a8f96;
   --line-rule: rgba(21, 23, 26, 0.08);
-  --line-accent: #4f46e5;
+  --line-accent: #5142b5;
   background: #ffffff;
   border-top: 1px solid var(--line-rule);
 }
@@ -36,7 +36,7 @@
   right: 0;
   top: 50%;
   height: 1px;
-  background: rgba(79, 70, 229, 0.38);
+  background: rgba(81, 66, 181, 0.38);
 }
 
 .hp-line-path li {
