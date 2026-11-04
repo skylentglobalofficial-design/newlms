@@ -1308,13 +1308,13 @@ export function HomeCareer() {
           <div className="hx-royal-showcase__head">
             <div>
               <p className="hx-eyebrow hx-eyebrow--dark" style={{ marginBottom: 6 }}>
-                Real Student Projects, Verified Certificates &amp; Outcomes
+                Sample Benchmark Dossiers · Execution Flight Recorder Previews (Illustrative)
               </p>
               <h3 className="hx-royal-showcase__title">
-                See What Learners Actually Build &amp; Put on Their Resume
+                See How Skylent Flight Recorders Capture V1 → V2 Revisions &amp; Lab Telemetry
               </h3>
               <p className="hx-royal-showcase__sub">
-                Every learner graduates with a real graded project and a public certificate ID that any recruiter can verify in one click.
+                Every learner builds a defended project dossier and a public verification ID. Below are three illustrative benchmark dossiers demonstrating the public `/verify` Flight Recorder format.
               </p>
             </div>
             <Link className="sk-btn sk-btn-secondary" to="/verify">
@@ -1326,7 +1326,7 @@ export function HomeCareer() {
             {[
               {
                 code: "SKL-2026-DA-EXEMPLAR",
-                name: "Aarav Sharma",
+                name: "Data Analytics Benchmark Specimen (Illustrative)",
                 role: "Aspiring Data Analyst · Final-Year B.Tech",
                 score: "96/100 Project Score",
                 track: "Data Analytics · Built in Northwind SQL Lab",
@@ -1336,7 +1336,7 @@ export function HomeCareer() {
               },
               {
                 code: "SKL-2026-PM-EXEMPLAR",
-                name: "Meera Krishnan",
+                name: "Product Management Benchmark Specimen (Illustrative)",
                 role: "Transitioning to Product Management",
                 score: "95/100 Project Score",
                 track: "Product Management · Built in Harbor Desk Studio",
@@ -1346,7 +1346,7 @@ export function HomeCareer() {
               },
               {
                 code: "SKL-2026-AI-EXEMPLAR",
-                name: "Rohan Verma",
+                name: "Applied AI & RAG Benchmark Specimen (Illustrative)",
                 role: "Software Engineer Upskilling in AI",
                 score: "97/100 Project Score",
                 track: "Generative AI · Built in Grounded RAG Lab",
