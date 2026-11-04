@@ -77,7 +77,7 @@ export function HomeHero({
           </h1>
           <span className="hx-sr" style={{ display: "none" }}>Learn. Practise. Build. <em>Prove it.</em></span>
           <p className="hxw-hero__lead hx-rise">
-            An independent, industry-connected Institute of Applied Learning: build foundations in 6 Simulated Enterprise Units (Environment A), execute faculty-supervised MSME &amp; startup projects in the Work Assignment Exchange (Environment B), and graduate with an event-based Execution Flight Recorder.
+            Master SQL, Python, Product Management, Full-Stack, and GenAI by solving real company problems in your browser — progress from Simulated Enterprise Labs to supervised MSME &amp; startup fieldwork, and graduate with a verifiable Execution Flight Recorder.
           </p>
           <p className="hx-sr" aria-live="polite">{availability}</p>
 
@@ -799,7 +799,7 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
                   desc: "Master both SQL revenue analytics and Python automation pipelines to build and validate retention models.",
                   skills: ["SQL + Python", "Cohort Analysis", "Churn Modelling"],
                   meta: "10 modules · 30 lessons · 2 capstones",
-                  img: photoAnalytics,
+                  img: photoClass,
                   alt: "Data Science cohort analysis preview",
                 },
                 {
@@ -811,7 +811,7 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
                   desc: "Build citation-backed RAG search assistants, prompt guardrails, and automated accuracy benchmarks.",
                   skills: ["Grounded RAG", "Prompt Guardrails", "LLM Evals"],
                   meta: "5 modules · 15 lessons · 1 capstone",
-                  img: photoProduct,
+                  img: photoCampusPg,
                   alt: "Generative AI evaluation preview",
                 },
                 {
@@ -823,7 +823,7 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
                   desc: "Ship end-to-end React + TypeScript interfaces, Node/Express APIs, and safe PostgreSQL payment ledgers.",
                   skills: ["React & TypeScript", "Node REST APIs", "PostgreSQL"],
                   meta: "5 modules · 15 lessons · 1 capstone",
-                  img: photoScience,
+                  img: heroStudent720,
                   alt: "Full-stack engineering preview",
                 },
               ].map((item) => (
@@ -1842,7 +1842,7 @@ export function HomeInstitutionalArchitecture() {
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", gap: 20, flexWrap: "wrap", marginBottom: 24 }}>
           <div>
             <p style={{ margin: "0 0 8px", color: "#fbbf24", font: "700 11.5px/1.4 var(--font-mono)", letterSpacing: "0.14em", textTransform: "uppercase" }}>
-              ★ NEW V25 INSTITUTIONAL ARCHITECTURE · NOT AN LMS, AN APPLIED WORK INSTITUTION
+              SKYLENT APPLIED WORK MODEL · SIMULATED LABS TO REAL PARTNER FIELDWORK
             </p>
             <h2 id="hx-inst-arch-title" style={{ margin: 0, fontSize: "clamp(24px, 3.2vw, 38px)", color: "#ffffff", fontFamily: "var(--font-display)", lineHeight: 1.12 }}>
               From Simulated Enterprise Units to Real Partner Fieldwork &amp; Flight Recorders
@@ -1865,7 +1865,7 @@ export function HomeInstitutionalArchitecture() {
                 cursor: "pointer",
               }}
             >
-              01 · Work Assignment Exchange (Env B · NEW)
+              01 · Real Partner Fieldwork (Work Exchange)
             </button>
             <button
               type="button"
@@ -1883,7 +1883,7 @@ export function HomeInstitutionalArchitecture() {
                 cursor: "pointer",
               }}
             >
-              02 · 6 Simulated Enterprise Units (Env A)
+              02 · 6 Simulated Enterprise Labs (Env A)
             </button>
             <button
               type="button"

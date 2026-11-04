@@ -32,13 +32,13 @@ export default function HomePage() {
           catalogue={catalogue}
           openTitles={catalogue === "confirmed" ? confirmedOpenTitles(catalog.data ?? []) : []}
         />
-        <HomeInstitutionalArchitecture />
         <HomeProgrammes
           programmes={catalog.data ?? []}
           loading={catalogue === "loading"}
           confirmed={catalogue === "confirmed"}
           onRetry={() => void catalog.reload()}
         />
+        <HomeInstitutionalArchitecture />
         <ZeroLoginInteractiveTryout />
         <HomeElixirFlywheel />
         <InsideProgramme />

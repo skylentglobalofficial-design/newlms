@@ -287,19 +287,19 @@ export default function CourseDetailPage() {
               {showLiveCurriculum ? (
                 <div className="cat-rubric-strip cat-hero-rubric" style={{ gridColumn: "1 / -1", marginTop: 18 }} aria-label="How Your Proof-of-Work Certificate Is Graded · 100% Elixir Fee Credit Eligible">
                   <div className="cat-rubric-item">
-                    <span className="cat-rubric-weight">25% · Concept Checks</span>
-                    <strong>3 Module Quizzes (15 Questions)</strong>
-                    <span>+10 Elixir bonus at 80%+ score.</span>
+                    <span className="cat-rubric-weight">15% Knowledge · 30% Execution</span>
+                    <strong>Concept Checks &amp; Browser Lab Tasks</strong>
+                    <span>3 module checks + verified sandbox execution.</span>
                   </div>
                   <div className="cat-rubric-item">
-                    <span className="cat-rubric-weight">35% · Applied Practice</span>
-                    <strong>Applied Briefs &amp; Lab Execution</strong>
-                    <span>In-browser lab + 20-Min TA SLA.</span>
+                    <span className="cat-rubric-weight">20% Judgement · 15% Defence</span>
+                    <strong>Written Briefs &amp; Boardroom Cold Calls</strong>
+                    <span>Trade-off reasoning + timed oral defence.</span>
                   </div>
                   <div className="cat-rubric-item">
-                    <span className="cat-rubric-weight">40% · Executive Proof</span>
-                    <strong>Capstone &amp; Cold Call Defense</strong>
-                    <span>Career Rise at 60% · Certificate at 100%.</span>
+                    <span className="cat-rubric-weight">20% · V1 → V2 Revision</span>
+                    <strong>Capstone Improvement &amp; Flight Recorder</strong>
+                    <span>Faculty red-line review · Verifiable at /verify.</span>
                   </div>
                 </div>
               ) : null}

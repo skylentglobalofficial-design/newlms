@@ -453,7 +453,7 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
                     </li>
                     <li>
                       <span aria-hidden="true">✓</span>
-                      <span><strong>{content.evidence.rows.length} portfolio artefacts</strong> graded against a 4-criterion rubric</span>
+                      <span><strong>{content.evidence.rows.length} portfolio artefacts</strong> graded on our 5-dimension competency rubric (Knowledge, Execution, Judgement, Oral Defence & V1→V2 Revision)</span>
                     </li>
                     <li>
                       <span aria-hidden="true">✓</span>

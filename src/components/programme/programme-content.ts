@@ -238,7 +238,7 @@ const DATA_ANALYTICS: AuthoredProgrammeContent = {
     intro:
       "The Northwind Commercial Review walks you through cleaning a 180-row retail extract, isolating category margin leakage in SQL, and defending an executive recommendation.",
     disclaimer:
-      "Completed capstone work is evaluated against our 4-criterion rubric and links directly to your Career OS portfolio and verified credential record.",
+      "Completed capstone work is evaluated against our 5-dimension competency rubric (15% Knowledge · 30% Execution · 20% Judgement · 15% Oral Defence · 20% V1→V2 Revision) and links directly to your Career OS portfolio and verified credential record.",
     steps: [
       {
         number: "01",
@@ -488,7 +488,7 @@ const DATA_SCIENCE_AI: AuthoredProgrammeContent = {
     intro:
       "You do not need prior machine-learning experience. You start by cleaning sales tables in SQL, automate data checks in Python, and step-by-step build a customer retention model you can explain in any interview.",
     disclaimer:
-      "Completed work is graded against our 4-criterion rubric and saved directly to your verifiable Career OS portfolio.",
+      "Completed work is graded against our 5-dimension competency rubric (15% Knowledge · 30% Execution · 20% Judgement · 15% Oral Defence · 20% V1→V2 Revision) and saved directly to your verifiable Career OS portfolio.",
     steps: [
       {
         number: "01",
