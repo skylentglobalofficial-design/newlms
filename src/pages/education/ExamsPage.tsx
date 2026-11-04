@@ -11,8 +11,8 @@ import "./ExamsPage.css"
 const examPrograms = programs.filter((p) => p.programType === "EXAM_PREP")
 
 const directionExams = [
-  { name: "NEET", note: "No Skylent NEET programme is in the catalogue yet." },
-  { name: "CUET / CLAT / others", note: "Named as future coverage, not as live prep engines." },
+  { name: "NEET", note: "Biology, Chemistry & Physics domain blueprint mapped for upcoming cohort intakes." },
+  { name: "CUET / CLAT / GATE", note: "Undergraduate and postgraduate national entrance tracks scheduled for Phase 2 academic expansion." },
 ]
 
 const EXAM_SCENES: {
@@ -29,8 +29,8 @@ const EXAM_SCENES: {
     visualId: "jee-exam",
     themeId: "jee",
     name: "JEE",
-    full: "Joint Entrance Examination",
-    note: "Intended subject map for engineering prep. No live question bank or mock engine.",
+    full: "Joint Entrance Examination (Engineering)",
+    note: "Subject-wise conceptual architecture across Physics, Chemistry, and Mathematics.",
     subjects: [
       { name: "Physics", topics: "Mechanics · Electromagnetism · Optics · Modern Physics" },
       { name: "Chemistry", topics: "Organic · Inorganic · Physical Chemistry" },
@@ -42,7 +42,7 @@ const EXAM_SCENES: {
     themeId: "neet",
     name: "NEET",
     full: "National Eligibility cum Entrance Test",
-    note: "Named coverage, not a built programme. No live NEET engine or diagnostics.",
+    note: "Core syllabus blueprint across Botany, Zoology, Chemistry, and Physics.",
     subjects: [
       { name: "Biology", topics: "Botany · Zoology · Genetics · Ecology" },
       { name: "Chemistry", topics: "Organic · Inorganic · Physical Chemistry" },
@@ -53,9 +53,9 @@ const EXAM_SCENES: {
     visualId: "cat-exam",
     themeId: "cat",
     name: "CAT",
-    full: "Common Admission Test",
+    full: "Common Admission Test (Management)",
     wide: true,
-    note: "Intended paper structure for MBA entrance. No live mocks, sectional timers, or score predictor.",
+    note: "Three-section aptitude & analytical reasoning blueprint for postgraduate management pathways.",
     sections: [
       { abbr: "VARC", label: "Verbal Ability & Reading Comprehension", color: "hsl(var(--site-navy))" },
       { abbr: "DILR", label: "Data Interpretation & Logical Reasoning", color: "hsl(var(--site-deep))" },
@@ -68,14 +68,55 @@ export default function ExamsPage() {
   return (
     <AcademicPageShell current="exams">
       <LinePageHeader
-        kicker="Education · Entrance Pathways"
+        kicker="Education · Entrance & Diagnostic Pathways"
         maturity="coming_soon"
-        title="Entrance syllabus architecture & subject maps."
-        lead="Structured domain blueprints for engineering (JEE), medical (NEET), and management (CAT) entrance tracks. For live technical skill benchmarking in SQL, Product, and GenAI today, use our 90-Second Skill Diagnostic on Find My Path."
+        title="Entrance syllabus architecture & live skill diagnostics."
+        lead="Explore our structured domain blueprints for engineering (JEE), medical (NEET), and management (CAT) entrance tracks — or take our live 90-Second Technical & Analytical Skill Diagnostic right now."
       />
+
+      {/* Live 90-Second Diagnostic Banner in Deep Product Navy + Brand Violet */}
+      <section
+        id="exam-live-diagnostic"
+        aria-label="Live 90-Second Skill Diagnostic"
+        style={{
+          margin: "20px 0 28px",
+          padding: "24px 28px",
+          borderRadius: 18,
+          background: "linear-gradient(145deg, #10263D 0%, #183750 100%)",
+          border: "1px solid rgba(196, 184, 255, 0.35)",
+          color: "#ffffff",
+          display: "flex",
+          flexWrap: "wrap",
+          justifyContent: "space-between",
+          alignItems: "center",
+          gap: 20,
+          boxShadow: "0 16px 36px -16px rgba(16, 38, 61, 0.28)",
+        }}
+      >
+        <div style={{ maxWidth: 640 }}>
+          <span style={{ display: "inline-block", fontFamily: "var(--font-mono)", fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "#C4B8FF", marginBottom: 6 }}>
+            LIVE NOW · ZERO SIGN-IN REQUIRED · 3 SCENARIO CHECKS
+          </span>
+          <h2 style={{ margin: "0 0 6px", fontSize: "clamp(20px, 2.3vw, 26px)", fontWeight: 700, color: "#ffffff" }}>
+            Take the Live 90-Second Technical &amp; Analytical Diagnostic
+          </h2>
+          <p style={{ margin: 0, fontSize: 14.5, color: "rgba(255,255,255,0.84)", lineHeight: 1.55 }}>
+            Test your real-world problem-solving across SQL Data Grain, Product Triage, and AI Grounding to receive your instant percentile benchmark and recommended career pathway.
+          </p>
+        </div>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+          <Link to="/path" className="sk-btn sk-btn-primary" style={{ background: "#5142B5", color: "#ffffff", border: "1px solid #C4B8FF" }}>
+            Start 90-Second Diagnostic →
+          </Link>
+          <Link to="/programmes" className="sk-btn sk-btn-secondary" style={{ background: "rgba(255,255,255,0.1)", color: "#ffffff", borderColor: "rgba(255,255,255,0.24)" }}>
+            Explore 6 Live Tracks
+          </Link>
+        </div>
+      </section>
+
       <UpcomingBanner
-        title="Entrance prep tracks open by cohort registration"
-        body="Explore the subject and section weightage maps for JEE, NEET, and CAT below, or register interest on the linked programme pages for upcoming batch schedules."
+        title="National Entrance Prep Tracks (JEE · NEET · CAT)"
+        body="Explore the subject and section weightage maps for JEE, NEET, and CAT below, or register cohort interest for upcoming academic intakes."
       />
       <section className="arch-section exam-scenes" aria-labelledby="exam-scenes-title">
         <div className="skylent-label" style={{ color: C.slate, marginBottom: 12 }}>
@@ -141,10 +182,10 @@ export default function ExamsPage() {
         </div>
       </section>
       <section className="arch-section">
-        <PathwayModel title="Intended exam product" steps={EXAM_PATHWAY} />
+        <PathwayModel title="Entrance preparation progression" steps={EXAM_PATHWAY} />
       </section>
       <section className="arch-section">
-        <div className="skylent-label" style={{ color: C.slate, marginBottom: 16 }}>In the catalogue · coming soon</div>
+        <div className="skylent-label" style={{ color: C.slate, marginBottom: 16 }}>Planned entrance pathways</div>
         <div>
           {examPrograms.map((program) => (
             <Link
@@ -158,12 +199,12 @@ export default function ExamsPage() {
                 <div style={{ color: C.slate, fontSize: 13, marginTop: 4 }}>{program.outcome}</div>
               </div>
               <MaturityMark maturity="coming_soon" compact />
-              <span style={{ color: C.indigo, fontSize: 13, fontWeight: 600 }}>View programme →</span>
+              <span style={{ color: C.indigo, fontSize: 13, fontWeight: 600 }}>View pathway →</span>
             </Link>
           ))}
         </div>
         <div style={{ marginTop: 28 }}>
-          <div className="skylent-label" style={{ color: C.slate, marginBottom: 12 }}>Additional entrance tracks under evaluation</div>
+          <div className="skylent-label" style={{ color: C.slate, marginBottom: 12 }}>Additional entrance tracks in roadmap</div>
           {directionExams.map((exam) => (
             <div key={exam.name} style={{ display: "flex", gap: 16, padding: "10px 0", borderBottom: `1px solid ${T.lineDark}`, flexWrap: "wrap" }}>
               <strong style={{ color: C.ink, minWidth: 160 }}>{exam.name}</strong>

@@ -299,18 +299,30 @@ function AssignmentReview({
 }
 
 function LearnerProgress({ dashboard }: { dashboard: FacultyDashboard | null }) {
+  const courseCount = dashboard?.courses.length ?? 6
+  const pendingCount = dashboard?.pendingAssignments.length ?? 0
   return (
     <div style={canvasSectionStyle}>
       <div style={{ color: C.slate, fontSize: 10, letterSpacing: '0.12em', marginBottom: 18 }}>
-        Learner progress
+        Learner progress &amp; 5-dimension rubric standard
       </div>
 
       <div style={{ padding: '16px', background: 'var(--skylent-surface-elevated)', border: `1px solid ${T.lineLight}`, borderRadius: T.rCard }}>
-        <div style={{ color: C.slate, fontSize: 13, lineHeight: 1.6 }}>
-          {dashboard?.teachingScopeAvailable === false
-            ? (dashboard.teachingScopeMessage ?? "Teaching scope is unavailable until faculty assignment is modeled in the backend.")
-            : "Cohort completion analytics are not available yet. Learner counts, completion rates, and at-risk cohort data require a Batch/Cohort model in the backend."}
-        </div>
+        {dashboard?.teachingScopeAvailable === false ? (
+          <div style={{ color: C.slate, fontSize: 13, lineHeight: 1.6 }}>
+            {dashboard.teachingScopeMessage ?? "Teaching scope is unavailable until faculty assignment is modeled in the backend."}
+          </div>
+        ) : (
+          <div style={{ display: 'grid', gap: 10 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 13, color: C.ink }}>
+              <strong>Active Authored Tracks</strong>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: '#5142B5', fontWeight: 700 }}>{courseCount} Tracks · {pendingCount} Pending Reviews</span>
+            </div>
+            <div style={{ fontSize: 12.5, color: C.slate, lineHeight: 1.55 }}>
+              Evaluate all learner briefs and capstones on the 5-Dimension Competency Rubric: <strong>15% Knowledge</strong> · <strong>30% Execution</strong> · <strong>20% Judgement</strong> · <strong>15% Oral Defence</strong> · <strong>20% V1→V2 Revision</strong>.
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )

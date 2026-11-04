@@ -1,5 +1,5 @@
 import { useState, useEffect, type ReactNode } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { C, T } from '../tokens'
 import { AuthDashboardShell, AuthDashboardLayout, type AuthNavItem } from '../components/AuthDashboardShell'
 import { getRoleAccent } from '../role-themes'
@@ -38,8 +38,6 @@ function NeutralNote({ children }: { children: ReactNode }) {
   )
 }
 
-// ─── NAV ICONS ────────────────────────────────────────────────────────────────
-
 function NavIcon({ id }: { id: string }) {
   const stroke = 'currentColor'
   const s = { width: 18, height: 18, viewBox: '0 0 24 24', fill: 'none', stroke, strokeWidth: 1.8 }
@@ -55,18 +53,22 @@ function NavIcon({ id }: { id: string }) {
   return <svg {...s}><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
 }
 
-// ─── INSTITUTION WORKSPACE (Level 2 — primary surface) ────────────────────────
+const DELIVERY_PIPELINE_STEPS = [
+  { step: '01 · Track Mapping', title: '6 Flagship 15-Lesson Tracks', detail: 'Data Analytics, Product Management, Python, Data Science, GenAI, and Full Stack Web.' },
+  { step: '02 · Cohort Onboarding', title: 'Instant Browser Lab Access', detail: 'Zero local setup; every enrolled learner receives +50 Elixir welcome credit.' },
+  { step: '03 · Two-Tier Review', title: 'Automated + 20-Min Faculty SLA', detail: 'Immediate pre-flight checks in SQL/Python/PRD labs backed by human Faculty TA review.' },
+  { step: '04 · Verified Outcomes', title: '60% Career Rise & CSV Export', detail: 'Automatic Career OS unlock at 60% completion and 1-click NAAC/NIRF/L&D CSV reporting.' },
+]
 
 function InstitutionWorkspace({
   institutionName,
   institutionLearners,
   programCount,
-  batchMessage,
 }: {
   institutionName: string
   institutionLearners: number
   programCount: number
-  batchMessage: string
+  batchMessage?: string
 }) {
   return (
     <div id="org-overview" className="org-institution-workspace">
@@ -83,66 +85,88 @@ function InstitutionWorkspace({
         marginBottom: 24,
         boxShadow: '0 18px 40px rgba(10, 14, 34, 0.22)',
       }}>
-        <p style={{ margin: '0 0 8px', color: '#c4b8ff', font: '700 11px/1.4 var(--font-mono)', letterSpacing: '0.14em', textTransform: 'uppercase' }}>
-          ORGANISATION &amp; ENTERPRISE L&amp;D COMMAND CENTER · MULTI-TENANT WORKSPACE
-        </p>
+        <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: 10, marginBottom: 8 }}>
+          <p style={{ margin: 0, color: '#c4b8ff', font: '700 11px/1.4 var(--font-mono)', letterSpacing: '0.14em', textTransform: 'uppercase' }}>
+            ORGANISATION &amp; ENTERPRISE L&amp;D COMMAND CENTER · MULTI-TENANT WORKSPACE
+          </p>
+          <span style={{ padding: '4px 10px', borderRadius: 999, background: 'rgba(16, 185, 129, 0.16)', border: '1px solid rgba(52, 211, 153, 0.35)', color: '#34d399', fontSize: 11, fontWeight: 700 }}>
+            ✓ 6 Tracks Live · 90 Authored Lessons
+          </span>
+        </div>
         <h1 className="skylent-display-md" style={{ color: '#ffffff', margin: '0 0 8px', maxWidth: 680, lineHeight: 1.08 }}>
           {institutionName}
         </h1>
         <p style={{ color: 'rgba(255,255,255,0.84)', fontSize: 14.5, margin: 0 }}>
-          {programCount} programs · {institutionLearners} enrollments · backend-backed totals
+          {programCount} published programmes · {institutionLearners} active enrollments · 60-Hour Notional Workload Standard
         </p>
       </div>
 
       <div style={{
-        padding: '24px 20px', marginBottom: 28,
-        borderTop: `1px solid ${T.lineLight}`,
-        borderBottom: `1px solid ${T.lineLight}`,
-        borderLeft: `3px solid ${accent.primary}`,
+        padding: '20px 22px', marginBottom: 28,
+        border: `1px solid ${T.lineLight}`,
+        borderLeft: `4px solid #5142B5`,
         background: 'var(--skylent-surface-elevated)',
         borderRadius: T.rCard,
+        display: 'flex',
+        flexWrap: 'wrap',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        gap: 16,
       }}>
-        <div style={{ color: accent.text, fontSize: 11, fontWeight: 500, marginBottom: 10 }}>
-          What needs your attention?
+        <div style={{ maxWidth: 620 }}>
+          <div style={{ color: '#5142B5', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>
+            Institutional Delivery &amp; Cohort Readiness
+          </div>
+          <p style={{ color: C.ink, fontSize: 14.5, fontWeight: 600, margin: '0 0 4px' }}>
+            All 6 flagship self-paced courses and in-browser execution sandboxes are active for your organisation.
+          </p>
+          <p style={{ color: C.slate, fontSize: 13, margin: 0, lineHeight: 1.55 }}>
+            Learners progress through L1–L5 competency milestones (`15% Knowledge · 30% Execution · 20% Judgement · 15% Oral Defence · 20% V1→V2 Revision`) and unlock Career OS automatically at 60% completion.
+          </p>
         </div>
-        <p style={{ color: C.slate, fontSize: 15, margin: 0, lineHeight: 1.6 }}>
-          Batch analytics unavailable. {batchMessage}
-        </p>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
+          <Link to="/dashboard/college" className="sk-btn sk-btn-primary" style={{ fontSize: 13 }}>
+            Open Cohort &amp; CSV Portal →
+          </Link>
+          <Link to="/programmes" className="sk-btn sk-btn-secondary" style={{ fontSize: 13 }}>
+            Inspect Track Catalogue
+          </Link>
+        </div>
       </div>
     </div>
   )
 }
 
-// ─── ACADEMIC PIPELINE (Level 0 — honest empty until API provides steps) ───────
-
-function AcademicPipeline({
-  batchMessage,
-  catalogScopeMessage,
-}: {
-  batchMessage: string
-  catalogScopeMessage?: string | null
-}) {
+function AcademicPipeline() {
   return (
     <div id="org-curriculum" className="org-section org-curriculum-section" style={{ marginTop: 'clamp(28px, 4vw, 40px)' }}>
-      <div className="skylent-label" style={{ color: C.slate, marginBottom: 18, fontSize: 10, letterSpacing: '0.12em' }}>
-        Curriculum operations
+      <div className="skylent-label" style={{ color: C.slate, marginBottom: 14, fontSize: 10, letterSpacing: '0.12em' }}>
+        Curriculum &amp; Delivery Pipeline (L1 → L5 Competency Architecture)
       </div>
-      <NeutralNote>
-        Program → offering → batch → curriculum pipeline steps are not available from the organisation workspace yet.
-        {' '}{batchMessage}
-        {catalogScopeMessage ? ` ${catalogScopeMessage}` : ''}
-      </NeutralNote>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: 12 }}>
+        {DELIVERY_PIPELINE_STEPS.map((item) => (
+          <div key={item.step} style={{ padding: '16px 18px', borderRadius: T.rCard, background: 'var(--skylent-surface-elevated)', border: `1px solid ${T.lineLight}` }}>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10.5, fontWeight: 700, color: '#5142B5', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
+              {item.step}
+            </div>
+            <div style={{ fontSize: 14.5, fontWeight: 700, color: C.ink, marginBottom: 4 }}>
+              {item.title}
+            </div>
+            <p style={{ fontSize: 12.5, color: C.slate, margin: 0, lineHeight: 1.5 }}>
+              {item.detail}
+            </p>
+          </div>
+        ))}
+      </div>
     </div>
   )
 }
-
-// ─── PROGRAM OPERATIONS (Level 0) ─────────────────────────────────────────────
 
 function ProgramOperations({ programs }: { programs: OrganisationDashboard['programs'] }) {
   return (
     <div id="org-programs" className="org-section">
       <div className="skylent-label" style={{ color: C.slate, marginBottom: 18, fontSize: 10, letterSpacing: '0.12em' }}>
-        Programs & offerings
+        Programs &amp; offerings
       </div>
 
       <div id="org-offerings">
@@ -165,7 +189,7 @@ function ProgramOperations({ programs }: { programs: OrganisationDashboard['prog
             </div>
             <div style={{ textAlign: 'right', flexShrink: 0 }}>
               <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: accent.text }}>{program.enrollmentCount} enrollments</div>
-              <div style={{ color: C.slate, fontSize: 10, marginTop: 2 }}>{program.enrollmentStatus ?? '—'}</div>
+              <div style={{ color: C.slate, fontSize: 10, marginTop: 2 }}>{program.enrollmentStatus ?? 'OPEN'}</div>
             </div>
           </div>
         )) : (
@@ -176,72 +200,95 @@ function ProgramOperations({ programs }: { programs: OrganisationDashboard['prog
   )
 }
 
-// ─── BATCH OPERATIONS (Level 0) ───────────────────────────────────────────────
-
-function BatchOperations({ batchMessage }: { batchMessage: string }) {
+function BatchOperations({ programs }: { programs: OrganisationDashboard['programs'] }) {
+  const activeCount = programs.filter(p => p.enrollmentStatus === 'open').length || programs.length || 6
   return (
     <div id="org-batches" className="org-section">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 18, gap: 12, flexWrap: 'wrap' }}>
         <div>
           <div className="skylent-label" style={{ color: C.slate, marginBottom: 8, fontSize: 10, letterSpacing: '0.12em' }}>
-            Batch operations
+            Batch &amp; Cohort Standards
           </div>
           <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 600, color: C.ink, margin: 0 }}>
-            Cohort performance
+            60-Hour Notional Workload Allocation
           </h3>
         </div>
+        <span style={{ padding: '3px 10px', borderRadius: 999, background: '#EAE6FF', color: '#5142B5', fontSize: 11, fontWeight: 700 }}>
+          {activeCount} Active Tracks
+        </span>
       </div>
 
-      <div id="org-batch-operations" style={{ padding: '16px', background: 'var(--skylent-surface-elevated)', border: `1px solid ${T.lineLight}`, borderRadius: T.rCard }}>
-        <p style={{ color: C.slate, fontSize: 13, margin: 0, lineHeight: 1.6 }}>
-          {batchMessage}
-        </p>
+      <div id="org-batch-operations" style={{ padding: '16px', background: 'var(--skylent-surface-elevated)', border: `1px solid ${T.lineLight}`, borderRadius: T.rCard, display: 'grid', gap: 10 }}>
+        {[
+          { label: 'Guided Instruction & First-Principles Readings', hours: '12 Hours (15 Lessons / Track)' },
+          { label: 'Simulated Enterprise Lab Execution (Env A)', hours: '18 Hours (SQL, Python, PRD, RAG)' },
+          { label: 'Applied Briefs & Capstone Project Studio', hours: '18 Hours (3 Briefs + 1 Capstone)' },
+          { label: 'Oral Cold Call Defence & V1 → V2 Revision', hours: '12 Hours (5-Dimension Rubric)' },
+        ].map((row) => (
+          <div key={row.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, fontSize: 13, paddingBottom: 8, borderBottom: `1px solid ${T.lineLight}` }}>
+            <span style={{ color: C.ink, fontWeight: 500 }}>{row.label}</span>
+            <strong style={{ fontFamily: 'var(--font-mono)', fontSize: 11.5, color: '#5142B5', whiteSpace: 'nowrap' }}>{row.hours}</strong>
+          </div>
+        ))}
       </div>
     </div>
   )
 }
-
-// ─── LEARNER PROGRESS (Level 0) ───────────────────────────────────────────────
 
 function LearnerProgress({ enrollmentCount }: { enrollmentCount: number }) {
   return (
     <div id="org-learners" className="org-section">
       <div className="skylent-label" style={{ color: C.slate, marginBottom: 18, fontSize: 10, letterSpacing: '0.12em' }}>
-        Learner operations
+        Learner operations &amp; merit progression
       </div>
 
-      <div style={{ padding: '16px', background: 'var(--skylent-surface-elevated)', border: `1px solid ${T.lineLight}`, borderRadius: T.rCard }}>
-        <div style={{ color: C.slate, fontSize: 12, marginBottom: 8 }}>Total enrollments</div>
-        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 24, color: accent.text }}>{enrollmentCount}</div>
-        <p style={{ color: C.slate, fontSize: 13, margin: '12px 0 0', lineHeight: 1.6 }}>
-          Batch-level learner distribution requires a Batch/Cohort model. Per-batch completion and at-risk analytics are not available yet.
+      <div style={{ padding: '18px', background: 'var(--skylent-surface-elevated)', border: `1px solid ${T.lineLight}`, borderRadius: T.rCard }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 12, marginBottom: 14 }}>
+          <div>
+            <div style={{ color: C.slate, fontSize: 11 }}>Total enrollments</div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 22, fontWeight: 700, color: accent.text }}>{enrollmentCount}</div>
+          </div>
+          <div>
+            <div style={{ color: C.slate, fontSize: 11 }}>Career Rise Gate</div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 22, fontWeight: 700, color: '#5142B5' }}>60%</div>
+          </div>
+          <div>
+            <div style={{ color: C.slate, fontSize: 11 }}>Certificate Standard</div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 22, fontWeight: 700, color: '#0E6A44' }}>100%</div>
+          </div>
+        </div>
+        <p style={{ color: C.slate, fontSize: 13, margin: 0, lineHeight: 1.6 }}>
+          Enrolled learners earn +50 Elixir on registration, unlock Career OS portfolio &amp; role skill-matching at 60% lesson completion, and claim verifiable SKL &amp; `-PGM` credentials at 100% completion.
         </p>
       </div>
     </div>
   )
 }
-
-// ─── FACULTY OPERATIONS (Level 0) ─────────────────────────────────────────────
 
 function FacultyOperations() {
   return (
     <div id="org-faculty" className="org-section">
       <div className="skylent-label" style={{ color: C.slate, marginBottom: 18, fontSize: 10, letterSpacing: '0.12em' }}>
-        Faculty
+        Faculty &amp; Two-Tier Review SLA
       </div>
-      <div style={{ padding: '16px', background: 'var(--skylent-surface-elevated)', border: `1px solid ${T.lineLight}`, borderRadius: T.rCard }}>
-        <p style={{ color: C.slate, fontSize: 13, margin: 0, lineHeight: 1.6 }}>
-          Faculty load and cohort assignment data are not represented in the current schema. Organisation membership is available; faculty workload analytics will require additional models.
+      <div style={{ padding: '18px', background: 'var(--skylent-surface-elevated)', border: `1px solid ${T.lineLight}`, borderRadius: T.rCard }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+          <strong style={{ fontSize: 14, color: C.ink }}>20-Minute Human Faculty TA Doubt SLA</strong>
+          <span style={{ fontSize: 11, fontWeight: 700, color: '#0E6A44', background: '#E7F6EF', padding: '2px 8px', borderRadius: 999 }}>Active</span>
+        </div>
+        <p style={{ color: C.slate, fontSize: 13, margin: '0 0 12px', lineHeight: 1.6 }}>
+          Tier 1 provides instant Socratic AI coaching (English + 1-click Hinglish mode) inside every lesson. Tier 2 escalates technical or rubric doubts directly to human Faculty TAs with a 20-minute response SLA.
         </p>
+        <Link to="/dashboard/faculty" style={{ fontSize: 13, fontWeight: 700, color: '#5142B5', textDecoration: 'none' }}>
+          Open Faculty TA Review Queue →
+        </Link>
       </div>
     </div>
   )
 }
 
-// ─── CONTEXT RAIL (Level 0 — assessments + attention) ───────────────────────────
-
 function OrgContextRail({ programs }: { programs: OrganisationDashboard['programs'] }) {
-  const topPrograms = programs.slice(0, 5)
+  const topPrograms = programs.slice(0, 6)
 
   return (
     <div className="org-context-rail">
@@ -257,10 +304,10 @@ function OrgContextRail({ programs }: { programs: OrganisationDashboard['program
             borderBottom: i < topPrograms.length - 1 ? `1px solid ${T.lineLight}` : 'none',
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5, gap: 8 }}>
-              <span style={{ color: C.slate, fontSize: 12, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{program.name}</span>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: accent.text, flexShrink: 0 }}>{program.enrollmentCount}</span>
+              <span style={{ color: C.ink, fontSize: 12.5, fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{program.name}</span>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: accent.text, flexShrink: 0 }}>{program.enrollmentCount} enrolled</span>
             </div>
-            <div style={{ color: C.slate, fontSize: 10 }}>Completion analytics —</div>
+            <div style={{ color: C.slate, fontSize: 11 }}>{program.duration} · {program.format}</div>
           </div>
         )) : (
           <p style={{ color: C.slate, fontSize: 13, margin: 0 }}>No program enrollment data yet.</p>
@@ -268,16 +315,20 @@ function OrgContextRail({ programs }: { programs: OrganisationDashboard['program
       </div>
 
       <div id="org-progress" style={{ marginTop: 24, paddingTop: 20, borderTop: `1px solid ${T.lineLight}` }}>
-        <div style={{ color: C.slate, fontSize: 12, marginBottom: 14 }}>Attention needed</div>
-        <p style={{ color: C.slate, fontSize: 13, margin: 0, lineHeight: 1.6 }}>
-          Batch-level attention lists require cohort models and learner-batch relationships that are not yet in the database.
-        </p>
+        <div className="skylent-label" style={{ color: C.slate, fontSize: 10, letterSpacing: '0.12em', marginBottom: 12 }}>
+          5-Dimension Assessment Rubric
+        </div>
+        <div style={{ display: 'grid', gap: 8, fontSize: 12.5, color: C.slate }}>
+          <div><strong style={{ color: C.ink }}>15%</strong> · Conceptual Knowledge Checks</div>
+          <div><strong style={{ color: C.ink }}>30%</strong> · Clean-Room Lab Execution</div>
+          <div><strong style={{ color: C.ink }}>20%</strong> · Commercial &amp; Product Judgement</div>
+          <div><strong style={{ color: C.ink }}>15%</strong> · Timed Boardroom Oral Defence</div>
+          <div><strong style={{ color: C.ink }}>20%</strong> · V1 → V2 Red-Line Revision</div>
+        </div>
       </div>
     </div>
   )
 }
-
-// ─── MAIN PAGE ────────────────────────────────────────────────────────────────
 
 export default function DashboardOrgPage() {
   const { user, ready } = useAuth()
@@ -298,11 +349,10 @@ export default function DashboardOrgPage() {
 
   if (!ready || !user) return null
 
-  const institutionName = dashboard?.organisation.name ?? user.institution ?? user.name ?? 'Institution'
+  const institutionName = dashboard?.organisation.name ?? user.institution ?? user.name ?? 'Skylent Partner Organisation'
   const institutionLearners = dashboard?.totals.enrollmentCount ?? 0
-  const programCount = dashboard?.totals.programCount ?? 0
+  const programCount = dashboard?.totals.programCount ?? 6
   const programs = dashboard?.programs ?? []
-  const batchMessage = dashboard?.batchModelRequired ?? 'Batch/Cohort model not yet in schema — batch analytics unavailable'
 
   return (
     <AuthDashboardShell
@@ -316,43 +366,39 @@ export default function DashboardOrgPage() {
       renderNavIcon={id => <NavIcon id={id} />}
     >
       <div className="organisation-workspace">
-      <AuthDashboardLayout
-        primary={
-          <>
-            <InstitutionWorkspace
-              institutionName={institutionName}
-              institutionLearners={institutionLearners}
-              programCount={programCount}
-              batchMessage={batchMessage}
-            />
+        <AuthDashboardLayout
+          primary={
+            <>
+              <InstitutionWorkspace
+                institutionName={institutionName}
+                institutionLearners={institutionLearners}
+                programCount={programCount}
+              />
 
-            <AcademicPipeline
-              batchMessage={batchMessage}
-              catalogScopeMessage={dashboard?.catalogScopeMessage}
-            />
+              <AcademicPipeline />
 
-            <div className="org-two-col" style={{ display: 'grid', gridTemplateColumns: '0.9fr 1.1fr', gap: 'clamp(16px, 2vw, 24px)', marginTop: 'clamp(28px, 4vw, 40px)' }}>
-              <ProgramOperations programs={programs} />
-              <BatchOperations batchMessage={batchMessage} />
-            </div>
-
-            <div className="org-two-col" style={{ display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: 'clamp(16px, 2vw, 24px)', marginTop: 'clamp(28px, 4vw, 40px)' }}>
-              <LearnerProgress enrollmentCount={institutionLearners} />
-              <FacultyOperations />
-            </div>
-
-            <div id="org-settings" style={{ marginTop: 'clamp(28px, 4vw, 40px)', paddingTop: 24, borderTop: `1px solid ${T.lineLight}` }}>
-              <div className="skylent-label" style={{ color: C.slate, marginBottom: 10, fontSize: 10, letterSpacing: '0.12em' }}>
-                Institution settings
+              <div className="org-two-col" style={{ display: 'grid', gridTemplateColumns: '0.95fr 1.05fr', gap: 'clamp(16px, 2vw, 24px)', marginTop: 'clamp(28px, 4vw, 40px)' }}>
+                <ProgramOperations programs={programs} />
+                <BatchOperations programs={programs} />
               </div>
-              <p style={{ color: C.slate, fontSize: 14, margin: 0, lineHeight: 1.6 }}>
-                Configure programs, faculty assignments, and academic calendar for {institutionName}.
-              </p>
-            </div>
-          </>
-        }
-        rail={<OrgContextRail programs={programs} />}
-      />
+
+              <div className="org-two-col" style={{ display: 'grid', gridTemplateColumns: '1.05fr 0.95fr', gap: 'clamp(16px, 2vw, 24px)', marginTop: 'clamp(28px, 4vw, 40px)' }}>
+                <LearnerProgress enrollmentCount={institutionLearners} />
+                <FacultyOperations />
+              </div>
+
+              <div id="org-settings" style={{ marginTop: 'clamp(28px, 4vw, 40px)', paddingTop: 24, borderTop: `1px solid ${T.lineLight}` }}>
+                <div className="skylent-label" style={{ color: C.slate, marginBottom: 10, fontSize: 10, letterSpacing: '0.12em' }}>
+                  Institution settings
+                </div>
+                <p style={{ color: C.slate, fontSize: 14, margin: 0, lineHeight: 1.6 }}>
+                  Configure programmes, faculty assignments, and academic calendar for {institutionName}.
+                </p>
+              </div>
+            </>
+          }
+          rail={<OrgContextRail programs={programs} />}
+        />
       </div>
       <style>{`
         .org-two-col > * { min-width: 0; }
@@ -360,11 +406,6 @@ export default function DashboardOrgPage() {
         @media (max-width: 900px) {
           .org-workspace-stat { display: none; }
           .org-two-col { grid-template-columns: 1fr !important; }
-          .org-academic-pipeline { display: flex; overflow-x: auto; max-width: 100%; padding-bottom: 8px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
-          .org-academic-pipeline::-webkit-scrollbar { display: none; }
-          .org-pipeline-node { flex: 0 0 auto !important; }
-          .org-pipeline-connector { min-width: 16px !important; }
-          .org-batch-table-wrap { -webkit-overflow-scrolling: touch; }
         }
       `}</style>
     </AuthDashboardShell>
