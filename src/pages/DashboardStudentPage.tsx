@@ -833,7 +833,7 @@ export default function DashboardStudentPage() {
               ["15% Oral Defence", "Boardroom Cold Call", "#c4b8ff"],
               ["20% V1 → V2 Diff", "Faculty Red-Line Review", "#c4b8ff"],
             ].map(([title, sub, col]) => (
-              <div key={title} style={{ background: "rgba(15, 23, 42, 0.62)", border: "1px solid rgba(255,255,255,0.14)", borderRadius: 10, padding: "10px 12px" }}>
+              <div key={title} style={{ background: "rgba(255, 255, 255, 0.14)", border: "1px solid rgba(255,255,255,0.14)", borderRadius: 10, padding: "10px 12px" }}>
                 <strong style={{ color: col, fontSize: 13, fontFamily: "var(--font-mono)", display: "block" }}>{title}</strong>
                 <span style={{ color: "rgba(255,255,255,0.8)", fontSize: 12 }}>{sub}</span>
               </div>

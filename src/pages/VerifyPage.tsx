@@ -514,21 +514,21 @@ export default function VerifyPage() {
               </span>
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(230px, 1fr))", gap: 14 }}>
-              <div style={{ background: "rgba(15, 23, 42, 0.6)", border: "1px solid rgba(255,255,255,0.14)", borderRadius: 12, padding: 16 }}>
+              <div style={{ background: "#FFFFFF", border: "1px solid rgba(255,255,255,0.14)", borderRadius: 12, padding: 16 }}>
                 <strong style={{ color: "#c4b8ff", fontSize: 12, fontFamily: "var(--font-mono)", display: "block", marginBottom: 6 }}>LEVEL 1 · 5-SECOND RECRUITER SUMMARY</strong>
-                <p style={{ margin: 0, fontSize: 13, color: "rgba(255,255,255,0.85)", lineHeight: 1.5 }}>
+                <p style={{ margin: 0, fontSize: 13, color: "#334155", lineHeight: 1.5 }}>
                   Displays verified achievement, 5 competency dimensions (Knowledge 15%, Execution 30%, Judgement 20%, Defence 15%, Revision 20%), reviewer identity, and active status.
                 </p>
               </div>
-              <div style={{ background: "rgba(15, 23, 42, 0.6)", border: "1px solid rgba(255,255,255,0.14)", borderRadius: 12, padding: 16 }}>
+              <div style={{ background: "#FFFFFF", border: "1px solid rgba(255,255,255,0.14)", borderRadius: 12, padding: 16 }}>
                 <strong style={{ color: "#c4b8ff", fontSize: 12, fontFamily: "var(--font-mono)", display: "block", marginBottom: 6 }}>LEVEL 2 · EVENT-BASED FLIGHT RECORDER</strong>
-                <p style={{ margin: 0, fontSize: 13, color: "rgba(255,255,255,0.85)", lineHeight: 1.5 }}>
+                <p style={{ margin: 0, fontSize: 13, color: "#334155", lineHeight: 1.5 }}>
                   Logs structured provenance events: <code>attempt_started</code> → <code>task_executed</code> → <code>submission_created</code> → <code>faculty_feedback_added</code> → <code>submission_revised</code> → <code>defence_completed</code>.
                 </p>
               </div>
-              <div style={{ background: "rgba(15, 23, 42, 0.6)", border: "1px solid rgba(255,255,255,0.14)", borderRadius: 12, padding: 16 }}>
+              <div style={{ background: "#FFFFFF", border: "1px solid rgba(255,255,255,0.14)", borderRadius: 12, padding: 16 }}>
                 <strong style={{ color: "#c4b8ff", fontSize: 12, fontFamily: "var(--font-mono)", display: "block", marginBottom: 6 }}>INTEGRITY &amp; AI-USE DISCLOSURE</strong>
-                <p style={{ margin: 0, fontSize: 13, color: "rgba(255,255,255,0.85)", lineHeight: 1.5 }}>
+                <p style={{ margin: 0, fontSize: 13, color: "#334155", lineHeight: 1.5 }}>
                   Issued by Skylent Global Pvt. Ltd. (Institute of Applied Learning). Public exemplar records below are explicitly marked as illustrative benchmark samples.
                 </p>
               </div>

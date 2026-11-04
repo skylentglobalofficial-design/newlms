@@ -201,7 +201,7 @@ export function AcademicSubnav({ current }: { current?: string }) {
 
 export function LearnPillarSubnav({ current }: { current: string }) {
   return (
-    <nav className="arch-pillar-subnav" aria-label="Learn destinations">
+    <nav className="arch-pillar-subnav" aria-label="Learn destinations" style={{ position: "absolute", width: 1, height: 1, overflow: "hidden", clip: "rect(0,0,0,0)", whiteSpace: "nowrap" }}>
       <span className="arch-pillar-kicker">Learn</span>
       {LEARN_DESTINATIONS.map((line) => (
         <Link

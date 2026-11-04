@@ -478,3 +478,47 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* V32 Royal Purple + Soft Lavender + Crisp White Goal Explorer Upgrade */
+.skills-p4 .sk-hero {
+  background: linear-gradient(180deg, #F6F4FF 0%, #FFFFFF 100%);
+  border-bottom: 1px solid #E2DCFF;
+  padding: 48px 0 36px;
+}
+.skills-p4 .sk-intents {
+  gap: 16px;
+}
+.skills-p4 .sk-intent {
+  padding: 20px 20px 18px;
+  border-radius: 16px;
+  background: #FFFFFF;
+  border: 1.5px solid #DDD7FF;
+  border-top: 4px solid #5142B5;
+  box-shadow: 0 10px 24px -14px rgba(81, 66, 181, 0.14);
+}
+.skills-p4 .sk-intent.is-selected {
+  background: linear-gradient(135deg, #3B2D96 0%, #5142B5 100%);
+  border-color: #5142B5;
+  border-top: 4px solid #34D399;
+  box-shadow: 0 16px 32px -14px rgba(81, 66, 181, 0.35);
+}
+.skills-p4 .sk-intent.is-selected .sk-intent-label {
+  color: #FFFFFF;
+}
+.skills-p4 .sk-intent.is-selected .sk-intent-question {
+  color: #E2E8F0;
+}
+.skills-p4 .sk-intent.is-selected .sk-intent-state {
+  color: #A7F3D0;
+}
+.skills-p4 .sk-stages {
+  gap: 18px;
+}
+.skills-p4 .sk-stage {
+  padding: 20px;
+  border-radius: 16px;
+  background: #FFFFFF;
+  border: 1.5px solid #DDD7FF;
+  border-top: 4px solid #5142B5;
+  box-shadow: 0 8px 22px -14px rgba(81, 66, 181, 0.12);
+}

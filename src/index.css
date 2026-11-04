@@ -149,9 +149,7 @@ body {
 .skylent-public-canvas main p[style*="color: rgb(255, 255, 255)"],
 .skylent-public-canvas main h1[style*="color: #fff"],
 .skylent-public-canvas main h2[style*="color: #fff"],
-.skylent-public-canvas main h3[style*="color: #fff"] { color: var(--skylent-color-ink) !important; }
-.skylent-public-canvas main [style*="background: rgba(255, 255, 255"],
-.skylent-public-canvas main [style*="background: rgba(255,255,255"] { background: var(--skylent-color-cream) !important; }
+/* Removed destructive inline white override */
 .skylent-light-atmosphere { display: none; }
 .program-sticky-nav-scroll { scrollbar-width: none; }
 .program-sticky-nav-scroll::-webkit-scrollbar { display: none; }

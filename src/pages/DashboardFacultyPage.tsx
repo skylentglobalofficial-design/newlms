@@ -98,26 +98,26 @@ function CatalogOverview({
         padding: '16px 0', marginBottom: 20,
         borderTop: '1px solid rgba(255,255,255,0.14)', borderBottom: '1px solid rgba(255,255,255,0.14)',
       }}>
-        <div style={{ background: 'rgba(15,23,42,0.55)', padding: 14, borderRadius: 12, border: '1px solid rgba(52,211,153,0.36)' }}>
+        <div style={{ background: 'rgba(255, 255, 255, 0.14)', padding: 14, borderRadius: 12, border: '1px solid rgba(52,211,153,0.36)' }}>
           <div style={{ color: '#34d399', fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 700, marginBottom: 4 }}>Faculty TA SLA</div>
           <div style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 700, color: '#ffffff' }}>20 min</div>
           <div style={{ color: 'rgba(255,255,255,0.72)', fontSize: 11, marginTop: 2 }}>20-minute doubt &amp; rubric SLA</div>
         </div>
-        <div style={{ background: 'rgba(15,23,42,0.55)', padding: 14, borderRadius: 12, border: '1px solid rgba(196, 184, 255,0.34)' }}>
+        <div style={{ background: 'rgba(255, 255, 255, 0.14)', padding: 14, borderRadius: 12, border: '1px solid rgba(196, 184, 255,0.34)' }}>
           <div style={{ color: '#c4b8ff', fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 700, marginBottom: 4 }}>Pending reviews</div>
           <div style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 700, color: '#ffffff' }}>
             {pendingCount}
           </div>
           <div style={{ color: 'rgba(255,255,255,0.72)', fontSize: 11, marginTop: 2 }}>V1 → V2 submissions waiting</div>
         </div>
-        <div style={{ background: 'rgba(15,23,42,0.55)', padding: 14, borderRadius: 12, border: '1px solid rgba(255,255,255,0.14)' }}>
+        <div style={{ background: 'rgba(255, 255, 255, 0.14)', padding: 14, borderRadius: 12, border: '1px solid rgba(255,255,255,0.14)' }}>
           <div style={{ color: '#c4b8ff', fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 700, marginBottom: 4 }}>Programs in catalog</div>
           <div style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 700, color: '#ffffff' }}>
             {programCount}
           </div>
           <div style={{ color: 'rgba(255,255,255,0.72)', fontSize: 11, marginTop: 2 }}>career pathways</div>
         </div>
-        <div style={{ background: 'rgba(15,23,42,0.55)', padding: 14, borderRadius: 12, border: '1px solid rgba(255,255,255,0.14)' }}>
+        <div style={{ background: 'rgba(255, 255, 255, 0.14)', padding: 14, borderRadius: 12, border: '1px solid rgba(255,255,255,0.14)' }}>
           <div style={{ color: '#c4b8ff', fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 700, marginBottom: 4 }}>Courses in catalog</div>
           <div style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 700, color: '#ffffff' }}>
             {courseCount}

@@ -21,6 +21,7 @@ import { practiceNoteForProgramme } from "../../lib/practice-environments"
 import "./ProfessionalProgrammeTemplate.css"
 import "../../pages/cine.css"
 import { STATUS_NOT_CONFIRMED } from "./CatalogueNotice"
+import ProgrammePricingAndDock from "./ProgrammePricingAndDock"
 
 type Props = {
   program: CatalogProgramDetail
@@ -500,6 +501,17 @@ export default function ProgrammeListing({ program, truth, cta, honesty, afterEn
           ))}
         </div>
       </section>
+
+      <div id="pp-review-standard" />
+      <div id="pp-evidence" />
+      <div id="pp-career" />
+      <ProgrammePricingAndDock
+        programName={program.name}
+        studioName={pathwaySpec.studio}
+        capstoneTitle={pathwaySpec.capstoneTitle}
+        canEnrol={canEnrol}
+        onEnrol={onEnrol}
+      />
 
       <section className="sky-stage sky-band-navy pp-next pp-next--listing" aria-labelledby="pp-next-title">
         <div className={`sky-container pp-listing-stage${thumb.hasArtefact ? "" : " pp-listing-stage--plain"}`}>

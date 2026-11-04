@@ -319,7 +319,7 @@ export default function SkillsPage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const intentId = useMemo(() => {
     const value = searchParams.get("intent")
-    return isLearnIntentId(value) ? value : null
+    return isLearnIntentId(value) ? value : "data"
   }, [searchParams])
 
   function selectIntent(id: LearnIntentId) {

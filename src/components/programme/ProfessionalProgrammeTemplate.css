@@ -335,7 +335,7 @@
 .pp-enrol-card__terminal {
   padding: 12px 14px;
   border-radius: 10px;
-  background: rgba(15, 23, 42, 0.72);
+  background: rgba(255, 255, 255, 0.14);
   border: 1px solid rgba(148, 163, 184, 0.24);
 }
 
@@ -556,7 +556,7 @@
   align-items: start;
 }
 .pp-build__lead { max-width: 44em; }
-.pp-practice {
+.pp-build .pp-practice {
   margin-top: 12px;
   max-width: 44em;
   font-size: 0.96875rem;
@@ -935,8 +935,13 @@
 .pp-split__intro { min-width: 0; }
 .pp-split__main { min-width: 0; }
 
-/* ── 6. Practice: Navy Band ───────────────────────────────────────────────── */
-.pp-practice { padding-block: clamp(48px, 5.6vw, 80px); }
+/* ── 6. Practice: Full-Width Band (Fixes 50% Half-Width Bug) ──────────────── */
+section.pp-practice {
+  width: 100%;
+  max-width: none;
+  margin-top: 0;
+  padding-block: clamp(52px, 5.8vw, 84px);
+}
 .pp-practice .pp-body { color: hsl(var(--site-on-navy)); opacity: 0.88; }
 .pp-practice .sky-spec { border-top-color: hsl(var(--site-on-navy-muted)); }
 .pp-practice .sky-spec__row { padding: 16px 0; border-bottom-color: hsl(var(--site-navy-line)); }
@@ -1179,4 +1184,493 @@
 
 .pp-jump a::before {
   background: #c4b8ff;
+}
+
+
+/* ── Visual Portfolio Deliverable Cards (Screenshot 2 Enhancement) ────────── */
+.pp-portfolio-cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 28px;
+}
+
+.pp-port-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 20px 22px;
+  border-radius: 16px;
+  background: #ffffff;
+  border: 1.5px solid #DDD7FF;
+  border-top: 4px solid #5142B5;
+  box-shadow: 0 10px 26px -14px rgba(81, 66, 181, 0.14);
+}
+
+.pp-port-card--cap {
+  background: linear-gradient(180deg, #F6F4FF 0%, #FFFFFF 100%);
+  border-color: #5142B5;
+  border-top-width: 5px;
+}
+
+.pp-port-card__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.pp-port-card__num {
+  font-family: var(--sk-font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #5142B5;
+}
+
+.pp-port-card__tag {
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: #F5F3FF;
+  border: 1px solid #DDD7FF;
+  font-family: var(--sk-font-mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #5142B5;
+}
+
+.pp-port-card__tag--cap {
+  background: #DCFCE7;
+  border-color: #86EFAC;
+  color: #15803D;
+}
+
+.pp-port-card__title {
+  margin: 0;
+  font-family: var(--sk-font-heading);
+  font-size: 1.15rem;
+  font-weight: 750;
+  color: #0F172A;
+}
+
+.pp-port-card__block {
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+}
+
+.pp-port-card__block--verify {
+  background: #F6F4FF;
+  border-color: #E2DCFF;
+}
+
+.pp-port-card__block span {
+  display: block;
+  font-family: var(--sk-font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #5142B5;
+  margin-bottom: 3px;
+}
+
+.pp-port-card__block p {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.45;
+  color: #334155;
+}
+
+/* ── 3-Tier Pricing Plans & Online/Offline Toggle (Screenshot 10) ─────────── */
+.pp-plans-band {
+  padding-block: clamp(56px, 6.5vw, 92px);
+  background: linear-gradient(180deg, #F6F4FF 0%, #FFFFFF 100%);
+  border-top: 1px solid #E2DCFF;
+  border-bottom: 1px solid #E2DCFF;
+  scroll-margin-top: calc(var(--nav-h, 64px) + 68px);
+}
+
+.pp-plans-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 48em;
+  margin: 0 auto 36px;
+}
+
+.pp-plans-eyebrow {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: #EDE9FE;
+  border: 1px solid #DDD7FF;
+  font-family: var(--sk-font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #5142B5;
+  text-transform: uppercase;
+}
+
+.pp-plans-h2 {
+  margin-top: 12px !important;
+  font-family: var(--sk-font-heading);
+  font-size: clamp(1.75rem, 2.8vw, 2.45rem);
+  font-weight: 800;
+  line-height: 1.15;
+  color: #0F172A;
+}
+
+.pp-plans-h2 em {
+  font-style: normal;
+  color: #5142B5;
+}
+
+.pp-plans-sub {
+  margin-top: 10px !important;
+  font-size: 0.98rem;
+  line-height: 1.6;
+  color: #475569;
+}
+
+.pp-mode-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 22px;
+  padding: 5px;
+  border-radius: 999px;
+  background: #EEF2F6;
+  border: 1px solid #CBD5E1;
+}
+
+.pp-mode-btn {
+  min-width: 118px;
+  padding: 10px 24px;
+  border-radius: 999px;
+  border: 0;
+  background: transparent;
+  font-family: var(--sk-font-heading);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #334155;
+  cursor: pointer;
+  transition: all 160ms ease;
+}
+
+.pp-mode-btn.is-active {
+  background: #FFFFFF;
+  color: #5142B5;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.1);
+}
+
+.pp-mode-caption {
+  margin-top: 10px !important;
+  font-size: 0.82rem;
+  color: #64748B;
+}
+
+.pp-plans-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 22px;
+  align-items: stretch;
+}
+
+.pp-plan-card {
+  display: flex;
+  flex-direction: column;
+  border-radius: 20px;
+  background: #FFFFFF;
+  border: 1.5px solid #E2E8F0;
+  box-shadow: 0 8px 28px -14px rgba(15, 23, 42, 0.08);
+  padding: 28px 26px;
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+}
+
+.pp-plan-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 18px 40px -16px rgba(81, 66, 181, 0.18);
+}
+
+.pp-plan-card--pro {
+  border: 2px solid #5142B5;
+  box-shadow: 0 18px 44px -16px rgba(81, 66, 181, 0.24);
+  position: relative;
+}
+
+.pp-plan-card__top {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #F1F5F9;
+}
+
+.pp-plan-card__icon {
+  width: 44px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pp-plan-card__title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pp-plan-card__name {
+  margin: 0;
+  font-family: var(--sk-font-heading);
+  font-size: 1.35rem;
+  font-weight: 750;
+  color: #1E293B;
+}
+
+.pp-plan-card__rec {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: #8B5CF6;
+  color: #FFFFFF;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.pp-plan-card__price-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 10px;
+  margin-top: 2px;
+}
+
+.pp-plan-card__price {
+  font-family: var(--sk-font-heading);
+  font-size: 1.95rem;
+  font-weight: 800;
+  color: #0F172A;
+  letter-spacing: -0.02em;
+}
+
+.pp-plan-card__pilot {
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: #DCFCE7;
+  border: 1px solid #86EFAC;
+  color: #15803D;
+  font-family: var(--sk-font-mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.pp-plan-card__meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: #64748B;
+}
+
+.pp-plan-card__star {
+  color: #D97706;
+  font-weight: 750;
+}
+
+.pp-plan-card__sep {
+  color: #CBD5E1;
+}
+
+.pp-plan-card__btn {
+  margin-top: 8px;
+  width: 100%;
+  min-height: 46px;
+  border-radius: 10px;
+  font-family: var(--sk-font-heading);
+  font-size: 0.95rem;
+  font-weight: 750;
+  cursor: pointer;
+  transition: all 160ms ease;
+}
+
+.pp-plan-card__btn--soft {
+  background: #F5F3FF;
+  border: 1px solid #DDD7FF;
+  color: #5142B5;
+}
+
+.pp-plan-card__btn--soft:hover {
+  background: #EDE9FE;
+  border-color: #5142B5;
+}
+
+.pp-plan-card__btn--primary {
+  background: #5142B5;
+  border: 1px solid #5142B5;
+  color: #FFFFFF;
+  box-shadow: 0 8px 20px -6px rgba(81, 66, 181, 0.45);
+}
+
+.pp-plan-card__btn--primary:hover {
+  background: #43349F;
+}
+
+.pp-plan-card__features {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-top: 20px;
+}
+
+.pp-plan-feat strong {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 750;
+  color: #1E293B;
+  margin-bottom: 3px;
+}
+
+.pp-plan-feat p {
+  margin: 0;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: #64748B;
+}
+
+/* ── Programme FAQs Section (#pp-faq) ─────────────────────────────────────── */
+.pp-faq-band {
+  padding-block: clamp(44px, 5vw, 72px);
+  background: #FFFFFF;
+  scroll-margin-top: calc(var(--nav-h, 64px) + 68px);
+}
+
+.pp-faq-head {
+  text-align: center;
+  max-width: 42em;
+  margin: 0 auto 28px;
+}
+
+.pp-faq-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.pp-faq-item {
+  padding: 18px 20px;
+  border-radius: 14px;
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+}
+
+.pp-faq-item summary {
+  font-family: var(--sk-font-heading);
+  font-size: 1rem;
+  font-weight: 750;
+  color: #0F172A;
+  cursor: pointer;
+  list-style: none;
+}
+
+.pp-faq-item summary::-webkit-details-marker {
+  display: none;
+}
+
+.pp-faq-item p {
+  margin-top: 8px !important;
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: #475569;
+}
+
+/* ── Sleek Floating Bottom Section Navigation Dock (Screenshot 10) ────────── */
+.pp-floating-dock-wrap {
+  position: sticky;
+  bottom: 16px;
+  z-index: 45;
+  display: flex;
+  justify-content: center;
+  padding: 0 16px;
+  margin-top: -12px;
+  margin-bottom: 16px;
+  pointer-events: none;
+}
+
+.pp-floating-dock {
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 100%;
+  overflow-x: auto;
+  padding: 8px 10px;
+  border-radius: 16px;
+  background: rgba(24, 24, 36, 0.94);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 16px 38px -10px rgba(15, 23, 42, 0.45);
+}
+
+.pp-floating-dock__up {
+  flex: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.08);
+  color: #FFFFFF;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.pp-floating-dock a {
+  flex: none;
+  padding: 7px 13px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #E2E8F0 !important;
+  white-space: nowrap;
+  transition: all 150ms ease;
+}
+
+.pp-floating-dock a:hover,
+.pp-floating-dock a.is-highlight {
+  background: rgba(139, 92, 246, 0.22);
+  border: 1px solid rgba(167, 139, 250, 0.55);
+  color: #FFFFFF !important;
+}
+
+.pp-floating-dock__cta {
+  flex: none;
+  margin-left: 6px;
+  padding: 8px 18px;
+  border-radius: 10px;
+  border: 0;
+  background: #5142B5;
+  color: #FFFFFF;
+  font-family: var(--sk-font-heading);
+  font-size: 0.85rem;
+  font-weight: 750;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.pp-floating-dock__cta:hover {
+  background: #6353CE;
+}
+
+@media (max-width: 1024px) {
+  .pp-portfolio-cards,
+  .pp-plans-grid,
+  .pp-faq-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }

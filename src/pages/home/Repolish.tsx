@@ -68,10 +68,6 @@ export function HomeHero({
       <div className="hxw-hero__bg" aria-hidden="true" />
       <div className="sky-container hxw-hero__grid">
         <div className="hxw-hero__copy">
-          <p className="hx-rise hxw-hero__pill">
-            <span className="hxw-hero__pill-dot" aria-hidden="true" />
-            <span>SKYLENT · INSTITUTE OF APPLIED LEARNING · LEARN · PRACTISE · WORK · REFLECT · PROVE</span>
-          </p>
           <h1 id="hx-hero-title" className="hxw-hero__title hx-rise">
             Learn beyond the classroom. <em>Build the ability to do real work.</em>
           </h1>
@@ -85,12 +81,6 @@ export function HomeHero({
             <Link className="sk-btn sk-btn-primary hx-btn" to="/programmes">
               Explore programmes
               <ArrowRight />
-            </Link>
-            <Link className="sk-btn sk-btn-secondary hx-btn" to="/events">
-              Join ₹99 Live Workshop
-            </Link>
-            <Link className="sk-btn sk-btn-secondary hx-btn" to="/path">
-              Find My Path (90s)
             </Link>
           </div>
           <ul
@@ -244,134 +234,270 @@ export function WalkControls({
 
 const DA_SLUG = "data-analytics-pro"
 const LMS_STAGES = [
-  { key: "programme", label: "1. Choose Track", href: "/programmes/data-analytics-pro", action: "Explore Programmes" },
-  { key: "lesson", label: "2. Read & Check", href: "/courses/data-analytics", action: "Preview Lessons" },
-  { key: "practice", label: "3. Browser Lab", href: "/os/practice/data-analytics", action: "See Browser Labs" },
-  { key: "project", label: "4. Capstone Project", href: "/os/projects/data-analytics/northwind", action: "View Capstones" },
-  { key: "evidence", label: "5. Verified Certificate", href: "/verify", action: "Verify Credentials" },
+  { key: "programme", label: "1. Course Syllabus", href: "/programmes/data-analytics-pro", action: "Explore Programmes" },
+  { key: "lesson", label: "2. Lesson & AI Coach", href: "/courses/data-analytics", action: "Preview Lessons" },
+  { key: "practice", label: "3. Live SQL Lab", href: "/os/practice/data-analytics", action: "See Browser Labs" },
+  { key: "project", label: "4. Capstone Grader", href: "/os/projects/data-analytics/northwind", action: "View Capstones" },
+  { key: "evidence", label: "5. Verified Dossier", href: "/verify/SKL-2026-DA-EXEMPLAR", action: "Verify Credentials" },
 ] as const
 
 function LmsCanvas({ stage }: { stage: number }) {
   const facts = courseFacts()
   const content = authoredProgrammeContent(DA_SLUG)
   const max = NORTHWIND.categories[0].value
+
   if (stage === 0) {
     return (
-      <div className="hx-canvas">
-        <div className="hx-canvas__head">
+      <div className="hx-canvas hx-lms-mock">
+        <div className="hx-lms-mock__topstrip">
           <div>
-            <p className="hx-k">Step 01 · Structured Career Track</p>
-            <h3>{facts?.title ?? "Data Analytics"}</h3>
+            <span className="hx-k">INSIDE SKYLENT OS · COURSE DASHBOARD &amp; MODULE TREE</span>
+            <h3>{facts?.title ?? "Data Analytics"} — 5 Modules · 15 Authored Lessons</h3>
           </div>
-          <p>{facts ? `${facts.stats.modules} modules · ${facts.stats.lessons} lessons` : "Modules appear with the course."}</p>
+          <div className="hx-lms-mock__badges">
+            <span className="hx-lms-pill hx-lms-pill--green">✓ 60% Career OS Gate Unlocked</span>
+            <span className="hx-lms-pill hx-lms-pill--purple">Streak: 5 Days 🔥 (+15 Elixir)</span>
+          </div>
         </div>
-        <ol className="hx-mods">
-          {(facts?.modules ?? []).map((module) => (
-            <li key={module.id} className={`is-${module.state}`}>
-              <span>{module.label}</span>
-              <span>
-                <strong>{module.title}</strong>
-                <em>{module.lessons.length} lessons</em>
-              </span>
-              <span>{module.state === "current" ? "Active Module" : module.state === "complete" ? "Completed" : "Included"}</span>
-            </li>
-          ))}
-        </ol>
-      </div>
-    )
-  }
-  if (stage === 1 && facts) {
-    return (
-      <div className="hx-canvas hx-canvas--split">
-        <ol className="hx-lessons">
-          {facts.currentModule.lessons.map((lesson) => {
-            const open = lesson.id === facts.current.id
-            const earlier = facts.currentModule.lessons.findIndex((item) => item.id === lesson.id) < facts.currentModule.lessons.findIndex((item) => item.id === facts.current.id)
-            return (
-              <li key={lesson.id} className={open ? "is-open" : earlier ? "is-earlier" : undefined}>
-                <span>{lesson.label}</span>
-                <span>{lesson.title}</span>
+        <div className="hx-lms-mock__grid2">
+          <ol className="hx-mods">
+            {(facts?.modules ?? []).map((module) => (
+              <li key={module.id} className={`is-${module.state}`}>
+                <span>{module.label}</span>
+                <span>
+                  <strong>{module.title}</strong>
+                  <em>{module.lessons.length} lessons · Notes, Lab &amp; Brief</em>
+                </span>
+                <span>{module.state === "current" ? "● Active Module" : module.state === "complete" ? "✓ Completed" : "Included"}</span>
               </li>
-            )
-          })}
-        </ol>
-        <div>
-          <p className="hx-k">Module {facts.currentModuleNumber} · {facts.current.kind}{facts.current.duration ? ` · ${facts.current.duration}` : ""}</p>
-          <h3>{facts.current.title}</h3>
-          <p className="hx-canvas__note">Bite-sized written lessons + quick concept quizzes so you understand every concept before writing code.</p>
-          <span className="hx-bar" aria-hidden="true"><span style={{ width: `${facts.percent}%` }} /></span>
+            ))}
+          </ol>
+          <div className="hx-lms-mock__rightcard">
+            <span className="hx-lms-mock__subkicker">ACTIVE MODULE 03 · SQL FOR ANALYSTS</span>
+            <strong>What happens inside each module</strong>
+            <p>Every module pairs first-principles written notes with an in-browser SQL lab, a 60-second Boardroom Cold Call, and a graded brief.</p>
+            <div className="hx-lms-mock__checklist">
+              <div><span>✓ L7 · Notes + Lab</span><b>SQL SELECT, WHERE &amp; Valid-Row Hygiene</b></div>
+              <div><span>● L8 · Active Now</span><b>Multi-Table Joins &amp; Grain-Fanout Checks</b></div>
+              <div><span>○ L9 · Concept Check</span><b>3-Question SQL Verification Quiz</b></div>
+            </div>
+            <div className="hx-lms-mock__coldcall">
+              <span>BOARDROOM COLD CALL CHECKPOINT · PEER BENCHMARK: 78%</span>
+              <p>“Why did raw Q2 Apparel revenue drop 14.5% when unit volume stayed flat?” — Defend in 60 seconds.</p>
+            </div>
+          </div>
         </div>
       </div>
     )
   }
+
   if (stage === 1) {
-    return <p className="hx-canvas__note">The lesson outline is not available in this preview.</p>
+    return (
+      <div className="hx-canvas hx-lms-mock">
+        <div className="hx-lms-mock__topstrip">
+          <div>
+            <span className="hx-k">INSIDE LESSON WORKSPACE · NOTES + CONCEPT CHECK + SOCRATIC AI</span>
+            <h3>{facts?.current.title ?? "SQL SELECT, WHERE, and aggregates"}</h3>
+          </div>
+          <div className="hx-lms-mock__badges">
+            <span className="hx-lms-pill hx-lms-pill--green">✓ Draft Auto-Saved</span>
+            <span className="hx-lms-pill hx-lms-pill--purple">Module {facts?.currentModuleNumber ?? 3} · 50 min</span>
+          </div>
+        </div>
+
+        <div className="hx-lms-mock__grid3">
+          {/* Left: Module Lesson List */}
+          <div className="hx-lms-mock__col">
+            <span className="hx-lms-mock__subkicker">MODULE 03 LESSONS</span>
+            <ol className="hx-lessons">
+              {(facts?.currentModule.lessons ?? [
+                { id: "l7", label: "L7", title: "SQL SELECT, WHERE, and aggregates" },
+                { id: "l8", label: "L8", title: "SQL joins and data-quality checks" },
+                { id: "l9", label: "L9", title: "SQL check" },
+              ]).map((lesson, idx) => (
+                <li key={lesson.id} className={idx === 0 ? "is-open" : undefined}>
+                  <span>{lesson.label}</span>
+                  <span>{lesson.title}</span>
+                </li>
+              ))}
+            </ol>
+            <div className="hx-lms-mock__progressbox">
+              <span>COURSE PROGRESS · {facts?.percent ?? 68}%</span>
+              <span className="hx-bar" aria-hidden="true"><span style={{ width: `${facts?.percent ?? 68}%` }} /></span>
+              <small>Bite-sized written lessons + quick concept quizzes so you understand every concept before writing code.</small>
+            </div>
+          </div>
+
+          {/* Center: Lesson Reading + Inline Quiz Check */}
+          <div className="hx-lms-mock__col hx-lms-mock__col--main">
+            <span className="hx-lms-mock__subkicker">FIRST-PRINCIPLES LESSON NOTE &amp; INLINE CHECK</span>
+            <h4>Enforcing the Valid-Row Rule before aggregating revenue</h4>
+            <p>
+              Raw operational tables contain cancelled shipments, zero-price promo rows, and negative adjustments. In Northwind, aggregating without filtering inflates revenue by 14 rows.
+            </p>
+            <pre className="hx-sql" style={{ marginTop: 8, padding: "8px 10px", fontSize: 11 }}>{
+`WHERE units > 0 AND unit_price > 0 AND returned = 'no'`
+            }</pre>
+            <div className="hx-lms-mock__quiz">
+              <span>CONCEPT CHECK · QUESTION 1 OF 3</span>
+              <strong>What happens if you SUM(order_freight) after joining orders to order_items?</strong>
+              <div className="hx-lms-mock__quizopts">
+                <span className="is-correct">✓ A. Freight is multiplied per line item (1-to-many grain fanout)</span>
+                <span>B. SQL automatically deduplicates parent order rows</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Right: Skylent Hinglish Socratic AI + 20-Min TA Drawer */}
+          <div className="hx-lms-mock__col hx-lms-mock__col--ai">
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 6 }}>
+              <span className="hx-lms-mock__subkicker">SKYLENT AI COACH</span>
+              <span className="hx-lms-pill hx-lms-pill--green">Hinglish Mode</span>
+            </div>
+            <div className="hx-lms-mock__aibubble">
+              <strong>Hinglish First-Principles Intuition:</strong>
+              <p>
+                Socho ek order bill mein 4 items hain. Agar seedha JOIN karke order-level freight SUM karoge, toh woh 4 baar count ho jayega! Pehle CTE mein item revenue aggregate karo.
+              </p>
+            </div>
+            <div className="hx-lms-mock__ta">
+              <span>STUCK ON EDGE CASES?</span>
+              <strong>Flag for Faculty TA review (20-min SLA) →</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
   }
+
   if (stage === 2) {
     return (
-      <div className="hx-canvas">
-        <div className="hx-canvas__head">
+      <div className="hx-canvas hx-lms-mock">
+        <div className="hx-lms-mock__topstrip">
           <div>
-            <p className="hx-k">Step 03 · In-Browser Lab (Inside the Course)</p>
-            <h3>Net revenue by category</h3>
+            <span className="hx-k">STEP 03 · IN-BROWSER NORTHWIND SQL WORKBENCH (ZERO SETUP)</span>
+            <h3>Net revenue by category — Live Browser SQL Execution</h3>
           </div>
-          <p>{NORTHWIND.validRows} of {NORTHWIND.rows} rows valid · {NORTHWIND.window}</p>
+          <div className="hx-lms-mock__badges">
+            <span className="hx-lms-pill hx-lms-pill--green">✓ {NORTHWIND.validRows} of {NORTHWIND.rows} valid rows</span>
+            <span className="hx-lms-pill hx-lms-pill--purple">PostgreSQL Engine · 14 ms</span>
+          </div>
         </div>
-        <pre className="hx-sql">{NORTHWIND_CATEGORY_SQL_EXCERPT}</pre>
-        <div className="hx-bars">
-          {NORTHWIND.categories.map((row) => (
-            <div key={row.name}>
-              <span>{row.name}</span>
-              <span className="hx-bar"><span style={{ width: `${Math.round((row.value / max) * 100)}%` }} /></span>
-              <span>{rupees(row.value)}</span>
+        <div className="hx-lms-mock__grid2">
+          <div>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+              <span className="hx-lms-mock__subkicker">SQL EDITOR · northwind_sales.csv ({NORTHWIND.window})</span>
+              <span className="hx-lms-pill hx-lms-pill--purple">▶ Run Query &amp; Save to Capstone</span>
             </div>
-          ))}
+            <pre className="hx-sql" style={{ marginTop: 0 }}>{NORTHWIND_CATEGORY_SQL_EXCERPT}</pre>
+          </div>
+          <div className="hx-lms-mock__rightcard">
+            <span className="hx-lms-mock__subkicker">QUERY RESULT TABLE &amp; VISUAL DISTRIBUTION</span>
+            <strong>4 categories returned · Verified against rubric</strong>
+            <div className="hx-bars" style={{ marginTop: 10 }}>
+              {NORTHWIND.categories.map((row) => (
+                <div key={row.name}>
+                  <span>{row.name}</span>
+                  <span className="hx-bar"><span style={{ width: `${Math.round((row.value / max) * 100)}%` }} /></span>
+                  <span>{rupees(row.value)}</span>
+                </div>
+              ))}
+            </div>
+            <div className="hx-lms-mock__coldcall" style={{ marginTop: 12 }}>
+              <span>SAVED TO CAPSTONE EVIDENCE</span>
+              <p>Query snapshot + 166-row validation log attached to your Northwind Commercial Review.</p>
+            </div>
+          </div>
         </div>
       </div>
     )
   }
+
   if (stage === 3) {
-    const title = content?.capstoneTitle ?? facts?.capstoneTitle ?? "Capstone"
+    const title = content?.capstoneTitle ?? facts?.capstoneTitle ?? "Northwind Commercial Review"
     return (
-      <div className="hx-canvas">
-        <div className="hx-canvas__head">
+      <div className="hx-canvas hx-lms-mock">
+        <div className="hx-lms-mock__topstrip">
           <div>
-            <p className="hx-k">Step 04 · Guided Capstone Project</p>
+            <span className="hx-k">STEP 04 · GRADED CAPSTONE STUDIO &amp; 5-DIMENSION RUBRIC</span>
             <h3>{title}</h3>
           </div>
+          <div className="hx-lms-mock__badges">
+            <span className="hx-lms-pill hx-lms-pill--green">✓ V1 → V2 Faculty Review Included</span>
+            <span className="hx-lms-pill hx-lms-pill--purple">6 Structured Tasks</span>
+          </div>
         </div>
-        <ol className="hx-deliver">
-          {["Clean & validate raw company data", "Run SQL / Python / PRD analysis", "Write your executive recommendation"].map((task, index) => (
-            <li key={task} className={index === 1 ? "is-open" : undefined}>
-              <span>{index + 1}</span>
-              <span>{task}</span>
-              <span>{index === 1 ? "In Progress" : index === 0 ? "Done" : "Final Step"}</span>
-            </li>
-          ))}
-        </ol>
-        <p className="hx-canvas__note">{content?.evidence.record.footnote}</p>
+        <div className="hx-lms-mock__grid2">
+          <div>
+            <span className="hx-lms-mock__subkicker">CAPSTONE SUBMISSION PIPELINE</span>
+            <ol className="hx-deliver" style={{ marginTop: 8 }}>
+              {[
+                "1. Audit 180 raw rows & quarantine 14 invalid/returned records",
+                "2. Execute multi-table SQL joins & category margin breakdown",
+                "3. Defend 3-part executive memo (Finding · Why It Matters · Action)",
+              ].map((task, index) => (
+                <li key={task} className={index === 1 ? "is-open" : undefined}>
+                  <span>0{index + 1}</span>
+                  <span>{task}</span>
+                  <span>{index === 1 ? "● In Review" : index === 0 ? "✓ Verified" : "Final Step"}</span>
+                </li>
+              ))}
+            </ol>
+            <p className="hx-canvas__note" style={{ marginTop: 10 }}>{content?.evidence.record.footnote}</p>
+          </div>
+          <div className="hx-lms-mock__rightcard">
+            <span className="hx-lms-mock__subkicker">5-DIMENSION COMPETENCY RUBRIC SCORECARD</span>
+            <strong>Evaluated by Practitioner Faculty &amp; Pre-Flight Checks</strong>
+            <div className="hx-lms-mock__checklist" style={{ marginTop: 8 }}>
+              <div><span>15% · Knowledge</span><b>SQL Grain &amp; Schema Accuracy ✓</b></div>
+              <div><span>30% · Execution</span><b>166 Validated Rows &amp; Margin CTEs ✓</b></div>
+              <div><span>20% · Judgement</span><b>Discount Leakage Trade-Off Memo ✓</b></div>
+              <div><span>15% · Oral Defence</span><b>Boardroom Cold Call Passed ✓</b></div>
+              <div><span>20% · V1 → V2 Revision</span><b>Faculty Red-Line Critique Addressed ✓</b></div>
+            </div>
+          </div>
+        </div>
       </div>
     )
   }
+
   const record = content?.evidence.record
   return (
-    <div className="hx-canvas">
-      <div className="hx-canvas__head">
+    <div className="hx-canvas hx-lms-mock">
+      <div className="hx-lms-mock__topstrip">
         <div>
-          <p className="hx-k">Step 05 · Recruiter-Ready Certificate &amp; Portfolio</p>
-          <h3>{record?.title ?? "Finished project"}</h3>
+          <span className="hx-k">STEP 05 · CRYPTOGRAPHICALLY VERIFIED DOSSIER ON /VERIFY</span>
+          <h3>{record?.title ?? "Northwind Commercial Review"} — SKL-2026-DA-EXEMPLAR</h3>
+        </div>
+        <div className="hx-lms-mock__badges">
+          <span className="hx-lms-pill hx-lms-pill--green">✓ Publicly Verifiable URL</span>
+          <span className="hx-lms-pill hx-lms-pill--purple">1-Click LinkedIn Share</span>
         </div>
       </div>
-      <dl className="hx-record">
-        <div><dt>Context</dt><dd>{record?.context}</dd></div>
-        <div><dt>What it shows</dt><dd>{record?.workShown}</dd></div>
-      </dl>
-      <p className="hx-chips">
-        {(record?.skills ?? []).slice(0, 4).map((skill) => (
-          <span key={skill}>{skill}</span>
-        ))}
-      </p>
-      <p className="hx-canvas__note">{record?.footnote}</p>
+      <div className="hx-lms-mock__grid2">
+        <div>
+          <dl className="hx-record" style={{ marginTop: 4 }}>
+            <div><dt>Credential ID &amp; Issuer</dt><dd>SKL-2026-DA-EXEMPLAR · Skylent Global Pvt. Ltd.</dd></div>
+            <div><dt>Context</dt><dd>{record?.context}</dd></div>
+            <div><dt>Verified Work Shown</dt><dd>{record?.workShown}</dd></div>
+          </dl>
+          <p className="hx-chips">
+            {(record?.skills ?? []).slice(0, 4).map((skill) => (
+              <span key={skill}>{skill}</span>
+            ))}
+          </p>
+        </div>
+        <div className="hx-lms-mock__rightcard">
+          <span className="hx-lms-mock__subkicker">CAREER OS &amp; RECRUITER VERIFICATION</span>
+          <strong>What employers see when they click your /verify link</strong>
+          <p>Hiring managers inspect your actual saved SQL queries, data-cleaning rules, 5-dimension rubric breakdown, and written executive recommendations.</p>
+          <div className="hx-lms-mock__checklist">
+            <div><span>✓ Verified SQL Artefact</span><b>northwind_sales.csv · 166 valid rows</b></div>
+            <div><span>✓ Skill-Gap Role Match</span><b>Unlocked in Career OS for Data Analyst roles</b></div>
+          </div>
+          <p className="hx-canvas__note" style={{ marginTop: 8 }}>{record?.footnote}</p>
+        </div>
+      </div>
     </div>
   )
 }
@@ -1831,21 +1957,21 @@ export function HomeInstitutionalArchitecture() {
     <section
       aria-labelledby="hx-inst-arch-title"
       style={{
-        background: "linear-gradient(135deg, #3B2D96 0%, #5142B5 100%)",
-        borderTop: "1px solid rgba(196, 184, 255, 0.42)",
-        borderBottom: "1px solid rgba(196, 184, 255, 0.42)",
-        padding: "clamp(40px, 5vw, 68px) 0",
-        color: "#ffffff",
+        background: "linear-gradient(180deg, #F6F4FF 0%, #FFFFFF 100%)",
+        borderTop: "1px solid #DDD7FF",
+        borderBottom: "1px solid #DDD7FF",
+        padding: "clamp(44px, 5.2vw, 72px) 0",
+        color: "#0F172A",
       }}
     >
       <div className="sky-container">
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", gap: 20, flexWrap: "wrap", marginBottom: 24 }}>
           <div>
-            <p style={{ margin: "0 0 8px", color: "#c4b8ff", font: "700 11.5px/1.4 var(--font-mono)", letterSpacing: "0.14em", textTransform: "uppercase" }}>
+            <p style={{ margin: "0 0 8px", color: "#5142B5", font: "700 11.5px/1.4 var(--font-mono)", letterSpacing: "0.12em", textTransform: "uppercase" }}>
               SKYLENT APPLIED WORK MODEL · SIMULATED LABS TO REAL PARTNER FIELDWORK
             </p>
-            <h2 id="hx-inst-arch-title" style={{ margin: 0, fontSize: "clamp(24px, 3.2vw, 38px)", color: "#ffffff", fontFamily: "var(--font-display)", lineHeight: 1.12 }}>
-              From Simulated Enterprise Units to Real Partner Fieldwork &amp; Flight Recorders
+            <h2 id="hx-inst-arch-title" style={{ margin: 0, fontSize: "clamp(24px, 3vw, 36px)", color: "#0F172A", fontFamily: "var(--sk-font-heading)", fontWeight: 750, lineHeight: 1.14, letterSpacing: "-0.02em" }}>
+              From Simulated Enterprise Units to <span style={{ color: "#5142B5" }}>Real Partner Fieldwork</span>
             </h2>
           </div>
           <div role="tablist" aria-label="Institutional Environments" style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
@@ -1855,14 +1981,15 @@ export function HomeInstitutionalArchitecture() {
               aria-selected={activeTab === "envB"}
               onClick={() => setActiveTab("envB")}
               style={{
-                padding: "10px 16px",
+                padding: "10px 18px",
                 borderRadius: 999,
-                border: activeTab === "envB" ? "1px solid #c4b8ff" : "1px solid rgba(255,255,255,0.22)",
-                background: activeTab === "envB" ? "#5142b5" : "rgba(15,23,42,0.65)",
-                color: "#ffffff",
+                border: activeTab === "envB" ? "1.5px solid #5142B5" : "1px solid #DDD7FF",
+                background: activeTab === "envB" ? "#5142B5" : "#FFFFFF",
+                color: activeTab === "envB" ? "#FFFFFF" : "#43349F",
                 fontWeight: 700,
                 fontSize: 13,
                 cursor: "pointer",
+                boxShadow: activeTab === "envB" ? "0 6px 16px -6px rgba(81, 66, 181, 0.35)" : "none",
               }}
             >
               01 · Real Partner Fieldwork (Work Exchange)
@@ -1873,14 +2000,15 @@ export function HomeInstitutionalArchitecture() {
               aria-selected={activeTab === "envA"}
               onClick={() => setActiveTab("envA")}
               style={{
-                padding: "10px 16px",
+                padding: "10px 18px",
                 borderRadius: 999,
-                border: activeTab === "envA" ? "1px solid #c4b8ff" : "1px solid rgba(255,255,255,0.22)",
-                background: activeTab === "envA" ? "#5142b5" : "rgba(15,23,42,0.65)",
-                color: "#ffffff",
+                border: activeTab === "envA" ? "1.5px solid #5142B5" : "1px solid #DDD7FF",
+                background: activeTab === "envA" ? "#5142B5" : "#FFFFFF",
+                color: activeTab === "envA" ? "#FFFFFF" : "#43349F",
                 fontWeight: 700,
                 fontSize: 13,
                 cursor: "pointer",
+                boxShadow: activeTab === "envA" ? "0 6px 16px -6px rgba(81, 66, 181, 0.35)" : "none",
               }}
             >
               02 · 6 Simulated Enterprise Labs (Env A)
@@ -1891,14 +2019,15 @@ export function HomeInstitutionalArchitecture() {
               aria-selected={activeTab === "rubric"}
               onClick={() => setActiveTab("rubric")}
               style={{
-                padding: "10px 16px",
+                padding: "10px 18px",
                 borderRadius: 999,
-                border: activeTab === "rubric" ? "1px solid #c4b8ff" : "1px solid rgba(255,255,255,0.22)",
-                background: activeTab === "rubric" ? "#5142b5" : "rgba(15,23,42,0.65)",
-                color: "#ffffff",
+                border: activeTab === "rubric" ? "1.5px solid #5142B5" : "1px solid #DDD7FF",
+                background: activeTab === "rubric" ? "#5142B5" : "#FFFFFF",
+                color: activeTab === "rubric" ? "#FFFFFF" : "#43349F",
                 fontWeight: 700,
                 fontSize: 13,
                 cursor: "pointer",
+                boxShadow: activeTab === "rubric" ? "0 6px 16px -6px rgba(81, 66, 181, 0.35)" : "none",
               }}
             >
               03 · L1–L5 &amp; 5-Dimension Flight Recorder
@@ -1908,39 +2037,45 @@ export function HomeInstitutionalArchitecture() {
 
         {activeTab === "envB" ? (
           <div style={{ display: "grid", gap: 18 }}>
-            <div style={{ background: "rgba(15,23,42,0.68)", border: "1px solid rgba(52,211,153,0.45)", borderRadius: 16, padding: "20px 24px" }}>
+            <div style={{ background: "#FFFFFF", border: "1.5px solid #DDD7FF", borderLeft: "5px solid #5142B5", borderRadius: 16, padding: "20px 24px", boxShadow: "0 8px 24px -12px rgba(81, 66, 181, 0.12)" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap", marginBottom: 10 }}>
-                <span style={{ padding: "4px 12px", borderRadius: 999, background: "rgba(16,185,129,0.18)", border: "1px solid rgba(52,211,153,0.45)", color: "#34d399", fontSize: 11.5, fontFamily: "var(--font-mono)", fontWeight: 700 }}>
-                  ENVIRONMENT B · SKYLENT WORK ASSIGNMENT EXCHANGE (CUTTACK–BHUBANESWAR &amp; INDIA-WIDE HYBRID)
+                <span style={{ padding: "4px 12px", borderRadius: 999, background: "#DCFCE7", border: "1px solid #86EFAC", color: "#15803D", fontSize: 11.5, fontFamily: "var(--font-mono)", fontWeight: 700 }}>
+                  ✓ ENVIRONMENT B · SKYLENT WORK ASSIGNMENT EXCHANGE (CUTTACK–BHUBANESWAR &amp; INDIA-WIDE HYBRID)
                 </span>
-                <Link to="/contact?for=institution" style={{ color: "#c4b8ff", fontWeight: 700, fontSize: 13.5, textDecoration: "none" }}>
+                <Link to="/contact?for=institution" style={{ color: "#5142B5", fontWeight: 700, fontSize: 13.5, textDecoration: "none" }}>
                   Submit a Partner Organisation Problem →
                 </Link>
               </div>
-              <p style={{ margin: 0, color: "rgba(255,255,255,0.88)", fontSize: 14.5, lineHeight: 1.6 }}>
-                After mastering Environment A simulations, learners qualify for <strong>supervised fieldwork with real MSMEs, local manufacturers, clinics (non-clinical workflows), NGOs, startups, and colleges</strong>. Real organisations submit scoped operational problems; Skylent faculty validate permissions and supervise V1 → V2 delivery.
+              <p style={{ margin: 0, color: "#334155", fontSize: 14.5, lineHeight: 1.6 }}>
+                After mastering Environment A simulations, learners qualify for <strong style={{ color: "#0F172A" }}>supervised fieldwork with real MSMEs, local manufacturers, clinics (non-clinical workflows), NGOs, startups, and colleges</strong>. Real organisations submit scoped operational problems; Skylent faculty validate permissions and supervise V1 → V2 delivery.
               </p>
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 16 }}>
-              <article style={{ background: "rgba(15,23,42,0.62)", border: "1px solid rgba(196, 184, 255,0.36)", borderRadius: 14, padding: 20 }}>
-                <span style={{ color: "#c4b8ff", fontSize: 11, fontFamily: "var(--font-mono)", fontWeight: 700 }}>FIELDWORK ARCHETYPE 01 · MSME &amp; DISTRIBUTION</span>
-                <h3 style={{ margin: "6px 0 8px", fontSize: 17.5, color: "#ffffff" }}>Regional Distributor Margin &amp; Return Leakage Audit</h3>
-                <p style={{ margin: 0, fontSize: 13.5, color: "rgba(255,255,255,0.8)", lineHeight: 1.55 }}>
-                  <strong>Problem Scope:</strong> 4,000+ anonymised invoice rows with falling SKU margins. Learners isolate discount leakage, submit V1 SQL/sheet memo, and incorporate supervisor V2 critique.
+              <article style={{ background: "#FFFFFF", border: "1.5px solid #DDD7FF", borderTop: "4px solid #5142B5", borderRadius: 14, padding: 20, boxShadow: "0 8px 22px -12px rgba(81, 66, 181, 0.12)" }}>
+                <span style={{ display: "inline-block", padding: "3px 9px", borderRadius: 6, background: "#F5F3FF", border: "1px solid #DDD7FF", color: "#5142B5", fontSize: 10.5, fontFamily: "var(--font-mono)", fontWeight: 700 }}>
+                  FIELDWORK ARCHETYPE 01 · MSME &amp; DISTRIBUTION
+                </span>
+                <h3 style={{ margin: "10px 0 8px", fontSize: 17.5, fontWeight: 750, color: "#0F172A" }}>Regional Distributor Margin &amp; Return Leakage Audit</h3>
+                <p style={{ margin: 0, fontSize: 13.5, color: "#334155", lineHeight: 1.58 }}>
+                  <strong style={{ color: "#0F172A" }}>Problem Scope:</strong> 4,000+ anonymised invoice rows with falling SKU margins. Learners isolate discount leakage, submit V1 SQL/sheet memo, and incorporate supervisor V2 critique.
                 </p>
               </article>
-              <article style={{ background: "rgba(15,23,42,0.62)", border: "1px solid rgba(196, 184, 255,0.36)", borderRadius: 14, padding: 20 }}>
-                <span style={{ color: "#c4b8ff", fontSize: 11, fontFamily: "var(--font-mono)", fontWeight: 700 }}>FIELDWORK ARCHETYPE 02 · STARTUP &amp; SaaS OPS</span>
-                <h3 style={{ margin: "6px 0 8px", fontSize: 17.5, color: "#ffffff" }}>Onboarding Drop-Off &amp; Support Ticket Triage</h3>
-                <p style={{ margin: 0, fontSize: 13.5, color: "rgba(255,255,255,0.8)", lineHeight: 1.55 }}>
-                  <strong>Problem Scope:</strong> Categorise 150 support escalations, write a 2-week engineering fix PRD, and defend trade-offs before the partner product lead.
+              <article style={{ background: "#FFFFFF", border: "1.5px solid #DDD7FF", borderTop: "4px solid #5142B5", borderRadius: 14, padding: 20, boxShadow: "0 8px 22px -12px rgba(81, 66, 181, 0.12)" }}>
+                <span style={{ display: "inline-block", padding: "3px 9px", borderRadius: 6, background: "#F5F3FF", border: "1px solid #DDD7FF", color: "#5142B5", fontSize: 10.5, fontFamily: "var(--font-mono)", fontWeight: 700 }}>
+                  FIELDWORK ARCHETYPE 02 · STARTUP &amp; SaaS OPS
+                </span>
+                <h3 style={{ margin: "10px 0 8px", fontSize: 17.5, fontWeight: 750, color: "#0F172A" }}>Onboarding Drop-Off &amp; Support Ticket Triage</h3>
+                <p style={{ margin: 0, fontSize: 13.5, color: "#334155", lineHeight: 1.58 }}>
+                  <strong style={{ color: "#0F172A" }}>Problem Scope:</strong> Categorise 150 support escalations, write a 2-week engineering fix PRD, and defend trade-offs before the partner product lead.
                 </p>
               </article>
-              <article style={{ background: "rgba(15,23,42,0.62)", border: "1px solid rgba(196, 184, 255,0.36)", borderRadius: 14, padding: 20 }}>
-                <span style={{ color: "#c4b8ff", fontSize: 11, fontFamily: "var(--font-mono)", fontWeight: 700 }}>FIELDWORK ARCHETYPE 03 · NGO &amp; CLINIC WORKFLOWS</span>
-                <h3 style={{ margin: "6px 0 8px", fontSize: 17.5, color: "#ffffff" }}>Non-Clinical Appointment Queue &amp; Impact Reporting</h3>
-                <p style={{ margin: 0, fontSize: 13.5, color: "rgba(255,255,255,0.8)", lineHeight: 1.55 }}>
-                  <strong>Problem Scope:</strong> Strict privacy-gated operational reporting on wait-time bottlenecks and field survey data hygiene, signed off by faculty reviewers.
+              <article style={{ background: "#FFFFFF", border: "1.5px solid #DDD7FF", borderTop: "4px solid #5142B5", borderRadius: 14, padding: 20, boxShadow: "0 8px 22px -12px rgba(81, 66, 181, 0.12)" }}>
+                <span style={{ display: "inline-block", padding: "3px 9px", borderRadius: 6, background: "#F5F3FF", border: "1px solid #DDD7FF", color: "#5142B5", fontSize: 10.5, fontFamily: "var(--font-mono)", fontWeight: 700 }}>
+                  FIELDWORK ARCHETYPE 03 · NGO &amp; CLINIC WORKFLOWS
+                </span>
+                <h3 style={{ margin: "10px 0 8px", fontSize: 17.5, fontWeight: 750, color: "#0F172A" }}>Non-Clinical Appointment Queue &amp; Impact Reporting</h3>
+                <p style={{ margin: 0, fontSize: 13.5, color: "#334155", lineHeight: 1.58 }}>
+                  <strong style={{ color: "#0F172A" }}>Problem Scope:</strong> Strict privacy-gated operational reporting on wait-time bottlenecks and field survey data hygiene, signed off by faculty reviewers.
                 </p>
               </article>
             </div>
@@ -1957,10 +2092,10 @@ export function HomeInstitutionalArchitecture() {
               ["05 · PulseAI", "AI & Evaluation Lab", "RAG reliability, prompt evaluation rubrics, data hygiene, and hallucination checks."],
               ["06 · Skylent Digital Systems", "Computing & Full-Stack", "API contracts, automated QA assertions, deployment readiness, and security checks."],
             ].map(([title, school, desc]) => (
-              <div key={title} style={{ background: "rgba(15,23,42,0.62)", border: "1px solid rgba(196, 184, 255,0.34)", borderRadius: 14, padding: 18 }}>
-                <span style={{ color: "#34d399", fontSize: 11, fontFamily: "var(--font-mono)", fontWeight: 700 }}>{school}</span>
-                <h3 style={{ margin: "6px 0", fontSize: 17, color: "#ffffff" }}>{title}</h3>
-                <p style={{ margin: 0, fontSize: 13, color: "rgba(255,255,255,0.8)", lineHeight: 1.5 }}>{desc}</p>
+              <div key={title} style={{ background: "#FFFFFF", border: "1.5px solid #DDD7FF", borderTop: "4px solid #5142B5", borderRadius: 14, padding: 18, boxShadow: "0 8px 22px -12px rgba(81, 66, 181, 0.1)" }}>
+                <span style={{ display: "inline-block", padding: "3px 9px", borderRadius: 999, background: "#DCFCE7", border: "1px solid #86EFAC", color: "#15803D", fontSize: 11, fontFamily: "var(--font-mono)", fontWeight: 700 }}>{school}</span>
+                <h3 style={{ margin: "8px 0 6px", fontSize: 17, fontWeight: 750, color: "#0F172A" }}>{title}</h3>
+                <p style={{ margin: 0, fontSize: 13.5, color: "#334155", lineHeight: 1.55 }}>{desc}</p>
               </div>
             ))}
           </div>
@@ -1976,17 +2111,17 @@ export function HomeInstitutionalArchitecture() {
                 ["15% · Oral Defence", "Boardroom Cold Call & stakeholder clarity"],
                 ["20% · V1 → V2 Revision", "Measurable improvement after faculty critique"],
               ].map(([k, v]) => (
-                <div key={k} style={{ background: "rgba(15,23,42,0.65)", border: "1px solid rgba(196, 184, 255,0.38)", borderRadius: 12, padding: 16 }}>
-                  <strong style={{ color: "#c4b8ff", fontSize: 17, display: "block", marginBottom: 4 }}>{k}</strong>
-                  <span style={{ fontSize: 12.5, color: "rgba(255,255,255,0.82)" }}>{v}</span>
+                <div key={k} style={{ background: "#FFFFFF", border: "1.5px solid #DDD7FF", borderTop: "4px solid #5142B5", borderRadius: 12, padding: 16, boxShadow: "0 6px 18px -10px rgba(81, 66, 181, 0.1)" }}>
+                  <strong style={{ color: "#5142B5", fontSize: 17, fontWeight: 800, display: "block", marginBottom: 4 }}>{k}</strong>
+                  <span style={{ fontSize: 13, color: "#334155", lineHeight: 1.45, display: "block" }}>{v}</span>
                 </div>
               ))}
             </div>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap", background: "rgba(15,23,42,0.65)", border: "1px solid rgba(255,255,255,0.16)", borderRadius: 14, padding: "16px 20px" }}>
-              <span style={{ fontSize: 13.5, color: "rgba(255,255,255,0.88)" }}>
-                <strong>5 Internal Competency Levels:</strong> L1 Foundation → L2 Guided Practice → L3 Independent Execution → L4 Professional Practice → L5 Advanced Practice
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap", background: "#FFFFFF", border: "1.5px solid #DDD7FF", borderRadius: 14, padding: "16px 20px" }}>
+              <span style={{ fontSize: 13.5, color: "#334155" }}>
+                <strong style={{ color: "#0F172A" }}>5 Internal Competency Levels:</strong> L1 Foundation → L2 Guided Practice → L3 Independent Execution → L4 Professional Practice → L5 Advanced Practice
               </span>
-              <Link to="/verify" style={{ padding: "8px 16px", borderRadius: 999, background: "#5142b5", color: "#ffffff", border: "1px solid rgba(196, 184, 255, 0.45)", fontWeight: 700, fontSize: 13, textDecoration: "none" }}>
+              <Link to="/verify" style={{ padding: "8px 16px", borderRadius: 999, background: "#5142B5", color: "#FFFFFF", fontWeight: 700, fontSize: 13, textDecoration: "none" }}>
                 Open Public Flight Recorder Registry →
               </Link>
             </div>
@@ -1996,4 +2131,3 @@ export function HomeInstitutionalArchitecture() {
     </section>
   )
 }
-

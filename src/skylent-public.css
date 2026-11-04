@@ -198,22 +198,7 @@ body:has(.skylent-public-canvas) {
   color: #ffffff !important;
 }
 
-.skylent-public-canvas main p[style*="color: rgba(255"],
-.skylent-public-canvas main div[style*="color: rgba(255, 255, 255"],
-.skylent-public-canvas main div[style*="color: rgba(255,255,255"],
-.skylent-public-canvas main span[style*="color: rgba(255, 255, 255"],
-.skylent-public-canvas main span[style*="color: rgba(255,255,255"] {
-  color: var(--skylent-color-slate) !important;
-}
-
-.skylent-public-canvas main div[style*="color: #FFFFFF"],
-.skylent-public-canvas main span[style*="color: #FFFFFF"],
-.skylent-public-canvas main p[style*="color: #FFFFFF"],
-.skylent-public-canvas main li[style*="color: #FFFFFF"],
-.skylent-public-canvas main strong[style*="color: #FFFFFF"],
-.skylent-public-canvas main td[style*="color: #FFFFFF"] {
-  color: var(--skylent-color-ink) !important;
-}
+/* Removed destructive inline white-text override that caused dark-grey text on purple/dark cards */
 
 .skylent-public-canvas main input,
 .skylent-public-canvas main textarea,

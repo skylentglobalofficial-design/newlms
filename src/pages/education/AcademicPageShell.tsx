@@ -38,11 +38,11 @@ export default function AcademicPageShell({
             </p>
             <LiveCoreRail lead="Academic lines above are product direction. Start with a live course or programme, then Skylent OS and Career OS." />
             <div className="edu-start-row" style={{ marginTop: 14 }}>
-              <Link to="/courses/data-analytics" style={{ background: "rgba(15,23,42,0.65)", border: "1px solid rgba(196, 184, 255,0.38)", borderRadius: 12, padding: "14px 18px", color: "#ffffff", textDecoration: "none" }}>
+              <Link to="/courses/data-analytics" style={{ background: "rgba(255, 255, 255, 0.14)", border: "1px solid rgba(196, 184, 255,0.38)", borderRadius: 12, padding: "14px 18px", color: "#ffffff", textDecoration: "none" }}>
                 <strong style={{ color: "#c4b8ff", display: "block" }}>Start Data Analytics →</strong>
                 <span style={{ color: "rgba(255,255,255,0.82)", fontSize: 13 }}>Ready written course · Northwind SQL Lab</span>
               </Link>
-              <Link to="/courses/product-management" style={{ background: "rgba(15,23,42,0.65)", border: "1px solid rgba(52,211,153,0.38)", borderRadius: 12, padding: "14px 18px", color: "#ffffff", textDecoration: "none" }}>
+              <Link to="/courses/product-management" style={{ background: "rgba(255, 255, 255, 0.14)", border: "1px solid rgba(52,211,153,0.38)", borderRadius: 12, padding: "14px 18px", color: "#ffffff", textDecoration: "none" }}>
                 <strong style={{ color: "#34d399", display: "block" }}>Start Product Management →</strong>
                 <span style={{ color: "rgba(255,255,255,0.82)", fontSize: 13 }}>Ready written course · Harbor Desk Studio</span>
               </Link>

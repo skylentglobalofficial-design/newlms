@@ -278,36 +278,38 @@ const PUBLIC_NAV: readonly PublicNavGroup[] = [
   {
     label: 'Programmes',
     to: '/programmes',
-    tagline: 'Flagship programmes, live courses, and hands-on workshops',
+    tagline: 'Choose by career track, in-browser lab, or weekend live sprint',
     match: ['/programmes', '/programs', '/courses', '/skills', '/workshops', '/labs', '/events'],
-    items: [
-      { label: 'All programmes', sub: 'Flagship pathways with SQL labs, case studies, and capstones.', to: '/programmes' },
-      { label: 'All 6 live courses', sub: 'Data Analytics, PM, Python, Data Science, GenAI, and Full Stack.', to: '/programmes#live-courses' },
-      { label: 'Workshops & Case Store', sub: '₹99 live workshops with 100% Elixir Coin cashback.', to: '/events' },
-      { label: 'Professional programmes', sub: 'In-depth tracks combining lessons, practice, and portfolio work.', to: '/programmes#professional' },
+    items: [],
+    sections: [
+      {
+        heading: 'Data, AI & Software Tracks',
+        items: [
+          { label: 'Data Analytics', sub: 'SQL, Spreadsheets, Northwind Lab & Commercial Capstone · 5 Modules.', to: '/programmes/data-analytics-pro', mark: 'live' },
+          { label: 'Data Science & AI', sub: 'SQL + Python ETL + Out-of-Time Churn Cohort Sandbox.', to: '/programmes/data-science-ai' },
+          { label: 'Generative AI & LLM Systems', sub: 'Grounded RAG, Vector Retrieval & Accuracy Evaluation Suite.', to: '/programmes/generative-ai-program' },
+          { label: 'Full-Stack Web Development', sub: 'React 18, TypeScript, Node/Express & PostgreSQL Ledger Lab.', to: '/programmes/full-stack' },
+        ],
+      },
+      {
+        heading: 'Product, Coding & Live Sprints',
+        items: [
+          { label: 'Product Management', sub: 'User Research, PRD Scoping & Harbor Desk Studio · 5 Modules.', to: '/programmes/product-management', mark: 'live' },
+          { label: 'Python Programming & Automation', sub: 'Python 3, Pandas, Pytest Validators & Pipeline Audit · 5 Modules.', to: '/courses/python-programming', mark: 'live' },
+          { label: '₹99 Weekend Live Workshops', sub: '90-min weekend sprints with 100% Elixir Coin cashback (99 Coins).', to: '/events', mark: 'live' },
+          { label: 'Explore All Programmes & Goal Finder →', sub: 'Compare all 6 tracks, pricing plans, and career goal pathways.', to: '/programmes' },
+        ],
+      },
     ],
   },
   {
     label: 'Education',
     to: '/education',
-    tagline: 'University & Institutional Pathways',
+    tagline: 'University & Institutional Degree Pathways',
     match: ['/education', '/exams'],
-    items: [],
-    sections: [
-      {
-        heading: 'Undergraduate (UG)',
-        items: [
-          { label: 'Online pathways', sub: 'Planned online curriculum tracks for institutional integration.', to: '/education?level=ug&mode=online' },
-          { label: 'On-campus pathways', sub: 'Planned campus curriculum tracks for partner institutions.', to: '/education?level=ug&mode=campus' },
-        ],
-      },
-      {
-        heading: 'Postgraduate (PG)',
-        items: [
-          { label: 'Online pathways', sub: 'Planned online postgraduate specialisations.', to: '/education?level=pg&mode=online' },
-          { label: 'On-campus pathways', sub: 'Planned campus postgraduate specialisations.', to: '/education?level=pg&mode=campus' },
-        ],
-      },
+    items: [
+      { label: 'Undergraduate (UG)', sub: 'Bachelor’s degree tracks (B.Sc., BCA, BBA) with integrated Skylent OS labs.', to: '/education?level=ug' },
+      { label: 'Postgraduate (PG)', sub: 'Master’s & postgraduate specialisations (M.Sc., MCA, MBA) with applied capstones.', to: '/education?level=pg' },
     ],
   },
   {
