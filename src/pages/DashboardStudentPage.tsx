@@ -88,6 +88,7 @@ const SLICE = ['Learn', 'Practice', 'Build', 'Prove'] as const
 
 type Loaded<T> = { status: 'loading' } | { status: 'ready'; data: T } | { status: 'error' }
 type AiAvailability = 'checking' | 'available' | 'unavailable' | 'unknown'
+type StudentTabId = 'overview' | 'courses' | 'projects' | 'certificates' | 'wallet'
 
 function ListError({ what, onRetry }: { what: string; onRetry: () => void }) {
   return (
@@ -129,6 +130,7 @@ export default function DashboardStudentPage() {
   const { pathname, hash } = useLocation()
   const activeNav = learnerNavId(pathname, hash)
   const previousHash = useRef(hash)
+  const [studentTab, setStudentTab] = useState<StudentTabId>('overview')
   const [enrollments, setEnrollments] = useState<Loaded<ApiEnrollmentSummary[]>>({ status: 'loading' })
   const [projects, setProjects] = useState<Loaded<ProjectSummary[]>>({ status: 'loading' })
   const [certificates, setCertificates] = useState<Loaded<SkylentCertificate[]>>({ status: 'loading' })
@@ -142,6 +144,8 @@ export default function DashboardStudentPage() {
   }, [ready, user, navigate])
 
   useEffect(() => {
+    if (hash === '#sh-my-learning') setStudentTab('courses')
+    else if (hash === '#student-projects') setStudentTab('projects')
     const sectionId = hash === '#sh-my-learning' || hash === '#student-projects' ? hash.slice(1) : ''
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     if (sectionId) {
@@ -220,11 +224,15 @@ export default function DashboardStudentPage() {
   }
 
   const crumbSection =
-    hash === '#sh-my-learning'
+    studentTab === 'courses' || hash === '#sh-my-learning'
       ? 'Active Courses'
-      : hash === '#student-projects'
+      : studentTab === 'projects' || hash === '#student-projects'
         ? 'Projects & Labs'
-        : 'Dashboard'
+        : studentTab === 'certificates'
+          ? 'Certificates & Proof'
+          : studentTab === 'wallet'
+            ? 'Elixir Wallet'
+            : 'Dashboard'
 
   const shell = {
     themeId: 'data-science' as const,
@@ -234,12 +242,16 @@ export default function DashboardStudentPage() {
     navItems: LEARNER_NAV,
     bottomNavItems: LEARNER_NAV,
     activeNav,
-    onNavChange: () => undefined,
+    onNavChange: (id: string) => {
+      if (id === 'dashboard') setStudentTab('overview')
+      else if (id === 'courses') setStudentTab('courses')
+      else if (id === 'projects') setStudentTab('projects')
+    },
     renderNavIcon: (id: string) => <LearnerNavIcon id={id} />,
     bar: (
       <>
         <span className="sh-crumb">My Courses <span aria-hidden="true">/</span> <b>{crumbSection}</b></span>
-        <ProductSlice steps={SLICE} current={hash === '#student-projects' ? 'Build' : 'Learn'} label="Where this screen sits in the product model" />
+        <ProductSlice steps={SLICE} current={studentTab === 'projects' || hash === '#student-projects' ? 'Build' : studentTab === 'certificates' ? 'Prove' : 'Learn'} label="Where this screen sits in the product model" />
       </>
     ),
   }
@@ -286,7 +298,7 @@ export default function DashboardStudentPage() {
 
   const myLearning = (
     <section
-      className={hash === '#sh-my-learning' ? 'sh-card sh-card--focused' : 'sh-card'}
+      className={hash === '#sh-my-learning' || studentTab === 'courses' ? 'sh-card sh-card--focused' : 'sh-card'}
       aria-labelledby="sh-my-learning"
     >
       <header className="sh-card-head">
@@ -499,7 +511,7 @@ export default function DashboardStudentPage() {
             <h2>Choose what to learn first</h2>
             <p className="sh-body">You are signed in and ready to start. Pick any of our 6 career tracks and its first lesson and browser lab open immediately.</p>
             <div className="os-actions">
-              <Link className="os-btn os-btn-primary os-btn-lg" to="/programmes">Explore programmes <ArrowRight /></Link>
+              <Link className="os-btn os-btn-primary os-btn-lg sh-royal-cta" to="/programmes">Explore programmes <ArrowRight /></Link>
             </div>
           </div>
           {enrolmentRows.length > 0 ? <div className="sh-stack">{myLearning}<CareerRiseCard />{evidence}</div> : null}
@@ -554,7 +566,7 @@ export default function DashboardStudentPage() {
 
   const projectsSection = (
     <section
-      className={hash === '#student-projects' ? 'sh-card sh-card--focused' : 'sh-card'}
+      className={hash === '#student-projects' || studentTab === 'projects' ? 'sh-card sh-card--focused' : 'sh-card'}
       id="student-projects"
       aria-labelledby="sh-project"
     >
@@ -636,6 +648,53 @@ export default function DashboardStudentPage() {
   return (
     <AuthDashboardShell {...shell}>
       <div className="sh">
+        {/* Multi-Tab Student Workspace Switcher Bar */}
+        <div
+          role="tablist"
+          aria-label="Learner Workspace Views"
+          style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: 8,
+            padding: '10px 12px',
+            marginBottom: 16,
+            borderRadius: 14,
+            background: '#f6f4ff',
+            border: '1px solid #ddd6fe',
+          }}
+        >
+          {[
+            { id: 'overview' as const, label: '1. Full Workspace (Overview)' },
+            { id: 'courses' as const, label: '2. My Active Courses' },
+            { id: 'projects' as const, label: '3. Capstone & Browser Labs' },
+            { id: 'certificates' as const, label: '4. Certificates & Flight Recorder' },
+            { id: 'wallet' as const, label: '5. Elixir Wallet & Case Store' },
+          ].map((t) => {
+            const active = studentTab === t.id
+            return (
+              <button
+                key={t.id}
+                type="button"
+                role="tab"
+                aria-selected={active}
+                onClick={() => setStudentTab(t.id)}
+                style={{
+                  padding: '8px 14px',
+                  borderRadius: 999,
+                  border: active ? '1px solid #5142b5' : '1px solid #cbd5e1',
+                  background: active ? '#5142b5' : '#ffffff',
+                  color: active ? '#ffffff' : '#334155',
+                  fontSize: 12.5,
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                }}
+              >
+                {t.label}
+              </button>
+            )
+          })}
+        </div>
+
         <div className="sh-top-head">
           <div>
             <p className="os-eyebrow">My Learning Workspace</p>
@@ -662,77 +721,79 @@ export default function DashboardStudentPage() {
           </ul>
         </div>
 
-        {/* 1. Primary Action Above the Fold: Royal Midnight Navy Continue Learning Hero Card */}
-        <section className="sh-next sh-royal-hero" id="student-learning" aria-labelledby="sh-continue">
-          <div className="sh-royal-hero__top">
-            <p className="sh-next-label">
-              <span aria-hidden="true" />
-              {allComplete ? 'COURSE COMPLETE' : 'CONTINUE LEARNING · ACTIVE LESSON'}
-              {allComplete ? (
-                <em>{course.title}</em>
-              ) : (
-                <em>
-                  {course.title} · Module {resume.moduleIndex}
-                  {resumeLesson ? ` · ${lessonTypeLabel(resumeLesson.type, resumeLesson.title)}` : ''}
-                  {resumeLesson?.duration ? ` · ${resumeLesson.duration}` : ''}
-                </em>
-              )}
+        {/* 1. Primary Action Above the Fold: Royal Purple Continue Learning Hero Card */}
+        {studentTab === 'overview' || studentTab === 'courses' ? (
+          <section className="sh-next sh-royal-hero" id="student-learning" aria-labelledby="sh-continue">
+            <div className="sh-royal-hero__top">
+              <p className="sh-next-label">
+                <span aria-hidden="true" />
+                {allComplete ? 'COURSE COMPLETE' : 'CONTINUE LEARNING · ACTIVE LESSON'}
+                {allComplete ? (
+                  <em>{course.title}</em>
+                ) : (
+                  <em>
+                    {course.title} · Module {resume.moduleIndex}
+                    {resumeLesson ? ` · ${lessonTypeLabel(resumeLesson.type, resumeLesson.title)}` : ''}
+                    {resumeLesson?.duration ? ` · ${resumeLesson.duration}` : ''}
+                  </em>
+                )}
+              </p>
+              <span className="sh-royal-hero__badge">
+                ✓ {completedCount}/{totalLessons} Lessons ({progressPct}%)
+              </span>
+            </div>
+
+            <h2 id="sh-continue">
+              {allComplete
+                ? `You have completed every lesson in ${course.title}`
+                : `${resumeNumber ? `Lesson ${resumeNumber} · ` : ''}${resume.lessonTitle || course.title}`}
+            </h2>
+            <p className="sh-body">
+              {allComplete
+                ? certificates.status === 'ready' && (claimable.length > 0 || claimableProgrammes.length > 0)
+                  ? 'Your certificate can be claimed below.'
+                  : 'Every lesson in this course is complete.'
+                : `Module ${resume.moduleIndex} of ${resume.moduleTotal} · ${resume.moduleTitle}${resume.nextLessonTitle ? ` · Up next: ${resume.nextLessonTitle}` : ''}`}
             </p>
-            <span className="sh-royal-hero__badge">
-              ✓ {completedCount}/{totalLessons} Lessons ({progressPct}%)
-            </span>
-          </div>
+            {workspace.program ? (
+              <p className="sh-note sh-programme">
+                Part of {workspace.program.name} · {workspace.program.progress.completedCourses} of {workspace.program.progress.totalCourses} courses complete
+              </p>
+            ) : null}
 
-          <h2 id="sh-continue">
-            {allComplete
-              ? `You have completed every lesson in ${course.title}`
-              : `${resumeNumber ? `Lesson ${resumeNumber} · ` : ''}${resume.lessonTitle || course.title}`}
-          </h2>
-          <p className="sh-body">
-            {allComplete
-              ? certificates.status === 'ready' && (claimable.length > 0 || claimableProgrammes.length > 0)
-                ? 'Your certificate can be claimed below.'
-                : 'Every lesson in this course is complete.'
-              : `Module ${resume.moduleIndex} of ${resume.moduleTotal} · ${resume.moduleTitle}${resume.nextLessonTitle ? ` · Up next: ${resume.nextLessonTitle}` : ''}`}
-          </p>
-          {workspace.program ? (
-            <p className="sh-note sh-programme">
-              Part of {workspace.program.name} · {workspace.program.progress.completedCourses} of {workspace.program.progress.totalCourses} courses complete
-            </p>
-          ) : null}
+            <div className="sh-progress">
+              <div className="os-progress-bar" role="progressbar" aria-label={`${course.title} progress`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={progressPct}>
+                <span style={{ width: `${Math.max(progressPct, 6)}%` }} />
+              </div>
+              <span className="sh-royal-hero__pct">{progressPct}% complete · Career Rise unlocks at 60%</span>
+            </div>
 
-          <div className="sh-progress">
-            <div className="os-progress-bar" role="progressbar" aria-label={`${course.title} progress`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={progressPct}>
-              <span style={{ width: `${Math.max(progressPct, 6)}%` }} />
+            <div className="sh-royal-hero__footer">
+              <div className="os-actions" style={{ marginTop: 0 }}>
+                {allComplete ? (
+                  <Link className="os-btn os-btn-primary os-btn-lg sh-royal-cta" to={`/learn/${course.slug}`}>Review the course <ArrowRight /></Link>
+                ) : (
+                  <Link className="os-btn os-btn-primary os-btn-lg sh-royal-cta" to={resumeHref}>
+                    {resumeStarted || completedCount > 0 ? 'Continue learning' : 'Start learning'} <ArrowRight />
+                  </Link>
+                )}
+                {profile?.project ? (
+                  <Link className="os-btn os-btn-ghost sh-royal-secondary" to={profile.project.href}>
+                    Open Capstone Studio
+                  </Link>
+                ) : null}
+              </div>
+              <div className="sh-royal-hero__pills">
+                <span>🇮🇳 Hinglish AI Coach</span>
+                <span>Browser Lab Included</span>
+                <span>20-Min TA Help</span>
+              </div>
             </div>
-            <span className="sh-royal-hero__pct">{progressPct}% complete · Career Rise unlocks at 60%</span>
-          </div>
-
-          <div className="sh-royal-hero__footer">
-            <div className="os-actions" style={{ marginTop: 0 }}>
-              {allComplete ? (
-                <Link className="os-btn os-btn-primary os-btn-lg" to={`/learn/${course.slug}`}>Review the course <ArrowRight /></Link>
-              ) : (
-                <Link className="os-btn os-btn-primary os-btn-lg sh-royal-cta" to={resumeHref}>
-                  {resumeStarted || completedCount > 0 ? 'Continue learning' : 'Start learning'} <ArrowRight />
-                </Link>
-              )}
-              {profile?.project ? (
-                <Link className="os-btn os-btn-ghost sh-royal-secondary" to={profile.project.href}>
-                  Open Capstone Studio
-                </Link>
-              ) : null}
-            </div>
-            <div className="sh-royal-hero__pills">
-              <span>🇮🇳 Hinglish AI Coach</span>
-              <span>Browser Lab Included</span>
-              <span>20-Min TA Help</span>
-            </div>
-          </div>
-        </section>
+          </section>
+        ) : null}
 
         {/* 2. Compact 14-Day Execution Streak Bar */}
-        {(() => {
+        {studentTab === 'overview' ? (() => {
           const activityDates: string[] = [
             ...projectRows.map((p) => p.updatedAt),
             ...certificateRows.map((c) => c.issuedAt),
@@ -765,14 +826,14 @@ export default function DashboardStudentPage() {
                     style={{
                       height: 26,
                       borderRadius: 6,
-                      background: day.active ? "linear-gradient(135deg, #3B2D96 0%, #5142B5 100%)" : "#f1f5f9",
-                      border: day.active ? "1px solid rgba(196, 184, 255, 0.55)" : "1px solid #e2e8f0",
+                      background: day.active ? "linear-gradient(135deg, #3b2d96 0%, #5142b5 100%)" : "#f1f5f9",
+                      border: day.active ? "1px solid #c4b8ff" : "1px solid #e2e8f0",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
                       fontSize: 10,
                       fontWeight: 700,
-                      color: day.active ? "#c4b8ff" : "#64748B",
+                      color: day.active ? "#ffffff" : "#64748B",
                     }}
                   >
                     {day.date.slice(8)}
@@ -781,140 +842,167 @@ export default function DashboardStudentPage() {
               </div>
             </section>
           )
-        })()}
+        })() : null}
 
-        {/* 3. Main 2-Column Workspace Grid */}
-        <div className="sh-grid">
-          <div className="sh-stack">
-            {attention.length > 0 ? (
-              <section className="sh-card" aria-labelledby="sh-attention">
-                <header className="sh-card-head">
-                  <h2 id="sh-attention">Needs attention</h2>
-                  <span className="sh-note">{attention.length} open</span>
+        {/* 3. Main 2-Column Workspace Grid (Placed Directly Above the Fold!) */}
+        {studentTab === 'overview' ? (
+          <div className="sh-grid">
+            <div className="sh-stack">
+              {attention.length > 0 ? (
+                <section className="sh-card" aria-labelledby="sh-attention">
+                  <header className="sh-card-head">
+                    <h2 id="sh-attention">Needs attention</h2>
+                    <span className="sh-note">{attention.length} open</span>
+                  </header>
+                  <ul className="sh-rows">
+                    {attention.map((lesson) => (
+                      <li key={lesson.id} className="sh-row">
+                        <div className="sh-row-main">
+                          <strong>{lesson.title}</strong>
+                          <span className="sh-note">{lesson.note}</span>
+                        </div>
+                        <Link className="os-link sh-row-link" to={lesson.href} aria-label={`Open ${lesson.title}`}>
+                          Open <ArrowRight />
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              ) : null}
+
+              {hash === '#student-projects' ? (
+                <>
+                  {projectsSection}
+                  {myLearning}
+                  <CareerRiseCard />
+                </>
+              ) : (
+                <>
+                  {myLearning}
+                  {projectsSection}
+                  <CareerRiseCard />
+                </>
+              )}
+            </div>
+
+            <div className="sh-stack">
+              {/* Soft Lavender + Crisp White Skylent AI & 20-Min TA Mentor Card */}
+              <section className="sh-card sh-ai sh-royal-ai" aria-labelledby="sh-ai">
+                <header className="sh-ai-head">
+                  <AiMark />
+                  <span className="sh-ai-live-pill">✓ Live in Lesson</span>
                 </header>
-                <ul className="sh-rows">
-                  {attention.map((lesson) => (
-                    <li key={lesson.id} className="sh-row">
-                      <div className="sh-row-main">
-                        <strong>{lesson.title}</strong>
-                        <span className="sh-note">{lesson.note}</span>
-                      </div>
-                      <Link className="os-link sh-row-link" to={lesson.href} aria-label={`Open ${lesson.title}`}>
-                        Open <ArrowRight />
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            ) : null}
-
-            {hash === '#student-projects' ? (
-              <>
-                {projectsSection}
-                {myLearning}
-                <CareerRiseCard />
-              </>
-            ) : (
-              <>
-                {myLearning}
-                {projectsSection}
-                <CareerRiseCard />
-              </>
-            )}
-          </div>
-
-          <div className="sh-stack">
-            {/* Royal Midnight Navy Skylent AI & 20-Min TA Mentor Card (Always Ready) */}
-            <section className="sh-card sh-ai sh-royal-ai" aria-labelledby="sh-ai">
-              <header className="sh-ai-head">
-                <AiMark />
-                <span className="sh-ai-live-pill">✓ Live in Lesson</span>
-              </header>
-              <div className="sh-royal-ai__body">
-                <h2 id="sh-ai" className="sh-royal-ai__title">{AI_NAME} · Hinglish &amp; English Coach</h2>
-                <p className="sh-royal-ai__desc">
-                  Need a simple Hinglish analogy, help debugging a SQL query, or a 20-minute human Faculty TA review? Open your active lesson to use {AI_NAME} side-by-side.
-                </p>
-                <div className="sh-royal-ai__pills">
-                  <span>🇮🇳 Simple Hinglish Mode</span>
-                  <span>🛠️ SQL &amp; Code Debugger</span>
-                  <span>👨‍🏫 20-Min Human TA SLA</span>
+                <div className="sh-royal-ai__body">
+                  <h2 id="sh-ai" className="sh-royal-ai__title">{AI_NAME} · Hinglish &amp; English Coach</h2>
+                  <p className="sh-royal-ai__desc">
+                    Need a simple Hinglish analogy, help debugging a SQL query, or a 20-minute human Faculty TA review? Open your active lesson to use {AI_NAME} side-by-side.
+                  </p>
+                  <div className="sh-royal-ai__pills">
+                    <span>🇮🇳 Simple Hinglish Mode</span>
+                    <span>🛠️ SQL &amp; Code Debugger</span>
+                    <span>👨‍🏫 20-Min Human TA SLA</span>
+                  </div>
+                  <Link className="sh-royal-ai__cta" to={resumeHref}>
+                    Open {AI_NAME} in Lesson {resumeNumber || 1} <ArrowRight />
+                  </Link>
                 </div>
-                <Link className="sh-royal-ai__cta" to={resumeHref}>
-                  Open {AI_NAME} in Lesson {resumeNumber || 1} <ArrowRight />
-                </Link>
-              </div>
-            </section>
+              </section>
 
+              {evidence}
+              {career}
+            </div>
+          </div>
+        ) : null}
+
+        {studentTab === 'courses' ? (
+          <div className="sh-stack">
+            {myLearning}
+            <CareerRiseCard />
+          </div>
+        ) : null}
+
+        {studentTab === 'projects' ? (
+          <div className="sh-stack">
+            {projectsSection}
+            <CareerRiseCard />
+          </div>
+        ) : null}
+
+        {studentTab === 'certificates' ? (
+          <div className="sh-stack">
             {evidence}
             {career}
           </div>
-        </div>
+        ) : null}
 
-        {/* 3B. L1-L5 Institutional Competency & Work Assignment Exchange (Env B) — Crisp Daylight Card */}
-        <section
-          aria-label="L1 to L5 Competency Progression and Work Assignment Exchange"
-          style={{
-            marginTop: 22,
-            background: "linear-gradient(180deg, #F6F4FF 0%, #FFFFFF 100%)",
-            border: "1.5px solid #DDD7FF",
-            borderTop: "4px solid #5142B5",
-            borderRadius: 16,
-            padding: "20px 24px",
-            color: "#0F172A",
-            boxShadow: "0 10px 26px -14px rgba(81, 66, 181, 0.14)",
-          }}
-        >
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 16, flexWrap: "wrap", marginBottom: 14 }}>
-            <div>
-              <span style={{ color: "#5142B5", font: "700 11px/1.4 var(--font-mono)", letterSpacing: "0.14em", textTransform: "uppercase", display: "block", marginBottom: 4 }}>
-                ★ SKYLENT INSTITUTE OF APPLIED LEARNING · L1 → L5 PROGRESSION &amp; WORK ASSIGNMENT EXCHANGE
-              </span>
-              <strong style={{ fontSize: 18, color: "#0F172A", fontFamily: "var(--font-display)", fontWeight: 800, display: "block" }}>
-                Current Stage: L2 Guided Practice → Unlocking Env B Partner Fieldwork Exchange
-              </strong>
-              <span style={{ fontSize: 13.5, color: "#334155", display: "block", marginTop: 4 }}>
-                Complete your Environment A Simulated Enterprise Sprint (Northwind / Harbor Desk) with a V1 → V2 Faculty Red-Line pass to unlock supervised real-world MSME &amp; startup assignments.
-              </span>
-            </div>
-            <Link
-              to="/verify"
-              style={{
-                padding: "8px 14px",
-                borderRadius: 999,
-                background: "#DCFCE7",
-                border: "1px solid #86EFAC",
-                color: "#15803D",
-                fontSize: 12,
-                fontFamily: "var(--font-mono)",
-                fontWeight: 700,
-                textDecoration: "none",
-                whiteSpace: "nowrap",
-              }}
-            >
-              ✓ View Flight Recorder Standard →
-            </Link>
-          </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 10 }}>
-            {[
-              ["15% Knowledge", "First-Principles Checks"],
-              ["30% Execution", "Env A Browser Sandbox"],
-              ["20% Judgement", "Trade-Off Decisions"],
-              ["15% Oral Defence", "Boardroom Cold Call"],
-              ["20% V1 → V2 Diff", "Faculty Red-Line Review"],
-            ].map(([title, sub]) => (
-              <div key={title} style={{ background: "#FFFFFF", border: "1.5px solid #DDD7FF", borderTop: "3px solid #5142B5", borderRadius: 10, padding: "10px 12px" }}>
-                <strong style={{ color: "#5142B5", fontSize: 13, fontFamily: "var(--font-mono)", fontWeight: 800, display: "block" }}>{title}</strong>
-                <span style={{ color: "#334155", fontSize: 12 }}>{sub}</span>
+        {/* 4. L1-L5 Institutional Competency & Work Assignment Exchange (Soft Lavender + Crisp White + 4px #5142B5 Card) */}
+        {studentTab === 'overview' || studentTab === 'certificates' ? (
+          <section
+            aria-label="L1 to L5 Competency Progression and Work Assignment Exchange"
+            style={{
+              marginTop: 22,
+              background: "linear-gradient(180deg, #f6f4ff 0%, #ffffff 100%)",
+              border: "1px solid #ddd6fe",
+              borderTop: "4px solid #5142b5",
+              borderRadius: 16,
+              padding: "20px 24px",
+              color: "#0f172a",
+              boxShadow: "0 12px 30px -14px rgba(81, 66, 181, 0.14)",
+            }}
+          >
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 16, flexWrap: "wrap", marginBottom: 14 }}>
+              <div>
+                <span style={{ color: "#5142b5", font: "700 11px/1.4 var(--font-mono)", letterSpacing: "0.14em", textTransform: "uppercase", display: "block", marginBottom: 4 }}>
+                  ★ SKYLENT INSTITUTE OF APPLIED LEARNING · L1 → L5 PROGRESSION &amp; WORK ASSIGNMENT EXCHANGE
+                </span>
+                <strong style={{ fontSize: 18, color: "#0f172a", fontFamily: "var(--font-display)", display: "block" }}>
+                  Current Stage: L2 Guided Practice → Unlocking Env B Partner Fieldwork Exchange
+                </strong>
+                <span style={{ fontSize: 13, color: "#475569", display: "block", marginTop: 4 }}>
+                  Complete your Environment A Simulated Enterprise Sprint (Northwind / Harbor Desk) with a V1 → V2 Faculty Red-Line pass to unlock supervised real-world MSME &amp; startup assignments.
+                </span>
               </div>
-            ))}
-          </div>
-        </section>
+              <Link
+                to="/verify"
+                style={{
+                  padding: "8px 14px",
+                  borderRadius: 999,
+                  background: "#dcfce7",
+                  border: "1px solid #86efac",
+                  color: "#166534",
+                  fontSize: 12,
+                  fontFamily: "var(--font-mono)",
+                  fontWeight: 700,
+                  textDecoration: "none",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                ✓ View Flight Recorder Standard →
+              </Link>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 10 }}>
+              {[
+                ["15% Knowledge", "First-Principles Checks", "#5142b5"],
+                ["30% Execution", "Env A Browser Sandbox", "#5142b5"],
+                ["20% Judgement", "Trade-Off Decisions", "#5142b5"],
+                ["15% Oral Defence", "Boardroom Cold Call", "#5142b5"],
+                ["20% V1 → V2 Diff", "Faculty Red-Line Review", "#5142b5"],
+              ].map(([title, sub, col]) => (
+                <div key={title} style={{ background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: 10, padding: "10px 12px" }}>
+                  <strong style={{ color: col, fontSize: 13, fontFamily: "var(--font-mono)", display: "block" }}>{title}</strong>
+                  <span style={{ color: "#475569", fontSize: 12 }}>{sub}</span>
+                </div>
+              ))}
+            </div>
+          </section>
+        ) : null}
 
-        {/* 4. Elixir Wallet & Case Study Store (Cleanly placed below main learning workspace) */}
-        <section className="sh-card" aria-label="Elixir wallet" style={{ marginTop: 22 }}>
-          <ElixirWalletPanel />
-        </section>
+        {/* 5. Elixir Wallet & Case Study Store */}
+        {studentTab === 'overview' || studentTab === 'wallet' ? (
+          <section className="sh-card" aria-label="Elixir wallet" style={{ marginTop: 22 }}>
+            <ElixirWalletPanel />
+          </section>
+        ) : null}
       </div>
     </AuthDashboardShell>
   )

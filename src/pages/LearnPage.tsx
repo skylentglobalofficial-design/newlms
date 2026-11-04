@@ -1,12 +1,12 @@
 import { useState, useEffect, useCallback, useRef, lazy, Suspense, type ReactNode } from 'react'
 import { useParams, useNavigate, useLocation, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { HeaderWalletAndNotifications } from '../components/learner/HeaderWalletAndNotifications'
 import { EMPTY_LESSON_STATE } from '../demo/DemoStateContext'
 import CurriculumRail from '../components/lms/CurriculumRail'
 import { LessonContentView, LessonNavigation } from '../components/lms/LessonContent'
 import { LessonContextPanel } from '../components/product/ProductLanguage'
 import { AiMark, ProductSlice } from '../components/skylent/primitives'
-import { HeaderWalletAndNotifications } from '../components/learner/HeaderWalletAndNotifications'
 import { getLessonMeta } from '../content/course-lookups'
 import { isAuthoredCourse } from '../lib/live-intents'
 import { isMultiTrackAuthoredCourse } from '../content/multi-track-packs'
@@ -617,8 +617,8 @@ export default function LearnPage() {
             label="Where this lesson sits"
           />
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap" }}>
-          <div className="os-top-progress">
+        <div className="os-top-progress" style={{ display: "flex", alignItems: "center", gap: 14 }}>
+          <div>
             <span>{completedCount} of {totalLessons} complete · {progressPct}%</span>
             <div
               className="os-progress-bar"

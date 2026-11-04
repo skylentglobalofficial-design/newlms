@@ -412,9 +412,9 @@
   max-width: none;
   padding: 26px 28px;
   border-radius: 18px;
-  background: linear-gradient(135deg, #3B2D96 0%, #5142B5 100%);
-  border: 1px solid rgba(196, 184, 255, 0.42);
-  box-shadow: 0 20px 44px -18px rgba(16, 38, 61, 0.45);
+  background: linear-gradient(135deg, #3b2d96 0%, #5142b5 100%);
+  border: 1px solid rgba(196, 184, 255, 0.48);
+  box-shadow: 0 20px 44px -18px rgba(59, 45, 150, 0.38);
   color: #ffffff;
 }
 
@@ -511,15 +511,15 @@
 
 .sh .sh-royal-cta {
   background: #ffffff !important;
-  color: #5142B5 !important;
+  color: #5142b5 !important;
   font-weight: 800 !important;
-  border: 2px solid #ffffff !important;
-  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.22);
+  border-color: #ffffff !important;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.16) !important;
 }
 
 .sh .sh-royal-cta:hover {
-  background: #F5F3FF !important;
-  color: #3B2D96 !important;
+  background: #f5f3ff !important;
+  color: #43349f !important;
 }
 
 .sh .sh-royal-secondary {
@@ -565,7 +565,7 @@
 }
 
 .sh .sh-card--focused > .sh-card-head {
-  background: linear-gradient(135deg, #3B2D96 0%, #5142B5 100%);
+  background: linear-gradient(145deg, #10263d 0%, #183750 100%);
   color: #ffffff;
 }
 
@@ -580,23 +580,24 @@
 
 /* Royal Midnight Navy Skylent AI Card on Dashboard */
 .sh .sh-ai.sh-royal-ai {
-  background: linear-gradient(135deg, #3B2D96 0%, #5142B5 100%);
-  border: 1px solid rgba(196, 184, 255, 0.4);
-  box-shadow: 0 18px 38px -18px rgba(16, 38, 61, 0.45);
-  color: #ffffff;
+  background: linear-gradient(180deg, #f6f4ff 0%, #ffffff 100%);
+  border: 1px solid #ddd6fe;
+  border-top: 4px solid #5142b5;
+  box-shadow: 0 12px 30px -14px rgba(81, 66, 181, 0.14);
+  color: #0f172a;
 }
 
 .sh .sh-royal-ai .sh-ai-head {
-  background: rgba(255, 255, 255, 0.04);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  background: #f5f3ff;
+  border-bottom: 1px solid #e9d5ff;
 }
 
 .sh .sh-ai-live-pill {
   padding: 3px 10px;
   border-radius: 999px;
-  background: rgba(16, 185, 129, 0.16);
-  border: 1px solid rgba(52, 211, 153, 0.38);
-  color: #34d399;
+  background: #dcfce7;
+  border: 1px solid #86efac;
+  color: #166534;
   font-size: 11.5px;
   font-weight: 700;
 }
@@ -612,14 +613,14 @@
   margin: 0;
   font-size: 17px;
   font-weight: 800;
-  color: #c4b8ff;
+  color: #0f172a;
 }
 
 .sh .sh-royal-ai__desc {
   margin: 0;
   font-size: 13.5px;
   line-height: 1.55;
-  color: #cbd5e1;
+  color: #475569;
 }
 
 .sh .sh-royal-ai__pills {
@@ -631,8 +632,9 @@
 .sh .sh-royal-ai__pills span {
   padding: 4px 10px;
   border-radius: 999px;
-  background: #ffffff;
-  color: #0f172a;
+  background: #f5f3ff;
+  border: 1px solid #ddd6fe;
+  color: #5142b5;
   font-size: 11px;
   font-weight: 700;
 }
@@ -642,7 +644,7 @@
   align-items: center;
   gap: 6px;
   margin-top: 4px;
-  color: #c4b8ff;
+  color: #5142b5;
   font-size: 13.5px;
   font-weight: 800;
   text-decoration: none;
@@ -650,49 +652,4 @@
 
 .sh .sh-royal-ai__cta:hover {
   text-decoration: underline;
-}
-
-/* V33 Student Dashboard Soft Lavender + Crisp White Card Refinements */
-.sh .sh-ai.sh-royal-ai {
-  background: linear-gradient(180deg, #F6F4FF 0%, #FFFFFF 100%) !important;
-  border: 1.5px solid #DDD7FF !important;
-  border-top: 4px solid #5142B5 !important;
-  box-shadow: 0 12px 28px -16px rgba(81, 66, 181, 0.16) !important;
-  color: #0F172A !important;
-}
-.sh .sh-royal-ai .sh-ai-head {
-  background: #F5F3FF !important;
-  border-bottom: 1px solid #E2DCFF !important;
-  color: #5142B5 !important;
-}
-.sh .sh-ai-live-pill {
-  background: #DCFCE7 !important;
-  border: 1px solid #86EFAC !important;
-  color: #15803D !important;
-}
-.sh .sh-royal-ai__title {
-  color: #0F172A !important;
-}
-.sh .sh-royal-ai__desc {
-  color: #334155 !important;
-}
-.sh .sh-royal-ai__pills span {
-  background: #FFFFFF !important;
-  border: 1px solid #DDD7FF !important;
-  color: #5142B5 !important;
-}
-.sh .sh-royal-ai__cta {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 9px 14px;
-  border-radius: 10px;
-  background: #5142B5 !important;
-  color: #FFFFFF !important;
-  font-weight: 700 !important;
-  align-self: flex-start;
-}
-.sh .sh-royal-ai__cta:hover {
-  background: #43349F !important;
-  text-decoration: none;
 }

@@ -90,17 +90,24 @@ export function AuthDashboardShell({
       navigate(item.href)
       return
     }
-    if (item.sectionId) {
-      document
-        .getElementById(item.sectionId)
-        ?.scrollIntoView({ behavior: prefersReducedMotion() ? 'auto' : 'smooth', block: 'start' })
-    }
+    requestAnimationFrame(() => {
+      if (item.sectionId) {
+        const el = document.getElementById(item.sectionId)
+        if (el) {
+          el.scrollIntoView({ behavior: prefersReducedMotion() ? 'auto' : 'smooth', block: 'start' })
+          return
+        }
+      }
+      window.scrollTo({ top: 0, behavior: prefersReducedMotion() ? 'auto' : 'smooth' })
+    })
   }
 
   async function handleLogout() {
     await logout()
     navigate('/login')
   }
+
+  const activeItem = navItems.find(n => n.id === activeNav)
 
   const railContent = (
     <>
@@ -212,15 +219,46 @@ export function AuthDashboardShell({
           </div>
         </header>
 
-        <div className="auth-shell-bar">
-          <div style={{ display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap", flex: "1 1 auto", minWidth: 0 }}>
+        <div
+          className="auth-shell-bar"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: 16,
+            padding: '10px clamp(18px, 3vw, 32px)',
+            background: '#ffffff',
+            borderBottom: '1px solid #e2e8f0',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0, flexWrap: 'wrap' }}>
             {bar ?? (
-              <span className="sh-crumb" style={{ fontFamily: "var(--font-mono)", fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "#64748B" }}>
-                Skylent OS <span aria-hidden="true">/</span> <b style={{ color: "#0F172A", fontWeight: 700 }}>{workspaceLabel} · {roleLabel}</b>
-              </span>
+              <>
+                <span
+                  style={{
+                    fontSize: 11,
+                    fontFamily: 'var(--font-mono)',
+                    fontWeight: 700,
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.08em',
+                    color: '#5142b5',
+                    background: '#f5f3ff',
+                    border: '1px solid #ddd6fe',
+                    padding: '3px 10px',
+                    borderRadius: 999,
+                  }}
+                >
+                  {workspaceLabel} OS
+                </span>
+                {activeItem ? (
+                  <span style={{ fontSize: 13, fontWeight: 600, color: '#334155' }}>
+                    Active Tab: <strong style={{ color: '#0f172a' }}>{activeItem.label}</strong>
+                  </span>
+                ) : null}
+              </>
             )}
           </div>
-          <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 12 }}>
+          <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 12 }}>
             <HeaderWalletAndNotifications variant="dashboard" />
           </div>
         </div>

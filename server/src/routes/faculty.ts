@@ -64,14 +64,19 @@ async function loadSuperadminFacultyDashboard() {
     prisma.course.findMany({
       orderBy: { title: "asc" },
       select: {
+        id: true,
         slug: true,
         title: true,
         curriculum: {
           orderBy: { order: "asc" },
-          include: { nodes: { select: { id: true } } },
+          select: {
+            id: true,
+            title: true,
+            nodes: { orderBy: { order: "asc" }, select: { id: true, title: true, nodeType: true } },
+          },
         },
       },
-      take: 6,
+      take: 12,
     }),
     prisma.assignmentProgress.findMany({
       where: { status: "submitted" },
@@ -98,10 +103,23 @@ async function loadSuperadminFacultyDashboard() {
   return {
     programs,
     courses: courses.map((course) => ({
+      id: course.id,
       slug: course.slug,
       title: course.title,
       moduleCount: course.curriculum.length,
       lessonCount: course.curriculum.reduce((sum, mod) => sum + mod.nodes.length, 0),
+      modules: course.curriculum.map((mod, idx) => ({
+        id: mod.id,
+        position: idx + 1,
+        title: mod.title,
+        lessonCount: mod.nodes.length,
+        lectures: mod.nodes.map((n, nIdx) => ({
+          id: n.id,
+          position: nIdx + 1,
+          title: n.title,
+          nodeType: n.nodeType,
+        })),
+      })),
     })),
     submissions: submissions.map((row) => ({
       id: row.id,
@@ -116,7 +134,13 @@ async function loadSuperadminFacultyDashboard() {
       attachmentCount: row.attachments.length,
     })),
     pendingReviewCount: submissions.length,
-    curriculumSummary: [],
+    curriculumSummary: courses.flatMap((course) =>
+      course.curriculum.map((module) => ({
+        label: module.title,
+        detail: `${course.title} · ${module.nodes.length} lectures`,
+        status: "current",
+      })),
+    ),
     teachingScopeAvailable: true,
     teachingScopeMessage: null,
     cohortAnalyticsAvailable: false,
@@ -130,6 +154,7 @@ async function loadAssignedFacultyDashboard(userId: string) {
     where: { id: { in: assigned } },
     orderBy: { title: "asc" },
     select: {
+      id: true,
       slug: true,
       title: true,
       curriculum: {
@@ -137,7 +162,7 @@ async function loadAssignedFacultyDashboard(userId: string) {
         select: {
           id: true,
           title: true,
-          nodes: { select: { id: true, title: true, moduleId: true } },
+          nodes: { orderBy: { order: "asc" }, select: { id: true, title: true, nodeType: true, moduleId: true } },
         },
       },
     },
@@ -166,10 +191,23 @@ async function loadAssignedFacultyDashboard(userId: string) {
   return {
     programs: [],
     courses: courses.map((course) => ({
+      id: course.id,
       slug: course.slug,
       title: course.title,
       moduleCount: course.curriculum.length,
       lessonCount: course.curriculum.reduce((sum, mod) => sum + mod.nodes.length, 0),
+      modules: course.curriculum.map((mod, idx) => ({
+        id: mod.id,
+        position: idx + 1,
+        title: mod.title,
+        lessonCount: mod.nodes.length,
+        lectures: mod.nodes.map((n, nIdx) => ({
+          id: n.id,
+          position: nIdx + 1,
+          title: n.title,
+          nodeType: n.nodeType,
+        })),
+      })),
     })),
     submissions: submissions.map((row) => ({
       id: row.id,
@@ -480,7 +518,7 @@ const facultyLectureSchema = z.object({
 facultyRouter.post(
   "/courses/:courseId/lectures",
   requireAuth,
-  requireRoles("faculty"),
+  requireRoles("faculty", "superadmin"),
   requireCsrf,
   async (req: AuthenticatedRequest, res) => {
     const params = z.object({ courseId: z.string().uuid() }).safeParse(req.params)
@@ -547,7 +585,7 @@ facultyRouter.delete(
 facultyRouter.post(
   "/courses/:courseId/lectures/:lectureId/materials",
   requireAuth,
-  requireRoles("faculty"),
+  requireRoles("faculty", "superadmin"),
   requireCsrf,
   async (req: AuthenticatedRequest, res) => {
     const params = z.object({ courseId: z.string().uuid(), lectureId: z.string().uuid() }).safeParse(req.params)

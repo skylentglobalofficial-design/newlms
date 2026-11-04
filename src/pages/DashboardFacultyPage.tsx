@@ -1,31 +1,54 @@
-import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState, useEffect, type FormEvent } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import { C, T } from '../tokens'
 import { GlassSurface } from '../components/foundation'
 import { AuthDashboardShell, AuthDashboardLayout, type AuthNavItem } from '../components/AuthDashboardShell'
 import { getRoleAccent } from '../role-themes'
 import { useAuth } from '../context/AuthContext'
-import { fetchFacultyDashboard, fetchFacultyDoubts, resolveFacultyDoubt, type FacultyDashboard, type FacultyDoubtItem, type FacultySubmission } from '../lib/faculty-api'
+import {
+  createFacultyLecture,
+  fetchFacultyDashboard,
+  fetchFacultyDoubts,
+  fetchFacultySubmissionDetail,
+  gradeFacultySubmission,
+  resolveFacultyDoubt,
+  uploadFacultyLessonMaterial,
+  type FacultyDashboard,
+  type FacultyDoubtItem,
+  type FacultySubmission,
+  type FacultySubmissionDetail,
+} from '../lib/faculty-api'
 
 const NAV_ITEMS: AuthNavItem[] = [
-  { id: 'overview', label: 'Overview', short: 'Home', sectionId: 'faculty-overview' },
-  { id: 'classes', label: 'Classes', short: 'Classes', sectionId: 'faculty-classes' },
-  { id: 'curriculum', label: 'Curriculum', short: 'Curriculum', sectionId: 'faculty-curriculum' },
-  { id: 'assignments', label: 'Assignments', short: 'Tasks', sectionId: 'faculty-assignments' },
-  { id: 'assessments', label: 'Assessments', short: 'Tests', sectionId: 'faculty-upcoming' },
-  { id: 'learners', label: 'Learners', short: 'Learners', sectionId: 'faculty-learners' },
-  { id: 'settings', label: 'Settings', short: 'Settings', sectionId: 'faculty-settings' },
+  { id: 'overview', label: 'Overview & SLA', short: 'Home' },
+  { id: 'classes', label: 'Assigned Courses', short: 'Courses' },
+  { id: 'curriculum', label: 'Add Lectures & PDFs', short: 'Author' },
+  { id: 'assignments', label: 'V1→V2 Grading Studio', short: 'Grade' },
+  { id: 'assessments', label: '20-Min Doubt Queue', short: 'Doubts' },
+  { id: 'learners', label: 'Learner Cohort', short: 'Learners' },
+  { id: 'settings', label: 'Rubric & Settings', short: 'Settings' },
 ]
 
 const accent = getRoleAccent('faculty')
 
 const canvasSectionStyle = {
+  background: '#ffffff',
+  border: '1px solid #e2e8f0',
+  borderTop: '4px solid #5142b5',
+  borderRadius: 16,
   padding: '22px 24px',
-  background: '#FFFFFF',
-  border: '1.5px solid #DDD7FF',
-  borderTop: '4px solid #5142B5',
-  borderRadius: 18,
-  boxShadow: '0 10px 26px -14px rgba(81, 66, 181, 0.14)',
+  boxShadow: '0 10px 28px -12px rgba(15, 23, 42, 0.08)',
+} as const
+
+const inputStyle = {
+  width: '100%',
+  padding: '9px 12px',
+  borderRadius: 10,
+  border: '1px solid #cbd5e1',
+  background: '#ffffff',
+  color: '#0f172a',
+  fontSize: 13.5,
+  fontFamily: 'var(--font-body)',
 } as const
 
 function NavIcon({ id }: { id: string }) {
@@ -37,29 +60,42 @@ function NavIcon({ id }: { id: string }) {
   if (id === 'assignments') return <svg {...s}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
   if (id === 'assessments') return <svg {...s}><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
   if (id === 'learners') return <svg {...s}><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
-  return <svg {...s}><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l-.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+  return <svg {...s}><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+}
+
+function fileToBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => {
+      const result = typeof reader.result === 'string' ? reader.result : ''
+      const base64 = result.includes(',') ? result.split(',')[1] ?? '' : result
+      resolve(base64)
+    }
+    reader.onerror = () => reject(new Error('Could not read file'))
+    reader.readAsDataURL(file)
+  })
 }
 
 function TeachingEmptyState({ message }: { message?: string | null }) {
   return (
     <div style={{
-      background: 'linear-gradient(135deg, #3B2D96 0%, #5142B5 100%)',
-      border: '1px solid rgba(196, 184, 255, 0.38)',
+      background: 'linear-gradient(135deg, #3b2d96 0%, #5142b5 100%)',
+      border: '1px solid rgba(196, 184, 255, 0.42)',
       borderRadius: 18,
       padding: 'clamp(24px, 4vw, 34px)',
       color: '#ffffff',
-      boxShadow: '0 18px 40px rgba(10, 14, 34, 0.22)',
+      boxShadow: '0 18px 40px -14px rgba(59, 45, 150, 0.35)',
     }}>
-      <p style={{ margin: '0 0 8px', color: '#c4b8ff', font: '700 11px/1.4 var(--font-mono)', letterSpacing: '0.14em', textTransform: 'uppercase' }}>
+      <p style={{ margin: '0 0 8px', color: '#e9d5ff', font: '700 11px/1.4 var(--font-mono)', letterSpacing: '0.14em', textTransform: 'uppercase' }}>
         FACULTY TA &amp; RED-LINE REVIEW TERMINAL · 20-MINUTE SLA
       </p>
       <h1 className="skylent-display-sm" style={{ color: '#ffffff', margin: '0 0 8px', lineHeight: 1.1 }}>
         Teaching scope &amp; V1 → V2 Red-Line Review Queue
       </h1>
-      <p style={{ color: 'rgba(255,255,255,0.86)', fontSize: 15, margin: '0 0 10px', lineHeight: 1.55 }}>
+      <p style={{ color: 'rgba(255,255,255,0.88)', fontSize: 15, margin: '0 0 10px', lineHeight: 1.55 }}>
         Resolve learner doubts within the 20-minute SLA and grade Capstone Version 1 → Version 2 Red-Line Diffs below.
       </p>
-      <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 13.5, margin: 0, lineHeight: 1.6, maxWidth: 640 }}>
+      <p style={{ color: 'rgba(255,255,255,0.75)', fontSize: 13.5, margin: 0, lineHeight: 1.6, maxWidth: 680 }}>
         {message ?? 'All 6 simulated company tracks route live learner doubts and rubric submissions directly to this terminal.'}
       </p>
     </div>
@@ -71,78 +107,371 @@ function CatalogOverview({
   courseCount,
   pendingCount,
   onReview,
+  onAuthorLecture,
 }: {
   programCount: number
   courseCount: number
   pendingCount: number
   onReview: () => void
+  onAuthorLecture: () => void
 }) {
   return (
     <div style={{
-      background: 'linear-gradient(135deg, #3B2D96 0%, #5142B5 100%)',
-      border: '1px solid rgba(196, 184, 255, 0.38)',
+      background: 'linear-gradient(135deg, #3b2d96 0%, #5142b5 100%)',
+      border: '1px solid rgba(196, 184, 255, 0.42)',
       borderRadius: 18,
       padding: 'clamp(24px, 4vw, 34px)',
       color: '#ffffff',
-      boxShadow: '0 18px 40px rgba(10, 14, 34, 0.22)',
+      boxShadow: '0 18px 40px -14px rgba(59, 45, 150, 0.35)',
     }}>
-      <p style={{ margin: '0 0 8px', color: '#c4b8ff', font: '700 11px/1.4 var(--font-mono)', letterSpacing: '0.14em', textTransform: 'uppercase' }}>
-        FACULTY TA &amp; RED-LINE REVIEW TERMINAL · SUPERADMIN ALL-TRACK VIEW
+      <p style={{ margin: '0 0 8px', color: '#e9d5ff', font: '700 11px/1.4 var(--font-mono)', letterSpacing: '0.14em', textTransform: 'uppercase' }}>
+        FACULTY TA &amp; RED-LINE REVIEW TERMINAL · SUPERADMIN &amp; INSTRUCTOR VIEW
       </p>
       <h1 className="skylent-display-sm" style={{ color: '#ffffff', margin: '0 0 8px', lineHeight: 1.1 }}>
         Catalog &amp; Red-Line Grading Command Center
       </h1>
-      <p style={{ color: 'rgba(255,255,255,0.84)', fontSize: 15, margin: '0 0 22px', lineHeight: 1.5 }}>
-        Monitor 20-minute doubt SLA queues and V1 → V2 Capstone Red-Line reviews across all 6 flagship tracks.
+      <p style={{ color: 'rgba(255,255,255,0.88)', fontSize: 15, margin: '0 0 22px', lineHeight: 1.5 }}>
+        Monitor 20-minute doubt SLA queues, author new lectures &amp; study materials, and grade V1 → V2 Capstone Red-Line reviews across your assigned tracks.
       </p>
 
       <div style={{
         display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 14,
         padding: '16px 0', marginBottom: 20,
-        borderTop: '1px solid rgba(255,255,255,0.14)', borderBottom: '1px solid rgba(255,255,255,0.14)',
+        borderTop: '1px solid rgba(255,255,255,0.18)', borderBottom: '1px solid rgba(255,255,255,0.18)',
       }}>
-        <div style={{ background: 'rgba(255, 255, 255, 0.14)', padding: 14, borderRadius: 12, border: '1px solid rgba(52,211,153,0.36)' }}>
+        <div style={{ background: 'rgba(15,23,42,0.35)', padding: 14, borderRadius: 12, border: '1px solid rgba(52,211,153,0.4)' }}>
           <div style={{ color: '#34d399', fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 700, marginBottom: 4 }}>Faculty TA SLA</div>
           <div style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 700, color: '#ffffff' }}>20 min</div>
-          <div style={{ color: 'rgba(255,255,255,0.72)', fontSize: 11, marginTop: 2 }}>20-minute doubt &amp; rubric SLA</div>
+          <div style={{ color: 'rgba(255,255,255,0.78)', fontSize: 11, marginTop: 2 }}>20-minute doubt &amp; rubric SLA</div>
         </div>
-        <div style={{ background: 'rgba(255, 255, 255, 0.14)', padding: 14, borderRadius: 12, border: '1px solid rgba(196, 184, 255,0.34)' }}>
-          <div style={{ color: '#c4b8ff', fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 700, marginBottom: 4 }}>Pending reviews</div>
+        <div style={{ background: 'rgba(15,23,42,0.35)', padding: 14, borderRadius: 12, border: '1px solid rgba(255,255,255,0.22)' }}>
+          <div style={{ color: '#f3e8ff', fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 700, marginBottom: 4 }}>Pending reviews</div>
           <div style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 700, color: '#ffffff' }}>
             {pendingCount}
           </div>
-          <div style={{ color: 'rgba(255,255,255,0.72)', fontSize: 11, marginTop: 2 }}>V1 → V2 submissions waiting</div>
+          <div style={{ color: 'rgba(255,255,255,0.78)', fontSize: 11, marginTop: 2 }}>V1 → V2 submissions waiting</div>
         </div>
-        <div style={{ background: 'rgba(255, 255, 255, 0.14)', padding: 14, borderRadius: 12, border: '1px solid rgba(255,255,255,0.14)' }}>
-          <div style={{ color: '#c4b8ff', fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 700, marginBottom: 4 }}>Programs in catalog</div>
+        <div style={{ background: 'rgba(15,23,42,0.35)', padding: 14, borderRadius: 12, border: '1px solid rgba(255,255,255,0.22)' }}>
+          <div style={{ color: '#f3e8ff', fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 700, marginBottom: 4 }}>Programs in catalog</div>
           <div style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 700, color: '#ffffff' }}>
             {programCount}
           </div>
-          <div style={{ color: 'rgba(255,255,255,0.72)', fontSize: 11, marginTop: 2 }}>career pathways</div>
+          <div style={{ color: 'rgba(255,255,255,0.78)', fontSize: 11, marginTop: 2 }}>career pathways</div>
         </div>
-        <div style={{ background: 'rgba(255, 255, 255, 0.14)', padding: 14, borderRadius: 12, border: '1px solid rgba(255,255,255,0.14)' }}>
-          <div style={{ color: '#c4b8ff', fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 700, marginBottom: 4 }}>Courses in catalog</div>
+        <div style={{ background: 'rgba(15,23,42,0.35)', padding: 14, borderRadius: 12, border: '1px solid rgba(255,255,255,0.22)' }}>
+          <div style={{ color: '#f3e8ff', fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 700, marginBottom: 4 }}>Courses in catalog</div>
           <div style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 700, color: '#ffffff' }}>
             {courseCount}
           </div>
-          <div style={{ color: 'rgba(255,255,255,0.72)', fontSize: 11, marginTop: 2 }}>simulated company tracks</div>
+          <div style={{ color: 'rgba(255,255,255,0.78)', fontSize: 11, marginTop: 2 }}>simulated company tracks</div>
         </div>
       </div>
 
-      <button
-        type="button"
-        onClick={onReview}
-        style={{
-          display: 'inline-flex', alignItems: 'center', gap: 8,
-          background: '#ffffff', color: '#5142B5', border: '2px solid #ffffff', boxShadow: '0 8px 20px rgba(15, 23, 42, 0.2)',
-          padding: '12px 22px', borderRadius: 999,
-          fontSize: 14, fontWeight: 700, fontFamily: 'var(--font-body)',
-          cursor: 'pointer',
-        }}
-      >
-        Review submissions
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-      </button>
+      <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+        <button
+          type="button"
+          onClick={onReview}
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: 8,
+            background: '#ffffff', color: '#5142b5', border: '1px solid #ffffff',
+            padding: '11px 20px', borderRadius: 999,
+            fontSize: 13.5, fontWeight: 800, fontFamily: 'var(--font-body)',
+            cursor: 'pointer',
+            boxShadow: '0 6px 16px rgba(0,0,0,0.16)',
+          }}
+        >
+          Review submissions ({pendingCount}) →
+        </button>
+        <button
+          type="button"
+          onClick={onAuthorLecture}
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: 8,
+            background: 'rgba(255,255,255,0.14)', color: '#ffffff', border: '1px solid rgba(255,255,255,0.34)',
+            padding: '11px 20px', borderRadius: 999,
+            fontSize: 13.5, fontWeight: 700, fontFamily: 'var(--font-body)',
+            cursor: 'pointer',
+          }}
+        >
+          + Add Lecture or Upload PDF/Slide
+        </button>
+      </div>
+    </div>
+  )
+}
+
+function FacultyLectureAuthoringStudio({
+  courses,
+  onReload,
+}: {
+  courses: FacultyDashboard['courses']
+  onReload: () => void
+}) {
+  const [selectedCourseSlug, setSelectedCourseSlug] = useState<string>(courses[0]?.slug ?? '')
+  const currentCourse = courses.find((c) => c.slug === selectedCourseSlug) ?? courses[0]
+  const modules = currentCourse?.modules ?? []
+  const [selectedModuleId, setSelectedModuleId] = useState<string>(modules[0]?.id ?? '')
+  const [title, setTitle] = useState('')
+  const [nodeType, setNodeType] = useState<'NOTES' | 'VIDEO' | 'LAB' | 'ASSIGNMENT' | 'PROJECT'>('NOTES')
+  const [summary, setSummary] = useState('')
+  const [statusMsg, setStatusMsg] = useState<string | null>(null)
+  const [errMsg, setErrMsg] = useState<string | null>(null)
+  const [submitting, setSubmitting] = useState(false)
+
+  useEffect(() => {
+    if (currentCourse && currentCourse.modules?.[0] && !currentCourse.modules.some((m) => m.id === selectedModuleId)) {
+      setSelectedModuleId(currentCourse.modules[0].id)
+    }
+  }, [currentCourse?.slug])
+
+  async function handleCreateLecture(e: FormEvent) {
+    e.preventDefault()
+    if (!currentCourse?.id || !selectedModuleId) {
+      setErrMsg('Select an assigned course and module first.')
+      return
+    }
+    setSubmitting(true)
+    setStatusMsg(null)
+    setErrMsg(null)
+    try {
+      const created = await createFacultyLecture(currentCourse.id, {
+        moduleId: selectedModuleId,
+        title: title.trim(),
+        summary: summary.trim() || undefined,
+        nodeType,
+      })
+      setTitle('')
+      setSummary('')
+      setStatusMsg(`Added ${created.nodeType} lecture "${created.title}" to ${currentCourse.title}.`)
+      onReload()
+    } catch (err) {
+      setErrMsg(err instanceof Error ? err.message : 'Could not add lecture')
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  async function handleAttachFile(courseId: string, lectureId: string, file: File | null) {
+    if (!file) return
+    setStatusMsg(null)
+    setErrMsg(null)
+    try {
+      const dataBase64 = await fileToBase64(file)
+      const saved = await uploadFacultyLessonMaterial(courseId, lectureId, {
+        fileName: file.name,
+        contentType: file.type || 'application/pdf',
+        dataBase64,
+      })
+      setStatusMsg(`Uploaded study material "${saved.fileName}" (${Math.round(saved.byteSize / 1024)} KB).`)
+      onReload()
+    } catch (err) {
+      setErrMsg(err instanceof Error ? err.message : 'Could not upload study material')
+    }
+  }
+
+  if (courses.length === 0) {
+    return (
+      <div style={canvasSectionStyle}>
+        <span style={{ fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 700, color: '#5142b5' }}>
+          FACULTY LECTURE &amp; MATERIAL AUTHORING
+        </span>
+        <h3 style={{ margin: '4px 0 8px', fontSize: 18, color: '#0f172a' }}>No Assigned Courses Yet</h3>
+        <p style={{ margin: 0, fontSize: 13.5, color: '#475569' }}>
+          Ask a Superadmin to assign your Faculty account to a course in the Course Builder Studio (`/dashboard/curriculum` → Tab 4: Assign Faculty TA).
+        </p>
+      </div>
+    )
+  }
+
+  return (
+    <div style={{ display: 'grid', gap: 18 }}>
+      {statusMsg ? (
+        <div role="status" style={{ padding: '12px 16px', borderRadius: 12, background: '#ecfdf5', border: '1px solid #6ee7b7', color: '#065f46', fontSize: 13.5, fontWeight: 700 }}>
+          ✓ {statusMsg}
+        </div>
+      ) : null}
+      {errMsg ? (
+        <div role="alert" style={{ padding: '12px 16px', borderRadius: 12, background: '#fef2f2', border: '1px solid #fca5a5', color: '#991b1b', fontSize: 13.5, fontWeight: 700 }}>
+          ⚠️ {errMsg}
+        </div>
+      ) : null}
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 380px), 1fr))', gap: 18, alignItems: 'start' }}>
+        <form onSubmit={handleCreateLecture} style={{ ...canvasSectionStyle, display: 'grid', gap: 12 }}>
+          <div>
+            <span style={{ fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 700, color: '#5142b5' }}>
+              FACULTY LECTURE STUDIO · ADD LESSON TO ASSIGNED MODULE
+            </span>
+            <h3 style={{ margin: '2px 0 0', fontSize: 18, color: '#0f172a' }}>Add New Lecture / Case Brief</h3>
+          </div>
+
+          <label style={{ display: 'grid', gap: 4, fontSize: 12, fontWeight: 700, color: '#334155' }}>
+            Assigned Course
+            <select
+              value={currentCourse?.slug ?? ''}
+              onChange={(e) => setSelectedCourseSlug(e.target.value)}
+              style={inputStyle}
+            >
+              {courses.map((c) => (
+                <option key={c.slug} value={c.slug}>
+                  {c.title} ({c.moduleCount} modules · {c.lessonCount} lessons)
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+            <label style={{ display: 'grid', gap: 4, fontSize: 12, fontWeight: 700, color: '#334155' }}>
+              Target Module
+              <select
+                value={selectedModuleId}
+                onChange={(e) => setSelectedModuleId(e.target.value)}
+                required
+                style={inputStyle}
+              >
+                <option value="">Choose module…</option>
+                {modules.map((m) => (
+                  <option key={m.id} value={m.id}>
+                    M{m.position}: {m.title}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label style={{ display: 'grid', gap: 4, fontSize: 12, fontWeight: 700, color: '#334155' }}>
+              Lecture Type
+              <select
+                value={nodeType}
+                onChange={(e) => setNodeType(e.target.value as typeof nodeType)}
+                style={inputStyle}
+              >
+                <option value="NOTES">NOTES — Reading &amp; AI Notes</option>
+                <option value="VIDEO">VIDEO — Video Lecture</option>
+                <option value="LAB">LAB — Browser Sandbox</option>
+                <option value="ASSIGNMENT">ASSIGNMENT — Graded Case Brief</option>
+                <option value="PROJECT">PROJECT — Capstone Studio</option>
+              </select>
+            </label>
+          </div>
+
+          <label style={{ display: 'grid', gap: 4, fontSize: 12, fontWeight: 700, color: '#334155' }}>
+            Lecture Title
+            <input
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="e.g. Executive Cohort Retention Memo Walkthrough"
+              required
+              style={inputStyle}
+            />
+          </label>
+
+          <label style={{ display: 'grid', gap: 4, fontSize: 12, fontWeight: 700, color: '#334155' }}>
+            Lecture Notes / Case Brief Instructions
+            <textarea
+              rows={4}
+              value={summary}
+              onChange={(e) => setSummary(e.target.value)}
+              placeholder="Write the lesson reading notes or case assignment rubric instructions…"
+              style={inputStyle}
+            />
+          </label>
+
+          <button
+            type="submit"
+            disabled={submitting}
+            style={{
+              background: '#5142b5',
+              color: '#ffffff',
+              border: '1px solid #5142b5',
+              padding: '10px 18px',
+              borderRadius: 10,
+              fontWeight: 700,
+              fontSize: 13.5,
+              cursor: 'pointer',
+            }}
+          >
+            {submitting ? 'Saving Lecture…' : 'Save Lecture to Module →'}
+          </button>
+        </form>
+
+        <div style={canvasSectionStyle}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10, flexWrap: 'wrap', marginBottom: 12 }}>
+            <div>
+              <span style={{ fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 700, color: '#5142b5' }}>
+                SYLLABUS &amp; STUDY MATERIALS (PDF / PPTX / MD)
+              </span>
+              <h3 style={{ margin: '2px 0 0', fontSize: 18, color: '#0f172a' }}>{currentCourse?.title}</h3>
+            </div>
+            {currentCourse ? (
+              <Link
+                to={`/learn/${currentCourse.slug}`}
+                style={{ fontSize: 12.5, fontWeight: 700, color: '#5142b5', textDecoration: 'none' }}
+              >
+                Open in Player →
+              </Link>
+            ) : null}
+          </div>
+
+          {modules.length === 0 ? (
+            <p style={{ margin: 0, fontSize: 13, color: '#64748b' }}>No modules found on this course.</p>
+          ) : (
+            <div style={{ display: 'grid', gap: 10 }}>
+              {modules.map((m) => (
+                <div key={m.id} style={{ padding: 12, borderRadius: 12, background: '#f8fafc', border: '1px solid #e2e8f0' }}>
+                  <strong style={{ fontSize: 13.5, color: '#0f172a', display: 'block', marginBottom: 6 }}>
+                    Module {m.position}: {m.title} ({m.lectures.length} lectures)
+                  </strong>
+                  <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gap: 6 }}>
+                    {m.lectures.map((lec) => (
+                      <li
+                        key={lec.id}
+                        style={{
+                          padding: '8px 10px',
+                          borderRadius: 8,
+                          background: '#ffffff',
+                          border: '1px solid #e2e8f0',
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          gap: 8,
+                          flexWrap: 'wrap',
+                          fontSize: 12.5,
+                        }}
+                      >
+                        <span>
+                          <strong>{lec.position}. {lec.title}</strong> <span style={{ color: '#64748b' }}>({lec.nodeType})</span>
+                        </span>
+                        {currentCourse?.id ? (
+                          <label
+                            style={{
+                              padding: '3px 8px',
+                              borderRadius: 6,
+                              border: '1px solid #cbd5e1',
+                              background: '#f5f3ff',
+                              color: '#5142b5',
+                              fontSize: 11,
+                              fontWeight: 700,
+                              cursor: 'pointer',
+                            }}
+                          >
+                            📎 Attach PDF/Slide
+                            <input
+                              type="file"
+                              accept=".pdf,.ppt,.pptx,.txt,.md"
+                              style={{ display: 'none' }}
+                              onChange={(e) => void handleAttachFile(currentCourse.id!, lec.id, e.target.files?.[0] ?? null)}
+                            />
+                          </label>
+                        ) : null}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   )
 }
@@ -150,7 +479,7 @@ function CatalogOverview({
 function CurriculumTeachingPath({ summary }: { summary: FacultyDashboard['curriculumSummary'] }) {
   if (summary.length === 0) {
     return (
-      <div id="faculty-curriculum" style={{ marginTop: 'clamp(28px, 4vw, 40px)' }}>
+      <div id="faculty-curriculum" style={canvasSectionStyle}>
         <p style={{ color: C.slate, fontSize: 14, margin: 0, lineHeight: 1.6 }}>
           No teaching path is assigned yet. Curriculum steps appear here when a programme or course is linked to your account.
         </p>
@@ -168,45 +497,46 @@ function CurriculumTeachingPath({ summary }: { summary: FacultyDashboard['curric
   }))
 
   return (
-    <div id="faculty-curriculum" style={{ marginTop: 'clamp(28px, 4vw, 40px)' }}>
+    <div id="faculty-curriculum" style={canvasSectionStyle}>
+      <span style={{ fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 700, color: '#5142b5', display: 'block', marginBottom: 10 }}>
+        MODULE TEACHING PATHWAY
+      </span>
       <div className="faculty-path-timeline">
         {curriculum.map((node, i) => {
           const isCurrent = node.status === 'current'
           const isComplete = node.status === 'complete'
           const isLast = i === curriculum.length - 1
           return (
-            <div key={node.id} className="faculty-path-step" style={{ display: 'flex', gap: 16, minHeight: isLast ? 'auto' : 52 }}>
+            <div key={node.id} className="faculty-path-step" style={{ display: 'flex', gap: 16, minHeight: isLast ? 'auto' : 46 }}>
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: 20, flexShrink: 0 }}>
                 <div style={{
                   width: isCurrent ? 12 : 8,
                   height: isCurrent ? 12 : 8,
                   borderRadius: '50%',
-                  background: isCurrent ? accent.primary : isComplete ? accent.primary : 'var(--skylent-color-border-strong)',
-                  boxShadow: isCurrent ? `0 0 16px ${accent.subtleStrong}` : 'none',
+                  background: isCurrent ? '#5142b5' : isComplete ? '#5142b5' : '#cbd5e1',
                   flexShrink: 0,
                   marginTop: 4,
                 }} />
                 {!isLast && (
                   <div style={{
-                    width: 1, flex: 1, minHeight: 28,
-                    background: isComplete ? `${accent.primary}55` : T.lineLight,
+                    width: 1, flex: 1, minHeight: 24,
+                    background: '#e2e8f0',
                     marginTop: 4,
                   }} />
                 )}
               </div>
-              <div style={{ paddingBottom: isLast ? 0 : 20, minWidth: 0 }}>
+              <div style={{ paddingBottom: isLast ? 0 : 14, minWidth: 0 }}>
                 <div style={{
-                  fontSize: isCurrent ? 14 : 13,
-                  fontWeight: isCurrent ? 600 : 400,
-                  color: isCurrent ? C.ink : C.slate,
+                  fontSize: 14,
+                  fontWeight: 700,
+                  color: '#0f172a',
                 }}>
                   {node.label}
-                  {isCurrent && <span style={{ color: 'var(--skylent-color-accent-text)', fontSize: 11, marginLeft: 8, fontWeight: 500 }}>current</span>}
                 </div>
                 <div style={{
-                  fontSize: 12,
-                  color: isCurrent ? accent.textMuted : C.slate,
-                  marginTop: 4,
+                  fontSize: 12.5,
+                  color: '#475569',
+                  marginTop: 2,
                 }}>
                   {node.detail}
                 </div>
@@ -227,68 +557,181 @@ function formatSubmittedAt(value: string | null) {
 function AssignmentReview({
   submissions,
   onFocus,
+  onReload,
 }: {
   submissions: FacultySubmission[]
   onFocus: () => void
+  onReload: () => void
 }) {
+  const [selectedId, setSelectedId] = useState<string | null>(null)
+  const [detail, setDetail] = useState<FacultySubmissionDetail | null>(null)
+  const [loadingDetail, setLoadingDetail] = useState(false)
+  const [gradeVal, setGradeVal] = useState('88')
+  const [feedbackVal, setFeedbackVal] = useState('Verified V1 → V2 Red-Line revision: SQL grain and commercial trade-offs are accurately defended.')
+  const [gradingMsg, setGradingMsg] = useState<string | null>(null)
+  const [savingGrade, setSavingGrade] = useState(false)
+
   const pendingCount = submissions.length
   const featured = submissions[0]
 
+  async function openSubmission(id: string) {
+    setSelectedId(id)
+    setLoadingDetail(true)
+    setGradingMsg(null)
+    try {
+      const d = await fetchFacultySubmissionDetail(id)
+      setDetail(d)
+      if (d.grade != null) setGradeVal(String(d.grade))
+      if (d.feedback) setFeedbackVal(d.feedback)
+    } catch {
+      setDetail(null)
+    } finally {
+      setLoadingDetail(false)
+    }
+  }
+
+  async function submitGrade(e: FormEvent) {
+    e.preventDefault()
+    if (!selectedId) return
+    setSavingGrade(true)
+    setGradingMsg(null)
+    try {
+      await gradeFacultySubmission(selectedId, {
+        grade: Math.min(100, Math.max(0, parseInt(gradeVal, 10) || 0)),
+        feedback: feedbackVal.trim() || undefined,
+      })
+      setGradingMsg('Submission graded and V1 → V2 Red-Line feedback saved!')
+      onReload()
+    } catch (err) {
+      setGradingMsg(err instanceof Error ? err.message : 'Could not save grade')
+    } finally {
+      setSavingGrade(false)
+    }
+  }
+
   return (
     <div style={canvasSectionStyle}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20, gap: 12, flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16, gap: 12, flexWrap: 'wrap' }}>
         <div>
-          <div style={{ color: C.slate, fontSize: 10, letterSpacing: '0.12em', marginBottom: 8 }}>
-            Assignment review
-          </div>
-          <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 600, color: C.ink, margin: 0 }}>
-            {featured?.lessonTitle ?? 'No submissions yet'}
+          <span style={{ color: '#5142b5', fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+            V1 → V2 RED-LINE ASSIGNMENT GRADING STUDIO
+          </span>
+          <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 700, color: '#0f172a', margin: '2px 0 0' }}>
+            {featured?.lessonTitle ?? 'Assignment review queue'}
           </h3>
         </div>
-        <div style={{ display: 'flex', gap: 12, flexShrink: 0 }}>
-          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--skylent-color-accent-text)' }}>{pendingCount} pending</span>
-        </div>
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11.5, fontWeight: 700, padding: '4px 10px', borderRadius: 999, background: '#f5f3ff', color: '#5142b5' }}>
+          {pendingCount} pending
+        </span>
       </div>
 
+      {gradingMsg ? (
+        <div role="status" style={{ marginBottom: 12, padding: '10px 14px', borderRadius: 10, background: '#ecfdf5', border: '1px solid #6ee7b7', color: '#065f46', fontSize: 13, fontWeight: 700 }}>
+          {gradingMsg}
+        </div>
+      ) : null}
+
       {submissions.length > 0 ? (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-          {submissions.map((row, i) => (
+        <div style={{ display: 'grid', gap: 10 }}>
+          {submissions.map((row) => (
             <div key={row.id} style={{
+              padding: '14px 16px',
+              borderRadius: 12,
+              background: '#f8fafc',
+              border: '1px solid #e2e8f0',
               display: 'grid',
-              gridTemplateColumns: '1fr auto',
-              gap: 12,
-              alignItems: 'center',
-              padding: '14px 0',
-              borderBottom: i < submissions.length - 1 ? `1px solid ${T.lineLight}` : 'none',
+              gap: 10,
             }}>
-              <div style={{ minWidth: 0 }}>
-                <div style={{ color: C.ink, fontSize: 14, fontWeight: 500 }}>{row.studentName}</div>
-                <div style={{ color: C.slate, fontSize: 12, marginTop: 2 }}>
-                  {row.lessonTitle}
-                  {row.courseTitle ? ` · ${row.courseTitle}` : ''}
-                  {row.attachmentCount > 0 ? ` · ${row.attachmentCount} attachment(s)` : ''}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+                <div style={{ minWidth: 0 }}>
+                  <div style={{ color: '#0f172a', fontSize: 14.5, fontWeight: 700 }}>{row.studentName}</div>
+                  <div style={{ color: '#475569', fontSize: 12.5, marginTop: 2 }}>
+                    {row.lessonTitle}
+                    {row.courseTitle ? ` · ${row.courseTitle}` : ''}
+                    {row.attachmentCount > 0 ? ` · ${row.attachmentCount} attachment(s)` : ''}
+                  </div>
+                  <div style={{ color: '#64748b', fontSize: 11.5, marginTop: 2 }}>{formatSubmittedAt(row.submittedAt)}</div>
                 </div>
-                <div style={{ color: C.slate, fontSize: 11, marginTop: 2 }}>{formatSubmittedAt(row.submittedAt)}</div>
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onFocus()
+                      void openSubmission(row.id)
+                    }}
+                    style={{
+                      background: '#5142b5',
+                      border: '1px solid #5142b5',
+                      color: '#ffffff',
+                      padding: '8px 14px',
+                      borderRadius: 8,
+                      fontSize: 12.5,
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    Review &amp; Grade
+                  </button>
+                </div>
               </div>
-              <button
-                type="button"
-                onClick={onFocus}
-                style={{
-                  background: accent.subtle,
-                  border: `1px solid ${accent.border}`,
-                  color: 'var(--skylent-color-accent-text)',
-                  padding: '7px 14px',
-                  borderRadius: T.rControl,
-                  fontSize: 12,
-                  fontWeight: 500,
-                  cursor: 'pointer',
-                  fontFamily: 'var(--font-body)',
-                  whiteSpace: 'nowrap',
-                  flexShrink: 0,
-                }}
-              >
-                Review
-              </button>
+
+              {selectedId === row.id ? (
+                <div style={{ padding: 14, borderRadius: 10, background: '#ffffff', border: '1px solid #ddd6fe', display: 'grid', gap: 10 }}>
+                  {loadingDetail ? (
+                    <p style={{ margin: 0, fontSize: 13, color: '#64748b' }}>Loading learner submission…</p>
+                  ) : detail ? (
+                    <form onSubmit={submitGrade} style={{ display: 'grid', gap: 10 }}>
+                      <div>
+                        <span style={{ fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 700, color: '#5142b5' }}>
+                          LEARNER WRITTEN SUBMISSION ({detail.student.email})
+                        </span>
+                        <pre style={{ margin: '6px 0 0', padding: 12, borderRadius: 8, background: '#f8fafc', border: '1px solid #e2e8f0', whiteSpace: 'pre-wrap', fontSize: 13, color: '#0f172a' }}>
+                          {detail.responseText || 'No text body submitted (check attachments).'}
+                        </pre>
+                      </div>
+                      <div style={{ display: 'grid', gridTemplateColumns: '140px 1fr', gap: 10 }}>
+                        <label style={{ display: 'grid', gap: 4, fontSize: 12, fontWeight: 700, color: '#334155' }}>
+                          Score (0–100)
+                          <input
+                            type="number"
+                            min={0}
+                            max={100}
+                            value={gradeVal}
+                            onChange={(e) => setGradeVal(e.target.value)}
+                            required
+                            style={inputStyle}
+                          />
+                        </label>
+                        <label style={{ display: 'grid', gap: 4, fontSize: 12, fontWeight: 700, color: '#334155' }}>
+                          V1 → V2 Faculty Red-Line Feedback
+                          <input
+                            value={feedbackVal}
+                            onChange={(e) => setFeedbackVal(e.target.value)}
+                            placeholder="Write actionable feedback for the learner…"
+                            style={inputStyle}
+                          />
+                        </label>
+                      </div>
+                      <div style={{ display: 'flex', gap: 8 }}>
+                        <button
+                          type="submit"
+                          disabled={savingGrade}
+                          style={{ background: '#059669', color: '#ffffff', border: 'none', padding: '8px 16px', borderRadius: 8, fontWeight: 700, fontSize: 12.5, cursor: 'pointer' }}
+                        >
+                          {savingGrade ? 'Saving Grade…' : '✓ Submit Verified Grade'}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setSelectedId(null)}
+                          style={{ background: '#f1f5f9', color: '#334155', border: '1px solid #cbd5e1', padding: '8px 12px', borderRadius: 8, fontWeight: 600, fontSize: 12.5, cursor: 'pointer' }}
+                        >
+                          Close
+                        </button>
+                      </div>
+                    </form>
+                  ) : null}
+                </div>
+              ) : null}
             </div>
           ))}
         </div>
@@ -302,30 +745,18 @@ function AssignmentReview({
 }
 
 function LearnerProgress({ dashboard }: { dashboard: FacultyDashboard | null }) {
-  const courseCount = dashboard?.courses.length ?? 6
-  const pendingCount = dashboard?.pendingAssignments.length ?? 0
   return (
     <div style={canvasSectionStyle}>
-      <div style={{ color: C.slate, fontSize: 10, letterSpacing: '0.12em', marginBottom: 18 }}>
-        Learner progress &amp; 5-dimension rubric standard
-      </div>
-
-      <div style={{ padding: '16px', background: 'var(--skylent-surface-elevated)', border: `1px solid ${T.lineLight}`, borderRadius: T.rCard }}>
-        {dashboard?.teachingScopeAvailable === false ? (
-          <div style={{ color: C.slate, fontSize: 13, lineHeight: 1.6 }}>
-            {dashboard.teachingScopeMessage ?? "Teaching scope is unavailable until faculty assignment is modeled in the backend."}
-          </div>
-        ) : (
-          <div style={{ display: 'grid', gap: 10 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 13, color: C.ink }}>
-              <strong>Active Authored Tracks</strong>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: '#5142B5', fontWeight: 700 }}>{courseCount} Tracks · {pendingCount} Pending Reviews</span>
-            </div>
-            <div style={{ fontSize: 12.5, color: C.slate, lineHeight: 1.55 }}>
-              Evaluate all learner briefs and capstones on the 5-Dimension Competency Rubric: <strong>15% Knowledge</strong> · <strong>30% Execution</strong> · <strong>20% Judgement</strong> · <strong>15% Oral Defence</strong> · <strong>20% V1→V2 Revision</strong>.
-            </div>
-          </div>
-        )}
+      <span style={{ color: '#5142b5', fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 700, letterSpacing: '0.08em', display: 'block', marginBottom: 8 }}>
+        LEARNER COHORT ANALYTICS
+      </span>
+      <h3 style={{ margin: '0 0 12px', fontSize: 18, color: '#0f172a' }}>Learner progress</h3>
+      <div style={{ padding: '16px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 12 }}>
+        <div style={{ color: '#475569', fontSize: 13.5, lineHeight: 1.6 }}>
+          {dashboard?.teachingScopeAvailable === false
+            ? (dashboard.teachingScopeMessage ?? "Teaching scope is unavailable until faculty assignment is modeled in the backend.")
+            : "Cohort completion analytics are tracked across your assigned courses. Use the V1 → V2 Grading Studio and 20-Minute Doubt SLA Queue to review active student work."}
+        </div>
       </div>
     </div>
   )
@@ -334,27 +765,28 @@ function LearnerProgress({ dashboard }: { dashboard: FacultyDashboard | null }) 
 function UpcomingTeaching({ pendingCount }: { pendingCount: number }) {
   return (
     <div style={canvasSectionStyle}>
-      <div style={{ color: C.slate, fontSize: 10, letterSpacing: '0.12em', marginBottom: 18 }}>
-        Upcoming teaching
-      </div>
+      <span style={{ color: '#5142b5', fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 700, letterSpacing: '0.08em', display: 'block', marginBottom: 8 }}>
+        ACTION QUEUE
+      </span>
+      <h3 style={{ margin: '0 0 12px', fontSize: 17, color: '#0f172a' }}>Upcoming teaching</h3>
       {pendingCount > 0 ? (
-        <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', gap: 14, alignItems: 'center', padding: '14px 0' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', gap: 14, alignItems: 'center', padding: '10px 0' }}>
           <div style={{
-            width: 32, height: 32, borderRadius: 6,
-            background: accent.subtle,
-            border: `1px solid ${accent.border}`,
+            width: 36, height: 36, borderRadius: 8,
+            background: '#f5f3ff',
+            border: '1px solid #ddd6fe',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--skylent-color-accent-text)" strokeWidth="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5142b5" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
           </div>
           <div style={{ minWidth: 0 }}>
-            <div style={{ color: C.ink, fontSize: 14, fontWeight: 500 }}>Assignment review</div>
-            <div style={{ color: C.slate, fontSize: 12, marginTop: 2 }}>{pendingCount} submissions pending review</div>
+            <div style={{ color: '#0f172a', fontSize: 14, fontWeight: 700 }}>Assignment review</div>
+            <div style={{ color: '#475569', fontSize: 12.5, marginTop: 2 }}>{pendingCount} submissions pending review</div>
           </div>
         </div>
       ) : (
-        <p style={{ color: C.slate, fontSize: 14, margin: 0, lineHeight: 1.6 }}>
-          No scheduled sessions, assessments, or assignments. Items appear here from assigned teaching data — not sample content.
+        <p style={{ color: C.slate, fontSize: 13.5, margin: 0, lineHeight: 1.6 }}>
+          No pending assignment reviews right now. New student submissions appear here automatically.
         </p>
       )}
     </div>
@@ -372,24 +804,31 @@ function ClassesRail({
 }) {
   return (
     <div style={{ ...canvasSectionStyle, marginTop: 20 }}>
-      <div style={{ color: C.slate, fontSize: 10, letterSpacing: '0.12em', marginBottom: 18 }}>
-        {catalogPeek ? 'Catalog programs & courses' : 'Assigned programs & courses'}
-      </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-        {programs.map((p, i) => (
+      <span style={{ color: '#5142b5', fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 700, letterSpacing: '0.08em', display: 'block', marginBottom: 10 }}>
+        {catalogPeek ? 'CATALOG PROGRAMS & COURSES' : 'ASSIGNED PROGRAMS & COURSES'}
+      </span>
+      <div style={{ display: 'grid', gap: 10 }}>
+        {programs.map((p) => (
           <div key={p.slug} style={{
-            padding: '16px 0',
-            borderBottom: i < programs.length - 1 || courses.length > 0 ? `1px solid ${T.lineLight}` : 'none',
+            padding: '12px 14px',
+            borderRadius: 10,
+            background: '#f8fafc',
+            border: '1px solid #e2e8f0',
           }}>
-            <div style={{ color: C.ink, fontSize: 14, fontWeight: 600, marginBottom: 6 }}>{p.name}</div>
-            <div style={{ color: C.slate, fontSize: 12 }}>{p.duration} · {p.format}</div>
+            <div style={{ color: '#0f172a', fontSize: 14, fontWeight: 700, marginBottom: 4 }}>{p.name}</div>
+            <div style={{ color: '#475569', fontSize: 12 }}>{p.duration} · {p.format}</div>
           </div>
         ))}
-        {courses.map((course, i) => (
-          <div key={course.slug} style={{ padding: '16px 0', borderBottom: i < courses.length - 1 ? `1px solid ${T.lineLight}` : 'none' }}>
-            <div style={{ color: 'var(--skylent-color-accent-text)', fontSize: 10, letterSpacing: '0.08em', marginBottom: 6 }}>LMS course</div>
-            <div style={{ color: C.ink, fontSize: 14, fontWeight: 600 }}>{course.title}</div>
-            <div style={{ color: C.slate, fontSize: 12, marginTop: 4 }}>{course.moduleCount} modules · {course.lessonCount} lessons</div>
+        {courses.map((course) => (
+          <div key={course.slug} style={{ padding: '12px 14px', borderRadius: 10, background: '#f6f4ff', border: '1px solid #ddd6fe' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
+              <span style={{ color: '#5142b5', fontSize: 10.5, fontFamily: 'var(--font-mono)', fontWeight: 700 }}>LMS COURSE</span>
+              <Link to={`/learn/${course.slug}`} style={{ fontSize: 11.5, fontWeight: 700, color: '#5142b5', textDecoration: 'none' }}>
+                Open Player →
+              </Link>
+            </div>
+            <div style={{ color: '#0f172a', fontSize: 14.5, fontWeight: 700, marginTop: 2 }}>{course.title}</div>
+            <div style={{ color: '#475569', fontSize: 12, marginTop: 2 }}>{course.moduleCount} modules · {course.lessonCount} lessons</div>
           </div>
         ))}
         {programs.length === 0 && courses.length === 0 && (
@@ -400,25 +839,25 @@ function ClassesRail({
   )
 }
 
-
 function FacultyDoubtQueue({
   doubts,
   onResolve,
   resolvingId,
 }: {
   doubts: FacultyDoubtItem[]
-  onResolve: (id: string) => void
+  onResolve: (id: string, note?: string) => void
   resolvingId: string | null
 }) {
+  const [notes, setNotes] = useState<Record<string, string>>({})
   const openDoubts = doubts.filter((d) => d.status === 'open')
   return (
-    <div id="faculty-doubts" style={{ ...canvasSectionStyle, marginTop: 'clamp(24px, 3vw, 32px)' }}>
+    <div id="faculty-doubts" style={canvasSectionStyle}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, marginBottom: 12 }}>
         <div>
-          <div style={{ color: C.slate, fontSize: 11, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+          <div style={{ color: '#5142b5', fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
             20-Minute Faculty TA Doubt Queue
           </div>
-          <h2 style={{ color: C.ink, fontSize: 18, margin: '4px 0 0', fontFamily: 'var(--font-display)' }}>
+          <h2 style={{ color: '#0f172a', fontSize: 18, margin: '4px 0 0', fontFamily: 'var(--font-display)' }}>
             Live Lesson Doubt Escalations ({openDoubts.length} open)
           </h2>
         </div>
@@ -433,40 +872,46 @@ function FacultyDoubtQueue({
             <li
               key={item.id}
               style={{
-                padding: '12px 14px',
-                borderRadius: T.rControl,
-                border: `1px solid ${T.lineLight}`,
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                gap: 12,
-                flexWrap: 'wrap',
+                padding: '14px 16px',
+                borderRadius: 12,
+                background: '#f8fafc',
+                border: '1px solid #e2e8f0',
+                display: 'grid',
+                gap: 10,
               }}
             >
               <div>
-                <strong style={{ color: C.ink, fontSize: 14 }}>{item.learnerName}</strong>
-                <span style={{ color: C.slate, fontSize: 12, marginLeft: 8 }}>
+                <strong style={{ color: '#0f172a', fontSize: 14 }}>{item.learnerName}</strong>
+                <span style={{ color: '#5142b5', fontSize: 12, fontWeight: 700, marginLeft: 8 }}>
                   {item.courseSlug} · {item.lessonTitle} ({item.slaMinutes}-min SLA)
                 </span>
-                <p style={{ color: C.ink, fontSize: 13, margin: '6px 0 0' }}>{item.question}</p>
+                <p style={{ color: '#0f172a', fontSize: 13.5, margin: '6px 0 0' }}>{item.question}</p>
               </div>
-              <button
-                type="button"
-                onClick={() => onResolve(item.id)}
-                disabled={resolvingId === item.id}
-                style={{
-                  background: accent.primary,
-                  color: C.white,
-                  border: 'none',
-                  padding: '8px 14px',
-                  borderRadius: T.rControl,
-                  fontSize: 12,
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                }}
-              >
-                {resolvingId === item.id ? 'Resolving…' : 'Mark Resolved'}
-              </button>
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                <input
+                  value={notes[item.id] ?? ''}
+                  onChange={(e) => setNotes((prev) => ({ ...prev, [item.id]: e.target.value }))}
+                  placeholder="Write faculty resolution note (sent directly to learner notifications)…"
+                  style={{ ...inputStyle, flex: 1, minWidth: 220 }}
+                />
+                <button
+                  type="button"
+                  onClick={() => onResolve(item.id, notes[item.id])}
+                  disabled={resolvingId === item.id}
+                  style={{
+                    background: '#5142b5',
+                    color: '#ffffff',
+                    border: 'none',
+                    padding: '9px 16px',
+                    borderRadius: 10,
+                    fontSize: 12.5,
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                  }}
+                >
+                  {resolvingId === item.id ? 'Resolving…' : 'Mark Resolved'}
+                </button>
+              </div>
             </li>
           ))}
         </ul>
@@ -488,7 +933,7 @@ export default function DashboardFacultyPage() {
     if (ready && !user) navigate('/login')
   }, [ready, user, navigate])
 
-  useEffect(() => {
+  function reloadAll() {
     if (!ready || !user) return
     void fetchFacultyDoubts().then(setDoubts).catch(() => setDoubts([]))
     fetchFacultyDashboard()
@@ -500,6 +945,10 @@ export default function DashboardFacultyPage() {
         setDashboard(null)
         setLoadError(err instanceof Error ? err.message : "Unable to load this workspace. Try again.")
       })
+  }
+
+  useEffect(() => {
+    reloadAll()
   }, [ready, user])
 
   if (!ready || !user) return null
@@ -513,13 +962,12 @@ export default function DashboardFacultyPage() {
 
   function focusAssignments() {
     setActiveNav('assignments')
-    document.getElementById('faculty-assignments')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
 
-  async function handleResolveDoubt(id: string) {
+  async function handleResolveDoubt(id: string, customNote?: string) {
     setResolvingDoubtId(id)
     try {
-      const updated = await resolveFacultyDoubt(id, 'Resolved by Faculty TA within 20-min SLA')
+      const updated = await resolveFacultyDoubt(id, customNote?.trim() || 'Resolved by Faculty TA within 20-min SLA')
       setDoubts((prev) => prev.map((d) => (d.id === id ? updated : d)))
     } catch {
       // Keep current state if resolve fails transiently
@@ -534,77 +982,150 @@ export default function DashboardFacultyPage() {
       workspaceLabel="Teaching"
       roleLabel="Faculty"
       navItems={NAV_ITEMS}
-      bottomNavItems={NAV_ITEMS.filter(n => ['overview', 'classes', 'assignments', 'learners', 'settings'].includes(n.id))}
+      bottomNavItems={NAV_ITEMS.filter(n => ['overview', 'classes', 'curriculum', 'assignments', 'assessments'].includes(n.id))}
       activeNav={activeNav}
       onNavChange={setActiveNav}
       renderNavIcon={id => <NavIcon id={id} />}
     >
-      <div id="faculty-overview" className="faculty-teaching-workspace">
-        <AuthDashboardLayout
-          primary={
-            <>
-              {loadError ? (
-                <GlassSurface level={2} padding="clamp(24px, 4vw, 36px)">
-                  <h1 className="skylent-display-sm" style={{ color: C.ink, margin: '0 0 8px' }}>Teaching scope</h1>
-                  <p style={{ color: C.slate, fontSize: 15, margin: '0 0 16px' }}>{loadError}</p>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      fetchFacultyDashboard()
-                        .then((data) => {
-                          setDashboard(data)
-                          setLoadError(null)
-                        })
-                        .catch((err: unknown) => {
-                          setLoadError(err instanceof Error ? err.message : "Unable to load this workspace. Try again.")
-                        })
-                    }}
-                    style={{
-                      background: accent.primary, color: C.white, border: 'none',
-                      padding: '11px 18px', borderRadius: T.rControl, cursor: 'pointer',
-                      fontFamily: 'var(--font-body)', fontWeight: 600,
-                    }}
-                  >
-                    Try again
-                  </button>
-                </GlassSurface>
-              ) : catalogPeek ? (
-                <CatalogOverview
-                  programCount={programs.length}
-                  courseCount={courses.length}
-                  pendingCount={submissions.length}
-                  onReview={focusAssignments}
-                />
-              ) : (
-                <TeachingEmptyState message={dashboard?.teachingScopeMessage} />
-              )}
-              <CurriculumTeachingPath summary={curriculumSummary} />
-              <FacultyDoubtQueue doubts={doubts} onResolve={(id) => void handleResolveDoubt(id)} resolvingId={resolvingDoubtId} />
-              <div id="faculty-assignments" style={{ marginTop: 'clamp(24px, 3vw, 32px)' }}>
-                <AssignmentReview submissions={submissions} onFocus={focusAssignments} />
+      <div id="faculty-overview" className="faculty-teaching-workspace" style={{ display: 'grid', gap: 20 }}>
+        {/* Horizontal Multi-Tab Switcher Bar */}
+        <div
+          role="tablist"
+          aria-label="Faculty Workspace Tabs"
+          style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: 8,
+            padding: '10px 12px',
+            borderRadius: 14,
+            background: '#f6f4ff',
+            border: '1px solid #ddd6fe',
+          }}
+        >
+          {NAV_ITEMS.map((item) => {
+            const active = activeNav === item.id
+            return (
+              <button
+                key={item.id}
+                type="button"
+                role="tab"
+                aria-selected={active}
+                onClick={() => setActiveNav(item.id)}
+                style={{
+                  padding: '8px 14px',
+                  borderRadius: 999,
+                  border: active ? '1px solid #5142b5' : '1px solid #cbd5e1',
+                  background: active ? '#5142b5' : '#ffffff',
+                  color: active ? '#ffffff' : '#334155',
+                  fontSize: 12.5,
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                }}
+              >
+                {item.label}
+              </button>
+            )
+          })}
+        </div>
+
+        {activeNav === 'overview' ? (
+          <AuthDashboardLayout
+            primary={
+              <div style={{ display: 'grid', gap: 20 }}>
+                {loadError ? (
+                  <GlassSurface level={2} padding="clamp(24px, 4vw, 36px)">
+                    <h1 className="skylent-display-sm" style={{ color: C.ink, margin: '0 0 8px' }}>Teaching scope</h1>
+                    <p style={{ color: C.slate, fontSize: 15, margin: '0 0 16px' }}>{loadError}</p>
+                    <button
+                      type="button"
+                      onClick={reloadAll}
+                      style={{
+                        background: '#5142b5', color: C.white, border: 'none',
+                        padding: '11px 18px', borderRadius: T.rControl, cursor: 'pointer',
+                        fontFamily: 'var(--font-body)', fontWeight: 600,
+                      }}
+                    >
+                      Try again
+                    </button>
+                  </GlassSurface>
+                ) : catalogPeek ? (
+                  <CatalogOverview
+                    programCount={programs.length}
+                    courseCount={courses.length}
+                    pendingCount={submissions.length}
+                    onReview={focusAssignments}
+                    onAuthorLecture={() => setActiveNav('curriculum')}
+                  />
+                ) : (
+                  <TeachingEmptyState message={dashboard?.teachingScopeMessage} />
+                )}
+                <FacultyDoubtQueue doubts={doubts} onResolve={(id, note) => void handleResolveDoubt(id, note)} resolvingId={resolvingDoubtId} />
+                <div id="faculty-assignments">
+                  <AssignmentReview submissions={submissions} onFocus={focusAssignments} onReload={reloadAll} />
+                </div>
               </div>
-              <div id="faculty-learners" style={{ marginTop: 'clamp(24px, 3vw, 32px)' }}>
-                <LearnerProgress dashboard={dashboard} />
+            }
+            rail={
+              <div>
+                <div id="faculty-upcoming">
+                  <UpcomingTeaching pendingCount={submissions.length} />
+                </div>
+                <div id="faculty-classes">
+                  <ClassesRail programs={programs} courses={courses} catalogPeek={catalogPeek} />
+                </div>
               </div>
-              <div id="faculty-settings" style={{ marginTop: 32, paddingTop: 24, borderTop: `1px solid ${T.lineLight}` }}>
-                <div style={{ color: C.slate, fontSize: 11, letterSpacing: '0.08em', marginBottom: 10 }}>SETTINGS</div>
-                <p style={{ color: C.slate, fontSize: 14, margin: 0, lineHeight: 1.6 }}>
-                  Notification preferences and teaching profile settings will appear here.
-                </p>
-              </div>
-            </>
-          }
-          rail={
-            <>
-              <div id="faculty-upcoming">
-                <UpcomingTeaching pendingCount={submissions.length} />
-              </div>
-              <div id="faculty-classes">
-                <ClassesRail programs={programs} courses={courses} catalogPeek={catalogPeek} />
-              </div>
-            </>
-          }
-        />
+            }
+          />
+        ) : null}
+
+        {activeNav === 'classes' ? (
+          <ClassesRail programs={programs} courses={courses} catalogPeek={catalogPeek} />
+        ) : null}
+
+        {activeNav === 'curriculum' ? (
+          <div style={{ display: 'grid', gap: 20 }}>
+            <FacultyLectureAuthoringStudio courses={courses} onReload={reloadAll} />
+            <CurriculumTeachingPath summary={curriculumSummary} />
+          </div>
+        ) : null}
+
+        {activeNav === 'assignments' ? (
+          <AssignmentReview submissions={submissions} onFocus={focusAssignments} onReload={reloadAll} />
+        ) : null}
+
+        {activeNav === 'assessments' ? (
+          <FacultyDoubtQueue doubts={doubts} onResolve={(id, note) => void handleResolveDoubt(id, note)} resolvingId={resolvingDoubtId} />
+        ) : null}
+
+        {activeNav === 'learners' ? (
+          <LearnerProgress dashboard={dashboard} />
+        ) : null}
+
+        {activeNav === 'settings' ? (
+          <div id="faculty-settings" style={canvasSectionStyle}>
+            <span style={{ color: '#5142b5', fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 700, letterSpacing: '0.08em', display: 'block', marginBottom: 8 }}>
+              5-DIMENSION RUBRIC &amp; SLA SETTINGS
+            </span>
+            <h3 style={{ margin: '0 0 10px', fontSize: 18, color: '#0f172a' }}>Faculty TA Rubric Standard</h3>
+            <p style={{ color: '#475569', fontSize: 13.5, margin: '0 0 14px', lineHeight: 1.6 }}>
+              All Capstone and Written Case Brief submissions are evaluated on Skylent&apos;s 5-Dimension Competency Standard:
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 10 }}>
+              {[
+                ['15% Knowledge', 'First-Principles Accuracy'],
+                ['30% Execution', 'Browser Lab & Code Output'],
+                ['20% Judgement', 'Commercial Trade-Offs'],
+                ['15% Oral Defence', 'Boardroom Cold Call'],
+                ['20% V1 → V2 Revision', 'Red-Line Diff Resolution'],
+              ].map(([k, v]) => (
+                <div key={k} style={{ padding: 12, borderRadius: 10, background: '#f6f4ff', border: '1px solid #ddd6fe' }}>
+                  <strong style={{ display: 'block', fontSize: 13.5, color: '#5142b5' }}>{k}</strong>
+                  <span style={{ fontSize: 12, color: '#475569' }}>{v}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : null}
       </div>
     </AuthDashboardShell>
   )

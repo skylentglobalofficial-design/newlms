@@ -1,7 +1,7 @@
 import crypto from "node:crypto"
 import { Router } from "express"
 import { z } from "zod"
-import { CoursePublicationStatus, CurriculumNodeType } from "@prisma/client"
+import { CoursePublicationStatus, CurriculumNodeType, RoleName } from "@prisma/client"
 import { prisma } from "../lib/prisma.js"
 import { requireAuth, requireCsrf, type AuthenticatedRequest } from "../lib/auth.js"
 import { requireRoles } from "../lib/roles.js"
@@ -188,6 +188,11 @@ adminCurriculumRouter.get("/courses", ...readGuards, async (_req, res) => {
         slug: true,
         title: true,
         category: true,
+        level: true,
+        duration: true,
+        mode: true,
+        price: true,
+        lessonCount: true,
         ...(caps.coursePublication ? { publicationStatus: true, authoredInApp: true } : {}),
       },
     })
@@ -456,6 +461,61 @@ adminCurriculumRouter.post("/modules/:moduleId/lectures", ...guards, async (req:
   }
 })
 
+adminCurriculumRouter.patch("/lectures/:lectureId", ...guards, async (req: AuthenticatedRequest, res) => {
+  const params = z.object({ lectureId: uuidSchema }).safeParse(req.params)
+  const body = z.object({
+    title: z.string().trim().min(1).max(160).optional(),
+    summary: z.string().trim().max(8000).nullable().optional(),
+    nodeType: z.nativeEnum(CurriculumNodeType).optional(),
+    referenceUrl: z.string().trim().url().max(500).nullable().optional(),
+  }).safeParse(req.body)
+  if (!params.success || !body.success) return res.status(400).json({ error: "Validation failed" })
+  try {
+    const lecture = await prisma.curriculumNode.findUnique({
+      where: { id: params.data.lectureId },
+      select: { id: true, module: { select: { courseId: true } } },
+    })
+    if (!lecture?.module.courseId) return res.status(404).json({ error: "Lecture not found" })
+    await prisma.curriculumNode.update({
+      where: { id: lecture.id },
+      data: {
+        ...(body.data.title !== undefined ? { title: body.data.title } : {}),
+        ...(body.data.summary !== undefined ? { summary: body.data.summary } : {}),
+        ...(body.data.nodeType !== undefined ? { nodeType: body.data.nodeType } : {}),
+        ...(body.data.referenceUrl !== undefined ? { referenceUrl: body.data.referenceUrl } : {}),
+      },
+    })
+    const loaded = await loadCourse(lecture.module.courseId)
+    res.json({ data: serializeCourse(loaded!) })
+  } catch (error) {
+    sendAuthoringError(res, error, "Failed to update lecture")
+  }
+})
+
+adminCurriculumRouter.delete("/lectures/:lectureId", ...guards, async (req: AuthenticatedRequest, res) => {
+  const params = z.object({ lectureId: uuidSchema }).safeParse(req.params)
+  if (!params.success) return res.status(400).json({ error: "Validation failed" })
+  try {
+    const lecture = await prisma.curriculumNode.findUnique({
+      where: { id: params.data.lectureId },
+      select: { id: true, title: true, module: { select: { courseId: true } } },
+    })
+    if (!lecture?.module.courseId) return res.status(404).json({ error: "Lecture not found" })
+    await prisma.curriculumNode.delete({ where: { id: lecture.id } })
+    await recordAdminAudit({
+      actorId: req.auth!.user.id,
+      action: "curriculum.lecture.delete",
+      targetType: "CurriculumNode",
+      targetId: lecture.id,
+      summary: `Deleted lecture ${lecture.title}`,
+    })
+    const loaded = await loadCourse(lecture.module.courseId)
+    res.json({ data: serializeCourse(loaded!) })
+  } catch (error) {
+    sendAuthoringError(res, error, "Failed to delete lecture")
+  }
+})
+
 adminCurriculumRouter.post("/lectures/:lectureId/materials", ...guards, async (req: AuthenticatedRequest, res) => {
   const params = z.object({ lectureId: uuidSchema }).safeParse(req.params)
   const body = fileSchema.safeParse(req.body)
@@ -548,5 +608,107 @@ adminCurriculumRouter.post("/courses/:courseId/publish", ...guards, async (req: 
     res.json({ data: serializeCourse(loaded!) })
   } catch (error) {
     sendAuthoringError(res, error, "Failed to publish course")
+  }
+})
+
+adminCurriculumRouter.post("/courses/:courseId/unpublish", ...guards, async (req: AuthenticatedRequest, res) => {
+  const params = z.object({ courseId: uuidSchema }).safeParse(req.params)
+  if (!params.success) return res.status(400).json({ error: "Invalid course" })
+  if (await refuseAuthoring(res)) return
+  try {
+    const course = await loadCourse(params.data.courseId)
+    if (!course) return res.status(404).json({ error: "Course not found" })
+    await prisma.course.update({
+      where: { id: course.id },
+      data: { publicationStatus: CoursePublicationStatus.DRAFT },
+    })
+    await recordAdminAudit({
+      actorId: req.auth!.user.id,
+      action: "curriculum.course.unpublish",
+      targetType: "Course",
+      targetId: course.id,
+      summary: `Moved course ${course.slug} back to draft`,
+    })
+    const loaded = await loadCourse(course.id)
+    res.json({ data: serializeCourse(loaded!) })
+  } catch (error) {
+    sendAuthoringError(res, error, "Failed to unpublish course")
+  }
+})
+
+adminCurriculumRouter.get("/courses/:courseId/faculty", ...readGuards, async (req, res) => {
+  const params = z.object({ courseId: uuidSchema }).safeParse(req.params)
+  if (!params.success) return res.status(400).json({ error: "Invalid course" })
+  try {
+    const [assigned, facultyUsers] = await Promise.all([
+      prisma.facultyCourseAssignment.findMany({
+        where: { courseId: params.data.courseId },
+        include: { user: { select: { id: true, displayName: true, email: true } } },
+      }),
+      prisma.user.findMany({
+        where: {
+          roles: {
+            some: {
+              role: { name: { in: [RoleName.FACULTY, RoleName.SUPERADMIN, RoleName.PLATFORM_ADMIN] } },
+            },
+          },
+        },
+        select: { id: true, displayName: true, email: true },
+        orderBy: { email: "asc" },
+      }),
+    ])
+    res.json({
+      data: {
+        assigned: assigned.map((a) => ({
+          userId: a.user.id,
+          name: a.user.displayName ?? a.user.email,
+          email: a.user.email,
+          assignedAt: a.createdAt.toISOString(),
+        })),
+        availableFaculty: facultyUsers.map((u) => ({
+          id: u.id,
+          name: u.displayName ?? u.email,
+          email: u.email,
+        })),
+      },
+    })
+  } catch (error) {
+    sendAuthoringError(res, error, "Failed to load course faculty assignments")
+  }
+})
+
+adminCurriculumRouter.post("/courses/:courseId/faculty", ...guards, async (req: AuthenticatedRequest, res) => {
+  const params = z.object({ courseId: uuidSchema }).safeParse(req.params)
+  const body = z.object({ userId: uuidSchema }).safeParse(req.body)
+  if (!params.success || !body.success) return res.status(400).json({ error: "Validation failed" })
+  try {
+    await prisma.facultyCourseAssignment.upsert({
+      where: { userId_courseId: { userId: body.data.userId, courseId: params.data.courseId } },
+      update: {},
+      create: { userId: body.data.userId, courseId: params.data.courseId },
+    })
+    await recordAdminAudit({
+      actorId: req.auth!.user.id,
+      action: "curriculum.faculty.assign",
+      targetType: "Course",
+      targetId: params.data.courseId,
+      summary: `Assigned faculty ${body.data.userId} to course ${params.data.courseId}`,
+    })
+    res.status(201).json({ data: { assigned: true } })
+  } catch (error) {
+    sendAuthoringError(res, error, "Failed to assign faculty to course")
+  }
+})
+
+adminCurriculumRouter.delete("/courses/:courseId/faculty/:userId", ...guards, async (req: AuthenticatedRequest, res) => {
+  const params = z.object({ courseId: uuidSchema, userId: uuidSchema }).safeParse(req.params)
+  if (!params.success) return res.status(400).json({ error: "Validation failed" })
+  try {
+    await prisma.facultyCourseAssignment.deleteMany({
+      where: { courseId: params.data.courseId, userId: params.data.userId },
+    })
+    res.json({ data: { removed: true } })
+  } catch (error) {
+    sendAuthoringError(res, error, "Failed to unassign faculty")
   }
 })

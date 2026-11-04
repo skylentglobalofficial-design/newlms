@@ -16,6 +16,32 @@ export type FacultySubmission = {
   programName: string | null
   submittedAt: string | null
   attachmentCount: number
+  status?: string
+  grade?: number | null
+  gradedAt?: string | null
+}
+
+export type FacultySubmissionDetail = {
+  id: string
+  status: string
+  responseText: string | null
+  submittedAt: string | null
+  grade: number | null
+  feedback: string | null
+  gradedAt: string | null
+  student: { id: string; name: string; email: string }
+  lesson: { id: string; title: string; key: string | null; moduleTitle: string }
+  course: { slug: string; title: string } | null
+  program: { slug: string; name: string } | null
+  attachments: Array<{ id: string; fileName: string; mimeType: string; byteSize: number; storageProvider: string }>
+}
+
+export type FacultyCourseModule = {
+  id: string
+  position: number
+  title: string
+  lessonCount: number
+  lectures: Array<{ id: string; position: number; title: string; nodeType: string }>
 }
 
 export type FacultyDashboard = {
@@ -27,10 +53,12 @@ export type FacultyDashboard = {
     programType: string
   }>
   courses: Array<{
+    id?: string
     slug: string
     title: string
     moduleCount: number
     lessonCount: number
+    modules?: FacultyCourseModule[]
   }>
   submissions: FacultySubmission[]
   pendingReviewCount: number
@@ -81,5 +109,64 @@ export async function resolveFacultyDoubt(id: string, resolutionNote?: string): 
     body: JSON.stringify({ resolutionNote }),
   })
   const result = await parseJson<{ data: FacultyDoubtItem }>(response)
+  return result.data
+}
+
+export async function fetchFacultySubmissionDetail(submissionId: string): Promise<FacultySubmissionDetail> {
+  const response = await fetch(`${API_BASE}/faculty/submissions/${encodeURIComponent(submissionId)}`, {
+    credentials: "include",
+  })
+  const result = await parseJson<{ data: FacultySubmissionDetail }>(response)
+  return result.data
+}
+
+export async function gradeFacultySubmission(
+  submissionId: string,
+  input: { grade: number; feedback?: string },
+): Promise<{ id: string; status: string; grade: number | null; feedback: string | null; gradedAt: string | null }> {
+  const token = await ensureCsrfToken()
+  const response = await fetch(`${API_BASE}/faculty/submissions/${encodeURIComponent(submissionId)}/grade`, {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json", "X-CSRF-Token": token },
+    body: JSON.stringify(input),
+  })
+  const result = await parseJson<{
+    data: { id: string; status: string; grade: number | null; feedback: string | null; gradedAt: string | null }
+  }>(response)
+  return result.data
+}
+
+export async function createFacultyLecture(
+  courseId: string,
+  input: { moduleId: string; title: string; summary?: string; nodeType?: "NOTES" | "VIDEO" | "LAB" | "ASSIGNMENT" | "PROJECT" },
+): Promise<{ id: string; moduleId: string; title: string; nodeType: string }> {
+  const token = await ensureCsrfToken()
+  const response = await fetch(`${API_BASE}/faculty/courses/${encodeURIComponent(courseId)}/lectures`, {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json", "X-CSRF-Token": token },
+    body: JSON.stringify(input),
+  })
+  const result = await parseJson<{ data: { id: string; moduleId: string; title: string; nodeType: string } }>(response)
+  return result.data
+}
+
+export async function uploadFacultyLessonMaterial(
+  courseId: string,
+  lectureId: string,
+  input: { fileName: string; contentType: string; dataBase64: string },
+): Promise<{ id: string; fileName: string; byteSize: number }> {
+  const token = await ensureCsrfToken()
+  const response = await fetch(
+    `${API_BASE}/faculty/courses/${encodeURIComponent(courseId)}/lectures/${encodeURIComponent(lectureId)}/materials`,
+    {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json", "X-CSRF-Token": token },
+      body: JSON.stringify(input),
+    },
+  )
+  const result = await parseJson<{ data: { id: string; fileName: string; byteSize: number } }>(response)
   return result.data
 }

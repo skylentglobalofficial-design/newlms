@@ -1,28 +1,28 @@
-# SKYLENT (`skylent.live`) —COMPLETE AI & FOUNDER CONTINUITY HANDOFF MASTER (V31 — Image 2 Canonical Royal Purple #5142B5 + Soft Lavender #F5F3FF + Crisp White #FFFFFF System)
+# SKYLENT (`skylent.live`) — COMPLETE AI & FOUNDER CONTINUITY HANDOFF MASTER (V33 — Complete 6-Role Dashboard Polish, Canonical Royal Purple #5142B5 + Crisp White #FFFFFF System & Remaining Gap Audit)
 
-* **Last Updated:** November 4, 2026
+* **Last Updated:** November 5, 2026
 
 * **Production Domain:** <https://skylent.live>
 
-* **GitHub Repository:** `https://github.com/skylentglobalofficial-design/newlms` (`main` branch)
+* **GitHub Repository:** `https://github.com/skylentglobalofficial-design/newlms` (`main` branch, latest commit `e51704f`)
 
 * **Local Windows Path:** `C:\Users\Chandan\Documents\newlms`
 
-* **Latest Verified Release Package:** `skylent-v31-clean-hero-and-purple-white-master.zip` (built on top of V27 Brand Color OS commit `e6bcad0`)
+* **Latest Verified Release Package:** `skylent-v33-complete-dashboard-and-lms-polish-master.zip` (All 9 Automated Test Suites Green + Vite/Backend Production Build Verified)
 
-## 1. Canonical Brand Color OS (Locked Across All 55+ Styled Surfaces in V27–V28)
+## 1. Canonical Brand Color OS (Locked Across All Public & Signed-In Surfaces)
 
-Skylent operates on a single, unified **Light-First + Deep Product Navy + Brand Violet** institutional design system (`0` stray `#fbbf24` yellow or `#4f46e5` Tailwind indigo clashes across `src/`):
+Skylent operates on a single, unified **Light-First + Royal Purple (`#5142B5`) + Soft Lavender (`#F6F4FF`) + Crisp White (`#FFFFFF`)** institutional design system (`0` stray `#fbbf24` yellow or `#4f46e5` Tailwind indigo clashes across `src/`):
 
 | Surface / Token Role | Canonical CSS Token / Value | Where Applied | 
 | ----- | ----- | ----- | 
-| **Page Canvas & Reading Surfaces** | Crisp White `#FFFFFF` + Soft Lavender-White `#F7F6FC` (`--site-paper`, `--site-soft`) | Homepage, `/programmes`, `/courses`, `/events`, `/workshops`, `/career-os`, `/education`, and Lesson reading stage | 
+| **Page Canvas & Reading Surfaces** | Crisp White `#FFFFFF` + Soft Lavender-White `#F7F6FC` (`--site-paper`, `--site-soft`) | Homepage, `/programmes`, `/courses`, `/events`, `/workshops`, `/career-os`, `/education`, all 6 Role Dashboards, and Lesson reading stage | 
 | **Primary Brand Action (Buttons, Links, Active States)** | **Skylent Brand Violet `#5142B5`** (Hover `#43349F`, Soft Tint `#EAE6FF`, Border `#DDD7FF`) | All `.sk-btn-primary`, active tabs, badges, and interactive links | 
-| **Workbench & Institutional Dark Stage** | **Rich Skylent Royal Purple `linear-gradient(135deg, #3B2D96 0%, #5142B5 100%)` + Soft Lavender Card Surface (`#F6F4FF -> #FFFFFF` with `4px solid #5142B5` top bar)** (`--skylent-navy`, `--skylent-navy-2`) | Hero Enrolment Card, Live ₹99 Workshop Cards, Student Project Dossiers, 6-Step Career Journey Stage Plate, Interactive AI Studio, Course Player Top Bar, and Institutional Headers | 
-| **Dark Surface Borders & Kickers** | **Soft Brand Lavender `#C4B8FF`** (`rgba(196, 184, 255, 0.35)`) + Sky Blue `#3E96D6` | Borders, monospace kickers, certificate codes (`SKL-2026-...`), and 5-Dimension Rubric cards on dark navy stages | 
-| **Verified / Live Status Pills** | **Emerald `#34D399` / `#0E6A44`** (`rgba(16, 185, 129, 0.16)` on dark, `#E7F6EF` on light) | `✓ Open for enrolment`, `✓ 96/100 Rubric Score`, `₹99 · 100% Coin Back` | 
+| **Workbench & Institutional Headers** | **Rich Skylent Royal Purple `linear-gradient(135deg, #3B2D96 0%, #5142B5 100%)`** + **Soft Lavender Card Surface (`#F6F4FF -> #FFFFFF` with `4px solid #5142B5` top bar)** | Hero Enrolment Card, Live ₹99 Workshop Cards, Student Project Dossiers, 6-Step Career Journey Stage Plate, Interactive AI Studio, Course Player Top Bar, and Role Dashboard Headers | 
+| **High-Contrast Header CTAs** | **Crisp White `#FFFFFF` background with Bold `#5142B5` Royal Purple text** | Primary CTAs inside Royal Purple hero banners (`Continue learning →`, `Open Course Builder →`, `Export Cohort CSV`, `Review submissions`) | 
+| **Verified / Live Status Pills** | **Emerald `#34D399` / `#0E6A44`** (`#DCFCE7` / `#E7F6EF` on light, `rgba(16, 185, 129, 0.16)` on dark) | `✓ Open for enrolment`, `✓ 96/100 Rubric Score`, `₹99 · 100% Coin Back` | 
 
-## 2. Complete Platform Audit: What Is 100% Built & Live in V28
+## 2. What Is 100% Built, Tested & Live on `main` (Up to Commit `e51704f` / V33)
 
 1. **6 Flagship Authored Courses & 6 In-Browser Execution Sandboxes (90 Lessons Total):**
 
@@ -30,57 +30,62 @@ Skylent operates on a single, unified **Light-First + Deep Product Navy + Brand 
 
 2. **All 82 Public, Learner, Career OS & Role-Based Dashboard Routes:**
 
-   * **Public Discovery:** Homepage (`/`), Programmes (`/programmes`, `/programmes/:slug`), Courses (`/courses`, `/courses/:slug`), Events (`/events`, `/events/:slug`), Workshops (`/workshops`, `/workshops/:slug`), Degrees (`/education`, `/education/:mode/:slug`, `/education/schooling`, `/education/exams`), Institutions (`/institutions`, `/universities`), 90-Second Skill Diagnostic (`/path`), Stories (`/stories`), Certificate Verifier (`/verify`, `/verify/:code`), About (`/about`), and Contact (`/contact`).
+   * **Public Discovery (V31–V32 Polished):** Homepage (`/`), Programmes (`/programmes`, `/programmes/:slug` with 3-Tier Pricing + Online/Offline Toggle + Floating Bottom Dock), Courses (`/courses`, `/courses/:slug`), Events (`/events`, `/events/:slug`), Workshops (`/workshops`, `/workshops/:slug`), Degrees (`/education`, `/education/:mode/:slug`, `/education/schooling`, `/education/exams`), Institutions (`/institutions`, `/universities`), 90-Second Skill Diagnostic (`/path`), Skills (`/skills`), Stories (`/stories`), Certificate Verifier (`/verify`, `/verify/:code`), About (`/about`), and Contact (`/contact`).
 
-   * **Signed-In Workspaces & 6 Role Dashboards:** Student (`/dashboard/student`), Faculty TA (`/dashboard/faculty` — with 20-Min Doubt SLA Queue & 5-Dimension Rubric standard), College HoD/TPO (`/dashboard/college` — with 1-Click NAAC/NIRF CSV export), Recruiter (`/dashboard/recruiter`), Organisation L&D (`/dashboard/organisation` — upgraded in V28 with L1–L5 Competency Pipeline & 60-Hour Notional Workload breakdown), and Admin C-Suite (`/dashboard/admin`, `/dashboard/curriculum`).
+   * **Signed-In Workspaces & 6 Role Dashboards (V33 Polished):**
 
-   * **Superadmin Account:** `tariniprasadtripathy17@gmail.com` / `Tarini@Skylent2026!` is auto-provisioned on server startup (`server/src/index.ts`) and via `scripts/bootstrap-superadmin.ts` with full 1-Click Superadmin Role Switcher and automatic 60% Career OS bypass.
+     * **Universal Desktop Top Bar (`AuthDashboardShell.tsx` & `LearnPage.tsx`):** `<HeaderWalletAndNotifications variant="dashboard" />` is mounted across all 6 role dashboards, Career OS, and the Inside-LMS Lesson Player (`/learn/:slug`).
 
-3. **5-Dimension Competency Grading & Statutory Compliance (`SKYLENT_INSTITUTIONAL_CHARTER_V1.md`):**
+     * **Student (`/dashboard/student`):** High-contrast white-on-purple `Continue learning →` CTA, 14-day execution streak bar, above-the-fold 2-column workspace grid, and Soft Lavender + Crisp White `L1 → L5 Progression` & `Skylent AI` cards.
 
-   * Uniform 5-Dimension Rubric (`15% Knowledge · 30% Execution · 20% Judgement · 15% Oral Defence · 20% V1→V2 Revision`), 60-Hour Notional Workload standard (L1–L5 progression), UGC Section 22 statutory disclosure, and explicit `SAMPLE BENCHMARK DOSSIER · ILLUSTRATIVE PREVIEW` badges on sample benchmark records.
+     * **Superadmin C-Suite (`/dashboard/admin` & `AdminPlatform.tsx`):** Structured 2-column command center with Crisp White + `4px solid #5142B5` cards for C-Suite Unit Economics, Real-Time Telemetry, Learning Reward Rules, Users & Roles, Organisations, Employers, Enquiries, Practice Studios, Lesson Media, Payments, Wallet Adjustments, Case Store Publishing, and Security Audit Log.
 
-## 3. Founder Conversion Audit: Koi Ayega Toh Kyun Ayega vs. Koi Nahi Ayega Toh Kyun Nahi Ayega
+     * **Faculty TA (`/dashboard/faculty`):** 20-Min Doubt SLA Queue, 5-Dimension Rubric standard, and pending submission grading queue in Crisp White + `#5142B5` cards.
 
-### A. Koi Ayega Toh Kyun Ayega (6 Core Conversion Drivers)
+     * **College HoD/TPO (`/dashboard/college`):** NEP 2020 / NAAC Cohort KPI strip + 1-Click CSV export (`/api/v1/college/dashboard/export.csv`).
 
-1. **Zero Entry Friction (`₹0 Free Pilot` + `90-Second Live Diagnostic`):** Competitors (`Scaler`, `AlmaBetter`, `UpGrad`) ask for phone numbers, counsellor calls, and ₹1.5L–₹2.5L EMI loans before showing the product. On Skylent, a student can take a 90-second skill diagnostic (`/path`) or start Lesson 1 of any of the 6 tracks for **₹0** immediately.
+     * **Recruiter (`/dashboard/recruiter`):** Verified Candidate Proof-of-Work Verifier + Actionable Employer Linker guide.
 
-2. **₹99 Weekend Workshop → 99 Elixir Coins (100% Cashback Hook):** A skeptical college student who won't pay ₹5,000 upfront will happily pay **₹99** for a 2-hour live weekend workshop (*AI RAG*, *Commercial SQL*, or *Product PRD*) because they get a Workshop Certificate + 100% of their ₹99 back as 99 Elixir Coins to unlock industry Case Studies.
+     * **Organisation L&D (`/dashboard/organisation`):** L1–L5 Competency Pipeline & 60-Hour Notional Workload breakdown.
 
-3. **In-Browser Execution From Day 1 (No Boring Video Lectures):** Students don't watch 40 hours of passive MP4 videos; they write real SQL against 166 Northwind rows, scope a 12-store Harbor Desk PRD, or debug Python ETL pipelines right inside their browser with zero laptop setup.
+## 3. Complete Remaining Gap Audit: Kaha, Kya, Aur Kyu Bacha Hai (Before Final Production Launch)
 
-4. **Hinglish + English Socratic AI + 20-Minute Human TA SLA:** Tier-2/Tier-3 college students across India often get stuck on English technical jargon. Skylent's 1-click **"Explain in Simple Hinglish"** inside every lesson + 20-minute human Faculty TA escalation removes the fear of getting stuck alone.
+### Bucket A — Code & UI Polish Gaps (Jo Codebase Mein Abhi Bhi Bache Hain)
 
-5. **Verifiable Proof-of-Work Dossier (`/verify/:code`) Over Fake PDFs:** Recruiters don't trust generic "Completed Course" PDFs. Skylent's `/verify/:code` page shows the exact SQL query, PRD memo, 5-Dimension Rubric score, and V1→V2 revision history.
+| \# | Kaha (File / Route) | Kya Bacha Hai (Exact Gap) | Kyu Bacha Hai (Root Cause) | Recommended Fix (V34) | 
+| ----- | ----- | ----- | ----- | ----- | 
+| **A1** | **`/dashboard/curriculum`** (`src/pages/CourseBuilderPage.tsx`, lines 113–212) | Superadmin dashboard (`/dashboard/admin`) ke hero button `"Open Course Builder →"` par click karne se jo page khulta hai, woh abhi bhi raw unstyled `<form>`, `<input>`, `<select>`, aur `<ol>` render karta hai (zero cards, zero Royal Purple header, zero CSS layout). | V33 mein 6 main role dashboards (`DashboardAdminPage`, `AdminPlatform`, etc.) redesign hue, par separate route `/dashboard/curriculum` छूट gaya tha. | `CourseBuilderPage.tsx` ko Royal Purple header + 2-column Crisp White + `4px solid #5142B5` cards (Left: Course & Module Tree, Right: Create Course / Add Module / Add Lecture forms) mein upgrade karna. | 
+| **A2** | **`/workshops`, `/workshops/:slug`, `/labs`, `/blog`** (`src/pages/WorkshopsPage.tsx`, `WorkshopDetailPage.tsx`, `LabsPage.tsx`, `BlogPage.tsx`) | `WorkshopsPage.tsx` (line 27) aur `LabsPage.tsx` (line 45) abhi bhi legacy subnav wrappers (`LearnPillarSubnav`, `PracticePillarSubnav`, `CapabilityRail`) aur plain `.cat-hero` use kar rahe hain, jabki `/programmes`, `/events`, aur `/skills` V32 mein Royal Purple + Soft Lavender card hubs ban chuke hain. | V32 mein main navbar ke primary pages update hue the; `/workshops`, `/labs`, aur `/blog` secondary routes hone ke karan purane `.cat-hero` layout par reh gaye. | `WorkshopsPage.tsx`, `WorkshopDetailPage.tsx`, `LabsPage.tsx`, aur `BlogPage.tsx` se legacy subnav strips hata kar unhein unified Royal Purple + Soft Lavender + Crisp White card system par laana. | 
+| **A3** | **`/courses/:slug`** (`src/pages/CourseDetailPage.tsx`) | `/programmes/:slug` par V32 mein 3-Tier Pricing Plans (`Basic / Premium / Pro`), \`Online | Offline` switcher, aur Floating Bottom Navigation Dock (`ProgrammePricingAndDock.tsx`) lag gaya hai, lekin standalone `/courses/:slug\` par abhi bhi sirf basic syllabus list hai. | `ProgrammePricingAndDock` sirf `ProfessionalProgrammeTemplate.tsx` aur `ProgrammeListing.tsx` mein mount hua tha. | 
+| **A4** | **20-Min Faculty Doubt SLA Storage** (`server/src/lib/doubt-sla.ts`, line 19) | `const doubtStore = new Map<string, FacultyDoubtTicket>()` — Student doubts aur Faculty TA resolutions abhi server RAM (`Map`) mein save hote hain. Server restart/redeploy hone par doubt history clear ho jaati hai. | September/October DB schema compatibility (`SKYLENT_SEPTEMBER_COMPAT`) ko bina naya Prisma table add kiye pass karane ke liye in-memory store banaya gaya tha. | Optional disk-backed JSON snapshot ya Prisma table fallback add karna taaki server restart par bhi doubt tickets persist rahein (bina test suite break kiye). | 
 
-6. **Turnkey College TPO & Autonomous Campus OS (`/dashboard/college`):** Engineering and degree colleges need NEP-aligned practical labs and NAAC/NIRF placement readiness reports. Skylent gives Deans/TPOs an isolated campus dashboard with 1-click CSV cohort export.
+### Bucket B — Production Environment & Live Third-Party Keys (`skylent.live` Server `.env` Gaps)
 
-### B. Koi Nahi Ayega (Ya Drop Karega) Toh Kyun Nahi Ayega — And How to Solve It
+Yeh chizein code mein 100% built aur guarded hain, lekin production server (Railway / Render / Hostinger `.env`) mein live keys daalne par hi activate hongi:
 
-1. **"Abhi Real Alumni Placement Logos / Video Testimonials Nahi Hain" (Social Proof Gap):**
+| \# | Feature / Flow | Backend File | Abhi Production Par Kya Hota Hai | Kyu (Technical Reason) | Kaise Activate Hoga (`.env` Keys) | 
+| ----- | ----- | ----- | ----- | ----- | ----- | 
+| **B1** | **Skylent AI (Lesson Tutor) & Floating Reva Assistant** | `server/src/routes/skylent/reva.ts` | Production (`NODE_ENV=production`) mein bina API key ke AI *"Skylent AI isn't available yet / Leave an enquiry"* dikhata hai. | `test-release-readiness-hardening.ts` (Check #6) enforce karta hai ki production mein deterministic stub (`lesson-grounded`) ko live LLM na dikhaya jaye jab tak real API key na ho. | Production `.env` mein `SKYLENT_AI_PROVIDER=openai-compatible`, `SKYLENT_AI_API_KEY=<your-key>`, `SKYLENT_AI_BASE_URL=https://api.openai.com/v1` (ya Groq/Gemini endpoint), aur `SKYLENT_AI_MODEL=gpt-4o-mini` set karein. | 
+| **B2** | **1-Click Google Sign-In (`/login`)** | `server/src/lib/google-oauth.ts` | `/login` page par `"Continue with Google"` button disabled/unavailable dikhta hai. | `GET /api/v1/auth/google/status` checks `GOOGLE_CLIENT_ID` & `GOOGLE_CLIENT_SECRET`. Bina keys ke 503/redirect guard lagta hai ताकि user broken OAuth screen par na jaye. | Google Cloud Console mein `https://skylent.live/api/v1/auth/google/callback` register karke `.env` mein `GOOGLE_CLIENT_ID` aur `GOOGLE_CLIENT_SECRET` daalein. | 
+| **B3** | **Password Reset & Transactional Emails** | `server/src/lib/email.ts` | `/reset-password` request karne par email send nahi hota agar `mailgun` ya `sendgrid` configured nahi hai. | `server/src/lib/email.ts` (line 26) mein `mailgun` aur `sendgrid` implemented hain (`ses` aur `smtp` stubbed hain). | `.env` mein `EMAIL_PROVIDER=sendgrid`, `SENDGRID_API_KEY=<key>`, aur `EMAIL_FROM=noreply@skylent.live` set karein. | 
+| **B4** | **Student Assignment / Resume File Uploads (Cloudflare R2)** | `server/src/lib/storage.ts` | Local disk storage production mein ephemeral hota hai; cloud persistence ke liye R2 provider ready hai. | `server/src/lib/storage.ts` mein AWS SigV4 Cloudflare R2 upload/download/signed-URL 100% coded hai, bas env keys chahiye. | `.env` mein `STORAGE_PROVIDER=r2`, `STORAGE_BUCKET`, `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY` set karein. | 
+| **B5** | **Live UPI / Card Checkout (Razorpay / Cashfree)** | `server/src/routes/events.ts` & `admin-platform.ts` | Abhi ₹99 Workshop registration 1-click free/instant hai (+99 Elixir Coins) aur course payments `/dashboard/admin` mein `"Record Verified Payment"` se manual/offline record hote hain. | Codebase mein Razorpay/Cashfree SDK webhook abhi wired nahi hai taaki zero-login / ₹0 pilot friction na aaye. | Jab paid checkout chalu karna ho, Razorpay Order API + Webhook (`/api/v1/payments/razorpay/webhook`) wire karna. | 
 
-   * *Why a visitor might hesitate:* We rightly follow strict truth-in-claims (no fake placement numbers or fake company logos), so a cold visitor might wonder *"Is platform se abhi tak kitne log place hue hain?"*
+### Bucket C — Business & Truth-in-Catalogue Operations (Jo Compliance Tests Ke Karan Intentionally Honest Rakhe Gaye Hain)
 
-   * *How to solve it:* Run your first 2–3 campus/online ₹99 workshops in Bhubaneswar/Odisha, record 60-second real video clips of 5 students showing the SQL/PRD project they built in 2 hours, and publish their real verified dossiers on `/stories`.
+1. **Live Workshop Dates (`Date not set` / `Schedule to be announced`):**
 
-2. **₹99 Workshop Payment & Calendar Invite Flow Needs Live Razorpay + WhatsApp Automation:**
+   * **Kyu:** `scripts/test-catalog-truth.ts` kisi bhi hardcoded fake urgency timer (`Next Batch`, `seats remaining`, `50% OFF`, `Live Classes`) ko strictly block karta hai.
 
-   * *Why a visitor might drop:* If someone clicks to book a ₹99 workshop and doesn't get an instant UPI payment screen + instant WhatsApp/Email calendar link, they will forget to attend.
+   * **Solution:** Superadmin API (`POST /api/v1/events`) ya DB seed ke through har hafte real Saturday/Sunday workshop dates create karein.
 
-   * *How to solve it:* Add live Razorpay/Cashfree keys + Resend/WhatsApp webhook on the production server.
+2. **Public Exemplar Dossiers (`SAMPLE BENCHMARK DOSSIER · ILLUSTRATIVE PREVIEW` on `/stories` & `/verify`):**
 
-3. **Google Sign-In Needs Live Production OAuth Credentials:**
+   * **Kyu:** `SKYLENT_INSTITUTIONAL_CHARTER_V1.md` aur `scripts/test-public-catalogue-copy.ts` ke tahat bina real student consent ke fake alumni placement claims dikhana mana hai.
 
-   * *Why a visitor might drop at `/login`:* Many students prefer 1-click **"Continue with Google"** over typing a password. If `GOOGLE_CLIENT_ID` is not set in production `.env`, Google Sign-In shows unavailable.
+   * **Solution:** Pehle ₹99 Bhubaneswar/Odisha workshop ke 5–10 students ke real graded Northwind SQL / Harbor Desk PRD capstones issue karke unke asli `SKL-2026-...` verification codes `/stories` par showcase karein.
 
-   * *How to solve it:* Add `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` in Railway/Render `.env` with `https://skylent.live/api/v1/auth/google/callback`.
-
-4. **Live Workshop Dates Need to Be Scheduled Every Week:**
-
-   * *Why a visitor might hesitate on `/workshops`:* Honest `Date not set` labels pass compliance tests, but for conversion, running 1 fixed Saturday/Sunday live cohort every week (announced on the top banner/Instagram/LinkedIn) creates urgency.
-
-## 4. Mandatory Verification Commands (Keep All 9 Suites 100% Green)
+## 4. Mandatory 9-Suite Verification Checklist (Always Run Before Every Push)
 
 ```
 npx tsx scripts/test-public-catalogue-copy.ts
@@ -94,65 +99,22 @@ npx tsx scripts/test-dashboard-navigation.ts
 npx tsx scripts/test-release-readiness-hardening.ts
 npm run build
 
-
-
-
-
 ```
 
-## V32 Complete 10-Screenshot UI/UX & Programme Architecture Overhaul (`skylent-v32-complete-10point-ux-master.zip`)
-
-1. **Screenshot 1 Fix (`#pp-practice` 50% Half-Width Layout Bug on `/programmes/data-analytics-pro`):**
-
-   * Fixed the duplicate `.pp-practice` rule in `src/components/programme/ProfessionalProgrammeTemplate.css` where `.pp-practice` had `max-width: 44em`, constraining `<section className="sky-band-navy pp-practice" id="pp-practice">` to the left half of the viewport. Scoped `.pp-build .pp-practice` to the lead paragraph and set `section.pp-practice` to `width: 100%; max-width: none;`.
-
-2. **Screenshot 2 Fix (`#pp-evidence` Portfolio & Deliverables Clarity on `/programmes/:slug`):**
-
-   * Added a 4-card visual Portfolio Deliverables Grid (`.pp-portfolio-cards`) above `.pp-evtable` in `src/components/programme/ProfessionalProgrammeTemplate.tsx` showing what each module brief and capstone builds and what hiring managers verify.
-
-3. **Screenshot 3 Fix (`Programmes` Navbar Mega-Dropdown in `src/components/shared.tsx`):**
-
-   * Replaced the abstract 4-item list with a 2-column categorized Mega-Dropdown (`Data, AI & Software Tracks` and `Product, Coding & Live Sprints`) listing all 6 concrete programmes (`Data Analytics`, `Data Science & AI`, `Generative AI & LLM Systems`, `Full-Stack Web Development`, `Product Management`, `Python Programming & Automation`), `₹99 Weekend Live Workshops`, and `Explore All Programmes & Goal Finder →`.
-
-4. **Screenshots 4, 5, 6 Fix (`LearnPillarSubnav` Removal & Unified Goal + Masterclass Hub):**
-
-   * Hid the redundant `LEARN | Programmes | Skills | Workshops | Events` strip in `src/components/product/Architecture.tsx`.
-
-   * Integrated the interactive 4-Card Career Goal Picker (*"What do you want to be able to do?"*) directly into `/programmes` (`src/pages/ProgramsPage.tsx`).
-
-   * Upgraded `/events` (`src/pages/EventsPage.tsx`) and `/skills` (`src/pages/SkillsPage.tsx`, `src/pages/SkillsPage.css`) into Royal Purple (`#5142B5`) + Soft Lavender (`#F6F4FF`) + Crisp White (`#FFFFFF`) card hubs, with `/skills` defaulting to the active Data track instead of an empty state.
-
-5. **Screenshot 7 Fix (`Education` Navbar Dropdown in `src/components/shared.tsx`):**
-
-   * Simplified the `Education` navbar dropdown to display **only** `Undergraduate (UG)` and `Postgraduate (PG)`.
-
-6. **Screenshot 8 Fix (`/career-os` 9-Module Showcase & `/about` Institutional Dossier):**
-
-   * Redesigned `src/pages/career/CareerOSPublicPage.tsx` and `CareerOSPublicRepolish.css` with an Exemplar Proof-of-Work Dossier card in the hero and 9 differentiated Crisp White + Royal Purple module cards (each with custom SVG icon, numbered step badge, and concrete artifact preview).
-
-   * Redesigned `src/pages/AboutPage.tsx` and `AboutRepolish.css` with a 2-column Institutional Charter hero, Founder story, 3 Operating Environments (`Env A`, `Env B`, `Env C`), Old EdTech vs. Skylent comparison table, and 4 connected platform pillars.
-
-7. **Screenshot 9 Fix (Homepage `See what happens after you start a course` Inside-LMS Replica in `src/pages/home/Repolish.tsx`):**
-
-   * Replaced the old sparse dark box with a 5-stage high-density **Inside-LMS Replica** (`1. Course Syllabus`, `2. Lesson & AI Coach`, `3. Live SQL Lab`, `4. Capstone Grader`, `5. Verified Dossier`) styled in Skylent Royal Purple (`#3B2D96 -> #5142B5`) + Soft Lavender (`#F6F4FF`) + Crisp White (`#FFFFFF`).
-
-8. **Screenshot 10 Fix (PW-Skills-Style 3-Tier Pricing Plans + `Online | Offline` Toggle + Floating Bottom Navigation Dock):**
-
-   * Created `src/components/programme/ProgrammePricingAndDock.tsx` and mounted it in both `ProfessionalProgrammeTemplate.tsx` and `ProgrammeListing.tsx` to provide an interactive `Online | Offline` mode switcher, 3 side-by-side plan cards (`Basic`, `Premium`, `Pro [Recommended]`), FAQs, and a sleek floating bottom section navigation bar (`↑ | Overview | Offerings | Curriculum | Lab & Mentors | Career OS | Plans | Certifications | FAQs | [Buy now]`).
 
 ---
 
-## V33 Complete 7-Gap Platform & 6-Role Dashboard Polish (`skylent-v33-complete-dashboard-and-lms-polish-master.zip`)
+## 5. V34 Complete Multi-Tab Dashboard Architecture & End-to-End Course / Module / Lecture Authoring Studio (`skylent-v34-multi-tab-dashboards-and-course-studio.zip`)
 
-1. **Universal Desktop Top Bar + Elixir Wallet & Notification Bell (`src/components/AuthDashboardShell.tsx`):**
-   - Mounted `<HeaderWalletAndNotifications variant="dashboard" />` inside `.auth-shell-bar` on desktop and ensured `.auth-shell-bar` always renders across all 6 role dashboards (`Student`, `Faculty TA`, `College`, `Recruiter`, `Org L&D`, `Admin OS`) and `Career OS`.
-2. **Student Dashboard Hierarchy & High-Contrast CTA (`src/pages/DashboardStudentPage.tsx`, `src/pages/StudentHome.css`):**
-   - Styled `.sh-royal-cta` (`Continue learning →`) in Crisp White (`#FFFFFF`) with bold `#5142B5` Royal Purple text so it stands out immediately on the hero card.
-   - Moved the 2-Column Main Workspace Grid (`My learning`, `Current project & browser lab`, `Career Rise`, `Skylent AI`, `Evidence and certificates`) directly below the compact 14-day streak bar (above the `L1 → L5 Progression` card).
-   - Converted the `L1 → L5 Progression` card and `.sh-royal-ai` card into Soft Lavender (`#F6F4FF`) + Crisp White (`#FFFFFF`) + `4px solid #5142B5` top accent cards.
-3. **Superadmin & All 5 Role Dashboards Redesign (`DashboardAdminPage.tsx`, `AdminPlatform.tsx`, `DashboardFacultyPage.tsx`, `DashboardCollegePage.tsx`, `DashboardRecruiterPage.tsx`, `DashboardOrgPage.tsx`):**
-   - Redesigned `/dashboard/admin` and `AdminPlatform.tsx` into a structured 2-column command center with elevated Crisp White (`#FFFFFF`) + `4px solid #5142B5` cards for C-Suite Unit Economics, Real-Time Telemetry, Learning Reward Rules, Users & Roles, Organisations, Employers, Enquiries, Practice Studios, Lesson Media, Payments, Wallet Adjustments, Case Store Publishing, and Audit Log.
-   - Upgraded `Faculty TA`, `College`, `Recruiter`, and `Org L&D` dashboards with Crisp White + `4px solid #5142B5` cards and high-contrast Crisp White primary buttons on Royal Purple headers.
-4. **Inside-LMS Player, Multi-Track Listings, Catalogue & Signed-In Career OS (`LearnPage.tsx`, `ProgrammeListing.tsx`, `Catalog.css`, `CareerOSHome.css`, `ElixirWallet.tsx`):**
-   - Added `<HeaderWalletAndNotifications variant="dashboard" />` to the `.os-top` course player header in `LearnPage.tsx`.
-   - Unified `ProgrammeListing.tsx`, `Catalog.css`, `CareerOSHome.css`, and `ElixirWallet.tsx` onto the Soft Lavender (`#F6F4FF`) + Crisp White (`#FFFFFF`) + `4px solid #5142B5` Royal Purple + Mint Emerald (`#DCFCE7`) card system.
+1. **True Left-Sidebar & Top-Bar Multi-Tab Switching Across All 6 Role Dashboards (`Admin OS`, `Faculty TA`, `Student`, `College`, `Recruiter`, `Org L&D`):**
+   * **Superadmin Command OS (`/dashboard/admin` & `AdminPlatform.tsx`):** Left sidebar and top tab bar switch cleanly across 11 dedicated views: `1. Overview & KPIs` (with 6 Quick-Launch Module Cards), `2. Course & Lecture Studio` (embedded full authoring studio), `3. Users & Roles`, `4. Colleges & Orgs`, `5. Employers & Hiring`, `6. Inbound Enquiries`, `7. Practice Sandboxes`, `8. Lesson Video (Mux)`, `9. Payments & Elixir`, `10. System & Audit Log`, and `11. All Modules (Stacked)`.
+   * **Faculty TA & Instructor Dashboard (`/dashboard/faculty`):** Switches across 7 dedicated views: `Overview & SLA`, `Assigned Courses`, `Add Lectures & PDFs` (interactive Faculty Lecture & Study Material Authoring Studio), `V1→V2 Grading Studio` (inline student submission viewer + 0–100 score & Red-Line feedback grader), `20-Min Doubt Queue`, `Learner Cohort`, and `Rubric & Settings`.
+   * **Student Learning Dashboard (`/dashboard/student` & `StudentHome.css`):** Switches across 5 dedicated views (`1. Full Workspace (Overview)`, `2. My Active Courses`, `3. Capstone & Browser Labs`, `4. Certificates & Flight Recorder`, `5. Elixir Wallet & Case Store`) synced with `LEARNER_NAV`.
+   * **College HoD/TPO (`/dashboard/college`), Recruiter (`/dashboard/recruiter`), & Organisation L&D (`/dashboard/organisation`):** All upgraded with multi-tab switching (`Overview`, `Cohort/Jobs/Programs`, `Roster/Applications/Batches`, `Compliance/Verify/Settings`).
+2. **End-to-End Course, Module, Lecture, Quiz, PDF Material & Faculty Assignment Studio (`CourseBuilderPage.tsx` + `admin-curriculum.ts` + `faculty.ts`):**
+   * **Step 01 · Admin Creates Course (`POST /api/v1/admin/curriculum/courses`):** Creates a `DRAFT` course with Title, auto-generated Slug, Category, Level, Duration, Mode, Price (₹), Outcomes, Target Audience, and optional Course Cover Image (`POST /courses/:courseId/cover`).
+   * **Step 02 · Structure & Reorder Modules (`POST /courses/:courseId/modules`, `POST /modules/order`):** Add modules with title, objective description, and position; reorder modules (`↑` / `↓`) or delete modules with 1 click.
+   * **Step 03 · Author Multi-Modal Lectures (`POST /modules/:moduleId/lectures` & `POST /lectures/:lectureId/materials`):** Supports all 6 Skylent node types: `NOTES` (Reading + Hinglish AI Notes), `VIDEO` (Video URL / Mux Playback ID + summary), `LAB` (Browser SQL/Python/RAG/Ledger Sandbox), `ASSIGNMENT` (Graded Case Brief routed to Faculty V1→V2 Review), `PROJECT` (Capstone Studio), and `QUIZ` (Interactive Multi-Question Quiz Builder with options, correct answer radio, explanations, passing score %, and max attempts) + 1-click PDF/PPTX/Markdown attachment upload!
+   * **Step 04 · Assign Faculty TA & Publish Live (`POST /courses/:courseId/faculty`, `POST /courses/:courseId/publish`):** Assign Faculty accounts to specific courses so they can co-author lectures/materials and grade student submissions in `/dashboard/faculty`, then 1-click Publish directly to `/courses/:slug` and `/learn/:slug`!
+3. **Persistent 20-Minute Faculty Doubt SLA Store (`server/src/lib/doubt-sla.ts`):**
+   * Added automatic JSON snapshot persistence (`.cache/doubt-sla-tickets.json` when `NODE_ENV !== "test"`) so student lesson doubts and Faculty TA resolutions survive server restarts.

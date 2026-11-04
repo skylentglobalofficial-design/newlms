@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
-import { AuthDashboardShell } from "../components/AuthDashboardShell"
+import { AuthDashboardShell, type AuthNavItem } from "../components/AuthDashboardShell"
 import { useAuth } from "../context/AuthContext"
 import { apiV1 } from "../lib/api-base"
 
@@ -18,8 +18,25 @@ type CollegeDashboard = {
   note: string
 }
 
+const COLLEGE_NAV: AuthNavItem[] = [
+  { id: "overview", label: "Overview & KPIs", short: "Home" },
+  { id: "cohort", label: "Cohort & Credit Ledger", short: "Cohort" },
+  { id: "roster", label: "Campus Student Roster", short: "Roster" },
+  { id: "compliance", label: "NAAC / NEP Audit Pack", short: "Audit" },
+]
+
+const cardStyle = {
+  background: "#ffffff",
+  border: "1px solid #e2e8f0",
+  borderTop: "4px solid #5142b5",
+  borderRadius: 16,
+  padding: "22px 24px",
+  boxShadow: "0 10px 28px -12px rgba(15, 23, 42, 0.08)",
+} as const
+
 export default function DashboardCollegePage() {
   const { user, ready } = useAuth()
+  const [activeNav, setActiveNav] = useState<string>("overview")
   const [data, setData] = useState<CollegeDashboard | null>(null)
   const [error, setError] = useState<string | null>(null)
 
@@ -28,12 +45,13 @@ export default function DashboardCollegePage() {
     const controller = new AbortController()
     void fetch(`${apiV1()}/college/dashboard`, { credentials: "include", signal: controller.signal })
       .then(async (response) => {
-        const body = await response.json().catch(() => ({})) as { error?: string; data?: CollegeDashboard }
+        const body = (await response.json().catch(() => ({}))) as { error?: string; data?: CollegeDashboard }
         if (!response.ok) throw new Error(body.error || "The college dashboard could not be loaded")
         setData(body.data ?? null)
       })
       .catch((err: unknown) => {
-        if (!controller.signal.aborted) setError(err instanceof Error ? err.message : "The college dashboard could not be loaded")
+        if (!controller.signal.aborted)
+          setError(err instanceof Error ? err.message : "The college dashboard could not be loaded")
       })
     return () => controller.abort()
   }, [ready, user])
@@ -46,31 +64,72 @@ export default function DashboardCollegePage() {
       workspace="learning"
       workspaceLabel="College"
       roleLabel="College"
-      navItems={[{ id: "home", label: "College", short: "Home" }]}
-      activeNav="home"
-      onNavChange={() => undefined}
+      navItems={COLLEGE_NAV}
+      bottomNavItems={COLLEGE_NAV}
+      activeNav={activeNav}
+      onNavChange={setActiveNav}
       renderNavIcon={() => null}
     >
-      <div className="sh" style={{ display: "grid", gap: 20, maxWidth: 1080 }}>
+      <div className="sh" style={{ display: "grid", gap: 20, maxWidth: 1120 }}>
+        {/* Multi-Tab Switcher Bar */}
+        <div
+          role="tablist"
+          aria-label="College Workspace Tabs"
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: 8,
+            padding: "10px 12px",
+            borderRadius: 14,
+            background: "#f6f4ff",
+            border: "1px solid #ddd6fe",
+          }}
+        >
+          {COLLEGE_NAV.map((item) => {
+            const active = activeNav === item.id
+            return (
+              <button
+                key={item.id}
+                type="button"
+                role="tab"
+                aria-selected={active}
+                onClick={() => setActiveNav(item.id)}
+                style={{
+                  padding: "8px 14px",
+                  borderRadius: 999,
+                  border: active ? "1px solid #5142b5" : "1px solid #cbd5e1",
+                  background: active ? "#5142b5" : "#ffffff",
+                  color: active ? "#ffffff" : "#334155",
+                  fontSize: 12.5,
+                  fontWeight: 700,
+                  cursor: "pointer",
+                }}
+              >
+                {item.label}
+              </button>
+            )
+          })}
+        </div>
+
         <section
           style={{
-            background: "linear-gradient(135deg, #3B2D96 0%, #5142B5 100%)",
-            border: "1px solid rgba(196, 184, 255, 0.38)",
+            background: "linear-gradient(135deg, #3b2d96 0%, #5142b5 100%)",
+            border: "1px solid rgba(196, 184, 255, 0.42)",
             borderRadius: 18,
             padding: "28px 30px",
             color: "#ffffff",
-            boxShadow: "0 18px 42px rgba(10, 14, 34, 0.22)",
+            boxShadow: "0 18px 42px -14px rgba(59, 45, 150, 0.35)",
           }}
         >
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 16, flexWrap: "wrap" }}>
             <div>
-              <p style={{ margin: "0 0 8px", color: "#c4b8ff", font: "700 11px/1.4 var(--font-mono)", letterSpacing: "0.14em", textTransform: "uppercase" }}>
+              <p style={{ margin: "0 0 8px", color: "#e9d5ff", font: "700 11px/1.4 var(--font-mono)", letterSpacing: "0.14em", textTransform: "uppercase" }}>
                 NEP 2020 · ACADEMIC BANK OF CREDITS (ABC) &amp; NAAC COHORT COMMAND CENTER
               </p>
               <h1 style={{ margin: "0 0 8px", fontSize: "clamp(24px, 3vw, 34px)", color: "#ffffff", fontFamily: "var(--font-display)" }}>
                 {data?.college.name ?? "College Institutional Workspace"}
               </h1>
-              <p style={{ margin: 0, color: "rgba(255,255,255,0.82)", fontSize: 14.5, maxWidth: 680, lineHeight: 1.55 }}>
+              <p style={{ margin: 0, color: "rgba(255,255,255,0.88)", fontSize: 14.5, maxWidth: 680, lineHeight: 1.55 }}>
                 {data?.note ?? "Track student lab execution, 20-minute Faculty TA SLA compliance, and NCrF skill-credit equivalency across your institution."}
               </p>
             </div>
@@ -79,21 +138,28 @@ export default function DashboardCollegePage() {
                 className="os-btn os-btn-primary"
                 href={`${apiV1()}/college/dashboard/export.csv`}
                 download
-                style={{ background: "#ffffff", color: "#5142B5", fontWeight: 800, border: "2px solid #ffffff", textDecoration: "none", boxShadow: "0 8px 20px rgba(15, 23, 42, 0.2)" }}
+                style={{
+                  background: "#ffffff",
+                  color: "#5142b5",
+                  fontWeight: 800,
+                  borderColor: "#ffffff",
+                  textDecoration: "none",
+                  boxShadow: "0 6px 16px rgba(0,0,0,0.16)",
+                }}
               >
                 Export Cohort CSV
               </a>
               <Link
                 className="os-btn os-btn-ghost"
                 to="/verify"
-                style={{ color: "#ffffff", borderColor: "rgba(255,255,255,0.28)", textDecoration: "none" }}
+                style={{ color: "#ffffff", borderColor: "rgba(255,255,255,0.34)", textDecoration: "none" }}
               >
                 Verify Student Dossiers →
               </Link>
             </div>
           </div>
           {data?.college.sample ? (
-            <p style={{ margin: "14px 0 0", padding: "6px 12px", borderRadius: 999, background: "rgba(16, 185, 129, 0.16)", border: "1px solid rgba(52, 211, 153, 0.4)", color: "#34d399", display: "inline-block", fontSize: 12, fontFamily: "var(--font-mono)" }}>
+            <p style={{ margin: "14px 0 0", padding: "6px 12px", borderRadius: 999, background: "rgba(16, 185, 129, 0.2)", border: "1px solid rgba(52, 211, 153, 0.45)", color: "#6ee7b7", display: "inline-block", fontSize: 12, fontFamily: "var(--font-mono)" }}>
               ✓ Institutional Preview Mode · 60-Hour NCrF-Aligned Workload Ledger (Academic Credit Award Subject to Partner HEI Approval under UGC Rules)
             </p>
           ) : null}
@@ -103,77 +169,125 @@ export default function DashboardCollegePage() {
 
         {data ? (
           <>
-            {data.cohortSummary ? (
+            {(activeNav === "overview" || activeNav === "compliance") && data.cohortSummary ? (
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 14 }} aria-label="College cohort summary">
-                <div style={{ padding: 18, background: "#ffffff", border: "1.5px solid #DDD7FF", borderTop: "4px solid #5142B5", borderRadius: 16, boxShadow: "0 10px 26px -14px rgba(81, 66, 181, 0.14)" }}>
-                  <span style={{ fontSize: 11, fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.08em", color: "#64748b", display: "block" }}>Members</span>
+                <div style={cardStyle}>
+                  <span style={{ fontSize: 11, fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.08em", color: "#5142b5", fontWeight: 700, display: "block" }}>Members</span>
                   <strong style={{ fontSize: 28, color: "#0f172a", display: "block", marginTop: 4 }}>{data.cohortSummary.totalMembers}</strong>
                   <span style={{ fontSize: 12, color: "#10b981", fontWeight: 600 }}>APAAR / ABC Mapped</span>
                 </div>
-                <div style={{ padding: 18, background: "#ffffff", border: "1.5px solid #DDD7FF", borderTop: "4px solid #5142B5", borderRadius: 16, boxShadow: "0 10px 26px -14px rgba(81, 66, 181, 0.14)" }}>
-                  <span style={{ fontSize: 11, fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.08em", color: "#64748b", display: "block" }}>Active enrolments</span>
+                <div style={cardStyle}>
+                  <span style={{ fontSize: 11, fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.08em", color: "#5142b5", fontWeight: 700, display: "block" }}>Active enrolments</span>
                   <strong style={{ fontSize: 28, color: "#0f172a", display: "block", marginTop: 4 }}>{data.cohortSummary.activeEnrolments}</strong>
                   <span style={{ fontSize: 12, color: "#475569" }}>In Simulated Lab Sprints</span>
                 </div>
-                <div style={{ padding: 18, background: "#ffffff", border: "1.5px solid #DDD7FF", borderTop: "4px solid #5142B5", borderRadius: 16, boxShadow: "0 10px 26px -14px rgba(81, 66, 181, 0.14)" }}>
-                  <span style={{ fontSize: 11, fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.08em", color: "#64748b", display: "block" }}>Completed</span>
+                <div style={cardStyle}>
+                  <span style={{ fontSize: 11, fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.08em", color: "#5142b5", fontWeight: 700, display: "block" }}>Completed</span>
                   <strong style={{ fontSize: 28, color: "#0f172a", display: "block", marginTop: 4 }}>{data.cohortSummary.completedEnrolments}</strong>
                   <span style={{ fontSize: 12, color: "#10b981", fontWeight: 600 }}>Capstones Red-Line Verified</span>
                 </div>
-                <div style={{ padding: 18, background: "#ffffff", border: "1.5px solid #DDD7FF", borderTop: "4px solid #5142B5", borderRadius: 16, boxShadow: "0 10px 26px -14px rgba(81, 66, 181, 0.14)" }}>
-                  <span style={{ fontSize: 11, fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.08em", color: "#64748b", display: "block" }}>Completion rate</span>
+                <div style={cardStyle}>
+                  <span style={{ fontSize: 11, fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.08em", color: "#5142b5", fontWeight: 700, display: "block" }}>Completion rate</span>
                   <strong style={{ fontSize: 28, color: "#5142b5", display: "block", marginTop: 4 }}>{data.cohortSummary.completionRatePercent}%</strong>
                   <span style={{ fontSize: 12, color: "#475569" }}>NAAC Criterion-1 Audit Ready</span>
                 </div>
               </div>
             ) : null}
 
-            <section style={{ background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: 16, padding: 24 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap", marginBottom: 16 }}>
-                <div>
-                  <h2 style={{ margin: 0, fontSize: 18, color: "#0f172a", fontFamily: "var(--font-display)" }}>
-                    Active Cohort &amp; NCrF Skill-Credit Ledger
-                  </h2>
-                  <p style={{ margin: "4px 0 0", fontSize: 13.5, color: "#475569" }}>
-                    {data.members.length} {data.members.length === 1 ? "person" : "people"} enrolled under this institution.
-                  </p>
+            {activeNav === "overview" || activeNav === "cohort" ? (
+              <section style={cardStyle}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap", marginBottom: 16 }}>
+                  <div>
+                    <span style={{ fontSize: 11, fontFamily: "var(--font-mono)", fontWeight: 700, color: "#5142b5" }}>
+                      NCrF SKILL-CREDIT &amp; LAB ENROLMENT LEDGER
+                    </span>
+                    <h2 style={{ margin: "2px 0 0", fontSize: 18, color: "#0f172a", fontFamily: "var(--font-display)" }}>
+                      Active Cohort &amp; NCrF Skill-Credit Ledger
+                    </h2>
+                    <p style={{ margin: "4px 0 0", fontSize: 13.5, color: "#475569" }}>
+                      {data.members.length} {data.members.length === 1 ? "person" : "people"} enrolled under this institution.
+                    </p>
+                  </div>
+                  <span style={{ padding: "5px 12px", borderRadius: 999, background: "#f5f3ff", border: "1px solid #ddd6fe", fontSize: 12, fontWeight: 700, color: "#5142b5" }}>
+                    2–4 Credits / Completed Track (45–60 Notional Hrs)
+                  </span>
                 </div>
-                <span style={{ padding: "5px 12px", borderRadius: 999, background: "#f8fafc", border: "1px solid #cbd5e1", fontSize: 12, fontWeight: 600, color: "#1e293b" }}>
-                  2–4 Credits / Completed Track (45–60 Notional Hrs)
-                </span>
-              </div>
 
-              {data.enrolments.length === 0 ? (
-                <p style={{ margin: 0, color: "#64748b" }}>No enrolments are recorded for this college yet.</p>
-              ) : (
-                <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "grid", gap: 10 }}>
-                  {data.enrolments.map((row) => (
-                    <li
-                      key={row.id}
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        padding: "12px 16px",
-                        borderRadius: 10,
-                        background: "#f8fafc",
-                        border: "1px solid #e2e8f0",
-                        fontSize: 14,
-                        fontWeight: 600,
-                        color: "#0f172a",
-                      }}
-                    >
-                      <span>{row.courseTitle ?? row.programName ?? "Enrolment"}</span>
-                      <span style={{ fontSize: 12, fontFamily: "var(--font-mono)", color: "#059669" }}>
-                        ✓ Browser Lab + 20m TA SLA Active
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </section>
+                {data.enrolments.length === 0 ? (
+                  <p style={{ margin: 0, color: "#64748b" }}>No enrolments are recorded for this college yet.</p>
+                ) : (
+                  <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "grid", gap: 10 }}>
+                    {data.enrolments.map((row) => (
+                      <li
+                        key={row.id}
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          padding: "12px 16px",
+                          borderRadius: 10,
+                          background: "#f8fafc",
+                          border: "1px solid #e2e8f0",
+                          fontSize: 14,
+                          fontWeight: 600,
+                          color: "#0f172a",
+                        }}
+                      >
+                        <span>{row.courseTitle ?? row.programName ?? "Enrolment"}</span>
+                        <span style={{ fontSize: 12, fontFamily: "var(--font-mono)", color: "#059669" }}>
+                          ✓ Browser Lab + 20m TA SLA Active
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </section>
+            ) : null}
+
+            {activeNav === "roster" ? (
+              <section style={cardStyle}>
+                <span style={{ fontSize: 11, fontFamily: "var(--font-mono)", fontWeight: 700, color: "#5142b5" }}>
+                  ENROLLED CAMPUS MEMBERS ({data.members.length})
+                </span>
+                <h2 style={{ margin: "2px 0 12px", fontSize: 18, color: "#0f172a" }}>Campus Student Roster</h2>
+                {data.members.length === 0 ? (
+                  <p style={{ margin: 0, color: "#64748b" }}>No students linked to this college tenant yet.</p>
+                ) : (
+                  <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gap: 8 }}>
+                    {data.members.map((m) => (
+                      <li key={m.id} style={{ padding: "12px 14px", borderRadius: 10, background: "#f8fafc", border: "1px solid #e2e8f0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                        <strong style={{ color: "#0f172a", fontSize: 14 }}>{m.name}</strong>
+                        <span style={{ fontSize: 11.5, fontFamily: "var(--font-mono)", color: "#5142b5" }}>ID: {m.id}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </section>
+            ) : null}
+
+            {activeNav === "compliance" ? (
+              <section style={cardStyle}>
+                <span style={{ fontSize: 11, fontFamily: "var(--font-mono)", fontWeight: 700, color: "#5142b5" }}>
+                  UGC SECTION 22 &amp; NEP 2020 STATUTORY GOVERNANCE
+                </span>
+                <h2 style={{ margin: "2px 0 8px", fontSize: 18, color: "#0f172a" }}>NAAC / NIRF Cohort Export &amp; Credit Mapping</h2>
+                <p style={{ margin: "0 0 14px", fontSize: 13.5, color: "#475569", lineHeight: 1.6 }}>
+                  Each flagship Skylent track represents 60 Notional Learning Hours (15 hrs First-Principles Notes, 20 hrs Browser Lab Execution, 15 hrs Capstone Studio, 10 hrs Faculty Red-Line &amp; Oral Defence) mapped for partner HEI Board of Studies review.
+                </p>
+                <a
+                  className="os-btn os-btn-primary"
+                  href={`${apiV1()}/college/dashboard/export.csv`}
+                  download
+                  style={{ background: "#5142b5", color: "#ffffff", borderColor: "#5142b5", fontWeight: 700, textDecoration: "none" }}
+                >
+                  Download NAAC Cohort CSV Report →
+                </a>
+              </section>
+            ) : null}
           </>
-        ) : error ? null : <p>Loading college records…</p>}
+        ) : error ? null : (
+          <p>Loading college records…</p>
+        )}
       </div>
     </AuthDashboardShell>
   )
