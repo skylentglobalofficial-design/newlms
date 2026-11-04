@@ -82,7 +82,7 @@ export default function ExamsPage() {
           margin: "20px 0 28px",
           padding: "24px 28px",
           borderRadius: 18,
-          background: "linear-gradient(145deg, #10263D 0%, #183750 100%)",
+          background: "linear-gradient(145deg, #11152c 0%, #1e1b4b 100%)",
           border: "1px solid rgba(196, 184, 255, 0.35)",
           color: "#ffffff",
           display: "flex",

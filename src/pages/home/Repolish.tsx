@@ -3,7 +3,7 @@
  *
  * Visual Identity (V18 Royal Midnight Navy + Gold + Emerald on Crisp White):
  *   - Page background: Crisp White (#ffffff) & Soft Ice (#f8fafc)
- *   - Feature Cards: Royal Midnight Navy (linear-gradient(145deg, #10263d 0%, #183750 100%))
+ *   - Feature Cards: Royal Midnight Navy (linear-gradient(145deg, #11152c 0%, #1e1b4b 100%))
  *   - Accents: Warm Gold (#c4b8ff), Emerald Verified Badges (#34d399), Periwinkle (#a5b4fc),
  *     and Crisp Pure White Skill Pills (#ffffff with #0f172a ink).
  */
@@ -1831,7 +1831,7 @@ export function HomeInstitutionalArchitecture() {
     <section
       aria-labelledby="hx-inst-arch-title"
       style={{
-        background: "linear-gradient(145deg, #10263d 0%, #183750 100%)",
+        background: "linear-gradient(145deg, #11152c 0%, #1e1b4b 100%)",
         borderTop: "1px solid rgba(196, 184, 255, 0.42)",
         borderBottom: "1px solid rgba(196, 184, 255, 0.42)",
         padding: "clamp(40px, 5vw, 68px) 0",

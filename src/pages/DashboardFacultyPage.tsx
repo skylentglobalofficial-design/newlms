@@ -40,7 +40,7 @@ function NavIcon({ id }: { id: string }) {
 function TeachingEmptyState({ message }: { message?: string | null }) {
   return (
     <div style={{
-      background: 'linear-gradient(145deg, #10263d 0%, #183750 100%)',
+      background: 'linear-gradient(145deg, #11152c 0%, #1e1b4b 100%)',
       border: '1px solid rgba(196, 184, 255, 0.38)',
       borderRadius: 18,
       padding: 'clamp(24px, 4vw, 34px)',
@@ -76,7 +76,7 @@ function CatalogOverview({
 }) {
   return (
     <div style={{
-      background: 'linear-gradient(145deg, #10263d 0%, #183750 100%)',
+      background: 'linear-gradient(145deg, #11152c 0%, #1e1b4b 100%)',
       border: '1px solid rgba(196, 184, 255, 0.38)',
       borderRadius: 18,
       padding: 'clamp(24px, 4vw, 34px)',

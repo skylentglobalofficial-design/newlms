@@ -1538,7 +1538,7 @@
 
 /* ── V19 Royal Midnight Navy + Warm Gold + Emerald Course Player Header ── */
 .os-shell .os-top {
-  background: linear-gradient(145deg, #10263d 0%, #183750 100%);
+  background: linear-gradient(145deg, #11152c 0%, #1e1b4b 100%);
   border-bottom: 1px solid rgba(196, 184, 255, 0.34);
   box-shadow: 0 8px 24px -12px rgba(16, 38, 61, 0.45);
 }
@@ -1569,7 +1569,7 @@
 }
 
 .os-shell .os-slide__frame {
-  background: linear-gradient(145deg, #10263d 0%, #183750 100%);
+  background: linear-gradient(145deg, #11152c 0%, #1e1b4b 100%);
   border: 1px solid rgba(196, 184, 255, 0.38);
 }
 

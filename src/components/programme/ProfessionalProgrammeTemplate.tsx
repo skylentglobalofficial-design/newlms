@@ -742,7 +742,7 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
             <section className="sky-container pp-section" id="pp-review-standard" aria-labelledby="pp-review-standard-title">
         <div
           style={{
-            background: "linear-gradient(145deg, #10263d 0%, #183750 100%)",
+            background: "linear-gradient(145deg, #11152c 0%, #1e1b4b 100%)",
             border: "1px solid rgba(196, 184, 255, 0.38)",
             borderRadius: 20,
             padding: "clamp(24px, 4vw, 38px)",

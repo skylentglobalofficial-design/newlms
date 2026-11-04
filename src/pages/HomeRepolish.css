@@ -34,7 +34,7 @@
 /* ── Hero (dark violet band for non-homepage heroes) ── */
 .hx-page .hx-hero, .hx-page .hx-close {
   position: relative; overflow: hidden;
-  background: linear-gradient(135deg, #10263d 0%, #5142B5 100%); color: #f0edff;
+  background: linear-gradient(135deg, #141132 0%, #5142B5 100%); color: #f0edff;
 }
 .hx-page .hx-hero__glow {
   position: absolute; inset: 0; pointer-events: none;
@@ -128,7 +128,7 @@
 .hx-page .hx-degree__go { display: inline-flex; align-items: center; gap: 6px; margin-top: auto; padding-top: 8px; font-size: 14px; font-weight: 600; color: hsl(var(--site-deep)); }
 
 /* ── Student home on violet ── */
-.hx-page .hx-learn { background: linear-gradient(135deg, #10263d 0%, #5142B5 100%); color: #f0edff; padding-block: var(--hx-y); }
+.hx-page .hx-learn { background: linear-gradient(135deg, #141132 0%, #5142B5 100%); color: #f0edff; padding-block: var(--hx-y); }
 .hx-page .hx-learn__lead { margin: 18px 0 0; max-width: 32em; font-size: 16.5px; line-height: 1.6; color: hsl(var(--site-on-navy)); }
 .hx-page .hx-learn__list { list-style: none; margin: 22px 0 26px; padding: 0; display: grid; gap: 10px; }
 .hx-page .hx-learn__list li { position: relative; padding-left: 26px; font-size: 15.5px; color: hsl(var(--site-on-navy)); }
@@ -149,7 +149,7 @@
 .hx-page .hx-lab__text { margin: 0; font-size: 15px; line-height: 1.55; color: hsl(var(--site-muted)); }
 
 /* ── Career OS walkthrough ── */
-.hx-page .hx-journey { position: relative; padding-block: var(--hx-y); background: linear-gradient(135deg, #10263d 0%, #5142B5 100%); color: #f0edff; overflow: hidden; }
+.hx-page .hx-journey { position: relative; padding-block: var(--hx-y); background: linear-gradient(135deg, #141132 0%, #5142B5 100%); color: #f0edff; overflow: hidden; }
 .hx-page .hx-journey::before { content: ""; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(50% 60% at 90% 90%, hsl(252 76% 62% / .16), transparent 65%); }
 .hx-page .hx-journey > .sky-container { position: relative; }
 .hx-page .hx-journey__grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(24px, 4vw, 64px); align-items: start; }
@@ -572,7 +572,7 @@
 .hx-page--home .hx-inst__ptext { font-size: 15px; line-height: 1.55; color: hsl(var(--site-muted)); }
 
 /* ── Closing: one final statement ── */
-.hx-page--home .hx-close--final { position: relative; overflow: hidden; background: linear-gradient(135deg, #10263d 0%, #5142B5 100%); }
+.hx-page--home .hx-close--final { position: relative; overflow: hidden; background: linear-gradient(135deg, #141132 0%, #5142B5 100%); }
 .hx-page--home .hx-close__glow { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(45% 90% at 85% 100%, hsl(252 76% 62% / .3), transparent 65%), radial-gradient(30% 60% at 0% 0%, hsl(252 60% 72% / .08), transparent 65%); }
 .hx-page--home .hx-close__layout { position: relative; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 20px 40px; padding-block: clamp(40px, 4.5vw, 56px); }
 .hx-page--home .hx-close__title { margin: 0; max-width: 12em; font-size: clamp(32px, 3.6vw, 48px); text-align: left; }
@@ -821,7 +821,7 @@
   border-bottom-color: hsl(var(--site-border));
 }
 .hx-page--home .hx-ai__avatar {
-  background: #10263d;
+  background: #11152c;
   background-image: none;
   box-shadow: 0 0 0 1px #294b63, 0 12px 24px -16px hsl(210 60% 15% / .55);
 }
@@ -1087,7 +1087,7 @@
 /* Restore High-Contrast Deep Navy / Brand Violet Closing Anchor */
 .hx-page .hx-close,
 .hx-page--home .hx-close--final {
-  background: linear-gradient(135deg, #10263D 0%, #35297F 55%, #5142B5 100%) !important;
+  background: linear-gradient(135deg, #11152c 0%, #35297F 55%, #5142B5 100%) !important;
   color: #ffffff !important;
   border-top: 0 !important;
 }
@@ -1501,7 +1501,7 @@
   gap: 8px;
   padding: 6px 14px;
   border-radius: 999px;
-  background: linear-gradient(135deg, #10263d 0%, #183750 100%);
+  background: linear-gradient(135deg, #11152c 0%, #1e1b4b 100%);
   border: 1px solid rgba(196, 184, 255, 0.35);
   color: #c4b8ff;
   font-family: var(--sk-font-mono);
@@ -1567,8 +1567,8 @@
   gap: 18px;
   padding: 22px 24px;
   border-radius: 16px;
-  background: linear-gradient(145deg, #10263d 0%, #183750 100%);
-  border: 1px solid rgba(196, 184, 255, 0.34);
+  background: linear-gradient(145deg, #11152c 0%, #1e1b4b 100%);
+  border: 1px solid rgba(251, 191, 36, 0.38);
   color: #f8fafc;
   text-decoration: none;
   box-shadow: 0 14px 32px -12px rgba(15, 23, 42, 0.24);
@@ -1577,7 +1577,7 @@
 
 .hx-royal-card:hover {
   transform: translateY(-4px);
-  border-color: rgba(196, 184, 255, 0.72);
+  border-color: rgba(251, 191, 36, 0.72);
   box-shadow: 0 22px 44px -14px rgba(16, 38, 61, 0.36);
 }
 
@@ -1594,7 +1594,7 @@
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.04em;
-  color: #c4b8ff;
+  color: #fbbf24;
 }
 
 .hx-royal-card__badge {
@@ -1667,7 +1667,7 @@
   gap: 6px;
   font-size: 13px;
   font-weight: 700;
-  color: #c4b8ff;
+  color: #fbbf24;
 }
 
 /* 4-Step Workshop Coin Cashback Ribbon */
@@ -1695,7 +1695,7 @@
   width: 30px;
   height: 30px;
   border-radius: 8px;
-  background: linear-gradient(135deg, #10263d 0%, #183750 100%);
+  background: linear-gradient(135deg, #11152c 0%, #1e1b4b 100%);
   color: #c4b8ff;
   font-family: var(--sk-font-mono);
   font-size: 12px;
@@ -1736,7 +1736,7 @@
 }
 
 .hx-page--home .hx-career__steps li button.is-on {
-  background: linear-gradient(135deg, #10263d 0%, #183750 100%) !important;
+  background: linear-gradient(135deg, #11152c 0%, #1e1b4b 100%) !important;
   border-color: rgba(196, 184, 255, 0.5) !important;
   color: #ffffff !important;
   box-shadow: 0 8px 20px -8px rgba(16, 38, 61, 0.3);
@@ -1794,8 +1794,8 @@
   gap: 18px;
   padding: 26px 28px;
   border-radius: 18px;
-  background: linear-gradient(145deg, #10263d 0%, #183750 100%);
-  border: 1px solid rgba(196, 184, 255, 0.38);
+  background: linear-gradient(145deg, #11152c 0%, #1e1b4b 100%);
+  border: 1px solid rgba(251, 191, 36, 0.38);
   color: #ffffff;
   box-shadow: 0 20px 44px -18px rgba(16, 38, 61, 0.32);
   min-height: 320px;
@@ -1815,7 +1815,7 @@
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: #c4b8ff;
+  color: #fbbf24;
 }
 
 .hx-royal-plate__emerald {
@@ -1931,7 +1931,7 @@
 }
 
 .hx-ai-tab.is-on {
-  background: linear-gradient(135deg, #10263d 0%, #183750 100%);
+  background: linear-gradient(135deg, #11152c 0%, #1e1b4b 100%);
   border-color: rgba(196, 184, 255, 0.55);
   box-shadow: 0 10px 24px -10px rgba(16, 38, 61, 0.28);
 }
@@ -1980,8 +1980,8 @@
   display: flex;
   flex-direction: column;
   border-radius: 18px;
-  background: linear-gradient(145deg, #10263d 0%, #183750 100%);
-  border: 1px solid rgba(196, 184, 255, 0.38);
+  background: linear-gradient(145deg, #11152c 0%, #1e1b4b 100%);
+  border: 1px solid rgba(251, 191, 36, 0.38);
   color: #ffffff;
   box-shadow: 0 20px 44px -16px rgba(16, 38, 61, 0.32);
   overflow: hidden;

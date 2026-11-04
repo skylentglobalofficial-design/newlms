@@ -18,7 +18,7 @@
    *   Muted  #6B7280
    *   Accent #5142B5
    *   Hover  #43349F
-   *   Deep navy structure #10263D for rails and the lesson stage only
+   *   Deep navy structure #11152C for rails and the lesson stage only
    *   Sky blue #3E96D6 is the secondary accent (AI mark and supporting details)
    *   Red #9F2A24 is reserved for errors and alerts
    */
@@ -30,7 +30,7 @@
   --skylent-surface-soft: #f7f6fc;
   --skylent-surface-sand: #eae6ff;
   --skylent-surface-elevated: #ffffff;
-  --skylent-surface-inverse: #10263d;
+  --skylent-surface-inverse: #11152c;
 
   /* Proof surfaces — evidence and certificates only */
   --skylent-surface-proof: #f7f6fc;
@@ -38,9 +38,9 @@
   --skylent-color-proof-line: #ddd7ff;
 
   /* Violet anchors — shell rail, product top bars, workbench */
-  --skylent-navy: #10263d;
-  --skylent-navy-2: #183750;
-  --skylent-navy-line: #294b63;
+  --skylent-navy: #11152c;
+  --skylent-navy-2: #1e1b4b;
+  --skylent-navy-line: #312e81;
   --skylent-navy-line-2: #52738a;
   --skylent-on-navy: #edf5fa;
   --skylent-on-navy-muted: #b7c9d6;
@@ -109,8 +109,8 @@
   --skylent-color-information-border: var(--skylent-color-info-border);
 
   /* ── Product / application UI on deep navy ── */
-  --skylent-product-dark: #10263d;
-  --skylent-product-dark-surface: #183750;
+  --skylent-product-dark: #11152c;
+  --skylent-product-dark-surface: #1e1b4b;
   --skylent-product-dark-muted: #9aa6bf;
   --skylent-product-dark-border: #26304a;
   --skylent-product-dark-accent: #3e96d6;

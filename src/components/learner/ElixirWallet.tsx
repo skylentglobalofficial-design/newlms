@@ -109,7 +109,7 @@ export default function ElixirWalletPanel() {
           alignItems: "center",
           flexWrap: "wrap",
           gap: 16,
-          background: "linear-gradient(145deg, #10263d 0%, #183750 100%)",
+          background: "linear-gradient(145deg, #11152c 0%, #1e1b4b 100%)",
           border: "1px solid rgba(196, 184, 255, 0.38)",
           borderRadius: 14,
           padding: "20px 24px",
