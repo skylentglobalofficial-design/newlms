@@ -7,7 +7,7 @@
 
    Palette: light-first violet identity, Oct 2026:
    paper #FFFFFF, ink #171717, action #5142B5, hover #43349F,
-   deep navy #11152C / #1e1b4b for compact product chrome, AI mark #6657E8.
+   deep navy #3B2D96 / #43349F for compact product chrome, AI mark #6657E8.
    ===================================================================== */
 
 html,
@@ -40,7 +40,7 @@ body:has(.skylent-public-canvas) {
   --site-border: 220 14% 90%;
   --site-border-strong: 252 30% 85.5%;
   --site-ink: 0 0% 9%;
-  --site-navy: 246 47% 15%;
+  --site-navy: 249 54% 38%;
   --site-deep: 252 42% 48%;
   --site-ocean: 252 48% 44%;
   --site-highlight: 249 76% 62%;
@@ -60,7 +60,7 @@ body:has(.skylent-public-canvas) {
   --skylent-surface-soft: #f7f6fc;
   --skylent-surface-sand: #eae6ff;
   --skylent-surface-elevated: #ffffff;
-  --skylent-surface-inverse: #11152c;
+  --skylent-surface-inverse: #3B2D96;
 
   --skylent-color-paper: var(--skylent-surface-paper);
   --skylent-color-cream: var(--skylent-surface-cream);

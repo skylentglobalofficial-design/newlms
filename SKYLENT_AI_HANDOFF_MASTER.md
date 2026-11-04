@@ -1,10 +1,10 @@
-# SKYLENT (`skylent.live`) — COMPLETE AI & FOUNDER CONTINUITY HANDOFF MASTER (V29 — Royal Purple-Indigo Theme Restored)
+# SKYLENT (`skylent.live`) — COMPLETE AI & FOUNDER CONTINUITY HANDOFF MASTER (V30 — Image 2 Canonical Royal Purple #5142B5 + Soft Lavender #F5F3FF + Crisp White #FFFFFF System)
 
 * **Last Updated:** November 4, 2026
 * **Production Domain:** [https://skylent.live](https://skylent.live)
 * **GitHub Repository:** `https://github.com/skylentglobalofficial-design/newlms` (`main` branch)
 * **Local Windows Path:** `C:\Users\Chandan\Documents\newlms`
-* **Latest Verified Release Package:** `skylent-v29-royal-purple-restored-master.zip` (built on top of V27 Brand Color OS commit `e6bcad0`)
+* **Latest Verified Release Package:** `skylent-v30-image2-purple-white-master.zip` (built on top of V27 Brand Color OS commit `e6bcad0`)
 
 ---
 
@@ -16,7 +16,7 @@ Skylent operates on a single, unified **Light-First + Deep Product Navy + Brand 
 | :--- | :--- | :--- |
 | **Page Canvas & Reading Surfaces** | Crisp White `#FFFFFF` + Soft Lavender-White `#F7F6FC` (`--site-paper`, `--site-soft`) | Homepage, `/programmes`, `/courses`, `/events`, `/workshops`, `/career-os`, `/education`, and Lesson reading stage |
 | **Primary Brand Action (Buttons, Links, Active States)** | **Skylent Brand Violet `#5142B5`** (Hover `#43349F`, Soft Tint `#EAE6FF`, Border `#DDD7FF`) | All `.sk-btn-primary`, active tabs, badges, and interactive links |
-| **Workbench & Institutional Dark Stage** | **Royal Purple-Indigo `linear-gradient(145deg, #11152c 0%, #1e1b4b 100%)` (`--site-navy: 246 47% 15%`)** (`--skylent-navy`, `--skylent-navy-2`) | Hero Enrolment Card, Live ₹99 Workshop Cards, Student Project Dossiers, 6-Step Career Journey Stage Plate, Interactive AI Studio, Course Player Top Bar, and Institutional Headers |
+| **Workbench & Institutional Dark Stage** | **Rich Skylent Royal Purple `linear-gradient(135deg, #3B2D96 0%, #5142B5 100%)` + Soft Lavender Card Surface (`#F6F4FF -> #FFFFFF` with `4px solid #5142B5` top bar)** (`--skylent-navy`, `--skylent-navy-2`) | Hero Enrolment Card, Live ₹99 Workshop Cards, Student Project Dossiers, 6-Step Career Journey Stage Plate, Interactive AI Studio, Course Player Top Bar, and Institutional Headers |
 | **Dark Surface Borders & Kickers** | **Soft Brand Lavender `#C4B8FF`** (`rgba(196, 184, 255, 0.35)`) + Sky Blue `#3E96D6` | Borders, monospace kickers, certificate codes (`SKL-2026-...`), and 5-Dimension Rubric cards on dark navy stages |
 | **Verified / Live Status Pills** | **Emerald `#34D399` / `#0E6A44`** (`rgba(16, 185, 129, 0.16)` on dark, `#E7F6EF` on light) | `✓ Open for enrolment`, `✓ 96/100 Rubric Score`, `₹99 · 100% Coin Back` |
 

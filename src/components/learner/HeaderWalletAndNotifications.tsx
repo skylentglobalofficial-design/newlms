@@ -180,7 +180,7 @@ export function HeaderWalletAndNotifications({ variant = "public" }: { variant?:
             borderRadius: 999,
             border: "1px solid rgba(81, 66, 181, 0.28)",
             background: "rgba(81, 66, 181, 0.08)",
-            color: variant === "dashboard" ? "#1e1b4b" : "inherit",
+            color: variant === "dashboard" ? "#43349F" : "inherit",
             fontSize: 13,
             fontWeight: 600,
             cursor: "pointer",

@@ -34,7 +34,7 @@
 /* ── Hero (dark violet band for non-homepage heroes) ── */
 .hx-page .hx-hero, .hx-page .hx-close {
   position: relative; overflow: hidden;
-  background: linear-gradient(135deg, #141132 0%, #5142B5 100%); color: #f0edff;
+  background: linear-gradient(135deg, #3B2D96 0%, #5142B5 100%); color: #f0edff;
 }
 .hx-page .hx-hero__glow {
   position: absolute; inset: 0; pointer-events: none;
@@ -128,7 +128,7 @@
 .hx-page .hx-degree__go { display: inline-flex; align-items: center; gap: 6px; margin-top: auto; padding-top: 8px; font-size: 14px; font-weight: 600; color: hsl(var(--site-deep)); }
 
 /* ── Student home on violet ── */
-.hx-page .hx-learn { background: linear-gradient(135deg, #141132 0%, #5142B5 100%); color: #f0edff; padding-block: var(--hx-y); }
+.hx-page .hx-learn { background: linear-gradient(135deg, #3B2D96 0%, #5142B5 100%); color: #f0edff; padding-block: var(--hx-y); }
 .hx-page .hx-learn__lead { margin: 18px 0 0; max-width: 32em; font-size: 16.5px; line-height: 1.6; color: hsl(var(--site-on-navy)); }
 .hx-page .hx-learn__list { list-style: none; margin: 22px 0 26px; padding: 0; display: grid; gap: 10px; }
 .hx-page .hx-learn__list li { position: relative; padding-left: 26px; font-size: 15.5px; color: hsl(var(--site-on-navy)); }
@@ -149,7 +149,7 @@
 .hx-page .hx-lab__text { margin: 0; font-size: 15px; line-height: 1.55; color: hsl(var(--site-muted)); }
 
 /* ── Career OS walkthrough ── */
-.hx-page .hx-journey { position: relative; padding-block: var(--hx-y); background: linear-gradient(135deg, #141132 0%, #5142B5 100%); color: #f0edff; overflow: hidden; }
+.hx-page .hx-journey { position: relative; padding-block: var(--hx-y); background: linear-gradient(135deg, #3B2D96 0%, #5142B5 100%); color: #f0edff; overflow: hidden; }
 .hx-page .hx-journey::before { content: ""; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(50% 60% at 90% 90%, hsl(252 76% 62% / .16), transparent 65%); }
 .hx-page .hx-journey > .sky-container { position: relative; }
 .hx-page .hx-journey__grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(24px, 4vw, 64px); align-items: start; }
@@ -572,7 +572,7 @@
 .hx-page--home .hx-inst__ptext { font-size: 15px; line-height: 1.55; color: hsl(var(--site-muted)); }
 
 /* ── Closing: one final statement ── */
-.hx-page--home .hx-close--final { position: relative; overflow: hidden; background: linear-gradient(135deg, #141132 0%, #5142B5 100%); }
+.hx-page--home .hx-close--final { position: relative; overflow: hidden; background: linear-gradient(135deg, #3B2D96 0%, #5142B5 100%); }
 .hx-page--home .hx-close__glow { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(45% 90% at 85% 100%, hsl(252 76% 62% / .3), transparent 65%), radial-gradient(30% 60% at 0% 0%, hsl(252 60% 72% / .08), transparent 65%); }
 .hx-page--home .hx-close__layout { position: relative; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 20px 40px; padding-block: clamp(40px, 4.5vw, 56px); }
 .hx-page--home .hx-close__title { margin: 0; max-width: 12em; font-size: clamp(32px, 3.6vw, 48px); text-align: left; }
@@ -821,7 +821,7 @@
   border-bottom-color: hsl(var(--site-border));
 }
 .hx-page--home .hx-ai__avatar {
-  background: #11152c;
+  background: #3B2D96;
   background-image: none;
   box-shadow: 0 0 0 1px #294b63, 0 12px 24px -16px hsl(210 60% 15% / .55);
 }
@@ -960,7 +960,7 @@
 }
 .hx-moat-table td.is-skylent {
   background: #F5F3FF;
-  color: #1e1b4b;
+  color: #43349F;
   border-inline: 1px solid #DDD7FF;
 }
 .hx-moat-table td.is-skylent strong {
@@ -1087,7 +1087,7 @@
 /* Restore High-Contrast Deep Navy / Brand Violet Closing Anchor */
 .hx-page .hx-close,
 .hx-page--home .hx-close--final {
-  background: linear-gradient(135deg, #11152c 0%, #35297F 55%, #5142B5 100%) !important;
+  background: linear-gradient(135deg, #3B2D96 0%, #35297F 55%, #5142B5 100%) !important;
   color: #ffffff !important;
   border-top: 0 !important;
 }
@@ -1492,7 +1492,8 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   V18 SIGNATURE THEME: ROYAL MIDNIGHT NAVY + WARM GOLD + EMERALD ON WHITE
+   V30 CANONICAL IMAGE-2 SYSTEM: SKYLENT ROYAL PURPLE (#5142B5) + SOFT LAVENDER (#F5F3FF)
+   + CRISP WHITE (#FFFFFF) + MINT EMERALD (#DCFCE7 / #15803D) — ZERO BLACK BOXES
    ═══════════════════════════════════════════════════════════════════════════ */
 
 .hx-page--home .hxw-hero__pill {
@@ -1501,31 +1502,31 @@
   gap: 8px;
   padding: 6px 14px;
   border-radius: 999px;
-  background: linear-gradient(135deg, #11152c 0%, #1e1b4b 100%);
-  border: 1px solid rgba(196, 184, 255, 0.35);
-  color: #c4b8ff;
+  background: #F5F3FF;
+  border: 1px solid #DDD7FF;
+  color: #43349F;
   font-family: var(--sk-font-mono);
   font-size: 11.5px;
   font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
   margin-bottom: 14px;
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.12);
+  box-shadow: 0 2px 8px rgba(81, 66, 181, 0.08);
 }
 
 .hx-page--home .hxw-hero__pill-dot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #34d399;
-  box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.24);
+  background: #15803D;
+  box-shadow: 0 0 0 3px #DCFCE7;
 }
 
-/* Signature Royal Midnight Navy Cards (Workshops, Student Projects & Outcomes) */
+/* Signature Purple & White Cards (Workshops, Student Projects & Outcomes — Matches Image 2) */
 .hx-royal-showcase {
   margin-top: 36px;
   padding-top: 32px;
-  border-top: 1px solid #e2e8f0;
+  border-top: 1px solid #E2E8F0;
 }
 
 .hx-royal-showcase__head {
@@ -1543,7 +1544,7 @@
   font-size: clamp(22px, 2.5vw, 30px);
   font-weight: 750;
   letter-spacing: -0.02em;
-  color: #0f172a;
+  color: #0F172A;
 }
 
 .hx-royal-showcase__sub {
@@ -1561,24 +1562,26 @@
 }
 
 .hx-royal-card {
+  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   gap: 18px;
   padding: 22px 24px;
   border-radius: 16px;
-  background: linear-gradient(145deg, #11152c 0%, #1e1b4b 100%);
-  border: 1px solid rgba(251, 191, 36, 0.38);
-  color: #f8fafc;
+  background: linear-gradient(180deg, #F7F5FF 0%, #FFFFFF 100%);
+  border: 1.5px solid #DDD7FF;
+  border-top: 4px solid #5142B5;
+  color: #0F172A;
   text-decoration: none;
-  box-shadow: 0 14px 32px -12px rgba(15, 23, 42, 0.24);
+  box-shadow: 0 10px 28px -12px rgba(81, 66, 181, 0.14);
   transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
 }
 
 .hx-royal-card:hover {
   transform: translateY(-4px);
-  border-color: rgba(251, 191, 36, 0.72);
-  box-shadow: 0 22px 44px -14px rgba(16, 38, 61, 0.36);
+  border-color: #5142B5;
+  box-shadow: 0 18px 36px -14px rgba(81, 66, 181, 0.24);
 }
 
 .hx-royal-card__top {
@@ -1590,21 +1593,25 @@
 }
 
 .hx-royal-card__code {
+  display: inline-block;
+  padding: 3px 9px;
+  border-radius: 6px;
+  background: #5142B5;
+  color: #FFFFFF;
   font-family: var(--sk-font-mono);
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 700;
   letter-spacing: 0.04em;
-  color: #fbbf24;
 }
 
 .hx-royal-card__badge {
   padding: 3px 10px;
   border-radius: 999px;
-  background: rgba(16, 185, 129, 0.16);
-  border: 1px solid rgba(52, 211, 153, 0.32);
+  background: #DCFCE7;
+  border: 1px solid #86EFAC;
   font-size: 11px;
   font-weight: 700;
-  color: #34d399;
+  color: #15803D;
   white-space: nowrap;
 }
 
@@ -1614,15 +1621,15 @@
   font-size: 19px;
   font-weight: 750;
   line-height: 1.25;
-  color: #ffffff;
+  color: #0F172A;
 }
 
 .hx-royal-card__track {
   display: block;
   margin-top: 4px;
   font-size: 12.5px;
-  font-weight: 600;
-  color: #a5b4fc;
+  font-weight: 650;
+  color: #5142B5;
 }
 
 .hx-royal-card__project {
@@ -1630,18 +1637,18 @@
   margin-top: 10px;
   padding: 4px 10px;
   border-radius: 6px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(165, 180, 252, 0.2);
+  background: #EDE9FE;
+  border: 1px solid #DDD7FF;
   font-size: 11.5px;
   font-weight: 700;
-  color: #e2e8f0;
+  color: #43349F;
 }
 
 .hx-royal-card__quote {
   margin: 10px 0 0;
   font-size: 13.5px;
   line-height: 1.55;
-  color: #cbd5e1;
+  color: #334155;
 }
 
 .hx-royal-card__pills {
@@ -1654,8 +1661,9 @@
 .hx-royal-card__pill {
   padding: 4px 11px;
   border-radius: 999px;
-  background: #ffffff;
-  color: #0f172a;
+  background: #FFFFFF;
+  border: 1px solid #DDD7FF;
+  color: #43349F;
   font-size: 11.5px;
   font-weight: 700;
   letter-spacing: -0.01em;
@@ -1665,9 +1673,14 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: 13px;
+  font-size: 13.5px;
   font-weight: 700;
-  color: #fbbf24;
+  color: #5142B5;
+}
+
+.hx-royal-card:hover .hx-royal-card__cta {
+  color: #37298A;
+  text-decoration: underline;
 }
 
 /* 4-Step Workshop Coin Cashback Ribbon */
@@ -1678,8 +1691,8 @@
   margin-top: 20px;
   padding: 18px 20px;
   border-radius: 16px;
-  background: #f8fafc;
-  border: 1px solid #cbd5e1;
+  background: #F5F3FF;
+  border: 1px solid #DDD7FF;
 }
 
 .hx-coin-strip__item {
@@ -1695,8 +1708,8 @@
   width: 30px;
   height: 30px;
   border-radius: 8px;
-  background: linear-gradient(135deg, #11152c 0%, #1e1b4b 100%);
-  color: #c4b8ff;
+  background: #5142B5;
+  color: #FFFFFF;
   font-family: var(--sk-font-mono);
   font-size: 12px;
   font-weight: 800;
@@ -1706,7 +1719,7 @@
   display: block;
   font-size: 14px;
   font-weight: 700;
-  color: #0f172a;
+  color: #0F172A;
 }
 
 .hx-coin-strip__item span {
@@ -1717,7 +1730,7 @@
   line-height: 1.4;
 }
 
-/* Royal Midnight Navy Stage Plate inside Career Journey (Image 4 Fix) */
+/* Career Journey Steps & Stage Plate (Image 2 Purple & White Style) */
 .hx-page--home .hx-career__steps li button {
   display: flex !important;
   align-items: center !important;
@@ -1725,8 +1738,8 @@
   width: 100%;
   padding: 12px 14px !important;
   border-radius: 12px !important;
-  border: 1px solid #e2e8f0 !important;
-  background: #ffffff !important;
+  border: 1px solid #E2E8F0 !important;
+  background: #FFFFFF !important;
   text-align: left;
   transition: all 150ms ease;
 }
@@ -1736,10 +1749,10 @@
 }
 
 .hx-page--home .hx-career__steps li button.is-on {
-  background: linear-gradient(135deg, #11152c 0%, #1e1b4b 100%) !important;
-  border-color: rgba(196, 184, 255, 0.5) !important;
-  color: #ffffff !important;
-  box-shadow: 0 8px 20px -8px rgba(16, 38, 61, 0.3);
+  background: #5142B5 !important;
+  border-color: #43349F !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 8px 20px -8px rgba(81, 66, 181, 0.35);
 }
 
 .hx-career__step-num {
@@ -1749,16 +1762,16 @@
   width: 30px;
   height: 30px;
   border-radius: 8px;
-  background: #f1f5f9;
-  color: #43349f;
+  background: #F5F3FF;
+  color: #5142B5;
   font-family: var(--sk-font-mono);
   font-size: 12px;
   font-weight: 700;
 }
 
 .hx-page--home .hx-career__steps li button.is-on .hx-career__step-num {
-  background: rgba(196, 184, 255, 0.18);
-  color: #c4b8ff;
+  background: rgba(255, 255, 255, 0.2);
+  color: #FFFFFF;
 }
 
 .hx-career__step-copy {
@@ -1771,20 +1784,20 @@
 .hx-career__step-copy strong {
   font-size: 14.5px;
   font-weight: 700;
-  color: #0f172a;
+  color: #0F172A;
 }
 
 .hx-page--home .hx-career__steps li button.is-on .hx-career__step-copy strong {
-  color: #ffffff;
+  color: #FFFFFF;
 }
 
 .hx-career__step-copy small {
   font-size: 12px;
-  color: #64748b;
+  color: #64748B;
 }
 
 .hx-page--home .hx-career__steps li button.is-on .hx-career__step-copy small {
-  color: #cbd5e1;
+  color: #EAE6FF;
 }
 
 .hx-royal-plate {
@@ -1794,10 +1807,11 @@
   gap: 18px;
   padding: 26px 28px;
   border-radius: 18px;
-  background: linear-gradient(145deg, #11152c 0%, #1e1b4b 100%);
-  border: 1px solid rgba(251, 191, 36, 0.38);
-  color: #ffffff;
-  box-shadow: 0 20px 44px -18px rgba(16, 38, 61, 0.32);
+  background: linear-gradient(180deg, #F6F4FF 0%, #FFFFFF 100%);
+  border: 1.5px solid #DDD7FF;
+  border-top: 5px solid #5142B5;
+  color: #0F172A;
+  box-shadow: 0 16px 36px -16px rgba(81, 66, 181, 0.16);
   min-height: 320px;
 }
 
@@ -1810,22 +1824,26 @@
 }
 
 .hx-royal-plate__gold {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: #5142B5;
+  color: #FFFFFF;
   font-family: var(--sk-font-mono);
-  font-size: 11.5px;
+  font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: #fbbf24;
 }
 
 .hx-royal-plate__emerald {
   padding: 4px 11px;
   border-radius: 999px;
-  background: rgba(16, 185, 129, 0.16);
-  border: 1px solid rgba(52, 211, 153, 0.35);
+  background: #DCFCE7;
+  border: 1px solid #86EFAC;
   font-size: 11.5px;
   font-weight: 700;
-  color: #34d399;
+  color: #15803D;
 }
 
 .hx-royal-plate__title {
@@ -1834,14 +1852,15 @@
   font-size: clamp(21px, 2.2vw, 26px);
   font-weight: 750;
   line-height: 1.2;
-  color: #ffffff;
+  color: #0F172A;
 }
 
 .hx-royal-plate__sub {
   margin: -6px 0 0;
   font-size: 14.5px;
   line-height: 1.5;
-  color: #a5b4fc;
+  color: #5142B5;
+  font-weight: 600;
 }
 
 .hx-royal-plate__metrics {
@@ -1853,8 +1872,8 @@
 .hx-royal-plate__metrics > div {
   padding: 12px 14px;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: #FFFFFF;
+  border: 1px solid #DDD7FF;
 }
 
 .hx-royal-plate__metrics span {
@@ -1863,7 +1882,7 @@
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: #94a3b8;
+  color: #64748B;
 }
 
 .hx-royal-plate__metrics strong {
@@ -1871,7 +1890,7 @@
   margin-top: 4px;
   font-size: 14px;
   font-weight: 700;
-  color: #ffffff;
+  color: #43349F;
 }
 
 .hx-royal-plate__pills {
@@ -1883,13 +1902,14 @@
 .hx-royal-plate__pills span {
   padding: 5px 12px;
   border-radius: 999px;
-  background: #ffffff;
-  color: #0f172a;
+  background: #F5F3FF;
+  border: 1px solid #DDD7FF;
+  color: #43349F;
   font-size: 12px;
   font-weight: 700;
 }
 
-/* Interactive AI & 20-Min Mentor Studio (Image 6 Fix) */
+/* Interactive AI & 20-Min Mentor Studio (Image 2 Purple & White Style) */
 .hx-ai__header {
   display: flex;
   flex-wrap: wrap;
@@ -1919,21 +1939,21 @@
   gap: 4px;
   padding: 15px 18px;
   border-radius: 14px;
-  background: #ffffff;
-  border: 1px solid #cbd5e1;
+  background: #FFFFFF;
+  border: 1px solid #CBD5E1;
   text-align: left;
   cursor: pointer;
   transition: all 150ms ease;
 }
 
 .hx-ai-tab:hover {
-  border-color: #5142b5;
+  border-color: #5142B5;
 }
 
 .hx-ai-tab.is-on {
-  background: linear-gradient(135deg, #11152c 0%, #1e1b4b 100%);
-  border-color: rgba(196, 184, 255, 0.55);
-  box-shadow: 0 10px 24px -10px rgba(16, 38, 61, 0.28);
+  background: #5142B5;
+  border-color: #43349F;
+  box-shadow: 0 10px 24px -10px rgba(81, 66, 181, 0.35);
 }
 
 .hx-ai-tab__badge {
@@ -1942,31 +1962,31 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: #5142b5;
+  color: #5142B5;
 }
 
 .hx-ai-tab.is-on .hx-ai-tab__badge {
-  color: #c4b8ff;
+  color: #EAE6FF;
 }
 
 .hx-ai-tab__title {
   font-size: 16px;
   font-weight: 750;
-  color: #0f172a;
+  color: #0F172A;
 }
 
 .hx-ai-tab.is-on .hx-ai-tab__title {
-  color: #ffffff;
+  color: #FFFFFF;
 }
 
 .hx-ai-tab__preview {
   font-size: 12.8px;
-  color: #64748b;
+  color: #64748B;
   line-height: 1.4;
 }
 
 .hx-ai-tab.is-on .hx-ai-tab__preview {
-  color: #cbd5e1;
+  color: #F5F3FF;
 }
 
 .hx-ai-studio__actions {
@@ -1980,10 +2000,10 @@
   display: flex;
   flex-direction: column;
   border-radius: 18px;
-  background: linear-gradient(145deg, #11152c 0%, #1e1b4b 100%);
-  border: 1px solid rgba(251, 191, 36, 0.38);
-  color: #ffffff;
-  box-shadow: 0 20px 44px -16px rgba(16, 38, 61, 0.32);
+  background: #FFFFFF;
+  border: 1.5px solid #DDD7FF;
+  color: #0F172A;
+  box-shadow: 0 16px 36px -16px rgba(81, 66, 181, 0.16);
   overflow: hidden;
 }
 
@@ -1993,9 +2013,14 @@
   justify-content: space-between;
   align-items: center;
   gap: 10px;
-  padding: 15px 22px;
-  background: rgba(15, 23, 42, 0.55);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 14px 22px;
+  background: #5142B5;
+  color: #FFFFFF;
+}
+
+.hx-royal-ai-card__bar .hx-royal-plate__gold {
+  background: rgba(255, 255, 255, 0.18);
+  color: #FFFFFF;
 }
 
 .hx-royal-ai-card__body {
@@ -2004,13 +2029,14 @@
   flex-direction: column;
   gap: 14px;
   flex: 1;
+  background: linear-gradient(180deg, #F8F7FF 0%, #FFFFFF 100%);
 }
 
 .hx-royal-ai-card__user {
   padding: 14px 16px;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
 }
 
 .hx-royal-ai-card__who {
@@ -2020,12 +2046,12 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: #a5b4fc;
+  color: #5142B5;
   margin-bottom: 4px;
 }
 
 .hx-royal-ai-card__who--mentor {
-  color: #34d399;
+  color: #15803D;
 }
 
 .hx-royal-ai-card__user p,
@@ -2033,22 +2059,22 @@
   margin: 0;
   font-size: 14.5px;
   line-height: 1.58;
-  color: #f8fafc;
+  color: #0F172A;
 }
 
 .hx-royal-ai-card__reply {
   padding: 16px 18px;
   border-radius: 12px;
-  background: rgba(81, 66, 181, 0.16);
-  border: 1px solid rgba(165, 180, 252, 0.28);
+  background: #F5F3FF;
+  border: 1px solid #DDD7FF;
 }
 
 .hx-royal-ai-card__takeaway {
   margin-top: 10px;
   padding-top: 10px;
-  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  border-top: 1px solid #DDD7FF;
   font-size: 13px;
-  color: #eae6ff;
+  color: #43349F;
 }
 
 @media (max-width: 1024px) {
@@ -2067,26 +2093,5 @@
 @media (max-width: 640px) {
   .hx-coin-strip {
     grid-template-columns: 1fr;
-  }
-}
-
-/* ── V19 Mobile Viewport Hardening (360px–640px) ──────────────────────── */
-@media (max-width: 640px) {
-  .hx-royal-card,
-  .hx-royal-plate,
-  .hx-royal-ai-card {
-    padding: 18px 16px;
-  }
-  .hx-compare-table-wrap {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-  .hx-royal-showcase__head {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  .hx-royal-showcase__head .sk-btn {
-    width: 100%;
-    justify-content: center;
   }
 }

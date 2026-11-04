@@ -21,7 +21,7 @@
   --site-border: 220 14% 90%;          /* #E5E7EB hairline */
   --site-border-strong: 252 30% 85.5%;  /* #DDD7FF inputs, secondary buttons */
   --site-ink: 0 0% 9%;                 /* #171717 ink */
-  --site-navy: 246 47% 15%;             /* #11152C deep navy for compact product surfaces */
+  --site-navy: 249 54% 38%;             /* #3B2D96 deep navy for compact product surfaces */
   --site-deep: 252 42% 48%;             /* #5142B5 brand action */
   --site-ocean: 252 48% 44%;            /* #43349F hover / pressed */
   --site-highlight: 249 76% 62%;        /* #6657E8 focus ring */
@@ -58,7 +58,7 @@
   --site-proof: 252 40% 97.5%;          /* #F7F6FC evidence surface */
   --site-proof-2: 252 38% 95%;          /* #F2F0FC inset panel */
   --site-proof-line: 252 30% 90%;       /* hairline on a light band */
-  --site-navy-2: 246 45% 21%;           /* raised deep-navy surface */
+  --site-navy-2: 252 48% 44%;           /* raised deep-navy surface */
   --site-navy-line: 248 35% 32%;        /* hairline on deep navy */
   --site-navy-line-2: 248 32% 46%;     /* outline controls on deep navy */
   --site-on-navy: 250 45% 97%;          /* text on deep navy */

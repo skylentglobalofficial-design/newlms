@@ -310,7 +310,7 @@ export function CertificateTrophyShowcase() {
         marginTop: 28,
         padding: "24px",
         borderRadius: 16,
-        background: "linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)",
+        background: "linear-gradient(135deg, #0f172a 0%, #43349F 100%)",
         color: "#f8fafc",
         border: "1px solid rgba(165, 180, 252, 0.25)",
         display: "grid",

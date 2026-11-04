@@ -765,7 +765,7 @@ export default function DashboardStudentPage() {
                     style={{
                       height: 26,
                       borderRadius: 6,
-                      background: day.active ? "linear-gradient(145deg, #11152c 0%, #1e1b4b 100%)" : "#f1f5f9",
+                      background: day.active ? "linear-gradient(135deg, #3B2D96 0%, #5142B5 100%)" : "#f1f5f9",
                       border: day.active ? "1px solid rgba(196, 184, 255, 0.55)" : "1px solid #e2e8f0",
                       display: "flex",
                       alignItems: "center",
@@ -787,7 +787,7 @@ export default function DashboardStudentPage() {
         <section
           aria-label="L1 to L5 Competency Progression and Work Assignment Exchange"
           style={{
-            background: "linear-gradient(145deg, #11152c 0%, #1e1b4b 100%)",
+            background: "linear-gradient(135deg, #3B2D96 0%, #5142B5 100%)",
             border: "1px solid rgba(196, 184, 255, 0.42)",
             borderRadius: 16,
             padding: "20px 24px",

@@ -390,7 +390,7 @@ export default function ProgrammeListing({ program, truth, cta, honesty, afterEn
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))", gap: 14, marginTop: 20 }}>
               {pathwaySpec.steps.map((step) => (
-                <div key={step.num} style={{ padding: "16px", borderRadius: 12, background: "linear-gradient(145deg, #11152c 0%, #1e1b4b 100%)", border: "1px solid rgba(196, 184, 255, 0.36)" }}>
+                <div key={step.num} style={{ padding: "16px", borderRadius: 12, background: "linear-gradient(135deg, #3B2D96 0%, #5142B5 100%)", border: "1px solid rgba(196, 184, 255, 0.36)" }}>
                   <span style={{ fontSize: 11.5, fontWeight: 700, color: "#c4b8ff", fontFamily: "var(--font-mono)" }}>
                     STEP {step.num}
                   </span>
@@ -429,7 +429,7 @@ export default function ProgrammeListing({ program, truth, cta, honesty, afterEn
                   gap: 8,
                   padding: "20px 22px",
                   borderRadius: 16,
-                  background: "linear-gradient(145deg, #11152c 0%, #1e1b4b 100%)",
+                  background: "linear-gradient(135deg, #3B2D96 0%, #5142B5 100%)",
                   border: "1px solid rgba(196, 184, 255, 0.38)",
                   color: "#ffffff",
                   textDecoration: "none",

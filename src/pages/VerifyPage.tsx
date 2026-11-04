@@ -493,7 +493,7 @@ export default function VerifyPage() {
             aria-label="Execution Flight Recorder and Open Badges 3.0 Telemetry"
             style={{
               marginTop: 24,
-              background: "linear-gradient(145deg, #11152c 0%, #1e1b4b 100%)",
+              background: "linear-gradient(135deg, #3B2D96 0%, #5142B5 100%)",
               border: "1px solid rgba(196, 184, 255, 0.38)",
               borderRadius: 16,
               padding: "24px 26px",

@@ -289,7 +289,7 @@
 
 .pp-enrol-card__top {
   padding: 18px 20px;
-  background: linear-gradient(145deg, #0f172a 0%, #1e1b4b 100%);
+  background: linear-gradient(145deg, #0f172a 0%, #43349F 100%);
   color: #ffffff;
 }
 
@@ -1142,19 +1142,19 @@
 
 /* ── V18 Signature Royal Midnight Navy + Gold + Emerald Theme Refinement ── */
 .pp-enrol-card {
-  border-color: rgba(251, 191, 36, 0.45);
+  border-color: rgba(221, 215, 255, 0.65);
   box-shadow:
     0 6px 16px rgba(16, 38, 61, 0.06),
     0 24px 48px -20px rgba(16, 38, 61, 0.22);
 }
 
 .pp-enrol-card__top {
-  background: linear-gradient(145deg, #11152c 0%, #1e1b4b 100%);
+  background: linear-gradient(135deg, #3B2D96 0%, #5142B5 100%);
   border-bottom: 1px solid rgba(196, 184, 255, 0.28);
 }
 
 .pp-enrol-card__eyebrow {
-  color: #fbbf24;
+  color: #EAE6FF;
 }
 
 .pp-enrol-card__sub {
@@ -1163,12 +1163,12 @@
 }
 
 .pp-enrol-card__jump {
-  color: #fbbf24 !important;
+  color: #EAE6FF !important;
   font-weight: 700;
 }
 
 .pp-subnav-bar {
-  background: linear-gradient(90deg, #11152c 0%, #1e1b4b 100%);
+  background: linear-gradient(90deg, #3B2D96 0%, #5142B5 100%);
   border-bottom: 1px solid rgba(196, 184, 255, 0.28);
 }
 
