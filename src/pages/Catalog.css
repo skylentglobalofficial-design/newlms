@@ -2955,3 +2955,42 @@
 .cat-page .cat-unit-meta {
   color: #cbd5e1 !important;
 }
+
+/* V22 Royal Midnight Navy Course Workspace Card on /courses/:slug */
+.cat-page .cat-intro-meta {
+  background: linear-gradient(145deg, #11152c 0%, #1d1849 100%);
+  border: 1px solid rgba(251, 191, 36, 0.38);
+  border-radius: 18px;
+  padding: 22px 24px;
+  color: #ffffff;
+  box-shadow: 0 18px 40px rgba(10, 14, 34, 0.22);
+}
+
+.cat-page .cat-intro-meta .cat-metrics {
+  border-color: rgba(255, 255, 255, 0.14);
+}
+
+.cat-page .cat-intro-meta .cat-metrics dt,
+.cat-page .cat-intro-meta .cat-stat-label {
+  color: #fbbf24 !important;
+  font-family: var(--font-mono);
+  font-weight: 700;
+}
+
+.cat-page .cat-intro-meta .cat-metrics dd,
+.cat-page .cat-intro-meta .cat-stat-value,
+.cat-page .cat-intro-meta strong {
+  color: #ffffff !important;
+}
+
+.cat-page .cat-intro-meta .cat-statline {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.cat-page .cat-intro-meta .cat-statline span {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+  border-radius: 999px;
+  padding: 4px 10px;
+}

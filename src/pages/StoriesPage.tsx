@@ -99,6 +99,55 @@ export default function StoriesPage() {
         </div>
       </section>
 
+            <section className="pe-royal-band" aria-labelledby="stories-dossiers-title">
+        <div className="cat-rail">
+          <p className="pe-royal-eyebrow">SKYLENT INSTITUTE OF APPLIED LEARNING · PUBLIC EVIDENCE REGISTRY PREVIEW</p>
+          <h2 id="stories-dossiers-title" style={{ color: "#ffffff", fontSize: "clamp(26px, 3vw, 36px)", margin: "8px 0 10px", fontFamily: "var(--font-display)" }}>
+            How Skylent records demonstrated competence across Simulated Labs and Partner Fieldwork.
+          </h2>
+          <p style={{ color: "rgba(255,255,255,0.84)", maxWidth: 780, margin: "0 0 14px", fontSize: 15, lineHeight: 1.6 }}>
+            Skylent does not publish unverified salary claims or fabricated graduate testimonials. Below are three <strong>Illustrative Sample Benchmark Dossiers</strong> demonstrating how our event-based Execution Flight Recorder captures attempts, V1 → V2 faculty red-line revisions, oral defence, and supervised fieldwork.
+          </p>
+          <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "6px 14px", borderRadius: 999, background: "rgba(251, 191, 36, 0.16)", border: "1px solid rgba(251, 191, 36, 0.45)", color: "#fbbf24", fontSize: 11.5, fontFamily: "var(--font-mono)", fontWeight: 700, marginBottom: 8 }}>
+            ⚠️ DISCLOSURE: ILLUSTRATIVE BENCHMARK PREVIEWS · NOT PUBLISHED GRADUATE OUTCOME CLAIMS
+          </div>
+          <div className="pe-royal-grid">
+            <article className="pe-royal-card">
+              <span className="pe-royal-badge">SAMPLE BENCHMARK · SKL-2026-DA-00142</span>
+              <h3 style={{ margin: 0, fontSize: 18.5, color: "#ffffff" }}>Env A · Northwind Commerce Revenue Leakage Audit</h3>
+              <p style={{ margin: 0, fontSize: 13.5, color: "rgba(255,255,255,0.82)", lineHeight: 1.55 }}>
+                <strong>5-Dimension Rubric:</strong> Execution (30%) + Judgement (20%) + V1→V2 Revision (20%).<br />
+                <strong>Sample V1 → V2 Revision:</strong> Excluded returned orders and tiered discount rows before computing Q3 gross margin.
+              </p>
+              <Link to="/verify?code=SKL-2026-DA-00142" style={{ marginTop: "auto", color: "#fbbf24", fontWeight: 700, fontSize: 13.5, textDecoration: "none" }}>
+                Inspect Sample Flight Recorder on /verify →
+              </Link>
+            </article>
+            <article className="pe-royal-card">
+              <span className="pe-royal-badge">SAMPLE BENCHMARK · SKL-2026-PM-00089</span>
+              <h3 style={{ margin: 0, fontSize: 18.5, color: "#ffffff" }}>Env A · Harbor Desk SaaS Incident Triage &amp; PRD</h3>
+              <p style={{ margin: 0, fontSize: 13.5, color: "rgba(255,255,255,0.82)", lineHeight: 1.55 }}>
+                <strong>5-Dimension Rubric:</strong> Oral Defence (15%) + Stakeholder Trade-Off Judgement (20%).<br />
+                <strong>Sample V1 → V2 Revision:</strong> Scoped out custom SSO to protect the 2-engineer reliability sprint constraint.
+              </p>
+              <Link to="/verify?code=SKL-2026-PM-00089" style={{ marginTop: "auto", color: "#fbbf24", fontWeight: 700, fontSize: 13.5, textDecoration: "none" }}>
+                Inspect Sample Flight Recorder on /verify →
+              </Link>
+            </article>
+            <article className="pe-royal-card">
+              <span className="pe-royal-badge">FIELDWORK EXCHANGE · ENV B MODEL</span>
+              <h3 style={{ margin: 0, fontSize: 18.5, color: "#ffffff" }}>Env B · Skylent Work Assignment Exchange (MSME &amp; Startup Fieldwork)</h3>
+              <p style={{ margin: 0, fontSize: 13.5, color: "rgba(255,255,255,0.82)", lineHeight: 1.55 }}>
+                <strong>Supervised Real Work:</strong> Partner organisations submit scoped operational problems; eligible learners deliver faculty-supervised V1 → V2 solutions recorded with partner sign-off.
+              </p>
+              <Link to="/universities" style={{ marginTop: "auto", color: "#34d399", fontWeight: 700, fontSize: 13.5, textDecoration: "none" }}>
+                Explore Institutional &amp; Fieldwork Model →
+              </Link>
+            </article>
+          </div>
+        </div>
+      </section>
+
       <nav className="pe-inkbar" aria-label="Stories sections">
         <div className="cat-rail pe-inkbar-inner">
           <a href="#work">Work</a>

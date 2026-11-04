@@ -739,6 +739,80 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
       </section>
 
       {/* Section 05 & 06: Evidence Portfolio & Career OS Integration */}
+            <section className="sky-container pp-section" id="pp-review-standard" aria-labelledby="pp-review-standard-title">
+        <div
+          style={{
+            background: "linear-gradient(145deg, #11152c 0%, #1d1849 100%)",
+            border: "1px solid rgba(251, 191, 36, 0.38)",
+            borderRadius: 20,
+            padding: "clamp(24px, 4vw, 38px)",
+            color: "#ffffff",
+            boxShadow: "0 20px 44px rgba(10, 14, 34, 0.22)",
+          }}
+        >
+          <p style={{ margin: "0 0 8px", color: "#fbbf24", font: "700 11px/1.4 var(--font-mono)", letterSpacing: "0.14em", textTransform: "uppercase" }}>
+            SKYLENT INSTITUTE OF APPLIED LEARNING · 5-DIMENSION COMPETENCY &amp; ASSESSMENT STANDARD
+          </p>
+          <h2 id="pp-review-standard-title" style={{ margin: "0 0 12px", fontSize: "clamp(22px, 2.8vw, 32px)", color: "#ffffff", fontFamily: "var(--font-display)" }}>
+            Learn · Practise · Work · Reflect · Prove: How Competency Is Assessed
+          </h2>
+          <p style={{ margin: "0 0 20px", color: "rgba(255,255,255,0.84)", maxWidth: 800, fontSize: 15, lineHeight: 1.6 }}>
+            A Skylent learner does not pass merely by watching lessons. Progression moves across five internal competency levels (<strong>L1 Foundation → L2 Guided Practice → L3 Independent Execution → L4 Professional Practice → L5 Advanced Practice</strong>) and is evaluated across five weighted dimensions:
+          </p>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 12, marginBottom: 20 }}>
+            <div style={{ background: "rgba(15, 23, 42, 0.65)", border: "1px solid rgba(255,255,255,0.14)", borderRadius: 12, padding: 14 }}>
+              <strong style={{ color: "#fbbf24", fontSize: 18, display: "block" }}>15% · Knowledge</strong>
+              <span style={{ fontSize: 12.5, color: "rgba(255,255,255,0.8)" }}>Conceptual accuracy &amp; first principles</span>
+            </div>
+            <div style={{ background: "rgba(15, 23, 42, 0.65)", border: "1px solid rgba(52,211,153,0.38)", borderRadius: 12, padding: 14 }}>
+              <strong style={{ color: "#34d399", fontSize: 18, display: "block" }}>30% · Execution</strong>
+              <span style={{ fontSize: 12.5, color: "rgba(255,255,255,0.8)" }}>Verified lab tasks &amp; edge-case checks</span>
+            </div>
+            <div style={{ background: "rgba(15, 23, 42, 0.65)", border: "1px solid rgba(255,255,255,0.14)", borderRadius: 12, padding: 14 }}>
+              <strong style={{ color: "#fbbf24", fontSize: 18, display: "block" }}>20% · Judgement</strong>
+              <span style={{ fontSize: 12.5, color: "rgba(255,255,255,0.8)" }}>Trade-offs &amp; decision reasoning</span>
+            </div>
+            <div style={{ background: "rgba(15, 23, 42, 0.65)", border: "1px solid rgba(255,255,255,0.14)", borderRadius: 12, padding: 14 }}>
+              <strong style={{ color: "#fbbf24", fontSize: 18, display: "block" }}>15% · Oral Defence</strong>
+              <span style={{ fontSize: 12.5, color: "rgba(255,255,255,0.8)" }}>Boardroom Cold Call &amp; stakeholder clarity</span>
+            </div>
+            <div style={{ background: "rgba(15, 23, 42, 0.65)", border: "1px solid rgba(52,211,153,0.38)", borderRadius: 12, padding: 14 }}>
+              <strong style={{ color: "#34d399", fontSize: 18, display: "block" }}>20% · V1 → V2 Revision</strong>
+              <span style={{ fontSize: 12.5, color: "rgba(255,255,255,0.8)" }}>Capstone improvement after faculty critique</span>
+            </div>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: 16 }}>
+            <div style={{ background: "rgba(15, 23, 42, 0.62)", border: "1px solid rgba(255,255,255,0.14)", borderRadius: 14, padding: 18 }}>
+              <span style={{ display: "inline-block", padding: "3px 10px", borderRadius: 999, background: "rgba(16, 185, 129, 0.16)", border: "1px solid rgba(52, 211, 153, 0.4)", color: "#34d399", fontSize: 11, fontFamily: "var(--font-mono)", fontWeight: 700, marginBottom: 8 }}>
+                ENV A · SIMULATED ENTERPRISE UNITS
+              </span>
+              <h3 style={{ margin: "0 0 6px", fontSize: 16.5, color: "#ffffff" }}>Guided Trial → Independent Sprint</h3>
+              <p style={{ margin: 0, fontSize: 13, color: "rgba(255,255,255,0.8)", lineHeight: 1.55 }}>
+                Start on a ₹0 Free Pilot in Northwind Commerce or Harbor Desk SaaS with immediate automated pre-flight feedback and Socratic Hinglish support.
+              </p>
+            </div>
+            <div style={{ background: "rgba(15, 23, 42, 0.62)", border: "1px solid rgba(251, 191, 36, 0.42)", borderRadius: 14, padding: 18 }}>
+              <span style={{ display: "inline-block", padding: "3px 10px", borderRadius: 999, background: "rgba(251, 191, 36, 0.16)", border: "1px solid rgba(251, 191, 36, 0.45)", color: "#fbbf24", fontSize: 11, fontFamily: "var(--font-mono)", fontWeight: 700, marginBottom: 8 }}>
+                ENV B · WORK ASSIGNMENT EXCHANGE
+              </span>
+              <h3 style={{ margin: "0 0 6px", fontSize: 16.5, color: "#ffffff" }}>Supervised Partner Fieldwork &amp; V1 → V2 Review</h3>
+              <p style={{ margin: 0, fontSize: 13, color: "rgba(255,255,255,0.8)", lineHeight: 1.55 }}>
+                Receive human faculty red-line critique within published review windows and qualify for scoped MSME, startup, and institutional fieldwork projects.
+              </p>
+            </div>
+            <div style={{ background: "rgba(15, 23, 42, 0.62)", border: "1px solid rgba(255,255,255,0.14)", borderRadius: 14, padding: 18 }}>
+              <span style={{ display: "inline-block", padding: "3px 10px", borderRadius: 999, background: "rgba(16, 185, 129, 0.16)", border: "1px solid rgba(52, 211, 153, 0.4)", color: "#34d399", fontSize: 11, fontFamily: "var(--font-mono)", fontWeight: 700, marginBottom: 8 }}>
+                ENV C · FLIGHT RECORDER &amp; CAREER OS
+              </span>
+              <h3 style={{ margin: "0 0 6px", fontSize: 16.5, color: "#ffffff" }}>Verifiable Evidence &amp; Employer Evaluation</h3>
+              <p style={{ margin: 0, fontSize: 13, color: "rgba(255,255,255,0.8)", lineHeight: 1.55 }}>
+                Graduate with an event-based Execution Flight Recorder on `/verify` showing what you built, how you were assessed, and who reviewed your work.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section className="sky-band-proof pp-proof" id="pp-evidence" aria-labelledby="pp-evidence-title">
         <div className="sky-container">
           <div className="pp-split">

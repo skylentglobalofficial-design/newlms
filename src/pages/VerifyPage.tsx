@@ -489,6 +489,52 @@ export default function VerifyPage() {
             ) : null}
           </div>
 
+                    <section
+            aria-label="Execution Flight Recorder and Open Badges 3.0 Telemetry"
+            style={{
+              marginTop: 24,
+              background: "linear-gradient(145deg, #11152c 0%, #1d1849 100%)",
+              border: "1px solid rgba(251, 191, 36, 0.38)",
+              borderRadius: 16,
+              padding: "24px 26px",
+              color: "#ffffff",
+            }}
+          >
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap", marginBottom: 14 }}>
+              <div>
+                <p style={{ margin: 0, color: "#fbbf24", font: "700 11px/1.4 var(--font-mono)", letterSpacing: "0.14em", textTransform: "uppercase" }}>
+                  EXECUTION FLIGHT RECORDER · W3C VERIFIABLE CREDENTIALS 2.0 &amp; 1EDTECH OPEN BADGES 3.0
+                </p>
+                <h3 style={{ margin: "6px 0 0", fontSize: 19, color: "#ffffff", fontFamily: "var(--font-display)" }}>
+                  Two-Level Verification: What the Learner Did · How They Were Assessed · Who Reviewed It
+                </h3>
+              </div>
+              <span style={{ padding: "5px 12px", borderRadius: 999, background: "rgba(16, 185, 129, 0.16)", border: "1px solid rgba(52, 211, 153, 0.42)", color: "#34d399", fontSize: 11.5, fontFamily: "var(--font-mono)", fontWeight: 700 }}>
+                ✓ Event-Ledger Provenance &amp; Rubric Policy
+              </span>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(230px, 1fr))", gap: 14 }}>
+              <div style={{ background: "rgba(15, 23, 42, 0.6)", border: "1px solid rgba(255,255,255,0.14)", borderRadius: 12, padding: 16 }}>
+                <strong style={{ color: "#fbbf24", fontSize: 12, fontFamily: "var(--font-mono)", display: "block", marginBottom: 6 }}>LEVEL 1 · 5-SECOND RECRUITER SUMMARY</strong>
+                <p style={{ margin: 0, fontSize: 13, color: "rgba(255,255,255,0.85)", lineHeight: 1.5 }}>
+                  Displays verified achievement, 5 competency dimensions (Knowledge 15%, Execution 30%, Judgement 20%, Defence 15%, Revision 20%), reviewer identity, and active status.
+                </p>
+              </div>
+              <div style={{ background: "rgba(15, 23, 42, 0.6)", border: "1px solid rgba(255,255,255,0.14)", borderRadius: 12, padding: 16 }}>
+                <strong style={{ color: "#fbbf24", fontSize: 12, fontFamily: "var(--font-mono)", display: "block", marginBottom: 6 }}>LEVEL 2 · EVENT-BASED FLIGHT RECORDER</strong>
+                <p style={{ margin: 0, fontSize: 13, color: "rgba(255,255,255,0.85)", lineHeight: 1.5 }}>
+                  Logs structured provenance events: <code>attempt_started</code> → <code>task_executed</code> → <code>submission_created</code> → <code>faculty_feedback_added</code> → <code>submission_revised</code> → <code>defence_completed</code>.
+                </p>
+              </div>
+              <div style={{ background: "rgba(15, 23, 42, 0.6)", border: "1px solid rgba(255,255,255,0.14)", borderRadius: 12, padding: 16 }}>
+                <strong style={{ color: "#fbbf24", fontSize: 12, fontFamily: "var(--font-mono)", display: "block", marginBottom: 6 }}>INTEGRITY &amp; AI-USE DISCLOSURE</strong>
+                <p style={{ margin: 0, fontSize: 13, color: "rgba(255,255,255,0.85)", lineHeight: 1.5 }}>
+                  Issued by Skylent Global Pvt. Ltd. (Institute of Applied Learning). Public exemplar records below are explicitly marked as illustrative benchmark samples.
+                </p>
+              </div>
+            </div>
+          </section>
+
           <section
             aria-labelledby="vfy-exemplar-gallery-title"
             style={{

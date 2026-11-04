@@ -66,21 +66,28 @@ function NavIcon({ id }: { id: string }) {
 
 function AdminOverview() {
   return (
-    <GlassSurface level={2} padding="0" style={{ overflow: 'hidden', position: 'relative' }}>
-      <AuroraBand themeId="superadmin" />
-      <div style={{ position: 'relative', zIndex: 1, padding: 'clamp(24px, 3.5vw, 36px)' }}>
-        <h1 className="skylent-display-sm" style={{ color: C.ink, margin: '0 0 8px' }}>Platform overview</h1>
-        <p style={{ color: C.slate, fontSize: 14, lineHeight: 1.6, margin: 0, maxWidth: 640 }}>
-          Manage users, organisations, employers, practice labs, and Elixir unit economics, or jump directly into any workspace below.
-        </p>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, marginTop: 16 }}>
-          <a href="/dashboard/curriculum" className="os-btn os-btn-primary" style={{ textDecoration: 'none' }}>Open Course Builder →</a>
-          <a href="/dashboard/student" className="os-btn os-btn-ghost" style={{ textDecoration: 'none' }}>Open Learner Dashboard</a>
-          <a href="/os/labs/data-analytics/northwind" className="os-btn os-btn-ghost" style={{ textDecoration: 'none' }}>Open Northwind SQL Lab</a>
-          <a href="/career-os" className="os-btn os-btn-ghost" style={{ textDecoration: 'none' }}>Open Career OS</a>
-        </div>
+    <div style={{
+      background: 'linear-gradient(145deg, #11152c 0%, #1d1849 100%)',
+      border: '1px solid rgba(251, 191, 36, 0.38)',
+      borderRadius: 18,
+      padding: 'clamp(24px, 3.5vw, 34px)',
+      color: '#ffffff',
+      boxShadow: '0 18px 40px rgba(10, 14, 34, 0.22)',
+    }}>
+      <p style={{ margin: '0 0 8px', color: '#fbbf24', font: '700 11px/1.4 var(--font-mono)', letterSpacing: '0.14em', textTransform: 'uppercase' }}>
+        SUPERADMIN C-SUITE COMMAND OS · CEO / CFO / CCRO / CAO TELEMETRY
+      </p>
+      <h1 className="skylent-display-sm" style={{ color: '#ffffff', margin: '0 0 8px' }}>Platform overview</h1>
+      <p style={{ color: 'rgba(255,255,255,0.84)', fontSize: 14.5, lineHeight: 1.6, margin: 0, maxWidth: 680 }}>
+        Manage users, organisations, employers, practice labs, and Elixir unit economics, or jump directly into any workspace below.
+      </p>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, marginTop: 18 }}>
+        <a href="/dashboard/curriculum" className="os-btn os-btn-primary" style={{ background: '#fbbf24', color: '#0f172a', fontWeight: 700, borderColor: '#fbbf24', textDecoration: 'none' }}>Open Course Builder →</a>
+        <a href="/dashboard/student" className="os-btn os-btn-ghost" style={{ color: '#ffffff', borderColor: 'rgba(255,255,255,0.28)', textDecoration: 'none' }}>Open Learner Dashboard</a>
+        <a href="/os/labs/data-analytics/northwind" className="os-btn os-btn-ghost" style={{ color: '#ffffff', borderColor: 'rgba(255,255,255,0.28)', textDecoration: 'none' }}>Open Northwind SQL Lab</a>
+        <a href="/career-os" className="os-btn os-btn-ghost" style={{ color: '#ffffff', borderColor: 'rgba(255,255,255,0.28)', textDecoration: 'none' }}>Open Career OS</a>
       </div>
-    </GlassSurface>
+    </div>
   )
 }
 

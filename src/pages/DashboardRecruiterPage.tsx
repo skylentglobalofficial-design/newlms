@@ -212,12 +212,57 @@ export default function DashboardRecruiterPage() {
       renderNavIcon={id => <NavIcon id={id} />}
     >
       <div className="recruiter-workspace">
-        <h1 className="skylent-display-md" style={{ color: C.ink, margin: '0 0 8px', maxWidth: 680, lineHeight: 1.08 }}>
-          {user.name ?? 'Recruiter'}
-        </h1>
-        <p style={{ color: C.slate, fontSize: 14, margin: '0 0 24px', lineHeight: 1.6, maxWidth: 680 }}>
-          Create roles for employers linked to this account. Learners appear here only after they choose to share an application.
-        </p>
+        <section style={{
+          background: 'linear-gradient(145deg, #11152c 0%, #1d1849 100%)',
+          border: '1px solid rgba(251, 191, 36, 0.38)',
+          borderRadius: 18,
+          padding: '26px 28px',
+          color: '#ffffff',
+          marginBottom: 24,
+          boxShadow: '0 18px 40px rgba(10, 14, 34, 0.22)',
+        }}>
+          <p style={{ margin: '0 0 8px', color: '#fbbf24', font: '700 11px/1.4 var(--font-mono)', letterSpacing: '0.14em', textTransform: 'uppercase' }}>
+            RECRUITER TALENT TERMINAL · 15-MIN ROLE MICRO-AUDITIONS &amp; FLIGHT RECORDER VERIFIER
+          </p>
+          <h1 className="skylent-display-md" style={{ color: '#ffffff', margin: '0 0 8px', maxWidth: 680, lineHeight: 1.08 }}>
+            {user.name ?? 'Recruiter'} · Hiring Partner Console
+          </h1>
+          <p style={{ color: 'rgba(255,255,255,0.84)', fontSize: 14.5, margin: 0, lineHeight: 1.6, maxWidth: 720 }}>
+            Create roles for employers linked to this account. Learners appear here with their Verified Skill-Gap Match % and Execution Flight Recorder after they choose to share an application.
+          </p>
+        </section>
+
+                <section
+          aria-label="Skylent Work Assignment Exchange"
+          style={{
+            marginBottom: 24,
+            padding: "20px 22px",
+            background: "#f8fafc",
+            border: "1px solid #cbd5e1",
+            borderRadius: 14,
+          }}
+        >
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12, flexWrap: "wrap" }}>
+            <div>
+              <span style={{ display: "inline-block", fontSize: 11, fontFamily: "var(--font-mono)", fontWeight: 700, color: "#1d1849", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 4 }}>
+                ENVIRONMENT B · SKYLENT WORK ASSIGNMENT EXCHANGE (SUPERVISED PARTNER FIELDWORK)
+              </span>
+              <h2 style={{ margin: "0 0 6px", fontSize: 17.5, color: "#0f172a", fontFamily: "var(--font-display)" }}>
+                Submit a Scoped Business or Technical Problem for Faculty-Supervised Student Execution
+              </h2>
+              <p style={{ margin: 0, fontSize: 13.5, color: "#475569", maxWidth: 740, lineHeight: 1.55 }}>
+                Before or alongside full-time hiring, partner businesses, MSMEs, startups, and NGOs can scope a real operational assignment (sales margin audit, QA workflow, data reconciliation, or product research). Skylent faculty validate data privacy, supervise V1 → V2 delivery, and record your acceptance on the learner&apos;s Flight Recorder.
+              </p>
+            </div>
+            <a
+              href="/contact?for=institution"
+              className="os-btn os-btn-ghost"
+              style={{ textDecoration: "none", whiteSpace: "nowrap", fontWeight: 600 }}
+            >
+              Scope a Partner Assignment →
+            </a>
+          </div>
+        </section>
 
         {message ? <p className="os-error" role="alert">{message}</p> : null}
         {status === 'loading' ? <p style={{ color: C.slate }}>Loading your jobs…</p> : null}

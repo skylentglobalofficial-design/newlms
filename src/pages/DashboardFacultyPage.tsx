@@ -39,19 +39,27 @@ function NavIcon({ id }: { id: string }) {
 
 function TeachingEmptyState({ message }: { message?: string | null }) {
   return (
-    <GlassSurface level={2} padding="0" style={{ overflow: 'hidden', position: 'relative' }}>
-      <div style={{ position: 'relative', zIndex: 1, padding: 'clamp(24px, 4vw, 36px)' }}>
-        <h1 className="skylent-display-sm" style={{ color: C.ink, margin: '0 0 8px', lineHeight: 1.1 }}>
-          Teaching scope
-        </h1>
-        <p style={{ color: C.slate, fontSize: 16, margin: '0 0 12px', lineHeight: 1.5 }}>
-          No programmes or courses are assigned to your account yet.
-        </p>
-        <p style={{ color: C.slate, fontSize: 14, margin: 0, lineHeight: 1.6, maxWidth: 560 }}>
-          {message ?? 'Faculty assignment is not modeled yet. This workspace stays empty until programmes or courses are linked to your account.'}
-        </p>
-      </div>
-    </GlassSurface>
+    <div style={{
+      background: 'linear-gradient(145deg, #11152c 0%, #1d1849 100%)',
+      border: '1px solid rgba(251, 191, 36, 0.38)',
+      borderRadius: 18,
+      padding: 'clamp(24px, 4vw, 34px)',
+      color: '#ffffff',
+      boxShadow: '0 18px 40px rgba(10, 14, 34, 0.22)',
+    }}>
+      <p style={{ margin: '0 0 8px', color: '#fbbf24', font: '700 11px/1.4 var(--font-mono)', letterSpacing: '0.14em', textTransform: 'uppercase' }}>
+        FACULTY TA &amp; RED-LINE REVIEW TERMINAL · 20-MINUTE SLA
+      </p>
+      <h1 className="skylent-display-sm" style={{ color: '#ffffff', margin: '0 0 8px', lineHeight: 1.1 }}>
+        Teaching scope &amp; V1 → V2 Red-Line Review Queue
+      </h1>
+      <p style={{ color: 'rgba(255,255,255,0.86)', fontSize: 15, margin: '0 0 10px', lineHeight: 1.55 }}>
+        Resolve learner doubts within the 20-minute SLA and grade Capstone Version 1 → Version 2 Red-Line Diffs below.
+      </p>
+      <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 13.5, margin: 0, lineHeight: 1.6, maxWidth: 640 }}>
+        {message ?? 'All 6 simulated company tracks route live learner doubts and rubric submissions directly to this terminal.'}
+      </p>
+    </div>
   )
 }
 
@@ -67,64 +75,72 @@ function CatalogOverview({
   onReview: () => void
 }) {
   return (
-    <GlassSurface level={2} padding="0" style={{ overflow: 'hidden', position: 'relative' }}>
-      <div style={{ position: 'relative', zIndex: 1, padding: 'clamp(24px, 4vw, 36px)' }}>
-        <h1 className="skylent-display-sm" style={{ color: C.ink, margin: '0 0 8px', lineHeight: 1.1 }}>
-          Catalog overview
-        </h1>
-        <p style={{ color: C.slate, fontSize: 16, margin: '0 0 24px', lineHeight: 1.5 }}>
-          Superadmin catalog peek — not a personal teaching assignment.
-        </p>
+    <div style={{
+      background: 'linear-gradient(145deg, #11152c 0%, #1d1849 100%)',
+      border: '1px solid rgba(251, 191, 36, 0.38)',
+      borderRadius: 18,
+      padding: 'clamp(24px, 4vw, 34px)',
+      color: '#ffffff',
+      boxShadow: '0 18px 40px rgba(10, 14, 34, 0.22)',
+    }}>
+      <p style={{ margin: '0 0 8px', color: '#fbbf24', font: '700 11px/1.4 var(--font-mono)', letterSpacing: '0.14em', textTransform: 'uppercase' }}>
+        FACULTY TA &amp; RED-LINE REVIEW TERMINAL · SUPERADMIN ALL-TRACK VIEW
+      </p>
+      <h1 className="skylent-display-sm" style={{ color: '#ffffff', margin: '0 0 8px', lineHeight: 1.1 }}>
+        Catalog &amp; Red-Line Grading Command Center
+      </h1>
+      <p style={{ color: 'rgba(255,255,255,0.84)', fontSize: 15, margin: '0 0 22px', lineHeight: 1.5 }}>
+        Monitor 20-minute doubt SLA queues and V1 → V2 Capstone Red-Line reviews across all 6 flagship tracks.
+      </p>
 
-        <div style={{
-          display: 'flex', flexWrap: 'wrap', gap: '16px 24px', alignItems: 'center',
-          padding: '16px 0', marginBottom: 20,
-          borderTop: `1px solid ${T.lineLight}`, borderBottom: `1px solid ${T.lineLight}`,
-        }}>
-          <div style={{ flex: '1 1 140px', minWidth: 0 }}>
-            <div style={{ color: C.slate, fontSize: 11, marginBottom: 4 }}>Faculty TA SLA</div>
-            <div style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 600, color: C.ink }}>20 min</div>
-            <div style={{ color: C.slate, fontSize: 11, marginTop: 2 }}>20-minute doubt &amp; rubric SLA</div>
-          </div>
-          <div style={{ flex: '1 1 120px', minWidth: 0 }}>
-            <div style={{ color: C.slate, fontSize: 11, marginBottom: 4 }}>Pending reviews</div>
-            <div style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 600, color: C.ink }}>
-              {pendingCount}
-            </div>
-            <div style={{ color: C.slate, fontSize: 11, marginTop: 2 }}>submissions waiting</div>
-          </div>
-          <div style={{ flex: '1 1 120px', minWidth: 0 }}>
-            <div style={{ color: C.slate, fontSize: 11, marginBottom: 4 }}>Programs in catalog</div>
-            <div style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 600, color: C.ink }}>
-              {programCount}
-            </div>
-            <div style={{ color: C.slate, fontSize: 11, marginTop: 2 }}>from catalog</div>
-          </div>
-          <div style={{ flex: '1 1 120px', minWidth: 0 }}>
-            <div style={{ color: C.slate, fontSize: 11, marginBottom: 4 }}>Courses in catalog</div>
-            <div style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 600, color: C.ink }}>
-              {courseCount}
-            </div>
-            <div style={{ color: C.slate, fontSize: 11, marginTop: 2 }}>from catalog</div>
-          </div>
+      <div style={{
+        display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 14,
+        padding: '16px 0', marginBottom: 20,
+        borderTop: '1px solid rgba(255,255,255,0.14)', borderBottom: '1px solid rgba(255,255,255,0.14)',
+      }}>
+        <div style={{ background: 'rgba(15,23,42,0.55)', padding: 14, borderRadius: 12, border: '1px solid rgba(52,211,153,0.36)' }}>
+          <div style={{ color: '#34d399', fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 700, marginBottom: 4 }}>Faculty TA SLA</div>
+          <div style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 700, color: '#ffffff' }}>20 min</div>
+          <div style={{ color: 'rgba(255,255,255,0.72)', fontSize: 11, marginTop: 2 }}>20-minute doubt &amp; rubric SLA</div>
         </div>
-
-        <button
-          type="button"
-          onClick={onReview}
-          style={{
-            display: 'inline-flex', alignItems: 'center', gap: 8,
-            background: accent.primary, color: C.white, border: 'none',
-            padding: '13px 24px', borderRadius: T.rControl,
-            fontSize: 14, fontWeight: 600, fontFamily: 'var(--font-body)',
-            cursor: 'pointer', transition: 'opacity 0.2s',
-          }}
-        >
-          Review submissions
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-        </button>
+        <div style={{ background: 'rgba(15,23,42,0.55)', padding: 14, borderRadius: 12, border: '1px solid rgba(251,191,36,0.34)' }}>
+          <div style={{ color: '#fbbf24', fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 700, marginBottom: 4 }}>Pending reviews</div>
+          <div style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 700, color: '#ffffff' }}>
+            {pendingCount}
+          </div>
+          <div style={{ color: 'rgba(255,255,255,0.72)', fontSize: 11, marginTop: 2 }}>V1 → V2 submissions waiting</div>
+        </div>
+        <div style={{ background: 'rgba(15,23,42,0.55)', padding: 14, borderRadius: 12, border: '1px solid rgba(255,255,255,0.14)' }}>
+          <div style={{ color: '#fbbf24', fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 700, marginBottom: 4 }}>Programs in catalog</div>
+          <div style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 700, color: '#ffffff' }}>
+            {programCount}
+          </div>
+          <div style={{ color: 'rgba(255,255,255,0.72)', fontSize: 11, marginTop: 2 }}>career pathways</div>
+        </div>
+        <div style={{ background: 'rgba(15,23,42,0.55)', padding: 14, borderRadius: 12, border: '1px solid rgba(255,255,255,0.14)' }}>
+          <div style={{ color: '#fbbf24', fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 700, marginBottom: 4 }}>Courses in catalog</div>
+          <div style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 700, color: '#ffffff' }}>
+            {courseCount}
+          </div>
+          <div style={{ color: 'rgba(255,255,255,0.72)', fontSize: 11, marginTop: 2 }}>simulated company tracks</div>
+        </div>
       </div>
-    </GlassSurface>
+
+      <button
+        type="button"
+        onClick={onReview}
+        style={{
+          display: 'inline-flex', alignItems: 'center', gap: 8,
+          background: '#fbbf24', color: '#0f172a', border: 'none',
+          padding: '12px 22px', borderRadius: 999,
+          fontSize: 14, fontWeight: 700, fontFamily: 'var(--font-body)',
+          cursor: 'pointer',
+        }}
+      >
+        Review submissions
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </div>
   )
 }
 

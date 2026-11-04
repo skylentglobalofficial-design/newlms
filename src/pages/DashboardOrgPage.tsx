@@ -74,11 +74,22 @@ function InstitutionWorkspace({
         <ProductVisual id="institution-pipeline" themeId="institution" style={{ minHeight: 240 }} />
       </div>
 
-      <div style={{ marginBottom: 28 }}>
-        <h1 className="skylent-display-md" style={{ color: C.ink, margin: '0 0 8px', maxWidth: 680, lineHeight: 1.08 }}>
+      <div style={{
+        background: 'linear-gradient(145deg, #11152c 0%, #1d1849 100%)',
+        border: '1px solid rgba(251, 191, 36, 0.38)',
+        borderRadius: 18,
+        padding: '26px 28px',
+        color: '#ffffff',
+        marginBottom: 24,
+        boxShadow: '0 18px 40px rgba(10, 14, 34, 0.22)',
+      }}>
+        <p style={{ margin: '0 0 8px', color: '#fbbf24', font: '700 11px/1.4 var(--font-mono)', letterSpacing: '0.14em', textTransform: 'uppercase' }}>
+          ORGANISATION &amp; ENTERPRISE L&amp;D COMMAND CENTER · MULTI-TENANT WORKSPACE
+        </p>
+        <h1 className="skylent-display-md" style={{ color: '#ffffff', margin: '0 0 8px', maxWidth: 680, lineHeight: 1.08 }}>
           {institutionName}
         </h1>
-        <p style={{ color: C.slate, fontSize: 14, margin: 0 }}>
+        <p style={{ color: 'rgba(255,255,255,0.84)', fontSize: 14.5, margin: 0 }}>
           {programCount} programs · {institutionLearners} enrollments · backend-backed totals
         </p>
       </div>

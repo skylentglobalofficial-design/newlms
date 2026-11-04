@@ -109,6 +109,41 @@ export default function UniversitiesPage() {
         </div>
       </nav>
 
+            <section className="pe-royal-band" aria-labelledby="uni-nep-abc-title">
+        <div className="cat-rail">
+          <p className="pe-royal-eyebrow">SKYLENT INSTITUTE OF APPLIED LEARNING · ACADEMIC &amp; FIELDWORK ARCHITECTURE</p>
+          <h2 id="uni-nep-abc-title" style={{ color: "#ffffff", fontSize: "clamp(26px, 3vw, 36px)", margin: "8px 0 10px", fontFamily: "var(--font-display)" }}>
+            60-Hour Applied Workload Architecture, Partner Fieldwork Exchange &amp; Institutional Governance.
+          </h2>
+          <p style={{ color: "rgba(255,255,255,0.84)", maxWidth: 780, margin: "0 0 14px", fontSize: 15, lineHeight: 1.6 }}>
+            Skylent collaborates with colleges, universities, and industry partners across six long-term academic schools—combining structured instruction, Simulated Enterprise Labs (Environment A), and supervised Partner Work Assignments (Environment B).
+          </p>
+          <div className="pe-royal-grid">
+            <article className="pe-royal-card">
+              <span className="pe-royal-badge">60 NOTIONAL HOURS · WORKLOAD DESIGN</span>
+              <h3 style={{ margin: 0, fontSize: 18, color: "#ffffff" }}>Illustrative 60-Hour Applied Track</h3>
+              <p style={{ margin: 0, fontSize: 13.5, color: "rgba(255,255,255,0.82)", lineHeight: 1.55 }}>
+                <strong>12h</strong> Guided Instruction · <strong>12h</strong> Independent Study · <strong>18h</strong> Simulated Enterprise Work · <strong>12h</strong> Supervised Project / Fieldwork · <strong>6h</strong> Oral Defence &amp; Revision (Total: <strong>60 Hours</strong>).
+              </p>
+            </article>
+            <article className="pe-royal-card">
+              <span className="pe-royal-badge">ENV A → ENV B → ENV C PROGRESSION</span>
+              <h3 style={{ margin: 0, fontSize: 18, color: "#ffffff" }}>Work Assignment Exchange &amp; Internships</h3>
+              <p style={{ margin: 0, fontSize: 13.5, color: "rgba(255,255,255,0.82)", lineHeight: 1.55 }}>
+                Learners progress from synthetic enterprise simulations (Northwind, Harbor Desk) to faculty-scoped MSME, startup, and NGO fieldwork projects aligned with UGC 2024 internship guidelines.
+              </p>
+            </article>
+            <article className="pe-royal-card">
+              <span className="pe-royal-badge">REGULATORY &amp; CREDIT TRANSPARENCY</span>
+              <h3 style={{ margin: 0, fontSize: 18, color: "#ffffff" }}>Clear Statutory Boundaries (UGC Sec 22)</h3>
+              <p style={{ margin: 0, fontSize: 13.5, color: "rgba(255,255,255,0.82)", lineHeight: 1.55 }}>
+                Skylent Global Pvt. Ltd. is an independent applied-learning institution and does not unilaterally award university degrees or ABC credits; credit recognition is determined solely by authorised partner HEIs.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
       <section className="pe-section is-warm" id="work" aria-labelledby="uni-work-title">
         <div className="cat-rail pe-ink-stage">
           <div>
