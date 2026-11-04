@@ -14,6 +14,7 @@ import {
   HomeElixirFlywheel,
   confirmedOpenTitles,
   HomeHero,
+  HomeInstitutionalArchitecture,
   HomeProgrammes,
   InsideProgramme,
   ZeroLoginInteractiveTryout,
@@ -31,6 +32,7 @@ export default function HomePage() {
           catalogue={catalogue}
           openTitles={catalogue === "confirmed" ? confirmedOpenTitles(catalog.data ?? []) : []}
         />
+        <HomeInstitutionalArchitecture />
         <HomeProgrammes
           programmes={catalog.data ?? []}
           loading={catalogue === "loading"}

@@ -783,6 +783,64 @@ export default function DashboardStudentPage() {
           )
         })()}
 
+        {/* 2B. L1-L5 Institutional Competency & Work Assignment Exchange (Env B) */}
+        <section
+          aria-label="L1 to L5 Competency Progression and Work Assignment Exchange"
+          style={{
+            background: "linear-gradient(145deg, #11152c 0%, #1d1849 100%)",
+            border: "1px solid rgba(251, 191, 36, 0.42)",
+            borderRadius: 16,
+            padding: "20px 24px",
+            color: "#ffffff",
+            boxShadow: "0 16px 36px rgba(10, 14, 34, 0.2)",
+          }}
+        >
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 16, flexWrap: "wrap", marginBottom: 14 }}>
+            <div>
+              <span style={{ color: "#fbbf24", font: "700 11px/1.4 var(--font-mono)", letterSpacing: "0.14em", textTransform: "uppercase", display: "block", marginBottom: 4 }}>
+                ★ SKYLENT INSTITUTE OF APPLIED LEARNING · L1 → L5 PROGRESSION &amp; WORK ASSIGNMENT EXCHANGE
+              </span>
+              <strong style={{ fontSize: 18, color: "#ffffff", fontFamily: "var(--font-display)", display: "block" }}>
+                Current Stage: L2 Guided Practice → Unlocking Env B Partner Fieldwork Exchange
+              </strong>
+              <span style={{ fontSize: 13, color: "rgba(255,255,255,0.82)", display: "block", marginTop: 4 }}>
+                Complete your Environment A Simulated Enterprise Sprint (Northwind / Harbor Desk) with a V1 → V2 Faculty Red-Line pass to unlock supervised real-world MSME &amp; startup assignments.
+              </span>
+            </div>
+            <Link
+              to="/verify"
+              style={{
+                padding: "8px 14px",
+                borderRadius: 999,
+                background: "rgba(16, 185, 129, 0.18)",
+                border: "1px solid rgba(52, 211, 153, 0.45)",
+                color: "#34d399",
+                fontSize: 12,
+                fontFamily: "var(--font-mono)",
+                fontWeight: 700,
+                textDecoration: "none",
+                whiteSpace: "nowrap",
+              }}
+            >
+              ✓ View Flight Recorder Standard →
+            </Link>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 10 }}>
+            {[
+              ["15% Knowledge", "First-Principles Checks", "#fbbf24"],
+              ["30% Execution", "Env A Browser Sandbox", "#34d399"],
+              ["20% Judgement", "Trade-Off Decisions", "#fbbf24"],
+              ["15% Oral Defence", "Boardroom Cold Call", "#fbbf24"],
+              ["20% V1 → V2 Diff", "Faculty Red-Line Review", "#34d399"],
+            ].map(([title, sub, col]) => (
+              <div key={title} style={{ background: "rgba(15, 23, 42, 0.62)", border: "1px solid rgba(255,255,255,0.14)", borderRadius: 10, padding: "10px 12px" }}>
+                <strong style={{ color: col, fontSize: 13, fontFamily: "var(--font-mono)", display: "block" }}>{title}</strong>
+                <span style={{ color: "rgba(255,255,255,0.8)", fontSize: 12 }}>{sub}</span>
+              </div>
+            ))}
+          </div>
+        </section>
+
         {/* 3. Main 2-Column Workspace Grid */}
         <div className="sh-grid">
           <div className="sh-stack">
