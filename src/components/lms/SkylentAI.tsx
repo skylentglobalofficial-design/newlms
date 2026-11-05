@@ -139,55 +139,26 @@ function buildSmartLessonAnswer(
 ): { answer: string; basedOn: string; related: string; heldBack: boolean } {
   const qLower = question.toLowerCase().trim()
   const meta = getLessonMeta(courseSlug, lessonId)
-  const objective = meta?.objective ?? `understanding the core concepts in ${lessonTitle}`
-  const concepts = meta?.concepts?.length ? meta.concepts.join(", ") : lessonTitle
-  const output = meta?.practicalOutput ?? "applying the lesson concepts to the dataset or case"
-  const caseName = caseChipFor(courseSlug) ?? "Course Workspace"
+  const objective = meta?.objective ?? lessonTitle
+  const concepts = meta?.concepts?.slice(0, 3).join(", ") || lessonTitle
+  const output = meta?.practicalOutput ?? "Complete lesson check"
+  const caseName = caseChipFor(courseSlug) ?? "Workspace"
 
   if (assessmentOpen && /answer key|exact answer|write my|solve this quiz|give me the answer/i.test(qLower)) {
     return {
-      answer: `While this ${lessonKind === "quiz" ? "quiz" : "assignment"} is open, I can't give away the exact answer. Focus on: ${objective}. Tell me which option or step you are considering and I'll help you test your reasoning.`,
+      answer: `• **Open check:** Direct answers are hidden.\n• **Focus:** ${concepts}`,
       basedOn: lessonTitle,
       related: concepts,
       heldBack: true,
     }
   }
 
-  if (/^(hi|hello|hey|namaste|kya haal|hlo)\b/i.test(qLower)) {
-    return {
-      answer: `Hey! Main ${AI_NAME} hoon. Abhi hum "${lessonTitle}" par hain.\n\nIs lesson ka goal hai: ${objective}.\n\nAap mujhse English ya Hinglish mein koi bhi concept, formula, SQL/code doubt, ya example pooch sakte ho!`,
-      basedOn: lessonTitle,
-      related: concepts,
-      heldBack: false,
-    }
-  }
-
-  if (/what happens|kya hota|kya karna|what to do|what is this|samjha|explain this/i.test(qLower) || action === "explain") {
-    return {
-      answer: `Here is what happens in "${lessonTitle}":\n\n• Core goal: ${objective}\n• Key concepts covered: ${concepts}\n• What you will produce: ${output}\n\n${
-        courseSlug === "data-analytics"
-          ? "In the Northwind dataset (180 rows), filtering out returned orders (`returned = 'yes'`) and invalid rows (`units <= 0` or `unit_price <= 0`) leaves 166 valid rows totalling ₹8,12,020 in net revenue."
-          : courseSlug === "product-management"
-            ? "In the Harbor Desk case (12 retail stores, 9 weekend exceptions), your focus is isolating the root operational problem that 2 engineers can solve in 6 weeks."
-            : "Start by checking the input constraints and edge cases before writing your final solution."
-      }`,
-      basedOn: lessonTitle,
-      related: concepts,
-      heldBack: false,
-    }
-  }
-
   if (/hinglish|🇮🇳|hindi/i.test(qLower)) {
-    if (courseSlug === "data-analytics") {
-      return {
-        answer: `Simple Hinglish mein samajh ("${lessonTitle}"):\n\n• Goal: ${objective}\n• Northwind dataset mein total 180 rows hain, par usmein 14 invalid/returned rows hain. Jab hum ` + "`units > 0 AND unit_price > 0 AND returned = 'no'`" + ` lagate hain, tab 166 valid rows bachti hain jinka net revenue ₹8,12,020 aata hai.\n• Deliverable: ${output}`,
-        basedOn: `${lessonTitle} · Hinglish`,
-        related: concepts,
-        heldBack: false,
-      }
-    }
     return {
-      answer: `Simple Hinglish mein samajh ("${lessonTitle}"):\n\n• Is lesson ka main focus hai: ${objective}\n• Key topics: ${concepts}\n• Aapka practical output: ${output}\n\nKisi specific point par doubt ho toh seedha pooch lo!`,
+      answer:
+        courseSlug === "data-analytics"
+          ? `• **Goal:** ${objective}\n• **Rule:** Filter \`units > 0 AND unit_price > 0 AND returned = 'no'\` → **166 valid rows (₹8,12,020)**.`
+          : `• **Goal:** ${objective}\n• **Topics:** ${concepts}\n• **Output:** ${output}`,
       basedOn: `${lessonTitle} · Hinglish`,
       related: concepts,
       heldBack: false,
@@ -198,34 +169,25 @@ function buildSmartLessonAnswer(
     return {
       answer:
         courseSlug === "data-analytics"
-          ? `Worked example for "${lessonTitle}" (${caseName}):\n\n\`\`\`sql\nSELECT category,\n       ROUND(SUM(units * unit_price * (1 - discount_pct / 100.0))) AS net_revenue\nFROM northwind_sales\nWHERE units > 0 AND unit_price > 0 AND returned = 'no'\nGROUP BY category\nORDER BY net_revenue DESC;\n\`\`\`\n\nFiltering returned and zero-unit rows first ensures your category summary adds up to the verified ₹8,12,020 total across 166 valid rows.`
-          : `Worked example for "${lessonTitle}" (${caseName}):\n\n• Objective: ${objective}\n• Applied to ${caseName}: Define the exact input condition, isolate the failure mode (${concepts}), and verify your output against: ${output}.`,
+          ? "```sql\nSELECT category, ROUND(SUM(units * unit_price * (1 - discount_pct/100.0))) AS net_rev\nFROM northwind_sales\nWHERE units > 0 AND unit_price > 0 AND returned = 'no'\nGROUP BY category;\n```"
+          : `• **Case (${caseName}):** Apply ${concepts}\n• **Output:** ${output}`,
       basedOn: lessonTitle,
       related: `${caseName} · Example`,
       heldBack: false,
     }
   }
 
-  if (action === "quiz" || action === "practice" || /quiz|practice|test me|question/i.test(qLower)) {
+  if (action === "quiz" || action === "practice" || /quiz|practice|test me/i.test(qLower)) {
     return {
-      answer: `Quick practice question on "${lessonTitle}":\n\nBased on ${objective.toLowerCase()}, what would go wrong in ${caseName} if someone skipped checking (${concepts}) before presenting their final output? Reply in 1–2 sentences and I'll check your reasoning!`,
+      answer: `• **Quick Check:** What fails in ${caseName} if you skip **${concepts}**?`,
       basedOn: lessonTitle,
       related: concepts,
       heldBack: false,
     }
   }
 
-  if (/rubric|criteria|grade|grading|submit|assignment/i.test(qLower)) {
-    return {
-      answer: `For "${lessonTitle}", your submission is evaluated on:\n\n• Core objective: ${objective}\n• Expected deliverable: ${output}\n• Key concepts to demonstrate: ${concepts}\n\nMake sure your numbers or reasoning directly reference ${caseName}.`,
-      basedOn: lessonTitle,
-      related: "Rubric & evaluation criteria",
-      heldBack: false,
-    }
-  }
-
   return {
-    answer: `Regarding "${question}" in ${lessonTitle}:\n\n• Lesson focus: ${objective}\n• Key concepts: ${concepts}\n• Practical application (${caseName}): ${output}\n\nWant me to walk through a concrete example or break down a specific step from this lesson?`,
+    answer: `• **Goal:** ${objective}\n• **Key Concepts:** ${concepts}\n• **Output:** ${output}`,
     basedOn: lessonTitle,
     related: concepts,
     heldBack: false,
@@ -555,7 +517,7 @@ export default function SkylentAI({
               <strong style={{ color: "#0f172a", display: "block", marginBottom: 4 }}>
                 Hi! Need help with this lesson?
               </strong>
-              Ask any question in English or Hinglish about <strong>{lessonTitle}</strong>, or pick a quick starter:
+              Tap a quick starter or ask a question:
             </div>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
               {compactPrompts.map((item) => (

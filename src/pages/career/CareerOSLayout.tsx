@@ -2,48 +2,57 @@ import { useEffect, useState } from "react"
 import { Outlet, useLocation } from "react-router-dom"
 import { useAuth } from "../../context/AuthContext"
 import { apiV1 } from "../../lib/api-base"
-import { ensureCsrfToken } from "../../lib/auth-api"
+import { readStoredCourseTiers } from "../../lib/enrolment-tiers"
 import CareerOSShell from "../../components/career/CareerOSShell"
+import CareerOSOverviewPage from "./CareerOSOverviewPage"
 import CareerOSPublicPage from "./CareerOSPublicPage"
 import CareerOSPublicAreaPage from "./CareerOSPublicAreaPage"
 import "./CareerOS.css"
 
+function hasLocalCareerOsEnrolment(): boolean {
+  const map = readStoredCourseTiers()
+  return Object.values(map).some((r) => Boolean(r.careerOsEnrolled))
+}
+
 export default function CareerOSLayout() {
   const { user, ready } = useAuth()
   const { pathname } = useLocation()
-  const [activated, setActivated] = useState(false)
+  const [checked, setChecked] = useState(false)
+  const [entitled, setEntitled] = useState<boolean>(() => hasLocalCareerOsEnrolment())
 
   useEffect(() => {
     if (!user?.id) return
     let cancelled = false
-    const activateAndOpen = async () => {
+    const checkAccess = async () => {
+      if (hasLocalCareerOsEnrolment()) {
+        if (!cancelled) {
+          setEntitled(true)
+          setChecked(true)
+        }
+        return
+      }
       try {
         const res = await fetch(`${apiV1()}/career/access`, { credentials: "include" })
         if (res.ok) {
           const body = (await res.json().catch(() => ({}))) as { data?: { entitled?: boolean } }
-          if (body.data?.entitled === true) {
-            if (!cancelled) setActivated(true)
-            return
+          if (!cancelled) {
+            setEntitled(Boolean(body.data?.entitled))
           }
         }
-        const token = await ensureCsrfToken()
-        await fetch(`${apiV1()}/career/activate`, {
-          method: "POST",
-          credentials: "include",
-          headers: { "Content-Type": "application/json", "X-CSRF-Token": token },
-          body: JSON.stringify({}),
-        })
       } catch {
-        // Ignore network/schema fallback; overview handles graceful fallback
+        // Fallback to local state
       } finally {
-        if (!cancelled) setActivated(true)
+        if (!cancelled) setChecked(true)
       }
     }
-    void activateAndOpen()
+    void checkAccess()
+    const onUpdate = () => setEntitled(hasLocalCareerOsEnrolment())
+    window.addEventListener("skylent:career-os-enrolled", onUpdate)
     return () => {
       cancelled = true
+      window.removeEventListener("skylent:career-os-enrolled", onUpdate)
     }
-  }, [user?.id])
+  }, [user?.id, pathname])
 
   if (!ready) {
     return (
@@ -59,18 +68,28 @@ export default function CareerOSLayout() {
     return <CareerOSPublicAreaPage />
   }
 
-  if (!activated) {
+  if (!checked) {
     return (
-      <CareerOSShell>
-        <div style={{ padding: "32px 24px", color: "#475569", fontSize: 14 }}>
-          Opening your Career Services workspace…
+      <CareerOSShell showSubNav={false}>
+        <div style={{ padding: "24px", color: "#475569", fontSize: 14 }}>
+          Loading Career OS…
         </div>
       </CareerOSShell>
     )
   }
 
+  // Strict Pre-Enrolment Gate: Until the learner completes >=60% + quizzes + project and clicks "Enroll Now",
+  // only show the Eligibility & Progress Gate screen (hide Profile, Jobs, and sub-routes).
+  if (!entitled) {
+    return (
+      <CareerOSShell showSubNav={false}>
+        <CareerOSOverviewPage onEnrolled={() => setEntitled(true)} />
+      </CareerOSShell>
+    )
+  }
+
   return (
-    <CareerOSShell>
+    <CareerOSShell showSubNav={true}>
       <Outlet />
     </CareerOSShell>
   )

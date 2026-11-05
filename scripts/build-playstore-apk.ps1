@@ -149,7 +149,11 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.Toast;
 import androidx.activity.OnBackPressedCallback;
+import android.view.View;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 import com.getcapacitor.BridgeActivity;
 
@@ -160,13 +164,25 @@ public class MainActivity extends BridgeActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // 1. Prevent Android 14/15 Edge-to-Edge overlap with top status bar / camera cutout
+        // 1. Prevent Android 14/15/16 Edge-to-Edge overlap with top status bar / camera cutout (Before & After Login)
         WindowCompat.setDecorFitsSystemWindows(getWindow(), true);
-        getWindow().setStatusBarColor(Color.parseColor("#3B2D96"));
+        getWindow().setStatusBarColor(Color.parseColor("#0F172A"));
+        getWindow().setNavigationBarColor(Color.parseColor("#FFFFFF"));
         WindowInsetsControllerCompat insetsController =
             WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
         if (insetsController != null) {
             insetsController.setAppearanceLightStatusBars(false);
+        }
+        View contentView = findViewById(android.R.id.content);
+        if (contentView != null) {
+            contentView.setBackgroundColor(Color.parseColor("#0F172A"));
+            ViewCompat.setOnApplyWindowInsetsListener(contentView, (v, windowInsets) -> {
+                Insets bars = windowInsets.getInsets(
+                    WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout()
+                );
+                v.setPadding(bars.left, bars.top, bars.right, bars.bottom);
+                return WindowInsetsCompat.CONSUMED;
+            });
         }
 
         // 2. Configure WebView: enable third-party cookies & strip "; wv" so Google Sign-In works directly inside the APK
@@ -182,7 +198,7 @@ public class MainActivity extends BridgeActivity {
             String ua = settings.getUserAgentString();
             if (ua != null) {
                 String cleanUa = ua.replace("; wv", "").replace("wv)", ")");
-                settings.setUserAgentString(cleanUa + " SkylentNativeApp/1.3");
+                settings.setUserAgentString(cleanUa + " SkylentNativeApp/1.4 SkylentNativeInsetsApplied");
             }
         }
 
@@ -298,6 +314,37 @@ $cleanStylesXml = @"
 </resources>
 "@
 [System.IO.File]::WriteAllText($stylesXmlPath, $cleanStylesXml.Replace("`r`n", "`n"), $Utf8NoBom)
+$v35Dir = Join-Path (Get-Location).Path "android\app\src\main\res\values-v35"
+if (-not (Test-Path $v35Dir)) { New-Item -ItemType Directory -Path $v35Dir -Force | Out-Null }
+$v35StylesPath = Join-Path $v35Dir "styles.xml"
+$v35StylesXml = @"
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">#5142B5</item>
+        <item name="colorPrimaryDark">#0F172A</item>
+        <item name="colorAccent">#5142B5</item>
+        <item name="android:statusBarColor">#0F172A</item>
+        <item name="android:fitsSystemWindows">true</item>
+        <item name="android:windowOptOutEdgeToEdgeEnforcement">true</item>
+    </style>
+    <style name="AppTheme.NoActionBar" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:background">@null</item>
+        <item name="android:statusBarColor">#0F172A</item>
+        <item name="android:fitsSystemWindows">true</item>
+        <item name="android:windowOptOutEdgeToEdgeEnforcement">true</item>
+    </style>
+    <style name="AppTheme.NoActionBarLaunch" parent="AppTheme.NoActionBar">
+        <item name="android:background">@null</item>
+        <item name="android:statusBarColor">#0F172A</item>
+        <item name="android:fitsSystemWindows">true</item>
+        <item name="android:windowOptOutEdgeToEdgeEnforcement">true</item>
+    </style>
+</resources>
+"@
+[System.IO.File]::WriteAllText($v35StylesPath, $v35StylesXml.Replace("`r`n", "`n"), $Utf8NoBom)
 Write-Host "  [OK] Wrote AndroidManifest.xml, MainActivity.java (In-App Google OAuth + DeepLink + Back + StatusBar), and styles.xml." -ForegroundColor Green
 
 # Step 5: Configure Java JDK 21 & Android SDK Toolchain

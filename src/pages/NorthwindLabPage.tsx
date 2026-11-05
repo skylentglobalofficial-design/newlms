@@ -1,5 +1,8 @@
 import { useEffect, useRef, useState, type KeyboardEvent } from "react"
-import { Link, useSearchParams } from "react-router-dom"
+import { Link, useNavigate, useSearchParams } from "react-router-dom"
+import { AuthDashboardShell } from "../components/AuthDashboardShell"
+import { LEARNER_NAV, LearnerNavIcon } from "../components/learner/learner-nav"
+import { useAuth } from "../context/AuthContext"
 import { WORKSPACE_LOAD_ERROR, workspaceErrorMessage } from "../lib/http"
 import { isSignInError, learnerErrorMessage } from "../components/lms/lms-utils"
 import {
@@ -88,6 +91,8 @@ function DatasetSample({ workspace }: { workspace: LabWorkspace }) {
 }
 
 export default function NorthwindLabPage() {
+  const { user } = useAuth()
+  const navigate = useNavigate()
   const [params, setParams] = useSearchParams()
   const lessonKey = params.get("lesson")
   const workId = params.get("work")
@@ -355,26 +360,33 @@ export default function NorthwindLabPage() {
   const canSave = mode === "sql" ? Boolean(sqlResult) : Boolean(guidedResult)
 
   return (
-    <div className="lab-shell">
-      <header className="lab-top">
-        <Link className="lab-brand" to={northwindLabPath(lessonKey, null, mode)}>
-          <strong>{workspace.labTitle}</strong>
-          <span>Practice lab · {workspace.courseTitle}</span>
-        </Link>
-        <div className="sky-on-navy lab-slice">
-          <ProductSlice steps={["Learn", "Practice", "Build", "Prove"]} current="Practice" label="Where this lab sits" />
-        </div>
-        <div className="lab-top-actions">
-          {projectSlug === "northwind-commercial-review" ? (
-            <Link className="os-btn os-btn-ghost" to={northwindProjectPath()}>
-              Return to project
-            </Link>
-          ) : null}
-          <Link className="os-btn os-btn-ghost" to={lessonReturnTo(workspace.lesson?.lessonKey ?? lessonKey)}>
-            Return to lesson
+    <AuthDashboardShell
+      themeId="data-science"
+      workspace="learning"
+      workspaceLabel="My Courses"
+      roleLabel={user?.role === "superadmin" ? "Superadmin" : "Learner"}
+      navItems={LEARNER_NAV}
+      bottomNavItems={LEARNER_NAV}
+      activeNav="projects"
+      onNavChange={(id) => {
+        const found = LEARNER_NAV.find((n) => n.id === id)
+        if (found?.href) navigate(found.href)
+      }}
+      renderNavIcon={(id) => <LearnerNavIcon id={id} />}
+      bar={<strong>{workspace.labTitle} · {workspace.courseTitle}</strong>}
+    >
+    <div className="lab-shell" style={{ minHeight: "auto" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10, padding: "12px 18px", background: "#ffffff", borderBottom: "1px solid #e2e8f0", flexWrap: "wrap" }}>
+        <strong>{workspace.labTitle} ({workspace.dataset.filename})</strong>
+        <div style={{ display: "flex", gap: 8 }}>
+          <Link className="os-btn os-btn-ghost" style={{ minHeight: 36, fontSize: 12.5 }} to={northwindProjectPath()}>
+            Project Studio →
+          </Link>
+          <Link className="os-btn os-btn-ghost" style={{ minHeight: 36, fontSize: 12.5 }} to={lessonReturnTo(workspace.lesson?.lessonKey ?? lessonKey)}>
+            ← Return to Lesson
           </Link>
         </div>
-      </header>
+      </div>
       <h1 className="sr-only">{workspace.labTitle}</h1>
 
       <div className="lab-context">
@@ -719,5 +731,6 @@ export default function NorthwindLabPage() {
         <p className="lab-disclaimer">{workspace.disclaimer}</p>
       </div>
     </div>
+    </AuthDashboardShell>
   )
 }

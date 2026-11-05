@@ -449,3 +449,21 @@
   color: #ffffff;
   font-weight: 800;
 }
+
+/* ── V63 Mobile & APK Status-Bar Safe Area + Static Clean Header ── */
+@media (max-width: 900px) {
+  .auth-shell-topbar {
+    position: sticky;
+    top: 0;
+    min-height: 54px;
+    padding: max(env(safe-area-inset-top, 0px), 8px) 16px 6px 8px;
+    background: #1e1b4b;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  }
+  .auth-shell-rail--drawer {
+    padding-top: max(env(safe-area-inset-top, 0px), 10px);
+  }
+  .auth-shell-bar {
+    display: none !important;
+  }
+}

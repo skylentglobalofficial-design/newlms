@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
@@ -11,9 +11,9 @@
       name="description"
       content="Skylent is an online learning platform for Data Analytics, Python, Product Management, Data Science, Generative AI, and Full-Stack Web — with browser labs, graded projects, verifiable certificates, and Career OS."
     />
-    <meta name="theme-color" content="#0B0F1A" />
+    <meta name="theme-color" content="#0F172A" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="Skylent" />
     <meta name="mobile-web-app-capable" content="yes" />
     <link rel="manifest" href="/manifest.webmanifest" />
@@ -52,9 +52,47 @@
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
     />
+    <style>
+      /* Mobile & Android APK Static Top Status-Bar Safe Area Fix (Before & After Login) */
+      :root {
+        --sky-safe-top: env(safe-area-inset-top, 0px);
+      }
+      html[data-native-app="true"] {
+        --sky-safe-top: max(env(safe-area-inset-top, 0px), 28px);
+      }
+      html[data-native-app="true"] body {
+        padding-top: var(--sky-safe-top);
+      }
+      html[data-native-app="true"] .skylent-public-canvas .skn {
+        top: var(--sky-safe-top) !important;
+      }
+      html[data-native-app="true"] .auth-shell-topbar {
+        top: 0 !important;
+      }
+      @media (max-width: 900px) {
+        .skylent-public-canvas .skn__bar {
+          height: 58px !important;
+          padding-top: 4px !important;
+        }
+        .entry-top {
+          padding-top: max(env(safe-area-inset-top, 0px), 12px) !important;
+          height: auto !important;
+          min-height: 56px !important;
+        }
+      }
+    </style>
     <script>
       (function () {
         try {
+          var ua = navigator.userAgent || "";
+          var isNative =
+            ua.indexOf("SkylentNativeApp") !== -1 ||
+            ua.indexOf("; wv") !== -1 ||
+            Boolean(window.Capacitor) ||
+            (window.location.hostname === "localhost" && /Android|iPhone|iPad/i.test(ua));
+          if (isNative && ua.indexOf("SkylentNativeInsetsApplied") === -1) {
+            document.documentElement.setAttribute("data-native-app", "true");
+          }
           if ("serviceWorker" in navigator) {
             navigator.serviceWorker.getRegistrations().then(function (regs) {
               for (var i = 0; i < regs.length; i++) {

@@ -790,27 +790,50 @@ export const COLD_CALL_SCENARIOS: Record<string, ColdCallScenario> = {
 export function BoardroomColdCallCard({ courseSlug }: { courseSlug: string }) {
   const scenario = COLD_CALL_SCENARIOS[courseSlug]
   const [selectedId, setSelectedId] = useState<string | null>(null)
+  const [open, setOpen] = useState(false)
   if (!scenario) return null
   const chosen = scenario.options.find((opt) => opt.id === selectedId) ?? null
   return (
-    <aside className="os-cold-call" aria-label={scenario.kicker}>
-      <p className="pl-kicker">{scenario.kicker}</p>
-      <p className="os-cold-call__prompt"><strong>{scenario.prompt}</strong></p>
-      <div className="os-cold-call__actions" role="group" aria-label="Decision options">
-        {scenario.options.map((opt) => (
-          <button
-            key={opt.id}
-            type="button"
-            className={selectedId === opt.id ? "os-chip is-active" : "os-chip"}
-            aria-pressed={selectedId === opt.id}
-            onClick={() => setSelectedId(opt.id)}
-          >
-            {opt.label}{chosen ? ` (${opt.peerPercent}%)` : ""}
-          </button>
-        ))}
+    <aside className="os-cold-call" aria-label={scenario.kicker} style={{ padding: "10px 14px", marginBottom: 12 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+        <span style={{ fontSize: 12, fontWeight: 700, color: "#5142b5" }}>💡 Quick Case Poll · {scenario.kicker.split("·").pop()?.trim()}</span>
+        <button
+          type="button"
+          onClick={() => setOpen((v) => !v)}
+          style={{
+            background: "#f5f3ff",
+            border: "1px solid #ddd6fe",
+            color: "#5142b5",
+            borderRadius: 6,
+            padding: "4px 10px",
+            fontSize: 11.5,
+            fontWeight: 700,
+            cursor: "pointer",
+          }}
+        >
+          {open ? "Hide Poll" : "Try 10-Sec Poll →"}
+        </button>
       </div>
-      {chosen ? (
-        <p className="os-cold-call__takeaway" role="status">{chosen.takeaway}</p>
+      {open ? (
+        <div style={{ marginTop: 10 }}>
+          <p className="os-cold-call__prompt" style={{ margin: "0 0 8px", fontSize: 13 }}><strong>{scenario.prompt}</strong></p>
+          <div className="os-cold-call__actions" role="group" aria-label="Decision options">
+            {scenario.options.map((opt) => (
+              <button
+                key={opt.id}
+                type="button"
+                className={selectedId === opt.id ? "os-chip is-active" : "os-chip"}
+                aria-pressed={selectedId === opt.id}
+                onClick={() => setSelectedId(opt.id)}
+              >
+                {opt.label}{chosen ? ` (${opt.peerPercent}%)` : ""}
+              </button>
+            ))}
+          </div>
+          {chosen ? (
+            <p className="os-cold-call__takeaway" role="status" style={{ fontSize: 12.5, marginTop: 8 }}>{chosen.takeaway}</p>
+          ) : null}
+        </div>
       ) : null}
     </aside>
   )
@@ -819,23 +842,24 @@ export function BoardroomColdCallCard({ courseSlug }: { courseSlug: string }) {
 export function LessonContextPanel({ courseSlug, lessonId }: { courseSlug: string; lessonId: string }) {
   const meta = getLessonMeta(courseSlug, lessonId)
   if (!meta) return null
-  const rows = [
-    { label: "Objective", value: meta.objective },
-    { label: "Why this matters", value: meta.whyItMatters },
-    { label: "You produce", value: meta.practicalOutput },
-  ].filter((row) => Boolean(row.value))
-  if (rows.length === 0) return null
   return (
-    <>
-      <dl className="os-spec">
-      {rows.map((row) => (
-        <div key={row.label}>
-          <dt>{row.label}</dt>
-          <dd>{row.value}</dd>
+    <div style={{ marginBottom: 10 }}>
+      {meta.objective ? (
+        <div
+          style={{
+            padding: "8px 12px",
+            borderRadius: 8,
+            background: "#f8fafc",
+            border: "1px solid #e2e8f0",
+            fontSize: 13,
+            color: "#334155",
+            marginBottom: 8,
+          }}
+        >
+          <strong style={{ color: "#0f172a" }}>Goal:</strong> {meta.objective}
         </div>
-      ))}
-      </dl>
+      ) : null}
       <BoardroomColdCallCard courseSlug={courseSlug} />
-    </>
+    </div>
   )
 }

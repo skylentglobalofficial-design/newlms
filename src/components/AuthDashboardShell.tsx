@@ -196,6 +196,7 @@ export function AuthDashboardShell({
       </aside>
 
       <div className="auth-shell-main">
+        {/* Mobile Static Top Bar — sits cleanly below phone status bar with no clutter */}
         <header className="auth-shell-topbar">
           <button
             ref={menuRef}
@@ -213,11 +214,14 @@ export function AuthDashboardShell({
             </svg>
           </button>
           <span className="auth-shell-wordmark">Skylent</span>
-          <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
-            <HeaderWalletAndNotifications variant="dashboard" />
-          </div>
+          {activeItem ? (
+            <span style={{ fontSize: 12, color: '#cbd5e1', fontWeight: 600, marginLeft: 8 }}>
+              · {activeItem.short ?? activeItem.label}
+            </span>
+          ) : null}
         </header>
 
+        {/* Desktop Top Bar */}
         <div
           className="auth-shell-bar"
           style={{

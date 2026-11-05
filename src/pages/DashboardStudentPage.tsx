@@ -841,9 +841,7 @@ export default function DashboardStudentPage() {
                       <h3 style={{ margin: '0 0 6px', fontSize: 17, color: '#0f172a', lineHeight: 1.3 }}>
                         {item.title}
                       </h3>
-                      <p style={{ margin: '0 0 12px', fontSize: 13, color: '#475569', lineHeight: 1.5 }}>
-                        {item.subtitle}
-                      </p>
+
                       <div style={{ display: 'flex', gap: 12, fontSize: 12, color: '#64748b', fontWeight: 600, marginBottom: 10 }}>
                         <span>⏱ {item.duration}</span>
                         <span>📚 {item.modulesCount} Modules ({item.lessonsCount} Lessons)</span>
@@ -1352,7 +1350,7 @@ export default function DashboardStudentPage() {
       aria-labelledby="sh-project"
     >
       <header className="sh-card-head">
-        <h2 id="sh-project">Current project &amp; browser lab</h2>
+        <h2 id="sh-project">Project &amp; Interactive Studio</h2>
         {currentProject ? (
           <span className={currentProject.status === 'ready_to_review' ? 'os-status is-done' : currentProject.status === 'not_started' ? 'os-status is-idle' : 'os-status'}>
             {projectStatusLabel(currentProject.status)}
@@ -1364,65 +1362,52 @@ export default function DashboardStudentPage() {
       ) : projects.status === 'error' ? (
         <ListError what="Your projects" onRetry={retryLists} />
       ) : currentProject ? (
-        <div className="sh-row">
+        <div className="sh-row" id="student-practice">
           <div className="sh-row-main">
             <strong>{currentProject.title}</strong>
             <span className="sh-note">
-              {currentProject.progress.complete} of {currentProject.progress.total} tasks complete · updated {formatDate(currentProject.updatedAt)}
+              {currentProject.progress.complete} / {currentProject.progress.total} milestones complete
             </span>
             <div className="os-progress-bar sh-row-bar" role="progressbar" aria-label={`${currentProject.title} tasks`} aria-valuemin={0} aria-valuemax={currentProject.progress.total} aria-valuenow={currentProject.progress.complete}>
               <span style={{ width: `${currentProject.progress.total ? (currentProject.progress.complete / currentProject.progress.total) * 100 : 0}%` }} />
             </div>
           </div>
-          <Link className="os-link sh-row-link" to={learnerProjectPath(currentProject.courseSlug, currentProject.projectType)} aria-label={`Open ${currentProject.title}`}>
-            Open project <ArrowRight />
-          </Link>
+          <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
+            {(() => {
+              const environment = practiceEnvironmentForCourse(course.slug)
+              const sqlLabHref = dashboardSqlLabHref(course.slug, resume.lessonId)
+              if (environment?.status === 'runs' && sqlLabHref) {
+                return (
+                  <Link className="os-btn os-btn-ghost" style={{ minHeight: 36, fontSize: 12.5 }} to={sqlLabHref}>
+                    SQL Lab
+                  </Link>
+                )
+              }
+              return null
+            })()}
+            <Link
+              className="os-btn os-btn-primary"
+              style={{ minHeight: 36, fontSize: 12.5, textDecoration: 'none' }}
+              to={learnerProjectPath(currentProject.courseSlug, currentProject.projectType)}
+              aria-label={`Open ${currentProject.title}`}
+            >
+              Open Project Studio <ArrowRight />
+            </Link>
+          </div>
         </div>
       ) : profile?.project ? (
-        <div className="sh-row">
+        <div className="sh-row" id="student-practice">
           <div className="sh-row-main">
             <strong>{profile.project.title || 'Capstone Project Studio'}</strong>
-            <span className="sh-note">{profile.project.note}</span>
+            <span className="sh-note">Interactive Case &amp; 6 Capstone Milestones</span>
           </div>
-          <Link className="os-link sh-row-link" to={profile.project.href}>
-            {profile.project.label} <ArrowRight />
+          <Link className="os-btn os-btn-primary" style={{ minHeight: 36, fontSize: 12.5, textDecoration: 'none' }} to={profile.project.href}>
+            Open Project Studio <ArrowRight />
           </Link>
         </div>
       ) : (
-        <p className="sh-empty">This course has no separate project workspace. Assignments stay in the lesson path.</p>
+        <p className="sh-empty" id="student-practice">Assignments are inside your course lessons.</p>
       )}
-      {(() => {
-        const environment = practiceEnvironmentForCourse(course.slug)
-        const sqlLabHref = dashboardSqlLabHref(course.slug, resume.lessonId)
-        if (environment?.status === 'runs') {
-          if (!sqlLabHref) return <span id="student-practice" />
-          return (
-            <div className="sh-row" id="student-practice">
-              <div className="sh-row-main">
-                <strong>Northwind SQL Lab</strong>
-                <span className="sh-note">{environment.honesty}</span>
-              </div>
-              <Link className="os-link sh-row-link" to={sqlLabHref}>
-                Open SQL Lab <ArrowRight />
-              </Link>
-            </div>
-          )
-        }
-        if (environment?.status === 'written') {
-          return (
-            <div className="sh-row" id="student-practice">
-              <div className="sh-row-main">
-                <strong>Harbor Desk PRD Studio</strong>
-                <span className="sh-note">{environment.honesty}</span>
-              </div>
-              <Link className="os-link sh-row-link" to={environment.href}>
-                Open Studio <ArrowRight />
-              </Link>
-            </div>
-          )
-        }
-        return <span id="student-practice" />
-      })()}
     </section>
   )
 
@@ -1734,9 +1719,7 @@ export default function DashboardStudentPage() {
                 </header>
                 <div className="sh-royal-ai__body">
                   <h2 id="sh-ai" className="sh-royal-ai__title">{AI_NAME} · Hinglish &amp; English Coach</h2>
-                  <p className="sh-royal-ai__desc">
-                    Need a simple Hinglish explanation, SQL debugging help, or a 20-minute Faculty TA review? Open your active lesson to use {AI_NAME} side-by-side.
-                  </p>
+
                   <div className="sh-royal-ai__pills">
                     <span>🇮🇳 Simple Hinglish Mode</span>
                     <span>🛠️ SQL &amp; Code Debugger</span>

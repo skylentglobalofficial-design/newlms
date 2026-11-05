@@ -63,9 +63,11 @@ function CareerOSPageNav({ pathname }: { pathname: string }) {
 export default function CareerOSShell({
   children,
   header,
+  showSubNav = true,
 }: {
   children: ReactNode
   header?: ReactNode
+  showSubNav?: boolean
 }) {
   const { pathname } = useLocation()
 
@@ -82,7 +84,7 @@ export default function CareerOSShell({
       header={header}
     >
       <div className="cos-scope">
-        <CareerOSPageNav pathname={pathname} />
+        {showSubNav ? <CareerOSPageNav pathname={pathname} /> : null}
         {children}
       </div>
     </AuthDashboardShell>

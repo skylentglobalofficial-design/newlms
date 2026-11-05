@@ -60,7 +60,7 @@ export default function LearnerProjectPage() {
   const [careerLinkStatus, setCareerLinkStatus] = useState<"loading" | "ready" | "error" | "locked">("loading")
   const [careerBusy, setCareerBusy] = useState(false)
   const [careerNotice, setCareerNotice] = useState<string | null>(null)
-  const [showCaseData, setShowCaseData] = useState(false)
+  const [showCaseData, setShowCaseData] = useState(true)
   const editVersionRef = useRef(0)
 
   const draftKey = projectType ? buildProjectReflectionDraftKey(projectType, project?.id) : ""
@@ -375,8 +375,8 @@ export default function LearnerProjectPage() {
             <h1 style={{ margin: "0 0 8px", fontSize: "clamp(20px, 2.4vw, 26px)", color: "#0f172a", fontFamily: "var(--font-display)" }}>
               {project.title}
             </h1>
-            <p style={{ margin: "0 0 12px", fontSize: 14, color: "#475569", lineHeight: 1.55, maxWidth: "72ch" }}>
-              <strong style={{ color: "#0f172a" }}>Objective:</strong> {project.goal} — {project.context}
+            <p style={{ margin: "0 0 10px", fontSize: 13, color: "#475569" }}>
+              {project.goal}
             </p>
             <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
               <Link className="os-btn os-btn-ghost" to={`/learn/${project.courseSlug}`} style={{ minHeight: 38, fontSize: 13 }}>
@@ -427,8 +427,8 @@ export default function LearnerProjectPage() {
             <div className="os-progress-bar" style={{ height: 7, marginBottom: 8 }}>
               <span style={{ width: `${pct}%` }} />
             </div>
-            <span style={{ fontSize: 11.5, color: "#64748b", display: "block", lineHeight: 1.45 }}>
-              Complete all {project.progress.total} milestones on the left and save your executive summary on the right.
+            <span style={{ fontSize: 11.5, color: "#64748b", display: "block" }}>
+              {project.progress.complete} of {project.progress.total} milestones complete
             </span>
           </div>
         </section>
@@ -654,9 +654,7 @@ export default function LearnerProjectPage() {
               <h2 style={{ margin: "0 0 4px", fontSize: 18, color: "#0f172a" }}>
                 {project.labEnabled ? "Write Your Data-Backed Executive Memo" : "Write Your Product Strategy & PRD Case"}
               </h2>
-              <p style={{ margin: 0, fontSize: 12.5, color: "#64748b" }}>
-                Your saved write-up is attached to your verified Skylent Certificate &amp; Career OS Proof-of-Work Dossier.
-              </p>
+
             </div>
 
             <div>
