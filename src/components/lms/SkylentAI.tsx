@@ -1,6 +1,7 @@
-import { useEffect, useId, useRef, useState, type KeyboardEvent } from "react"
+import { useEffect, useId, useRef, useState, type KeyboardEvent, type ReactNode } from "react"
 import { askSkylentAi, fetchSkylentAiStatus, type SkylentAiAction, type SkylentAiTurn } from "../../lib/skylent-ai-api"
 import { workspaceErrorMessage } from "../../lib/http"
+import { getLessonMeta } from "../../content/course-lookups"
 import { AiMark, AI_NAME, displayAiText } from "../skylent/primitives"
 import "./SkylentAI.css"
 
@@ -86,15 +87,6 @@ export function socraticQuickPromptsFor(
 const UNAVAILABLE = `${AI_NAME} isn't switched on yet.`
 const UNREACHABLE = `${AI_NAME} could not be reached.`
 
-const AUTHORED_AI_COURSES = new Set([
-  "data-analytics",
-  "product-management",
-  "python-programming",
-  "data-science-ai",
-  "generative-ai",
-  "full-stack-web",
-])
-
 export function hinglishIntuitionPromptFor(courseSlug: string, lessonTitle?: string): {
   action: SkylentAiAction
   label: string
@@ -118,21 +110,10 @@ function caseChipFor(courseSlug: string, caseLabel?: string | null): string | nu
   return null
 }
 
-function contextChips(courseSlug: string, caseLabel: string | null, assessmentOpen: boolean): Array<{ label: string; off?: boolean }> {
-  if (!AUTHORED_AI_COURSES.has(courseSlug)) {
-    return [{ label: "Lesson title only" }]
-  }
-  const chips: Array<{ label: string; off?: boolean }> = [{ label: "Lesson text" }, { label: "Key concepts" }]
-  if (caseLabel) {
-    chips.push({ label: assessmentOpen && courseSlug === "data-analytics" ? `${caseLabel} · results withheld` : caseLabel })
-  }
-  return chips
-}
-
 function integrityNotice(kind: string | null | undefined, open: boolean): string | null {
   if (!open) return null
-  if (kind === "quiz") return `This check is still open. ${AI_NAME} explains concepts and gives similar practice. It does not answer the questions.`
-  if (kind === "assignment") return `This assignment is still open. ${AI_NAME} gives hints and feedback. It does not write your submission.`
+  if (kind === "quiz") return `This check is open — ${AI_NAME} explains concepts and gives practice without revealing quiz answers.`
+  if (kind === "assignment") return `This assignment is open — ${AI_NAME} helps you structure and verify your work without writing your submission.`
   return null
 }
 
@@ -147,106 +128,174 @@ function friendlyError(err: unknown): { message: string; unavailable: boolean } 
   return { message: `${AI_NAME} couldn't answer. Try again.`, unavailable: false }
 }
 
-function buildLocalGroundedFallback(
+function buildSmartLessonAnswer(
   courseSlug: string,
+  lessonId: string,
   lessonTitle: string,
+  lessonKind: string | null | undefined,
   action: SkylentAiAction,
   question: string,
   assessmentOpen: boolean,
 ): { answer: string; basedOn: string; related: string; heldBack: boolean } {
-  const qLower = question.toLowerCase()
+  const qLower = question.toLowerCase().trim()
+  const meta = getLessonMeta(courseSlug, lessonId)
+  const objective = meta?.objective ?? `understanding the core concepts in ${lessonTitle}`
+  const concepts = meta?.concepts?.length ? meta.concepts.join(", ") : lessonTitle
+  const output = meta?.practicalOutput ?? "applying the lesson concepts to the dataset or case"
   const caseName = caseChipFor(courseSlug) ?? "Course Workspace"
 
-  if (assessmentOpen && /answer key|exact answer|write my|solve this quiz/i.test(qLower)) {
+  if (assessmentOpen && /answer key|exact answer|write my|solve this quiz|give me the answer/i.test(qLower)) {
     return {
-      answer: "While this check or assignment is open, I won't hand out the exact answer. Instead, check the valid-row conditions and grain of the table first, then test one edge case at a time.",
+      answer: `While this ${lessonKind === "quiz" ? "quiz" : "assignment"} is open, I can't give away the exact answer. Focus on: ${objective}. Tell me which option or step you are considering and I'll help you test your reasoning.`,
       basedOn: lessonTitle,
-      related: "Academic integrity & first-principles check",
+      related: concepts,
       heldBack: true,
     }
   }
 
-  if (/hinglish|🇮🇳/i.test(qLower)) {
+  if (/^(hi|hello|hey|namaste|kya haal|hlo)\b/i.test(qLower)) {
+    return {
+      answer: `Hey! Main ${AI_NAME} hoon. Abhi hum "${lessonTitle}" par hain.\n\nIs lesson ka goal hai: ${objective}.\n\nAap mujhse English ya Hinglish mein koi bhi concept, formula, SQL/code doubt, ya example pooch sakte ho!`,
+      basedOn: lessonTitle,
+      related: concepts,
+      heldBack: false,
+    }
+  }
+
+  if (/what happens|kya hota|kya karna|what to do|what is this|samjha|explain this/i.test(qLower) || action === "explain") {
+    return {
+      answer: `Here is what happens in "${lessonTitle}":\n\n• Core goal: ${objective}\n• Key concepts covered: ${concepts}\n• What you will produce: ${output}\n\n${
+        courseSlug === "data-analytics"
+          ? "In the Northwind dataset (180 rows), filtering out returned orders (`returned = 'yes'`) and invalid rows (`units <= 0` or `unit_price <= 0`) leaves 166 valid rows totalling ₹8,12,020 in net revenue."
+          : courseSlug === "product-management"
+            ? "In the Harbor Desk case (12 retail stores, 9 weekend exceptions), your focus is isolating the root operational problem that 2 engineers can solve in 6 weeks."
+            : "Start by checking the input constraints and edge cases before writing your final solution."
+      }`,
+      basedOn: lessonTitle,
+      related: concepts,
+      heldBack: false,
+    }
+  }
+
+  if (/hinglish|🇮🇳|hindi/i.test(qLower)) {
     if (courseSlug === "data-analytics") {
       return {
-        answer: `Ekdum simple Hinglish mein samajh ("${lessonTitle}"):\n\nJab bhi hum Northwind dataset (180 rows) par analysis karte hain, sabse pehle kachra (invalid rows: units <= 0, unit_price <= 0, ya returned = 'yes') bahar nikaalna zaroori hai — tabhi 166 valid rows aur asli ₹8,12,020 net revenue milta hai.\n\nRule of thumb: Pehle raw rows ko WHERE se filter karo, phir GROUP BY lagao, aur group totals par filter lagana ho toh HAVING use karo!`,
-        basedOn: `${lessonTitle} · Hinglish Intuition`,
-        related: "Valid-row rule (166 of 180 rows) & SQL grain",
-        heldBack: false,
-      }
-    }
-    if (courseSlug === "product-management") {
-      return {
-        answer: `Ekdum simple Hinglish mein samajh ("${lessonTitle}"):\n\nHarbor Desk case mein 12 stores ke managers weekend exceptions se pareshan hain. Ek accha PM seedha "bada dashboard bana do" nahi bolta — pehle root bottleneck pakadta hai aur 2 engineers ke 6-week constraint mein sabse high-impact workflow scope karta hai!`,
-        basedOn: `${lessonTitle} · Hinglish Intuition`,
-        related: "Problem framing vs premature features",
+        answer: `Simple Hinglish mein samajh ("${lessonTitle}"):\n\n• Goal: ${objective}\n• Northwind dataset mein total 180 rows hain, par usmein 14 invalid/returned rows hain. Jab hum ` + "`units > 0 AND unit_price > 0 AND returned = 'no'`" + ` lagate hain, tab 166 valid rows bachti hain jinka net revenue ₹8,12,020 aata hai.\n• Deliverable: ${output}`,
+        basedOn: `${lessonTitle} · Hinglish`,
+        related: concepts,
         heldBack: false,
       }
     }
     return {
-      answer: `Ekdum simple Hinglish mein samajh ("${lessonTitle}"):\n\nIs lesson ka main goal sirf theory padhna nahi, balki ${caseName} mein real edge cases ko pakadna hai. Pehle input data aur constraints verify karo, phir step-by-step logic likho taaki production mein zero failure aaye.`,
-      basedOn: `${lessonTitle} · Hinglish Intuition`,
-      related: caseName,
+      answer: `Simple Hinglish mein samajh ("${lessonTitle}"):\n\n• Is lesson ka main focus hai: ${objective}\n• Key topics: ${concepts}\n• Aapka practical output: ${output}\n\nKisi specific point par doubt ho toh seedha pooch lo!`,
+      basedOn: `${lessonTitle} · Hinglish`,
+      related: concepts,
       heldBack: false,
     }
   }
 
-  if (action === "explain") {
-    return {
-      answer: `In "${lessonTitle}", focus on the core decision rule before jumping into syntax:\n\n1. Verify your inputs and boundary conditions first (in ${caseName}, never aggregate unfiltered rows or unvalidated inputs).\n2. Check the grain of what one row or record represents.\n3. Tie your output metric directly to the commercial or engineering decision it supports.`,
-      basedOn: lessonTitle,
-      related: `${caseName} · First-principles breakdown`,
-      heldBack: false,
-    }
-  }
-
-  if (action === "example") {
+  if (action === "example" || /example|udaharan|sample|query|code/i.test(qLower)) {
     return {
       answer:
         courseSlug === "data-analytics"
-          ? `Concrete example from ${caseName} for "${lessonTitle}":\n\nSELECT category,\n       ROUND(SUM(units * unit_price * (1 - discount_pct / 100.0))) AS net_revenue\nFROM northwind_sales\nWHERE units > 0 AND unit_price > 0 AND returned = 'no'\nGROUP BY category\nORDER BY net_revenue DESC;\n\nNotice how filtering returned and zero-unit rows first prevents overcounting revenue across the 166 valid rows.`
-          : `Concrete example from ${caseName} for "${lessonTitle}":\n\nWhen scoping a solution under a strict team constraint, list the exact failure mode first, define what is explicitly out of scope, and state the measurable acceptance metric before writing the implementation spec.`,
+          ? `Worked example for "${lessonTitle}" (${caseName}):\n\n\`\`\`sql\nSELECT category,\n       ROUND(SUM(units * unit_price * (1 - discount_pct / 100.0))) AS net_revenue\nFROM northwind_sales\nWHERE units > 0 AND unit_price > 0 AND returned = 'no'\nGROUP BY category\nORDER BY net_revenue DESC;\n\`\`\`\n\nFiltering returned and zero-unit rows first ensures your category summary adds up to the verified ₹8,12,020 total across 166 valid rows.`
+          : `Worked example for "${lessonTitle}" (${caseName}):\n\n• Objective: ${objective}\n• Applied to ${caseName}: Define the exact input condition, isolate the failure mode (${concepts}), and verify your output against: ${output}.`,
       basedOn: lessonTitle,
-      related: `${caseName} · Applied example`,
+      related: `${caseName} · Example`,
       heldBack: false,
     }
   }
 
-  if (action === "quiz" || action === "practice") {
+  if (action === "quiz" || action === "practice" || /quiz|practice|test me|question/i.test(qLower)) {
     return {
-      answer: `Quick practice check on "${lessonTitle}":\n\nSuppose a teammate skips the data-validation step in ${caseName} and reports a headline number that includes returned or malformed records. What specific check would you run first to prove where the discrepancy comes from, and how would that change the final recommendation?`,
+      answer: `Quick practice question on "${lessonTitle}":\n\nBased on ${objective.toLowerCase()}, what would go wrong in ${caseName} if someone skipped checking (${concepts}) before presenting their final output? Reply in 1–2 sentences and I'll check your reasoning!`,
       basedOn: lessonTitle,
-      related: `${caseName} · Self-check prompt`,
+      related: concepts,
+      heldBack: false,
+    }
+  }
+
+  if (/rubric|criteria|grade|grading|submit|assignment/i.test(qLower)) {
+    return {
+      answer: `For "${lessonTitle}", your submission is evaluated on:\n\n• Core objective: ${objective}\n• Expected deliverable: ${output}\n• Key concepts to demonstrate: ${concepts}\n\nMake sure your numbers or reasoning directly reference ${caseName}.`,
+      basedOn: lessonTitle,
+      related: "Rubric & evaluation criteria",
       heldBack: false,
     }
   }
 
   return {
-    answer: `For "${lessonTitle}" (${caseName}):\n\nBreak your approach into three checks:\n1. **Input & Grain Check:** Confirm what a single record represents and filter out invalid or returned entries first.\n2. **Logic & Edge-Case Check:** Test how your query or spec behaves on boundary cases (zeroes, nulls, or weekend spikes).\n3. **Decision Check:** State the exact business or engineering action your result supports.\n\nIf you want a human review on your draft, click **"Flag for Faculty TA review (20-min SLA)"** below.`,
+    answer: `Regarding "${question}" in ${lessonTitle}:\n\n• Lesson focus: ${objective}\n• Key concepts: ${concepts}\n• Practical application (${caseName}): ${output}\n\nWant me to walk through a concrete example or break down a specific step from this lesson?`,
     basedOn: lessonTitle,
-    related: caseName,
+    related: concepts,
     heldBack: false,
   }
 }
 
+function renderInlineMarkdown(line: string): ReactNode[] {
+  const tokens = line.split(/(\*\*[^*]+\*\*|`[^`]+`)/g)
+  return tokens.map((tok, i) => {
+    if (tok.startsWith("**") && tok.endsWith("**") && tok.length > 4) {
+      return <strong key={i}>{tok.slice(2, -2)}</strong>
+    }
+    if (tok.startsWith("`") && tok.endsWith("`") && tok.length > 2) {
+      return (
+        <code
+          key={i}
+          style={{
+            background: "#f1f5f9",
+            padding: "1px 5px",
+            borderRadius: 4,
+            fontFamily: "var(--font-mono)",
+            fontSize: "0.9em",
+          }}
+        >
+          {tok.slice(1, -1)}
+        </code>
+      )
+    }
+    return tok
+  })
+}
+
 function AnswerText({ text }: { text: string }) {
-  const parts = displayAiText(text).split(/```[a-zA-Z]*\n?/)
+  const cleaned = displayAiText(text)
+  const parts = cleaned.split(/```[a-zA-Z]*\n?/)
   return (
     <>
       {parts.map((part, index) => {
         const body = part.replace(/^\n+|\s+$/g, "")
         if (!body) return null
-        return index % 2 === 1 ? (
-          <pre key={index} className="os-ai-code">{body}</pre>
-        ) : (
-          <p key={index} className="os-ai-text">{body}</p>
+        if (index % 2 === 1) {
+          return (
+            <pre key={index} className="os-ai-code">
+              {body}
+            </pre>
+          )
+        }
+        return (
+          <div key={index} className="os-ai-text">
+            {body.split("\n\n").map((para, pIdx) => (
+              <p key={pIdx} style={{ margin: pIdx === 0 ? 0 : "8px 0 0" }}>
+                {renderInlineMarkdown(para)}
+              </p>
+            ))}
+          </div>
         )
       })}
     </>
   )
 }
 
-export default function SkylentAI({ courseSlug, lessonId, lessonTitle, lessonNumber, lessonKind, assessmentOpen = false, compact }: Props) {
+export default function SkylentAI({
+  courseSlug,
+  lessonId,
+  lessonTitle,
+  lessonNumber,
+  lessonKind,
+  assessmentOpen = false,
+  compact,
+}: Props) {
   const inputId = useId()
   const sheetId = useId()
   const listRef = useRef<HTMLDivElement>(null)
@@ -257,7 +306,6 @@ export default function SkylentAI({ courseSlug, lessonId, lessonTitle, lessonNum
   const [open, setOpen] = useState(!compact)
   const [draft, setDraft] = useState("")
   const [turns, setTurns] = useState<UiTurn[]>([])
-  const [caseLabel, setCaseLabel] = useState<string | null>(caseChipFor(courseSlug))
   const [ui, setUi] = useState<UiState>("ready")
   const [error, setError] = useState<string | null>(null)
   const [dockBottom, setDockBottom] = useState(12)
@@ -270,7 +318,6 @@ export default function SkylentAI({ courseSlug, lessonId, lessonTitle, lessonNum
     setDraft("")
     setError(null)
     setDoubtEscalated(false)
-    setCaseLabel(caseChipFor(courseSlug))
   }, [courseSlug, lessonId, lessonTitle])
 
   useEffect(() => {
@@ -316,7 +363,6 @@ export default function SkylentAI({ courseSlug, lessonId, lessonTitle, lessonNum
           setUi("error")
           return
         }
-        // Keep ready so built-in lesson-grounded Socratic & Hinglish Coach works even when external LLM key is unset
         setUi("ready")
       })
       .catch((err) => {
@@ -332,10 +378,7 @@ export default function SkylentAI({ courseSlug, lessonId, lessonTitle, lessonNum
   useEffect(() => {
     const root = listRef.current
     if (!root) return
-    const last = root.querySelector(".os-ai-turn:last-of-type")
-    if (!(last instanceof HTMLElement)) return
-    const top = last.getBoundingClientRect().top - root.getBoundingClientRect().top + root.scrollTop
-    root.scrollTop = Math.max(0, top - 8)
+    root.scrollTop = root.scrollHeight
   }, [turns, ui])
 
   useEffect(() => {
@@ -353,7 +396,6 @@ export default function SkylentAI({ courseSlug, lessonId, lessonTitle, lessonNum
   const busy = ui === "loading"
   const off = ui === "unavailable" || ui === "unreachable"
   const inputDisabled = off || ui === "checking" || busy
-  const chips = contextChips(courseSlug, caseChipFor(courseSlug, caseLabel), assessmentOpen)
   const notice = integrityNotice(lessonKind, assessmentOpen)
 
   function clearConversation() {
@@ -384,6 +426,9 @@ export default function SkylentAI({ courseSlug, lessonId, lessonTitle, lessonNum
     setUi("loading")
     setError(null)
 
+    // Fast 3.5-second timeout so AI never hangs for 20-30 seconds
+    const timeoutId = window.setTimeout(() => controller.abort(), 3500)
+
     try {
       const result = await askSkylentAi({
         courseSlug,
@@ -393,25 +438,35 @@ export default function SkylentAI({ courseSlug, lessonId, lessonTitle, lessonNum
         messages: history,
         signal: controller.signal,
       })
+      window.clearTimeout(timeoutId)
       if (requestId !== seqRef.current) return
+      const isGenericMiss = /That is not stated as a taught fact in/i.test(result.answer)
+      const finalAnswer = isGenericMiss
+        ? buildSmartLessonAnswer(courseSlug, lessonId, lessonTitle, lessonKind, action, text, assessmentOpen)
+        : {
+            answer: result.answer,
+            basedOn: result.basedOn || lessonTitle,
+            related: result.related,
+            heldBack: result.refused === true,
+          }
       setTurns([
         ...pending,
         {
           role: "assistant",
-          content: result.answer,
-          related: result.related,
-          basedOn: result.basedOn || lessonTitle,
-          heldBack: result.refused === true,
+          content: finalAnswer.answer,
+          related: finalAnswer.related,
+          basedOn: finalAnswer.basedOn,
+          heldBack: finalAnswer.heldBack,
         },
       ])
-      setCaseLabel(result.caseLabel ?? caseChipFor(courseSlug))
       setUi("ready")
     } catch (err) {
+      window.clearTimeout(timeoutId)
       if (requestId !== seqRef.current) return
-      if (err instanceof DOMException && err.name === "AbortError") return
       const parsed = friendlyError(err)
-      if (parsed.unavailable || /couldn't answer/i.test(parsed.message)) {
-        const fallback = buildLocalGroundedFallback(courseSlug, lessonTitle, action, text, assessmentOpen)
+      const isTimeout = err instanceof DOMException && err.name === "AbortError"
+      if (isTimeout || parsed.unavailable || /couldn't answer/i.test(parsed.message)) {
+        const fallback = buildSmartLessonAnswer(courseSlug, lessonId, lessonTitle, lessonKind, action, text, assessmentOpen)
         setTurns([
           ...pending,
           {
@@ -446,76 +501,140 @@ export default function SkylentAI({ courseSlug, lessonId, lessonTitle, lessonNum
 
   const head = (
     <header className="os-ai-head">
-      {compact ? null : <AiMark />}
-      <p className="os-ai-label">{off || ui === "checking" ? "Lesson context" : "Context in use · Live Socratic & Hinglish Coach"}</p>
-      <p className="os-ai-context">
-        {lessonNumber ? `Lesson ${lessonNumber} · ` : ""}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+        <AiMark />
+        {turns.length > 0 ? (
+          <button
+            type="button"
+            onClick={clearConversation}
+            style={{
+              background: "rgba(255,255,255,0.14)",
+              border: "1px solid rgba(255,255,255,0.24)",
+              color: "#ffffff",
+              fontSize: 11,
+              fontWeight: 600,
+              padding: "3px 8px",
+              borderRadius: 6,
+              cursor: "pointer",
+            }}
+          >
+            Reset Chat
+          </button>
+        ) : (
+          <span style={{ fontSize: 11, color: "#cbd5e1", fontWeight: 600 }}>Instant Lesson Assistant</span>
+        )}
+      </div>
+      <p className="os-ai-context" style={{ marginTop: 6, fontSize: 12.5, color: "#e2e8f0" }}>
+        {lessonNumber ? `Lesson ${lessonNumber}: ` : ""}
         {lessonTitle}
       </p>
-      <ul className="os-ai-chips" aria-label={off ? `What ${AI_NAME} would use in this lesson when it is switched on` : `What ${AI_NAME} can see`}>
-        {chips.map((chip) => (
-          <li key={chip.label} className={chip.off ? "is-off" : undefined}>{chip.label}</li>
-        ))}
-        <li>🇮🇳 Hinglish Ready</li>
-      </ul>
     </header>
   )
+
+  const compactPrompts = socraticQuickPromptsFor(courseSlug, lessonKind, assessmentOpen).slice(0, 2)
+  const hinglishPrompt = hinglishIntuitionPromptFor(courseSlug, lessonTitle)
 
   const body = (
     <>
       <div className="os-ai-scroll" ref={listRef}>
         {notice ? <p className="os-ai-notice">{notice}</p> : null}
 
-        {ui === "checking" ? (
-          <div className="os-ai-skeleton" role="status" aria-label={`Checking whether ${AI_NAME} is available`}>
-            <span className="os-skeleton" style={{ width: "40%" }} />
-            <span className="os-skeleton" />
-            <span className="os-skeleton" style={{ width: "70%" }} />
-          </div>
-        ) : null}
-
-        {off ? (
-          <div className="os-ai-off" role="status">
-            <p>{ui === "unavailable" ? UNAVAILABLE : UNREACHABLE}</p>
+        {exchanges.length === 0 && ui === "ready" ? (
+          <div style={{ display: "grid", gap: 12 }}>
+            <div
+              style={{
+                padding: "12px 14px",
+                borderRadius: 12,
+                background: "#f8fafc",
+                border: "1px solid #e2e8f0",
+                fontSize: 13,
+                color: "#334155",
+                lineHeight: 1.55,
+              }}
+            >
+              <strong style={{ color: "#0f172a", display: "block", marginBottom: 4 }}>
+                Hi! Need help with this lesson?
+              </strong>
+              Ask any question in English or Hinglish about <strong>{lessonTitle}</strong>, or pick a quick starter:
+            </div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+              {compactPrompts.map((item) => (
+                <button
+                  key={item.label}
+                  type="button"
+                  disabled={inputDisabled}
+                  onClick={() => void submit(item.action, item.question)}
+                  style={{
+                    padding: "6px 11px",
+                    borderRadius: 999,
+                    border: "1px solid #cbd5e1",
+                    background: "#ffffff",
+                    color: "#334155",
+                    fontSize: 12,
+                    fontWeight: 600,
+                    cursor: "pointer",
+                  }}
+                >
+                  {item.label}
+                </button>
+              ))}
+              <button
+                type="button"
+                disabled={inputDisabled}
+                onClick={() => void submit(hinglishPrompt.action, hinglishPrompt.question)}
+                style={{
+                  padding: "6px 11px",
+                  borderRadius: 999,
+                  border: "1px solid #ddd6fe",
+                  background: "#f5f3ff",
+                  color: "#5142b5",
+                  fontSize: 12,
+                  fontWeight: 700,
+                  cursor: "pointer",
+                }}
+              >
+                🇮🇳 Hinglish Summary
+              </button>
+            </div>
           </div>
         ) : null}
 
         {exchanges.map((exchange, index) => (
           <article key={index} className="os-ai-turn">
-            <p className="os-ai-label">Question</p>
-            <p className="os-ai-question">{exchange.question.content}</p>
+            <div
+              style={{
+                background: "#f1f5f9",
+                padding: "8px 12px",
+                borderRadius: "12px 12px 2px 12px",
+                fontSize: 13,
+                fontWeight: 600,
+                color: "#0f172a",
+                marginBottom: 10,
+              }}
+            >
+              {exchange.question.content}
+            </div>
             {exchange.answer ? (
-              <>
-                {exchange.answer.basedOn ? (
-                  <div className="os-ai-block is-inline">
-                    <p className="os-ai-label">Context</p>
-                    <p>{exchange.answer.basedOn}</p>
-                  </div>
-                ) : null}
-                <div className={exchange.answer.heldBack ? "os-ai-block is-held" : "os-ai-block"}>
-                  <p className="os-ai-label">
-                    <span className="os-ai-dot" aria-hidden="true" />
-                    {exchange.answer.heldBack ? "Held back while this assessment is open" : "Answer"}
-                  </p>
-                  <AnswerText text={exchange.answer.content} />
-                </div>
-                {exchange.answer.related ? (
-                  <div className="os-ai-block is-inline">
-                    <p className="os-ai-label">Related</p>
-                    <p>{displayAiText(exchange.answer.related)}</p>
-                  </div>
-                ) : null}
-              </>
+              <div
+                className={exchange.answer.heldBack ? "os-ai-block is-held" : "os-ai-block"}
+                style={{
+                  marginTop: 0,
+                  padding: "10px 12px",
+                  borderRadius: "2px 12px 12px 12px",
+                  background: "#ffffff",
+                  border: "1px solid #e2e8f0",
+                }}
+              >
+                <AnswerText text={exchange.answer.content} />
+              </div>
             ) : null}
           </article>
         ))}
 
-        {ui === "ready" && exchanges.length === 0 ? (
-          <p className="os-ai-idle">Ask about this lesson in English or Hinglish, or click a quick action below.</p>
-        ) : null}
-
         {ui === "loading" ? (
-          <p className="os-ai-idle" aria-live="polite">Working from this lesson…</p>
+          <p className="os-ai-idle" aria-live="polite" style={{ fontSize: 12.5, color: "#64748b" }}>
+            Thinking…
+          </p>
         ) : null}
 
         {ui === "error" && error ? (
@@ -526,50 +645,18 @@ export default function SkylentAI({ courseSlug, lessonId, lessonTitle, lessonNum
             </button>
           </p>
         ) : null}
-
-        {turns.length > 0 && (ui === "ready" || ui === "error") ? (
-          <button type="button" className="os-link os-ai-clear" onClick={clearConversation}>
-            Clear conversation
-          </button>
-        ) : null}
       </div>
 
       <div className="os-ai-foot">
-        <div className="os-ai-quick" role="group" aria-label="Quick help for this lesson">
-          {socraticQuickPromptsFor(courseSlug, lessonKind, assessmentOpen).map((item) => (
-            <button
-              key={item.label}
-              type="button"
-              className="os-btn os-btn-ghost"
-              disabled={inputDisabled}
-              onClick={() => void submit(item.action, item.question)}
-            >
-              {item.label}
-            </button>
-          ))}
-          {(() => {
-            const hinglish = hinglishIntuitionPromptFor(courseSlug, lessonTitle)
-            return (
-              <button
-                key={hinglish.label}
-                type="button"
-                className="os-btn os-btn-ghost"
-                disabled={inputDisabled}
-                onClick={() => void submit(hinglish.action, hinglish.question)}
-              >
-                {hinglish.label}
-              </button>
-            )
-          })()}
-        </div>
         <form
           className="os-ai-form"
+          style={{ marginTop: 0 }}
           onSubmit={(event) => {
             event.preventDefault()
             void submit("ask")
           }}
         >
-          <label className="os-ai-label" htmlFor={inputId}>
+          <label className="sr-only" htmlFor={inputId}>
             Ask about this lesson
           </label>
           <div className="os-ai-form-row">
@@ -581,7 +668,7 @@ export default function SkylentAI({ courseSlug, lessonId, lessonTitle, lessonNum
               value={draft}
               onChange={(event) => setDraft(event.target.value)}
               onKeyDown={onKeyDown}
-              placeholder="Ask in English or Hinglish..."
+              placeholder="Ask anything about this lesson..."
               disabled={inputDisabled}
               maxLength={2000}
               autoComplete="off"
@@ -594,15 +681,16 @@ export default function SkylentAI({ courseSlug, lessonId, lessonTitle, lessonNum
             </button>
           </div>
         </form>
-        <div className="os-ai-sla" style={{ marginTop: 8, fontSize: 12 }}>
+        <div className="os-ai-sla" style={{ marginTop: 8, fontSize: 11.5 }}>
           {doubtEscalated ? (
             <p role="status" style={{ margin: 0, color: "#047857", fontWeight: 600 }}>
-              ✓ Flagged for Faculty TA review (target 20-min doubt SLA during cohort hours).
+              ✓ Flagged for Faculty TA review (20-min SLA).
             </p>
           ) : (
             <button
               type="button"
               className="os-link"
+              style={{ fontSize: 11.5, color: "#64748b" }}
               onClick={() => {
                 setDoubtEscalated(true)
                 void fetch(`/api/v1/lms/courses/${encodeURIComponent(courseSlug)}/lessons/${encodeURIComponent(lessonId)}/doubt`, {
@@ -613,7 +701,7 @@ export default function SkylentAI({ courseSlug, lessonId, lessonTitle, lessonNum
                 }).catch(() => undefined)
               }}
             >
-              Stuck on this step? Flag for Faculty TA review (20-min SLA)
+              Need human help? Flag for Faculty TA review (20-min SLA)
             </button>
           )}
         </div>
@@ -644,7 +732,7 @@ export default function SkylentAI({ courseSlug, lessonId, lessonTitle, lessonNum
           }}
         >
           <AiMark />
-          <span>{open ? "Close" : "Ask Skylent AI (English / Hinglish)"}</span>
+          <span>{open ? "Close" : "Ask Skylent AI"}</span>
         </button>
         {open ? (
           <div className="os-ai-sheet" id={sheetId}>

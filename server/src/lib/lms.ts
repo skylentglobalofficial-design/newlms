@@ -281,10 +281,11 @@ export async function getProgramEnrollmentForCourse(userId: string, courseId: st
 }
 
 export async function resolveCourseEnrollment(userId: string, courseId: string) {
-  const direct = await getActiveCourseEnrollment(userId, courseId)
-  if (direct) return direct
-
-  return getProgramEnrollmentForCourse(userId, courseId)
+  const [direct, program] = await Promise.all([
+    getActiveCourseEnrollment(userId, courseId),
+    getProgramEnrollmentForCourse(userId, courseId),
+  ])
+  return direct ?? program
 }
 
 const ASSIGNMENT_STATUS_RANK: Record<string, number> = {
@@ -487,7 +488,10 @@ async function resolveProgramResumeEnrollment(
 }
 
 export async function getPrimaryEnrollment(userId: string) {
-  const programEnrollment = await loadProgramEnrollment(userId)
+  const [programEnrollment, directEnrollment] = await Promise.all([
+    loadProgramEnrollment(userId),
+    loadDirectCourseEnrollment(userId),
+  ])
   if (programEnrollment) {
     const resolved = await resolveProgramResumeEnrollment(userId, programEnrollment)
     if (resolved) {
@@ -498,7 +502,7 @@ export async function getPrimaryEnrollment(userId: string) {
     }
   }
 
-  return loadDirectCourseEnrollment(userId)
+  return directEnrollment
 }
 
 export function buildLessonState(
@@ -805,29 +809,31 @@ export async function buildProgramWorkspace(
   })
   if (!programEnrollment) return null
 
-  const courses: ProgramCourseProgress[] = []
-  for (const link of program.programCourses) {
-    const course = link.course
-    const enrollment = await resolveCourseEnrollment(userId, course.id)
-    if (!enrollment) continue
-    const lessonStates = await loadLessonStates(enrollment, course)
-    const progress = computeProgress(course, lessonStates)
-    const lastAccessedInThisCourse = flattenNodes(course).some(
-      (item) => item.node.id === enrollment.lastAccessedNodeId,
-    )
-    const resume = computeResume(
-      course,
-      lessonStates,
-      lastAccessedInThisCourse ? enrollment.lastAccessedNodeId : null,
-    )
-    courses.push({
-      slug: course.slug,
-      title: course.title,
-      progress,
-      resume,
-    })
-  }
+  const loadedCourses = await Promise.all(
+    program.programCourses.map(async (link) => {
+      const course = link.course
+      const enrollment = await resolveCourseEnrollment(userId, course.id)
+      if (!enrollment) return null
+      const lessonStates = await loadLessonStates(enrollment, course)
+      const progress = computeProgress(course, lessonStates)
+      const lastAccessedInThisCourse = flattenNodes(course).some(
+        (item) => item.node.id === enrollment.lastAccessedNodeId,
+      )
+      const resume = computeResume(
+        course,
+        lessonStates,
+        lastAccessedInThisCourse ? enrollment.lastAccessedNodeId : null,
+      )
+      return {
+        slug: course.slug,
+        title: course.title,
+        progress,
+        resume,
+      } satisfies ProgramCourseProgress
+    }),
+  )
 
+  const courses = loadedCourses.filter((item): item is ProgramCourseProgress => item !== null)
   if (courses.length === 0) return null
 
   const completedCount = courses.reduce((sum, course) => sum + course.progress.completedCount, 0)
@@ -904,7 +910,10 @@ export async function findProgramWorkspaceForCourse(userId: string, courseId: st
 }
 
 export async function loadLearnerDashboard(userId: string): Promise<CourseWorkspace | null> {
-  const programEnrollment = await loadProgramEnrollment(userId)
+  const [programEnrollment, courseEnrollment] = await Promise.all([
+    loadProgramEnrollment(userId),
+    loadDirectCourseEnrollment(userId),
+  ])
   if (programEnrollment) {
     const resolved = await resolveProgramResumeEnrollment(userId, programEnrollment)
     if (resolved) {
@@ -916,7 +925,6 @@ export async function loadLearnerDashboard(userId: string): Promise<CourseWorksp
     }
   }
 
-  const courseEnrollment = await loadDirectCourseEnrollment(userId)
   if (!courseEnrollment?.course) return null
   const workspace = await buildCourseWorkspace(courseEnrollment)
   return workspace
@@ -972,25 +980,25 @@ export async function summarizeEnrollmentCourses(enrollmentId: string): Promise<
   })
   if (!enrollment) return []
   const courses = enrollment.program?.programCourses.map((link) => link.course) ?? (enrollment.course ? [enrollment.course] : [])
-  const summaries: EnrollmentCourseSummary[] = []
-  for (const course of courses) {
-    const progressEnrollment = (await resolveCourseEnrollment(enrollment.userId, course.id)) ?? enrollment
-    const lessonStates = await loadLessonStates(progressEnrollment, course)
-    const openAssessments = flattenNodes(course).flatMap((item) => {
-      const type = nodeTypeKey(item.node.nodeType)
-      if (type !== "quiz" && type !== "assignment") return []
-      const state = lessonStates[item.lessonKey]
-      if (!state?.started || state.complete || state.locked) return []
-      return [{ lessonKey: item.lessonKey, title: item.node.title, type: type as "quiz" | "assignment" }]
-    })
-    summaries.push({
-      slug: course.slug,
-      title: course.title,
-      progress: computeProgress(course, lessonStates),
-      openAssessments,
-    })
-  }
-  return summaries
+  return Promise.all(
+    courses.map(async (course) => {
+      const progressEnrollment = (await resolveCourseEnrollment(enrollment.userId, course.id)) ?? enrollment
+      const lessonStates = await loadLessonStates(progressEnrollment, course)
+      const openAssessments = flattenNodes(course).flatMap((item) => {
+        const type = nodeTypeKey(item.node.nodeType)
+        if (type !== "quiz" && type !== "assignment") return []
+        const state = lessonStates[item.lessonKey]
+        if (!state?.started || state.complete || state.locked) return []
+        return [{ lessonKey: item.lessonKey, title: item.node.title, type: type as "quiz" | "assignment" }]
+      })
+      return {
+        slug: course.slug,
+        title: course.title,
+        progress: computeProgress(course, lessonStates),
+        openAssessments,
+      }
+    }),
+  )
 }
 
 export function formatVideoMedia(node: CurriculumNode) {

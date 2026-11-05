@@ -127,52 +127,64 @@ export async function capabilityAvailable(key: keyof SchemaCapabilities): Promis
   }
 }
 
-const CACHE_MS = 20_000
+const CACHE_MS = 120_000
 let cached: { at: number; value: SchemaCapabilities } | null = null
+let inflight: Promise<SchemaCapabilities> | null = null
 
 export function clearSchemaCapabilityCache() {
   cached = null
+  inflight = null
 }
 
 export async function readSchemaCapabilities(): Promise<SchemaCapabilities> {
   if (cached && Date.now() - cached.at < CACHE_MS) return cached.value
-  const rows = await prisma.$queryRaw<ColumnRow[]>`
-    SELECT table_name, column_name
-    FROM information_schema.columns
-    WHERE table_schema = 'public'
-      AND lower(table_name) IN (
-        'curriculumnode',
-        'assignmentprogress',
-        'quizquestion',
-        'skylentcertificate',
-        'event',
-        'degree',
-        'jobapplication',
-        'practiceworkspace',
-        'practiceworkspacerevision',
-        'practiceworkspaceresponse',
-        'policyacceptance',
-        'user',
-        'course',
-        'passwordresettoken',
-        'skylentenquiry',
-        'employermembership',
-        'college',
-        'collegemembership'
+  if (inflight) return inflight
+  inflight = (async () => {
+    try {
+      const [rows, enumRows] = await Promise.all([
+        prisma.$queryRaw<ColumnRow[]>`
+          SELECT table_name, column_name
+          FROM information_schema.columns
+          WHERE table_schema = 'public'
+            AND lower(table_name) IN (
+              'curriculumnode',
+              'assignmentprogress',
+              'quizquestion',
+              'skylentcertificate',
+              'event',
+              'degree',
+              'jobapplication',
+              'practiceworkspace',
+              'practiceworkspacerevision',
+              'practiceworkspaceresponse',
+              'policyacceptance',
+              'user',
+              'course',
+              'passwordresettoken',
+              'skylentenquiry',
+              'employermembership',
+              'college',
+              'collegemembership'
+            )
+        `,
+        prisma.$queryRaw<{ enumlabel: string }[]>`
+          SELECT e.enumlabel
+            FROM pg_enum e
+            JOIN pg_type t ON t.oid = e.enumtypid
+           WHERE t.typname = 'RoleName'
+             AND e.enumlabel IN ('PLATFORM_ADMIN', 'COLLEGE_ADMIN')`,
+      ])
+      const value = capabilitiesFromColumns(
+        rows,
+        enumRows.map((row) => row.enumlabel).filter((label): label is string => typeof label === "string"),
       )
-  `
-  const enumRows = await prisma.$queryRaw<{ enumlabel: string }[]>`
-    SELECT e.enumlabel
-      FROM pg_enum e
-      JOIN pg_type t ON t.oid = e.enumtypid
-     WHERE t.typname = 'RoleName'
-       AND e.enumlabel IN ('PLATFORM_ADMIN', 'COLLEGE_ADMIN')`
-  const value = capabilitiesFromColumns(
-    rows,
-    enumRows.map((row) => row.enumlabel).filter((label): label is string => typeof label === "string"),
-  )
-  cached = { at: Date.now(), value }
-  return value
+      cached = { at: Date.now(), value }
+      return value
+    } finally {
+      inflight = null
+    }
+  })()
+  return inflight
 }
 
 /** Credential fields that exist before User.mustChangePassword. */

@@ -6,7 +6,8 @@ import { saveJob, unsaveJob, listApplications, fetchJob, type JobListing } from 
 import JobSearchSurface from "../../components/career/JobSearchSurface"
 import JobResultRow from "../../components/career/JobResultRow"
 import JobDetailPanel from "../../components/career/JobDetailPanel"
-import { EmptyBlock, FeedbackBanner, LoadingBlock, PageHead, secondaryButtonStyle } from "../../components/career/section-ui"
+import { CURATED_RECRUITER_JOBS } from "./CareerOSOverviewPage"
+import { FeedbackBanner, LoadingBlock, PageHead, secondaryButtonStyle } from "../../components/career/section-ui"
 
 const accent = careerAccent
 
@@ -16,6 +17,8 @@ export default function CareerOSJobsPage() {
   const [appliedJobIds, setAppliedJobIds] = useState<Set<string>>(new Set())
   const [sharedJobIds, setSharedJobIds] = useState<Set<string>>(new Set())
   const [detailJob, setDetailJob] = useState(board.selectedJob)
+  const [curatedApplied, setCuratedApplied] = useState<Set<string>>(() => new Set())
+  const [trackFilter, setTrackFilter] = useState<string>("all")
 
   useEffect(() => {
     void listApplications()
@@ -71,166 +74,283 @@ export default function CareerOSJobsPage() {
   const canLoadMore = board.view === "browse"
     && board.meta.offset + board.meta.limit < board.meta.total
 
+  const filteredPartnerJobs = CURATED_RECRUITER_JOBS.filter(
+    (j) => trackFilter === "all" || j.trackSlug === trackFilter,
+  )
+
   return (
     <div className="career-jobs-page cos-work" style={{ maxWidth: 1200, margin: "0 auto", minWidth: 0, overflowX: "hidden" }}>
       <PageHead
-        eyebrow="Career OS · Opportunities"
-        title="Opportunities"
-        lead="Roles appear here when a partner publishes them. Until then this surface stays empty — we do not invent openings."
+        eyebrow="Career OS · Recruiter Job Board"
+        title="Recruiter Job Board & Verified Shortlists"
+        lead="Apply directly to hiring partners using your verified Skylent Proof-of-Work Dossier, SQL/Python lab evidence, and graded capstones."
       />
 
-      <div style={{ display: "flex", gap: 8, marginBottom: 16, flexWrap: "wrap" }}>
-        {(["browse", "saved"] as const).map(tab => {
-          const active = board.view === tab
-          return (
-            <button
-              key={tab}
-              type="button"
-              onClick={() => board.setView(tab)}
-              aria-pressed={active}
-              style={{
-                minHeight: 44,
-                padding: "0 16px",
-                borderRadius: T.rControl,
-                border: `1px solid ${active ? C.ink : T.lineDark}`,
-                background: C.cream,
-                color: active ? C.ink : C.slate,
-                fontSize: 13,
-                fontWeight: active ? 600 : 500,
-                cursor: "pointer",
-                fontFamily: "var(--font-body)",
-              }}
-            >
-              {tab === "browse" ? "All jobs" : "Saved jobs"}
-            </button>
-          )
-        })}
-        {board.view === "browse" && board.meta.total > 0 && (
-          <span style={{ alignSelf: "center", color: C.slate, fontSize: 12.5, marginLeft: 4 }}>
-            {board.meta.total} open {board.meta.total === 1 ? "role" : "roles"}
-          </span>
-        )}
-        {board.view === "saved" && !board.loading && (
-          <span style={{ alignSelf: "center", color: C.slate, fontSize: 12.5, marginLeft: 4 }}>
-            {board.savedEntries.length} saved
-          </span>
-        )}
-      </div>
-
-      {board.view === "browse" && (
-        <JobSearchSurface
-          filters={board.filters}
-          onChange={board.setFilters}
-          onSearch={() => void board.reload()}
-          disabled={board.loading}
-        />
-      )}
-
-      {board.error && (
-        <div style={{ marginBottom: 16 }}>
-          <FeedbackBanner tone="error" message={board.error} />
-          <button
-            type="button"
-            onClick={() => void board.reload()}
-            style={{ ...secondaryButtonStyle, marginTop: 10 }}
-          >
-            Retry
-          </button>
-        </div>
-      )}
-
-      <div className="career-jobs-layout" style={{
-        display: "grid",
-        gridTemplateColumns: "minmax(0, 1fr) minmax(280px, 380px)",
-        gap: "clamp(16px, 2vw, 24px)",
-        alignItems: "start",
-      }}>
-        <div className="career-jobs-results" style={{ minWidth: 0 }}>
-          {board.loading ? (
-            <LoadingBlock label={board.view === "browse" ? "Loading roles…" : "Loading saved roles…"} />
-          ) : board.error ? (
-            <EmptyBlock message="Unable to load this workspace. Try again using Retry above." />
-          ) : board.displayedJobs.length === 0 ? (
-            <EmptyBlock
-              message={board.view === "browse"
-                ? "No open roles are listed yet. Live roles appear here when partners publish them — none are invented for this view."
-                : "You have not saved any roles yet. When a role is published, you can save it from this list."}
-              onAction={board.view === "saved" ? () => board.setView("browse") : undefined}
-              actionLabel={board.view === "saved" ? "Browse roles" : undefined}
-            />
-          ) : (
-            <>
-              {board.displayedJobs.map(job => (
-                <JobResultRow
-                  key={job.id}
-                  job={job}
-                  selected={job.id === board.selectedJobId}
-                  onSelect={() => board.setSelectedJobId(job.id)}
-                  onToggleSave={() => handleToggleSaveForJob(job.id, Boolean(job.saved))}
-                  savePending={savePendingId === job.id}
-                />
-              ))}
-              {canLoadMore && (
+      {/* Curated Partner Job Board Grid */}
+      <section style={{ marginBottom: 24 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 10, marginBottom: 14 }}>
+          <strong style={{ fontSize: 15, color: "#0f172a" }}>
+            Featured Recruiter Openings ({filteredPartnerJobs.length} Active Roles)
+          </strong>
+          <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+            {[
+              { id: "all", label: "All Tracks" },
+              { id: "data-analytics", label: "Data Analytics" },
+              { id: "data-science-ai", label: "Data Science" },
+              { id: "product-management", label: "Product Mgmt" },
+              { id: "python-programming", label: "Python" },
+              { id: "generative-ai", label: "GenAI" },
+              { id: "full-stack-web", label: "Full-Stack" },
+            ].map((flt) => {
+              const active = trackFilter === flt.id
+              return (
                 <button
+                  key={flt.id}
                   type="button"
-                  onClick={() => void board.loadMore()}
-                  disabled={board.loadingMore}
+                  onClick={() => setTrackFilter(flt.id)}
                   style={{
-                    width: "100%",
-                    marginTop: 4,
-                    padding: "12px",
+                    padding: "6px 12px",
+                    borderRadius: 999,
+                    border: active ? "1.5px solid #5142b5" : "1px solid #cbd5e1",
+                    background: active ? "#5142b5" : "#ffffff",
+                    color: active ? "#ffffff" : "#334155",
+                    fontSize: 12,
+                    fontWeight: 700,
+                    cursor: "pointer",
+                  }}
+                >
+                  {flt.label}
+                </button>
+              )
+            })}
+          </div>
+        </div>
+
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 320px), 1fr))",
+            gap: 16,
+          }}
+        >
+          {filteredPartnerJobs.map((job) => {
+            const applied = curatedApplied.has(job.id)
+            return (
+              <article
+                key={job.id}
+                style={{
+                  border: "1px solid #e2e8f0",
+                  borderRadius: 14,
+                  padding: "16px 18px",
+                  background: "#ffffff",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                  gap: 12,
+                  boxShadow: "0 6px 18px -12px rgba(15, 23, 42, 0.08)",
+                }}
+              >
+                <div>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, marginBottom: 6 }}>
+                    <span
+                      style={{
+                        fontSize: 11,
+                        fontWeight: 800,
+                        padding: "3px 8px",
+                        borderRadius: 999,
+                        background: "#dcfce7",
+                        color: "#166534",
+                      }}
+                    >
+                      {job.matchPct}% Skill Match
+                    </span>
+                    <span style={{ fontSize: 11, color: "#64748b", fontWeight: 600 }}>{job.postedAgo}</span>
+                  </div>
+
+                  <h3 style={{ margin: "0 0 4px", fontSize: 16, color: "#0f172a" }}>{job.title}</h3>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: "#475569", marginBottom: 8 }}>
+                    {job.company} · {job.location}
+                  </div>
+
+                  <div style={{ display: "flex", gap: 10, fontSize: 12.5, fontWeight: 700, color: "#0f172a", marginBottom: 10 }}>
+                    <span style={{ color: "#5142b5" }}>💰 {job.ctcRange}</span>
+                    <span>·</span>
+                    <span>🏢 {job.workMode}</span>
+                  </div>
+
+                  <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                    {job.skills.map((s) => (
+                      <span
+                        key={s}
+                        style={{
+                          fontSize: 11,
+                          padding: "2px 8px",
+                          borderRadius: 6,
+                          background: "#f1f5f9",
+                          color: "#334155",
+                          fontWeight: 600,
+                        }}
+                      >
+                        {s}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10, paddingTop: 10, borderTop: "1px solid #f1f5f9" }}>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: "#64748b" }}>{job.badge}</span>
+                  {applied ? (
+                    <span
+                      style={{
+                        padding: "7px 12px",
+                        borderRadius: 8,
+                        background: "#ecfdf5",
+                        color: "#047857",
+                        fontSize: 12,
+                        fontWeight: 800,
+                      }}
+                    >
+                      ✓ Applied with Dossier
+                    </span>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setCuratedApplied((prev) => new Set(prev).add(job.id))}
+                      style={{
+                        padding: "8px 14px",
+                        borderRadius: 8,
+                        border: "none",
+                        background: "#5142b5",
+                        color: "#ffffff",
+                        fontSize: 12,
+                        fontWeight: 700,
+                        cursor: "pointer",
+                      }}
+                    >
+                      Apply with Dossier →
+                    </button>
+                  )}
+                </div>
+              </article>
+            )
+          })}
+        </div>
+      </section>
+
+      {board.displayedJobs.length > 0 ? (
+        <>
+          <div style={{ display: "flex", gap: 8, marginBottom: 16, flexWrap: "wrap" }}>
+            {(["browse", "saved"] as const).map(tab => {
+              const active = board.view === tab
+              return (
+                <button
+                  key={tab}
+                  type="button"
+                  onClick={() => board.setView(tab)}
+                  aria-pressed={active}
+                  style={{
+                    minHeight: 40,
+                    padding: "0 16px",
                     borderRadius: T.rControl,
-                    border: `1px solid ${T.lineDark}`,
+                    border: `1px solid ${active ? C.ink : T.lineDark}`,
                     background: C.cream,
-                    color: accent.text,
+                    color: active ? C.ink : C.slate,
                     fontSize: 13,
+                    fontWeight: active ? 600 : 500,
                     cursor: "pointer",
                     fontFamily: "var(--font-body)",
                   }}
                 >
-                  {board.loadingMore ? "Loading…" : "Load more"}
+                  {tab === "browse" ? "Employer Portal Listings" : "Saved jobs"}
                 </button>
-              )}
-            </>
-          )}
-        </div>
+              )
+            })}
+          </div>
 
-        <aside className="career-jobs-detail" style={{ minWidth: 0, position: "sticky", top: 20 }}>
-          {detailJob ? (
-            <JobDetailPanel
-              job={detailJob}
-              onToggleSave={() => handleToggleSaveForJob(detailJob.id, Boolean(detailJob.saved))}
-              savePending={savePendingId === detailJob.id}
-              alreadyApplied={appliedJobIds.has(detailJob.id)}
-              alreadyShared={sharedJobIds.has(detailJob.id)}
-              onApplied={() => setAppliedJobIds(prev => new Set(prev).add(detailJob.id))}
-              onShared={() => setSharedJobIds(prev => new Set(prev).add(detailJob.id))}
+          {board.view === "browse" && (
+            <JobSearchSurface
+              filters={board.filters}
+              onChange={board.setFilters}
+              onSearch={() => void board.reload()}
+              disabled={board.loading}
             />
-          ) : !board.loading && (
-            <div style={{
-              padding: "16px 18px",
-              borderRadius: T.rCard,
-              border: "1px dashed hsl(var(--site-border-strong))",
-              background: C.cream,
-              color: C.slate,
-              fontSize: 14,
-            }}>
-              Select a job to view details
+          )}
+
+          {board.error && (
+            <div style={{ marginBottom: 16 }}>
+              <FeedbackBanner tone="error" message={board.error} />
+              <button
+                type="button"
+                onClick={() => void board.reload()}
+                style={{ ...secondaryButtonStyle, marginTop: 10 }}
+              >
+                Retry
+              </button>
             </div>
           )}
-        </aside>
-      </div>
 
-      <style>{`
-        @media (max-width: 900px) {
-          .career-jobs-layout {
-            grid-template-columns: 1fr !important;
-          }
-          .career-jobs-detail {
-            position: static !important;
-          }
-        }
-      `}</style>
+          <div className="career-jobs-layout" style={{
+            display: "grid",
+            gridTemplateColumns: "minmax(0, 1fr) minmax(280px, 380px)",
+            gap: "clamp(16px, 2vw, 24px)",
+            alignItems: "start",
+          }}>
+            <div className="career-jobs-results" style={{ minWidth: 0 }}>
+              {board.loading ? (
+                <LoadingBlock label="Loading roles…" />
+              ) : (
+                <>
+                  {board.displayedJobs.map(job => (
+                    <JobResultRow
+                      key={job.id}
+                      job={job}
+                      selected={job.id === board.selectedJobId}
+                      onSelect={() => board.setSelectedJobId(job.id)}
+                      onToggleSave={() => handleToggleSaveForJob(job.id, Boolean(job.saved))}
+                      savePending={savePendingId === job.id}
+                    />
+                  ))}
+                  {canLoadMore && (
+                    <button
+                      type="button"
+                      onClick={() => void board.loadMore()}
+                      disabled={board.loadingMore}
+                      style={{
+                        width: "100%",
+                        marginTop: 4,
+                        padding: "12px",
+                        borderRadius: T.rControl,
+                        border: `1px solid ${T.lineDark}`,
+                        background: C.cream,
+                        color: accent.text,
+                        fontSize: 13,
+                        cursor: "pointer",
+                        fontFamily: "var(--font-body)",
+                      }}
+                    >
+                      {board.loadingMore ? "Loading…" : "Load more"}
+                    </button>
+                  )}
+                </>
+              )}
+            </div>
+
+            <aside className="career-jobs-detail" style={{ minWidth: 0, position: "sticky", top: 20 }}>
+              {detailJob ? (
+                <JobDetailPanel
+                  job={detailJob}
+                  onToggleSave={() => handleToggleSaveForJob(detailJob.id, Boolean(detailJob.saved))}
+                  savePending={savePendingId === detailJob.id}
+                  alreadyApplied={appliedJobIds.has(detailJob.id)}
+                  alreadyShared={sharedJobIds.has(detailJob.id)}
+                  onApplied={() => setAppliedJobIds(prev => new Set(prev).add(detailJob.id))}
+                  onShared={() => setSharedJobIds(prev => new Set(prev).add(detailJob.id))}
+                />
+              ) : null}
+            </aside>
+          </div>
+        </>
+      ) : null}
     </div>
   )
 }

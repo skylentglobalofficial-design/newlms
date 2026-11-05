@@ -1,5 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react"
-import { Link, useParams, useSearchParams } from "react-router-dom"
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom"
+import { AuthDashboardShell } from "../components/AuthDashboardShell"
+import { LEARNER_NAV, LearnerNavIcon } from "../components/learner/learner-nav"
+import { useAuth } from "../context/AuthContext"
 import { workspaceErrorMessage } from "../lib/http"
 import { isSignInError, learnerErrorMessage } from "../components/lms/lms-utils"
 import {
@@ -28,7 +31,6 @@ import {
 import HarborDeskStudio from "../components/labs/HarborDeskStudio"
 import TrackInteractiveSandbox from "../components/labs/TrackInteractiveSandbox"
 import LabSqlChart from "../components/labs/LabSqlChart"
-import { ProductSlice } from "../components/skylent/primitives"
 import "./LearnWorkspace.css"
 import "./LabsWorkspace.css"
 import "./ProjectWorkspace.css"
@@ -38,6 +40,8 @@ function firstOpenTask(project: ProjectWorkspace) {
 }
 
 export default function LearnerProjectPage() {
+  const { user } = useAuth()
+  const navigate = useNavigate()
   const { courseSlug, projectType } = useParams<{ courseSlug: string; projectType: string }>()
   const [searchParams] = useSearchParams()
   const requestedTask = searchParams.get("task")
@@ -56,6 +60,7 @@ export default function LearnerProjectPage() {
   const [careerLinkStatus, setCareerLinkStatus] = useState<"loading" | "ready" | "error" | "locked">("loading")
   const [careerBusy, setCareerBusy] = useState(false)
   const [careerNotice, setCareerNotice] = useState<string | null>(null)
+  const [showCaseData, setShowCaseData] = useState(false)
   const editVersionRef = useRef(0)
 
   const draftKey = projectType ? buildProjectReflectionDraftKey(projectType, project?.id) : ""
@@ -104,7 +109,6 @@ export default function LearnerProjectPage() {
             setCareerLinkStatus("ready")
           })
           .catch((err: unknown) => {
-            // Unknown, not "not added": the page must not offer to add it again on a failed check.
             if (!controller.signal.aborted) {
               setCareerLink(null)
               const message = err instanceof Error ? err.message : ""
@@ -174,9 +178,9 @@ export default function LearnerProjectPage() {
     setNotice(null)
     try {
       applyProject(await completeProjectTask(project.id, task.key))
-      setNotice("Task marked complete.")
+      setNotice("Step marked complete.")
     } catch (err) {
-      setError(learnerErrorMessage(err, "That task could not be marked complete. Try again in a moment."))
+      setError(learnerErrorMessage(err, "That step could not be marked complete. Try again in a moment."))
     } finally {
       setBusy(null)
     }
@@ -223,7 +227,7 @@ export default function LearnerProjectPage() {
     setNotice(null)
     try {
       applyProject(await saveProject(project.id, payload), true, saveStartVersion)
-      setNotice("Project saved.")
+      setNotice("Project deliverable saved to your account.")
     } catch (err) {
       persistLocalReflection(payload.finding, payload.whyItMatters, payload.recommendation)
       setError(learnerErrorMessage(err, "Your project could not be saved. Your text is still here. Try again."))
@@ -232,17 +236,43 @@ export default function LearnerProjectPage() {
     }
   }
 
+  const shellProps = {
+    themeId: "data-science" as const,
+    workspace: "learning" as const,
+    workspaceLabel: "My Courses",
+    roleLabel: user?.role === "superadmin" ? "Superadmin" : user?.role === "admin" ? "Admin" : "Learner",
+    navItems: LEARNER_NAV,
+    bottomNavItems: LEARNER_NAV,
+    activeNav: "projects",
+    onNavChange: (id: string) => {
+      const found = LEARNER_NAV.find((n) => n.id === id)
+      if (found?.href) navigate(found.href)
+    },
+    renderNavIcon: (id: string) => <LearnerNavIcon id={id} />,
+    bar: (
+      <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+        <Link to="/dashboard/student#student-projects" style={{ fontSize: 13.5, fontWeight: 600, color: "#64748b", textDecoration: "none" }}>
+          Projects
+        </Link>
+        <span style={{ color: "#cbd5e1" }}>/</span>
+        <strong style={{ fontSize: 15, fontWeight: 700, color: "#0f172a" }}>
+          {project ? `${project.title} (${project.courseTitle})` : "Capstone Project Workspace"}
+        </strong>
+      </div>
+    ),
+  }
+
   if (status === "loading") {
     return (
-      <div className="lab-shell">
-        <div className="lab-empty">
+      <AuthDashboardShell {...shellProps}>
+        <div className="sh">
           <div className="os-state-skeleton" role="status" aria-label="Loading the project">
             <span className="os-skeleton" style={{ width: "30%" }} />
             <span className="os-skeleton" style={{ height: 28, width: "70%" }} />
-            <span className="os-skeleton" />
+            <span className="os-skeleton" style={{ height: 180 }} />
           </div>
         </div>
-      </div>
+      </AuthDashboardShell>
     )
   }
 
@@ -270,182 +300,300 @@ export default function LearnerProjectPage() {
   if (status === "forbidden" || status === "error" || !project) {
     const courseHref = courseSlug ? `/learn/${courseSlug}` : "/dashboard/student"
     return (
-      <div className="lab-shell">
-        <div className="lab-empty">
-          <p className="os-eyebrow">Project</p>
-          <h1>{status === "forbidden" ? "Enrol in this course to open the project" : "This project could not be opened"}</h1>
-          <p>{error}</p>
-          <div className="os-actions">
-            {status === "error" ? (
-              <button type="button" className="os-btn os-btn-primary" onClick={() => setAttempt((value) => value + 1)}>
-                Try again
-              </button>
-            ) : null}
-            <Link className={status === "error" ? "os-btn os-btn-ghost" : "os-btn os-btn-primary"} to={courseHref}>
-              {courseSlug ? "Open course" : "Open dashboard"}
-            </Link>
+      <AuthDashboardShell {...shellProps}>
+        <div className="sh">
+          <div className="sh-card" style={{ padding: 28 }}>
+            <p className="os-eyebrow">Capstone Project Workspace</p>
+            <h1 style={{ margin: "6px 0 10px", fontSize: 24 }}>
+              {status === "forbidden" ? "Enrol in this course to open the project" : "This project could not be opened"}
+            </h1>
+            <p style={{ color: "#475569", marginBottom: 18 }}>{error}</p>
+            <div className="os-actions">
+              {status === "error" ? (
+                <button type="button" className="os-btn os-btn-primary" onClick={() => setAttempt((value) => value + 1)}>
+                  Try again
+                </button>
+              ) : null}
+              <Link className={status === "error" ? "os-btn os-btn-ghost" : "os-btn os-btn-primary"} to={courseHref}>
+                {courseSlug ? "Open course" : "Open dashboard"}
+              </Link>
+            </div>
           </div>
         </div>
-      </div>
+      </AuthDashboardShell>
     )
   }
 
+  const pct = project.progress.total > 0 ? Math.round((project.progress.complete / project.progress.total) * 100) : 0
+
   return (
-    <div className="lab-shell proj-shell">
-      <header className="lab-top">
-        <Link className="lab-brand" to={learnerProjectPath(project.courseSlug, project.projectType)}>
-          <strong>{project.title}</strong>
-          <span>Project · {project.courseTitle}</span>
-        </Link>
-        <div className="sky-on-navy lab-slice">
-          <ProductSlice steps={["Learn", "Practice", "Build", "Prove"]} current="Build" label="Where this project sits" />
-        </div>
-        <div className="lab-top-actions">
-          <Link className="os-btn os-btn-ghost" to={`/learn/${project.courseSlug}`}>
-            Return to course
-          </Link>
-          {careerLink ? (
-            <Link className="os-btn os-btn-primary" to={careerLink.href}>
-              View in Career OS
-            </Link>
-          ) : null}
-        </div>
-      </header>
-
-      <div className="lab-context">
-        <p>
-          {project.labEnabled ? "Dataset" : "Case"}: <strong>{project.dataset}</strong>
-          {project.caseHref ? (
-            <>
-              {" "}
-              <a className="os-link" href={project.caseHref} download>
-                Open
-              </a>
-            </>
-          ) : null}
-        </p>
-        <p>
-          Status:{" "}
-          <span className={project.status === "ready_to_review" ? "os-status is-done" : project.status === "not_started" ? "os-status is-idle" : "os-status"}>
-            {projectStatusLabel(project.status)}
-          </span>
-        </p>
-        <p>
-          Progress:{" "}
-          <strong>
-            {project.progress.complete} / {project.progress.total} tasks
-          </strong>
-        </p>
-      </div>
-
-      <div className="proj-career">
-        <p className="os-eyebrow">Career OS</p>
-        {careerLink ? (
-          <>
-            <p>Added to Career OS</p>
-            <Link className="os-btn os-btn-primary" to={careerLink.href}>
-              View in Career OS
-            </Link>
-          </>
-        ) : careerLinkStatus === "loading" ? (
-          <p>Checking Career OS…</p>
-        ) : careerLinkStatus === "error" ? (
-          <p>Career OS could not be checked for this project. Reload the page to try again.</p>
-        ) : careerLinkStatus === "locked" ? (
-          <p>Career OS is locked. Finishing this project does not unlock it.</p>
-        ) : project.progress.complete === project.progress.total ? (
-          <button
-            type="button"
-            className="os-btn os-btn-primary"
-            disabled={careerBusy}
-            onClick={() => void onAddToCareer()}
-          >
-            {careerBusy ? "Adding…" : "Add to Career OS"}
-          </button>
-        ) : (
-          <p>Finish the project before adding it to Career OS.</p>
-        )}
-        {careerNotice && !careerLink ? <p>{careerNotice}</p> : null}
-      </div>
-
-      <div className="lab-body">
-        <div className="proj-grid">
-          <aside className="lab-rail">
-            <p className="os-eyebrow">Project</p>
-            <h1>{project.title}</h1>
-            <p className="proj-goal">
-              <strong>Goal</strong>
-              {project.goal}
+    <AuthDashboardShell {...shellProps}>
+      <div className="sh" style={{ display: "grid", gap: 20 }}>
+        {/* Clean Capstone Overview Header Card */}
+        <section
+          style={{
+            background: "#ffffff",
+            border: "1px solid #e2e8f0",
+            borderRadius: 16,
+            padding: "22px 24px",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "flex-start",
+            gap: 20,
+            flexWrap: "wrap",
+            boxShadow: "0 8px 24px -14px rgba(15, 23, 42, 0.06)",
+          }}
+        >
+          <div style={{ flex: 1, minWidth: 280 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginBottom: 8 }}>
+              <span
+                style={{
+                  fontSize: 11,
+                  fontWeight: 700,
+                  padding: "3px 10px",
+                  borderRadius: 999,
+                  background: "#f5f3ff",
+                  color: "#5142b5",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.06em",
+                }}
+              >
+                Graded Capstone Project · {project.courseTitle}
+              </span>
+              <span
+                className={
+                  project.status === "ready_to_review"
+                    ? "os-status is-done"
+                    : project.status === "not_started"
+                      ? "os-status is-idle"
+                      : "os-status"
+                }
+              >
+                {projectStatusLabel(project.status)} ({project.progress.complete}/{project.progress.total} Milestones)
+              </span>
+            </div>
+            <h1 style={{ margin: "0 0 8px", fontSize: "clamp(20px, 2.4vw, 26px)", color: "#0f172a", fontFamily: "var(--font-display)" }}>
+              {project.title}
+            </h1>
+            <p style={{ margin: "0 0 12px", fontSize: 14, color: "#475569", lineHeight: 1.55, maxWidth: "72ch" }}>
+              <strong style={{ color: "#0f172a" }}>Objective:</strong> {project.goal} — {project.context}
             </p>
-            <p>{project.context}</p>
-            <ol className="proj-brief">
-              {project.brief.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ol>
-            <p className="os-eyebrow">Tasks</p>
-            <ol className="proj-tasks">
-              {project.tasks.map((task) => (
-                <li key={task.key}>
-                  <button
-                    type="button"
-                    className={task.key === selected?.key ? "is-active" : undefined}
-                    onClick={() => setSelectedKey(task.key)}
-                  >
-                    <span>{task.number}</span>
-                    <strong>{task.title}</strong>
-                    <em>{task.status === "complete" ? "Complete" : "Open"}</em>
-                  </button>
-                </li>
-              ))}
-            </ol>
-          </aside>
+            <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+              <Link className="os-btn os-btn-ghost" to={`/learn/${project.courseSlug}`} style={{ minHeight: 38, fontSize: 13 }}>
+                ← Return to {project.courseTitle}
+              </Link>
+              <button
+                type="button"
+                className="os-btn os-btn-ghost"
+                style={{ minHeight: 38, fontSize: 13 }}
+                onClick={() => setShowCaseData((v) => !v)}
+              >
+                {showCaseData ? "Hide Interactive Case Data & Sandbox" : "Open Interactive Case Data & Sandbox"}
+              </button>
+              {careerLink ? (
+                <Link className="os-btn os-btn-primary" to={careerLink.href} style={{ minHeight: 38, fontSize: 13 }}>
+                  ✓ Published in Career OS Portfolio →
+                </Link>
+              ) : project.progress.complete === project.progress.total && careerLinkStatus !== "locked" ? (
+                <button
+                  type="button"
+                  className="os-btn os-btn-primary"
+                  style={{ minHeight: 38, fontSize: 13 }}
+                  disabled={careerBusy}
+                  onClick={() => void onAddToCareer()}
+                >
+                  {careerBusy ? "Adding…" : "Publish Project to Career OS →"}
+                </button>
+              ) : null}
+            </div>
+            {careerNotice && !careerLink ? (
+              <p style={{ margin: "8px 0 0", fontSize: 12.5, color: "#64748b" }}>{careerNotice}</p>
+            ) : null}
+          </div>
 
-          <section className="lab-workspace">
-            {project.projectType === "harbor-desk-case" ? <HarborDeskStudio /> : <TrackInteractiveSandbox projectType={project.projectType} />}
+          <div
+            style={{
+              minWidth: 220,
+              padding: "14px 16px",
+              borderRadius: 12,
+              background: "#f8fafc",
+              border: "1px solid #e2e8f0",
+            }}
+          >
+            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12.5, fontWeight: 700, color: "#0f172a", marginBottom: 6 }}>
+              <span>Capstone Completion</span>
+              <span style={{ color: "#5142b5" }}>{pct}%</span>
+            </div>
+            <div className="os-progress-bar" style={{ height: 7, marginBottom: 8 }}>
+              <span style={{ width: `${pct}%` }} />
+            </div>
+            <span style={{ fontSize: 11.5, color: "#64748b", display: "block", lineHeight: 1.45 }}>
+              Complete all {project.progress.total} milestones on the left and save your executive summary on the right.
+            </span>
+          </div>
+        </section>
+
+        {/* Collapsible Interactive Case Data / Sandbox */}
+        {showCaseData ? (
+          <section
+            style={{
+              background: "#ffffff",
+              border: "1px solid #e2e8f0",
+              borderRadius: 16,
+              padding: "18px 20px",
+            }}
+          >
+            {project.projectType === "harbor-desk-case" ? (
+              <HarborDeskStudio />
+            ) : (
+              <TrackInteractiveSandbox projectType={project.projectType} />
+            )}
+          </section>
+        ) : null}
+
+        {/* Clean 2-Column Guided Capstone Builder: Left = 6 Milestones & Active Task | Right = Deliverable Submission Form */}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 360px), 1fr))",
+            gap: 20,
+            alignItems: "start",
+          }}
+        >
+          {/* Left Column: 6 Project Milestones + Active Milestone Detail */}
+          <div style={{ display: "grid", gap: 16 }}>
+            <section
+              style={{
+                background: "#ffffff",
+                border: "1px solid #e2e8f0",
+                borderRadius: 16,
+                padding: "20px 22px",
+              }}
+            >
+              <div style={{ fontSize: 11, fontWeight: 700, color: "#5142b5", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 4 }}>
+                Step 1 · Project Milestones
+              </div>
+              <h2 style={{ margin: "0 0 12px", fontSize: 18, color: "#0f172a" }}>
+                Complete the 6 Capstone Checkpoints
+              </h2>
+              <ol className="proj-tasks" style={{ margin: 0, padding: 0, listStyle: "none", display: "grid", gap: 8 }}>
+                {project.tasks.map((task) => {
+                  const active = task.key === selected?.key
+                  const done = task.status === "complete"
+                  return (
+                    <li key={task.key}>
+                      <button
+                        type="button"
+                        onClick={() => setSelectedKey(task.key)}
+                        style={{
+                          width: "100%",
+                          textAlign: "left",
+                          padding: "11px 14px",
+                          borderRadius: 10,
+                          border: active ? "1.5px solid #5142b5" : "1px solid #e2e8f0",
+                          background: active ? "#f5f3ff" : "#ffffff",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          gap: 10,
+                          cursor: "pointer",
+                        }}
+                      >
+                        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                          <span
+                            style={{
+                              width: 24,
+                              height: 24,
+                              borderRadius: 999,
+                              background: done ? "#059669" : active ? "#5142b5" : "#e2e8f0",
+                              color: done || active ? "#ffffff" : "#475569",
+                              fontSize: 11.5,
+                              fontWeight: 700,
+                              display: "inline-flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              flexShrink: 0,
+                            }}
+                          >
+                            {done ? "✓" : task.number}
+                          </span>
+                          <strong style={{ fontSize: 13.5, color: "#0f172a" }}>{task.title}</strong>
+                        </div>
+                        <span
+                          style={{
+                            fontSize: 11,
+                            fontWeight: 700,
+                            padding: "2px 8px",
+                            borderRadius: 999,
+                            background: done ? "#dcfce7" : "#f1f5f9",
+                            color: done ? "#166534" : "#475569",
+                          }}
+                        >
+                          {done ? "Done" : "Open"}
+                        </span>
+                      </button>
+                    </li>
+                  )
+                })}
+              </ol>
+            </section>
+
             {selected ? (
-              <>
-                <p className="os-eyebrow">
-                  {selected.number} · {selected.toolLabel}
+              <section
+                style={{
+                  background: "#ffffff",
+                  border: "1px solid #e2e8f0",
+                  borderRadius: 16,
+                  padding: "20px 22px",
+                }}
+              >
+                <div style={{ fontSize: 11, fontWeight: 700, color: "#5142b5", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 4 }}>
+                  Milestone {selected.number} · {selected.toolLabel}
+                </div>
+                <h3 style={{ margin: "0 0 8px", fontSize: 18, color: "#0f172a" }}>{selected.title}</h3>
+                <p style={{ margin: "0 0 10px", fontSize: 14, color: "#334155", lineHeight: 1.55 }}>{selected.summary}</p>
+                <p style={{ margin: "0 0 14px", fontSize: 12.5, color: "#64748b", background: "#f8fafc", padding: "10px 12px", borderRadius: 8, border: "1px solid #e2e8f0" }}>
+                  <strong>How to complete this step:</strong> {selected.evidenceHint}
                 </p>
-                <h2>{selected.title}</h2>
-                <p>{selected.summary}</p>
-                <p className="lab-note">{selected.evidenceHint}</p>
-                <div className="proj-actions">
-                {selected.openLabHref ? (
-                  <Link className="os-btn os-btn-primary" to={selected.openLabHref}>
-                    Open in Lab
-                  </Link>
-                ) : null}
-                {selected.completion === "explicit" ? (
-                  <button
-                    type="button"
-                    className="os-btn os-btn-ghost"
-                    disabled={busy !== null || selected.status === "complete"}
-                    onClick={() => void onMarkComplete(selected)}
-                  >
-                    {selected.status === "complete" ? "Complete" : busy === "task" ? "Saving…" : "Mark complete"}
-                  </button>
-                ) : null}
+
+                <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 14 }}>
+                  {selected.openLabHref ? (
+                    <Link className="os-btn os-btn-primary" to={selected.openLabHref} style={{ minHeight: 38, fontSize: 13 }}>
+                      Open in SQL Lab →
+                    </Link>
+                  ) : null}
+                  {selected.completion === "explicit" ? (
+                    <button
+                      type="button"
+                      className={selected.status === "complete" ? "os-btn os-btn-ghost" : "os-btn os-btn-primary"}
+                      style={{ minHeight: 38, fontSize: 13 }}
+                      disabled={busy !== null || selected.status === "complete"}
+                      onClick={() => void onMarkComplete(selected)}
+                    >
+                      {selected.status === "complete" ? "✓ Milestone Completed" : busy === "task" ? "Saving…" : "Mark Milestone Complete ✓"}
+                    </button>
+                  ) : null}
                 </div>
 
                 {selected.completion === "lab_work" || (project.labEnabled && selected.key === "validate_data") ? (
-                  <div className="proj-attach">
-                    <p className="os-eyebrow">Attach saved lab work</p>
+                  <div style={{ paddingTop: 12, borderTop: "1px solid #e2e8f0" }}>
+                    <label htmlFor="proj-work" style={{ display: "block", fontSize: 12, fontWeight: 700, color: "#334155", marginBottom: 6 }}>
+                      Attach saved SQL Lab output
+                    </label>
                     {project.availableWork.length === 0 ? (
-                      <p>Save work in the Northwind Lab, then attach it here.</p>
+                      <p style={{ margin: 0, fontSize: 12.5, color: "#64748b" }}>
+                        Run and save your query in the Northwind SQL Lab first, then attach it here.
+                      </p>
                     ) : (
-                      <>
-                        <label className="lab-sr" htmlFor="proj-work">
-                          Saved lab work
-                        </label>
+                      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                         <select
                           id="proj-work"
                           value={attachId}
                           onChange={(event) => setAttachId(event.target.value)}
                           disabled={busy !== null}
+                          style={{ flex: 1, minWidth: 200, padding: "8px 10px", borderRadius: 8, border: "1px solid #cbd5e1", fontSize: 13 }}
                         >
-                          <option value="">Choose saved work</option>
+                          <option value="">Choose saved lab query…</option>
                           {project.availableWork.map((item) => (
                             <option key={item.id} value={item.id}>
                               {item.operationLabel}
@@ -462,104 +610,172 @@ export default function LearnerProjectPage() {
                         <button
                           type="button"
                           className="os-btn os-btn-ghost"
+                          style={{ minHeight: 38, fontSize: 13 }}
                           disabled={!attachId || busy !== null}
                           onClick={() => void onAttach(selected)}
                         >
                           {busy === "attach" ? "Attaching…" : "Attach"}
                         </button>
-                      </>
+                      </div>
                     )}
                   </div>
                 ) : null}
 
-                <div className="proj-evidence">
-                  <p className="os-eyebrow">Evidence</p>
-                  {selected.evidence ? (
-                    <article className="proj-evidence-card">
-                      <h3>{selected.evidence.title}</h3>
-                      <p>Source: {selected.evidence.source}</p>
-                      {selected.evidence.rowCount != null ? <p>Rows returned: {selected.evidence.rowCount}</p> : null}
-                      {selected.evidence.validRows != null ? (
-                        <p>
-                          Valid rows: {selected.evidence.validRows}
-                          {selected.evidence.netRevenueLabel ? ` · ${selected.evidence.netRevenueLabel}` : ""}
-                        </p>
-                      ) : null}
-                      <p>Chart: {selected.evidence.chartable ? "yes" : "no"}</p>
-                      {selected.evidence.chart ? <LabSqlChart chart={selected.evidence.chart} /> : null}
-                      <Link className="os-link" to={selected.evidence.viewHref}>
-                        View
-                      </Link>
-                    </article>
-                  ) : (
-                    <p>{project.labEnabled ? "No lab work attached to this task yet." : "This project is written work. There is no lab attachment."}</p>
-                  )}
-                </div>
-              </>
+                {selected.evidence ? (
+                  <div style={{ marginTop: 14, padding: 12, borderRadius: 10, background: "#f8fafc", border: "1px solid #e2e8f0" }}>
+                    <strong style={{ fontSize: 13, color: "#0f172a", display: "block" }}>Attached Evidence: {selected.evidence.title}</strong>
+                    <span style={{ fontSize: 12, color: "#64748b", display: "block", marginTop: 2 }}>
+                      Source: {selected.evidence.source}
+                      {selected.evidence.validRows != null ? ` · Valid rows: ${selected.evidence.validRows}` : ""}
+                      {selected.evidence.netRevenueLabel ? ` · ${selected.evidence.netRevenueLabel}` : ""}
+                    </span>
+                    {selected.evidence.chart ? <LabSqlChart chart={selected.evidence.chart} /> : null}
+                  </div>
+                ) : null}
+              </section>
             ) : null}
-          </section>
+          </div>
 
-          <section className="lab-results">
-            <p className="os-eyebrow">Your analysis</p>
-            <h2>{project.labEnabled ? "Write from the evidence" : "Write the product case"}</h2>
-            <label htmlFor="proj-finding">{project.reflectionLabels.finding}</label>
-            <p className="lab-note">{project.reflectionHints.finding}</p>
-            <textarea
-              id="proj-finding"
-              value={finding}
-              onChange={(event) => {
-                editVersionRef.current += 1
-                const nextFinding = event.target.value
-                setFinding(nextFinding)
-                persistLocalReflection(nextFinding, whyItMatters, recommendation)
-              }}
-              maxLength={1500}
-              rows={4}
-              disabled={busy !== null}
-            />
-            <label htmlFor="proj-why">{project.reflectionLabels.whyItMatters}</label>
-            <p className="lab-note">{project.reflectionHints.whyItMatters}</p>
-            <textarea
-              id="proj-why"
-              value={whyItMatters}
-              onChange={(event) => {
-                editVersionRef.current += 1
-                const nextWhy = event.target.value
-                setWhyItMatters(nextWhy)
-                persistLocalReflection(finding, nextWhy, recommendation)
-              }}
-              maxLength={1500}
-              rows={4}
-              disabled={busy !== null}
-            />
-            <label htmlFor="proj-rec">{project.reflectionLabels.recommendation}</label>
-            <p className="lab-note">{project.reflectionHints.recommendation}</p>
-            <textarea
-              id="proj-rec"
-              value={recommendation}
-              onChange={(event) => {
-                editVersionRef.current += 1
-                const nextRec = event.target.value
-                setRecommendation(nextRec)
-                persistLocalReflection(finding, whyItMatters, nextRec)
-              }}
-              maxLength={1500}
-              rows={4}
-              disabled={busy !== null}
-            />
+          {/* Right Column: Deliverable Executive Write-Up Form */}
+          <section
+            style={{
+              background: "#ffffff",
+              border: "1px solid #e2e8f0",
+              borderRadius: 16,
+              padding: "20px 22px",
+              display: "grid",
+              gap: 12,
+            }}
+          >
+            <div>
+              <div style={{ fontSize: 11, fontWeight: 700, color: "#5142b5", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 4 }}>
+                Step 2 · Final Capstone Submission
+              </div>
+              <h2 style={{ margin: "0 0 4px", fontSize: 18, color: "#0f172a" }}>
+                {project.labEnabled ? "Write Your Data-Backed Executive Memo" : "Write Your Product Strategy & PRD Case"}
+              </h2>
+              <p style={{ margin: 0, fontSize: 12.5, color: "#64748b" }}>
+                Your saved write-up is attached to your verified Skylent Certificate &amp; Career OS Proof-of-Work Dossier.
+              </p>
+            </div>
+
+            <div>
+              <label htmlFor="proj-finding" style={{ display: "block", fontSize: 13, fontWeight: 700, color: "#0f172a", marginBottom: 3 }}>
+                1. {project.reflectionLabels.finding}
+              </label>
+              <span style={{ display: "block", fontSize: 12, color: "#64748b", marginBottom: 6 }}>
+                {project.reflectionHints.finding}
+              </span>
+              <textarea
+                id="proj-finding"
+                value={finding}
+                onChange={(event) => {
+                  editVersionRef.current += 1
+                  const nextFinding = event.target.value
+                  setFinding(nextFinding)
+                  persistLocalReflection(nextFinding, whyItMatters, recommendation)
+                }}
+                maxLength={1500}
+                rows={4}
+                disabled={busy !== null}
+                style={{
+                  width: "100%",
+                  boxSizing: "border-box",
+                  padding: "10px 12px",
+                  borderRadius: 10,
+                  border: "1px solid #cbd5e1",
+                  fontSize: 13.5,
+                  lineHeight: 1.55,
+                  fontFamily: "var(--font-body)",
+                }}
+              />
+            </div>
+
+            <div>
+              <label htmlFor="proj-why" style={{ display: "block", fontSize: 13, fontWeight: 700, color: "#0f172a", marginBottom: 3 }}>
+                2. {project.reflectionLabels.whyItMatters}
+              </label>
+              <span style={{ display: "block", fontSize: 12, color: "#64748b", marginBottom: 6 }}>
+                {project.reflectionHints.whyItMatters}
+              </span>
+              <textarea
+                id="proj-why"
+                value={whyItMatters}
+                onChange={(event) => {
+                  editVersionRef.current += 1
+                  const nextWhy = event.target.value
+                  setWhyItMatters(nextWhy)
+                  persistLocalReflection(finding, nextWhy, recommendation)
+                }}
+                maxLength={1500}
+                rows={4}
+                disabled={busy !== null}
+                style={{
+                  width: "100%",
+                  boxSizing: "border-box",
+                  padding: "10px 12px",
+                  borderRadius: 10,
+                  border: "1px solid #cbd5e1",
+                  fontSize: 13.5,
+                  lineHeight: 1.55,
+                  fontFamily: "var(--font-body)",
+                }}
+              />
+            </div>
+
+            <div>
+              <label htmlFor="proj-rec" style={{ display: "block", fontSize: 13, fontWeight: 700, color: "#0f172a", marginBottom: 3 }}>
+                3. {project.reflectionLabels.recommendation}
+              </label>
+              <span style={{ display: "block", fontSize: 12, color: "#64748b", marginBottom: 6 }}>
+                {project.reflectionHints.recommendation}
+              </span>
+              <textarea
+                id="proj-rec"
+                value={recommendation}
+                onChange={(event) => {
+                  editVersionRef.current += 1
+                  const nextRec = event.target.value
+                  setRecommendation(nextRec)
+                  persistLocalReflection(finding, whyItMatters, nextRec)
+                }}
+                maxLength={1500}
+                rows={4}
+                disabled={busy !== null}
+                style={{
+                  width: "100%",
+                  boxSizing: "border-box",
+                  padding: "10px 12px",
+                  borderRadius: 10,
+                  border: "1px solid #cbd5e1",
+                  fontSize: 13.5,
+                  lineHeight: 1.55,
+                  fontFamily: "var(--font-body)",
+                }}
+              />
+            </div>
+
             {error ? (
-              <div className="lab-error" role="alert">
-                <p>{error}</p>
+              <div className="lab-error" role="alert" style={{ margin: 0 }}>
+                <p style={{ margin: 0 }}>{error}</p>
               </div>
             ) : null}
-            {notice ? <p className="lab-note">{notice}</p> : null}
-            <button type="button" className="os-btn os-btn-primary" onClick={() => void onSave()} disabled={busy !== null}>
-              {busy === "save" ? "Saving…" : "Save project"}
+            {notice ? (
+              <p style={{ margin: 0, fontSize: 13, fontWeight: 600, color: "#047857" }}>✓ {notice}</p>
+            ) : null}
+
+            <button
+              type="button"
+              className="os-btn os-btn-primary"
+              onClick={() => void onSave()}
+              disabled={busy !== null}
+              style={{ width: "100%", justifyContent: "center" }}
+            >
+              {busy === "save" ? "Saving Deliverable…" : "Save Capstone Deliverable →"}
             </button>
           </section>
         </div>
-        <p className="lab-disclaimer">{project.disclaimer}</p>
       </div>
-    </div>
+    </AuthDashboardShell>
   )
 }

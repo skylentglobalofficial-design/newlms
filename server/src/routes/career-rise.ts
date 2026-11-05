@@ -84,28 +84,31 @@ careerRiseRouter.get("/", async (req: AuthenticatedRequest, res) => {
       }
     }
 
-    const data = []
-    for (const scope of scopes) {
-      const completion = await measureCareerRise(userId, scope)
-      const enrolment = await findCareerRiseEnrolment(userId, scope)
-      data.push({
-        kind: scope.kind,
-        slug: scope.slug,
-        title: scope.title,
-        totalModules: completion.totalModules,
-        completedModules: completion.completedModules,
-        percent: completion.percent,
-        thresholdPercent: completion.thresholdPercent,
-        eligible: completion.eligible,
-        enrolled: Boolean(enrolment),
-        mockDefenseHref: buildCareerRiseMockDefenseHref(scope.slug),
-        milestones: {
-          curriculumGatePassed: completion.eligible,
-          caseEvidenceRequired: true,
+    const data = await Promise.all(
+      scopes.map(async (scope) => {
+        const [completion, enrolment] = await Promise.all([
+          measureCareerRise(userId, scope),
+          findCareerRiseEnrolment(userId, scope),
+        ])
+        return {
+          kind: scope.kind,
+          slug: scope.slug,
+          title: scope.title,
+          totalModules: completion.totalModules,
+          completedModules: completion.completedModules,
+          percent: completion.percent,
+          thresholdPercent: completion.thresholdPercent,
+          eligible: completion.eligible,
+          enrolled: Boolean(enrolment),
           mockDefenseHref: buildCareerRiseMockDefenseHref(scope.slug),
-        },
-      })
-    }
+          milestones: {
+            curriculumGatePassed: completion.eligible,
+            caseEvidenceRequired: true,
+            mockDefenseHref: buildCareerRiseMockDefenseHref(scope.slug),
+          },
+        }
+      }),
+    )
     res.json({ data })
   } catch (error) {
     sendCareerRiseFailure(res, error, "Failed to read Career Rise eligibility")

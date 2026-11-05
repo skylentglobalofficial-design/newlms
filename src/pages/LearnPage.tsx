@@ -6,7 +6,7 @@ import { EMPTY_LESSON_STATE } from '../demo/DemoStateContext'
 import CurriculumRail from '../components/lms/CurriculumRail'
 import { LessonContentView, LessonNavigation } from '../components/lms/LessonContent'
 import { LessonContextPanel } from '../components/product/ProductLanguage'
-import { AiMark, ProductSlice } from '../components/skylent/primitives'
+import { AiMark } from '../components/skylent/primitives'
 import { getLessonMeta } from '../content/course-lookups'
 import { isAuthoredCourse } from '../lib/live-intents'
 import { isMultiTrackAuthoredCourse } from '../content/multi-track-packs'
@@ -20,7 +20,6 @@ import {
   lessonObjective,
   learnerErrorMessage,
   lessonTypeLabel,
-  productStepForLesson,
 } from '../components/lms/lms-utils'
 import { useLmsCourse } from '../hooks/useLms'
 import LockedLessonState from '../components/lms/LockedLessonState'
@@ -45,7 +44,6 @@ import {
 } from '../lib/draft-storage'
 import type { AssignmentRecord } from '../components/lms/AssignmentResponse'
 import { TermsConsent } from '../components/legal/TermsConsent'
-import LessonSlide from '../components/lms/LessonSlide'
 import './LearnWorkspace.css'
 
 const TERMS_REQUIRED = '__terms_required__'
@@ -59,8 +57,6 @@ const ACCENT = {
   border: 'var(--skylent-color-accent-border)',
   text: 'var(--skylent-color-accent)',
 }
-
-const SLICE = ['Learn', 'Practice', 'Build', 'Prove'] as const
 
 function SkylentAiFallback({ compact }: { compact: boolean }) {
   return (
@@ -100,20 +96,20 @@ function TopProgressRing({ percent }: { percent: number }) {
   return (
     <div style={{ position: 'relative', width: size, height: size, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
       <svg width={size} height={size} style={{ transform: 'rotate(-90deg)' }} aria-hidden="true">
-        <circle cx={size / 2} cy={size / 2} r={radius} fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth={stroke} />
+        <circle cx={size / 2} cy={size / 2} r={radius} fill="none" stroke="#e2e8f0" strokeWidth={stroke} />
         <circle
           cx={size / 2}
           cy={size / 2}
           r={radius}
           fill="none"
-          stroke="#10b981"
+          stroke="#5142b5"
           strokeWidth={stroke}
           strokeDasharray={circumference}
           strokeDashoffset={dashOffset}
           strokeLinecap="round"
         />
       </svg>
-      <span style={{ position: 'absolute', fontSize: 9.5, fontWeight: 800, color: '#ffffff', fontFamily: 'var(--font-mono)' }}>
+      <span style={{ position: 'absolute', fontSize: 9.5, fontWeight: 800, color: '#0f172a', fontFamily: 'var(--font-mono)' }}>
         {clamped}%
       </span>
     </div>
@@ -629,8 +625,20 @@ export default function LearnPage() {
 
   return (
     <div className="os-shell">
-      <header className="os-top">
-        <div className="os-top-lead">
+      {/* Unified Clean Top Bar (Matching Student Dashboard Skeleton — No Purple Slice Strip) */}
+      <header
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 16,
+          padding: '10px clamp(16px, 2.5vw, 28px)',
+          background: '#ffffff',
+          borderBottom: '1px solid #e2e8f0',
+          flexShrink: 0,
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, minWidth: 0, flexWrap: 'wrap' }}>
           <button
             ref={menuBtnRef}
             type="button"
@@ -639,6 +647,7 @@ export default function LearnPage() {
             aria-label="Open course outline"
             aria-expanded={sidebarOpen}
             aria-controls="os-curriculum"
+            style={{ color: '#0f172a', borderColor: '#cbd5e1', background: '#f8fafc' }}
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
               <line x1="3" y1="6" x2="21" y2="6" />
@@ -646,41 +655,46 @@ export default function LearnPage() {
               <line x1="3" y1="18" x2="21" y2="18" />
             </svg>
           </button>
-          <Link className="os-top-back" to={dashRoute(user?.role)} aria-label="Back to my learning">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <Link
+            to={dashRoute(user?.role)}
+            aria-label="Back to my learning"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              padding: '6px 12px',
+              borderRadius: 8,
+              border: '1px solid #e2e8f0',
+              background: '#f8fafc',
+              color: '#0f172a',
+              fontSize: 13,
+              fontWeight: 700,
+              textDecoration: 'none',
+            }}
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <path d="M19 12H5M12 19l-7-7 7-7" />
             </svg>
             <span>Dashboard</span>
           </Link>
-          <span className="os-top-rule" aria-hidden="true" />
-          <div className="os-top-context">
-            <div className="os-top-module">
-              {currentModule ? `Module 0${moduleIndex} · ${currentModule.title}` : 'Course'}
-            </div>
-            <div className="os-top-course">{readyCourse.title}</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
+            <strong style={{ fontSize: 15, fontWeight: 700, color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              {readyCourse.title}
+            </strong>
+            {currentModule ? (
+              <span style={{ fontSize: 12.5, color: '#64748b', fontWeight: 600 }}>
+                · Module 0{moduleIndex}: {currentModule.title}
+              </span>
+            ) : null}
           </div>
         </div>
-        <div className="sky-on-navy">
-          <ProductSlice
-            steps={SLICE}
-            current={selectedLesson ? productStepForLesson(selectedLesson, allLessons) : undefined}
-            label="Where this lesson sits"
-          />
-        </div>
-        <div className="os-top-progress" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <TopProgressRing percent={progressPct} />
-          <div>
-            <span>Course Progress: {completedCount}/{totalLessons}</span>
-            <div
-              className="os-progress-bar"
-              role="progressbar"
-              aria-label="Course progress"
-              aria-valuemin={0}
-              aria-valuemax={100}
-              aria-valuenow={progressPct}
-            >
-              <span style={{ width: `${progressPct}%` }} />
-            </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <TopProgressRing percent={progressPct} />
+            <span style={{ fontSize: 12.5, fontWeight: 700, color: '#334155' }}>
+              {completedCount}/{totalLessons} Lessons
+            </span>
           </div>
           <HeaderWalletAndNotifications variant="dashboard" />
         </div>
@@ -734,16 +748,7 @@ export default function LearnPage() {
 
             {selectedLesson ? (
               <article className="os-lesson-stage">
-                {!selectedState.locked && selectedLesson.type !== 'video' && (isAuthoredCourse(readyCourse.slug) || isMultiTrackAuthoredCourse(readyCourse.slug)) ? (
-                  <LessonSlide
-                    courseSlug={readyCourse.slug}
-                    lessonId={selectedLesson.id}
-                    title={selectedLesson.title}
-                    kicker={`${moduleIndex ? `Module 0${moduleIndex} · ` : ''}Lesson ${lessonIndex} · ${lessonTypeLabel(selectedLesson.type, selectedLesson.title)}`}
-                  />
-                ) : null}
-
-                {/* Lesson Workspace Tabs (Matching Image 8: Lesson Content | Personal Notes | Attachments & Resources) */}
+                {/* Lesson Workspace Tabs (Lesson Content | Personal Notes | Attachments & Resources) */}
                 {!selectedState.locked ? (
                   <div
                     role="tablist"

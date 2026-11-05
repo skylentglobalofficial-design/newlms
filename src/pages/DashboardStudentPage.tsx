@@ -22,6 +22,7 @@ import { courseProductProfile } from '../lib/course-product'
 import { dashboardSqlLabHref, practiceEnvironmentForCourse } from '../lib/practice-environments'
 import { isAuthoredCourse } from '../lib/authored-courses'
 import { EnrollmentModal } from '../components/shared'
+import { getCourseTierRecord, tierLabelFor } from '../lib/enrolment-tiers'
 import { AiMark, AI_NAME, ArrowRight, TruthChip } from '../components/skylent/primitives'
 import analyticsVisual from '@/assets/site/home/program-analytics-800.webp'
 import productVisual from '@/assets/site/home/program-product-800.webp'
@@ -584,48 +585,57 @@ export default function DashboardStudentPage() {
               <p style={{ margin: '0 0 18px', fontSize: 14.5, lineHeight: 1.6, color: '#cbd5e1' }}>
                 {selectedExploreDetail.subtitle}
               </p>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, marginBottom: 18 }}>
-                <strong style={{ fontSize: 28, color: '#ffffff' }}>₹{selectedExploreDetail.price.toLocaleString('en-IN')}</strong>
-                <span style={{ fontSize: 14, color: '#94a3b8', textDecoration: 'line-through' }}>
-                  ₹{(selectedExploreDetail.price * 2).toLocaleString('en-IN')}
-                </span>
-                <span style={{ fontSize: 12, fontWeight: 700, padding: '3px 10px', borderRadius: 999, background: '#dcfce7', color: '#166534' }}>
-                  100% Free Pilot Coupon Available
-                </span>
-              </div>
-              <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-                <button
-                  type="button"
-                  onClick={() => setCheckoutTarget(selectedExploreDetail)}
-                  style={{
-                    padding: '12px 22px',
-                    borderRadius: 10,
-                    border: 'none',
-                    background: '#5142b5',
-                    color: '#ffffff',
-                    fontWeight: 700,
-                    fontSize: 14.5,
-                    cursor: 'pointer',
-                  }}
-                >
-                  Enroll Now →
-                </button>
-                <Link
-                  to={`/learn/${selectedExploreDetail.slug}`}
-                  style={{
-                    padding: '12px 18px',
-                    borderRadius: 10,
-                    border: '1px solid rgba(255,255,255,0.3)',
-                    background: 'rgba(255,255,255,0.08)',
-                    color: '#ffffff',
-                    fontWeight: 600,
-                    fontSize: 14,
-                    textDecoration: 'none',
-                  }}
-                >
-                  Open Course Player
-                </Link>
-              </div>
+              {allMyCourses.some((r) => r.slug === selectedExploreDetail.slug) ? (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap', marginBottom: 8 }}>
+                  <span style={{ fontSize: 13, fontWeight: 700, padding: '6px 14px', borderRadius: 999, background: '#dcfce7', color: '#166534' }}>
+                    ✓ Enrolled · {tierLabelFor(getCourseTierRecord(selectedExploreDetail.slug).tier)}
+                  </span>
+                  <Link
+                    to={`/learn/${selectedExploreDetail.slug}`}
+                    style={{
+                      padding: '12px 22px',
+                      borderRadius: 10,
+                      background: '#059669',
+                      color: '#ffffff',
+                      fontWeight: 700,
+                      fontSize: 14.5,
+                      textDecoration: 'none',
+                    }}
+                  >
+                    Resume Course →
+                  </Link>
+                </div>
+              ) : (
+                <>
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, marginBottom: 18, flexWrap: 'wrap' }}>
+                    <span style={{ fontSize: 13, color: '#cbd5e1' }}>3 Plans Available · Starting at</span>
+                    <strong style={{ fontSize: 28, color: '#ffffff' }}>
+                      ₹{Math.max(999, Math.round((selectedExploreDetail.price * 0.43) / 100) * 100 - 1).toLocaleString('en-IN')}
+                    </strong>
+                    <span style={{ fontSize: 12, fontWeight: 700, padding: '3px 10px', borderRadius: 999, background: '#dcfce7', color: '#166534' }}>
+                      Certificate / Professional (Career OS) / Flagship Live
+                    </span>
+                  </div>
+                  <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+                    <button
+                      type="button"
+                      onClick={() => setCheckoutTarget(selectedExploreDetail)}
+                      style={{
+                        padding: '12px 22px',
+                        borderRadius: 10,
+                        border: 'none',
+                        background: '#5142b5',
+                        color: '#ffffff',
+                        fontWeight: 700,
+                        fontSize: 14.5,
+                        cursor: 'pointer',
+                      }}
+                    >
+                      Choose Plan &amp; Enroll →
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
             <div>
               <img
@@ -869,12 +879,37 @@ export default function DashboardStudentPage() {
                     }}
                   >
                     <div>
-                      <strong style={{ fontSize: 18, color: '#0f172a', display: 'block' }}>
-                        ₹{item.price.toLocaleString('en-IN')}
-                      </strong>
-                      <span style={{ fontSize: 11, color: '#15803d', fontWeight: 700 }}>
-                        ₹0 with Pilot Scholarship
-                      </span>
+                      {isEnrolled ? (
+                        <>
+                          <span
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: 4,
+                              padding: '4px 10px',
+                              borderRadius: 999,
+                              background: '#dcfce7',
+                              color: '#166534',
+                              fontSize: 11.5,
+                              fontWeight: 800,
+                            }}
+                          >
+                            ✓ Enrolled · Active
+                          </span>
+                          <span style={{ fontSize: 11, color: '#475569', fontWeight: 600, display: 'block', marginTop: 3 }}>
+                            {tierLabelFor(getCourseTierRecord(item.slug).tier)}
+                          </span>
+                        </>
+                      ) : (
+                        <>
+                          <strong style={{ fontSize: 16.5, color: '#0f172a', display: 'block' }}>
+                            From ₹{Math.max(999, Math.round((item.price * 0.43) / 100) * 100 - 1).toLocaleString('en-IN')}
+                          </strong>
+                          <span style={{ fontSize: 11, color: '#5142b5', fontWeight: 700 }}>
+                            3 Plans · Career OS in Tier 2 &amp; 3
+                          </span>
+                        </>
+                      )}
                     </div>
                     <div style={{ display: 'flex', gap: 8 }}>
                       <button

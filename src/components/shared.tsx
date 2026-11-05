@@ -23,6 +23,7 @@ import SiteAssistant from './skylent/SiteAssistant'
 import { InstallAppPrompt } from './skylent/InstallAppPrompt'
 import { TermsConsent } from './legal/TermsConsent'
 import { rememberEnrolConsent } from '../lib/policy'
+import { buildSkylentTiersForPrice, saveStoredCourseTier, type SkylentTierId } from '../lib/enrolment-tiers'
 
 // Re-export color tokens for backward compatibility
 export { C } from '../tokens'
@@ -95,7 +96,7 @@ export function FadeIn({ children, delay = 0, className }: { children: React.Rea
   )
 }
 
-// ── ENROLLMENT MODAL ──
+// ── ENROLLMENT MODAL (V62: Instant 0ms GPU-Lag-Free 3-Tier Plan Selector) ──
 export type CatalogEnrollItem = {
   kind: 'course' | 'program'
   slug: string
@@ -104,11 +105,14 @@ export type CatalogEnrollItem = {
   enrollmentStatus?: CatalogEnrollmentStatus
   enrollable: boolean
   linkedCourseSlugs?: string[]
+  initialTier?: SkylentTierId
 }
 
 export function EnrollmentModal({ item, onClose }: { item: CatalogEnrollItem; onClose: () => void; themeId?: AuroraThemeId }) {
   const { user } = useAuth()
   const navigate = useNavigate()
+  const tiers = useMemo(() => buildSkylentTiersForPrice(item.price > 0 ? item.price : 3499), [item.price])
+  const [selectedTierId, setSelectedTierId] = useState<SkylentTierId>(item.initialTier ?? 'professional')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [accepted, setAccepted] = useState(true)
@@ -116,7 +120,7 @@ export function EnrollmentModal({ item, onClose }: { item: CatalogEnrollItem; on
   const [paymentMethod, setPaymentMethod] = useState<'upi' | 'card' | 'netbanking' | 'scholarship'>('upi')
   const [upiId, setUpiId] = useState('')
   const [selectedBank, setSelectedBank] = useState('SBI')
-  const [couponCode, setCouponCode] = useState('SKYLENTPILOT')
+  const [couponCode] = useState('SKYLENTPILOT')
   const [couponApplied, setCouponApplied] = useState(true)
 
   const dialogRef = useRef<HTMLDivElement>(null)
@@ -125,8 +129,9 @@ export function EnrollmentModal({ item, onClose }: { item: CatalogEnrollItem; on
   const onCloseRef = useRef(onClose)
   onCloseRef.current = onClose
 
-  const basePrice = item.price > 0 ? item.price : 4999
-  const mrpPrice = basePrice * 2
+  const activeTier = tiers.find((t) => t.id === selectedTierId) ?? tiers[1]
+  const basePrice = activeTier.price
+  const mrpPrice = activeTier.mrp
   const discountAmount = couponApplied ? basePrice : 0
   const payableAmount = Math.max(0, basePrice - discountAmount)
 
@@ -140,41 +145,15 @@ export function EnrollmentModal({ item, onClose }: { item: CatalogEnrollItem; on
   useEffect(() => {
     const previouslyFocused = document.activeElement instanceof HTMLElement ? document.activeElement : null
     document.body.style.overflow = 'hidden'
-    const root = dialogRef.current
-    function focusables(): HTMLElement[] {
-      if (!root) return []
-      return Array.from(root.querySelectorAll<HTMLElement>('a, button, input, textarea, select, [tabindex]:not([tabindex="-1"])')).filter(
-        (el) => !el.hasAttribute('disabled'),
-      )
-    }
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         e.preventDefault()
         onCloseRef.current()
-        return
-      }
-      if (e.key !== 'Tab') return
-      const items = focusables()
-      if (!items.length) return
-      const first = items[0]
-      const last = items[items.length - 1]
-      const active = document.activeElement as HTMLElement | null
-      if (e.shiftKey) {
-        if (active === first || !root?.contains(active)) {
-          e.preventDefault()
-          last.focus()
-        }
-        return
-      }
-      if (active === last) {
-        e.preventDefault()
-        first.focus()
       }
     }
     window.addEventListener('keydown', onKey)
-    const frame = requestAnimationFrame(() => closeRef.current?.focus())
+    closeRef.current?.focus()
     return () => {
-      cancelAnimationFrame(frame)
       document.body.style.overflow = ''
       window.removeEventListener('keydown', onKey)
       previouslyFocused?.focus()
@@ -192,6 +171,11 @@ export function EnrollmentModal({ item, onClose }: { item: CatalogEnrollItem; on
       setTriedWithoutTerms(true)
       termsRef.current?.focus()
       return
+    }
+
+    saveStoredCourseTier(item.slug, selectedTierId)
+    for (const linked of item.linkedCourseSlugs ?? []) {
+      saveStoredCourseTier(linked, selectedTierId)
     }
 
     if (!user) {
@@ -222,13 +206,22 @@ export function EnrollmentModal({ item, onClose }: { item: CatalogEnrollItem; on
         : 'Enrolment not available yet'
     : user
       ? submitting
-        ? 'Processing Enrollment…'
-        : `Pay Now (₹${payableAmount.toLocaleString('en-IN')}) & Start Learning →`
-      : `Proceed to Login & Pay (₹${payableAmount.toLocaleString('en-IN')}) →`
+        ? 'Activating Your Enrolment…'
+        : `Enrol in ${activeTier.name.replace(/^[0-9]+\.\s*/, "")} (₹${payableAmount.toLocaleString('en-IN')}) →`
+      : `Proceed to Login & Enrol (₹${payableAmount.toLocaleString('en-IN')}) →`
 
   return (
     <>
-      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.62)', backdropFilter: 'blur(4px)', zIndex: 500 }} aria-hidden="true" />
+      <div
+        onClick={onClose}
+        style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(15, 23, 42, 0.72)',
+          zIndex: 500,
+        }}
+        aria-hidden="true"
+      />
       <div
         ref={dialogRef}
         role="dialog"
@@ -244,10 +237,10 @@ export function EnrollmentModal({ item, onClose }: { item: CatalogEnrollItem; on
           border: '1px solid #cbd5e1',
           borderRadius: 16,
           padding: 0,
-          width: 820,
-          maxWidth: '95vw',
+          width: 960,
+          maxWidth: '96vw',
           zIndex: 501,
-          boxShadow: '0 28px 70px -16px rgba(15, 23, 42, 0.38)',
+          boxShadow: '0 24px 60px -12px rgba(15, 23, 42, 0.42)',
           overflowY: 'auto',
           maxHeight: '92vh',
           fontFamily: 'var(--font-body)',
@@ -256,9 +249,9 @@ export function EnrollmentModal({ item, onClose }: { item: CatalogEnrollItem; on
         {/* Top Checkout Header Bar */}
         <div
           style={{
-            background: 'linear-gradient(135deg, #3B2D96 0%, #5142B5 100%)',
+            background: 'linear-gradient(135deg, #1e1b4b 0%, #3b2d96 55%, #5142b5 100%)',
             color: '#ffffff',
-            padding: '18px 24px',
+            padding: '16px 24px',
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
@@ -266,8 +259,8 @@ export function EnrollmentModal({ item, onClose }: { item: CatalogEnrollItem; on
           }}
         >
           <div>
-            <div style={{ fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 700, color: '#e0e7ff', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
-              SKYLENT CHECKOUT · ORDER SUMMARY &amp; PAYMENT
+            <div style={{ fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 700, color: '#c4b8ff', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+              CHOOSE YOUR SKYLENT LEARNING TIER · INSTANT ACCESS
             </div>
             <div id="enrollment-modal-title" style={{ color: '#ffffff', fontSize: 20, fontWeight: 700, marginTop: 2 }}>
               {item.title}
@@ -279,7 +272,7 @@ export function EnrollmentModal({ item, onClose }: { item: CatalogEnrollItem; on
             onClick={onClose}
             aria-label="Close enrolment dialog"
             style={{
-              background: 'rgba(255,255,255,0.16)',
+              background: 'rgba(255,255,255,0.14)',
               border: '1px solid rgba(255,255,255,0.28)',
               borderRadius: 8,
               padding: '7px 12px',
@@ -293,229 +286,310 @@ export function EnrollmentModal({ item, onClose }: { item: CatalogEnrollItem; on
           </button>
         </div>
 
-        {/* Main 2-Column Checkout Body */}
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))',
-            gap: 20,
-            padding: '20px 24px 24px',
-          }}
-        >
-          {/* Left Column: Course Package + Coupon + Payment Methods */}
-          <div style={{ display: 'grid', gap: 14, alignContent: 'start' }}>
-            {/* Package Included Card */}
-            <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 12, padding: '14px 16px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                <strong style={{ fontSize: 13.5, color: '#0f172a' }}>What is included in your enrolment</strong>
-                <span style={{ fontSize: 11, fontWeight: 700, padding: '2px 8px', borderRadius: 999, background: '#dcfce7', color: '#166534' }}>
-                  Instant Access
-                </span>
-              </div>
-              <ul style={{ margin: 0, paddingLeft: 18, fontSize: 12.5, color: '#334155', lineHeight: 1.65 }}>
-                <li>Full self-paced modules, written notes &amp; concept checks</li>
-                <li>Live in-browser SQL / Python / Product / AI lab workspace</li>
-                <li>Graded capstone project &amp; verifiable SKL certificate (/verify)</li>
-                <li>+50 Bonus Elixir Coins credited on enrolment</li>
-              </ul>
-            </div>
-
-            {/* Coupon / Pilot Scholarship Box */}
-            <div style={{ background: couponApplied ? '#f5f3ff' : '#ffffff', border: couponApplied ? '1.5px solid #5142b5' : '1px solid #cbd5e1', borderRadius: 12, padding: '12px 14px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-                <div>
-                  <span style={{ fontSize: 11, fontWeight: 700, color: '#5142b5', display: 'block' }}>
-                    COUPON &amp; SCHOLARSHIP CODE
-                  </span>
-                  <strong style={{ fontSize: 13.5, color: '#0f172a' }}>
-                    {couponApplied ? `${couponCode} Applied (100% Open Pilot Waiver)` : 'Have a scholarship or coupon code?'}
-                  </strong>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setCouponApplied((v) => !v)}
-                  style={{
-                    padding: '6px 12px',
-                    borderRadius: 8,
-                    border: couponApplied ? '1px solid #cbd5e1' : 'none',
-                    background: couponApplied ? '#ffffff' : '#5142b5',
-                    color: couponApplied ? '#334155' : '#ffffff',
-                    fontSize: 12,
-                    fontWeight: 700,
-                    cursor: 'pointer',
-                  }}
-                >
-                  {couponApplied ? 'Remove Coupon (Pay ₹' + basePrice.toLocaleString('en-IN') + ')' : 'Apply SKYLENTPILOT (₹0)'}
-                </button>
-              </div>
-            </div>
-
-            {/* Payment Method Selector */}
-            <div>
-              <span style={{ fontSize: 11.5, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 8 }}>
-                Select Payment Mode
+        <div style={{ padding: '18px 24px 24px', display: 'grid', gap: 18 }}>
+          {/* Step 1: 3-Tier Enrolment Plan Selector */}
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8, marginBottom: 10 }}>
+              <strong style={{ fontSize: 13.5, color: '#0f172a', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                Step 1: Select Your Enrolment Plan (Career OS is included in Plans 2 &amp; 3)
+              </strong>
+              <span style={{ fontSize: 12, color: '#047857', fontWeight: 700, background: '#ecfdf5', padding: '3px 10px', borderRadius: 999 }}>
+                ✓ Career OS: 6-Month Active Window + 3-Month Practice Extension on 60% Completion
               </span>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-                {[
-                  { id: 'upi' as const, title: 'UPI (GPay / PhonePe / Paytm)', sub: 'Instant UPI ID or QR' },
-                  { id: 'card' as const, title: 'Debit / Credit Card', sub: 'Visa, Mastercard, RuPay' },
-                  { id: 'netbanking' as const, title: 'NetBanking', sub: 'SBI, HDFC, ICICI, Axis' },
-                  { id: 'scholarship' as const, title: '100% Pilot Scholarship', sub: '₹0 Open Pilot Waiver' },
-                ].map((pm) => {
-                  const active = paymentMethod === pm.id
-                  return (
-                    <button
-                      key={pm.id}
-                      type="button"
-                      onClick={() => {
-                        setPaymentMethod(pm.id)
-                        if (pm.id === 'scholarship') setCouponApplied(true)
-                      }}
-                      style={{
-                        textAlign: 'left',
-                        padding: '10px 12px',
-                        borderRadius: 10,
-                        border: active ? '2px solid #5142b5' : '1px solid #cbd5e1',
-                        background: active ? '#f5f3ff' : '#ffffff',
-                        cursor: 'pointer',
-                      }}
-                    >
-                      <strong style={{ display: 'block', fontSize: 12.5, color: active ? '#5142b5' : '#0f172a' }}>{pm.title}</strong>
-                      <span style={{ fontSize: 11, color: '#64748b' }}>{pm.sub}</span>
-                    </button>
-                  )
-                })}
-              </div>
+            </div>
 
-              {paymentMethod === 'upi' && !couponApplied ? (
-                <div style={{ marginTop: 10, padding: 12, borderRadius: 10, background: '#f8fafc', border: '1px solid #e2e8f0' }}>
-                  <label style={{ display: 'block', fontSize: 11.5, fontWeight: 700, color: '#334155', marginBottom: 4 }}>
-                    Enter UPI ID (Google Pay / PhonePe / Paytm)
-                  </label>
-                  <input
-                    type="text"
-                    value={upiId}
-                    onChange={(e) => setUpiId(e.target.value)}
-                    placeholder="yourname@okaxis or 9876543210@ybl"
-                    style={{ width: '100%', boxSizing: 'border-box', padding: '8px 10px', borderRadius: 8, border: '1px solid #cbd5e1', fontSize: 13 }}
-                  />
-                </div>
-              ) : null}
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 260px), 1fr))',
+                gap: 12,
+              }}
+            >
+              {tiers.map((tier) => {
+                const selected = tier.id === selectedTierId
+                return (
+                  <button
+                    key={tier.id}
+                    type="button"
+                    onClick={() => setSelectedTierId(tier.id)}
+                    style={{
+                      textAlign: 'left',
+                      padding: '14px 16px',
+                      borderRadius: 14,
+                      border: selected ? '2px solid #5142b5' : '1px solid #cbd5e1',
+                      background: selected ? '#f5f3ff' : '#ffffff',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'space-between',
+                      gap: 10,
+                      position: 'relative',
+                    }}
+                  >
+                    <div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+                        <span
+                          style={{
+                            fontSize: 10.5,
+                            fontWeight: 800,
+                            padding: '2px 8px',
+                            borderRadius: 999,
+                            background: tier.includesCareerOS ? (tier.popular ? '#5142b5' : '#0f172a') : '#e2e8f0',
+                            color: tier.includesCareerOS ? '#ffffff' : '#334155',
+                            textTransform: 'uppercase',
+                          }}
+                        >
+                          {tier.popular ? '★ Most Popular · Final Year' : tier.shortBadge}
+                        </span>
+                        <span
+                          style={{
+                            fontSize: 11,
+                            fontWeight: 700,
+                            color: tier.includesCareerOS ? '#047857' : '#64748b',
+                          }}
+                        >
+                          {tier.includesCareerOS ? '✓ Career OS Included' : 'No Career OS'}
+                        </span>
+                      </div>
 
-              {paymentMethod === 'netbanking' && !couponApplied ? (
-                <div style={{ marginTop: 10, display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                  {['SBI', 'HDFC', 'ICICI', 'Axis', 'Kotak'].map((b) => (
-                    <button
-                      key={b}
-                      type="button"
-                      onClick={() => setSelectedBank(b)}
-                      style={{
-                        padding: '5px 12px',
-                        borderRadius: 999,
-                        border: selectedBank === b ? '1.5px solid #5142b5' : '1px solid #cbd5e1',
-                        background: selectedBank === b ? '#f5f3ff' : '#ffffff',
-                        color: selectedBank === b ? '#5142b5' : '#334155',
-                        fontSize: 12,
-                        fontWeight: 700,
-                        cursor: 'pointer',
-                      }}
-                    >
-                      {b} Bank
-                    </button>
-                  ))}
-                </div>
-              ) : null}
+                      <strong style={{ fontSize: 15.5, color: '#0f172a', display: 'block', marginBottom: 4 }}>
+                        {tier.name}
+                      </strong>
+                      <p style={{ margin: '0 0 8px', fontSize: 12, color: '#475569', lineHeight: 1.45 }}>
+                        {tier.tagline}
+                      </p>
+
+                      <ul style={{ margin: 0, paddingLeft: 16, fontSize: 11.5, color: '#334155', lineHeight: 1.55 }}>
+                        {tier.features.map((f) => (
+                          <li key={f} style={{ marginBottom: 2 }}>{f}</li>
+                        ))}
+                        {(tier.notIncluded ?? []).map((nf) => (
+                          <li key={nf} style={{ color: '#94a3b8', marginBottom: 2 }}>{nf}</li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <div style={{ paddingTop: 8, borderTop: '1px solid rgba(148, 163, 184, 0.25)', display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
+                      <div>
+                        <strong style={{ fontSize: 18, color: selected ? '#5142b5' : '#0f172a' }}>
+                          ₹{tier.price.toLocaleString('en-IN')}
+                        </strong>
+                        <span style={{ fontSize: 11.5, color: '#94a3b8', textDecoration: 'line-through', marginLeft: 6 }}>
+                          ₹{tier.mrp.toLocaleString('en-IN')}
+                        </span>
+                      </div>
+                      <span style={{ fontSize: 11.5, fontWeight: 700, color: selected ? '#5142b5' : '#64748b' }}>
+                        {selected ? '● Selected' : 'Select Plan'}
+                      </span>
+                    </div>
+                  </button>
+                )
+              })}
             </div>
           </div>
 
-          {/* Right Column: Detailed Price Breakdown & Pay Now CTA */}
-          <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 14, padding: '18px 20px' }}>
-            <div>
-              <strong style={{ fontSize: 14, color: '#0f172a', display: 'block', marginBottom: 12, paddingBottom: 8, borderBottom: '1px solid #e2e8f0' }}>
-                Payment Summary
-              </strong>
+          {/* Step 2: Payment & Scholarship Summary */}
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))',
+              gap: 18,
+            }}
+          >
+            {/* Left Column: Coupon + Payment Mode */}
+            <div style={{ display: 'grid', gap: 12, alignContent: 'start' }}>
+              <div style={{ background: couponApplied ? '#f5f3ff' : '#ffffff', border: couponApplied ? '1.5px solid #5142b5' : '1px solid #cbd5e1', borderRadius: 12, padding: '12px 14px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                  <div>
+                    <span style={{ fontSize: 11, fontWeight: 700, color: '#5142b5', display: 'block' }}>
+                      SCHOLARSHIP &amp; PILOT COUPON
+                    </span>
+                    <strong style={{ fontSize: 13, color: '#0f172a' }}>
+                      {couponApplied ? `${couponCode} Applied (100% Open Pilot Waiver)` : 'Apply 100% Pilot Scholarship Waiver?'}
+                    </strong>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setCouponApplied((v) => !v)}
+                    style={{
+                      padding: '6px 12px',
+                      borderRadius: 8,
+                      border: couponApplied ? '1px solid #cbd5e1' : 'none',
+                      background: couponApplied ? '#ffffff' : '#5142b5',
+                      color: couponApplied ? '#334155' : '#ffffff',
+                      fontSize: 12,
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    {couponApplied ? 'Pay Regular Price (₹' + basePrice.toLocaleString('en-IN') + ')' : 'Apply SKYLENTPILOT (₹0)'}
+                  </button>
+                </div>
+              </div>
 
-              <div style={{ display: 'grid', gap: 8, fontSize: 13, color: '#334155' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span>Original Programme MRP</span>
-                  <span style={{ textDecoration: 'line-through', color: '#94a3b8' }}>₹{mrpPrice.toLocaleString('en-IN')}</span>
+              <div>
+                <span style={{ fontSize: 11.5, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 8 }}>
+                  Payment Mode
+                </span>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                  {[
+                    { id: 'upi' as const, title: 'UPI (GPay / PhonePe)', sub: 'Instant UPI ID or QR' },
+                    { id: 'card' as const, title: 'Debit / Credit Card', sub: 'Visa, Mastercard, RuPay' },
+                    { id: 'netbanking' as const, title: 'NetBanking', sub: 'SBI, HDFC, ICICI, Axis' },
+                    { id: 'scholarship' as const, title: '100% Pilot Scholarship', sub: '₹0 Open Pilot Waiver' },
+                  ].map((pm) => {
+                    const active = paymentMethod === pm.id
+                    return (
+                      <button
+                        key={pm.id}
+                        type="button"
+                        onClick={() => {
+                          setPaymentMethod(pm.id)
+                          if (pm.id === 'scholarship') setCouponApplied(true)
+                        }}
+                        style={{
+                          textAlign: 'left',
+                          padding: '9px 11px',
+                          borderRadius: 10,
+                          border: active ? '2px solid #5142b5' : '1px solid #cbd5e1',
+                          background: active ? '#f5f3ff' : '#ffffff',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        <strong style={{ display: 'block', fontSize: 12, color: active ? '#5142b5' : '#0f172a' }}>{pm.title}</strong>
+                        <span style={{ fontSize: 11, color: '#64748b' }}>{pm.sub}</span>
+                      </button>
+                    )
+                  })}
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span>Listed Platform Price</span>
-                  <strong>₹{basePrice.toLocaleString('en-IN')}</strong>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span>In-Browser Cloud Lab &amp; IDE</span>
-                  <span style={{ color: '#15803d', fontWeight: 700 }}>FREE</span>
-                </div>
-                {couponApplied ? (
-                  <div style={{ display: 'flex', justifyContent: 'space-between', color: '#15803d', fontWeight: 700 }}>
-                    <span>Pilot Scholarship (SKYLENTPILOT)</span>
-                    <span>- ₹{discountAmount.toLocaleString('en-IN')}</span>
+
+                {paymentMethod === 'upi' && !couponApplied ? (
+                  <div style={{ marginTop: 8, padding: 10, borderRadius: 10, background: '#f8fafc', border: '1px solid #e2e8f0' }}>
+                    <input
+                      type="text"
+                      value={upiId}
+                      onChange={(e) => setUpiId(e.target.value)}
+                      placeholder="Enter UPI ID (e.g. name@okaxis)"
+                      style={{ width: '100%', boxSizing: 'border-box', padding: '8px 10px', borderRadius: 8, border: '1px solid #cbd5e1', fontSize: 13 }}
+                    />
                   </div>
                 ) : null}
-                <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: 10, marginTop: 4, borderTop: '1.5px dashed #cbd5e1', fontSize: 16, fontWeight: 800, color: '#0f172a' }}>
-                  <span>Total Payable Amount</span>
-                  <span style={{ color: '#5142b5', fontSize: 22 }}>₹{payableAmount.toLocaleString('en-IN')}</span>
-                </div>
+
+                {paymentMethod === 'netbanking' && !couponApplied ? (
+                  <div style={{ marginTop: 8, display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                    {['SBI', 'HDFC', 'ICICI', 'Axis'].map((b) => (
+                      <button
+                        key={b}
+                        type="button"
+                        onClick={() => setSelectedBank(b)}
+                        style={{
+                          padding: '4px 10px',
+                          borderRadius: 999,
+                          border: selectedBank === b ? '1.5px solid #5142b5' : '1px solid #cbd5e1',
+                          background: selectedBank === b ? '#f5f3ff' : '#ffffff',
+                          color: selectedBank === b ? '#5142b5' : '#334155',
+                          fontSize: 11.5,
+                          fontWeight: 700,
+                          cursor: 'pointer',
+                        }}
+                      >
+                        {b}
+                      </button>
+                    ))}
+                  </div>
+                ) : null}
               </div>
-
-              <div id="enrollment-modal-copy" style={{ color: '#475569', fontSize: 12, marginTop: 10, lineHeight: 1.5 }}>
-                {item.enrollable
-                  ? 'No payment is taken to enrol during this pilot, and there is no checkout charge when SKYLENTPILOT is applied. Clicking Pay Now & Start Learning opens your course immediately inside Skylent OS.'
-                  : 'Enrolment is not open, and no payment is taken. Use the contact form to register your interest.'}
-              </div>
-
-              <p style={{ color: '#64748b', fontSize: 12, lineHeight: 1.5, margin: '8px 0 12px' }}>{helperMessage}</p>
-
-              {item.enrollable ? (
-                <TermsConsent inputRef={termsRef} checked={accepted} onChange={setAccepted} action="enrolling" showError={triedWithoutTerms} />
-              ) : null}
-
-              {error ? (
-                <div role="alert" style={{ background: '#fef2f2', border: '1px solid #fca5a5', borderRadius: 8, padding: '10px 12px', color: '#991b1b', fontSize: 12.5, marginTop: 10 }}>
-                  {error}
-                </div>
-              ) : null}
             </div>
 
-            <div style={{ display: 'flex', gap: 10, marginTop: 14 }}>
-              <button
-                type="button"
-                onClick={onClose}
-                style={{
-                  background: '#ffffff',
-                  border: '1px solid #cbd5e1',
-                  color: '#334155',
-                  borderRadius: 10,
-                  padding: '12px 14px',
-                  fontSize: 13,
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                }}
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={handlePrimaryAction}
-                disabled={submitting}
-                style={{
-                  flex: 1,
-                  background: '#5142b5',
-                  border: 'none',
-                  color: '#ffffff',
-                  borderRadius: 10,
-                  padding: '13px 16px',
-                  fontSize: 14,
-                  fontWeight: 700,
-                  cursor: submitting ? 'wait' : 'pointer',
-                  opacity: submitting ? 0.7 : 1,
-                  boxShadow: '0 8px 20px -6px rgba(81, 66, 181, 0.45)',
-                }}
-              >
-                {primaryLabel}
-              </button>
+            {/* Right Column: Order Summary & CTA */}
+            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 14, padding: '16px 18px' }}>
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10, paddingBottom: 8, borderBottom: '1px solid #e2e8f0' }}>
+                  <strong style={{ fontSize: 13.5, color: '#0f172a' }}>Selected Plan Summary</strong>
+                  <span style={{ fontSize: 11.5, fontWeight: 700, color: activeTier.includesCareerOS ? '#047857' : '#475569' }}>
+                    {activeTier.includesCareerOS ? '✓ Includes Career OS' : 'Certificate Only'}
+                  </span>
+                </div>
+
+                <div style={{ display: 'grid', gap: 6, fontSize: 12.5, color: '#334155' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span>Plan Tier</span>
+                    <strong>{activeTier.name}</strong>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span>Plan Price (MRP ₹{mrpPrice.toLocaleString('en-IN')})</span>
+                    <strong>₹{basePrice.toLocaleString('en-IN')}</strong>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span>Career OS Access</span>
+                    <span style={{ fontWeight: 700, color: activeTier.includesCareerOS ? '#047857' : '#64748b' }}>
+                      {activeTier.includesCareerOS ? '6 Months + 3M Practice (60% Gate)' : 'Not Included in Tier 1'}
+                    </span>
+                  </div>
+                  {couponApplied ? (
+                    <div style={{ display: 'flex', justifyContent: 'space-between', color: '#15803d', fontWeight: 700 }}>
+                      <span>Pilot Scholarship ({couponCode})</span>
+                      <span>- ₹{discountAmount.toLocaleString('en-IN')}</span>
+                    </div>
+                  ) : null}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: 8, marginTop: 4, borderTop: '1.5px dashed #cbd5e1', fontSize: 15, fontWeight: 800, color: '#0f172a' }}>
+                    <span>Total Payable</span>
+                    <span style={{ color: '#5142b5', fontSize: 20 }}>₹{payableAmount.toLocaleString('en-IN')}</span>
+                  </div>
+                </div>
+
+                <p id="enrollment-modal-copy" style={{ color: '#64748b', fontSize: 11.5, lineHeight: 1.45, margin: '8px 0' }}>
+                  {helperMessage}
+                </p>
+
+                {item.enrollable ? (
+                  <TermsConsent inputRef={termsRef} checked={accepted} onChange={setAccepted} action="enrolling" showError={triedWithoutTerms} />
+                ) : null}
+
+                {error ? (
+                  <div role="alert" style={{ background: '#fef2f2', border: '1px solid #fca5a5', borderRadius: 8, padding: '8px 10px', color: '#991b1b', fontSize: 12, marginTop: 8 }}>
+                    {error}
+                  </div>
+                ) : null}
+              </div>
+
+              <div style={{ display: 'flex', gap: 10, marginTop: 12 }}>
+                <button
+                  type="button"
+                  onClick={onClose}
+                  style={{
+                    background: '#ffffff',
+                    border: '1px solid #cbd5e1',
+                    color: '#334155',
+                    borderRadius: 10,
+                    padding: '11px 14px',
+                    fontSize: 13,
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handlePrimaryAction}
+                  disabled={submitting}
+                  style={{
+                    flex: 1,
+                    background: '#5142b5',
+                    border: 'none',
+                    color: '#ffffff',
+                    borderRadius: 10,
+                    padding: '12px 16px',
+                    fontSize: 13.5,
+                    fontWeight: 700,
+                    cursor: submitting ? 'wait' : 'pointer',
+                    opacity: submitting ? 0.7 : 1,
+                  }}
+                >
+                  {primaryLabel}
+                </button>
+              </div>
             </div>
           </div>
         </div>
