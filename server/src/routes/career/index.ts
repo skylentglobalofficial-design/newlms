@@ -1,6 +1,8 @@
 import { Router } from "express"
-import { requireAuth, type AuthenticatedRequest } from "../../lib/auth.js"
+import { prisma } from "../../lib/prisma.js"
+import { requireAuth, requireCsrf, type AuthenticatedRequest } from "../../lib/auth.js"
 import { CAREER_OS_UNAVAILABLE, readCareerOsAccess, requireCareerOsAccess } from "../../lib/career-os-access.js"
+import { isDatabaseUnavailableError, isMissingSchemaError } from "../../lib/schema-capabilities.js"
 import { profileRouter } from "./profile.js"
 import { employerJobsRouter } from "./employer-jobs.js"
 import { jobsRouter } from "./jobs.js"
@@ -30,6 +32,24 @@ careerRouter.get("/access", requireAuth, async (req: AuthenticatedRequest, res) 
     })
   } catch (error) {
     console.error("Career OS access check failed:", error instanceof Error ? error.name : "unknown")
+    res.status(500).json(CAREER_OS_UNAVAILABLE)
+  }
+})
+
+careerRouter.post("/activate", requireAuth, requireCsrf, async (req: AuthenticatedRequest, res) => {
+  try {
+    const userId = req.auth!.user.id
+    await prisma.careerOsAccess.upsert({
+      where: { userId },
+      update: {},
+      create: { userId },
+    })
+    res.json({ data: { entitled: true, locked: false } })
+  } catch (error) {
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+      return res.status(503).json(CAREER_OS_UNAVAILABLE)
+    }
+    console.error("Career OS activation failed:", error instanceof Error ? error.name : "unknown")
     res.status(500).json(CAREER_OS_UNAVAILABLE)
   }
 })

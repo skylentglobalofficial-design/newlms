@@ -21,7 +21,6 @@ import { getDomainAccent, type AuroraThemeId } from '../aurora-themes'
 import { ArrowRight, TruthChip, type JourneyStage, type TruthState } from './skylent/primitives'
 import SiteAssistant from './skylent/SiteAssistant'
 import { InstallAppPrompt } from './skylent/InstallAppPrompt'
-import { GoogleOneTapSuggestion } from './skylent/GoogleOneTapSuggestion'
 import { TermsConsent } from './legal/TermsConsent'
 import { rememberEnrolConsent } from '../lib/policy'
 
@@ -558,7 +557,7 @@ const PUBLIC_NAV: readonly PublicNavGroup[] = [
           { label: 'Product Management', sub: 'User Research, PRD Scoping & Harbor Desk Studio · 5 Modules.', to: '/programmes/product-management', mark: 'live' },
           { label: 'Python Programming & Automation', sub: 'Python 3, Pandas, Pytest Validators & Pipeline Audit · 5 Modules.', to: '/courses/python-programming', mark: 'live' },
           { label: '₹99 Weekend Live Workshops', sub: '90-min weekend sprints with 100% Elixir Coin cashback (99 Coins).', to: '/workshops', mark: 'live' },
-          { label: 'Explore All Programmes & Courses →', sub: 'Compare all 6 tracks, pricing plans, and career goal pathways.', to: '/programmes' },
+          { label: 'Explore All Programmes & Goal Finder →', sub: 'Compare all 6 tracks, pricing plans, and career goal pathways.', to: '/programmes' },
         ],
       },
     ],
@@ -1044,7 +1043,7 @@ export function Nav() {
             </>
           )}
 
-          {/* Native URL bar install only */}
+          <InstallAppPrompt variant="nav" />
 
           <Link to={pathCta.to} className="skn__cta sk-btn sk-btn-primary">
             {pathCta.label}
@@ -1275,7 +1274,7 @@ export function PageShell({
       <main className="skylent-public-main">{children}</main>
       <Footer />
       {/* Site-wide Skylent AI: POST /api/v1/reva/chat (legacy internal route name). */}
-      <GoogleOneTapSuggestion />
+      <SiteAssistant />
     </PublicCanvas>
   )
 }

@@ -169,18 +169,9 @@ async function getGoogleCertificates(options?: { forceRefresh?: boolean }): Prom
   return keys
 }
 
-function cleanEnvVal(v: string | undefined): string {
-  return (v ?? "").trim().replace(/^['"]+|['"]+$/g, "").trim()
-}
-
-export function isLiveGoogleOAuthClientId(clientId: string | undefined | null): boolean {
-  const clean = cleanEnvVal(clientId ?? "")
-  return /^[0-9]{6,}-[a-z0-9_-]+\.apps\.googleusercontent\.com$/i.test(clean)
-}
-
 function googleClientCredentials(env: NodeJS.ProcessEnv = process.env): { clientId: string; clientSecret: string } | null {
-  const clientId = cleanEnvVal(env.GOOGLE_CLIENT_ID)
-  const clientSecret = cleanEnvVal(env.GOOGLE_CLIENT_SECRET)
+  const clientId = env.GOOGLE_CLIENT_ID?.trim()
+  const clientSecret = env.GOOGLE_CLIENT_SECRET?.trim()
   if (!clientId || !clientSecret) return null
   return { clientId, clientSecret }
 }

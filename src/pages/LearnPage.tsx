@@ -53,7 +53,6 @@ import '../components/lms/SkylentAI.css'
 
 const SkylentAI = lazy(() => import('../components/lms/SkylentAI'))
 
-/** One accent for the whole player: cobalt, from the system tokens. */
 const ACCENT = {
   primary: 'var(--skylent-color-accent)',
   subtle: 'var(--skylent-color-accent-soft)',
@@ -91,6 +90,36 @@ function StateScreen({ children }: { children: ReactNode }) {
   )
 }
 
+function TopProgressRing({ percent }: { percent: number }) {
+  const clamped = Math.max(0, Math.min(100, Math.round(percent)))
+  const size = 34
+  const stroke = 3.5
+  const radius = (size - stroke) / 2
+  const circumference = 2 * Math.PI * radius
+  const dashOffset = circumference - (clamped / 100) * circumference
+  return (
+    <div style={{ position: 'relative', width: size, height: size, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+      <svg width={size} height={size} style={{ transform: 'rotate(-90deg)' }} aria-hidden="true">
+        <circle cx={size / 2} cy={size / 2} r={radius} fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth={stroke} />
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          fill="none"
+          stroke="#10b981"
+          strokeWidth={stroke}
+          strokeDasharray={circumference}
+          strokeDashoffset={dashOffset}
+          strokeLinecap="round"
+        />
+      </svg>
+      <span style={{ position: 'absolute', fontSize: 9.5, fontWeight: 800, color: '#ffffff', fontFamily: 'var(--font-mono)' }}>
+        {clamped}%
+      </span>
+    </div>
+  )
+}
+
 export default function LearnPage() {
   const { slug, lessonId } = useParams<{ slug: string; lessonId?: string }>()
   const navigate = useNavigate()
@@ -118,6 +147,10 @@ export default function LearnPage() {
   const [completing, setCompleting] = useState(false)
   const [assignmentRecord, setAssignmentRecord] = useState<(AssignmentRecord & { lessonId: string }) | null>(null)
   const [dynamicPractice, setDynamicPractice] = useState<LearnerPracticeWorkspace | null>(null)
+  const [playerTab, setPlayerTab] = useState<'lesson' | 'notes' | 'attachments'>('lesson')
+  const [personalNote, setPersonalNote] = useState('')
+  const [noteSavedToast, setNoteSavedToast] = useState(false)
+
   const menuBtnRef = useRef<HTMLButtonElement>(null)
   const stageRef = useRef<HTMLElement>(null)
   const draftTimer = useRef<number | null>(null)
@@ -130,6 +163,30 @@ export default function LearnPage() {
 
   const selectedLessonType = allLessons.find((lesson) => lesson.id === selectedLessonId)?.type ?? null
   const selectedLessonLocked = Boolean(selectedLessonId && lessonStates[selectedLessonId]?.locked)
+
+  // Load personal notes for active lesson
+  useEffect(() => {
+    if (!slug || !selectedLessonId) return
+    try {
+      const saved = window.localStorage.getItem(`skylent:lesson-note:${slug}:${selectedLessonId}`)
+      setPersonalNote(saved ?? '')
+    } catch {
+      setPersonalNote('')
+    }
+    setPlayerTab('lesson')
+  }, [slug, selectedLessonId])
+
+  function handleSavePersonalNote(value: string) {
+    setPersonalNote(value)
+    if (!slug || !selectedLessonId) return
+    try {
+      window.localStorage.setItem(`skylent:lesson-note:${slug}:${selectedLessonId}`, value)
+      setNoteSavedToast(true)
+      window.setTimeout(() => setNoteSavedToast(false), 1500)
+    } catch {
+      // ignore storage errors
+    }
+  }
 
   useEffect(() => {
     if (firstLessonId && !lessonId && access.status === 'ready') {
@@ -288,7 +345,6 @@ export default function LearnPage() {
       setQuizStatus('loading')
       fetchQuizQuestions(slug, selectedLessonId)
         .then((questions) => {
-          // Correct answers stay server-side. The browser receives question text/options only.
           setQuizQuestions(questions.map((q) => ({
             q: q.q,
             options: q.options,
@@ -296,7 +352,6 @@ export default function LearnPage() {
           setQuizStatus('ready')
         })
         .catch(() => {
-          // Not "no questions": the request failed, and the learner can retry it.
           setQuizQuestions([])
           setQuizStatus('error')
         })
@@ -409,7 +464,6 @@ export default function LearnPage() {
   const readyCourse = access.course
   const selectedLesson = allLessons.find((lesson) => lesson.id === selectedLessonId)
   const selectedState = selectedLessonId ? (lessonStates[selectedLessonId] ?? { ...EMPTY_LESSON_STATE }) : { ...EMPTY_LESSON_STATE }
-  // Course progress exactly as the server computed it for this enrolment.
   const { progressPct, completedCount, totalLessons, allComplete } = access.workspace.progress
   const { prev, next } = getAdjacentLessons(allLessons, selectedLessonId)
   const prevUnlocked = prev && isLessonUnlocked(prev.id, allLessons, lessonStates) ? prev : null
@@ -424,8 +478,6 @@ export default function LearnPage() {
     : 0
   const nextUnlocked = next && isLessonUnlocked(next.id, allLessons, lessonStates) ? next : null
   const showAi = Boolean(selectedLesson && !selectedState.locked)
-  // Mirrors the server's academic policy (skylent-ai/integrity.ts deriveAcademicPolicy) so the panel
-  // states the rule that will actually apply. The server still enforces it.
   const assessmentOpen = Boolean(
     selectedLesson &&
       ((selectedLesson.type === 'quiz' && !selectedState.quizPassed && !selectedState.complete) ||
@@ -457,7 +509,6 @@ export default function LearnPage() {
     }
   }
 
-  /** Records completion with the server, then moves to the next lesson it has just unlocked. */
   async function handleCompleteAndContinue() {
     if (completing) return
     setCompleting(true)
@@ -512,7 +563,6 @@ export default function LearnPage() {
     }, 700)
   }
 
-  /** True only once the server has recorded the submission. */
   async function handleAssignmentSubmit(text: string): Promise<boolean> {
     if (!slug || !selectedLesson) return false
     setActionError(null)
@@ -544,7 +594,7 @@ export default function LearnPage() {
           submittedAt: fresh.submittedAt,
         }
       } catch {
-        // The submit already succeeded. Keep the saved status and drop the old grade.
+        // Keep saved status
       }
       assignmentStatusRef.current = next.status
       setAssignmentRecord(next)
@@ -600,12 +650,12 @@ export default function LearnPage() {
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <path d="M19 12H5M12 19l-7-7 7-7" />
             </svg>
-            <span>My learning</span>
+            <span>Dashboard</span>
           </Link>
           <span className="os-top-rule" aria-hidden="true" />
           <div className="os-top-context">
             <div className="os-top-module">
-              {currentModule ? `Module ${moduleIndex} · ${currentModule.title}` : 'Course'}
+              {currentModule ? `Module 0${moduleIndex} · ${currentModule.title}` : 'Course'}
             </div>
             <div className="os-top-course">{readyCourse.title}</div>
           </div>
@@ -617,9 +667,10 @@ export default function LearnPage() {
             label="Where this lesson sits"
           />
         </div>
-        <div className="os-top-progress" style={{ display: "flex", alignItems: "center", gap: 14 }}>
+        <div className="os-top-progress" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <TopProgressRing percent={progressPct} />
           <div>
-            <span>{completedCount} of {totalLessons} complete · {progressPct}%</span>
+            <span>Course Progress: {completedCount}/{totalLessons}</span>
             <div
               className="os-progress-bar"
               role="progressbar"
@@ -665,7 +716,6 @@ export default function LearnPage() {
               <div className="os-banner">
                 <p className="os-eyebrow">Course complete</p>
                 <h2>{readyCourse.title}</h2>
-                {/* Programme learners: the server only marks the programme eligible when every course in it is complete. */}
                 {access.workspace.program && !access.workspace.program.certificateEligible ? (
                   <p className="os-lead">
                     You have completed every lesson in this course. {access.workspace.program.name} continues with{' '}
@@ -689,18 +739,64 @@ export default function LearnPage() {
                     courseSlug={readyCourse.slug}
                     lessonId={selectedLesson.id}
                     title={selectedLesson.title}
-                    kicker={`${moduleIndex ? `Module ${moduleIndex} · ` : ''}Lesson ${lessonIndex} · ${lessonTypeLabel(selectedLesson.type, selectedLesson.title)}`}
+                    kicker={`${moduleIndex ? `Module 0${moduleIndex} · ` : ''}Lesson ${lessonIndex} · ${lessonTypeLabel(selectedLesson.type, selectedLesson.title)}`}
                   />
                 ) : null}
+
+                {/* Lesson Workspace Tabs (Matching Image 8: Lesson Content | Personal Notes | Attachments & Resources) */}
+                {!selectedState.locked ? (
+                  <div
+                    role="tablist"
+                    aria-label="Lesson workspace tabs"
+                    style={{
+                      display: 'flex',
+                      flexWrap: 'wrap',
+                      gap: 8,
+                      marginBottom: 16,
+                      paddingBottom: 10,
+                      borderBottom: '1px solid #e2e8f0',
+                    }}
+                  >
+                    {[
+                      { id: 'lesson' as const, label: 'Lesson Content' },
+                      { id: 'notes' as const, label: 'Personal Notes' },
+                      { id: 'attachments' as const, label: 'Attachments & Cheat-Sheets' },
+                    ].map((tab) => {
+                      const active = playerTab === tab.id
+                      return (
+                        <button
+                          key={tab.id}
+                          type="button"
+                          role="tab"
+                          aria-selected={active}
+                          onClick={() => setPlayerTab(tab.id)}
+                          style={{
+                            padding: '8px 16px',
+                            borderRadius: 8,
+                            border: active ? '1.5px solid #5142b5' : '1px solid #cbd5e1',
+                            background: active ? '#5142b5' : '#ffffff',
+                            color: active ? '#ffffff' : '#334155',
+                            fontSize: 13,
+                            fontWeight: 700,
+                            cursor: 'pointer',
+                          }}
+                        >
+                          {tab.label}
+                        </button>
+                      )
+                    })}
+                  </div>
+                ) : null}
+
                 <div className="os-lesson-head">
                   <p className="os-kicker">
-                    {moduleIndex ? `Module ${moduleIndex} · ` : ''}
+                    {moduleIndex ? `Module 0${moduleIndex} · ` : ''}
                     Lesson {lessonIndex} · {lessonTypeLabel(selectedLesson.type, selectedLesson.title)} · {selectedLesson.duration ?? 'Self-paced'}
                   </p>
                   <h1>{selectedLesson.title}</h1>
                   <div className="os-lesson-sub">
                     <span className={selectedState.locked ? 'os-status is-idle' : selectedState.complete ? 'os-status is-done' : 'os-status'}>
-                      {selectedState.locked ? 'Locked' : selectedState.complete ? 'Completed' : 'In progress'}
+                      {selectedState.locked ? 'Locked' : selectedState.complete ? 'Completed ✓' : 'In progress'}
                     </span>
                     {!selectedState.locked ? (
                       <div className="os-tools">
@@ -743,49 +839,129 @@ export default function LearnPage() {
                   </p>
                 )}
 
-                <div className="os-paper">
-                  {selectedState.locked ? (
-                    <LockedLessonState
-                      lessonTitle={selectedLesson.title}
-                      requiredLessonTitle={
-                        selectedState.requiredLessonKey
-                          ? allLessons.find((lesson) => lesson.id === selectedState.requiredLessonKey)?.title
-                          : null
-                      }
-                      continueTitle={
-                        allLessons.find((lesson) => isLessonUnlocked(lesson.id, allLessons, lessonStates) && !lessonStates[lesson.id]?.complete)?.title
-                        ?? allLessons.find((lesson) => isLessonUnlocked(lesson.id, allLessons, lessonStates))?.title
-                        ?? null
-                      }
-                      onContinue={() => {
-                        const target = allLessons.find((lesson) => isLessonUnlocked(lesson.id, allLessons, lessonStates) && !lessonStates[lesson.id]?.complete)
-                          ?? allLessons.find((lesson) => isLessonUnlocked(lesson.id, allLessons, lessonStates))
-                        if (target) handleLessonSelect(target.id)
+                {playerTab === 'notes' && !selectedState.locked ? (
+                  <div className="os-paper" style={{ padding: 20 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                      <div>
+                        <strong style={{ fontSize: 15, color: '#0f172a', display: 'block' }}>
+                          Your Personal Notes · Lesson {lessonIndex}: {selectedLesson.title}
+                        </strong>
+                        <span style={{ fontSize: 12.5, color: '#64748b' }}>
+                          Saved automatically on your device for quick revision before assessments and interviews.
+                        </span>
+                      </div>
+                      {noteSavedToast ? (
+                        <span style={{ fontSize: 12, fontWeight: 700, color: '#059669', background: '#ecfdf5', padding: '4px 10px', borderRadius: 999 }}>
+                          ✓ Saved
+                        </span>
+                      ) : null}
+                    </div>
+                    <textarea
+                      value={personalNote}
+                      onChange={(e) => handleSavePersonalNote(e.target.value)}
+                      rows={8}
+                      placeholder="Write your key takeaways, SQL/Python snippets, or questions for this lesson…"
+                      style={{
+                        width: '100%',
+                        boxSizing: 'border-box',
+                        padding: 14,
+                        borderRadius: 12,
+                        border: '1px solid #cbd5e1',
+                        fontSize: 14,
+                        lineHeight: 1.6,
+                        fontFamily: 'var(--font-body)',
                       }}
                     />
-                  ) : (
-                    <LessonContentView
-                      key={selectedLesson.id}
-                      lesson={selectedLesson}
-                      lessonState={selectedState}
-                      accent={ACCENT}
-                      onComplete={() => { void handleLessonComplete() }}
-                      quizQuestions={selectedLesson.type === 'quiz' ? quizQuestions : undefined}
-                      quizStatus={selectedLesson.type === 'quiz' ? quizStatus : undefined}
-                      onQuizRetry={() => setQuizAttempt((value) => value + 1)}
-                      onQuizSubmit={selectedLesson.type === 'quiz' ? handleQuizSubmit : undefined}
-                      onAssignmentSubmit={selectedLesson.type === 'assignment' ? handleAssignmentSubmit : undefined}
-                      assignment={
-                        selectedLesson.type === 'assignment' && assignmentRecord?.lessonId === selectedLesson.id
-                          ? assignmentRecord
-                          : null
-                      }
-                      onAssignmentDraft={selectedLesson.type === 'assignment' ? handleAssignmentDraft : undefined}
-                      lessonMedia={lessonMedia}
-                      courseSlug={readyCourse.slug}
-                    />
-                  )}
-                </div>
+                  </div>
+                ) : playerTab === 'attachments' && !selectedState.locked ? (
+                  <div className="os-paper" style={{ padding: 20, display: 'grid', gap: 12 }}>
+                    <strong style={{ fontSize: 15, color: '#0f172a' }}>
+                      Lesson Reference Materials &amp; Datasets
+                    </strong>
+                    <div
+                      style={{
+                        padding: '14px 16px',
+                        borderRadius: 12,
+                        border: '1px solid #e2e8f0',
+                        background: '#f8fafc',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        gap: 12,
+                        flexWrap: 'wrap',
+                      }}
+                    >
+                      <div>
+                        <strong style={{ fontSize: 14, color: '#0f172a', display: 'block' }}>
+                          {readyCourse.title} · Module 0{moduleIndex} Summary &amp; Rubric Guide
+                        </strong>
+                        <span style={{ fontSize: 12.5, color: '#64748b' }}>
+                          Key formulas, syntax reference, and evaluation criteria for {selectedLesson.title}
+                        </span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setPlayerTab('lesson')}
+                        style={{
+                          padding: '8px 14px',
+                          borderRadius: 8,
+                          border: '1px solid #5142b5',
+                          background: '#f5f3ff',
+                          color: '#5142b5',
+                          fontSize: 12.5,
+                          fontWeight: 700,
+                          cursor: 'pointer',
+                        }}
+                      >
+                        Open in Lesson View →
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="os-paper">
+                    {selectedState.locked ? (
+                      <LockedLessonState
+                        lessonTitle={selectedLesson.title}
+                        requiredLessonTitle={
+                          selectedState.requiredLessonKey
+                            ? allLessons.find((lesson) => lesson.id === selectedState.requiredLessonKey)?.title
+                            : null
+                        }
+                        continueTitle={
+                          allLessons.find((lesson) => isLessonUnlocked(lesson.id, allLessons, lessonStates) && !lessonStates[lesson.id]?.complete)?.title
+                          ?? allLessons.find((lesson) => isLessonUnlocked(lesson.id, allLessons, lessonStates))?.title
+                          ?? null
+                        }
+                        onContinue={() => {
+                          const target = allLessons.find((lesson) => isLessonUnlocked(lesson.id, allLessons, lessonStates) && !lessonStates[lesson.id]?.complete)
+                            ?? allLessons.find((lesson) => isLessonUnlocked(lesson.id, allLessons, lessonStates))
+                          if (target) handleLessonSelect(target.id)
+                        }}
+                      />
+                    ) : (
+                      <LessonContentView
+                        key={selectedLesson.id}
+                        lesson={selectedLesson}
+                        lessonState={selectedState}
+                        accent={ACCENT}
+                        onComplete={() => { void handleLessonComplete() }}
+                        quizQuestions={selectedLesson.type === 'quiz' ? quizQuestions : undefined}
+                        quizStatus={selectedLesson.type === 'quiz' ? quizStatus : undefined}
+                        onQuizRetry={() => setQuizAttempt((value) => value + 1)}
+                        onQuizSubmit={selectedLesson.type === 'quiz' ? handleQuizSubmit : undefined}
+                        onAssignmentSubmit={selectedLesson.type === 'assignment' ? handleAssignmentSubmit : undefined}
+                        assignment={
+                          selectedLesson.type === 'assignment' && assignmentRecord?.lessonId === selectedLesson.id
+                            ? assignmentRecord
+                            : null
+                        }
+                        onAssignmentDraft={selectedLesson.type === 'assignment' ? handleAssignmentDraft : undefined}
+                        lessonMedia={lessonMedia}
+                        courseSlug={readyCourse.slug}
+                      />
+                    )}
+                  </div>
+                )}
                 {actionError ? <p className="os-error" role="alert">{actionError}</p> : null}
                 {!selectedState.locked ? (
                   <LessonNavigation

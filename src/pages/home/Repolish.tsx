@@ -68,16 +68,12 @@ export function HomeHero({
       <div className="hxw-hero__bg" aria-hidden="true" />
       <div className="sky-container hxw-hero__grid">
         <div className="hxw-hero__copy">
-          <p className="hx-rise hxw-hero__pill">
-            <span className="hxw-hero__pill-dot" aria-hidden="true" />
-            <span>SKYLENT · HANDS-ON CAREER COURSES &amp; LIVE WORKSHOPS</span>
-          </p>
           <h1 id="hx-hero-title" className="hxw-hero__title hx-rise">
-            Build job-ready tech &amp; data skills through <em>real projects.</em>
+            Practical courses with browser labs and verified projects.
           </h1>
           <span className="hx-sr" style={{ display: "none" }}>Learn. Practise. Build. <em>Prove it.</em></span>
           <p className="hxw-hero__lead hx-rise">
-            Master Data Analytics, Product Management, Python, Data Science, Full-Stack Web &amp; Generative AI in live browser labs — backed by 1:1 mentor support and verifiable certificates.
+            Practise SQL, Python, Product, Full-Stack &amp; GenAI in live browser labs — with 20-minute TA doubt support and recruiter-verified certificates.
           </p>
           <p className="hx-sr" aria-live="polite">{availability}</p>
 
@@ -112,15 +108,15 @@ export function HomeHero({
 
           <div className="hxw-hero__actions hx-rise" style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
             <Link className="sk-btn sk-btn-primary hx-btn" to="/programmes">
-              Explore Courses
+              Enroll Now — Explore Courses
               <ArrowRight />
             </Link>
             <Link
               className="sk-btn sk-btn-secondary hx-btn"
-              to="/events"
+              to="/path"
               style={{ border: "1px solid #cbd5e1", background: "#ffffff", color: "#0f172a", fontWeight: 600 }}
             >
-              Explore Skylent Workshops
+              Take 90-second skill check
             </Link>
           </div>
           <ul
@@ -1676,7 +1672,7 @@ export function HomeAi() {
 
             <div className="hx-ai-studio__actions">
               <Link className="sk-btn sk-btn-primary" to="/path">
-                Explore Courses
+                Find My Path in 90s
                 <ArrowRight />
               </Link>
               <Link className="sk-btn sk-btn-secondary" to="/courses/data-analytics">

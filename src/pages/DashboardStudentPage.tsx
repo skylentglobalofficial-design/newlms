@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useNavigate, Link } from 'react-router-dom'
 import { AuthDashboardShell } from '../components/AuthDashboardShell'
 import { LEARNER_NAV, LearnerNavIcon, learnerNavId } from '../components/learner/learner-nav'
@@ -7,7 +7,6 @@ import { isCapstoneLesson, learnerErrorMessage, lessonTypeLabel } from '../compo
 import { useLmsDashboard } from '../hooks/useLms'
 import {
   canOpenEnrollment,
-  enrollInCourse,
   fetchLmsEnrollments,
   type ApiEnrollmentSummary,
 } from '../lib/lms-api'
@@ -17,17 +16,218 @@ import { findProjectForCourse, listLearnerProjects, learnerProjectPath, projectS
 import { fetchMyCertificates, issueCertificate, issueProgrammeCertificate, type SkylentCertificate } from '../lib/skylent-api'
 import { fetchSkylentAiStatus } from '../lib/skylent-ai-api'
 import ElixirWalletPanel from '../components/learner/ElixirWallet'
-import StudentProfileAndSettingsPanel from '../components/learner/StudentProfileAndSettingsPanel'
 import { computeLearnerExecutionStreak } from '../lib/execution-streak'
 import { truthOf } from '../lib/truth'
 import { courseProductProfile } from '../lib/course-product'
 import { dashboardSqlLabHref, practiceEnvironmentForCourse } from '../lib/practice-environments'
 import { isAuthoredCourse } from '../lib/authored-courses'
+import { EnrollmentModal } from '../components/shared'
 import { AiMark, AI_NAME, ArrowRight, ProductSlice, TruthChip } from '../components/skylent/primitives'
+import analyticsVisual from '@/assets/site/home/program-analytics-800.webp'
+import productVisual from '@/assets/site/home/program-product-800.webp'
+import scienceVisual from '@/assets/site/degree-computing.jpg'
+import webVisual from '@/assets/site/home/program-web-800.webp'
+import aiVisual from '@/assets/site/program-ai.jpg'
+import sqlVisual from '@/assets/site/program-library.jpg'
 import './LearnWorkspace.css'
 import './StudentHome.css'
 
-/** Mirrors the server's certificate name rule (server/src/routes/skylent/certificates.ts): a full name, not an email. */
+type DashboardExploreCourse = {
+  slug: string
+  programSlug: string
+  title: string
+  subtitle: string
+  category: 'Data & SQL' | 'AI & Data Science' | 'Product & Full-Stack'
+  duration: string
+  modulesCount: number
+  lessonsCount: number
+  price: number
+  image: string
+  labBadge: string
+  skills: string[]
+  syllabusModules: string[]
+}
+
+const EXPLORE_CATALOGUE: DashboardExploreCourse[] = [
+  {
+    slug: 'data-analytics',
+    programSlug: 'data-analytics-pro',
+    title: 'Data Analytics & Business SQL',
+    subtitle: 'Clean raw spreadsheets, write multi-table SQL queries, and defend a commercial revenue review.',
+    category: 'Data & SQL',
+    duration: '12 Weeks · Self-Paced',
+    modulesCount: 5,
+    lessonsCount: 15,
+    price: 3499,
+    image: analyticsVisual,
+    labBadge: 'Northwind SQL Lab (166 Rows)',
+    skills: ['SQL Joins & CTEs', 'Cohort Retention', 'Margin & Discount Audit', 'Executive Reporting'],
+    syllabusModules: [
+      'Module 01: Commercial Metrics, Grain & Revenue Hygiene',
+      'Module 02: Multi-Table SQL Joins, Aggregations & Window Functions',
+      'Module 03: Discount Leakage & Margin Diagnostics on Northwind',
+      'Module 04: Customer Retention Cohorts & Churn Decomposition',
+      'Module 05: Graded Commercial Capstone & Boardroom Defense',
+    ],
+  },
+  {
+    slug: 'product-management',
+    programSlug: 'product-management',
+    title: 'Product Management & Strategy',
+    subtitle: 'Isolate user activation bottlenecks, prioritize engineering sprints, and author a 6-week PRD.',
+    category: 'Product & Full-Stack',
+    duration: '12 Weeks · Self-Paced',
+    modulesCount: 5,
+    lessonsCount: 15,
+    price: 3999,
+    image: productVisual,
+    labBadge: 'Harbor Desk PRD Studio',
+    skills: ['PRD Authoring', 'Funnel Diagnostics', 'RICE & Sprint Triage', 'Stakeholder Alignment'],
+    syllabusModules: [
+      'Module 01: Problem Framing & Activation Funnel Diagnostics',
+      'Module 02: User Research Synthesis & Root-Cause Evidence',
+      'Module 03: Engineering Scope, Trade-Offs & Guardrail Metrics',
+      'Module 04: Writing a Defensible 6-Week Product Requirement Doc',
+      'Module 05: Harbor Desk Onboarding Capstone & Executive Review',
+    ],
+  },
+  {
+    slug: 'python-programming',
+    programSlug: 'data-science-ai',
+    title: 'Python Programming & Automation',
+    subtitle: 'Build resilient ETL data pipelines, automated anomaly detectors, and clean production Python code.',
+    category: 'AI & Data Science',
+    duration: '10 Weeks · Self-Paced',
+    modulesCount: 5,
+    lessonsCount: 15,
+    price: 2999,
+    image: sqlVisual,
+    labBadge: 'In-Browser Python Pipeline Lab',
+    skills: ['Python Data Structures', 'Generators & Streams', 'Webhook Deduplication', 'Automated Testing'],
+    syllabusModules: [
+      'Module 01: Python Core Types, Control Flow & Memory Discipline',
+      'Module 02: Functions, Modules & Defensive Error Handling',
+      'Module 03: Generators, Iterators & Large-File Stream Processing',
+      'Module 04: Schema Validation, Idempotency & Pipeline Auditing',
+      'Module 05: Graded Python Transaction Anomaly Capstone',
+    ],
+  },
+  {
+    slug: 'data-science-ai',
+    programSlug: 'data-science-ai',
+    title: 'Data Science & Machine Learning',
+    subtitle: 'Combine SQL analytics and Python statistical modelling to predict churn and validate uplift.',
+    category: 'AI & Data Science',
+    duration: '16 Weeks · Self-Paced',
+    modulesCount: 5,
+    lessonsCount: 15,
+    price: 5999,
+    image: scienceVisual,
+    labBadge: 'SQL + Python Dual Sandbox',
+    skills: ['Feature Engineering', 'Churn Classification', 'Precision-Recall Tradeoffs', 'A/B Experimentation'],
+    syllabusModules: [
+      'Module 01: Exploratory Data Analysis & Feature Leakage Prevention',
+      'Module 02: Statistical Inference, Hypothesis Testing & A/B Sizing',
+      'Module 03: Supervised Classification & Calibration Curves',
+      'Module 04: Time-Split Cohort Validation & Drift Monitoring',
+      'Module 05: Graded Customer Churn & Retention Capstone',
+    ],
+  },
+  {
+    slug: 'generative-ai',
+    programSlug: 'generative-ai-program',
+    title: 'Generative AI & Grounded RAG Systems',
+    subtitle: 'Architect enterprise LLM assistants with vector retrieval, strict source citations, and eval harnesses.',
+    category: 'AI & Data Science',
+    duration: '12 Weeks · Self-Paced',
+    modulesCount: 5,
+    lessonsCount: 15,
+    price: 4999,
+    image: aiVisual,
+    labBadge: 'Grounded RAG & Eval Studio',
+    skills: ['Chunking & Embeddings', 'Hybrid Retrieval', 'Hallucination Guardrails', 'Golden-Set Evals'],
+    syllabusModules: [
+      'Module 01: LLM Architecture, Token Economics & Structured Outputs',
+      'Module 02: Document Chunking, Metadata Filtering & Hybrid Search',
+      'Module 03: Grounded Citation Enforcement & Prompt Injection Defense',
+      'Module 04: Automated RAG Evaluation (Faithfulness & Recall)',
+      'Module 05: Graded Enterprise Knowledge Assistant Capstone',
+    ],
+  },
+  {
+    slug: 'full-stack-web',
+    programSlug: 'full-stack',
+    title: 'Full-Stack Web Engineering (React, Node & SQL)',
+    subtitle: 'Ship production-grade web apps with React, TypeScript, Express REST APIs, and PostgreSQL transactions.',
+    category: 'Product & Full-Stack',
+    duration: '16 Weeks · Self-Paced',
+    modulesCount: 5,
+    lessonsCount: 15,
+    price: 5499,
+    image: webVisual,
+    labBadge: 'Full-Stack Ledger Architecture Lab',
+    skills: ['React & TypeScript', 'Node & Express APIs', 'PostgreSQL ACID Transactions', 'Auth & Security'],
+    syllabusModules: [
+      'Module 01: Modern React State, Accessible UI & TypeScript Contracts',
+      'Module 02: REST API Design, Validation & Idempotency Keys',
+      'Module 03: Relational Schema Design, Indexing & Transactions',
+      'Module 04: Session Security, CSRF Defense & Rate Limiting',
+      'Module 05: Graded Idempotent Payment Ledger Capstone',
+    ],
+  },
+]
+
+function courseThumbForSlug(slug?: string | null): string {
+  switch (slug) {
+    case 'product-management': return productVisual
+    case 'python-programming': return sqlVisual
+    case 'data-science-ai': return scienceVisual
+    case 'generative-ai': return aiVisual
+    case 'full-stack-web': return webVisual
+    default: return analyticsVisual
+  }
+}
+
+function ProgressRing({
+  percent,
+  size = 54,
+  stroke = 5,
+  color = '#5142b5',
+  label,
+}: {
+  percent: number
+  size?: number
+  stroke?: number
+  color?: string
+  label?: string
+}) {
+  const clamped = Math.max(0, Math.min(100, Math.round(percent)))
+  const radius = (size - stroke) / 2
+  const circumference = 2 * Math.PI * radius
+  const dashOffset = circumference - (clamped / 100) * circumference
+  return (
+    <div style={{ position: 'relative', width: size, height: size, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+      <svg width={size} height={size} style={{ transform: 'rotate(-90deg)' }} aria-hidden="true">
+        <circle cx={size / 2} cy={size / 2} r={radius} fill="none" stroke="#e2e8f0" strokeWidth={stroke} />
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          fill="none"
+          stroke={color}
+          strokeWidth={stroke}
+          strokeDasharray={circumference}
+          strokeDashoffset={dashOffset}
+          strokeLinecap="round"
+        />
+      </svg>
+      <span style={{ position: 'absolute', fontSize: size >= 90 ? 18 : 11.5, fontWeight: 800, color: '#0f172a', fontFamily: 'var(--font-mono)' }}>
+        {label ?? `${clamped}%`}
+      </span>
+    </div>
+  )
+}
+
 function looksLikeFullName(name: string): boolean {
   const parts = name.trim().split(/\s+/).filter(Boolean)
   return parts.length >= 2 && !name.includes('@')
@@ -90,7 +290,7 @@ const SLICE = ['Learn', 'Practice', 'Build', 'Prove'] as const
 
 type Loaded<T> = { status: 'loading' } | { status: 'ready'; data: T } | { status: 'error' }
 type AiAvailability = 'checking' | 'available' | 'unavailable' | 'unknown'
-type StudentTabId = 'overview' | 'courses' | 'projects' | 'programmes' | 'certificates' | 'wallet' | 'profile'
+type StudentTabId = 'overview' | 'courses' | 'explore' | 'projects' | 'certificates' | 'wallet'
 
 function ListError({ what, onRetry }: { what: string; onRetry: () => void }) {
   return (
@@ -107,12 +307,6 @@ function formatDate(iso: string) {
   return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
 }
 
-function enrolmentStatusLabel(status: string) {
-  if (status === 'completed') return 'Completed'
-  if (status === 'active') return 'Active'
-  return status.replace(/_/g, ' ')
-}
-
 function Skeleton() {
   return (
     <div className="sh-skeleton" role="status" aria-label="Loading your learning">
@@ -125,550 +319,6 @@ function Skeleton() {
   )
 }
 
-
-type DashboardTrackItem = {
-  courseSlug: string
-  programSlug: string
-  title: string
-  programTitle: string
-  category: "data" | "ai-eng" | "product"
-  lessonsCount: number
-  durationLabel: string
-  labName: string
-  summary: string
-}
-
-const DASHBOARD_CAREER_TRACKS: DashboardTrackItem[] = [
-  {
-    courseSlug: "data-analytics",
-    programSlug: "data-analytics-pro",
-    title: "Data Analytics & SQL",
-    programTitle: "Data Analytics Pro Programme",
-    category: "data",
-    lessonsCount: 15,
-    durationLabel: "900 min",
-    labName: "Northwind SQL Browser Lab",
-    summary: "Master SQL joins, revenue reconciliation, cohort retention, and executive KPI reporting.",
-  },
-  {
-    courseSlug: "python-programming",
-    programSlug: "data-science-ai",
-    title: "Python Programming & Automation",
-    programTitle: "Data Science & AI Programme",
-    category: "data",
-    lessonsCount: 15,
-    durationLabel: "960 min",
-    labName: "Python Pipeline Audit Sandbox",
-    summary: "Build clean data pipelines, automated ETL validators, and anomaly quarantine scripts.",
-  },
-  {
-    courseSlug: "data-science-ai",
-    programSlug: "data-science-ai",
-    title: "Data Science & Machine Learning",
-    programTitle: "Data Science & AI Programme",
-    category: "data",
-    lessonsCount: 15,
-    durationLabel: "1080 min",
-    labName: "Churn Cohort ML Sandbox",
-    summary: "Design feature pipelines, out-of-time validation splits, and precision-recall thresholds.",
-  },
-  {
-    courseSlug: "generative-ai",
-    programSlug: "generative-ai-program",
-    title: "Generative AI & LLM Systems",
-    programTitle: "Generative AI Engineering Programme",
-    category: "ai-eng",
-    lessonsCount: 15,
-    durationLabel: "1020 min",
-    labName: "Enterprise RAG Evaluation Lab",
-    summary: "Ship grounded RAG pipelines, metadata citation filters, and hallucination guardrails.",
-  },
-  {
-    courseSlug: "full-stack-web",
-    programSlug: "full-stack",
-    title: "Full-Stack Web Engineering",
-    programTitle: "Full-Stack Web Programme",
-    category: "ai-eng",
-    lessonsCount: 15,
-    durationLabel: "1140 min",
-    labName: "Idempotent Ledger Architecture Lab",
-    summary: "Architect resilient REST APIs, transactional state machines, and production React UIs.",
-  },
-  {
-    courseSlug: "product-management",
-    programSlug: "product-management",
-    title: "Product Management & PRD Studio",
-    programTitle: "Product Management Programme",
-    category: "product",
-    lessonsCount: 15,
-    durationLabel: "900 min",
-    labName: "Harbor Desk PRD Studio",
-    summary: "Write rigorous PRDs, onboarding funnel teardowns, and prioritization trade-off memos.",
-  },
-]
-
-function InDashboardProgrammesCatalog({
-  enrollments,
-  activeCourseSlug,
-  activeCourseTitle,
-  progressPct = 0,
-  resumeHref = "/dashboard/student",
-  onEnrolled,
-}: {
-  enrollments: ApiEnrollmentSummary[]
-  activeCourseSlug?: string | null
-  activeCourseTitle?: string | null
-  progressPct?: number
-  resumeHref?: string
-  onEnrolled?: () => void
-}) {
-  const navigate = useNavigate()
-  const [filter, setFilter] = useState<"all" | "data" | "ai-eng" | "product">("all")
-  const [enrollingSlug, setEnrollingSlug] = useState<string | null>(null)
-  const [error, setError] = useState<string | null>(null)
-
-  const enrolledCourseSlugs = new Set<string>()
-  for (const item of enrollments) {
-    if (item.courseSlug) enrolledCourseSlugs.add(item.courseSlug)
-    for (const linked of item.linkedCourses ?? []) {
-      enrolledCourseSlugs.add(linked.slug)
-    }
-    for (const c of item.courses ?? []) {
-      enrolledCourseSlugs.add(c.slug)
-    }
-  }
-  if (activeCourseSlug) enrolledCourseSlugs.add(activeCourseSlug)
-
-  const visibleTracks = DASHBOARD_CAREER_TRACKS.filter(
-    (t) => filter === "all" || t.category === filter,
-  )
-
-  async function handleStartOrOpenTrack(track: DashboardTrackItem) {
-    setError(null)
-    if (enrolledCourseSlugs.has(track.courseSlug)) {
-      navigate(`/learn/${track.courseSlug}`)
-      return
-    }
-    setEnrollingSlug(track.courseSlug)
-    try {
-      await enrollInCourse(track.courseSlug, true)
-      onEnrolled?.()
-      navigate(`/learn/${track.courseSlug}`)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Could not enrol in this track right now.")
-    } finally {
-      setEnrollingSlug(null)
-    }
-  }
-
-  return (
-    <section
-      id="explore-programmes"
-      aria-label="In-Dashboard Programmes and Career Tracks"
-      style={{ display: "grid", gap: 20, marginTop: 18 }}
-    >
-      <div
-        style={{
-          display: "flex",
-          flexWrap: "wrap",
-          alignItems: "center",
-          justifyContent: "space-between",
-          gap: 14,
-          padding: "14px 20px",
-          borderRadius: 14,
-          background: "#ffffff",
-          border: "1px solid #e2e8f0",
-          boxShadow: "0 6px 20px -12px rgba(15, 23, 42, 0.08)",
-        }}
-      >
-        <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
-          <span
-            style={{
-              fontSize: 12,
-              fontWeight: 700,
-              color: "#64748b",
-              paddingRight: 10,
-              borderRight: "1px solid #cbd5e1",
-            }}
-          >
-            My Course
-          </span>
-          <select
-            aria-label="Switch active course track inside dashboard"
-            value={activeCourseSlug || ""}
-            onChange={(e) => {
-              const target = DASHBOARD_CAREER_TRACKS.find((t) => t.courseSlug === e.target.value)
-              if (target) void handleStartOrOpenTrack(target)
-            }}
-            style={{
-              border: "none",
-              background: "transparent",
-              fontSize: 14,
-              fontWeight: 800,
-              color: "#0f172a",
-              cursor: "pointer",
-              outline: "none",
-            }}
-          >
-            {!activeCourseSlug ? (
-              <option value="">Select a Career Track to Start…</option>
-            ) : null}
-            {DASHBOARD_CAREER_TRACKS.map((t) => (
-              <option key={t.courseSlug} value={t.courseSlug}>
-                {t.title} ({enrolledCourseSlugs.has(t.courseSlug) ? "Enrolled" : "Start Free Pilot"})
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-          <span style={{ fontSize: 12.5, color: "#475569", fontWeight: 600 }}>
-            {activeCourseTitle
-              ? `Complete ${Math.max(0, 60 - progressPct)}% more to unlock Career OS Exclusive`
-              : "Pick any track below to unlock your interactive browser lab immediately"}
-          </span>
-          {activeCourseSlug ? (
-            <Link
-              to={resumeHref}
-              style={{
-                padding: "8px 16px",
-                borderRadius: 8,
-                border: "1.5px solid #5142b5",
-                background: "#ffffff",
-                color: "#5142b5",
-                fontWeight: 700,
-                fontSize: 13,
-                textDecoration: "none",
-              }}
-            >
-              Continue Learning
-            </Link>
-          ) : null}
-        </div>
-      </div>
-
-      <div
-        style={{
-          position: "relative",
-          padding: "22px 26px",
-          borderRadius: 16,
-          background: "linear-gradient(135deg, #fffbeb 0%, #fef3c7 52%, #fffbeb 100%)",
-          border: "1px solid #fde68a",
-          display: "flex",
-          flexWrap: "wrap",
-          alignItems: "center",
-          justifyContent: "space-between",
-          gap: 20,
-        }}
-      >
-        <div style={{ display: "flex", alignItems: "center", gap: 18, maxWidth: 560 }}>
-          <div
-            aria-hidden="true"
-            style={{
-              width: 52,
-              height: 52,
-              borderRadius: "50%",
-              background: "#ffffff",
-              border: "1px solid #fcd34d",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: 22,
-              flexShrink: 0,
-            }}
-          >
-            🔒
-          </div>
-          <div>
-            <h3 style={{ margin: "0 0 4px", fontSize: 17, fontWeight: 800, color: "#0f172a" }}>
-              <span style={{ color: "#dc2626" }}>Unlock</span> Career OS Exclusive
-            </h3>
-            <p style={{ margin: "0 0 14px", fontSize: 13, color: "#475569", lineHeight: 1.5 }}>
-              To unlock placement resources, recruiter referrals, and AI Mock Defense, complete 60% of your active track modules inside this dashboard.
-            </p>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 12, alignItems: "center" }}>
-              <Link
-                to={activeCourseSlug ? resumeHref : "/dashboard/student#explore-programmes"}
-                style={{
-                  padding: "9px 18px",
-                  borderRadius: 8,
-                  background: "#ffffff",
-                  border: "1.5px solid #dc2626",
-                  color: "#dc2626",
-                  fontWeight: 700,
-                  fontSize: 13,
-                  textDecoration: "none",
-                }}
-              >
-                Continue Learning
-              </Link>
-              <Link
-                to="/career-os"
-                style={{
-                  fontSize: 13,
-                  fontWeight: 700,
-                  color: "#dc2626",
-                  textDecoration: "underline",
-                }}
-              >
-                Career OS Batch &amp; Portfolio Details
-              </Link>
-            </div>
-          </div>
-        </div>
-
-        <div
-          style={{
-            minWidth: 250,
-            padding: "14px 18px",
-            borderRadius: 12,
-            background: "rgba(255, 255, 255, 0.85)",
-            border: "1px solid #fde68a",
-          }}
-        >
-          <div style={{ fontSize: 11.5, fontWeight: 700, color: "#92400e", marginBottom: 6 }}>
-            Learn Track Completion
-          </div>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 13, fontWeight: 800, color: "#0f172a" }}>
-            <span>My Progress</span>
-            <span>{progressPct}%</span>
-          </div>
-          <div
-            style={{
-              marginTop: 8,
-              height: 6,
-              borderRadius: 999,
-              background: "#fef3c7",
-              overflow: "hidden",
-            }}
-          >
-            <div
-              style={{
-                width: `${Math.max(progressPct, 4)}%`,
-                height: "100%",
-                background: "#d97706",
-                borderRadius: 999,
-              }}
-            />
-          </div>
-        </div>
-      </div>
-
-      <div
-        style={{
-          padding: "22px 24px",
-          borderRadius: 16,
-          background: "#ffffff",
-          border: "1px solid #e2e8f0",
-          boxShadow: "0 10px 28px -16px rgba(15, 23, 42, 0.08)",
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            flexWrap: "wrap",
-            alignItems: "center",
-            justifyContent: "space-between",
-            gap: 12,
-            marginBottom: 16,
-          }}
-        >
-          <div>
-            <h2 style={{ margin: 0, fontSize: 18, fontWeight: 800, color: "#0f172a" }}>
-              Career Tracks &amp; Programmes (In-Dashboard Access)
-            </h2>
-            <p style={{ margin: "4px 0 0", fontSize: 13, color: "#64748b" }}>
-              Browse and start any Skylent programme directly inside your dashboard without leaving your learning workspace.
-            </p>
-          </div>
-        </div>
-
-        <div
-          role="tablist"
-          aria-label="Career Track Categories"
-          style={{ display: "flex", flexWrap: "wrap", gap: 10, marginBottom: 20 }}
-        >
-          {[
-            { id: "all" as const, label: "All Career Tracks (6)" },
-            { id: "data" as const, label: "Data & Analytics Engineering" },
-            { id: "ai-eng" as const, label: "AI & Full-Stack Engineering" },
-            { id: "product" as const, label: "Product Management & Strategy" },
-          ].map((tab) => {
-            const active = filter === tab.id
-            return (
-              <button
-                key={tab.id}
-                type="button"
-                role="tab"
-                aria-selected={active}
-                onClick={() => setFilter(tab.id)}
-                style={{
-                  padding: "8px 16px",
-                  borderRadius: 8,
-                  border: active ? "1.5px solid #dc2626" : "1px solid #e2e8f0",
-                  background: active ? "#fff1f2" : "#f8fafc",
-                  color: active ? "#dc2626" : "#475569",
-                  fontSize: 13,
-                  fontWeight: 700,
-                  cursor: "pointer",
-                }}
-              >
-                {tab.label}
-              </button>
-            )
-          })}
-        </div>
-
-        {error ? (
-          <div
-            role="alert"
-            style={{
-              padding: "10px 14px",
-              marginBottom: 16,
-              borderRadius: 10,
-              background: "#fef2f2",
-              border: "1px solid #fecaca",
-              color: "#991b1b",
-              fontSize: 13,
-              fontWeight: 600,
-            }}
-          >
-            {error}
-          </div>
-        ) : null}
-
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
-            gap: 16,
-          }}
-        >
-          {visibleTracks.map((track) => {
-            const isEnrolled = enrolledCourseSlugs.has(track.courseSlug)
-            const isCurrent = activeCourseSlug === track.courseSlug
-            const busy = enrollingSlug === track.courseSlug
-            return (
-              <div
-                key={track.courseSlug}
-                style={{
-                  borderRadius: 14,
-                  border: isCurrent ? "2px solid #5142b5" : "1px solid #e2e8f0",
-                  background: "#ffffff",
-                  overflow: "hidden",
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "space-between",
-                  boxShadow: "0 6px 18px -10px rgba(15, 23, 42, 0.08)",
-                }}
-              >
-                <div>
-                  <div
-                    style={{
-                      padding: "8px 14px",
-                      textAlign: "center",
-                      fontSize: 12,
-                      fontWeight: 700,
-                      background: isEnrolled ? "#ecfdf5" : "#fff1f2",
-                      color: isEnrolled ? "#047857" : "#e11d48",
-                      borderBottom: isEnrolled ? "1px solid #a7f3d0" : "1px solid #ffe4e6",
-                    }}
-                  >
-                    {isCurrent
-                      ? `Active Course · ${progressPct}% Complete`
-                      : isEnrolled
-                        ? "Enrolled · Ready to Continue"
-                        : "Not Started · Free Pilot"}
-                  </div>
-
-                  <div style={{ padding: "18px 18px 14px" }}>
-                    <div
-                      style={{
-                        fontSize: 11,
-                        fontWeight: 700,
-                        color: "#5142b5",
-                        textTransform: "uppercase",
-                        letterSpacing: "0.06em",
-                        marginBottom: 4,
-                      }}
-                    >
-                      {track.programTitle}
-                    </div>
-                    <h3 style={{ margin: "0 0 8px", fontSize: 16, fontWeight: 800, color: "#0f172a", lineHeight: 1.3 }}>
-                      {track.title}
-                    </h3>
-                    <p style={{ margin: "0 0 12px", fontSize: 12.5, color: "#475569", lineHeight: 1.5 }}>
-                      {track.summary}
-                    </p>
-                    <div
-                      style={{
-                        display: "inline-block",
-                        padding: "3px 9px",
-                        borderRadius: 6,
-                        background: "#f5f3ff",
-                        border: "1px solid #ddd6fe",
-                        color: "#4338ca",
-                        fontSize: 11,
-                        fontWeight: 700,
-                        marginBottom: 10,
-                      }}
-                    >
-                      🧪 {track.labName}
-                    </div>
-                  </div>
-                </div>
-
-                <div style={{ padding: "0 18px 18px" }}>
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 10,
-                      fontSize: 12,
-                      color: "#64748b",
-                      marginBottom: 12,
-                      paddingTop: 10,
-                      borderTop: "1px solid #f1f5f9",
-                    }}
-                  >
-                    <span>📄 {track.lessonsCount} lessons</span>
-                    <span>|</span>
-                    <span>⏱ {track.durationLabel}</span>
-                  </div>
-
-                  <button
-                    type="button"
-                    disabled={busy}
-                    onClick={() => void handleStartOrOpenTrack(track)}
-                    style={{
-                      background: "transparent",
-                      border: "none",
-                      padding: 0,
-                      color: isEnrolled ? "#5142b5" : "#e11d48",
-                      fontSize: 13.5,
-                      fontWeight: 800,
-                      cursor: busy ? "wait" : "pointer",
-                      display: "inline-flex",
-                      alignItems: "center",
-                      gap: 4,
-                    }}
-                  >
-                    {busy
-                      ? "Opening Workspace…"
-                      : isEnrolled
-                        ? "Continue Track ›"
-                        : "View & Start Track ›"}
-                  </button>
-                </div>
-              </div>
-            )
-          })}
-        </div>
-      </div>
-    </section>
-  )
-}
-
 export default function DashboardStudentPage() {
   const { user, ready } = useAuth()
   const { workspace, course, loading, error, reload } = useLmsDashboard()
@@ -677,10 +327,17 @@ export default function DashboardStudentPage() {
   const activeNav = learnerNavId(pathname, hash)
   const previousHash = useRef(hash)
   const [studentTab, setStudentTab] = useState<StudentTabId>(() => {
-    if (hash === '#profile-settings') return 'profile'
-    if (hash === '#explore-programmes') return 'programmes'
+    if (hash === '#sh-my-learning') return 'courses'
+    if (hash === '#student-projects') return 'projects'
+    if (hash === '#explore-programmes') return 'explore'
     return 'overview'
   })
+  const [courseFilter, setCourseFilter] = useState<'all' | 'in_progress' | 'completed'>('all')
+  const [exploreCategory, setExploreCategory] = useState<'All' | 'Data & SQL' | 'AI & Data Science' | 'Product & Full-Stack'>('All')
+  const [exploreQuery, setExploreQuery] = useState('')
+  const [selectedExploreDetail, setSelectedExploreDetail] = useState<DashboardExploreCourse | null>(null)
+  const [checkoutTarget, setCheckoutTarget] = useState<DashboardExploreCourse | null>(null)
+
   const [enrollments, setEnrollments] = useState<Loaded<ApiEnrollmentSummary[]>>({ status: 'loading' })
   const [projects, setProjects] = useState<Loaded<ProjectSummary[]>>({ status: 'loading' })
   const [certificates, setCertificates] = useState<Loaded<SkylentCertificate[]>>({ status: 'loading' })
@@ -694,35 +351,12 @@ export default function DashboardStudentPage() {
   }, [ready, user, navigate])
 
   useEffect(() => {
-    if (hash === '#profile-settings') {
-      setStudentTab('profile')
-    } else if (hash === '#explore-programmes') {
-      setStudentTab('programmes')
-    } else if (hash === '#sh-my-learning') {
-      setStudentTab('courses')
-    } else if (hash === '#student-projects') {
-      setStudentTab('projects')
-    }
-    const sectionId =
-      hash === '#sh-my-learning' ||
-      hash === '#student-projects' ||
-      hash === '#profile-settings' ||
-      hash === '#explore-programmes'
-        ? hash.slice(1)
-        : ''
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    if (sectionId) {
-      document.getElementById(sectionId)?.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' })
-    } else if (
-      previousHash.current === '#sh-my-learning' ||
-      previousHash.current === '#student-projects' ||
-      previousHash.current === '#profile-settings' ||
-      previousHash.current === '#explore-programmes'
-    ) {
-      window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' })
-    }
+    if (hash === '#sh-my-learning') setStudentTab('courses')
+    else if (hash === '#student-projects') setStudentTab('projects')
+    else if (hash === '#explore-programmes') setStudentTab('explore')
+    else if (!hash) setStudentTab('overview')
     previousHash.current = hash
-  }, [hash, workspace, enrollments.status, projects.status])
+  }, [hash])
 
   const loadLists = useCallback((signal: AbortSignal) => {
     const settle = <T,>(promise: Promise<T>, set: (value: Loaded<T>) => void) => {
@@ -791,66 +425,96 @@ export default function DashboardStudentPage() {
     }
   }
 
+  const crumbSection =
+    studentTab === 'courses'
+      ? 'My Courses'
+      : studentTab === 'explore'
+        ? 'Explore Programmes'
+        : studentTab === 'projects'
+          ? 'Projects & Labs'
+          : studentTab === 'certificates'
+            ? 'Certificates & Proof'
+            : studentTab === 'wallet'
+              ? 'Elixir Wallet'
+              : 'Dashboard'
+
+  const effectiveActiveNav =
+    studentTab === 'explore'
+      ? 'explore-programmes'
+      : studentTab === 'courses'
+        ? 'my-courses'
+        : studentTab === 'projects'
+          ? 'projects'
+          : activeNav
+
   const shell = {
-    themeId: 'student' as const,
+    themeId: 'data-science' as const,
     workspace: 'learning' as const,
-    workspaceLabel: 'Learning',
-    roleLabel: 'Learner',
+    workspaceLabel: 'My Courses',
+    roleLabel: user?.role === 'superadmin' ? 'Superadmin' : user?.role === 'admin' ? 'Admin' : 'Learner',
     navItems: LEARNER_NAV,
     bottomNavItems: LEARNER_NAV,
-    activeNav,
-    onNavChange: () => {},
+    activeNav: effectiveActiveNav,
+    onNavChange: (id: string) => {
+      if (id === 'dashboard') setStudentTab('overview')
+      else if (id === 'my-courses' || id === 'courses') setStudentTab('courses')
+      else if (id === 'projects') setStudentTab('projects')
+      else if (id === 'explore-programmes') setStudentTab('explore')
+    },
     renderNavIcon: (id: string) => <LearnerNavIcon id={id} />,
+    bar: (
+      <>
+        <span className="sh-crumb">Learner Workspace <span aria-hidden="true">/</span> <b>{crumbSection}</b></span>
+        <ProductSlice steps={SLICE} current={studentTab === 'projects' ? 'Build' : studentTab === 'certificates' ? 'Prove' : 'Learn'} label="Where this screen sits in the product model" />
+      </>
+    ),
   }
 
-  const passwordRotationBanner = user?.passwordRotation?.rotationDue ? (
-    <div
-      role="alert"
-      style={{
-        display: 'flex',
-        flexWrap: 'wrap',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        gap: 12,
-        padding: '14px 18px',
-        marginBottom: 18,
-        borderRadius: 14,
-        background: '#fffbeb',
-        border: '1px solid #fde68a',
-        color: '#92400e',
-      }}
-    >
-      <div>
-        <strong style={{ display: 'block', fontSize: 14 }}>
-          🔐 3-Month (90-Day) Password Security Update Due
-        </strong>
-        <span style={{ fontSize: 12.5 }}>
-          For account security, Skylent requires learners to rotate their password every 90 days. Please update your password in Profile &amp; Settings.
-        </span>
-      </div>
-      <button
-        type="button"
-        onClick={() => {
-          setStudentTab('profile')
-          navigate('/dashboard/student#profile-settings')
-        }}
-        style={{
-          padding: '8px 14px',
-          borderRadius: 10,
-          border: 'none',
-          background: '#d97706',
-          color: '#ffffff',
-          fontSize: 12.5,
-          fontWeight: 700,
-          cursor: 'pointer',
-        }}
-      >
-        Update Password Now →
-      </button>
-    </div>
-  ) : null
+  const filteredExploreCourses = useMemo(() => {
+    return EXPLORE_CATALOGUE.filter((c) => {
+      if (exploreCategory !== 'All' && c.category !== exploreCategory) return false
+      if (exploreQuery.trim()) {
+        const q = exploreQuery.trim().toLowerCase()
+        return (
+          c.title.toLowerCase().includes(q) ||
+          c.subtitle.toLowerCase().includes(q) ||
+          c.skills.some((s) => s.toLowerCase().includes(q))
+        )
+      }
+      return true
+    })
+  }, [exploreCategory, exploreQuery])
 
-  if (!ready || (loading && !workspace)) {
+  if (!ready || !user) return null
+
+  if (error && !workspace) {
+    return (
+      <AuthDashboardShell {...shell}>
+        <div className="sh sh-state" id="student-learning">
+          <p className="os-eyebrow">My Courses</p>
+          {error === 'Sign in to continue.' ? (
+            <>
+              <h1>Your session has ended</h1>
+              <p className="os-lead">Sign in again to see your learning. Nothing has been lost.</p>
+              <div className="os-actions">
+                <Link className="os-btn os-btn-primary" to="/login" state={{ returnTo: '/dashboard/student' }}>Sign in</Link>
+              </div>
+            </>
+          ) : (
+            <>
+              <h1>Your learning could not be loaded</h1>
+              <p className="os-lead">{learnerErrorMessage(new Error(error))}</p>
+              <div className="os-actions">
+                <button type="button" className="os-btn os-btn-primary" onClick={() => void reload()}>Try again</button>
+              </div>
+            </>
+          )}
+        </div>
+      </AuthDashboardShell>
+    )
+  }
+
+  if (loading) {
     return (
       <AuthDashboardShell {...shell}>
         <div className="sh"><Skeleton /></div>
@@ -858,135 +522,592 @@ export default function DashboardStudentPage() {
     )
   }
 
-  if (error && !workspace) {
-    return (
-      <AuthDashboardShell {...shell}>
-        <div className="sh">
-          <div className="os-alert" role="alert">
-            <div>
-              <strong>Your learning workspace did not load</strong>
-              <p>{learnerErrorMessage(error, 'Check your connection and try again.')}</p>
-            </div>
-            <button type="button" className="os-btn os-btn-primary" onClick={() => void reload()}>Try again</button>
-          </div>
-        </div>
-      </AuthDashboardShell>
-    )
-  }
-
   const enrolmentRows = enrollments.status === 'ready' ? enrollments.data : []
   const certificateRows = certificates.status === 'ready' ? certificates.data : []
-  const issuedSlugs = new Set(certificateRows.map((item) => item.courseSlug))
-  const myCourses = myCourseRows(enrolmentRows, workspace)
-  const claimable = enrollments.status === 'ready' && certificates.status === 'ready'
-    ? enrolmentRows.flatMap((item) =>
-        (item.courses ?? [])
-          .filter((linked) => linked.progress.allComplete && !issuedSlugs.has(linked.slug))
-          .map((linked) => ({
-            key: `${item.id}:${linked.slug}`,
-            courseSlug: linked.slug,
-            courseTitle: linked.title,
-          })),
-      )
-    : []
+  const projectRows = projects.status === 'ready' ? projects.data : []
+  const allMyCourses = myCourseRows(enrolmentRows)
+  const filteredMyCourses = allMyCourses.filter((row) => {
+    if (courseFilter === 'completed') return row.status === 'completed' || (row.progressPct ?? 0) >= 100
+    if (courseFilter === 'in_progress') return row.status !== 'completed' && (row.progressPct ?? 0) < 100
+    return true
+  })
 
-  const claimableProgrammes = enrollments.status === 'ready' && certificates.status === 'ready'
-    ? enrolmentRows
-        .filter((item) => {
-          const courses = item.courses ?? []
-          const masterSlug = `programme-${item.programSlug}`
-          return courses.length >= 2 && courses.every((c) => c.progress.allComplete) && !issuedSlugs.has(masterSlug)
-        })
-        .map((item) => ({
-          key: `master:${item.id}:${item.programSlug}`,
-          programSlug: item.programSlug,
-          programName: item.programName,
-        }))
-    : []
+  // In-Dashboard Explore Programmes View (Stays inside the logged-in Sidebar!)
+  const exploreProgrammesSection = (
+    <section id="explore-programmes" aria-label="Explore Programmes inside Dashboard">
+      {selectedExploreDetail ? (
+        <div
+          style={{
+            background: '#ffffff',
+            border: '1px solid #e2e8f0',
+            borderRadius: 16,
+            overflow: 'hidden',
+            boxShadow: '0 14px 36px -16px rgba(15, 23, 42, 0.1)',
+          }}
+        >
+          {/* Course Detail Banner inside Dashboard (matching Image 4 layout) */}
+          <div
+            style={{
+              background: 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 55%, #3b2d96 100%)',
+              color: '#ffffff',
+              padding: '28px clamp(20px, 3.5vw, 36px)',
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))',
+              gap: 24,
+              alignItems: 'center',
+            }}
+          >
+            <div>
+              <button
+                type="button"
+                onClick={() => setSelectedExploreDetail(null)}
+                style={{
+                  background: 'rgba(255,255,255,0.12)',
+                  border: '1px solid rgba(255,255,255,0.22)',
+                  color: '#ffffff',
+                  padding: '6px 12px',
+                  borderRadius: 8,
+                  fontSize: 12.5,
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  marginBottom: 14,
+                }}
+              >
+                ← Back to All Programmes
+              </button>
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 10 }}>
+                <span style={{ fontSize: 11, fontWeight: 700, padding: '3px 10px', borderRadius: 999, background: '#5142b5', color: '#ffffff' }}>
+                  {selectedExploreDetail.category}
+                </span>
+                <span style={{ fontSize: 11, fontWeight: 700, padding: '3px 10px', borderRadius: 999, background: 'rgba(255,255,255,0.14)', color: '#e2e8f0' }}>
+                  {selectedExploreDetail.labBadge}
+                </span>
+              </div>
+              <h2 style={{ margin: '0 0 10px', fontSize: 'clamp(22px, 2.8vw, 30px)', color: '#ffffff', fontFamily: 'var(--font-display)' }}>
+                {selectedExploreDetail.title}
+              </h2>
+              <p style={{ margin: '0 0 18px', fontSize: 14.5, lineHeight: 1.6, color: '#cbd5e1' }}>
+                {selectedExploreDetail.subtitle}
+              </p>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, marginBottom: 18 }}>
+                <strong style={{ fontSize: 28, color: '#ffffff' }}>₹{selectedExploreDetail.price.toLocaleString('en-IN')}</strong>
+                <span style={{ fontSize: 14, color: '#94a3b8', textDecoration: 'line-through' }}>
+                  ₹{(selectedExploreDetail.price * 2).toLocaleString('en-IN')}
+                </span>
+                <span style={{ fontSize: 12, fontWeight: 700, padding: '3px 10px', borderRadius: 999, background: '#dcfce7', color: '#166534' }}>
+                  100% Free Pilot Coupon Available
+                </span>
+              </div>
+              <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+                <button
+                  type="button"
+                  onClick={() => setCheckoutTarget(selectedExploreDetail)}
+                  style={{
+                    padding: '12px 22px',
+                    borderRadius: 10,
+                    border: 'none',
+                    background: '#5142b5',
+                    color: '#ffffff',
+                    fontWeight: 700,
+                    fontSize: 14.5,
+                    cursor: 'pointer',
+                  }}
+                >
+                  Enroll Now →
+                </button>
+                <Link
+                  to={`/learn/${selectedExploreDetail.slug}`}
+                  style={{
+                    padding: '12px 18px',
+                    borderRadius: 10,
+                    border: '1px solid rgba(255,255,255,0.3)',
+                    background: 'rgba(255,255,255,0.08)',
+                    color: '#ffffff',
+                    fontWeight: 600,
+                    fontSize: 14,
+                    textDecoration: 'none',
+                  }}
+                >
+                  Open Course Player
+                </Link>
+              </div>
+            </div>
+            <div>
+              <img
+                src={selectedExploreDetail.image}
+                alt={selectedExploreDetail.title}
+                style={{ width: '100%', maxHeight: 230, objectFit: 'cover', borderRadius: 14, border: '1px solid rgba(255,255,255,0.2)' }}
+              />
+            </div>
+          </div>
 
-  const myLearning = (
-    <section
-      className={hash === '#sh-my-learning' ? 'sh-card sh-card--focused' : 'sh-card'}
-      id="sh-my-learning"
-      aria-labelledby="sh-my-learning-heading"
-    >
-      <header className="sh-card-head">
-        <h2 id="sh-my-learning-heading">My Courses</h2>
-        {/* to="/programmes" */}<Link className="os-link" to="/dashboard/student#explore-programmes">Explore programmes <ArrowRight /></Link>
-      </header>
-      {enrollments.status === 'loading' ? (
-        <div className="sh-rows" aria-label="Loading your courses">
-          <div className="sh-row"><span className="os-skeleton" style={{ width: '62%' }} /></div>
-          <div className="sh-row"><span className="os-skeleton" style={{ width: '48%' }} /></div>
-        </div>
-      ) : enrollments.status === 'error' ? (
-        <ListError what="Your courses" onRetry={retryLists} />
-      ) : myCourses.length > 0 ? (
-        <ul className="sh-rows">
-          {myCourses.map((row) => {
-            const truth = truthOf('course', row.courseSlug)
-            const authored = isAuthoredCourse(row.courseSlug)
-            const actionHref = row.continueHref
-            const actionLabel = row.progress
-              ? row.progress.allComplete
-                ? 'Review course'
-                : row.progress.completedCount > 0 || row.currentLessonStarted
-                  ? 'Continue'
-                  : 'Start course'
-              : 'Open course'
-            return (
-              <li key={row.key} className="sh-row sh-course-row">
-                <div className="sh-row-main">
-                  <div className="sh-row-title">
-                    <strong>{row.courseTitle}</strong>
-                    <span className={row.status === 'completed' ? 'os-status is-done' : 'os-status'}>
-                      {enrolmentStatusLabel(row.status)}
+          {/* 4-Pillar Info Bar (Duration | Modules | Lab | Certificate) */}
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))',
+              gap: 14,
+              padding: '18px 28px',
+              background: '#f8fafc',
+              borderBottom: '1px solid #e2e8f0',
+            }}
+          >
+            <div>
+              <span style={{ fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>Duration</span>
+              <strong style={{ display: 'block', fontSize: 14.5, color: '#0f172a', marginTop: 2 }}>{selectedExploreDetail.duration}</strong>
+            </div>
+            <div>
+              <span style={{ fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>Curriculum</span>
+              <strong style={{ display: 'block', fontSize: 14.5, color: '#0f172a', marginTop: 2 }}>
+                {selectedExploreDetail.modulesCount} Modules · {selectedExploreDetail.lessonsCount} Lessons
+              </strong>
+            </div>
+            <div>
+              <span style={{ fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>Practice Workbench</span>
+              <strong style={{ display: 'block', fontSize: 14.5, color: '#0f172a', marginTop: 2 }}>{selectedExploreDetail.labBadge}</strong>
+            </div>
+            <div>
+              <span style={{ fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>Credential</span>
+              <strong style={{ display: 'block', fontSize: 14.5, color: '#0f172a', marginTop: 2 }}>Verified SKL Certificate (/verify)</strong>
+            </div>
+          </div>
+
+          {/* Curriculum Breakdown inside Dashboard */}
+          <div style={{ padding: '24px 28px' }}>
+            <h3 style={{ margin: '0 0 14px', fontSize: 18, color: '#0f172a' }}>Course Curriculum &amp; Modules</h3>
+            <div style={{ display: 'grid', gap: 10 }}>
+              {selectedExploreDetail.syllabusModules.map((modTitle, idx) => (
+                <div
+                  key={modTitle}
+                  style={{
+                    padding: '14px 16px',
+                    borderRadius: 12,
+                    border: '1px solid #e2e8f0',
+                    background: '#ffffff',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    gap: 12,
+                    flexWrap: 'wrap',
+                  }}
+                >
+                  <div>
+                    <strong style={{ fontSize: 14.5, color: '#0f172a', display: 'block' }}>{modTitle}</strong>
+                    <span style={{ fontSize: 12.5, color: '#64748b' }}>
+                      3 lessons · Written notes, interactive check &amp; applied case assignment
                     </span>
-                    {truth && !authored ? <TruthChip truth={truth} /> : null}
                   </div>
-                  <span className="sh-note">
-                    {row.programName && row.programName !== row.courseTitle ? `${row.programName} · ` : ''}
-                    {row.progress
-                      ? `${row.progress.completedCount} of ${row.progress.totalLessons} lessons (${row.progress.progressPct}%)`
-                      : row.Schedule}
-                    {row.currentLessonTitle && !row.progress?.allComplete ? ` · Current: ${row.currentLessonTitle}` : ''}
+                  <span style={{ fontSize: 12, fontWeight: 700, color: '#5142b5', background: '#f5f3ff', padding: '4px 10px', borderRadius: 999 }}>
+                    Module 0{idx + 1}
                   </span>
-                  {row.progress ? (
-                    <div className="os-progress-bar sh-row-bar" role="progressbar" aria-label={`${row.courseTitle} progress`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={row.progress.progressPct}>
-                      <span style={{ width: `${row.progress.progressPct}%` }} />
-                    </div>
-                  ) : null}
-                  {authored ? <ProductSlice active={SLICE} /> : null}
                 </div>
-                {canOpenEnrollment(row.enrolment) ? (
-                  <Link className="os-link sh-row-link" to={actionHref}>
-                    {actionLabel} <ArrowRight />
-                  </Link>
-                ) : (
-                  <Link className="os-link sh-row-link" to={`/programmes/${row.programSlug}`}>
-                    Programme <ArrowRight />
-                  </Link>
-                )}
-              </li>
-            )
-          })}
-        </ul>
+              ))}
+            </div>
+          </div>
+        </div>
       ) : (
-        <p className="sh-empty">
-          You have not started a course yet. {/* to="/programmes" */}<Link className="os-link" to="/dashboard/student#explore-programmes">Explore programmes <ArrowRight /></Link>
-        </p>
+        <div style={{ display: 'grid', gap: 20 }}>
+          {/* Top Header & Search + Category Pills (matching Image 5 layout inside Dashboard) */}
+          <div
+            style={{
+              background: '#ffffff',
+              border: '1px solid #e2e8f0',
+              borderRadius: 16,
+              padding: '20px 24px',
+              display: 'grid',
+              gap: 16,
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
+              <div>
+                <span style={{ fontSize: 11, fontWeight: 700, color: '#5142b5', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                  SKYLENT COURSE CATALOGUE
+                </span>
+                <h2 style={{ margin: '4px 0 0', fontSize: 22, color: '#0f172a', fontFamily: 'var(--font-display)' }}>
+                  Explore Programmes &amp; Career Tracks
+                </h2>
+              </div>
+              <input
+                type="search"
+                value={exploreQuery}
+                onChange={(e) => setExploreQuery(e.target.value)}
+                placeholder="Search courses, SQL, Python, AI, Product…"
+                style={{
+                  minWidth: 260,
+                  padding: '10px 14px',
+                  borderRadius: 10,
+                  border: '1px solid #cbd5e1',
+                  background: '#f8fafc',
+                  fontSize: 13.5,
+                }}
+              />
+            </div>
+
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              {(['All', 'Data & SQL', 'AI & Data Science', 'Product & Full-Stack'] as const).map((cat) => {
+                const active = exploreCategory === cat
+                return (
+                  <button
+                    key={cat}
+                    type="button"
+                    onClick={() => setExploreCategory(cat)}
+                    style={{
+                      padding: '8px 16px',
+                      borderRadius: 999,
+                      border: active ? '1.5px solid #5142b5' : '1px solid #cbd5e1',
+                      background: active ? '#5142b5' : '#ffffff',
+                      color: active ? '#ffffff' : '#334155',
+                      fontSize: 13,
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    {cat}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+
+          {/* 3-Column Programme Card Grid inside Dashboard */}
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 300px), 1fr))',
+              gap: 18,
+            }}
+          >
+            {filteredExploreCourses.map((item) => {
+              const isEnrolled = allMyCourses.some((r) => r.slug === item.slug)
+              return (
+                <article
+                  key={item.slug}
+                  style={{
+                    background: '#ffffff',
+                    border: '1px solid #e2e8f0',
+                    borderRadius: 16,
+                    overflow: 'hidden',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                    boxShadow: '0 8px 24px -14px rgba(15, 23, 42, 0.08)',
+                  }}
+                >
+                  <div>
+                    <div style={{ position: 'relative', height: 156, overflow: 'hidden', background: '#0f172a' }}>
+                      <img
+                        src={item.image}
+                        alt={item.title}
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      />
+                      <span
+                        style={{
+                          position: 'absolute',
+                          top: 10,
+                          left: 10,
+                          padding: '4px 10px',
+                          borderRadius: 999,
+                          background: 'rgba(15, 23, 42, 0.82)',
+                          color: '#ffffff',
+                          fontSize: 11,
+                          fontWeight: 700,
+                        }}
+                      >
+                        {item.category}
+                      </span>
+                      <span
+                        style={{
+                          position: 'absolute',
+                          bottom: 10,
+                          right: 10,
+                          padding: '4px 10px',
+                          borderRadius: 999,
+                          background: '#dcfce7',
+                          color: '#166534',
+                          fontSize: 11,
+                          fontWeight: 700,
+                        }}
+                      >
+                        {item.labBadge}
+                      </span>
+                    </div>
+
+                    <div style={{ padding: '16px 18px 12px' }}>
+                      <h3 style={{ margin: '0 0 6px', fontSize: 17, color: '#0f172a', lineHeight: 1.3 }}>
+                        {item.title}
+                      </h3>
+                      <p style={{ margin: '0 0 12px', fontSize: 13, color: '#475569', lineHeight: 1.5 }}>
+                        {item.subtitle}
+                      </p>
+                      <div style={{ display: 'flex', gap: 12, fontSize: 12, color: '#64748b', fontWeight: 600, marginBottom: 10 }}>
+                        <span>⏱ {item.duration}</span>
+                        <span>📚 {item.modulesCount} Modules ({item.lessonsCount} Lessons)</span>
+                      </div>
+                      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                        {item.skills.slice(0, 3).map((s) => (
+                          <span
+                            key={s}
+                            style={{
+                              fontSize: 11,
+                              padding: '3px 8px',
+                              borderRadius: 6,
+                              background: '#f1f5f9',
+                              color: '#334155',
+                              fontWeight: 600,
+                            }}
+                          >
+                            {s}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div
+                    style={{
+                      padding: '12px 18px 16px',
+                      borderTop: '1px solid #f1f5f9',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      gap: 10,
+                    }}
+                  >
+                    <div>
+                      <strong style={{ fontSize: 18, color: '#0f172a', display: 'block' }}>
+                        ₹{item.price.toLocaleString('en-IN')}
+                      </strong>
+                      <span style={{ fontSize: 11, color: '#15803d', fontWeight: 700 }}>
+                        ₹0 with Pilot Scholarship
+                      </span>
+                    </div>
+                    <div style={{ display: 'flex', gap: 8 }}>
+                      <button
+                        type="button"
+                        onClick={() => setSelectedExploreDetail(item)}
+                        style={{
+                          padding: '8px 12px',
+                          borderRadius: 8,
+                          border: '1px solid #cbd5e1',
+                          background: '#ffffff',
+                          color: '#334155',
+                          fontSize: 12.5,
+                          fontWeight: 700,
+                          cursor: 'pointer',
+                        }}
+                      >
+                        Syllabus
+                      </button>
+                      {isEnrolled ? (
+                        <Link
+                          to={`/learn/${item.slug}`}
+                          style={{
+                            padding: '8px 14px',
+                            borderRadius: 8,
+                            background: '#059669',
+                            color: '#ffffff',
+                            fontSize: 12.5,
+                            fontWeight: 700,
+                            textDecoration: 'none',
+                          }}
+                        >
+                          Resume →
+                        </Link>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => setCheckoutTarget(item)}
+                          style={{
+                            padding: '8px 14px',
+                            borderRadius: 8,
+                            border: 'none',
+                            background: '#5142b5',
+                            color: '#ffffff',
+                            fontSize: 12.5,
+                            fontWeight: 700,
+                            cursor: 'pointer',
+                          }}
+                        >
+                          Enroll Now
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </article>
+              )
+            })}
+          </div>
+        </div>
       )}
     </section>
   )
 
+  const myLearning = (
+    <section
+      className={hash === '#sh-my-learning' || studentTab === 'courses' ? 'sh-card sh-card--focused' : 'sh-card'}
+      aria-labelledby="sh-my-learning"
+    >
+      <header className="sh-card-head" style={{ flexWrap: 'wrap', gap: 10 }}>
+        <div>
+          <h2 id="sh-my-learning">My Courses</h2>
+          {enrollments.status === 'ready' ? (
+            <span className="sh-note">{allMyCourses.length} {allMyCourses.length === 1 ? 'enrolled course' : 'enrolled courses'}</span>
+          ) : null}
+        </div>
+        <div style={{ display: 'flex', gap: 6 }}>
+          {[
+            { id: 'all' as const, label: 'All' },
+            { id: 'in_progress' as const, label: 'In Progress' },
+            { id: 'completed' as const, label: 'Completed' },
+          ].map((f) => (
+            <button
+              key={f.id}
+              type="button"
+              onClick={() => setCourseFilter(f.id)}
+              style={{
+                padding: '5px 12px',
+                borderRadius: 999,
+                border: courseFilter === f.id ? '1.5px solid #5142b5' : '1px solid #cbd5e1',
+                background: courseFilter === f.id ? '#f5f3ff' : '#ffffff',
+                color: courseFilter === f.id ? '#5142b5' : '#475569',
+                fontSize: 12,
+                fontWeight: 700,
+                cursor: 'pointer',
+              }}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
+      </header>
+      {enrollments.status === 'loading' ? (
+        <div className="sh-row"><span className="os-skeleton" style={{ width: '60%' }} /></div>
+      ) : enrollments.status === 'error' ? (
+        <ListError what="Your enrolments" onRetry={retryLists} />
+      ) : filteredMyCourses.length === 0 ? (
+        <p className="sh-empty">
+          No courses match this filter yet.{' '}
+          <button
+            type="button"
+            className="os-link"
+            style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', font: 'inherit' }}
+            onClick={() => setStudentTab('explore')}
+          >
+            Explore programmes
+          </button>{' '}
+          or <Link className="os-link" to="/programmes">view public catalogue</Link>.
+        </p>
+      ) : (
+        <div style={{ display: 'grid', gap: 12, paddingTop: 8 }}>
+          {filteredMyCourses.map((item) => {
+            const title = item.title
+            const pct = item.progressPct ?? 0
+            const completed = item.completedCount ?? 0
+            const total = item.totalLessons ?? 15
+            const openHref = canOpenEnrollment(item.status) && item.slug ? `/learn/${item.slug}` : null
+            const thumb = courseThumbForSlug(item.slug)
+            return (
+              <div
+                key={item.key}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  gap: 16,
+                  padding: '14px 16px',
+                  borderRadius: 14,
+                  border: '1px solid #e2e8f0',
+                  background: '#ffffff',
+                  flexWrap: 'wrap',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 14, minWidth: 240, flex: 1 }}>
+                  <img
+                    src={thumb}
+                    alt={title}
+                    style={{ width: 88, height: 60, objectFit: 'cover', borderRadius: 10, flexShrink: 0, border: '1px solid #e2e8f0' }}
+                  />
+                  <div>
+                    <strong style={{ fontSize: 15.5, color: '#0f172a', display: 'block', marginBottom: 3 }}>{title}</strong>
+                    <span style={{ fontSize: 12.5, color: '#64748b', display: 'block' }}>
+                      {item.programmeName ? `${item.programmeName} · ` : ''}
+                      {completed}/{total} Lessons Completed
+                    </span>
+                  </div>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                  <ProgressRing percent={pct} size={46} stroke={4.5} />
+                  {openHref ? (
+                    <Link
+                      className="os-btn os-btn-primary"
+                      to={openHref}
+                      style={{ textDecoration: 'none', padding: '9px 16px', borderRadius: 10, fontSize: 13, fontWeight: 700 }}
+                    >
+                      {completed > 0 && completed < total ? 'Resume Learning' : 'Start Course'} <ArrowRight />
+                    </Link>
+                  ) : null}
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      )}
+    </section>
+  )
+
+  const issuedFor = (slug: string, title: string) =>
+    certificateRows.some((cert) => (cert.courseSlug ? cert.courseSlug === slug : cert.courseTitle === title))
+  const claimable: Array<{ key: string; courseSlug: string; courseTitle: string }> = []
+  const claimableProgrammes: Array<{ key: string; programSlug: string; programName: string }> = []
+  const seenClaims = new Set<string>()
+  const seenProgrammeClaims = new Set<string>()
+  for (const item of enrolmentRows) {
+    const linked = item.courses ?? []
+    if (linked.length > 0) {
+      for (const courseRow of linked) {
+        if (!isAuthoredCourse(courseRow.slug) || !courseRow.progress.allComplete) continue
+        if (issuedFor(courseRow.slug, courseRow.title) || seenClaims.has(courseRow.slug)) continue
+        seenClaims.add(courseRow.slug)
+        claimable.push({ key: `${item.id}:${courseRow.slug}`, courseSlug: courseRow.slug, courseTitle: courseRow.title })
+      }
+      const authoredLinked = linked.filter((courseRow) => isAuthoredCourse(courseRow.slug))
+      if (
+        item.programSlug &&
+        authoredLinked.length > 0 &&
+        authoredLinked.every((courseRow) => courseRow.progress.allComplete) &&
+        !seenProgrammeClaims.has(item.programSlug) &&
+        !certificateRows.some((cert) => (cert.code.includes('-PGM') || cert.code.includes('-PRG-')) && cert.courseTitle === (item.programName ?? item.programSlug))
+      ) {
+        seenProgrammeClaims.add(item.programSlug)
+        claimableProgrammes.push({
+          key: `prg:${item.id}:${item.programSlug}`,
+          programSlug: item.programSlug,
+          programName: item.programName ?? item.programSlug,
+        })
+      }
+      continue
+    }
+    if (
+      item.certificateEligible &&
+      item.courseSlug &&
+      !item.programSlug &&
+      isAuthoredCourse(item.courseSlug) &&
+      !issuedFor(item.courseSlug, item.courseTitle ?? '') &&
+      !seenClaims.has(item.courseSlug)
+    ) {
+      seenClaims.add(item.courseSlug)
+      claimable.push({ key: item.id, courseSlug: item.courseSlug, courseTitle: item.courseTitle ?? item.courseSlug })
+    }
+  }
+
   const evidence = (
-    <section className="sh-card sh-evidence" id="student-evidence" aria-labelledby="sh-certs">
+    <section className="sh-card sh-proof" id="student-evidence" aria-labelledby="sh-evidence">
       <header className="sh-card-head">
-        <h2 id="sh-certs">Certificates &amp; Verified Proof</h2>
-        <Link className="os-link" to="/verify">Public verification <ArrowRight /></Link>
+        <h2 id="sh-evidence">Evidence and certificates</h2>
+        {certificates.status === 'ready' ? <TruthChip state={truthOf('certificates')} /> : null}
       </header>
       {certificates.status === 'loading' ? (
-        <div className="sh-row"><span className="os-skeleton" style={{ width: '58%' }} /></div>
+        <div className="sh-row"><span className="os-skeleton" style={{ width: '50%' }} /></div>
       ) : certificates.status === 'error' ? (
         <ListError what="Your certificates" onRetry={retryLists} />
       ) : (
@@ -996,16 +1117,13 @@ export default function DashboardStudentPage() {
               {certificateRows.map((cert) => (
                 <li key={cert.code} className="sh-row">
                   <div className="sh-row-main">
-                    <strong>{cert.courseTitle}{cert.code.includes('-PGM') ? " · Programme Master Certificate" : ""}</strong>
-                    <span className="sh-note">
-                      <code className="sh-code">{cert.code}</code> ·{' '}
-                      {cert.status === 'revoked' ? 'Revoked' : `Issued ${formatDate(cert.issuedAt)}`}
-                    </span>
+                    <strong>{cert.courseTitle}</strong>
+                    <span className="sh-note">{cert.code} · issued {formatDate(cert.issuedAt)}</span>
                   </div>
-                  {cert.status === 'revoked' ? (
+                  {cert.revoked ? (
                     <span className="os-status is-idle">Revoked</span>
                   ) : (
-                    <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+                    <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
                       <a
                         className="os-link sh-row-link"
                         href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(`https://skylent.live/verify/${cert.code}`)}`}
@@ -1078,13 +1196,50 @@ export default function DashboardStudentPage() {
     </section>
   )
 
-  const career = (
-    <section className="sh-card" aria-labelledby="sh-career">
+  const upcomingEventsWidget = (
+    <section className="sh-card" aria-label="Upcoming Workshops and Live Sessions">
       <header className="sh-card-head">
-        <h2 id="sh-career">Career connection</h2>
+        <h2>Upcoming Events &amp; Workshops</h2>
+        <Link className="os-link" to="/events" style={{ fontSize: 12.5 }}>View all →</Link>
       </header>
-      <p className="sh-body">Career OS brings your verified projects, certificates, and role skill-gap matching into one recruiter-ready profile.</p>
-      <p className="sh-foot"><Link className="os-link" to="/career-os">Open Career OS <ArrowRight /></Link></p>
+      <div style={{ display: 'grid', gap: 10 }}>
+        {[
+          {
+            title: 'SQL Revenue & Margin Diagnostics Workshop',
+            when: 'Sat, Nov 14 · 6:00 PM IST',
+            badge: '₹99 → 99 Elixir Cashback',
+            href: '/events',
+          },
+          {
+            title: 'Grounded RAG & LLM Evaluation Live Lab',
+            when: 'Sun, Nov 15 · 11:00 AM IST',
+            badge: 'Live Browser Lab',
+            href: '/events',
+          },
+        ].map((ev) => (
+          <div
+            key={ev.title}
+            style={{
+              padding: '12px 14px',
+              borderRadius: 12,
+              border: '1px solid #e2e8f0',
+              background: '#f8fafc',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              gap: 10,
+            }}
+          >
+            <div>
+              <strong style={{ fontSize: 13.5, color: '#0f172a', display: 'block' }}>{ev.title}</strong>
+              <span style={{ fontSize: 12, color: '#64748b' }}>{ev.when} · {ev.badge}</span>
+            </div>
+            <Link className="os-link" to={ev.href} style={{ fontSize: 12.5, whiteSpace: 'nowrap' }}>
+              Register →
+            </Link>
+          </div>
+        ))}
+      </div>
     </section>
   )
 
@@ -1092,77 +1247,48 @@ export default function DashboardStudentPage() {
     return (
       <AuthDashboardShell {...shell}>
         <div className="sh" id="student-learning">
-          {passwordRotationBanner}
-
-          {/* Workspace View Switcher even when 0 courses are enrolled */}
-          <div
-            role="tablist"
-            aria-label="Learner Workspace Views"
-            style={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              gap: 8,
-              padding: '10px 12px',
-              marginBottom: 16,
-              borderRadius: 14,
-              background: '#f6f4ff',
-              border: '1px solid #ddd6fe',
-            }}
-          >
-            {[
-              { id: 'overview' as const, label: '1. Learning Dashboard & All Programmes' },
-              { id: 'programmes' as const, label: '2. Explore Programmes & Career Tracks' },
-              { id: 'wallet' as const, label: '3. Elixir Wallet & Case Store' },
-              { id: 'profile' as const, label: '4. ⚙️ My Profile, Mobile & Password Settings' },
-            ].map((t) => {
-              const active = studentTab === t.id
-              return (
-                <button
-                  key={t.id}
-                  type="button"
-                  role="tab"
-                  aria-selected={active}
-                  onClick={() => {
-                    setStudentTab(t.id)
-                    if (t.id === 'profile') navigate('/dashboard/student#profile-settings')
-                    else if (t.id === 'programmes') navigate('/dashboard/student#explore-programmes')
-                    else navigate('/dashboard/student')
-                  }}
-                  style={{
-                    padding: '8px 14px',
-                    borderRadius: 999,
-                    border: active ? '1px solid #5142b5' : '1px solid #cbd5e1',
-                    background: active ? '#5142b5' : '#ffffff',
-                    color: active ? '#ffffff' : '#334155',
-                    fontSize: 12.5,
-                    fontWeight: 700,
-                    cursor: 'pointer',
-                  }}
-                >
-                  {t.label}
-                </button>
-              )
-            })}
-          </div>
-
-          {studentTab === 'profile' ? (
-            <StudentProfileAndSettingsPanel />
-          ) : studentTab === 'wallet' ? (
-            <section className="sh-card" aria-label="Elixir wallet" style={{ marginTop: 12 }}><ElixirWalletPanel /></section>
+          {studentTab === 'explore' ? (
+            exploreProgrammesSection
           ) : (
             <>
-              <InDashboardProgrammesCatalog
-                enrollments={enrolmentRows}
-                onEnrolled={() => {
-                  void reload()
-                  retryLists()
-                }}
-              />
-              {enrolmentRows.length > 0 ? <div className="sh-stack" style={{ marginTop: 22 }}>{myLearning}<CareerRiseCard />{evidence}</div> : null}
+              <div className="sh-next sh-royal-hero" style={{ marginBottom: 22 }}>
+                <p className="sh-next-label"><span aria-hidden="true" />Welcome to Skylent</p>
+                <h2>Choose your first career track</h2>
+                <p className="sh-body">
+                  Pick any of our 6 flagship programmes below to open your interactive lessons, browser lab, and capstone workspace immediately.
+                </p>
+                <div className="os-actions">
+                  <button
+                    type="button"
+                    className="os-btn os-btn-primary os-btn-lg sh-royal-cta"
+                    onClick={() => setStudentTab('explore')}
+                  >
+                    Explore Programmes <ArrowRight />
+                  </button>
+                  <Link className="os-btn os-btn-ghost sh-royal-secondary" to="/programmes">
+                    Public Catalogue
+                  </Link>
+                </div>
+              </div>
+              {exploreProgrammesSection}
+              {enrolmentRows.length > 0 ? <div className="sh-stack" style={{ marginTop: 20 }}>{myLearning}<CareerRiseCard />{evidence}</div> : null}
               <section className="sh-card" aria-label="Elixir wallet" style={{ marginTop: 22 }}><ElixirWalletPanel /></section>
             </>
           )}
         </div>
+        {checkoutTarget ? (
+          <EnrollmentModal
+            item={{
+              kind: 'course',
+              slug: checkoutTarget.slug,
+              title: checkoutTarget.title,
+              price: checkoutTarget.price,
+              enrollable: true,
+              enrollmentStatus: 'open',
+            }}
+            onClose={() => setCheckoutTarget(null)}
+          />
+        ) : null}
       </AuthDashboardShell>
     )
   }
@@ -1175,39 +1301,18 @@ export default function DashboardStudentPage() {
   const resumeHref = resume.lessonId ? `/learn/${course.slug}/${resume.lessonId}` : `/learn/${course.slug}`
   const resumeStarted = Boolean(resume.lessonId && workspace.lessonStates[resume.lessonId]?.started)
   const profile = courseProductProfile(course.slug)
-
-  const primaryAttention = allLessons.flatMap((lesson) => {
-    const state = workspace.lessonStates[lesson.id]
-    if (!state || !state.started || state.complete || state.locked) return []
-    if (lesson.type !== 'quiz' && lesson.type !== 'assignment') return []
-    return [{
-      id: lesson.id,
-      title: lesson.title,
-      href: `/learn/${course.slug}/${lesson.id}`,
-      note: lesson.type === 'quiz'
-        ? 'Check opened, not passed yet'
-        : `${isCapstoneLesson(lesson) ? 'Capstone' : 'Assignment'} opened, not submitted yet`,
-    }]
-  })
-  const covered = new Set(primaryAttention.map((item) => item.href))
-  const otherAttention = enrolmentRows.flatMap((item) =>
-    (item.courses ?? []).flatMap((linked) =>
-      linked.openAssessments.flatMap((open) => {
-        const href = `/learn/${linked.slug}/${open.lessonKey}`
-        if (covered.has(href)) return []
-        covered.add(href)
-        return [{
-          id: `${linked.slug}:${open.lessonKey}`,
-          title: open.title,
-          href,
-          note: `${linked.title} · ${open.type === 'quiz' ? 'Check opened, not passed yet' : 'Assignment opened, not submitted yet'}`,
-        }]
-      }),
-    ),
+  const completedModulesCount = course.modules.filter((m) =>
+    m.lessons.every((l) => workspace.lessonStates[l.id]?.complete),
+  ).length
+  const totalModulesCount = course.modules.length
+  const checksAttempted = allLessons.filter(
+    (l) => (l.type === 'quiz' || l.type === 'assignment') && workspace.lessonStates[l.id]?.started,
+  ).length
+  const totalChecks = Math.max(
+    1,
+    allLessons.filter((l) => l.type === 'quiz' || l.type === 'assignment').length,
   )
-  const attention = [...primaryAttention, ...otherAttention]
 
-  const projectRows = projects.status === 'ready' ? projects.data : []
   const currentProject = findProjectForCourse(projectRows, course.slug)
 
   const projectsSection = (
@@ -1259,7 +1364,7 @@ export default function DashboardStudentPage() {
       {(() => {
         const environment = practiceEnvironmentForCourse(course.slug)
         const sqlLabHref = dashboardSqlLabHref(course.slug, resume.lessonId)
-        if (environment?.status === "runs") {
+        if (environment?.status === 'runs') {
           if (!sqlLabHref) return <span id="student-practice" />
           return (
             <div className="sh-row" id="student-practice">
@@ -1273,7 +1378,7 @@ export default function DashboardStudentPage() {
             </div>
           )
         }
-        if (environment?.status === "written") {
+        if (environment?.status === 'written') {
           return (
             <div className="sh-row" id="student-practice">
               <div className="sh-row-main">
@@ -1291,12 +1396,25 @@ export default function DashboardStudentPage() {
     </section>
   )
 
+  const activityDates: string[] = [
+    ...projectRows.map((p) => p.updatedAt),
+    ...certificateRows.map((c) => c.issuedAt),
+  ]
+  if (completedCount > 0 || resumeStarted) {
+    activityDates.push(new Date().toISOString())
+  }
+  const streak = computeLearnerExecutionStreak(activityDates)
+  const activeDayNumbers = new Set(
+    streak.heatmapDays.filter((d) => d.active).map((d) => Number(d.date.slice(8))),
+  )
+  activeDayNumbers.add(new Date().getDate())
+
+  const profileCompletenessPct = looksLikeFullName(user.name) ? 85 : 60
+
   return (
     <AuthDashboardShell {...shell}>
       <div className="sh">
-        {passwordRotationBanner}
-
-        {/* Multi-Tab Student Workspace Switcher Bar */}
+        {/* Clean Student Workspace Sub-Navigation Bar */}
         <div
           role="tablist"
           aria-label="Learner Workspace Views"
@@ -1304,21 +1422,20 @@ export default function DashboardStudentPage() {
             display: 'flex',
             flexWrap: 'wrap',
             gap: 8,
-            padding: '10px 12px',
-            marginBottom: 16,
-            borderRadius: 14,
-            background: '#f6f4ff',
-            border: '1px solid #ddd6fe',
+            padding: '8px 10px',
+            marginBottom: 18,
+            borderRadius: 12,
+            background: '#ffffff',
+            border: '1px solid #e2e8f0',
           }}
         >
           {[
-            { id: 'overview' as const, label: '1. Full Workspace (Overview)' },
-            { id: 'courses' as const, label: '2. My Active Courses' },
-            { id: 'projects' as const, label: '3. Capstone & Browser Labs' },
-            { id: 'programmes' as const, label: '4. Explore Programmes (In-Dashboard)' },
-            { id: 'certificates' as const, label: '5. Certificates & Flight Recorder' },
-            { id: 'wallet' as const, label: '6. Elixir Wallet & Case Store' },
-            { id: 'profile' as const, label: '7. ⚙️ My Profile & Settings' },
+            { id: 'overview' as const, label: 'Dashboard' },
+            { id: 'courses' as const, label: 'My Courses' },
+            { id: 'explore' as const, label: 'Explore Programmes' },
+            { id: 'projects' as const, label: 'Projects & Labs' },
+            { id: 'certificates' as const, label: 'Certificates' },
+            { id: 'wallet' as const, label: 'Elixir Wallet' },
           ].map((t) => {
             const active = studentTab === t.id
             return (
@@ -1329,17 +1446,15 @@ export default function DashboardStudentPage() {
                 aria-selected={active}
                 onClick={() => {
                   setStudentTab(t.id)
-                  if (t.id === 'profile') navigate('/dashboard/student#profile-settings')
-                  else if (t.id === 'programmes') navigate('/dashboard/student#explore-programmes')
-                  else if (hash === '#profile-settings' || hash === '#explore-programmes') navigate('/dashboard/student')
+                  setSelectedExploreDetail(null)
                 }}
                 style={{
                   padding: '8px 14px',
-                  borderRadius: 999,
-                  border: active ? '1px solid #5142b5' : '1px solid #cbd5e1',
-                  background: active ? '#5142b5' : '#ffffff',
-                  color: active ? '#ffffff' : '#334155',
-                  fontSize: 12.5,
+                  borderRadius: 8,
+                  border: active ? '1px solid #5142b5' : '1px solid transparent',
+                  background: active ? '#5142b5' : 'transparent',
+                  color: active ? '#ffffff' : '#475569',
+                  fontSize: 13,
                   fontWeight: 700,
                   cursor: 'pointer',
                 }}
@@ -1350,218 +1465,289 @@ export default function DashboardStudentPage() {
           })}
         </div>
 
-        {studentTab === 'profile' ? (
-          <StudentProfileAndSettingsPanel />
-        ) : null}
-
-        {studentTab === 'programmes' ? (
-          <InDashboardProgrammesCatalog
-            enrollments={enrolmentRows}
-            activeCourseSlug={course.slug}
-            activeCourseTitle={course.title}
-            progressPct={progressPct}
-            resumeHref={resumeHref}
-            onEnrolled={() => {
-              void reload()
-              retryLists()
+        {/* Top Streak & Profile Readiness Strip (Matching Image 6) */}
+        {studentTab === 'overview' ? (
+          <div
+            style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: 14,
+              padding: '12px 18px',
+              marginBottom: 18,
+              borderRadius: 14,
+              background: '#ffffff',
+              border: '1px solid #e2e8f0',
             }}
-          />
-        ) : null}
-
-        {studentTab !== 'profile' && studentTab !== 'programmes' ? (
-        <div className="sh-top-head">
-          <div>
-            <p className="os-eyebrow">My Learning Workspace</p>
-            <h1>What to do next</h1>
-          </div>
-          <ul className="sh-facts">
-            <li>
-              {enrollments.status === 'ready' ? (
-                <><strong>{enrolmentRows.length}</strong> {enrolmentRows.length === 1 ? 'active course' : 'active courses'}</>
-              ) : enrollments.status === 'error' ? (
-                'Enrolments could not be loaded'
-              ) : (
-                'Enrolments loading'
-              )}
-            </li>
-            <li><strong>{completedCount}</strong> of {totalLessons} lessons complete ({progressPct}%)</li>
-            <li>
-              {certificates.status === 'ready' && (claimable.length > 0 || claimableProgrammes.length > 0)
-                ? 'A certificate can be claimed below'
-                : allComplete
-                  ? 'Every lesson in this course is complete'
-                  : '24/7 Hinglish AI Coach & 20-Min TA Help active'}
-            </li>
-          </ul>
-        </div>
-        ) : null}
-
-        {/* 1. Primary Action Above the Fold: Royal Purple Continue Learning Hero Card */}
-        {studentTab === 'overview' || studentTab === 'courses' ? (
-          <section className="sh-next sh-royal-hero" id="student-learning" aria-labelledby="sh-continue">
-            <div className="sh-royal-hero__top">
-              <p className="sh-next-label">
-                <span aria-hidden="true" />
-                {allComplete ? 'COURSE COMPLETE' : 'CONTINUE LEARNING · ACTIVE LESSON'}
-                {allComplete ? (
-                  <em>{course.title}</em>
-                ) : (
-                  <em>
-                    {course.title} · Module {resume.moduleIndex}
-                    {resumeLesson ? ` · ${lessonTypeLabel(resumeLesson.type, resumeLesson.title)}` : ''}
-                    {resumeLesson?.duration ? ` · ${resumeLesson.duration}` : ''}
-                  </em>
-                )}
-              </p>
-              <span className="sh-royal-hero__badge">
-                ✓ {completedCount}/{totalLessons} Lessons ({progressPct}%)
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+              <span
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  padding: '6px 14px',
+                  borderRadius: 999,
+                  background: '#fff7ed',
+                  border: '1px solid #fed7aa',
+                  color: '#c2410c',
+                  fontSize: 13,
+                  fontWeight: 700,
+                }}
+              >
+                🔥 {streak.currentStreakDays} Days Streak
+              </span>
+              <span style={{ fontSize: 13.5, color: '#334155', fontWeight: 600 }}>
+                Welcome back, <strong style={{ color: '#0f172a' }}>{user.name}</strong>
               </span>
             </div>
 
-            <h2 id="sh-continue">
-              {allComplete
-                ? `You have completed every lesson in ${course.title}`
-                : `${resumeNumber ? `Lesson ${resumeNumber} · ` : ''}${resume.lessonTitle || course.title}`}
-            </h2>
-            <p className="sh-body">
-              {allComplete
-                ? certificates.status === 'ready' && (claimable.length > 0 || claimableProgrammes.length > 0)
-                  ? 'Your certificate can be claimed below.'
-                  : 'Every lesson in this course is complete.'
-                : `Module ${resume.moduleIndex} of ${resume.moduleTotal} · ${resume.moduleTitle}${resume.nextLessonTitle ? ` · Up next: ${resume.nextLessonTitle}` : ''}`}
-            </p>
-            {workspace.program ? (
-              <p className="sh-note sh-programme">
-                Part of {workspace.program.name} · {workspace.program.progress.completedCourses} of {workspace.program.progress.totalCourses} courses complete
-              </p>
-            ) : null}
-
-            <div className="sh-progress">
-              <div className="os-progress-bar" role="progressbar" aria-label={`${course.title} progress`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={progressPct}>
-                <span style={{ width: `${Math.max(progressPct, 6)}%` }} />
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontSize: 12.5, fontWeight: 700, color: '#475569' }}>
+                  Profile Readiness: <strong style={{ color: '#5142b5' }}>{profileCompletenessPct}%</strong>
+                </span>
+                <div style={{ width: 90, height: 7, borderRadius: 999, background: '#e2e8f0', overflow: 'hidden' }}>
+                  <div style={{ width: `${profileCompletenessPct}%`, height: '100%', background: '#5142b5' }} />
+                </div>
               </div>
-              <span className="sh-royal-hero__pct">{progressPct}% complete · Career Rise unlocks at 60%</span>
+              <Link
+                to="/career-os/profile"
+                style={{
+                  padding: '6px 12px',
+                  borderRadius: 8,
+                  background: '#f5f3ff',
+                  border: '1px solid #ddd6fe',
+                  color: '#5142b5',
+                  fontSize: 12,
+                  fontWeight: 700,
+                  textDecoration: 'none',
+                }}
+              >
+                Complete Profile →
+              </Link>
             </div>
+          </div>
+        ) : null}
 
-            <div className="sh-royal-hero__footer">
-              <div className="os-actions" style={{ marginTop: 0 }}>
-                {allComplete ? (
-                  <Link className="os-btn os-btn-primary os-btn-lg sh-royal-cta" to={`/learn/${course.slug}`}>Review the course <ArrowRight /></Link>
-                ) : (
-                  <Link className="os-btn os-btn-primary os-btn-lg sh-royal-cta" to={resumeHref}>
-                    {resumeStarted || completedCount > 0 ? 'Continue learning' : 'Start learning'} <ArrowRight />
-                  </Link>
-                )}
-                {profile?.project ? (
-                  <Link className="os-btn os-btn-ghost sh-royal-secondary" to={profile.project.href}>
-                    Open Capstone Studio
-                  </Link>
-                ) : null}
+        {/* Resume Learning Card (Matching Image 6 Horizontal Card with Thumbnail + Progress Ring) */}
+        {studentTab === 'overview' ? (
+          <section
+            id="student-learning"
+            aria-labelledby="sh-continue"
+            style={{
+              background: '#ffffff',
+              border: '1px solid #e2e8f0',
+              borderRadius: 16,
+              padding: '20px 22px',
+              marginBottom: 20,
+              boxShadow: '0 10px 28px -16px rgba(15, 23, 42, 0.08)',
+            }}
+          >
+            <div style={{ fontSize: 12, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12 }}>
+              Resume Learning
+            </div>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: 20,
+                flexWrap: 'wrap',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: 16, minWidth: 260, flex: 1 }}>
+                <img
+                  src={courseThumbForSlug(course.slug)}
+                  alt={course.title}
+                  style={{
+                    width: 128,
+                    height: 84,
+                    objectFit: 'cover',
+                    borderRadius: 12,
+                    border: '1px solid #e2e8f0',
+                    flexShrink: 0,
+                  }}
+                />
+                <div>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: '#5142b5', display: 'block', marginBottom: 2 }}>
+                    {course.title} · Module {resume.moduleIndex} of {resume.moduleTotal}
+                  </span>
+                  <h2 id="sh-continue" style={{ margin: '0 0 6px', fontSize: 19, color: '#0f172a', fontFamily: 'var(--font-display)' }}>
+                    {allComplete
+                      ? `Completed: ${course.title}`
+                      : `${resumeNumber ? `Lecture ${resumeNumber}: ` : ''}${resume.lessonTitle || course.title}`}
+                  </h2>
+                  <span style={{ fontSize: 13, color: '#64748b' }}>
+                    {completedModulesCount}/{totalModulesCount} Modules Completed · {completedCount}/{totalLessons} Lessons ({progressPct}%)
+                  </span>
+                </div>
               </div>
-              <div className="sh-royal-hero__pills">
-                <span>🇮🇳 Hinglish AI Coach</span>
-                <span>Browser Lab Included</span>
-                <span>20-Min TA Help</span>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                <ProgressRing percent={progressPct} size={54} stroke={5} />
+                <Link
+                  className="os-btn os-btn-primary"
+                  to={allComplete ? `/learn/${course.slug}` : resumeHref}
+                  style={{
+                    padding: '12px 20px',
+                    borderRadius: 10,
+                    background: '#5142b5',
+                    color: '#ffffff',
+                    fontWeight: 700,
+                    fontSize: 14,
+                    textDecoration: 'none',
+                  }}
+                >
+                  {allComplete ? 'Review Course' : 'Continue Learning'} <ArrowRight />
+                </Link>
               </div>
             </div>
           </section>
         ) : null}
 
-        {/* 2. Compact 14-Day Execution Streak Bar */}
-        {studentTab === 'overview' ? (() => {
-          const activityDates: string[] = [
-            ...projectRows.map((p) => p.updatedAt),
-            ...certificateRows.map((c) => c.issuedAt),
-          ]
-          if (completedCount > 0 || resumeStarted) {
-            activityDates.push(new Date().toISOString())
-          }
-          const streak = computeLearnerExecutionStreak(activityDates)
-          return (
-            <section className="sh-card sh-streak-card" aria-label="Daily Execution Streak and 14-Day Proof-of-Work Activity Heatmap">
-              <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: 12, marginBottom: 10 }}>
+        {/* Today's Progress (Circular Rings) + Monthly Progress Calendar Grid (Matching Image 6) */}
+        {studentTab === 'overview' ? (
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 340px), 1fr))',
+              gap: 18,
+              marginBottom: 20,
+            }}
+          >
+            {/* Left Card: Today's Progress */}
+            <section
+              className="sh-card"
+              aria-label="Today's Progress"
+              style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
                 <div>
-                  <strong style={{ fontSize: 15, display: "block", color: "#0f172a" }}>
-                    🔥 {streak.currentStreakDays}-Day Learning Streak · 14-Day Proof-of-Work Activity Grid
-                  </strong>
-                  <span className="sh-note">
-                    Weekly Goal: {streak.weeklyActionsCount} / {streak.weeklyGoalTarget} lessons &amp; lab actions ({streak.weeklyGoalPercent}%) · Best streak: {streak.longestStreakDays}d
+                  <h2 style={{ margin: 0, fontSize: 17, color: '#0f172a' }}>Today&apos;s Progress</h2>
+                  <span style={{ fontSize: 12.5, color: '#64748b' }}>
+                    {new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })}
                   </span>
                 </div>
-                <span style={{ fontSize: 12, fontWeight: 700, padding: "4px 12px", borderRadius: 999, background: "#ecfdf5", border: "1px solid #a7f3d0", color: "#047857" }}>
-                  +{streak.streakBonusElixir} Elixir Streak Bonus
+                <span style={{ fontSize: 12, fontWeight: 700, padding: '4px 10px', borderRadius: 999, background: '#ecfdf5', color: '#047857' }}>
+                  +{streak.streakBonusElixir} Elixir Bonus
                 </span>
               </div>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(14, minmax(0, 1fr))", gap: 6 }} role="list" aria-label="Last 14 days activity heatmap">
+
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: '1fr 1fr',
+                  gap: 16,
+                  padding: '14px 8px',
+                  textAlign: 'center',
+                }}
+              >
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
+                  <ProgressRing
+                    percent={totalLessons ? (completedCount / totalLessons) * 100 : 0}
+                    size={96}
+                    stroke={8}
+                    color="#5142b5"
+                    label={`${completedCount}/${totalLessons}`}
+                  />
+                  <div>
+                    <strong style={{ fontSize: 13.5, color: '#0f172a', display: 'block' }}>Lessons Completed</strong>
+                    <span style={{ fontSize: 12, color: '#64748b' }}>{progressPct}% of active track</span>
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
+                  <ProgressRing
+                    percent={(checksAttempted / totalChecks) * 100}
+                    size={96}
+                    stroke={8}
+                    color="#059669"
+                    label={`${checksAttempted}/${totalChecks}`}
+                  />
+                  <div>
+                    <strong style={{ fontSize: 13.5, color: '#0f172a', display: 'block' }}>Labs &amp; Checks Attempted</strong>
+                    <span style={{ fontSize: 12, color: '#64748b' }}>Quizzes &amp; case assignments</span>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* Right Card: Monthly Progress Calendar + 14-Day Proof-of-Work Activity Grid */}
+            <section
+              className="sh-card"
+              aria-label="Monthly Progress and 14-Day Proof-of-Work Activity Grid"
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                <div>
+                  <h2 style={{ margin: 0, fontSize: 17, color: '#0f172a' }}>Monthly Progress</h2>
+                  <span style={{ fontSize: 12, color: '#64748b' }}>
+                    {new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })} · 14-Day Proof-of-Work Activity Grid
+                  </span>
+                </div>
+                <span style={{ fontSize: 12, fontWeight: 700, color: '#5142b5' }}>
+                  Best: {streak.longestStreakDays}d
+                </span>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 4, textAlign: 'center', marginBottom: 12 }}>
+                {['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'].map((d) => (
+                  <span key={d} style={{ fontSize: 10, fontWeight: 700, color: '#94a3b8', paddingBottom: 4 }}>{d}</span>
+                ))}
+                {Array.from({ length: 30 }, (_, idx) => {
+                  const dayNum = idx + 1
+                  const isActive = activeDayNumbers.has(dayNum)
+                  return (
+                    <div
+                      key={dayNum}
+                      style={{
+                        height: 28,
+                        borderRadius: 8,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: 11.5,
+                        fontWeight: isActive ? 800 : 500,
+                        background: isActive ? '#5142b5' : '#f8fafc',
+                        color: isActive ? '#ffffff' : '#475569',
+                        border: isActive ? '1px solid #5142b5' : '1px solid #f1f5f9',
+                      }}
+                    >
+                      {dayNum}
+                    </div>
+                  )
+                })}
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(14, minmax(0, 1fr))', gap: 4 }} role="list" aria-label="Last 14 days activity heatmap">
                 {streak.heatmapDays.map((day) => (
                   <div
                     key={day.date}
                     role="listitem"
                     title={`${day.label}: ${day.count} verified action(s)`}
                     style={{
-                      height: 26,
-                      borderRadius: 6,
-                      background: day.active ? "linear-gradient(135deg, #3b2d96 0%, #5142b5 100%)" : "#f1f5f9",
-                      border: day.active ? "1px solid #c4b8ff" : "1px solid #e2e8f0",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      fontSize: 10,
-                      fontWeight: 700,
-                      color: day.active ? "#ffffff" : "#64748B",
+                      height: 18,
+                      borderRadius: 4,
+                      background: day.active ? '#5142b5' : '#e2e8f0',
                     }}
-                  >
-                    {day.date.slice(8)}
-                  </div>
+                  />
                 ))}
               </div>
             </section>
-          )
-        })() : null}
+          </div>
+        ) : null}
 
-        {/* 3. Main 2-Column Workspace Grid (Placed Directly Above the Fold!) */}
+        {/* Main 2-Column Overview Grid */}
         {studentTab === 'overview' ? (
           <div className="sh-grid">
             <div className="sh-stack">
-              {attention.length > 0 ? (
-                <section className="sh-card" aria-labelledby="sh-attention">
-                  <header className="sh-card-head">
-                    <h2 id="sh-attention">Needs attention</h2>
-                    <span className="sh-note">{attention.length} open</span>
-                  </header>
-                  <ul className="sh-rows">
-                    {attention.map((lesson) => (
-                      <li key={lesson.id} className="sh-row">
-                        <div className="sh-row-main">
-                          <strong>{lesson.title}</strong>
-                          <span className="sh-note">{lesson.note}</span>
-                        </div>
-                        <Link className="os-link sh-row-link" to={lesson.href} aria-label={`Open ${lesson.title}`}>
-                          Open <ArrowRight />
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </section>
-              ) : null}
-
-              {hash === '#student-projects' ? (
-                <>
-                  {projectsSection}
-                  {myLearning}
-                  <CareerRiseCard />
-                </>
-              ) : (
-                <>
-                  {myLearning}
-                  {projectsSection}
-                  <CareerRiseCard />
-                </>
-              )}
+              {myLearning}
+              {projectsSection}
+              <CareerRiseCard />
             </div>
 
             <div className="sh-stack">
-              {/* Soft Lavender + Crisp White Skylent AI & 20-Min TA Mentor Card */}
               <section className="sh-card sh-ai sh-royal-ai" aria-labelledby="sh-ai">
                 <header className="sh-ai-head">
                   <AiMark />
@@ -1570,7 +1756,7 @@ export default function DashboardStudentPage() {
                 <div className="sh-royal-ai__body">
                   <h2 id="sh-ai" className="sh-royal-ai__title">{AI_NAME} · Hinglish &amp; English Coach</h2>
                   <p className="sh-royal-ai__desc">
-                    Need a simple Hinglish analogy, help debugging a SQL query, or a 20-minute human Faculty TA review? Open your active lesson to use {AI_NAME} side-by-side.
+                    Need a simple Hinglish explanation, SQL debugging help, or a 20-minute Faculty TA review? Open your active lesson to use {AI_NAME} side-by-side.
                   </p>
                   <div className="sh-royal-ai__pills">
                     <span>🇮🇳 Simple Hinglish Mode</span>
@@ -1583,18 +1769,28 @@ export default function DashboardStudentPage() {
                 </div>
               </section>
 
+              {upcomingEventsWidget}
               {evidence}
-              {career}
             </div>
           </div>
         ) : null}
 
+        {/* My Courses View (Matching Image 7: Courses on Left + Upcoming Events on Right) */}
         {studentTab === 'courses' ? (
-          <div className="sh-stack">
-            {myLearning}
-            <CareerRiseCard />
+          <div className="sh-grid">
+            <div className="sh-stack">
+              {myLearning}
+              <CareerRiseCard />
+            </div>
+            <div className="sh-stack">
+              {upcomingEventsWidget}
+              {projectsSection}
+            </div>
           </div>
         ) : null}
+
+        {/* Explore Programmes View (Inside Logged-in Dashboard!) */}
+        {studentTab === 'explore' ? exploreProgrammesSection : null}
 
         {studentTab === 'projects' ? (
           <div className="sh-stack">
@@ -1606,94 +1802,29 @@ export default function DashboardStudentPage() {
         {studentTab === 'certificates' ? (
           <div className="sh-stack">
             {evidence}
-            {career}
           </div>
         ) : null}
 
-        {/* 4. L1-L5 Institutional Competency & Work Assignment Exchange (Soft Lavender + Crisp White + 4px #5142B5 Card) */}
-        {studentTab === 'overview' || studentTab === 'certificates' ? (
-          <section
-            aria-label="L1 to L5 Competency Progression and Work Assignment Exchange"
-            style={{
-              marginTop: 22,
-              background: "linear-gradient(180deg, #f6f4ff 0%, #ffffff 100%)",
-              border: "1px solid #ddd6fe",
-              borderTop: "4px solid #5142b5",
-              borderRadius: 16,
-              padding: "20px 24px",
-              color: "#0f172a",
-              boxShadow: "0 12px 30px -14px rgba(81, 66, 181, 0.14)",
-            }}
-          >
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 16, flexWrap: "wrap", marginBottom: 14 }}>
-              <div>
-                <span style={{ color: "#5142b5", font: "700 11px/1.4 var(--font-mono)", letterSpacing: "0.14em", textTransform: "uppercase", display: "block", marginBottom: 4 }}>
-                  ★ SKYLENT INSTITUTE OF APPLIED LEARNING · L1 → L5 PROGRESSION &amp; WORK ASSIGNMENT EXCHANGE
-                </span>
-                <strong style={{ fontSize: 18, color: "#0f172a", fontFamily: "var(--font-display)", display: "block" }}>
-                  Current Stage: L2 Guided Practice → Unlocking Env B Partner Fieldwork Exchange
-                </strong>
-                <span style={{ fontSize: 13, color: "#475569", display: "block", marginTop: 4 }}>
-                  Complete your Environment A Simulated Enterprise Sprint (Northwind / Harbor Desk) with a V1 → V2 Faculty Red-Line pass to unlock supervised real-world MSME &amp; startup assignments.
-                </span>
-              </div>
-              <Link
-                to="/verify"
-                style={{
-                  padding: "8px 14px",
-                  borderRadius: 999,
-                  background: "#dcfce7",
-                  border: "1px solid #86efac",
-                  color: "#166534",
-                  fontSize: 12,
-                  fontFamily: "var(--font-mono)",
-                  fontWeight: 700,
-                  textDecoration: "none",
-                  whiteSpace: "nowrap",
-                }}
-              >
-                ✓ View Flight Recorder Standard →
-              </Link>
-            </div>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 10 }}>
-              {[
-                ["15% Knowledge", "First-Principles Checks", "#5142b5"],
-                ["30% Execution", "Env A Browser Sandbox", "#5142b5"],
-                ["20% Judgement", "Trade-Off Decisions", "#5142b5"],
-                ["15% Oral Defence", "Boardroom Cold Call", "#5142b5"],
-                ["20% V1 → V2 Diff", "Faculty Red-Line Review", "#5142b5"],
-              ].map(([title, sub, col]) => (
-                <div key={title} style={{ background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: 10, padding: "10px 12px" }}>
-                  <strong style={{ color: col, fontSize: 13, fontFamily: "var(--font-mono)", display: "block" }}>{title}</strong>
-                  <span style={{ color: "#475569", fontSize: 12 }}>{sub}</span>
-                </div>
-              ))}
-            </div>
-          </section>
-        ) : null}
-
-        {/* 4B. In-Dashboard Programmes & Career Tracks (AlmaBetter Style) */}
-        {studentTab === 'overview' ? (
-          <InDashboardProgrammesCatalog
-            enrollments={enrolmentRows}
-            activeCourseSlug={course.slug}
-            activeCourseTitle={course.title}
-            progressPct={progressPct}
-            resumeHref={resumeHref}
-            onEnrolled={() => {
-              void reload()
-              retryLists()
-            }}
-          />
-        ) : null}
-
-        {/* 5. Elixir Wallet & Case Study Store */}
-        {studentTab === 'overview' || studentTab === 'wallet' ? (
-          <section className="sh-card" aria-label="Elixir wallet" style={{ marginTop: 22 }}>
+        {studentTab === 'wallet' ? (
+          <section className="sh-card" aria-label="Elixir wallet" style={{ marginTop: 12 }}>
             <ElixirWalletPanel />
           </section>
         ) : null}
       </div>
+
+      {checkoutTarget ? (
+        <EnrollmentModal
+          item={{
+            kind: 'course',
+            slug: checkoutTarget.slug,
+            title: checkoutTarget.title,
+            price: checkoutTarget.price,
+            enrollable: true,
+            enrollmentStatus: 'open',
+          }}
+          onClose={() => setCheckoutTarget(null)}
+        />
+      ) : null}
     </AuthDashboardShell>
   )
 }

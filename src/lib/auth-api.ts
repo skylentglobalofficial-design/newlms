@@ -42,35 +42,12 @@ export async function checkGoogleOAuthAvailable(): Promise<boolean> {
   }
 }
 
-export type ProfessionalProfileDetails = {
-  status: string
-  organization: string
-  roleOrDegree: string
-  graduationYear: string
-  targetTrack: string
-  linkedinUrl: string
-  githubUrl: string
-}
-
-export type PasswordRotationInfo = {
-  passwordUpdatedAt: string
-  daysSinceUpdate: number
-  daysRemaining: number
-  rotationDue: boolean
-  nextRotationDate: string
-}
-
 export type ApiAuthUser = {
   id: string
   email: string
   displayName: string
   name: string
   avatar: string
-  phone?: string | null
-  emailLocked?: boolean
-  phoneLocked?: boolean
-  professional?: ProfessionalProfileDetails
-  passwordRotation?: PasswordRotationInfo
 }
 
 export type AuthResponse = {
@@ -88,10 +65,6 @@ function readCsrfCookie(): string | null {
   return match ? decodeURIComponent(match[1]) : null
 }
 
-/**
- * The csrf cookie is host-only. On skylent.live the page can still hold a
- * cookie from the colocated API, which is not the token api.skylent.live checks.
- */
 function csrfCookieMatchesApi(): boolean {
   if (typeof window === "undefined") return true
   if (API_BASE.startsWith("/")) return true
@@ -161,12 +134,15 @@ async function authRequest<T>(
   return parsed
 }
 
-/**
- * The generic 401 copy ("Sign in to continue.") means an ended session. On the sign-in form a 401
- * means wrong credentials, so the server's own sentence is shown. A 400 shows the first field error.
- */
 async function credentialFailureMessage(path: string, response: Response): Promise<string | null> {
-  if (response.status !== 400 && !(response.status === 401 && (path === "/auth/login" || path === "/auth/otp/verify"))) return null
+  if (
+    response.status !== 400 &&
+    response.status !== 502 &&
+    response.status !== 503 &&
+    !(response.status === 401 && (path === "/auth/login" || path === "/auth/otp/verify"))
+  ) {
+    return null
+  }
   const data = (await readJsonBody(response.clone()).catch(() => null)) as
     | { error?: unknown; details?: Record<string, unknown> }
     | null
@@ -174,10 +150,10 @@ async function credentialFailureMessage(path: string, response: Response): Promi
   if (data.details && typeof data.details === "object") {
     for (const value of Object.values(data.details)) {
       const first = Array.isArray(value) ? value[0] : null
-      if (typeof first === "string" && first.length <= 160) return first
+      if (typeof first === "string" && first.length <= 240) return first
     }
   }
-  return typeof data.error === "string" && data.error.length <= 160 ? data.error : null
+  return typeof data.error === "string" && data.error.length <= 240 ? data.error : null
 }
 
 function rememberIssuedCsrf(payload: unknown) {
@@ -196,8 +172,6 @@ export async function signupRequest(input: {
   name: string
   email: string
   password: string
-  phone?: string
-  /** The terms checkbox. The server refuses to create the account without it. */
   acceptedTerms: boolean
 }): Promise<AuthResponse> {
   return authRequest<AuthResponse>("/auth/signup", {
@@ -206,7 +180,6 @@ export async function signupRequest(input: {
       displayName: input.name,
       email: input.email,
       password: input.password,
-      ...(input.phone ? { phone: input.phone } : {}),
       ...(input.acceptedTerms ? { consent: consentPayload() } : {}),
     },
   })
@@ -224,24 +197,10 @@ export async function logoutRequest(): Promise<void> {
   csrfToken = null
 }
 
-export async function updateProfileRequest(input: {
-  displayName?: string
-  phone?: string
-  professional?: Partial<ProfessionalProfileDetails>
-}): Promise<AuthResponse> {
+export async function updateProfileRequest(input: { displayName: string }): Promise<AuthResponse> {
   return authRequest<AuthResponse>("/auth/me", {
     method: "PATCH",
-    body: input,
-  })
-}
-
-export async function changePasswordRequest(input: {
-  currentPassword: string
-  newPassword: string
-}): Promise<{ ok: boolean }> {
-  return authRequest<{ ok: boolean }>("/auth/change-password", {
-    method: "POST",
-    body: input,
+    body: { displayName: input.displayName },
   })
 }
 
@@ -265,7 +224,6 @@ function authErrorMessage(data: Record<string, unknown>, fallback: string): stri
   return typeof data.error === "string" && data.error.length > 0 && data.error.length <= 160 ? data.error : fallback
 }
 
-/** Same sentence for known and unknown accounts. `emailConfigured` says whether mail can send the link. */
 export async function requestPasswordReset(email: string): Promise<{ message: string; emailConfigured: boolean }> {
   const response = await fetch(`${API_BASE}/auth/password-reset/request`, {
     method: "POST",
@@ -312,23 +270,19 @@ export type MobileOtpSendResponse = {
   ok: boolean
   phone: string
   isExistingUser: boolean
-  directSignIn?: boolean
   existingName: string | null
-  boundEmailHint?: string | null
   expiresInSeconds: number
+  channels?: string[]
   message: string
-  user?: ApiAuthUser
-  roles?: ApiRole[]
-  role?: ApiRole
-  mustChangePassword?: boolean
-  csrfToken?: string
-  sessionToken?: string
 }
 
-export async function sendMobileOtpRequest(phone: string): Promise<MobileOtpSendResponse> {
+export async function sendMobileOtpRequest(phone: string, email?: string): Promise<MobileOtpSendResponse> {
   return authRequest<MobileOtpSendResponse>("/auth/otp/send", {
     method: "POST",
-    body: { phone },
+    body: {
+      phone,
+      ...(email && email.trim() ? { email: email.trim() } : {}),
+    },
   })
 }
 
@@ -336,7 +290,6 @@ export async function verifyMobileOtpRequest(input: {
   phone: string
   otp: string
   name?: string
-  email?: string
   acceptedTerms?: boolean
 }): Promise<AuthResponse> {
   return authRequest<AuthResponse>("/auth/otp/verify", {
@@ -345,27 +298,8 @@ export async function verifyMobileOtpRequest(input: {
       phone: input.phone,
       otp: input.otp,
       ...(input.name ? { name: input.name } : {}),
-      ...(input.email ? { email: input.email } : {}),
       acceptedTerms: Boolean(input.acceptedTerms),
       ...(input.acceptedTerms ? { consent: consentPayload() } : {}),
-    },
-  })
-}
-
-export async function instantGoogleSignInRequest(input: {
-  email: string
-  name?: string
-  phone?: string
-  acceptedTerms?: boolean
-}): Promise<AuthResponse> {
-  return authRequest<AuthResponse>("/auth/google/instant", {
-    method: "POST",
-    body: {
-      email: input.email,
-      ...(input.name ? { name: input.name } : {}),
-      ...(input.phone ? { phone: input.phone } : {}),
-      acceptedTerms: input.acceptedTerms !== false,
-      consent: consentPayload(),
     },
   })
 }

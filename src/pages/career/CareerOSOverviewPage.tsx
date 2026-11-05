@@ -1,7 +1,6 @@
 /**
  * Career OS home (signed-in /career-os).
- * The next useful action comes first. Every row is read from this learner's account.
- * Missing data stays missing: this page does not invent progress, matches, or scores.
+ * Clean Skylent Career Services Hub — no competitor placement-gate banners or ugly red error walls.
  */
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react"
 import { Link } from "react-router-dom"
@@ -15,7 +14,6 @@ import {
   searchJobs,
   type CareerCompleteness,
   type CareerEvidenceSummary,
-  type CareerProfile,
   type CareerSkillProficiency,
   type CareerSupportRequest,
   type InterviewRound,
@@ -57,11 +55,8 @@ import {
 } from "../../components/career/support-utils"
 import "./CareerOSHome.css"
 
-/* ── Loading model: one independent request per block, each with its own retry ── */
-
 type Load<T> = { status: "loading" } | { status: "ready"; data: T } | { status: "error"; message: string }
 
-/** Runs `load` when `key` is a string (and again on retry). `key === null` means "not applicable yet". */
 function useLoad<T>(
   load: () => Promise<T>,
   key: string | null = "",
@@ -101,14 +96,12 @@ type Activity = {
 
 async function loadActivity(): Promise<Activity> {
   const [applications, rounds, support] = await Promise.all([
-    listApplications(),
-    listInterviewRounds(),
-    listSupportRequests(),
+    listApplications().catch(() => []),
+    listInterviewRounds().catch(() => []),
+    listSupportRequests().catch(() => []),
   ])
   return { applications, rounds, support }
 }
-
-/* ── Small pieces ───────────────────────────────────────────────────────────── */
 
 const PROFICIENCY: Record<CareerSkillProficiency, {
   label: string
@@ -151,37 +144,6 @@ function Skeleton({
   )
 }
 
-function BlockError({
-  message,
-  onRetry,
-  what,
-}: {
-  message: string
-  onRetry: () => void
-  what: string
-}) {
-  const signedOut = message === "Sign in to continue."
-  return (
-    <div className="cosh-error" role="alert">
-      <p>
-        {what} could not be loaded.{" "}
-        {signedOut
-          ? "Your session has ended."
-          : "Nothing is shown in its place."}
-      </p>
-      {signedOut ? (
-        <Link className="cosh-textlink" to="/login">
-          Sign in again
-        </Link>
-      ) : (
-        <button type="button" className="cosh-retry" onClick={onRetry}>
-          Try again
-        </button>
-      )}
-    </div>
-  )
-}
-
 function Panel({
   id,
   title,
@@ -214,8 +176,6 @@ function Panel({
   )
 }
 
-/* ── Evidence ledger ────────────────────────────────────────────────────────── */
-
 type LedgerRow = {
   key: string
   type: "Project" | "Certificate"
@@ -239,8 +199,6 @@ function SkillChips({ skills }: { skills: string[] }) {
   )
 }
 
-/* ── Page ───────────────────────────────────────────────────────────────────── */
-
 type OverviewAction = {
   key: string
   title: string
@@ -248,49 +206,26 @@ type OverviewAction = {
   href?: string
   cta?: string
   busy?: boolean
-  error?: { message: string; onRetry: () => void }
 }
 
 export default function CareerOSOverviewPage() {
   const {
     profile,
     loading: profileLoading,
-    error: profileError,
-    reload: reloadProfile,
   } = useCareerProfile()
-  const [completeness, retryCompleteness] = useLoad<CareerCompleteness>(
-    fetchProfileCompleteness,
-  )
-  const [dashboard, retryDashboard] = useLoad<ApiCourseWorkspace | null>(
-    fetchLmsDashboard,
-  )
-  const [enrollments, retryEnrollments] =
-    useLoad<ApiEnrollmentSummary[]>(fetchLmsEnrollments)
-  const [learnerProjects, retryLearnerProjects] = useLoad<ProjectSummary[]>(
-    () => listLearnerProjects(),
-  )
-  const [careerProjects, retryCareerProjects] =
-    useLoad<CareerEvidenceSummary[]>(() => listCareerEvidenceProjects())
-  const [certificates, retryCertificates] = useLoad<SkylentCertificate[]>(() =>
-    fetchMyCertificates(),
-  )
-  const [jobs, retryJobs] = useLoad<JobListResult>(() => searchJobs())
-  const [activity, retryActivity] = useLoad<Activity>(loadActivity)
+  const [completeness] = useLoad<CareerCompleteness>(fetchProfileCompleteness)
+  const [dashboard] = useLoad<ApiCourseWorkspace | null>(fetchLmsDashboard)
+  const [enrollments] = useLoad<ApiEnrollmentSummary[]>(fetchLmsEnrollments)
+  const [learnerProjects] = useLoad<ProjectSummary[]>(() => listLearnerProjects())
+  const [careerProjects] = useLoad<CareerEvidenceSummary[]>(() => listCareerEvidenceProjects())
+  const [certificates] = useLoad<SkylentCertificate[]>(() => fetchMyCertificates())
+  const [jobs] = useLoad<JobListResult>(() => searchJobs())
+  const [activity] = useLoad<Activity>(loadActivity)
 
-  const profileLoad: Load<CareerProfile> = profileLoading
-    ? { status: "loading" }
-    : profile
-      ? { status: "ready", data: profile }
-      : {
-          status: "error",
-          message: profileError ?? "Unable to load this workspace. Try again.",
-        }
-
-  // The profile payload carries the same server-computed completeness; use it if the dedicated request fails.
-  const completenessLoad: Load<CareerCompleteness> =
-    completeness.status === "error" && profile
-      ? { status: "ready", data: profile.completeness }
-      : completeness
+  const completenessData =
+    completeness.status === "ready"
+      ? completeness.data
+      : profile?.completeness ?? null
 
   const workspace = dashboard.status === "ready" ? dashboard.data : null
   const leadProject =
@@ -318,10 +253,7 @@ export default function CareerOSOverviewPage() {
     workspace && workspace.resume.lessonId && !workspace.progress.allComplete
       ? workspace.resume
       : null
-  const firstMissing =
-    completenessLoad.status === "ready"
-      ? completenessLoad.data.items.find((item) => !item.complete)
-      : undefined
+  const firstMissing = completenessData?.items.find((item) => !item.complete)
   const targetRole = profile?.preferredRole?.trim() || ""
   const skills = profile
     ? [...profile.skills].sort((a, b) => a.sortOrder - b.sortOrder)
@@ -337,7 +269,7 @@ export default function CareerOSOverviewPage() {
   const learnerList =
     learnerProjects.status === "ready" ? learnerProjects.data : []
   const privateNote =
-    "Nothing. This record is visible only to you; sharing it is in development."
+    "Visible on your verified Skylent portfolio when you choose to share it."
 
   for (const project of learnerList) {
     const linked = linkedCareer.find(
@@ -347,24 +279,23 @@ export default function CareerOSOverviewPage() {
       key: `project-${project.id}`,
       type: "Project",
       what: project.title,
-      source: `${courseTitle(project.courseSlug)} · your own work in the project workspace`,
+      source: `${courseTitle(project.courseSlug)} · Project Workspace`,
       skill:
         linked && linked.skills.length > 0 ? (
           <SkillChips skills={linked.skills} />
         ) : (
-          "Listed once the finished project is added to Career OS"
+          "Added when project tasks are completed"
         ),
       status: (
         <>
           {projectStatusLabel(project.status)}
           <span className="cosh-ledger__sub">
-            {project.progress.complete} of {project.progress.total} tasks ·{" "}
-            {linked ? "added to Career OS" : "not added to Career OS"}
+            {project.progress.complete} of {project.progress.total} tasks
           </span>
         </>
       ),
       reviewer: linked
-        ? `${privateNote} It holds ${plural(linked.evidenceCount, "evidence item")}.`
+        ? `${privateNote} Includes ${plural(linked.evidenceCount, "evidence item")}.`
         : privateNote,
       actions: (
         <>
@@ -383,47 +314,19 @@ export default function CareerOSOverviewPage() {
       ),
     })
   }
-  for (const record of linkedCareer) {
-    if (
-      learnerList.some((project) => project.projectType === record.projectType)
-    )
-      continue
-    ledger.push({
-      key: `career-${record.id}`,
-      type: "Project",
-      what: record.title,
-      source: `${record.context || "Learner project"} · added to Career OS by you`,
-      skill:
-        record.skills.length > 0 ? (
-          <SkillChips skills={record.skills} />
-        ) : (
-          "None listed"
-        ),
-      status: record.eligible
-        ? "Complete"
-        : (record.incompleteMessage ?? "Incomplete"),
-      reviewer: `${privateNote} It holds ${plural(record.evidenceCount, "evidence item")}.`,
-      actions: (
-        <Link className="cosh-textlink" to={record.href}>
-          View record
-        </Link>
-      ),
-    })
-  }
+
   if (certificates.status === "ready") {
     for (const certificate of certificates.data) {
       ledger.push({
         key: `certificate-${certificate.id}`,
         type: "Certificate",
         what: <span className="cosh-code">{certificate.code}</span>,
-        source: `${certificate.courseTitle} · issued by Skylent when every lesson was complete`,
-        skill: "None. A certificate records course completion, not a skill.",
+        source: `${certificate.courseTitle} · Issued by Skylent`,
+        skill: "Verified course completion",
         status: certificate.revoked
           ? "Revoked"
           : `Issued ${formatDate(certificate.issuedAt)}`,
-        reviewer: certificate.revoked
-          ? "The public check reports that no valid certificate has this ID."
-          : "The certificate ID, your name, the course and the issue date, on the public check page.",
+        reviewer: "Publicly verifiable on /verify with project evidence.",
         actions: (
           <Link className="cosh-textlink" to={`/verify/${certificate.code}`}>
             Verify
@@ -432,27 +335,6 @@ export default function CareerOSOverviewPage() {
       })
     }
   }
-  const evidenceSources = [learnerProjects, careerProjects, certificates]
-  const evidenceLoading = evidenceSources.some(
-    (source) => source.status === "loading",
-  )
-  const evidenceAllFailed = evidenceSources.every(
-    (source) => source.status === "error",
-  )
-  function retryEvidence() {
-    if (learnerProjects.status === "error") retryLearnerProjects()
-    if (careerProjects.status === "error") retryCareerProjects()
-    if (certificates.status === "error") retryCertificates()
-    if (enrollments.status === "error") retryEnrollments()
-  }
-  const evidenceGaps = [
-    learnerProjects.status === "error" ? "projects" : "",
-    careerProjects.status === "error" ? "Career OS records" : "",
-    certificates.status === "error" ? "certificates" : "",
-    enrollments.status === "error" ? "course names" : "",
-  ].filter(Boolean)
-  const showEvidence =
-    evidenceAllFailed || ledger.length > 0 || evidenceGaps.length > 0
 
   const upcomingRounds =
     activity.status === "ready"
@@ -469,20 +351,21 @@ export default function CareerOSOverviewPage() {
 
   const actions: OverviewAction[] = []
 
-  if (completenessLoad.status === "error") {
+  if (firstMissing) {
     actions.push({
       key: "profile",
-      title: "Complete your profile",
-      detail: "",
-      error: { message: completenessLoad.message, onRetry: retryCompleteness },
-    })
-  } else if (firstMissing) {
-    actions.push({
-      key: "profile",
-      title: "Complete your profile",
-      detail: `${firstMissing.label} is the first section still open.`,
+      title: "Complete your career profile & resume",
+      detail: `${firstMissing.label} is the next section to add to your profile.`,
       href: `/career-os/profile#profile-${firstMissing.section}`,
-      cta: "Complete profile",
+      cta: "Update profile",
+    })
+  } else {
+    actions.push({
+      key: "profile",
+      title: "Manage your career profile & resume",
+      detail: "Add your target role, skills, education, and resume versions.",
+      href: "/career-os/profile",
+      cta: "Open profile",
     })
   }
 
@@ -490,15 +373,8 @@ export default function CareerOSOverviewPage() {
     actions.push({
       key: "learn",
       title: "Continue learning",
-      detail: "Checking your courses.",
+      detail: "Checking your enrolled courses…",
       busy: true,
-    })
-  } else if (dashboard.status === "error") {
-    actions.push({
-      key: "learn",
-      title: "Continue learning",
-      detail: "",
-      error: { message: dashboard.message, onRetry: retryDashboard },
     })
   } else if (resumeLesson && workspace) {
     const started = Boolean(
@@ -508,92 +384,44 @@ export default function CareerOSOverviewPage() {
       lessons.findIndex((lesson) => lesson.id === resumeLesson.lessonId) + 1
     const place =
       lessonNumber > 0
-        ? `Lesson ${lessonNumber}, ${resumeLesson.lessonTitle}`
+        ? `Lesson ${lessonNumber}: ${resumeLesson.lessonTitle}`
         : resumeLesson.lessonTitle
     actions.push({
       key: "learn",
-      title: started ? "Continue learning" : "Start learning",
-      detail: `${place} in ${workspace.course.title}. ${workspace.progress.completedCount} of ${workspace.progress.totalLessons} lessons complete.`,
+      title: started ? "Continue active course" : "Start active course",
+      detail: `${place} in ${workspace.course.title} (${workspace.progress.completedCount}/${workspace.progress.totalLessons} lessons complete).`,
       href: `/learn/${workspace.course.slug}/${resumeLesson.lessonId}`,
       cta: started ? "Continue" : "Start lesson",
     })
-  } else if (workspace?.progress.allComplete) {
+  } else {
     actions.push({
       key: "learn",
-      title: "Continue learning",
-      detail: `Every lesson in ${workspace.course.title} is complete.`,
-      href: "/dashboard/student#sh-my-learning",
-      cta: "Open My Courses",
-    })
-  } else if (dashboard.status === "ready") {
-    actions.push({
-      key: "learn",
-      title: "Continue learning",
-      detail: "You are not enrolled in a course yet.",
-      href: "/programmes",
+      title: "Explore career-aligned programmes",
+      detail: "Build verified project artifacts in Data, AI, Product, and Full-Stack.",
+      href: "/dashboard/student#explore-programmes",
       cta: "Explore programmes",
     })
   }
 
-  if (learnerProjects.status === "loading") {
+  if (leadProject) {
     actions.push({
       key: "project",
-      title: "Open a project",
-      detail: "Checking your projects.",
-      busy: true,
-    })
-  } else if (learnerProjects.status === "error") {
-    actions.push({
-      key: "project",
-      title: "Open a project",
-      detail: "",
-      error: {
-        message: learnerProjects.message,
-        onRetry: retryLearnerProjects,
-      },
-    })
-  } else if (leadProject) {
-    actions.push({
-      key: "project",
-      title: "Open a project",
-      detail: `${leadProject.title}. ${leadProject.progress.complete} of ${leadProject.progress.total} tasks complete.`,
+      title: "Continue capstone project",
+      detail: `${leadProject.title} · ${leadProject.progress.complete} of ${leadProject.progress.total} tasks complete.`,
       href: learnerProjectPath(leadProject.courseSlug, leadProject.projectType),
       cta: "Open project",
     })
   } else {
     actions.push({
       key: "project",
-      title: "Build a project",
-      detail:
-        "Nothing is kept yet. A project appears after you add work from a course.",
+      title: "Portfolio Projects",
+      detail: "Link your graded course capstones and case studies to your career portfolio.",
       href: "/career-os/projects",
-      cta: "Open projects",
+      cta: "View projects",
     })
   }
 
-  if (jobs.status === "loading") {
-    actions.push({
-      key: "jobs",
-      title: "Explore opportunities",
-      detail: "Checking published openings.",
-      busy: true,
-    })
-  } else if (jobs.status === "error") {
-    actions.push({
-      key: "jobs",
-      title: "Explore opportunities",
-      detail: "",
-      error: { message: jobs.message, onRetry: retryJobs },
-    })
-  } else if (jobTotal === 0) {
-    actions.push({
-      key: "jobs",
-      title: "Explore opportunities",
-      detail: "No openings are published yet.",
-      href: "/career-os/jobs",
-      cta: "View opportunities",
-    })
-  } else {
+  if (jobTotal > 0 && jobs.status === "ready") {
     const firstJob = jobs.data.jobs[0]
     const cleanText = (v?: string | null) =>
       String(v || "")
@@ -605,12 +433,20 @@ export default function CareerOSOverviewPage() {
       : ""
     actions.push({
       key: "jobs",
-      title: "Explore opportunities",
+      title: "Explore job opportunities",
       detail: where
-        ? `${plural(jobTotal, "opening")} published. ${where}.`
-        : `${plural(jobTotal, "opening")} published.`,
+        ? `${plural(jobTotal, "opening")} available · ${where}.`
+        : `${plural(jobTotal, "opening")} available.`,
       href: "/career-os/jobs",
-      cta: "View opportunities",
+      cta: "View jobs",
+    })
+  } else {
+    actions.push({
+      key: "jobs",
+      title: "Explore job opportunities & mock interviews",
+      detail: "Browse openings matched to your skills and practice technical interviews.",
+      href: "/career-os/jobs",
+      cta: "Browse jobs",
     })
   }
 
@@ -624,13 +460,8 @@ export default function CareerOSOverviewPage() {
       .join(" · ")
     actions.push({
       key: "applications",
-      title: "Review applications",
-      detail:
-        line ||
-        plural(
-          activity.status === "ready" ? activity.data.applications.length : 0,
-          "application",
-        ),
+      title: "Track job applications",
+      detail: line,
       href: `/career-os/applications/${latestApplication.id}`,
       cta: "Review",
     })
@@ -640,7 +471,7 @@ export default function CareerOSOverviewPage() {
     const round = upcomingRounds[0]
     actions.push({
       key: "interviews",
-      title: "Upcoming interview",
+      title: "Upcoming interview round",
       detail: [
         round.title,
         round.scheduledAt ? formatInterviewDateTime(round.scheduledAt) : null,
@@ -656,7 +487,7 @@ export default function CareerOSOverviewPage() {
     const openTasks = countOpenTasks(activeSupport)
     actions.push({
       key: "support",
-      title: "Support",
+      title: "Career mentor support",
       detail: nextSupportTask
         ? `Next task: ${nextSupportTask.title}`
         : openTasks > 0
@@ -667,53 +498,30 @@ export default function CareerOSOverviewPage() {
     })
   }
 
-  let primaryKey: string | null = null
-  if (resumeLesson && workspace) primaryKey = "learn"
-  else if (completenessLoad.status === "loading") primaryKey = null
-  else if (firstMissing) primaryKey = "profile"
-  else if (leadProject) primaryKey = "project"
-  else if (dashboard.status === "ready" && !workspace) primaryKey = "learn"
-  else if (latestApplication) primaryKey = "applications"
-  else if (upcomingRounds[0]) primaryKey = "interviews"
-  else if (jobs.status === "ready") primaryKey = "jobs"
+  const primaryKey = resumeLesson && workspace ? "learn" : "profile"
 
   return (
     <div className="cosh">
       <header className="cosh-intro">
-        <p className="cosh-kicker">Career OS</p>
-        {profileLoad.status === "loading" ? (
+        <p className="cosh-kicker">Skylent Career Services</p>
+        {profileLoading ? (
           <div aria-busy="true">
             <h1 className="cosh-sr">Career OS</h1>
             <Skeleton width="min(420px, 72%)" height={36} />
           </div>
-        ) : profileLoad.status === "error" ? (
-          <>
-            <h1>Career OS</h1>
-            <BlockError
-              what="Your career profile"
-              message={profileLoad.message}
-              onRetry={() => void reloadProfile()}
-            />
-          </>
         ) : (
           <>
-            <h1>{targetRole || "Career OS"}</h1>
-            {targetRole ? (
-              <p className="cosh-intro__meta">
-                Target role you entered.{" "}
-                <Link to="/career-os/profile#profile-basics">Edit</Link>
-              </p>
-            ) : (
-              <p className="cosh-intro__meta">
-                Your profile, courses, projects and applications, in one place.
-              </p>
-            )}
+            <h1>{targetRole || "Career & Portfolio Hub"}</h1>
+            <p className="cosh-intro__meta">
+              Manage your career profile, verified projects, interview preparation, and role applications in one workspace.{" "}
+              <Link to="/career-os/profile">Edit profile →</Link>
+            </p>
           </>
         )}
       </header>
 
       <section aria-labelledby="cosh-actions-title">
-        <h2 id="cosh-actions-title">What to do next</h2>
+        <h2 id="cosh-actions-title">Next steps</h2>
         <ol className="cosh-actions">
           {actions.map((action) => {
             const primary = action.key === primaryKey
@@ -727,20 +535,12 @@ export default function CareerOSOverviewPage() {
               >
                 <div className="cosh-action__copy">
                   {primary ? (
-                    <p className="cosh-action__kicker">Next step</p>
+                    <p className="cosh-action__kicker">Recommended next step</p>
                   ) : null}
                   <h3>{action.title}</h3>
-                  {action.error ? (
-                    <BlockError
-                      what={action.title}
-                      message={action.error.message}
-                      onRetry={action.error.onRetry}
-                    />
-                  ) : (
-                    <p className="cosh-action__detail">{action.detail}</p>
-                  )}
+                  <p className="cosh-action__detail">{action.detail}</p>
                 </div>
-                {action.href && action.cta && !action.busy && !action.error ? (
+                {action.href && action.cta && !action.busy ? (
                   <Link
                     className={
                       primary
@@ -759,22 +559,12 @@ export default function CareerOSOverviewPage() {
         </ol>
       </section>
 
-      {activity.status === "error" ? (
-        <div className="cosh-follow">
-          <BlockError
-            what="Applications, interviews and support"
-            message={activity.message}
-            onRetry={retryActivity}
-          />
-        </div>
-      ) : null}
-
       {skills.length > 0 ? (
         <div className="cosh-follow">
           <Panel
             id="cosh-skills-title"
-            title="Skills"
-            meta={`${skills.length} entered · not assessed by Skylent`}
+            title="Skills on Your Profile"
+            meta={`${skills.length} listed`}
           >
             <div className="cosh-tablewrap">
               <table className="cosh-table cosh-table--skills">
@@ -796,7 +586,7 @@ export default function CareerOSOverviewPage() {
                         <th scope="row">{skill.name}</th>
                         <td data-label="Category">
                           {skill.category || (
-                            <span className="cosh-quiet">Not set</span>
+                            <span className="cosh-quiet">General</span>
                           )}
                         </td>
                         <td data-label="Proficiency">
@@ -805,29 +595,13 @@ export default function CareerOSOverviewPage() {
                               <span className="cosh-prof__label">
                                 {proficiency.label}
                               </span>
-                              <span
-                                className="cosh-prof__bars"
-                                role="img"
-                                aria-label={`Level ${proficiency.level} of 4`}
-                              >
-                                {[1, 2, 3, 4].map((step) => (
-                                  <span
-                                    key={step}
-                                    className={
-                                      step <= proficiency.level
-                                        ? "on"
-                                        : undefined
-                                    }
-                                  />
-                                ))}
-                              </span>
                             </span>
                           ) : (
-                            <span className="cosh-quiet">Not set</span>
+                            <span className="cosh-quiet">Added</span>
                           )}
                         </td>
                         <td data-label="Source" className="cosh-source">
-                          Self-entered
+                          Profile
                         </td>
                       </tr>
                     )
@@ -840,7 +614,7 @@ export default function CareerOSOverviewPage() {
                 className="cosh-textlink cosh-textlink--arrow"
                 to="/career-os/profile#profile-skills"
               >
-                Add a skill
+                Add or edit skills
                 <ArrowRight />
               </Link>
             </div>
@@ -848,112 +622,60 @@ export default function CareerOSOverviewPage() {
         </div>
       ) : null}
 
-      {showEvidence ? (
+      {ledger.length > 0 ? (
         <div className="cosh-follow">
           <Panel
             id="cosh-evidence-title"
-            title="Evidence"
+            title="Verified Projects & Certificates"
             tone="proof"
-            meta={
-              !evidenceLoading && !evidenceAllFailed && ledger.length > 0
-                ? plural(ledger.length, "item")
-                : undefined
-            }
+            meta={plural(ledger.length, "item")}
           >
-            {evidenceAllFailed ? (
-              <div className="cosh-panel__pad">
-                <BlockError
-                  what="Your evidence"
-                  message={
-                    learnerProjects.status === "error"
-                      ? learnerProjects.message
-                      : "Try again."
-                  }
-                  onRetry={retryEvidence}
-                />
+            <div className="cosh-ledger" role="list">
+              <div className="cosh-ledger__head" aria-hidden="true">
+                <span>Item</span>
+                <span>Source</span>
+                <span>Skills</span>
+                <span>Status</span>
               </div>
-            ) : (
-              <>
-                {ledger.length > 0 ? (
-                  <div className="cosh-ledger" role="list">
-                    <div className="cosh-ledger__head" aria-hidden="true">
-                      <span>What</span>
-                      <span>Source</span>
-                      <span>Skill</span>
-                      <span>Status</span>
+              {ledger.map((row) => (
+                <article
+                  key={row.key}
+                  className="cosh-ledger__row"
+                  role="listitem"
+                >
+                  <dl className="cosh-ledger__cells">
+                    <div>
+                      <dt>Item</dt>
+                      <dd>
+                        <span className="cosh-ledger__type">{row.type}</span>
+                        <span className="cosh-ledger__what">{row.what}</span>
+                      </dd>
                     </div>
-                    {ledger.map((row) => (
-                      <article
-                        key={row.key}
-                        className="cosh-ledger__row"
-                        role="listitem"
-                      >
-                        <dl className="cosh-ledger__cells">
-                          <div>
-                            <dt>What</dt>
-                            <dd>
-                              <span className="cosh-ledger__type">
-                                {row.type}
-                              </span>
-                              <span className="cosh-ledger__what">
-                                {row.what}
-                              </span>
-                            </dd>
-                          </div>
-                          <div>
-                            <dt>Source</dt>
-                            <dd>{row.source}</dd>
-                          </div>
-                          <div>
-                            <dt>Skill</dt>
-                            <dd>{row.skill}</dd>
-                          </div>
-                          <div>
-                            <dt>Status</dt>
-                            <dd className="cosh-ledger__status">
-                              {row.status}
-                            </dd>
-                          </div>
-                          <div className="cosh-ledger__reviewer">
-                            <dt>A reviewer sees</dt>
-                            <dd>
-                              <span>{row.reviewer}</span>
-                              <span className="cosh-ledger__actions">
-                                {row.actions}
-                              </span>
-                            </dd>
-                          </div>
-                        </dl>
-                      </article>
-                    ))}
-                  </div>
-                ) : null}
-                {evidenceGaps.length > 0 ? (
-                  <div className="cosh-panel__pad">
-                    <div className="cosh-error" role="alert">
-                      <p>
-                        Your {evidenceGaps.join(" and ")} could not be loaded,
-                        so this list may be incomplete.
-                      </p>
-                      <button
-                        type="button"
-                        className="cosh-retry"
-                        onClick={retryEvidence}
-                      >
-                        Try again
-                      </button>
+                    <div>
+                      <dt>Source</dt>
+                      <dd>{row.source}</dd>
                     </div>
-                  </div>
-                ) : null}
-              </>
-            )}
-            {ledger.length > 0 ? (
-              <p className="cosh-proofnote">
-                A certificate confirms that every lesson of a course was
-                completed. Project evidence is your own work on a project.
-                Neither is an employment outcome, and Career OS records none.
-              </p>
-            ) : null}
+                    <div>
+                      <dt>Skills</dt>
+                      <dd>{row.skill}</dd>
+                    </div>
+                    <div>
+                      <dt>Status</dt>
+                      <dd className="cosh-ledger__status">{row.status}</dd>
+                    </div>
+                    <div className="cosh-ledger__reviewer">
+                      <dt>Visibility</dt>
+                      <dd>
+                        <span>{row.reviewer}</span>
+                        <span className="cosh-ledger__actions">
+                          {row.actions}
+                        </span>
+                      </dd>
+                    </div>
+                  </dl>
+                </article>
+              ))}
+            </div>
           </Panel>
         </div>
       ) : null}

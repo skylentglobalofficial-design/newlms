@@ -14,7 +14,6 @@ import {
 } from "../lib/auth.js"
 import { requireRoles } from "../lib/roles.js"
 import { recordAdminAudit } from "../lib/admin-audit.js"
-import { adminOverrideUserIdentity, getOrCreateIdentityEntry, normalizeIndianPhone } from "../lib/identity-vault.js"
 import {
   capabilityAvailable,
   isDatabaseUnavailableError,
@@ -88,12 +87,8 @@ function schemaUnavailable(error: unknown) {
 
 function serializeUser(user: NonNullable<AdminUser>) {
   const roles = user.roles.map((entry) => entry.role)
-  const identityEntry = getOrCreateIdentityEntry({ userId: user.id, email: user.email })
   return {
     ...toSafeUser(user),
-    phone: identityEntry.phone,
-    emailLocked: identityEntry.emailLocked,
-    phoneLocked: identityEntry.phoneLocked,
     createdAt: user.createdAt.toISOString(),
     roles: roles.map(toApiRole),
     role: primaryRole(roles),
@@ -541,55 +536,3 @@ adminRouter.post("/colleges", ...guards, requireCsrf, async (req: AuthenticatedR
     res.status(500).json({ error: "Failed to create college" })
   }
 })
-
-const adminIdentityOverrideSchema = z.object({
-  email: z.string().trim().email("Enter a valid email address").optional(),
-  phone: z.string().trim().max(20).optional(),
-})
-
-adminRouter.patch("/users/:id/identity", ...guards, requireCsrf, async (req: AuthenticatedRequest, res) => {
-  const idParsed = userIdSchema.safeParse(req.params.id)
-  if (!idParsed.success) return res.status(400).json({ error: "Expected a user id" })
-  const parsed = adminIdentityOverrideSchema.safeParse(req.body)
-  if (!parsed.success) return res.status(400).json({ error: "Enter a valid email or 10-digit mobile number" })
-
-  try {
-    const existing = await loadUser(idParsed.data)
-    if (!existing) return res.status(404).json({ error: "User not found" })
-
-    const nextEmail = parsed.data.email ? parsed.data.email.trim().toLowerCase() : undefined
-    if (nextEmail && nextEmail !== existing.email) {
-      const conflict = await prisma.user.findUnique({ where: { email: nextEmail }, select: { id: true } })
-      if (conflict && conflict.id !== existing.id) {
-        return res.status(409).json({ error: "Another user already has this email address" })
-      }
-      await prisma.user.update({
-        where: { id: existing.id },
-        data: { email: nextEmail },
-      })
-    }
-
-    adminOverrideUserIdentity({
-      userId: existing.id,
-      newEmail: nextEmail ?? existing.email,
-      newPhone: parsed.data.phone !== undefined ? (normalizeIndianPhone(parsed.data.phone) ?? "") : undefined,
-    })
-
-    const updated = await loadUser(existing.id)
-    await recordAdminAudit({
-      actorId: req.auth!.user.id,
-      action: "admin.user.identity_override",
-      targetType: "User",
-      targetId: existing.id,
-      summary: "Admin updated locked email/mobile identity",
-    })
-    return res.json({ data: serializeUser(updated!) })
-  } catch (error) {
-    if (schemaUnavailable(error)) {
-      return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.accounts))
-    }
-    console.error("Admin identity override failed:", error instanceof Error ? error.name : "unknown")
-    return res.status(500).json({ error: "Unable to update user identity" })
-  }
-})
-

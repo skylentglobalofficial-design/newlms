@@ -13,21 +13,35 @@ type Accent = { primary: string; subtle: string; border: string; text: string }
 
 function CheckGlyph({ label }: { label?: string }) {
   return (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2.4"
-      strokeLinecap="round"
-      strokeLinejoin="round"
+    <span
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: 20,
+        height: 20,
+        borderRadius: 999,
+        background: '#10b981',
+        color: '#ffffff',
+        flexShrink: 0,
+      }}
       role={label ? 'img' : undefined}
       aria-label={label}
       aria-hidden={label ? undefined : true}
     >
-      <path d="M20 6L9 17l-5-5" />
-    </svg>
+      <svg
+        width="12"
+        height="12"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="3"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M20 6L9 17l-5-5" />
+      </svg>
+    </span>
   )
 }
 
@@ -40,9 +54,31 @@ function LockGlyph() {
   )
 }
 
+function ChevronGlyph({ open }: { open: boolean }) {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      style={{
+        transform: open ? 'rotate(180deg)' : 'rotate(0deg)',
+        transition: 'transform 0.18s ease',
+        flexShrink: 0,
+      }}
+    >
+      <polyline points="6 9 12 15 18 9" />
+    </svg>
+  )
+}
+
 /**
- * Course outline: modules with real completion, lessons with real state.
- * The module that holds the open lesson is expanded; any other module can be opened from its row.
+ * Course outline: collapsible Module 01, Module 02... accordions with green completion checkmarks and lesson durations.
  */
 export default function CurriculumRail({
   course,
@@ -54,7 +90,6 @@ export default function CurriculumRail({
   course: LmsCourseView
   lessonStates: Record<string, LessonState>
   selectedLessonId: string
-  /** Kept for call-site compatibility; the outline uses the system tokens. */
   accent?: Accent
   onSelectLesson: (id: string) => void
   onClose?: () => void
@@ -82,7 +117,7 @@ export default function CurriculumRail({
             Close outline
           </button>
         ) : null}
-        <p className="os-eyebrow">Outline</p>
+        <p className="os-eyebrow">Course Modules</p>
       </div>
       <nav className="os-rail-scroll" aria-label="Course outline">
         {course.modules.map((mod: CourseModule, mi: number) => {
@@ -92,6 +127,7 @@ export default function CurriculumRail({
           const firstLesson = mod.lessons[0]
           const ahead = !mp.complete && !isCurrent && Boolean(firstLesson) && !isLessonUnlocked(firstLesson.id, allLessons, lessonStates)
           const panelId = `os-module-${mod.id}`
+          const modNum = String(mi + 1).padStart(2, '0')
           return (
             <div
               className={`os-module${isCurrent ? ' is-current' : ''}${ahead ? ' is-ahead' : ''}`}
@@ -104,15 +140,16 @@ export default function CurriculumRail({
                 aria-controls={panelId}
                 onClick={() => setOpenModules((current) => ({ ...current, [mod.id]: !current[mod.id] }))}
               >
-                <span className="os-module-name">
-                  <span className="os-module-num">M{mi + 1}</span>
-                  <span className="os-module-label">{mod.title}</span>
+                <span className="os-module-name" style={{ display: 'grid', gap: 2, textAlign: 'left' }}>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: '#5142b5', fontFamily: 'var(--font-mono)', textTransform: 'uppercase' }}>
+                    Module {modNum} · {mp.completed}/{mp.total} Done
+                  </span>
+                  <span className="os-module-label" style={{ fontWeight: 700 }}>{mod.title}</span>
                 </span>
-                {mp.complete ? (
-                  <span className="os-state-glyph"><CheckGlyph label="Module complete" /></span>
-                ) : (
-                  <span className="os-module-meta">{mp.completed} of {mp.total}</span>
-                )}
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                  {mp.complete ? <CheckGlyph label="Module complete" /> : null}
+                  <ChevronGlyph open={open} />
+                </span>
               </button>
               <div className="os-module-track" aria-hidden="true">
                 <span style={{ width: `${mp.pct}%` }} />
@@ -141,12 +178,18 @@ export default function CurriculumRail({
                           aria-current={isActive ? 'page' : undefined}
                           aria-label={`Lesson ${number}: ${lesson.title}, ${lessonTypeLabel(lesson.type, lesson.title)}, ${status}${lesson.duration ? `, ${lesson.duration}` : ''}`}
                         >
-                          <span className="os-lesson-num" aria-hidden="true">L{number}</span>
-                          <span className="os-lesson-title">{lesson.title}</span>
                           {state?.complete ? (
-                            <span className="os-state-glyph"><CheckGlyph /></span>
+                            <CheckGlyph />
                           ) : !unlocked ? (
                             <span className="os-state-glyph"><LockGlyph /></span>
+                          ) : (
+                            <span className="os-lesson-num" aria-hidden="true">L{number}</span>
+                          )}
+                          <span className="os-lesson-title" style={{ flex: 1, textAlign: 'left' }}>{lesson.title}</span>
+                          {lesson.duration ? (
+                            <span style={{ fontSize: 11, color: '#64748b', fontFamily: 'var(--font-mono)', marginLeft: 6 }}>
+                              {lesson.duration}
+                            </span>
                           ) : null}
                         </button>
                       </li>

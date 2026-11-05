@@ -3,66 +3,78 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#5142b5" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <title>Skylent — Learn. Practise. Build. Prove it.</title>
+    <meta
+      name="description"
+      content="Skylent is an online learning platform for Data Analytics, Python, Product Management, Data Science, Generative AI, and Full-Stack Web — with browser labs, graded projects, verifiable certificates, and Career OS."
+    />
+    <meta name="theme-color" content="#0B0F1A" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Skylent" />
     <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="application-name" content="Skylent" />
-    <meta name="msapplication-TileColor" content="#5142b5" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/skylent-icon-192.svg" />
+    <link rel="canonical" href="https://skylent.live/" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Skylent" />
+    <meta property="og:title" content="Skylent — Learn. Practise. Build. Prove it." />
+    <meta
+      property="og:description"
+      content="Self-paced courses, browser SQL and product labs, graded projects, verifiable certificates, and Career OS."
+    />
+    <meta property="og:url" content="https://skylent.live/" />
+    <meta property="og:image" content="https://skylent.live/og-card.svg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Skylent — Learn. Practise. Build. Prove it." />
+    <meta property="og:locale" content="en_IN" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Skylent — Learn. Practise. Build. Prove it." />
+    <meta
+      name="twitter:description"
+      content="Self-paced courses, browser labs, graded projects, verifiable certificates, and Career OS."
+    />
+    <meta name="twitter:image" content="https://skylent.live/og-card.svg" />
+
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="apple-touch-icon" href="/icon-192.png" />
-    <link rel="manifest" href="/manifest.webmanifest" />
-    <title>Skylent — Learn. Practise. Build.</title>
-    <meta name="description" content="Learn useful skills, practise through real work, and keep evidence of what you learn." />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+    />
     <script>
       (function () {
         try {
-          if ("caches" in window) {
-            caches.keys().then(function (keys) {
-              keys.forEach(function (k) {
-                if (k.indexOf("v58") === -1) caches.delete(k);
-              });
+          if ("serviceWorker" in navigator) {
+            navigator.serviceWorker.getRegistrations().then(function (regs) {
+              for (var i = 0; i < regs.length; i++) {
+                regs[i].unregister();
+              }
             });
           }
-          window.addEventListener("vite:preloadError", function () {
-            if (!sessionStorage.getItem("skylent:chunk-reload")) {
-              sessionStorage.setItem("skylent:chunk-reload", "1");
-              window.location.reload();
-            }
-          });
+          if ("caches" in window) {
+            caches.keys().then(function (keys) {
+              for (var j = 0; j < keys.length; j++) {
+                caches.delete(keys[j]);
+              }
+            });
+          }
         } catch (e) {}
       })();
     </script>
   </head>
   <body>
-    <!-- figma:body-start -->
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
-    <script>
-      // Register Service Worker on web so Chrome/Edge shows the native YouTube-style Install / Open in app button in the URL address bar
-      var isNativeCapacitor = Boolean(
-        window.Capacitor ||
-        window.location.hostname === "app.skylent.local" ||
-        (navigator.userAgent && navigator.userAgent.indexOf("SkylentNativeApp") !== -1)
-      );
-      if (
-        !isNativeCapacitor &&
-        "serviceWorker" in navigator &&
-        (window.location.protocol === "https:" || window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
-      ) {
-        window.addEventListener("load", function () {
-          navigator.serviceWorker
-            .register("/sw.js?v=58")
-            .then(function (reg) {
-              reg.update();
-            })
-            .catch(function () {});
-        });
-      }
-    </script>
-    <!-- figma:body-end -->
   </body>
 </html>
