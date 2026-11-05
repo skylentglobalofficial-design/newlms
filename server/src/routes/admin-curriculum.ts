@@ -649,7 +649,7 @@ adminCurriculumRouter.get("/courses/:courseId/faculty", ...readGuards, async (re
         where: {
           roles: {
             some: {
-              role: { name: { in: [RoleName.FACULTY, RoleName.SUPERADMIN, RoleName.PLATFORM_ADMIN] } },
+              role: { name: { in: [RoleName.FACULTY, RoleName.ADMIN, RoleName.PLATFORM_ADMIN] } },
             },
           },
         },

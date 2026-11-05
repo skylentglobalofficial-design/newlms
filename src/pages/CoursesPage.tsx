@@ -40,6 +40,7 @@ export default function CoursesPage() {
   return (
     <PageShell aurora={false}>
       <div className="cat-page">
+        <LearnPillarSubnav current="courses" />
         <section className="cat-hero">
           <div className="cat-rail">
             <p className="cat-label">Self-Paced Flagship Courses · In-Browser Labs · ₹0 Free Pilot</p>
