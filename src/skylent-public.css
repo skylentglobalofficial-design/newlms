@@ -838,8 +838,19 @@ body:has(.skylent-public-canvas) {
 /* On phones the bar is the wordmark and the menu button; sign in and the path
    action are the first things in the sheet, so the bar never wraps. */
 @media (max-width: 720px) {
-  .skylent-public-canvas .skn__signin,
   .skylent-public-canvas .skn__cta {
+    display: none;
+  }
+  .skylent-public-canvas .skn__signin {
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 1px solid hsl(var(--site-border-strong));
+    background: hsl(var(--site-soft));
+    font-size: 13px;
+    font-weight: 600;
+    min-height: 36px;
+  }
+  .skylent-public-canvas .skn__signin::after {
     display: none;
   }
 }
@@ -1122,26 +1133,53 @@ body:has(.skylent-public-canvas) {
   }
 }
 
-/* ── V37 60-FPS Fast Funnel & Below-the-Fold Paint Optimization ── */
-.skylent-public-canvas .hm-page > section:nth-of-type(n+3),
-.skylent-public-canvas .hx-page--home > section:nth-of-type(n+3),
-.skylent-public-canvas .cat-section:nth-of-type(n+3),
-.skylent-public-canvas .pe-section:nth-of-type(n+3) {
-  content-visibility: auto;
-  contain-intrinsic-size: auto 560px;
-}
-
+/* ── V52 Mobile & Native App Optimization (Safe-Area Top, Back Button, Vertical Scroll Fix) ── */
 .skylent-public-canvas .skn {
-  will-change: transform;
-  backface-visibility: hidden;
+  padding-top: env(safe-area-inset-top, 0px);
 }
 
-/* ── V51 Clean Mobile & App Navigation (Zero Navbar Overlap, Zero Emoji Clutter) ── */
-html[data-native-app="true"],
-html[data-native-app="true"] body {
-  overflow-x: hidden;
+.skylent-public-canvas .sk-shell-locator {
+  padding-top: calc(var(--nav-h) + env(safe-area-inset-top, 0px));
+}
+
+.skylent-public-canvas .skn-sheet {
+  inset: calc(var(--nav-h) + env(safe-area-inset-top, 0px)) 0 0 0;
+}
+
+.skylent-public-canvas .skn__back-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 1px solid hsl(var(--site-border-strong));
+  border-radius: 8px;
+  background: hsl(var(--site-white));
+  color: hsl(var(--site-ink));
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.skylent-public-canvas .skn__back-btn:hover {
+  background: hsl(var(--site-soft));
+  color: hsl(var(--site-deep));
+}
+
+html[data-native-app="true"] {
+  overflow-x: clip;
   overflow-y: auto !important;
   height: auto !important;
+}
+
+html[data-native-app="true"] body {
+  overflow-x: clip;
+  overflow-y: visible !important;
+  height: auto !important;
+  min-height: 100vh;
   -webkit-overflow-scrolling: touch;
   -webkit-tap-highlight-color: transparent;
 }
@@ -1151,7 +1189,6 @@ html[data-native-app="true"] .skylent-install-app-btn {
   display: none !important;
 }
 
-/* On mobile screens (< 900px), hide the Install App button in the top header and duplicate dashboard bar actions so the navbar never wraps or collides */
 @media (max-width: 900px) {
   .skylent-public-canvas .skn__actions .skylent-install-app-btn {
     display: none !important;
@@ -1171,9 +1208,9 @@ html[data-native-app="true"] .skylent-install-app-btn {
   z-index: 190;
   background: #ffffff;
   border-top: 1px solid #e2e8f0;
-  box-shadow: 0 -2px 12px rgba(15, 23, 42, 0.05);
+  box-shadow: 0 -2px 12px rgba(15, 23, 42, 0.06);
   grid-template-columns: repeat(5, 1fr);
-  padding: 4px 6px calc(4px + env(safe-area-inset-bottom));
+  padding: 4px 6px calc(4px + env(safe-area-inset-bottom, 0px));
   user-select: none;
   -webkit-user-select: none;
 }
@@ -1187,7 +1224,7 @@ html[data-native-app="true"] .skylent-mobile-tabbar {
     display: grid;
   }
   .skylent-public-canvas .skylent-public-main {
-    padding-bottom: calc(74px + env(safe-area-inset-bottom)) !important;
+    padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px)) !important;
   }
 }
 
@@ -1213,7 +1250,7 @@ html[data-native-app="true"] .skylent-mobile-tabbar {
   font-weight: 600;
 }
 
-/* Responsive Course & Dossier Cards on Mobile */
+/* Responsive Course & Dossier Cards on Mobile — Clean Vertical Stack (Zero Horizontal Scroll Trap) */
 .skylent-public-canvas .hx-live-course-card__desc,
 .skylent-public-canvas .hx-royal-card__quote {
   display: -webkit-box;
@@ -1226,19 +1263,16 @@ html[data-native-app="true"] .skylent-mobile-tabbar {
   .skylent-public-canvas .hx-live-courses-grid,
   .skylent-public-canvas .hx-royal-grid {
     display: grid !important;
-    grid-auto-flow: column !important;
-    grid-auto-columns: 84vw !important;
-    grid-template-columns: none !important;
-    gap: 12px !important;
-    overflow-x: auto !important;
-    scroll-snap-type: x mandatory !important;
-    padding-bottom: 10px !important;
-    -webkit-overflow-scrolling: touch;
+    grid-auto-flow: row !important;
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+    overflow: visible !important;
+    padding-bottom: 4px !important;
   }
 
-  .skylent-public-canvas .hx-live-courses-grid > li,
-  .skylent-public-canvas .hx-royal-grid > * {
-    scroll-snap-align: start;
+  .skylent-public-canvas .hx-hub-tabs {
+    grid-template-columns: repeat(2, 1fr) !important;
+    overflow: visible !important;
   }
 
   .skylent-public-canvas .hxw-hero__lead {

@@ -81,11 +81,19 @@ function shouldUseSecureCookies(req?: Request): boolean {
   return false
 }
 
+function cookieSameSiteFor(req?: Request, secure = false): "lax" | "none" {
+  if (secure && req?.headers["x-skylent-client"] === "native-app") {
+    return "none"
+  }
+  return "lax"
+}
+
 export function sessionCookieOptions(req?: Request, maxAgeSeconds = SESSION_MAX_AGE_SECONDS) {
   const secure = shouldUseSecureCookies(req)
+  const sameSite = cookieSameSiteFor(req, secure)
   return {
     httpOnly: true,
-    sameSite: "lax" as const,
+    sameSite,
     secure,
     path: "/",
     maxAge: maxAgeSeconds * 1000,
@@ -94,9 +102,10 @@ export function sessionCookieOptions(req?: Request, maxAgeSeconds = SESSION_MAX_
 
 export function csrfCookieOptions(req?: Request, maxAgeSeconds = SESSION_MAX_AGE_SECONDS) {
   const secure = shouldUseSecureCookies(req)
+  const sameSite = cookieSameSiteFor(req, secure)
   return {
     httpOnly: false,
-    sameSite: "lax" as const,
+    sameSite,
     secure,
     path: "/",
     maxAge: maxAgeSeconds * 1000,
@@ -105,7 +114,8 @@ export function csrfCookieOptions(req?: Request, maxAgeSeconds = SESSION_MAX_AGE
 
 export function clearSessionCookies(res: Response, req?: Request) {
   const secure = shouldUseSecureCookies(req)
-  const options = { path: "/", secure, sameSite: "lax" as const }
+  const sameSite = cookieSameSiteFor(req, secure)
+  const options = { path: "/", secure, sameSite }
   res.clearCookie(SESSION_COOKIE, options)
   res.clearCookie(CSRF_COOKIE, options)
 }
@@ -270,10 +280,11 @@ export function requireCsrf(req: Request, res: Response, next: NextFunction) {
     return
   }
 
-  // Native Android/iOS APK requests run from a bundled local origin where third-party
-  // cookies are not echoed by WebView; custom headers + cryptographic token prevent CSRF.
-  const isNativeClient = req.get("x-skylent-client") === "native-app"
-  if (isNativeClient && headerToken && headerToken.length >= 32) {
+  // Native Android/iOS APK and Web fetch bridge requests send X-Skylent-Client or Authorization: Bearer
+  // along with a 32+ char cryptographic X-CSRF-Token when third-party cookies are blocked.
+  const clientHeader = req.get("x-skylent-client")
+  const hasBearer = Boolean(extractBearerToken(req))
+  if ((clientHeader || hasBearer) && headerToken && headerToken.length >= 32) {
     next()
     return
   }

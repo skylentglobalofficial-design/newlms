@@ -252,7 +252,7 @@ authRouter.post("/signup", requireCsrf, async (req, res) => {
       role: primaryRole(roles),
       mustChangePassword: user.mustChangePassword,
       csrfToken: issuedCsrf,
-      ...(req.get("x-skylent-client") === "native-app" ? { sessionToken } : {}),
+      ...(Boolean(req.get("x-skylent-client")) ? { sessionToken } : {}),
     })
   } catch (error) {
     if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
@@ -309,7 +309,7 @@ authRouter.post("/login", requireCsrf, async (req, res) => {
       role: primaryRole(roles),
       mustChangePassword: "mustChangePassword" in user ? user.mustChangePassword : false,
       csrfToken: issuedCsrf,
-      ...(req.get("x-skylent-client") === "native-app" ? { sessionToken } : {}),
+      ...(Boolean(req.get("x-skylent-client")) ? { sessionToken } : {}),
     })
   } catch (error) {
     if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {

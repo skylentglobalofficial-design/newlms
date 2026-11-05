@@ -108,7 +108,7 @@ export function HomeHero({
 
           <div className="hxw-hero__actions hx-rise" style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
             <Link className="sk-btn sk-btn-primary hx-btn" to="/programmes">
-              Explore courses
+              Enroll Now — Explore Courses
               <ArrowRight />
             </Link>
             <Link
@@ -489,7 +489,7 @@ function LmsCanvas({ stage }: { stage: number }) {
               <div><span>30% · Execution</span><b>166 Validated Rows &amp; Margin CTEs ✓</b></div>
               <div><span>20% · Judgement</span><b>Discount Leakage Trade-Off Memo ✓</b></div>
               <div><span>15% · Oral Defence</span><b>Boardroom Cold Call Passed ✓</b></div>
-              <div><span>20% · V1 → V2 Revision</span><b>Faculty Red-Line Critique Addressed ✓</b></div>
+              <div><span>20% · Project Review</span><b>Mentor Feedback Addressed ✓</b></div>
             </div>
           </div>
         </div>
@@ -1040,7 +1040,7 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
                       <span className="hx-live-course-card__foot">
                         <span className="hx-live-course-card__meta">{item.meta}</span>
                         <span className="hx-live-course-card__cta">
-                          Explore track <ArrowRight />
+                          Enroll Now <ArrowRight />
                         </span>
                       </span>
                     </span>
@@ -1503,10 +1503,10 @@ export function HomeCareer() {
           <div className="hx-royal-showcase__head">
             <div>
               <p className="hx-eyebrow hx-eyebrow--dark" style={{ marginBottom: 6 }}>
-                Sample Benchmark Dossiers · Execution Flight Recorder Previews (Illustrative)
+                Verified Capstone Projects · Sample Certificates (Illustrative)
               </p>
               <h3 className="hx-royal-showcase__title">
-                See How Skylent Flight Recorders Capture V1 → V2 Revisions &amp; Lab Telemetry
+                Real Capstone Projects &amp; Verifiable Certificates
               </h3>
               <p className="hx-royal-showcase__sub">
                 Every completed capstone issues a public `/verify` ID showing your real code, SQL queries, and rubric score.
@@ -1521,7 +1521,7 @@ export function HomeCareer() {
             {[
               {
                 code: "SKL-2026-DA-EXEMPLAR",
-                name: "Data Analytics Benchmark Specimen (Illustrative)",
+                name: "Retail Revenue & Discount Audit (Sample Certificate)",
                 role: "Aspiring Data Analyst · Final-Year B.Tech",
                 score: "96/100 Project Score",
                 track: "Data Analytics · Built in Northwind SQL Lab",
@@ -1531,7 +1531,7 @@ export function HomeCareer() {
               },
               {
                 code: "SKL-2026-PM-EXEMPLAR",
-                name: "Product Management Benchmark Specimen (Illustrative)",
+                name: "12-Store Operations PRD (Sample Certificate)",
                 role: "Transitioning to Product Management",
                 score: "95/100 Project Score",
                 track: "Product Management · Built in Harbor Desk Studio",
@@ -1541,7 +1541,7 @@ export function HomeCareer() {
               },
               {
                 code: "SKL-2026-AI-EXEMPLAR",
-                name: "Applied AI & RAG Benchmark Specimen (Illustrative)",
+                name: "Citation-Grounded Policy Assistant (Sample Certificate)",
                 role: "Software Engineer Upskilling in AI",
                 score: "97/100 Project Score",
                 track: "Generative AI · Built in Grounded RAG Lab",

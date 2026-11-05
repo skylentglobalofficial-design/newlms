@@ -151,7 +151,7 @@ export default function CourseDetailPage() {
   const honesty = authored ? null : LISTING_HONESTY
 
   function openEnrol() {
-    if (!enrollable) return
+    if (!confirmed || !enrollable) return
     setEnrollOpen(true)
   }
 
@@ -298,8 +298,8 @@ export default function CourseDetailPage() {
                   </div>
                   <div className="cat-rubric-item">
                     <span className="cat-rubric-weight">20% · V1 → V2 Revision</span>
-                    <strong>Capstone Improvement &amp; Flight Recorder</strong>
-                    <span>Faculty red-line review · Verifiable at /verify.</span>
+                    <strong>Graded Capstone &amp; Verified Certificate</strong>
+                    <span>Mentor feedback · Verifiable at /verify.</span>
                   </div>
                 </div>
               ) : null}
@@ -595,8 +595,8 @@ export default function CourseDetailPage() {
 }
 
 function enrollCta(enrollable: boolean, primaryCta: string): string {
-  if (enrollable) return primaryCta
-  return "View outline"
+  if (enrollable) return `Enroll Now · ${primaryCta}`
+  return "Enroll Now"
 }
 
 function catalogOutlineCards(

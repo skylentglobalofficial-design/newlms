@@ -268,6 +268,43 @@ adminCurriculumRouter.post("/courses", ...guards, async (req: AuthenticatedReque
   }
 })
 
+adminCurriculumRouter.patch("/courses/:courseId", ...guards, async (req: AuthenticatedRequest, res) => {
+  const params = z.object({ courseId: uuidSchema }).safeParse(req.params)
+  const body = courseSchema.omit({ slug: true }).partial().safeParse(req.body)
+  if (!params.success || !body.success) return res.status(400).json({ error: "Validation failed" })
+  if (await refuseAuthoring(res)) return
+  try {
+    const existing = await prisma.course.findUnique({ where: { id: params.data.courseId }, select: { id: true, slug: true } })
+    if (!existing) return res.status(404).json({ error: "Course not found" })
+    await prisma.course.update({
+      where: { id: existing.id },
+      data: {
+        ...(body.data.title !== undefined ? { title: body.data.title } : {}),
+        ...(body.data.description !== undefined ? { desc: body.data.description, longDesc: body.data.description } : {}),
+        ...(body.data.category !== undefined ? { category: body.data.category } : {}),
+        ...(body.data.level !== undefined ? { level: body.data.level } : {}),
+        ...(body.data.duration !== undefined ? { duration: body.data.duration } : {}),
+        ...(body.data.mode !== undefined ? { mode: body.data.mode } : {}),
+        ...(body.data.price !== undefined ? { price: body.data.price } : {}),
+        ...(body.data.originalPrice !== undefined ? { originalPrice: body.data.originalPrice } : {}),
+        ...(body.data.outcomes !== undefined ? { outcomes: body.data.outcomes } : {}),
+        ...(body.data.forWhom !== undefined ? { forWhom: body.data.forWhom } : {}),
+      },
+    })
+    await recordAdminAudit({
+      actorId: req.auth!.user.id,
+      action: "curriculum.course.update",
+      targetType: "Course",
+      targetId: existing.id,
+      summary: `Updated course ${existing.slug}`,
+    })
+    const loaded = await loadCourse(existing.id)
+    res.json({ data: serializeCourse(loaded!) })
+  } catch (error) {
+    sendAuthoringError(res, error, "Failed to update course")
+  }
+})
+
 adminCurriculumRouter.post("/courses/:courseId/modules", ...guards, async (req: AuthenticatedRequest, res) => {
   const params = z.object({ courseId: uuidSchema }).safeParse(req.params)
   const body = moduleSchema.safeParse(req.body)

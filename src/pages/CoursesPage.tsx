@@ -171,7 +171,7 @@ function CourseCard({ view, featured = false, confirmed = true }: { view: Catalo
           </p>
         ) : null}
         <span className={view.maturity === "ready" ? "cat-btn cat-btn-primary cat-card-cta" : "cat-btn cat-btn-ghost cat-card-cta"}>
-          {confirmed ? view.ctaLabel : "View course"}
+          {confirmed ? (view.maturity === "ready" ? "Enroll Now" : view.ctaLabel) : "View course"}
         </span>
       </div>
     </Link>

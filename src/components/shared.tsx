@@ -212,8 +212,8 @@ export function EnrollmentModal({ item, onClose }: { item: CatalogEnrollItem; on
         ? 'Register interest'
         : 'Enrolment not available yet'
     : user
-      ? submitting ? 'Opening Skylent OS…' : 'Open Skylent OS'
-      : 'Sign in to enrol'
+      ? submitting ? 'Enrolling…' : 'Enroll Now & Open Skylent OS'
+      : 'Sign in to Enroll Now'
 
   return (
     <>
@@ -610,9 +610,24 @@ export function Nav() {
   return (
     <nav ref={navRef} className="skylent-site-nav skn" aria-label="Primary">
       <div className="skn__bar">
-        <Link to="/" className="skn__mark" aria-label="Skylent home">
-          Skylent
-        </Link>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          {location.pathname !== '/' ? (
+            <button
+              type="button"
+              className="skn__back-btn"
+              aria-label="Go back"
+              onClick={() => {
+                if (window.history.length > 1) navigate(-1)
+                else navigate('/')
+              }}
+            >
+              ←
+            </button>
+          ) : null}
+          <Link to="/" className="skn__mark" aria-label="Skylent home">
+            Skylent
+          </Link>
+        </div>
 
         <ul className="skn__links">
           {PUBLIC_NAV.map((group) => {

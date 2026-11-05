@@ -1894,12 +1894,20 @@ html, body {
   .learner-evidence-row { grid-template-columns: 1fr !important; }
 }
 
-/* Native 120Hz Smooth Touch & Wheel Scrolling Restoration (V47) */
-html, body {
-  overflow-x: hidden;
+/* Native 120Hz Smooth Touch & Wheel Scrolling Restoration (V52 — Single Viewport Scroller) */
+html {
+  overflow-x: clip;
   overflow-y: auto !important;
   height: auto !important;
-  min-height: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  overflow-x: clip;
+  overflow-y: visible !important;
+  height: auto !important;
+  min-height: 100vh;
+  position: relative;
   -webkit-overflow-scrolling: touch;
   touch-action: pan-y pinch-zoom !important;
   -webkit-tap-highlight-color: transparent;

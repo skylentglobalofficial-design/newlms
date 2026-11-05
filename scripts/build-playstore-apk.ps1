@@ -1,16 +1,20 @@
 # =============================================================================
-# SKYLENT PLAY STORE NATIVE APK & SIGNED AAB BUILDER (V49)
+# SKYLENT PLAY STORE NATIVE APK & SIGNED AAB BUILDER (V52)
 # Generates:
 #   1. skylent-playstore-debug.apk   (For testing on phone first)
 #   2. skylent-playstore-release.apk (Signed Release APK for phone install)
 #   3. skylent-playstore-release.aab (Signed Release Bundle for Google Play Console)
+# Includes:
+#   - Android 14/15 Status Bar Safe-Area Fix (setDecorFitsSystemWindows = true)
+#   - Hardware Back Button Navigation Fix (Navigates in-app history + double-back exit)
+#   - Third-Party Cookie + Bearer Token Vault Support for 100% Login Reliability
 # =============================================================================
 $ErrorActionPreference = "Stop"
 $Utf8NoBom = New-Object System.Text.UTF8Encoding($false)
 
 Write-Host ""
 Write-Host "============================================================" -ForegroundColor Cyan
-Write-Host "  SKYLENT PLAY STORE APK & SIGNED AAB BUILDER (v49)" -ForegroundColor Cyan
+Write-Host "  SKYLENT PLAY STORE APK & SIGNED AAB BUILDER (v52)" -ForegroundColor Cyan
 Write-Host "============================================================" -ForegroundColor Cyan
 
 # Step 1: Security Audit - Ensure no server secrets are prefixed with VITE_
@@ -44,8 +48,22 @@ if (-not (Test-Path "node_modules/@capacitor/android")) {
 }
 Write-Host "  [OK] Capacitor Android packages ready." -ForegroundColor Green
 
-# Step 4: Initialize or Sync Android Native Project & Write Clean BOM-Free AndroidManifest.xml
-Write-Host "`n[4/7] Syncing Bundled Assets into Native Android Project..." -ForegroundColor Yellow
+# Step 4: Initialize or Sync Android Native Project & Write Manifest + MainActivity + Styles
+Write-Host "`n[4/7] Syncing Bundled Assets & Native Back/Status-Bar Fixes into Android Project..." -ForegroundColor Yellow
+$capConfigPath = Join-Path (Get-Location).Path "capacitor.config.json"
+$capConfigJson = @"
+{
+  "appId": "live.skylent.app",
+  "appName": "Skylent",
+  "webDir": "dist",
+  "bundledWebRuntime": false,
+  "server": {
+    "androidScheme": "https"
+  }
+}
+"@
+[System.IO.File]::WriteAllText($capConfigPath, $capConfigJson.Replace("`r`n", "`n"), $Utf8NoBom)
+
 if (-not (Test-Path "android")) {
   cmd /c "npx cap add android"
 }
@@ -73,6 +91,7 @@ $cleanManifestXml = @"
             android:label="@string/title_activity_main"
             android:theme="@style/AppTheme.NoActionBarLaunch"
             android:launchMode="singleTask"
+            android:windowSoftInputMode="adjustResize"
             android:exported="true">
 
             <intent-filter>
@@ -97,7 +116,123 @@ $cleanManifestXml = @"
 </manifest>
 "@
 [System.IO.File]::WriteAllText($manifestPath, $cleanManifestXml.Replace("`r`n", "`n"), $Utf8NoBom)
-Write-Host "  [OK] Wrote valid BOM-free AndroidManifest.xml (120Hz hardwareAccelerated=true)." -ForegroundColor Green
+
+# Write custom MainActivity.java (Fixes Status Bar Top Overlap + Hardware Back Button Navigation)
+$mainActivityDir = Join-Path (Get-Location).Path "android\app\src\main\java\live\skylent\app"
+if (-not (Test-Path $mainActivityDir)) {
+  New-Item -ItemType Directory -Path $mainActivityDir -Force | Out-Null
+}
+$mainActivityPath = Join-Path $mainActivityDir "MainActivity.java"
+$mainActivityJava = @"
+package live.skylent.app;
+
+import android.graphics.Color;
+import android.os.Bundle;
+import android.webkit.CookieManager;
+import android.webkit.WebView;
+import android.widget.Toast;
+import androidx.activity.OnBackPressedCallback;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
+import com.getcapacitor.BridgeActivity;
+
+public class MainActivity extends BridgeActivity {
+    private long lastBackPressTime = 0;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        // 1. Prevent Android 14/15 Edge-to-Edge overlap with top status bar / camera cutout
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), true);
+        getWindow().setStatusBarColor(Color.parseColor("#3B2D96"));
+        WindowInsetsControllerCompat insetsController =
+            WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
+        if (insetsController != null) {
+            insetsController.setAppearanceLightStatusBars(false);
+        }
+
+        // 2. Enable cookies + third-party cookies for WebView session continuity
+        if (getBridge() != null && getBridge().getWebView() != null) {
+            CookieManager cookieManager = CookieManager.getInstance();
+            cookieManager.setAcceptCookie(true);
+            cookieManager.setAcceptThirdPartyCookies(getBridge().getWebView(), true);
+        }
+
+        // 3. Intercept Android Back button: close modals -> navigate back in router -> double-back to exit on Home
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                if (getBridge() != null && getBridge().getWebView() != null) {
+                    final WebView webView = getBridge().getWebView();
+                    webView.evaluateJavascript(
+                        "(function() { " +
+                        "  var closeBtn = document.querySelector('.skn-sheet__close, [role=\"dialog\"] button[aria-label*=\"Close\"]'); " +
+                        "  if (closeBtn) { closeBtn.click(); return 'MODAL_CLOSED'; } " +
+                        "  var p = window.location.pathname; " +
+                        "  if (p !== '/' && p !== '/index.html') { " +
+                        "    if (window.history.length > 1) { window.history.back(); } else { window.location.href = '/'; } " +
+                        "    return 'NAVIGATED_BACK'; " +
+                        "  } " +
+                        "  return 'AT_HOME'; " +
+                        "})()",
+                        value -> {
+                            if (value != null && (value.contains("MODAL_CLOSED") || value.contains("NAVIGATED_BACK"))) {
+                                return;
+                            }
+                            if (webView.canGoBack()) {
+                                webView.goBack();
+                                return;
+                            }
+                            long now = System.currentTimeMillis();
+                            if (now - lastBackPressTime < 2000) {
+                                finish();
+                            } else {
+                                lastBackPressTime = now;
+                                Toast.makeText(MainActivity.this, "Press back again to exit Skylent", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    );
+                } else {
+                    finish();
+                }
+            }
+        });
+    }
+}
+"@
+[System.IO.File]::WriteAllText($mainActivityPath, $mainActivityJava.Replace("`r`n", "`n"), $Utf8NoBom)
+
+# Write styles.xml with fitsSystemWindows=true so WebView starts strictly below the Android status bar
+$stylesXmlPath = Join-Path (Get-Location).Path "android\app\src\main\res\values\styles.xml"
+$cleanStylesXml = @"
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">#5142B5</item>
+        <item name="colorPrimaryDark">#3B2D96</item>
+        <item name="colorAccent">#5142B5</item>
+        <item name="android:statusBarColor">#3B2D96</item>
+        <item name="android:fitsSystemWindows">true</item>
+    </style>
+
+    <style name="AppTheme.NoActionBar" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:background">@null</item>
+        <item name="android:statusBarColor">#3B2D96</item>
+        <item name="android:fitsSystemWindows">true</item>
+    </style>
+
+    <style name="AppTheme.NoActionBarLaunch" parent="AppTheme.NoActionBar">
+        <item name="android:background">@null</item>
+        <item name="android:statusBarColor">#3B2D96</item>
+        <item name="android:fitsSystemWindows">true</item>
+    </style>
+</resources>
+"@
+[System.IO.File]::WriteAllText($stylesXmlPath, $cleanStylesXml.Replace("`r`n", "`n"), $Utf8NoBom)
+Write-Host "  [OK] Wrote AndroidManifest.xml, MainActivity.java (Back + Status-Bar fix), and styles.xml." -ForegroundColor Green
 
 # Step 5: Configure Java JDK 21 & Android SDK Toolchain
 Write-Host "`n[5/7] Configuring Java JDK 21 & Android SDK Toolchain..." -ForegroundColor Yellow
@@ -253,7 +388,7 @@ if (Test-Path "android/gradlew.bat") {
     $ApkSizeMb = [math]::Round(((Get-Item $OutDebugApk).Length / 1MB), 2)
     Write-Host ""
     Write-Host "============================================================" -ForegroundColor Green
-    Write-Host "  [SUCCESS] ALL GOOGLE PLAY STORE FILES GENERATED!" -ForegroundColor Green
+    Write-Host "  [SUCCESS] ALL GOOGLE PLAY STORE FILES GENERATED (V52)!" -ForegroundColor Green
     Write-Host "  1. Phone Test APK (Signed) : $OutReleaseApk ($ApkSizeMb MB)" -ForegroundColor White
     Write-Host "  2. Phone Test APK (Debug)  : $OutDebugApk" -ForegroundColor White
     Write-Host "  3. Play Store Upload (.aab): $OutReleaseAab" -ForegroundColor Cyan

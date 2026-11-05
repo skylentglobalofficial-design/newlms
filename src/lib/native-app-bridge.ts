@@ -1,17 +1,17 @@
 /**
- * Skylent Native APK Runtime Bridge (Security, API Rewriting & Token Vault)
+ * Skylent Universal Web & Native APK Runtime Bridge (Security, API Rewriting & Token Vault)
  *
- * Ensures that when Skylent runs as a compiled Android `.apk` / `.aab` or iOS `.ipa`:
- * 1. The UI runs 100% from bundled local assets inside the APK (not a website wrapper).
- * 2. Every relative `/api/v1/...` request is transparently routed to `https://skylent.live/api/v1/...`.
- * 3. Session & CSRF tokens are stored securely for native requests (`Authorization: Bearer` + `X-CSRF-Token`)
- *    so Android WebView / iOS WKWebView cross-site cookie restrictions never drop user sessions.
+ * Ensures that across both the Website and the compiled Android `.apk` / `.aab`:
+ * 1. In APK mode, the UI runs 100% from bundled local assets inside the APK.
+ * 2. Every relative `/api/v1/...` request is transparently routed to `https://skylent.live/api/v1/...` in APK mode.
+ * 3. Session & CSRF tokens are stored securely (`Authorization: Bearer` + `X-CSRF-Token`) across both
+ *    Web and APK so browser/WebView cookie restrictions never break Login, Enrollment, or Course Builder.
  */
 import { isNativeAppShell, PRODUCTION_API_ORIGIN } from "./api-base"
 
 const NATIVE_SESSION_KEY = "skylent:native:session-token:v1"
 const NATIVE_CSRF_KEY = "skylent:native:csrf-token:v1"
-export const APP_VERSION = "1.0.0"
+export const APP_VERSION = "1.2.0"
 
 let bridgeInstalled = false
 
@@ -73,21 +73,21 @@ export function installNativeAppBridge() {
     const activeNative = isNativeAppShell()
     let urlString = typeof input === "string" ? input : input instanceof URL ? input.toString() : input.url
 
-    // In Native APK mode, rewrite any relative /api/... request to https://skylent.live/api/...
     const isApiCall =
       urlString.startsWith("/api/") ||
-      urlString.startsWith(`${PRODUCTION_API_ORIGIN}/api/`)
+      urlString.startsWith(`${PRODUCTION_API_ORIGIN}/api/`) ||
+      urlString.includes("/api/v1/")
 
     if (activeNative && urlString.startsWith("/api/")) {
       urlString = `${PRODUCTION_API_ORIGIN}${urlString}`
     }
 
-    if (!activeNative || !isApiCall) {
+    if (!isApiCall) {
       return originalFetch(input, init)
     }
 
     const headers = new Headers(init?.headers ?? (input instanceof Request ? input.headers : undefined))
-    headers.set("X-Skylent-Client", "native-app")
+    headers.set("X-Skylent-Client", activeNative ? "native-app" : "web-app")
     headers.set("X-Skylent-App-Version", APP_VERSION)
 
     const sessionToken = getNativeSessionToken()
@@ -108,7 +108,7 @@ export function installNativeAppBridge() {
 
     const response = await originalFetch(urlString, nextInit)
 
-    // Inspect auth responses to persist or clear native session tokens automatically
+    // Inspect auth responses to persist or clear session/CSRF tokens automatically
     if (urlString.includes("/api/v1/auth/")) {
       if (urlString.endsWith("/logout") && response.ok) {
         clearNativeAuthVault()

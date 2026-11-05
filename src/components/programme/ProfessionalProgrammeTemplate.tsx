@@ -282,10 +282,15 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
 
   const primaryAction = canStartTrack ? (
     <button type="button" className="sk-btn sk-btn-primary" onClick={onEnrol}>
-      {cta}
+      Enroll Now
       <ArrowRight />
     </button>
-  ) : null
+  ) : (
+    <Link className="sk-btn sk-btn-primary" to={`/courses/${content.courseSlug}`}>
+      Enroll Now
+      <ArrowRight />
+    </Link>
+  )
 
   const closingLine = canStartTrack
     ? content.closing.line
@@ -743,66 +748,36 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
             <section className="sky-container pp-section" id="pp-review-standard" aria-labelledby="pp-review-standard-title">
         <div
           style={{
-            background: "linear-gradient(180deg, #F6F4FF 0%, #FFFFFF 100%)",
-            border: "1.5px solid #DDD7FF",
-            borderTop: "5px solid #5142B5",
-            borderRadius: 20,
-            padding: "clamp(24px, 4vw, 38px)",
+            background: "#FFFFFF",
+            border: "1px solid #E2E8F0",
+            borderTop: "4px solid #5142B5",
+            borderRadius: 16,
+            padding: "clamp(20px, 3vw, 30px)",
             color: "#0F172A",
-            boxShadow: "0 14px 34px -14px rgba(81, 66, 181, 0.14)",
           }}
         >
-          <p style={{ margin: "0 0 8px", color: "#5142B5", font: "700 11px/1.4 var(--font-mono)", letterSpacing: "0.14em", textTransform: "uppercase" }}>
-            SKYLENT INSTITUTE OF APPLIED LEARNING · 5-DIMENSION COMPETENCY &amp; ASSESSMENT STANDARD
+          <p style={{ margin: "0 0 6px", color: "#5142B5", font: "700 11px/1.4 var(--font-mono)", letterSpacing: "0.1em", textTransform: "uppercase" }}>
+            HOW YOUR WORK IS GRADED
           </p>
-          <h2 id="pp-review-standard-title" style={{ margin: "0 0 12px", fontSize: "clamp(22px, 2.8vw, 32px)", color: "#0F172A", fontFamily: "var(--font-display)", fontWeight: 750 }}>
-            Learn · Practise · Work · Reflect · Prove: How Competency Is Assessed
+          <h2 id="pp-review-standard-title" style={{ margin: "0 0 10px", fontSize: "clamp(20px, 2.4vw, 28px)", color: "#0F172A", fontFamily: "var(--font-display)", fontWeight: 700 }}>
+            Practical assessment across lessons, labs, and your final project
           </h2>
-          <p style={{ margin: "0 0 20px", color: "#334155", maxWidth: 800, fontSize: 15, lineHeight: 1.6 }}>
-            A Skylent learner does not pass merely by watching lessons. Progression moves across five internal competency levels (<strong style={{ color: "#0F172A" }}>L1 Foundation → L2 Guided Practice → L3 Independent Execution → L4 Professional Practice → L5 Advanced Practice</strong>) and is evaluated across five weighted dimensions:
+          <p style={{ margin: "0 0 16px", color: "#475569", maxWidth: 740, fontSize: 14.5, lineHeight: 1.55 }}>
+            Instead of passive video watch-time, your certificate is earned by completing concept checks, browser lab exercises, and a graded capstone project.
           </p>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 12, marginBottom: 20 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 10 }}>
             {[
-              ["15% · Knowledge", "Conceptual accuracy & first principles"],
-              ["30% · Execution", "Verified lab tasks & edge-case checks"],
-              ["20% · Judgement", "Trade-offs & decision reasoning"],
-              ["15% · Oral Defence", "Boardroom Cold Call & stakeholder clarity"],
-              ["20% · V1 → V2 Revision", "Capstone improvement after faculty critique"],
+              ["15% · Concepts", "Short module quizzes & checks"],
+              ["30% · Lab Work", "In-browser SQL, code & case tasks"],
+              ["20% · Analysis", "Written trade-off recommendations"],
+              ["15% · Case Check", "Scenario decision checkpoint"],
+              ["20% · Capstone", "Final project & faculty feedback"],
             ].map(([title, sub]) => (
-              <div key={title} style={{ background: "#FFFFFF", border: "1.5px solid #DDD7FF", borderTop: "4px solid #5142B5", borderRadius: 12, padding: 14 }}>
-                <strong style={{ color: "#5142B5", fontSize: 17, fontWeight: 800, display: "block", marginBottom: 4 }}>{title}</strong>
-                <span style={{ fontSize: 12.5, color: "#334155", lineHeight: 1.45, display: "block" }}>{sub}</span>
+              <div key={title} style={{ background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: 10, padding: 12 }}>
+                <strong style={{ color: "#5142B5", fontSize: 15, fontWeight: 700, display: "block", marginBottom: 3 }}>{title}</strong>
+                <span style={{ fontSize: 12.5, color: "#475569", lineHeight: 1.4, display: "block" }}>{sub}</span>
               </div>
             ))}
-          </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: 16 }}>
-            <div style={{ background: "#FFFFFF", border: "1.5px solid #DDD7FF", borderRadius: 14, padding: 18 }}>
-              <span style={{ display: "inline-block", padding: "3px 10px", borderRadius: 999, background: "#DCFCE7", border: "1px solid #86EFAC", color: "#15803D", fontSize: 11, fontFamily: "var(--font-mono)", fontWeight: 700, marginBottom: 8 }}>
-                ENV A · SIMULATED ENTERPRISE UNITS
-              </span>
-              <h3 style={{ margin: "0 0 6px", fontSize: 16.5, fontWeight: 750, color: "#0F172A" }}>Guided Trial → Independent Sprint</h3>
-              <p style={{ margin: 0, fontSize: 13.5, color: "#334155", lineHeight: 1.55 }}>
-                Start on a ₹0 Free Pilot in Northwind Commerce or Harbor Desk SaaS with immediate automated pre-flight feedback and Socratic Hinglish support.
-              </p>
-            </div>
-            <div style={{ background: "#FFFFFF", border: "1.5px solid #DDD7FF", borderRadius: 14, padding: 18 }}>
-              <span style={{ display: "inline-block", padding: "3px 10px", borderRadius: 999, background: "#F5F3FF", border: "1px solid #DDD7FF", color: "#5142B5", fontSize: 11, fontFamily: "var(--font-mono)", fontWeight: 700, marginBottom: 8 }}>
-                ENV B · WORK ASSIGNMENT EXCHANGE
-              </span>
-              <h3 style={{ margin: "0 0 6px", fontSize: 16.5, fontWeight: 750, color: "#0F172A" }}>Supervised Partner Fieldwork &amp; V1 → V2 Review</h3>
-              <p style={{ margin: 0, fontSize: 13.5, color: "#334155", lineHeight: 1.55 }}>
-                Receive human faculty red-line critique within published review windows and qualify for scoped MSME, startup, and institutional fieldwork projects.
-              </p>
-            </div>
-            <div style={{ background: "#FFFFFF", border: "1.5px solid #DDD7FF", borderRadius: 14, padding: 18 }}>
-              <span style={{ display: "inline-block", padding: "3px 10px", borderRadius: 999, background: "#DCFCE7", border: "1px solid #86EFAC", color: "#15803D", fontSize: 11, fontFamily: "var(--font-mono)", fontWeight: 700, marginBottom: 8 }}>
-                ENV C · FLIGHT RECORDER &amp; CAREER OS
-              </span>
-              <h3 style={{ margin: "0 0 6px", fontSize: 16.5, fontWeight: 750, color: "#0F172A" }}>Verifiable Evidence &amp; Employer Evaluation</h3>
-              <p style={{ margin: 0, fontSize: 13.5, color: "#334155", lineHeight: 1.55 }}>
-                Graduate with an event-based Execution Flight Recorder on `/verify` showing what you built, how you were assessed, and who reviewed your work.
-              </p>
-            </div>
           </div>
         </div>
       </section>
@@ -931,6 +906,8 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
       </section>
 
       <ProgrammePricingAndDock
+        programSlug={program.slug}
+        courseSlug={content.courseSlug}
         programName={program.name}
         studioName={content.specSheet.material.value}
         capstoneTitle={content.capstoneTitle}

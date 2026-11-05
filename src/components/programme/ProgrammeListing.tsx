@@ -154,17 +154,17 @@ export default function ProgrammeListing({ program, truth, cta, honesty, afterEn
 
   const primaryActionBtn = canEnrol ? (
     <button type="button" className="sk-btn sk-btn-primary" onClick={onEnrol}>
-      {cta}
+      Enroll Now
       <ArrowRight />
     </button>
   ) : firstLinked ? (
     <Link className="sk-btn sk-btn-primary" to={firstLinked.to}>
-      Start {firstLinked.title === program.name ? `${firstLinked.title} course` : firstLinked.title}
+      Enroll Now — {firstLinked.title}
       <ArrowRight />
     </Link>
   ) : (
     <Link className="sk-btn sk-btn-primary" to="/courses/data-analytics">
-      Start SQL in Data Analytics
+      Enroll Now — Data Analytics
       <ArrowRight />
     </Link>
   )
@@ -508,6 +508,8 @@ export default function ProgrammeListing({ program, truth, cta, honesty, afterEn
       <div id="pp-evidence" />
       <div id="pp-career" />
       <ProgrammePricingAndDock
+        programSlug={program.slug}
+        courseSlug={firstLinked?.slug ?? "data-analytics"}
         programName={program.name}
         studioName={pathwaySpec.studio}
         capstoneTitle={pathwaySpec.capstoneTitle}

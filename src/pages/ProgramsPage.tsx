@@ -262,7 +262,7 @@ function ProgrammeCard({ row, confirmed }: { row: Row; confirmed: boolean }) {
           <span className="pgx-card__footer">
             <span className="pgx-card__meta">{row.meta}</span>
             <span className="pgx-card__go">
-              Explore track <ArrowRight />
+              Enroll Now <ArrowRight />
             </span>
           </span>
         </span>
@@ -382,91 +382,6 @@ export default function ProgramsPage() {
         </section>
 
         
-        {/* Integrated Smart Goal & Skill Selector + ₹99 Weekend Sprints (Unified Hub) */}
-        <section className="pgx-smart-goals" aria-label="Choose by career goal" style={{ paddingBlock: "28px 12px", background: "linear-gradient(180deg, #F6F4FF 0%, #FFFFFF 100%)", borderBottom: "1px solid #E2DCFF" }}>
-          <div className="sky-container">
-            <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "flex-end", gap: 16, marginBottom: 18 }}>
-              <div>
-                <p className="pgx-eyebrow" style={{ marginBottom: 4 }}>START FROM A GOAL · INTERACTIVE PATH FINDER</p>
-                <h2 style={{ margin: 0, fontSize: "clamp(20px, 2.4vw, 26px)", fontWeight: 800, color: "#0F172A" }}>
-                  What do you want to be able to do?
-                </h2>
-              </div>
-              <p style={{ margin: 0, fontSize: 14, color: "#475569", maxWidth: "46ch" }}>
-                Click any career goal below to filter the matching programme, in-browser lab, and portfolio capstone.
-              </p>
-            </div>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(230px, 1fr))", gap: 14 }}>
-              {[
-                {
-                  cat: "Data & SQL",
-                  title: "Work with Data & SQL",
-                  question: "Analyse tables, clean dirty rows, and defend margin decisions.",
-                  lab: "Northwind SQL Lab (166 rows)",
-                  cap: "Commercial Revenue Review",
-                  badge: "✓ Authored Track Ready",
-                },
-                {
-                  cat: "Product Strategy",
-                  title: "Shape Products & PRDs",
-                  question: "Synthesise user research and scope a 6-week engineering bet.",
-                  lab: "Harbor Desk PRD Studio",
-                  cap: "Weekend Exception Queue Spec",
-                  badge: "✓ Authored Track Ready",
-                },
-                {
-                  cat: "Web Engineering",
-                  title: "Build Full-Stack Software",
-                  question: "Ship React 18 interfaces, Express APIs, and safe Postgres ledgers.",
-                  lab: "Transactional Ledger Sandbox",
-                  cap: "Idempotent Settlement API",
-                  badge: "✓ Full-Stack Track",
-                },
-                {
-                  cat: "Applied AI Systems",
-                  title: "Build GenAI & RAG Systems",
-                  question: "Engineer citation-grounded RAG pipelines and LLM accuracy evals.",
-                  lab: "Grounded RAG Evaluator",
-                  cap: "Enterprise RAG Audit Suite",
-                  badge: "✓ GenAI & Data Science",
-                },
-              ].map((goal) => {
-                const active = category === goal.cat;
-                return (
-                  <button
-                    key={goal.title}
-                    type="button"
-                    onClick={() => setCategory(active ? "All" : goal.cat)}
-                    style={{
-                      textAlign: "left",
-                      padding: "18px 20px",
-                      borderRadius: 16,
-                      background: active ? "linear-gradient(135deg, #3B2D96 0%, #5142B5 100%)" : "#FFFFFF",
-                      border: active ? "2px solid #5142B5" : "1.5px solid #DDD7FF",
-                      borderTop: active ? "4px solid #34D399" : "4px solid #5142B5",
-                      color: active ? "#FFFFFF" : "#0F172A",
-                      cursor: "pointer",
-                      boxShadow: "0 8px 22px -12px rgba(81, 66, 181, 0.16)",
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: 6,
-                    }}
-                  >
-                    <span style={{ fontSize: 11, fontFamily: "var(--font-mono)", fontWeight: 700, color: active ? "#A7F3D0" : "#15803D", background: active ? "rgba(16, 185, 129, 0.2)" : "#DCFCE7", padding: "2px 8px", borderRadius: 999, alignSelf: "flex-start" }}>
-                      {goal.badge}
-                    </span>
-                    <strong style={{ fontSize: 16.5, fontWeight: 800, color: active ? "#FFFFFF" : "#0F172A" }}>{goal.title}</strong>
-                    <span style={{ fontSize: 13, lineHeight: 1.45, color: active ? "#E2E8F0" : "#475569" }}>{goal.question}</span>
-                    <span style={{ marginTop: 4, paddingTop: 8, borderTop: active ? "1px solid rgba(255,255,255,0.18)" : "1px solid #F1F5F9", fontSize: 11.5, fontFamily: "var(--font-mono)", color: active ? "#C4B8FF" : "#5142B5", fontWeight: 700 }}>
-                      Lab: {goal.lab} →
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-
         <section className="pgx-tools" aria-label="Search and filters">
           <div className="sky-container">
             <label className="pgx-search">

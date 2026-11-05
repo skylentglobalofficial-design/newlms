@@ -137,41 +137,50 @@ const labelStyle = {
 
 const NODE_TYPE_META: Record<string, { badge: string; color: string; bg: string; desc: string }> = {
   NOTES: {
-    badge: "📖 NOTES / READING",
+    badge: "NOTES / READING",
     color: "#5142b5",
     bg: "#f5f3ff",
-    desc: "Structured reading notes with 1-click Hinglish & English Socratic AI coach.",
+    desc: "Written lesson notes with integrated English & Hinglish AI study mentor.",
   },
   VIDEO: {
-    badge: "🎬 VIDEO LECTURE",
+    badge: "VIDEO LECTURE",
     color: "#0369a1",
     bg: "#e0f2fe",
-    desc: "Video stream (Mux public playback ID or reference URL) + written transcript notes.",
+    desc: "Video lecture stream (Mux playback or video URL) with written summary notes.",
   },
   LAB: {
-    badge: "🧪 BROWSER LAB",
+    badge: "BROWSER LAB",
     color: "#047857",
     bg: "#ecfdf5",
-    desc: "In-browser interactive SQL, Python ETL, GenAI RAG, or Ledger execution sandbox.",
+    desc: "Interactive in-browser SQL, Python, Product, or AI practice workspace.",
   },
   ASSIGNMENT: {
-    badge: "✍️ CASE BRIEF (GRADED)",
+    badge: "ASSIGNMENT BRIEF",
     color: "#b45309",
     bg: "#fef3c7",
-    desc: "Written case memo routed to Faculty TA for V1 → V2 Red-Line review & grading.",
+    desc: "Graded written assignment reviewed by Faculty / TA.",
   },
   PROJECT: {
-    badge: "🏆 CAPSTONE STUDIO",
+    badge: "CAPSTONE PROJECT",
     color: "#6d28d9",
     bg: "#ede9fe",
-    desc: "6-Task Capstone Project Studio feeding the public /verify Proof-of-Work Dossier.",
+    desc: "Final graded capstone project required for course certificate issuance.",
   },
   QUIZ: {
-    badge: "✅ GRADED QUIZ",
+    badge: "GRADED QUIZ",
     color: "#0f766e",
     bg: "#ccfbf1",
-    desc: "Auto-graded multiple-choice checkpoint with passing score % and attempt limits.",
+    desc: "Auto-graded multiple-choice concept check with passing score and attempt limit.",
   },
+}
+
+function emptyQuizQuestion(): QuizDraftQuestion {
+  return {
+    question: "",
+    options: ["", "", "", ""],
+    correctIndex: 0,
+    explanation: "",
+  }
 }
 
 export function CourseAuthoringStudio({
@@ -188,7 +197,7 @@ export function CourseAuthoringStudio({
   const [message, setMessage] = useState<string | null>(null)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
   const [filterStatus, setFilterStatus] = useState<"ALL" | "PUBLISHED" | "DRAFT">("ALL")
-  const [localTab, setLocalTab] = useState<string>("course")
+  const [localTab, setLocalTab] = useState<string>("all")
 
   const studioTab = activeSubTab ?? localTab
   function setStudioTab(next: string) {
@@ -196,28 +205,48 @@ export function CourseAuthoringStudio({
     onSubTabChange?.(next)
   }
 
-  // Course creation state
+  // Course creation state (clean — zero dummy pre-filled text)
   const [title, setTitle] = useState("")
   const [slug, setSlug] = useState("")
   const [description, setDescription] = useState("")
-  const [category, setCategory] = useState("Data & Analytics")
-  const [level, setLevel] = useState("Foundation to Professional")
-  const [duration, setDuration] = useState("8 weeks · 60 notional hrs")
-  const [mode, setMode] = useState("Self-paced + Browser Lab")
-  const [price, setPrice] = useState("0")
-  const [outcomesText, setOutcomesText] = useState(
-    "Execute real-world commercial SQL & Python analysis\nDefend trade-offs in a V1 to V2 Faculty Red-Line review",
-  )
-  const [forWhomText, setForWhomText] = useState(
-    "Final-year students and early-career analysts\nWorking professionals switching into applied tech roles",
-  )
+  const [category, setCategory] = useState("Data")
+  const [level, setLevel] = useState("Beginner")
+  const [duration, setDuration] = useState("8 weeks")
+  const [mode, setMode] = useState("Self-paced")
+  const [price, setPrice] = useState("4999")
+  const [outcomesText, setOutcomesText] = useState("")
+  const [forWhomText, setForWhomText] = useState("")
+
+  // Inline Edit Course state
+  const [editingCourseDetails, setEditingCourseDetails] = useState(false)
+  const [editCourseTitle, setEditCourseTitle] = useState("")
+  const [editCourseDesc, setEditCourseDesc] = useState("")
+  const [editCourseCategory, setEditCourseCategory] = useState("")
+  const [editCourseLevel, setEditCourseLevel] = useState("")
+  const [editCourseDuration, setEditCourseDuration] = useState("")
+  const [editCoursePrice, setEditCoursePrice] = useState("0")
 
   // Module creation state
   const [moduleTitle, setModuleTitle] = useState("")
   const [moduleDescription, setModuleDescription] = useState("")
   const [modulePosition, setModulePosition] = useState("1")
 
-  // Lecture creation state
+  // Inline Edit Module state
+  const [editingModuleId, setEditingModuleId] = useState<string | null>(null)
+  const [editModuleTitle, setEditModuleTitle] = useState("")
+  const [editModuleDesc, setEditModuleDesc] = useState("")
+
+  // Inline Add Lecture under specific Module state
+  const [inlineAddLectureModuleId, setInlineAddLectureModuleId] = useState<string | null>(null)
+
+  // Inline Edit Lecture state
+  const [editingLectureId, setEditingLectureId] = useState<string | null>(null)
+  const [editLectureTitle, setEditLectureTitle] = useState("")
+  const [editLectureType, setEditLectureType] = useState("NOTES")
+  const [editLectureSummary, setEditLectureSummary] = useState("")
+  const [editLectureUrl, setEditLectureUrl] = useState("")
+
+  // Lecture creation state (shared by right-hand form & inline Module drawer)
   const [lectureTitle, setLectureTitle] = useState("")
   const [lectureModule, setLectureModule] = useState("")
   const [lectureNodeType, setLectureNodeType] = useState<string>("NOTES")
@@ -226,23 +255,20 @@ export function CourseAuthoringStudio({
   const [lecturePosition, setLecturePosition] = useState("")
   const [quizPassingScore, setQuizPassingScore] = useState("70")
   const [quizMaxAttempts, setQuizMaxAttempts] = useState("3")
-  const [quizQuestions, setQuizQuestions] = useState<QuizDraftQuestion[]>([
-    {
-      question: "Why does an unvalidated 1-to-many LEFT JOIN inflate revenue totals?",
-      options: [
-        "Parent order header amounts repeat across multiple line-item rows (fan-out)",
-        "SQL automatically multiplies numeric columns by 2",
-        "NULL values convert to positive integers",
-        "GROUP BY deletes primary keys",
-      ],
-      correctIndex: 0,
-      explanation: "Joining header-grain metrics to line-item grain without pre-aggregating duplicates parent rows.",
-    },
-  ])
+  const [quizQuestions, setQuizQuestions] = useState<QuizDraftQuestion[]>([emptyQuizQuestion()])
 
   // Faculty assignment state
   const [facultyData, setFacultyData] = useState<FacultyAssignmentPayload | null>(null)
   const [selectedFacultyUserId, setSelectedFacultyUserId] = useState("")
+
+  function syncEditCourseFields(detail: CourseRow) {
+    setEditCourseTitle(detail.title || "")
+    setEditCourseDesc(detail.description || "")
+    setEditCourseCategory(detail.category || "Data")
+    setEditCourseLevel(detail.level || "Beginner")
+    setEditCourseDuration(detail.duration || "8 weeks")
+    setEditCoursePrice(String(detail.price ?? 0))
+  }
 
   async function refreshCourses(selectId?: string) {
     try {
@@ -252,6 +278,7 @@ export function CourseAuthoringStudio({
       if (targetId) {
         const detail = await curriculumRequest<CourseRow>(`/courses/${targetId}`, "GET")
         setSelected(detail)
+        syncEditCourseFields(detail)
         if (!lectureModule && detail.modules[0]) {
           setLectureModule(detail.modules[0].id)
         }
@@ -280,6 +307,7 @@ export function CourseAuthoringStudio({
 
   useEffect(() => {
     if (selected?.id) {
+      syncEditCourseFields(selected)
       if (selected.modules[0] && !selected.modules.some((m) => m.id === lectureModule)) {
         setLectureModule(selected.modules[0].id)
       }
@@ -328,10 +356,37 @@ export function CourseAuthoringStudio({
       setTitle("")
       setSlug("")
       setDescription("")
-      setMessage(`Draft course "${created.title}" (${created.slug}) created. Now add Modules and Lectures!`)
+      setOutcomesText("")
+      setForWhomText("")
+      setMessage(`Draft course "${created.title}" (${created.slug}) created. Now add Modules and Lectures below!`)
       setStudioTab("modules")
     } catch (error) {
       setErrorMsg(error instanceof Error ? error.message : "Could not create the course")
+    }
+  }
+
+  async function onUpdateCourseDetails(event: FormEvent) {
+    event.preventDefault()
+    if (!selected) return
+    setMessage(null)
+    setErrorMsg(null)
+    try {
+      const updated = await curriculumRequest<CourseRow>(`/courses/${selected.id}`, "PATCH", {
+        title: editCourseTitle.trim(),
+        description: editCourseDesc.trim(),
+        category: editCourseCategory.trim(),
+        level: editCourseLevel.trim(),
+        duration: editCourseDuration.trim(),
+        price: Math.max(0, parseInt(editCoursePrice, 10) || 0),
+      })
+      setSelected(updated)
+      setCourses((prev) =>
+        prev.map((c) => (c.id === updated.id ? { ...c, title: updated.title, category: updated.category } : c)),
+      )
+      setEditingCourseDetails(false)
+      setMessage(`Updated course details for "${updated.title}".`)
+    } catch (error) {
+      setErrorMsg(error instanceof Error ? error.message : "Could not update course details")
     }
   }
 
@@ -350,10 +405,30 @@ export function CourseAuthoringStudio({
       setModuleTitle("")
       setModuleDescription("")
       setModulePosition(String(next.modules.length + 1))
-      if (!lectureModule && next.modules[0]) setLectureModule(next.modules[0].id)
-      setMessage("Module saved and ordered in syllabus.")
+      const newestModule = next.modules[next.modules.length - 1] ?? next.modules[0]
+      if (newestModule) {
+        setLectureModule(newestModule.id)
+      }
+      setMessage("Module added to course syllabus. Now click '+ Add Lecture Under Module' to add lectures!")
     } catch (error) {
       setErrorMsg(error instanceof Error ? error.message : "Could not add the module")
+    }
+  }
+
+  async function onSaveEditModule(event: FormEvent, moduleId: string) {
+    event.preventDefault()
+    setMessage(null)
+    setErrorMsg(null)
+    try {
+      const next = await curriculumRequest<CourseRow>(`/modules/${moduleId}`, "PATCH", {
+        title: editModuleTitle.trim(),
+        description: editModuleDesc.trim(),
+      })
+      setSelected(next)
+      setEditingModuleId(null)
+      setMessage("Module updated.")
+    } catch (error) {
+      setErrorMsg(error instanceof Error ? error.message : "Could not update module")
     }
   }
 
@@ -393,9 +468,8 @@ export function CourseAuthoringStudio({
     }
   }
 
-  async function onAddLecture(event: FormEvent) {
-    event.preventDefault()
-    if (!lectureModule) return
+  async function submitLectureToModule(targetModuleId: string) {
+    if (!targetModuleId) return
     setMessage(null)
     setErrorMsg(null)
     try {
@@ -416,15 +490,41 @@ export function CourseAuthoringStudio({
           ...(q.explanation.trim() ? { explanation: q.explanation.trim() } : {}),
         }))
       }
-      const next = await curriculumRequest<CourseRow>(`/modules/${lectureModule}/lectures`, "POST", bodyPayload)
+      const next = await curriculumRequest<CourseRow>(`/modules/${targetModuleId}/lectures`, "POST", bodyPayload)
       setSelected(next)
       setLectureTitle("")
       setLectureSummary("")
       setLectureReferenceUrl("")
       setLecturePosition("")
-      setMessage(`Lecture saved on the selected module (${lectureNodeType}).`)
+      setQuizQuestions([emptyQuizQuestion()])
+      setInlineAddLectureModuleId(null)
+      setMessage(`Lecture added under module (${lectureNodeType}).`)
     } catch (error) {
       setErrorMsg(error instanceof Error ? error.message : "Could not add the lecture")
+    }
+  }
+
+  async function onAddLecture(event: FormEvent) {
+    event.preventDefault()
+    await submitLectureToModule(lectureModule)
+  }
+
+  async function onSaveEditLecture(event: FormEvent, lectureId: string) {
+    event.preventDefault()
+    setMessage(null)
+    setErrorMsg(null)
+    try {
+      const next = await curriculumRequest<CourseRow>(`/lectures/${lectureId}`, "PATCH", {
+        title: editLectureTitle.trim(),
+        nodeType: editLectureType,
+        summary: editLectureSummary.trim() || null,
+        referenceUrl: editLectureUrl.trim() || null,
+      })
+      setSelected(next)
+      setEditingLectureId(null)
+      setMessage("Lecture updated.")
+    } catch (error) {
+      setErrorMsg(error instanceof Error ? error.message : "Could not update lecture")
     }
   }
 
@@ -452,7 +552,7 @@ export function CourseAuthoringStudio({
         dataBase64,
       })
       setSelected(next)
-      setMessage(`Attached material "${file.name}" to lecture.`)
+      setMessage(`Attached study material "${file.name}" to lecture.`)
     } catch (error) {
       setErrorMsg(error instanceof Error ? error.message : "Could not upload lecture material")
     }
@@ -544,27 +644,27 @@ export function CourseAuthoringStudio({
 
   return (
     <div style={{ display: "grid", gap: 22 }}>
-      {/* Royal Purple Institutional Course Studio Header */}
+      {/* Clean Admin Course Builder Header */}
       <section
         style={{
           background: "linear-gradient(135deg, #3b2d96 0%, #5142b5 100%)",
           border: "1px solid rgba(196, 184, 255, 0.42)",
           borderRadius: 18,
-          padding: "clamp(22px, 3vw, 30px)",
+          padding: "clamp(20px, 2.8vw, 28px)",
           color: "#ffffff",
-          boxShadow: "0 18px 40px -14px rgba(59, 45, 150, 0.35)",
+          boxShadow: "0 14px 32px -14px rgba(59, 45, 150, 0.3)",
         }}
       >
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 16, flexWrap: "wrap" }}>
           <div>
-            <p style={{ margin: "0 0 6px", color: "#e9d5ff", font: "700 11px/1.4 var(--font-mono)", letterSpacing: "0.14em", textTransform: "uppercase" }}>
-              SKYLENT CURRICULUM &amp; LECTURE AUTHORING STUDIO · ADMIN → FACULTY → STUDENT PIPELINE
+            <p style={{ margin: "0 0 6px", color: "#e9d5ff", font: "700 11px/1.4 var(--font-mono)", letterSpacing: "0.12em", textTransform: "uppercase" }}>
+              ADMIN CURRICULUM BUILDER · COURSE → MODULE → LECTURE UNDER MODULE
             </p>
-            <h1 style={{ margin: "0 0 8px", fontSize: "clamp(22px, 2.6vw, 30px)", color: "#ffffff", fontFamily: "var(--font-display)" }}>
-              Course builder &amp; Multi-Modal Lecture Studio
+            <h1 style={{ margin: "0 0 8px", fontSize: "clamp(22px, 2.5vw, 28px)", color: "#ffffff", fontFamily: "var(--font-display)" }}>
+              Course, Module &amp; Lecture Builder
             </h1>
-            <p style={{ margin: 0, color: "rgba(255,255,255,0.88)", fontSize: 14, lineHeight: 1.55, maxWidth: 740 }}>
-              New courses stay draft until you publish them. Publishing needs one module and one lecture. Create structured modules, add Notes, Video lectures, Browser SQL/Python Labs, Graded Quizzes, or Written Case Briefs, assign Faculty TAs, and publish directly to the live student player.
+            <p style={{ margin: 0, color: "rgba(255,255,255,0.9)", fontSize: 14, lineHeight: 1.55, maxWidth: 740 }}>
+              New courses stay draft until you publish them. Publishing needs one module and one lecture. Select or create a Course, add Modules in order, and add Lectures (Notes, Video, Browser Lab, Quiz, or Project) directly under each Module.
             </p>
           </div>
           {selected ? (
@@ -579,10 +679,9 @@ export function CourseAuthoringStudio({
                   fontWeight: 800,
                   fontSize: 13,
                   textDecoration: "none",
-                  boxShadow: "0 6px 16px rgba(0,0,0,0.16)",
                 }}
               >
-                Preview in Student Player (/learn/{selected.slug}) →
+                Open Student Player (/learn/{selected.slug}) →
               </Link>
               <Link
                 to={`/courses/${selected.slug}`}
@@ -597,44 +696,10 @@ export function CourseAuthoringStudio({
                   textDecoration: "none",
                 }}
               >
-                Public Catalogue Page →
+                Public Course Page →
               </Link>
             </div>
           ) : null}
-        </div>
-
-        {/* 4-Step End-to-End Governance Strip */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))",
-            gap: 10,
-            marginTop: 18,
-            paddingTop: 16,
-            borderTop: "1px solid rgba(255,255,255,0.18)",
-          }}
-        >
-          {[
-            ["01 · Admin Creates Course", "Starts in DRAFT mode with outcomes, pricing & cover"],
-            ["02 · Structure Modules", "Add & reorder sequential learning modules (M1, M2…)"],
-            ["03 · Author Lectures & Quizzes", "Add NOTES, VIDEO, LAB, QUIZ, ASSIGNMENT or PROJECT"],
-            ["04 · Assign Faculty & Publish", "Link Faculty TAs & publish live to /learn/:slug"],
-          ].map(([stepTitle, stepSub], i) => (
-            <div
-              key={stepTitle}
-              style={{
-                background: "rgba(15, 23, 42, 0.32)",
-                border: "1px solid rgba(255,255,255,0.16)",
-                borderRadius: 12,
-                padding: "10px 14px",
-              }}
-            >
-              <strong style={{ display: "block", fontSize: 12, color: "#f3e8ff", fontFamily: "var(--font-mono)" }}>
-                {stepTitle}
-              </strong>
-              <span style={{ fontSize: 12, color: "rgba(255,255,255,0.82)" }}>{stepSub}</span>
-            </div>
-          ))}
         </div>
       </section>
 
@@ -667,7 +732,7 @@ export function CourseAuthoringStudio({
             fontWeight: 700,
           }}
         >
-          ⚠️ {errorMsg}
+          {errorMsg}
         </div>
       ) : null}
 
@@ -686,11 +751,11 @@ export function CourseAuthoringStudio({
         }}
       >
         {[
+          { id: "all", label: "All-in-One Builder (Course → Module → Lecture)" },
           { id: "course", label: "1. Select or Create Course" },
-          { id: "modules", label: `2. Modules & Syllabus (${selected?.modules.length ?? 0})` },
-          { id: "lectures", label: `3. Add Lecture / Lab / Quiz (${totalLectures})` },
-          { id: "faculty", label: `4. Assign Faculty TA (${facultyData?.assigned.length ?? 0})` },
-          { id: "all", label: "⚡ Split-Screen Full Studio" },
+          { id: "modules", label: `2. Add Module (${selected?.modules.length ?? 0})` },
+          { id: "lectures", label: `3. Add Lecture Under Module (${totalLectures})` },
+          { id: "faculty", label: `4. Assign Faculty (${facultyData?.assigned.length ?? 0})` },
         ].map((t) => {
           const active = studioTab === t.id
           return (
@@ -717,7 +782,7 @@ export function CourseAuthoringStudio({
         })}
       </div>
 
-      {/* Main 2-Column Studio Grid: Left = Course & Live Syllabus Tree, Right = Active Workbench Tab */}
+      {/* Main 2-Column Studio Grid: Left = Course Selector + Interactive Syllabus Tree (Course -> Module -> Lecture), Right = Forms */}
       <div
         style={{
           display: "grid",
@@ -726,15 +791,15 @@ export function CourseAuthoringStudio({
           alignItems: "start",
         }}
       >
-        {/* LEFT COLUMN: Course Selector + Live Syllabus Tree + Publish Control */}
+        {/* LEFT COLUMN: Course Selector + Live Syllabus Tree + Inline Module/Lecture Actions */}
         <div style={{ display: "grid", gap: 18 }}>
           <section style={cardStyle}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10, flexWrap: "wrap", marginBottom: 12 }}>
               <div>
                 <span style={{ fontSize: 11, fontFamily: "var(--font-mono)", fontWeight: 700, color: "#5142b5", textTransform: "uppercase" }}>
-                  ACTIVE COURSE SELECTOR
+                  STEP 1 · SELECT ACTIVE COURSE
                 </span>
-                <h2 style={{ margin: "2px 0 0", fontSize: 18, color: "#0f172a" }}>Open a course to edit</h2>
+                <h2 style={{ margin: "2px 0 0", fontSize: 18, color: "#0f172a" }}>Open a course to manage</h2>
               </div>
               <div style={{ display: "flex", gap: 6 }}>
                 {(["ALL", "PUBLISHED", "DRAFT"] as const).map((st) => (
@@ -771,6 +836,7 @@ export function CourseAuthoringStudio({
                   void curriculumRequest<CourseRow>(`/courses/${id}`, "GET")
                     .then((detail) => {
                       setSelected(detail)
+                      syncEditCourseFields(detail)
                       if (detail.modules[0]) setLectureModule(detail.modules[0].id)
                     })
                     .catch((error: unknown) => {
@@ -816,11 +882,27 @@ export function CourseAuthoringStudio({
                     </span>
                     <h3 style={{ margin: 0, fontSize: 18, color: "#0f172a" }}>{selected.title}</h3>
                     <p style={{ margin: "4px 0 0", fontSize: 12.5, color: "#475569" }}>
-                      {selected.modules.length} modules · {totalLectures} lectures
+                      {selected.modules.length} modules · {totalLectures} lectures · Listed price: ₹{(selected.price ?? 0).toLocaleString("en-IN")}
                       {selected.coverFileName ? ` · Cover: ${selected.coverFileName}` : ""}
                     </p>
                   </div>
                   <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                    <button
+                      type="button"
+                      onClick={() => setEditingCourseDetails((v) => !v)}
+                      style={{
+                        padding: "8px 14px",
+                        borderRadius: 999,
+                        border: "1px solid #5142b5",
+                        background: "#ffffff",
+                        color: "#5142b5",
+                        fontWeight: 700,
+                        fontSize: 12.5,
+                        cursor: "pointer",
+                      }}
+                    >
+                      {editingCourseDetails ? "Cancel Edit" : "Edit Course Details"}
+                    </button>
                     <button
                       className="os-btn os-btn-primary"
                       type="button"
@@ -858,6 +940,93 @@ export function CourseAuthoringStudio({
                   </div>
                 </div>
 
+                {editingCourseDetails ? (
+                  <form
+                    onSubmit={onUpdateCourseDetails}
+                    style={{
+                      marginTop: 14,
+                      paddingTop: 14,
+                      borderTop: "1px solid #ddd6fe",
+                      display: "grid",
+                      gap: 10,
+                    }}
+                  >
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 8 }}>
+                      <label style={labelStyle}>
+                        Course Title
+                        <input
+                          value={editCourseTitle}
+                          onChange={(e) => setEditCourseTitle(e.target.value)}
+                          required
+                          style={inputStyle}
+                        />
+                      </label>
+                      <label style={labelStyle}>
+                        Category
+                        <input
+                          value={editCourseCategory}
+                          onChange={(e) => setEditCourseCategory(e.target.value)}
+                          required
+                          style={inputStyle}
+                        />
+                      </label>
+                      <label style={labelStyle}>
+                        Level
+                        <input
+                          value={editCourseLevel}
+                          onChange={(e) => setEditCourseLevel(e.target.value)}
+                          style={inputStyle}
+                        />
+                      </label>
+                      <label style={labelStyle}>
+                        Duration
+                        <input
+                          value={editCourseDuration}
+                          onChange={(e) => setEditCourseDuration(e.target.value)}
+                          style={inputStyle}
+                        />
+                      </label>
+                      <label style={labelStyle}>
+                        Price (₹ INR)
+                        <input
+                          type="number"
+                          min={0}
+                          value={editCoursePrice}
+                          onChange={(e) => setEditCoursePrice(e.target.value)}
+                          style={inputStyle}
+                        />
+                      </label>
+                    </div>
+                    <label style={labelStyle}>
+                      Course Description
+                      <textarea
+                        rows={2}
+                        value={editCourseDesc}
+                        onChange={(e) => setEditCourseDesc(e.target.value)}
+                        required
+                        style={inputStyle}
+                      />
+                    </label>
+                    <div>
+                      <button
+                        type="submit"
+                        style={{
+                          padding: "8px 16px",
+                          borderRadius: 8,
+                          background: "#5142b5",
+                          color: "#ffffff",
+                          border: "none",
+                          fontWeight: 700,
+                          fontSize: 12.5,
+                          cursor: "pointer",
+                        }}
+                      >
+                        Save Course Changes
+                      </button>
+                    </div>
+                  </form>
+                ) : null}
+
                 {/* Course Cover Upload */}
                 <div style={{ marginTop: 12, paddingTop: 12, borderTop: "1px solid #ddd6fe", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, flexWrap: "wrap" }}>
                   <span style={{ fontSize: 12, color: "#475569", fontWeight: 600 }}>
@@ -875,16 +1044,16 @@ export function CourseAuthoringStudio({
             ) : null}
           </section>
 
-          {/* LIVE SYLLABUS TREE */}
+          {/* LIVE SYLLABUS TREE: COURSE -> MODULE -> LECTURES UNDER MODULE */}
           {selected ? (
             <section style={cardStyle}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10, flexWrap: "wrap", marginBottom: 14 }}>
                 <div>
                   <span style={{ fontSize: 11, fontFamily: "var(--font-mono)", fontWeight: 700, color: "#5142b5" }}>
-                    LIVE SYLLABUS TREE · MODULES &amp; LECTURES
+                    COURSE SYLLABUS TREE · MODULES &amp; LECTURES UNDER EACH MODULE
                   </span>
                   <h2 style={{ margin: "2px 0 0", fontSize: 18, color: "#0f172a" }}>
-                    {selected.title} Curriculum ({selected.modules.length} Modules)
+                    {selected.title} ({selected.modules.length} Modules · {totalLectures} Lectures)
                   </h2>
                 </div>
                 <div style={{ display: "flex", gap: 8 }}>
@@ -925,216 +1094,536 @@ export function CourseAuthoringStudio({
 
               {selected.modules.length === 0 ? (
                 <p style={{ margin: 0, padding: 16, borderRadius: 12, background: "#f8fafc", color: "#64748b", fontSize: 13.5 }}>
-                  No modules yet. Use the "Add module" form on the right to create Module 1.
+                  No modules in this course yet. Use the "Add module" form on the right to create Module 1.
                 </p>
               ) : (
                 <ol style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gap: 14 }}>
-                  {selected.modules.map((module, mIdx) => (
-                    <li
-                      key={module.id}
-                      style={{
-                        borderRadius: 14,
-                        border: "1px solid #e2e8f0",
-                        background: "#f8fafc",
-                        padding: 16,
-                      }}
-                    >
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 10, flexWrap: "wrap" }}>
-                        <div>
-                          <span style={{ fontSize: 11, fontFamily: "var(--font-mono)", fontWeight: 700, color: "#5142b5" }}>
-                            MODULE 0{module.position}
-                          </span>
-                          <strong style={{ display: "block", fontSize: 15.5, color: "#0f172a", marginTop: 2 }}>
-                            {module.position}. {module.title}
-                          </strong>
-                          {module.description ? (
-                            <p style={{ margin: "4px 0 0", fontSize: 12.5, color: "#475569" }}>{module.description}</p>
-                          ) : null}
+                  {selected.modules.map((module, mIdx) => {
+                    const isEditingMod = editingModuleId === module.id
+                    const isAddingLectureInline = inlineAddLectureModuleId === module.id
+                    return (
+                      <li
+                        key={module.id}
+                        style={{
+                          borderRadius: 14,
+                          border: "1.5px solid #cbd5e1",
+                          background: "#f8fafc",
+                          padding: 16,
+                        }}
+                      >
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 10, flexWrap: "wrap" }}>
+                          <div>
+                            <span style={{ fontSize: 11, fontFamily: "var(--font-mono)", fontWeight: 700, color: "#5142b5" }}>
+                              MODULE 0{module.position} · {module.lectures.length} {module.lectures.length === 1 ? "LECTURE" : "LECTURES"}
+                            </span>
+                            <strong style={{ display: "block", fontSize: 16, color: "#0f172a", marginTop: 2 }}>
+                              {module.position}. {module.title}
+                            </strong>
+                            {module.description ? (
+                              <p style={{ margin: "4px 0 0", fontSize: 12.5, color: "#475569" }}>{module.description}</p>
+                            ) : null}
+                          </div>
+                          <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                            <button
+                              type="button"
+                              disabled={mIdx === 0}
+                              onClick={() => void onMoveModule(module.id, -1)}
+                              title="Move module up"
+                              style={{ padding: "5px 9px", borderRadius: 6, border: "1px solid #cbd5e1", background: "#ffffff", fontSize: 11, cursor: "pointer" }}
+                            >
+                              ↑
+                            </button>
+                            <button
+                              type="button"
+                              disabled={mIdx === selected.modules.length - 1}
+                              onClick={() => void onMoveModule(module.id, 1)}
+                              title="Move module down"
+                              style={{ padding: "5px 9px", borderRadius: 6, border: "1px solid #cbd5e1", background: "#ffffff", fontSize: 11, cursor: "pointer" }}
+                            >
+                              ↓
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                if (isEditingMod) {
+                                  setEditingModuleId(null)
+                                } else {
+                                  setEditingModuleId(module.id)
+                                  setEditModuleTitle(module.title)
+                                  setEditModuleDesc(module.description ?? "")
+                                }
+                              }}
+                              style={{
+                                padding: "5px 10px",
+                                borderRadius: 6,
+                                border: "1px solid #cbd5e1",
+                                background: "#ffffff",
+                                color: "#334155",
+                                fontSize: 11,
+                                fontWeight: 600,
+                                cursor: "pointer",
+                              }}
+                            >
+                              {isEditingMod ? "Close Edit" : "Edit Module"}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setLectureModule(module.id)
+                                setInlineAddLectureModuleId(isAddingLectureInline ? null : module.id)
+                              }}
+                              style={{
+                                padding: "5px 11px",
+                                borderRadius: 6,
+                                border: "1px solid #5142b5",
+                                background: "#5142b5",
+                                color: "#ffffff",
+                                fontSize: 11.5,
+                                fontWeight: 700,
+                                cursor: "pointer",
+                              }}
+                            >
+                              {isAddingLectureInline ? "Close Form" : "+ Add Lecture Under Module"}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => void onDeleteModule(module.id, module.title)}
+                              style={{
+                                padding: "5px 9px",
+                                borderRadius: 6,
+                                border: "1px solid #fecaca",
+                                background: "#fef2f2",
+                                color: "#b91c1c",
+                                fontSize: 11,
+                                fontWeight: 600,
+                                cursor: "pointer",
+                              }}
+                            >
+                              Delete
+                            </button>
+                          </div>
                         </div>
-                        <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-                          <button
-                            type="button"
-                            disabled={mIdx === 0}
-                            onClick={() => void onMoveModule(module.id, -1)}
-                            title="Move module up"
-                            style={{ padding: "4px 8px", borderRadius: 6, border: "1px solid #cbd5e1", background: "#ffffff", fontSize: 11, cursor: "pointer" }}
-                          >
-                            ↑
-                          </button>
-                          <button
-                            type="button"
-                            disabled={mIdx === selected.modules.length - 1}
-                            onClick={() => void onMoveModule(module.id, 1)}
-                            title="Move module down"
-                            style={{ padding: "4px 8px", borderRadius: 6, border: "1px solid #cbd5e1", background: "#ffffff", fontSize: 11, cursor: "pointer" }}
-                          >
-                            ↓
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setLectureModule(module.id)
-                              setStudioTab("lectures")
-                            }}
-                            style={{
-                              padding: "4px 10px",
-                              borderRadius: 6,
-                              border: "1px solid #5142b5",
-                              background: "#f5f3ff",
-                              color: "#5142b5",
-                              fontSize: 11,
-                              fontWeight: 700,
-                              cursor: "pointer",
-                            }}
-                          >
-                            + Add Lecture here
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => void onDeleteModule(module.id, module.title)}
-                            style={{
-                              padding: "4px 8px",
-                              borderRadius: 6,
-                              border: "1px solid #fecaca",
-                              background: "#fef2f2",
-                              color: "#b91c1c",
-                              fontSize: 11,
-                              fontWeight: 600,
-                              cursor: "pointer",
-                            }}
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      </div>
 
-                      {module.lectures.length === 0 ? (
-                        <p style={{ margin: "10px 0 0", fontSize: 12.5, color: "#64748b" }}>
-                          No lectures in this module yet. Click "+ Add Lecture here" to add Notes, Video, Lab, or Quiz.
-                        </p>
-                      ) : (
-                        <ul style={{ listStyle: "none", margin: "12px 0 0", padding: 0, display: "grid", gap: 8 }}>
-                          {module.lectures.map((lecture) => {
-                            const meta = NODE_TYPE_META[lecture.nodeType] ?? NODE_TYPE_META.NOTES
-                            return (
-                              <li
-                                key={lecture.id}
+                        {/* Inline Edit Module Form */}
+                        {isEditingMod ? (
+                          <form
+                            onSubmit={(e) => void onSaveEditModule(e, module.id)}
+                            style={{
+                              marginTop: 12,
+                              padding: 12,
+                              borderRadius: 10,
+                              background: "#ffffff",
+                              border: "1px solid #ddd6fe",
+                              display: "grid",
+                              gap: 8,
+                            }}
+                          >
+                            <strong style={{ fontSize: 12, color: "#5142b5" }}>Edit Module {module.position}</strong>
+                            <input
+                              value={editModuleTitle}
+                              onChange={(e) => setEditModuleTitle(e.target.value)}
+                              placeholder="Module title"
+                              required
+                              style={inputStyle}
+                            />
+                            <input
+                              value={editModuleDesc}
+                              onChange={(e) => setEditModuleDesc(e.target.value)}
+                              placeholder="Module objective / description (optional)"
+                              style={inputStyle}
+                            />
+                            <div style={{ display: "flex", gap: 8 }}>
+                              <button
+                                type="submit"
                                 style={{
-                                  padding: "10px 12px",
-                                  borderRadius: 10,
-                                  background: "#ffffff",
-                                  border: "1px solid #e2e8f0",
-                                  display: "flex",
-                                  justifyContent: "space-between",
-                                  alignItems: "center",
-                                  gap: 10,
-                                  flexWrap: "wrap",
+                                  padding: "6px 14px",
+                                  borderRadius: 8,
+                                  background: "#5142b5",
+                                  color: "#ffffff",
+                                  border: "none",
+                                  fontWeight: 700,
+                                  fontSize: 12,
+                                  cursor: "pointer",
                                 }}
                               >
-                                <div style={{ minWidth: 0, flex: 1 }}>
-                                  <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-                                    <span
-                                      style={{
-                                        fontSize: 10.5,
-                                        fontWeight: 800,
-                                        fontFamily: "var(--font-mono)",
-                                        padding: "2px 8px",
-                                        borderRadius: 999,
-                                        background: meta.bg,
-                                        color: meta.color,
-                                      }}
-                                    >
-                                      {meta.badge}
-                                    </span>
-                                    <strong style={{ fontSize: 13.5, color: "#0f172a" }}>
-                                      {lecture.position}. {lecture.title} ({lecture.nodeType})
-                                    </strong>
-                                  </div>
-                                  {lecture.summary ? (
-                                    <p style={{ margin: "4px 0 0", fontSize: 12, color: "#475569", lineHeight: 1.45 }}>
-                                      {lecture.summary.slice(0, 140)}
-                                      {lecture.summary.length > 140 ? "…" : ""}
-                                    </p>
-                                  ) : null}
-                                  {lecture.materials && lecture.materials.length > 0 ? (
-                                    <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 6 }}>
-                                      {lecture.materials.map((mat) => (
+                                Save Module
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => setEditingModuleId(null)}
+                                style={{
+                                  padding: "6px 12px",
+                                  borderRadius: 8,
+                                  background: "#f1f5f9",
+                                  color: "#334155",
+                                  border: "1px solid #cbd5e1",
+                                  fontSize: 12,
+                                  cursor: "pointer",
+                                }}
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          </form>
+                        ) : null}
+
+                        {/* Inline "+ Add Lecture Under Module" Drawer */}
+                        {isAddingLectureInline ? (
+                          <form
+                            onSubmit={(e) => {
+                              e.preventDefault()
+                              void submitLectureToModule(module.id)
+                            }}
+                            style={{
+                              marginTop: 12,
+                              padding: 14,
+                              borderRadius: 12,
+                              background: "#ffffff",
+                              border: "2px solid #5142b5",
+                              display: "grid",
+                              gap: 10,
+                            }}
+                          >
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                              <strong style={{ fontSize: 13, color: "#5142b5" }}>
+                                Add New Lecture Under Module {module.position}: {module.title}
+                              </strong>
+                              <span style={{ fontSize: 11, color: "#64748b" }}>
+                                Will be added as Lecture #{module.lectures.length + 1}
+                              </span>
+                            </div>
+                            <div style={{ display: "grid", gridTemplateColumns: "1fr 180px", gap: 8 }}>
+                              <label style={labelStyle}>
+                                Lecture Title
+                                <input
+                                  placeholder="e.g. Introduction to SQL Joins"
+                                  value={lectureTitle}
+                                  onChange={(e) => setLectureTitle(e.target.value)}
+                                  required
+                                  style={inputStyle}
+                                />
+                              </label>
+                              <label style={labelStyle}>
+                                Format / Type
+                                <select
+                                  value={lectureNodeType}
+                                  onChange={(e) => setLectureNodeType(e.target.value)}
+                                  style={inputStyle}
+                                >
+                                  <option value="NOTES">NOTES (Reading)</option>
+                                  <option value="VIDEO">VIDEO (Video Lecture)</option>
+                                  <option value="LAB">LAB (Browser Sandbox)</option>
+                                  <option value="ASSIGNMENT">ASSIGNMENT (Brief)</option>
+                                  <option value="PROJECT">PROJECT (Capstone)</option>
+                                  <option value="QUIZ">QUIZ (Multiple-Choice)</option>
+                                </select>
+                              </label>
+                            </div>
+                            <label style={labelStyle}>
+                              Lecture Notes / Summary / Prompt
+                              <textarea
+                                rows={3}
+                                placeholder="Write the lesson notes, instructions, or assignment prompt here..."
+                                value={lectureSummary}
+                                onChange={(e) => setLectureSummary(e.target.value)}
+                                style={inputStyle}
+                              />
+                            </label>
+                            {lectureNodeType === "VIDEO" || lectureNodeType === "NOTES" || lectureNodeType === "LAB" ? (
+                              <label style={labelStyle}>
+                                Video / Reference URL (Optional)
+                                <input
+                                  type="url"
+                                  placeholder="https://..."
+                                  value={lectureReferenceUrl}
+                                  onChange={(e) => setLectureReferenceUrl(e.target.value)}
+                                  style={inputStyle}
+                                />
+                              </label>
+                            ) : null}
+                            <div style={{ display: "flex", gap: 8 }}>
+                              <button
+                                type="submit"
+                                style={{
+                                  padding: "8px 16px",
+                                  borderRadius: 8,
+                                  background: "#5142b5",
+                                  color: "#ffffff",
+                                  border: "none",
+                                  fontWeight: 700,
+                                  fontSize: 12.5,
+                                  cursor: "pointer",
+                                }}
+                              >
+                                Save Lecture to Module {module.position}
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => setInlineAddLectureModuleId(null)}
+                                style={{
+                                  padding: "8px 12px",
+                                  borderRadius: 8,
+                                  background: "#f1f5f9",
+                                  color: "#334155",
+                                  border: "1px solid #cbd5e1",
+                                  fontSize: 12.5,
+                                  cursor: "pointer",
+                                }}
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          </form>
+                        ) : null}
+
+                        {module.lectures.length === 0 ? (
+                          <p style={{ margin: "10px 0 0", fontSize: 12.5, color: "#64748b" }}>
+                            No lectures in this module yet. Click "+ Add Lecture Under Module" above to add Notes, Video, Lab, or Quiz.
+                          </p>
+                        ) : (
+                          <ul style={{ listStyle: "none", margin: "12px 0 0", padding: 0, display: "grid", gap: 8 }}>
+                            {module.lectures.map((lecture) => {
+                              const meta = NODE_TYPE_META[lecture.nodeType] ?? NODE_TYPE_META.NOTES
+                              const isEditingLec = editingLectureId === lecture.id
+                              return (
+                                <li
+                                  key={lecture.id}
+                                  style={{
+                                    padding: "10px 12px",
+                                    borderRadius: 10,
+                                    background: "#ffffff",
+                                    border: "1px solid #e2e8f0",
+                                    display: "grid",
+                                    gap: 8,
+                                  }}
+                                >
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      justifyContent: "space-between",
+                                      alignItems: "center",
+                                      gap: 10,
+                                      flexWrap: "wrap",
+                                    }}
+                                  >
+                                    <div style={{ minWidth: 0, flex: 1 }}>
+                                      <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
                                         <span
-                                          key={mat.id}
                                           style={{
-                                            fontSize: 11,
+                                            fontSize: 10.5,
+                                            fontWeight: 800,
+                                            fontFamily: "var(--font-mono)",
                                             padding: "2px 8px",
-                                            borderRadius: 6,
-                                            background: "#f1f5f9",
-                                            color: "#334155",
-                                            fontWeight: 600,
+                                            borderRadius: 999,
+                                            background: meta.bg,
+                                            color: meta.color,
                                           }}
                                         >
-                                          📎 {mat.fileName} ({Math.round(mat.byteSize / 1024)} KB)
+                                          {meta.badge}
                                         </span>
-                                      ))}
+                                        <strong style={{ fontSize: 13.5, color: "#0f172a" }}>
+                                          {module.position}.{lecture.position} {lecture.title} ({lecture.nodeType})
+                                        </strong>
+                                      </div>
+                                      {lecture.summary ? (
+                                        <p style={{ margin: "4px 0 0", fontSize: 12, color: "#475569", lineHeight: 1.45 }}>
+                                          {lecture.summary.slice(0, 160)}
+                                          {lecture.summary.length > 160 ? "…" : ""}
+                                        </p>
+                                      ) : null}
+                                      {lecture.referenceUrl ? (
+                                        <p style={{ margin: "3px 0 0", fontSize: 11.5, color: "#5142b5", fontWeight: 600 }}>
+                                          Video / Link: {lecture.referenceUrl}
+                                        </p>
+                                      ) : null}
+                                      {lecture.materials && lecture.materials.length > 0 ? (
+                                        <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 6 }}>
+                                          {lecture.materials.map((mat) => (
+                                            <span
+                                              key={mat.id}
+                                              style={{
+                                                fontSize: 11,
+                                                padding: "2px 8px",
+                                                borderRadius: 6,
+                                                background: "#f1f5f9",
+                                                color: "#334155",
+                                                fontWeight: 600,
+                                              }}
+                                            >
+                                              PDF/Slide: {mat.fileName} ({Math.round(mat.byteSize / 1024)} KB)
+                                            </span>
+                                          ))}
+                                        </div>
+                                      ) : null}
                                     </div>
-                                  ) : null}
-                                </div>
 
-                                <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-                                  <label
-                                    style={{
-                                      padding: "4px 10px",
-                                      borderRadius: 6,
-                                      border: "1px solid #cbd5e1",
-                                      background: "#f8fafc",
-                                      color: "#334155",
-                                      fontSize: 11,
-                                      fontWeight: 700,
-                                      cursor: "pointer",
-                                    }}
-                                  >
-                                    📎 Attach PDF/Slide
-                                    <input
-                                      type="file"
-                                      accept=".pdf,.ppt,.pptx,.txt,.md"
-                                      style={{ display: "none" }}
-                                      onChange={(e) => void onUploadLectureMaterial(lecture.id, e.target.files?.[0] ?? null)}
-                                    />
-                                  </label>
-                                  <button
-                                    type="button"
-                                    onClick={() => void onDeleteLecture(lecture.id, lecture.title)}
-                                    style={{
-                                      padding: "4px 8px",
-                                      borderRadius: 6,
-                                      border: "1px solid #fecaca",
-                                      background: "#ffffff",
-                                      color: "#b91c1c",
-                                      fontSize: 11,
-                                      cursor: "pointer",
-                                    }}
-                                  >
-                                    Remove
-                                  </button>
-                                </div>
-                              </li>
-                            )
-                          })}
-                        </ul>
-                      )}
-                    </li>
-                  ))}
+                                    <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          if (isEditingLec) {
+                                            setEditingLectureId(null)
+                                          } else {
+                                            setEditingLectureId(lecture.id)
+                                            setEditLectureTitle(lecture.title)
+                                            setEditLectureType(lecture.nodeType)
+                                            setEditLectureSummary(lecture.summary ?? "")
+                                            setEditLectureUrl(lecture.referenceUrl ?? "")
+                                          }
+                                        }}
+                                        style={{
+                                          padding: "4px 9px",
+                                          borderRadius: 6,
+                                          border: "1px solid #cbd5e1",
+                                          background: "#ffffff",
+                                          color: "#334155",
+                                          fontSize: 11,
+                                          fontWeight: 600,
+                                          cursor: "pointer",
+                                        }}
+                                      >
+                                        {isEditingLec ? "Close Edit" : "Edit"}
+                                      </button>
+                                      <label
+                                        style={{
+                                          padding: "4px 10px",
+                                          borderRadius: 6,
+                                          border: "1px solid #cbd5e1",
+                                          background: "#f8fafc",
+                                          color: "#334155",
+                                          fontSize: 11,
+                                          fontWeight: 700,
+                                          cursor: "pointer",
+                                        }}
+                                      >
+                                        Attach PDF/Slide
+                                        <input
+                                          type="file"
+                                          accept=".pdf,.ppt,.pptx,.txt,.md"
+                                          style={{ display: "none" }}
+                                          onChange={(e) => void onUploadLectureMaterial(lecture.id, e.target.files?.[0] ?? null)}
+                                        />
+                                      </label>
+                                      <button
+                                        type="button"
+                                        onClick={() => void onDeleteLecture(lecture.id, lecture.title)}
+                                        style={{
+                                          padding: "4px 8px",
+                                          borderRadius: 6,
+                                          border: "1px solid #fecaca",
+                                          background: "#ffffff",
+                                          color: "#b91c1c",
+                                          fontSize: 11,
+                                          cursor: "pointer",
+                                        }}
+                                      >
+                                        Remove
+                                      </button>
+                                    </div>
+                                  </div>
+
+                                  {isEditingLec ? (
+                                    <form
+                                      onSubmit={(e) => void onSaveEditLecture(e, lecture.id)}
+                                      style={{
+                                        marginTop: 6,
+                                        paddingTop: 10,
+                                        borderTop: "1px solid #e2e8f0",
+                                        display: "grid",
+                                        gap: 8,
+                                      }}
+                                    >
+                                      <div style={{ display: "grid", gridTemplateColumns: "1fr 160px", gap: 8 }}>
+                                        <input
+                                          value={editLectureTitle}
+                                          onChange={(e) => setEditLectureTitle(e.target.value)}
+                                          placeholder="Lecture title"
+                                          required
+                                          style={inputStyle}
+                                        />
+                                        <select
+                                          value={editLectureType}
+                                          onChange={(e) => setEditLectureType(e.target.value)}
+                                          style={inputStyle}
+                                        >
+                                          <option value="NOTES">NOTES</option>
+                                          <option value="VIDEO">VIDEO</option>
+                                          <option value="LAB">LAB</option>
+                                          <option value="ASSIGNMENT">ASSIGNMENT</option>
+                                          <option value="PROJECT">PROJECT</option>
+                                          <option value="QUIZ">QUIZ</option>
+                                        </select>
+                                      </div>
+                                      <textarea
+                                        rows={3}
+                                        value={editLectureSummary}
+                                        onChange={(e) => setEditLectureSummary(e.target.value)}
+                                        placeholder="Lecture notes / summary"
+                                        style={inputStyle}
+                                      />
+                                      <input
+                                        type="url"
+                                        value={editLectureUrl}
+                                        onChange={(e) => setEditLectureUrl(e.target.value)}
+                                        placeholder="Video or reference URL (optional, https://...)"
+                                        style={inputStyle}
+                                      />
+                                      <div style={{ display: "flex", gap: 8 }}>
+                                        <button
+                                          type="submit"
+                                          style={{
+                                            padding: "6px 14px",
+                                            borderRadius: 8,
+                                            background: "#5142b5",
+                                            color: "#ffffff",
+                                            border: "none",
+                                            fontWeight: 700,
+                                            fontSize: 12,
+                                            cursor: "pointer",
+                                          }}
+                                        >
+                                          Save Lecture Changes
+                                        </button>
+                                        <button
+                                          type="button"
+                                          onClick={() => setEditingLectureId(null)}
+                                          style={{
+                                            padding: "6px 12px",
+                                            borderRadius: 8,
+                                            background: "#f1f5f9",
+                                            color: "#334155",
+                                            border: "1px solid #cbd5e1",
+                                            fontSize: 12,
+                                            cursor: "pointer",
+                                          }}
+                                        >
+                                          Cancel
+                                        </button>
+                                      </div>
+                                    </form>
+                                  ) : null}
+                                </li>
+                              )
+                            })}
+                          </ul>
+                        )}
+                      </li>
+                    )
+                  })}
                 </ol>
               )}
             </section>
           ) : null}
         </div>
 
-        {/* RIGHT COLUMN: Authoring Forms (Switched by studioTab or all shown in Split-Screen mode) */}
+        {/* RIGHT COLUMN: Dedicated Authoring Forms (Create Course, Add Module, Add Lecture Under Module, Assign Faculty) */}
         <div style={{ display: "grid", gap: 18 }}>
           {/* TAB 1: CREATE NEW COURSE */}
           {studioTab === "course" || studioTab === "all" ? (
             <form onSubmit={onCreateCourse} style={{ ...cardStyle, display: "grid", gap: 12 }}>
               <div>
                 <span style={{ fontSize: 11, fontFamily: "var(--font-mono)", fontWeight: 700, color: "#5142b5" }}>
-                  STEP 01 · CREATE NEW COURSE (STARTS IN DRAFT)
+                  CREATE NEW COURSE (STARTS IN DRAFT)
                 </span>
                 <h2 style={{ margin: "2px 0 0", fontSize: 18, color: "#0f172a" }}>New course</h2>
               </div>
@@ -1169,7 +1658,7 @@ export function CourseAuthoringStudio({
                   Category
                   <input
                     aria-label="Category"
-                    placeholder="Data & Analytics"
+                    placeholder="Data"
                     value={category}
                     onChange={(event) => setCategory(event.target.value)}
                     required
@@ -1180,7 +1669,7 @@ export function CourseAuthoringStudio({
                   Level
                   <input
                     aria-label="Course level"
-                    placeholder="Foundation to Pro"
+                    placeholder="Beginner"
                     value={level}
                     onChange={(event) => setLevel(event.target.value)}
                     style={inputStyle}
@@ -1190,14 +1679,14 @@ export function CourseAuthoringStudio({
                   Duration
                   <input
                     aria-label="Course duration"
-                    placeholder="8 weeks · 60 hrs"
+                    placeholder="8 weeks"
                     value={duration}
                     onChange={(event) => setDuration(event.target.value)}
                     style={inputStyle}
                   />
                 </label>
                 <label style={labelStyle}>
-                  Price (₹ INR, 0 = Free Pilot)
+                  Listed Price (₹ INR)
                   <input
                     aria-label="Course price"
                     type="number"
@@ -1214,7 +1703,7 @@ export function CourseAuthoringStudio({
                 <textarea
                   aria-label="Description"
                   rows={3}
-                  placeholder="Explain what the learner will execute, build, and prove in this course…"
+                  placeholder="Write a clear description of what students will learn and build in this course…"
                   value={description}
                   onChange={(event) => setDescription(event.target.value)}
                   required
@@ -1224,18 +1713,20 @@ export function CourseAuthoringStudio({
 
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 10 }}>
                 <label style={labelStyle}>
-                  Learning Outcomes (1 per line)
+                  Learning Outcomes (1 per line, optional)
                   <textarea
                     rows={3}
+                    placeholder="e.g. Write multi-table SQL joins&#10;Build a commercial revenue dashboard"
                     value={outcomesText}
                     onChange={(e) => setOutcomesText(e.target.value)}
                     style={inputStyle}
                   />
                 </label>
                 <label style={labelStyle}>
-                  Who This Course Is For (1 per line)
+                  Who This Course Is For (1 per line, optional)
                   <textarea
                     rows={3}
+                    placeholder="e.g. Final-year college students&#10;Early-career business analysts"
                     value={forWhomText}
                     onChange={(e) => setForWhomText(e.target.value)}
                     style={inputStyle}
@@ -1261,12 +1752,12 @@ export function CourseAuthoringStudio({
             </form>
           ) : null}
 
-          {/* TAB 2: ADD MODULE */}
+          {/* TAB 2: ADD MODULE UNDER COURSE */}
           {(studioTab === "modules" || studioTab === "all") && selected ? (
             <form onSubmit={onAddModule} style={{ ...cardStyle, display: "grid", gap: 12 }}>
               <div>
                 <span style={{ fontSize: 11, fontFamily: "var(--font-mono)", fontWeight: 700, color: "#5142b5" }}>
-                  STEP 02 · ADD MODULE TO {selected.slug.toUpperCase()}
+                  ADD MODULE UNDER COURSE: {selected.title.toUpperCase()}
                 </span>
                 <h2 style={{ margin: "2px 0 0", fontSize: 18, color: "#0f172a" }}>Add module</h2>
                 <p style={{ margin: "4px 0 0", fontSize: 13, color: "#475569" }}>
@@ -1280,7 +1771,7 @@ export function CourseAuthoringStudio({
                   Module Title
                   <input
                     aria-label="Module title"
-                    placeholder="e.g. Module 1: Commercial Revenue & SQL Grain"
+                    placeholder="e.g. Foundations & Data Cleaning"
                     value={moduleTitle}
                     onChange={(event) => setModuleTitle(event.target.value)}
                     required
@@ -1303,7 +1794,7 @@ export function CourseAuthoringStudio({
               <label style={labelStyle}>
                 Module Objective / Description (Optional)
                 <input
-                  placeholder="What will students master and submit at the end of this module?"
+                  placeholder="What will students learn in this module?"
                   value={moduleDescription}
                   onChange={(event) => setModuleDescription(event.target.value)}
                   style={inputStyle}
@@ -1328,19 +1819,19 @@ export function CourseAuthoringStudio({
             </form>
           ) : null}
 
-          {/* TAB 3: ADD LECTURE / LAB / QUIZ / VIDEO */}
+          {/* TAB 3: ADD LECTURE UNDER MODULE */}
           {(studioTab === "lectures" || studioTab === "all") && selected ? (
             <form onSubmit={onAddLecture} style={{ ...cardStyle, display: "grid", gap: 12 }}>
               <div>
                 <span style={{ fontSize: 11, fontFamily: "var(--font-mono)", fontWeight: 700, color: "#5142b5" }}>
-                  STEP 03 · AUTHOR LECTURE, VIDEO, LAB, CASE BRIEF OR QUIZ
+                  ADD LECTURE UNDER MODULE ({selected.title.toUpperCase()})
                 </span>
                 <h2 style={{ margin: "2px 0 0", fontSize: 18, color: "#0f172a" }}>Add lecture</h2>
               </div>
 
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 10 }}>
                 <label style={labelStyle}>
-                  Parent Module
+                  Parent Module (Select which Module this Lecture belongs to)
                   <select
                     aria-label="Parent module"
                     value={lectureModule}
@@ -1351,7 +1842,7 @@ export function CourseAuthoringStudio({
                     <option value="">Choose the module</option>
                     {selected.modules.map((module) => (
                       <option key={module.id} value={module.id}>
-                        {module.position}. {module.title}
+                        Module {module.position}: {module.title}
                       </option>
                     ))}
                   </select>
@@ -1365,12 +1856,12 @@ export function CourseAuthoringStudio({
                     onChange={(e) => setLectureNodeType(e.target.value)}
                     style={inputStyle}
                   >
-                    <option value="NOTES">NOTES — Reading + Hinglish AI Coach</option>
-                    <option value="VIDEO">VIDEO — Video Lecture + Transcript</option>
-                    <option value="LAB">LAB — Browser SQL / Python / RAG Sandbox</option>
-                    <option value="ASSIGNMENT">ASSIGNMENT — Graded Case Brief (V1→V2 Review)</option>
-                    <option value="PROJECT">PROJECT — Graded Capstone Studio</option>
-                    <option value="QUIZ">QUIZ — Graded Multiple-Choice Assessment</option>
+                    <option value="NOTES">NOTES — Written Lesson + AI Mentor</option>
+                    <option value="VIDEO">VIDEO — Video Lecture + Summary</option>
+                    <option value="LAB">LAB — Browser SQL / Code Sandbox</option>
+                    <option value="ASSIGNMENT">ASSIGNMENT — Graded Written Brief</option>
+                    <option value="PROJECT">PROJECT — Graded Capstone Project</option>
+                    <option value="QUIZ">QUIZ — Graded Multiple-Choice Quiz</option>
                   </select>
                 </label>
               </div>
@@ -1393,7 +1884,7 @@ export function CourseAuthoringStudio({
                   Lecture Title
                   <input
                     aria-label="Lecture title"
-                    placeholder="e.g. Diagnosing Order-to-Line-Item Join Fan-Out"
+                    placeholder="e.g. Filtering Rows with WHERE and Aggregates"
                     value={lectureTitle}
                     onChange={(event) => setLectureTitle(event.target.value)}
                     required
@@ -1414,10 +1905,10 @@ export function CourseAuthoringStudio({
               </div>
 
               <label style={labelStyle}>
-                Lecture Content / Reading Notes / Case Prompt (Markdown &amp; Hinglish AI Grounding Text)
+                Lecture Content / Reading Notes / Assignment Prompt
                 <textarea
                   rows={5}
-                  placeholder="Write the full lesson notes, SQL/Python explanation, or assignment prompt here. Skylent AI uses this exact text to coach learners in English and Hinglish!"
+                  placeholder="Write the full lesson notes, examples, or assignment instructions here..."
                   value={lectureSummary}
                   onChange={(e) => setLectureSummary(e.target.value)}
                   style={inputStyle}
@@ -1426,10 +1917,10 @@ export function CourseAuthoringStudio({
 
               {lectureNodeType === "VIDEO" || lectureNodeType === "NOTES" || lectureNodeType === "LAB" ? (
                 <label style={labelStyle}>
-                  Video / Live Session / Reference URL (Optional — e.g. https://… or Zoom/Meet/Mux link)
+                  Video / Live Session / Reference URL (Optional — e.g. https://…)
                   <input
                     type="url"
-                    placeholder="https://stream.mux.com/..."
+                    placeholder="https://..."
                     value={lectureReferenceUrl}
                     onChange={(e) => setLectureReferenceUrl(e.target.value)}
                     style={inputStyle}
@@ -1449,20 +1940,10 @@ export function CourseAuthoringStudio({
                   }}
                 >
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
-                    <strong style={{ fontSize: 14, color: "#0f172a" }}>Interactive Quiz Builder</strong>
+                    <strong style={{ fontSize: 14, color: "#0f172a" }}>Quiz Questions Builder</strong>
                     <button
                       type="button"
-                      onClick={() =>
-                        setQuizQuestions((prev) => [
-                          ...prev,
-                          {
-                            question: "",
-                            options: ["Option A", "Option B", "Option C", "Option D"],
-                            correctIndex: 0,
-                            explanation: "",
-                          },
-                        ])
-                      }
+                      onClick={() => setQuizQuestions((prev) => [...prev, emptyQuizQuestion()])}
                       style={{
                         padding: "5px 12px",
                         borderRadius: 999,
@@ -1528,7 +2009,7 @@ export function CourseAuthoringStudio({
                         ) : null}
                       </div>
                       <input
-                        placeholder="Question prompt"
+                        placeholder="Enter question prompt..."
                         value={q.question}
                         onChange={(e) =>
                           setQuizQuestions((prev) =>
@@ -1572,7 +2053,7 @@ export function CourseAuthoringStudio({
                         ))}
                       </div>
                       <input
-                        placeholder="First-principles explanation shown after answer"
+                        placeholder="Explanation shown after student submits answer (optional)"
                         value={q.explanation}
                         onChange={(e) =>
                           setQuizQuestions((prev) =>
@@ -1609,13 +2090,13 @@ export function CourseAuthoringStudio({
             <section style={{ ...cardStyle, display: "grid", gap: 12 }}>
               <div>
                 <span style={{ fontSize: 11, fontFamily: "var(--font-mono)", fontWeight: 700, color: "#5142b5" }}>
-                  STEP 04 · FACULTY TA COURSE ASSIGNMENT &amp; PERMISSIONS
+                  FACULTY / TA ASSIGNMENT
                 </span>
                 <h2 style={{ margin: "2px 0 0", fontSize: 18, color: "#0f172a" }}>
                   Assign Faculty / TA to {selected.title}
                 </h2>
                 <p style={{ margin: "4px 0 0", fontSize: 13, color: "#475569", lineHeight: 1.5 }}>
-                  Assigned Faculty TAs can add lectures, upload PDF/PPTX study materials, resolve 20-minute student doubts, and grade V1 → V2 Capstone submissions for this course inside <code>/dashboard/faculty</code>.
+                  Assigned Faculty TAs can add lectures, upload PDF/PPTX study materials, resolve student doubts, and grade submissions for this course inside <code>/dashboard/faculty</code>.
                 </p>
               </div>
 
@@ -1705,10 +2186,10 @@ export function CourseAuthoringStudio({
 }
 
 const BUILDER_NAV_ITEMS: AuthNavItem[] = [
-  { id: "all", label: "Full Studio View", short: "Studio" },
+  { id: "all", label: "Full Builder (Course → Module → Lecture)", short: "Builder" },
   { id: "course", label: "1. Create / Select Course", short: "Courses" },
-  { id: "modules", label: "2. Modules & Syllabus", short: "Modules" },
-  { id: "lectures", label: "3. Add Lectures & Quizzes", short: "Lectures" },
+  { id: "modules", label: "2. Add Modules", short: "Modules" },
+  { id: "lectures", label: "3. Add Lectures Under Module", short: "Lectures" },
   { id: "faculty", label: "4. Assign Faculty TA", short: "Faculty" },
   { id: "admin-back", label: "← Back to Admin OS", short: "Admin", href: "/dashboard/admin" },
 ]

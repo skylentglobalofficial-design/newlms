@@ -179,10 +179,10 @@ app.use((error: unknown, _request: express.Request, response: express.Response, 
 })
 
 async function ensureSuperadminOnStartup(): Promise<void> {
-  const email = normalizeEmail(process.env.SUPERADMIN_EMAIL || "tariniprasadtripathy17@gmail.com")
+  const primaryEmail = normalizeEmail(process.env.SUPERADMIN_EMAIL || "tariniprasadtripathy17@gmail.com")
   const password = process.env.SUPERADMIN_PASSWORD || process.env.SUPERADMIN_INITIAL_PASSWORD || "Tarini@Skylent2026!"
   const displayName = process.env.SUPERADMIN_NAME?.trim() || "Tarini Prasad Tripathy"
-  if (!email || password.length < 12) return
+  if (!primaryEmail || password.length < 12) return
 
   const adminRole = await prisma.role.upsert({
     where: { name: RoleName.ADMIN },
@@ -190,53 +190,60 @@ async function ensureSuperadminOnStartup(): Promise<void> {
     create: { name: RoleName.ADMIN },
   })
 
-  const existing = await prisma.user.findUnique({
-    where: { email },
-    include: { roles: { include: { role: true } } },
-  })
+  const accountsToSync = Array.from(new Set([primaryEmail, "admin@skylent.live"]))
 
-  let targetUserId: string
-  if (!existing) {
-    const passwordHash = await bcrypt.hash(password, BCRYPT_ROUNDS)
-    const created = await prisma.user.create({
-      data: {
-        email,
-        displayName,
-        passwordHash,
-        mustChangePassword: false,
-        roles: { create: { roleId: adminRole.id } },
-      },
+  for (const email of accountsToSync) {
+    const nameForAccount = email === "admin@skylent.live" ? "Skylent Super Admin" : displayName
+    const existing = await prisma.user.findUnique({
+      where: { email },
+      include: { roles: { include: { role: true } } },
     })
-    targetUserId = created.id
-    console.log(`Superadmin provisioned on startup: ${email}`)
-  } else {
-    targetUserId = existing.id
-    const hasAdmin = existing.roles.some((r) => r.role.name === RoleName.ADMIN)
-    if (!hasAdmin) {
-      await prisma.$transaction(async (tx) => {
-        await tx.userRole.deleteMany({ where: { userId: existing.id, roleId: { not: adminRole.id } } })
-        await tx.userRole.upsert({
-          where: { userId_roleId: { userId: existing.id, roleId: adminRole.id } },
-          update: {},
-          create: { userId: existing.id, roleId: adminRole.id },
-        })
-      })
-      console.log(`Superadmin elevated on startup: ${email}`)
-    }
-    if (!existing.passwordHash) {
-      const passwordHash = await bcrypt.hash(password, BCRYPT_ROUNDS)
-      await prisma.user.update({
-        where: { id: existing.id },
-        data: { passwordHash, mustChangePassword: false },
-      })
-    }
-  }
 
-  await prisma.careerOsAccess.upsert({
-    where: { userId: targetUserId },
-    update: {},
-    create: { userId: targetUserId, reason: "Super Admin Career OS entitlement" },
-  }).catch(() => undefined)
+    let targetUserId: string
+    if (!existing) {
+      const passwordHash = await bcrypt.hash(password, BCRYPT_ROUNDS)
+      const created = await prisma.user.create({
+        data: {
+          email,
+          displayName: nameForAccount,
+          passwordHash,
+          mustChangePassword: false,
+          roles: { create: { roleId: adminRole.id } },
+        },
+      })
+      targetUserId = created.id
+      console.log(`Superadmin provisioned on startup: ${email}`)
+    } else {
+      targetUserId = existing.id
+      const hasAdmin = existing.roles.some((r) => r.role.name === RoleName.ADMIN)
+      if (!hasAdmin) {
+        await prisma.$transaction(async (tx) => {
+          await tx.userRole.deleteMany({ where: { userId: existing.id, roleId: { not: adminRole.id } } })
+          await tx.userRole.upsert({
+            where: { userId_roleId: { userId: existing.id, roleId: adminRole.id } },
+            update: {},
+            create: { userId: existing.id, roleId: adminRole.id },
+          })
+        })
+        console.log(`Superadmin elevated on startup: ${email}`)
+      }
+      const passwordMatches = existing.passwordHash ? await bcrypt.compare(password, existing.passwordHash) : false
+      if (!passwordMatches || existing.mustChangePassword) {
+        const passwordHash = await bcrypt.hash(password, BCRYPT_ROUNDS)
+        await prisma.user.update({
+          where: { id: existing.id },
+          data: { passwordHash, mustChangePassword: false },
+        })
+        console.log(`Superadmin credentials synced on startup: ${email}`)
+      }
+    }
+
+    await prisma.careerOsAccess.upsert({
+      where: { userId: targetUserId },
+      update: {},
+      create: { userId: targetUserId, reason: "Super Admin Career OS entitlement" },
+    }).catch(() => undefined)
+  }
 }
 
 let server: ReturnType<typeof app.listen> | undefined

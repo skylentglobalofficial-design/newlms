@@ -184,7 +184,6 @@ export default function HomePage() {
           <div style={{ display: activeTab === "career" ? "block" : "none" }}>
             <HomeCareer />
             <HomeDegrees />
-            <HomeInstitutionalArchitecture />
           </div>
         </section>
 
