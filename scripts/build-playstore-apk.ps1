@@ -1,5 +1,5 @@
 # =============================================================================
-# SKYLENT PLAY STORE NATIVE APK & SIGNED AAB BUILDER (V56)
+# SKYLENT PLAY STORE NATIVE APK & SIGNED AAB BUILDER (V57)
 # Generates:
 #   1. skylent-playstore-debug.apk   (For testing on phone first)
 #   2. skylent-playstore-release.apk (Signed Release APK for phone install)
@@ -15,7 +15,7 @@ $Utf8NoBom = New-Object System.Text.UTF8Encoding($false)
 
 Write-Host ""
 Write-Host "============================================================" -ForegroundColor Cyan
-Write-Host "  SKYLENT PLAY STORE APK & SIGNED AAB BUILDER (v56)" -ForegroundColor Cyan
+Write-Host "  SKYLENT PLAY STORE APK & SIGNED AAB BUILDER (v57)" -ForegroundColor Cyan
 Write-Host "============================================================" -ForegroundColor Cyan
 
 # Step 1: Security Audit - Ensure no server secrets are prefixed with VITE_
@@ -183,7 +183,7 @@ public class MainActivity extends BridgeActivity {
             String ua = settings.getUserAgentString();
             if (ua != null) {
                 String cleanUa = ua.replace("; wv", "").replace("wv)", ")");
-                settings.setUserAgentString(cleanUa + " SkylentNativeApp/1.6");
+                settings.setUserAgentString(cleanUa + " SkylentNativeApp/1.7");
             }
         }
 
@@ -200,9 +200,20 @@ public class MainActivity extends BridgeActivity {
                         "(function() { " +
                         "  var closeBtn = document.querySelector('.skn-sheet__close, [role=\"dialog\"] button[aria-label*=\"Close\"]'); " +
                         "  if (closeBtn) { closeBtn.click(); return 'MODAL_CLOSED'; } " +
-                        "  var p = window.location.pathname; " +
+                        "  var p = window.location.pathname || '/'; " +
+                        "  var h = window.location.hash || ''; " +
+                        "  var hasSession = Boolean(localStorage.getItem('skylent:native:session-token:v1')); " +
+                        "  if (p.indexOf('/dashboard/') === 0 && (!h || h === '#')) { " +
+                        "    return 'AT_HOME'; " +
+                        "  } " +
+                        "  if (p.indexOf('/dashboard/student') === 0 && h && h !== '#') { " +
+                        "    window.location.hash = ''; return 'NAVIGATED_BACK'; " +
+                        "  } " +
+                        "  if (hasSession && (p.indexOf('/career-os') === 0 || p.indexOf('/learn/') === 0 || p.indexOf('/os/') === 0)) { " +
+                        "    window.location.href = '/dashboard/student'; return 'NAVIGATED_BACK'; " +
+                        "  } " +
                         "  if (p !== '/' && p !== '/index.html') { " +
-                        "    if (window.history.length > 1) { window.history.back(); } else { window.location.href = '/'; } " +
+                        "    if (window.history.length > 1) { window.history.back(); } else { window.location.href = hasSession ? '/dashboard/student' : '/'; } " +
                         "    return 'NAVIGATED_BACK'; " +
                         "  } " +
                         "  return 'AT_HOME'; " +
@@ -455,7 +466,7 @@ if (Test-Path "android/gradlew.bat") {
     $ApkSizeMb = [math]::Round(((Get-Item $OutDebugApk).Length / 1MB), 2)
     Write-Host ""
     Write-Host "============================================================" -ForegroundColor Green
-    Write-Host "  [SUCCESS] ALL GOOGLE PLAY STORE FILES GENERATED (V56)!" -ForegroundColor Green
+    Write-Host "  [SUCCESS] ALL GOOGLE PLAY STORE FILES GENERATED (V57)!" -ForegroundColor Green
     Write-Host "  1. Phone Test APK (Signed) : $OutReleaseApk ($ApkSizeMb MB)" -ForegroundColor White
     Write-Host "  2. Phone Test APK (Debug)  : $OutDebugApk" -ForegroundColor White
     Write-Host "  3. Play Store Upload (.aab): $OutReleaseAab" -ForegroundColor Cyan

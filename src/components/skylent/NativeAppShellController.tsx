@@ -115,7 +115,10 @@ export function NativeAppShellController() {
   // Hide the public bottom bar inside Dashboards, Lesson Player, and Auth forms
   // (Dashboards already have their own dedicated AuthDashboardShell bottom nav).
   const isWorkspaceOrAuthRoute =
+    Boolean(user) ||
     location.pathname.startsWith("/dashboard") ||
+    location.pathname.startsWith("/career-os") ||
+    location.pathname.startsWith("/os/") ||
     location.pathname.startsWith("/learn") ||
     location.pathname.startsWith("/login") ||
     location.pathname.startsWith("/signup") ||
