@@ -310,16 +310,23 @@ export default function LoginPage() {
     try {
       const res = await sendMobileOtpRequest(otpPhone.trim())
       setOtpPhone(res.phone)
-      setOtpExistingUser(res.isExistingUser)
-      setOtpBoundEmailHint(res.boundEmailHint ?? null)
-      if (res.existingName) setOtpName(res.existingName)
-      setOtpSent(true)
-      if (res.demoOtp) {
-        setOtpPreviewCode(res.demoOtp)
-        setOtpCode(res.demoOtp)
+      // If mobile number already exists in Skylent -> DIRECT SIGN-IN immediately!
+      if (res.directSignIn && res.user) {
+        if (res.sessionToken) setNativeSessionToken(res.sessionToken)
+        if (res.csrfToken) setNativeCsrfToken(res.csrfToken)
+        const activeUser = await refreshSession()
+        const targetRole = activeUser?.role ?? res.role ?? 'student'
+        await finishAuthNavigation(navigate, targetRole, redirectState)
+        return
       }
+      // Otherwise it is a new number -> show OTP + Your Name + Email + Sign Up!
+      setOtpExistingUser(false)
+      setOtpBoundEmailHint(null)
+      setOtpPreviewCode(null)
+      setOtpCode('')
+      setOtpSent(true)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unable to send OTP right now.')
+      setError(err instanceof Error ? err.message : 'Unable to continue right now.')
     } finally {
       submittingRef.current = false
       setSubmitting(false)
@@ -711,8 +718,11 @@ export default function LoginPage() {
                       fontSize: 15,
                     }}
                   >
-                    {submitting ? 'Sending OTP…' : 'Request OTP'}
+                    {submitting ? 'Checking account…' : 'Continue →'}
                   </button>
+                  <p style={{ margin: '8px 0 0', fontSize: 12, color: '#64748b', lineHeight: 1.45 }}>
+                    Existing users sign in directly. New users will enter their Name, Email &amp; 6-digit OTP on the next step.
+                  </p>
 
                   <div className="entry-or" style={{ margin: '18px 0' }}><span>or</span></div>
 
@@ -742,40 +752,55 @@ export default function LoginPage() {
                 </form>
               ) : (
                 <form className="entry-form" onSubmit={handleVerifyOtp} noValidate>
-                  {otpPreviewCode ? (
-                    <div
-                      role="status"
-                      style={{
-                        padding: '10px 14px',
-                        borderRadius: 10,
-                        background: '#f0fdf4',
-                        border: '1.5px solid #86efac',
-                        color: '#166534',
-                        fontSize: 12.5,
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        gap: 10,
-                        flexWrap: 'wrap',
-                      }}
-                    >
-                      <div>
-                        <strong style={{ display: 'block', fontSize: 11.5 }}>
-                          Verification OTP for +91-{otpPhone}
-                        </strong>
-                        <span>
-                          Your 6-digit OTP is <strong style={{ fontSize: 15, letterSpacing: '0.08em' }}>{otpPreviewCode}</strong>
-                          {otpBoundEmailHint ? ` (Linked Email: ${otpBoundEmailHint})` : ''}
-                        </span>
-                      </div>
-                      <span style={{ fontWeight: 700, fontSize: 11, background: '#16a34a', color: '#fff', padding: '4px 8px', borderRadius: 6 }}>
-                        Auto-Filled ✓
-                      </span>
-                    </div>
-                  ) : null}
+                  <div
+                    role="status"
+                    style={{
+                      padding: '10px 14px',
+                      borderRadius: 10,
+                      background: '#f5f3ff',
+                      border: '1px solid #ddd6fe',
+                      color: '#3b2d96',
+                      fontSize: 12.5,
+                      lineHeight: 1.45,
+                    }}
+                  >
+                    <strong style={{ display: 'block', fontSize: 12.5 }}>
+                      New Mobile Number (+91-{otpPhone}) · Complete Sign Up
+                    </strong>
+                    <span>
+                      Enter your full name, email address, and 6-digit verification OTP below to create your Skylent account.
+                    </span>
+                  </div>
 
                   <div className="entry-field">
-                    <label htmlFor="otp-code">6-DIGIT OTP FOR +91-{otpPhone}</label>
+                    <label htmlFor="otp-name">YOUR FULL NAME (FOR CERTIFICATES) *</label>
+                    <input
+                      id="otp-name"
+                      type="text"
+                      value={otpName}
+                      onChange={(e) => setOtpName(e.target.value)}
+                      placeholder="Enter your first and last name"
+                      disabled={submitting}
+                    />
+                  </div>
+
+                  <div className="entry-field">
+                    <label htmlFor="otp-email">EMAIL ADDRESS (PERMANENTLY LINKED TO +91-{otpPhone}) *</label>
+                    <input
+                      id="otp-email"
+                      type="email"
+                      value={otpEmail}
+                      onChange={(e) => setOtpEmail(e.target.value)}
+                      placeholder="yourname@gmail.com"
+                      disabled={submitting}
+                    />
+                    <span style={{ fontSize: 11.5, color: '#64748b', marginTop: 4, display: 'block' }}>
+                      🔒 Once linked, this Email and Mobile Number cannot be changed by the user (Admin-only change via email).
+                    </span>
+                  </div>
+
+                  <div className="entry-field">
+                    <label htmlFor="otp-code">6-DIGIT OTP FOR +91-{otpPhone} *</label>
                     <input
                       id="otp-code"
                       type="text"
@@ -789,45 +814,16 @@ export default function LoginPage() {
                     />
                   </div>
 
-                  {!otpExistingUser ? (
-                    <>
-                      <div className="entry-field">
-                        <label htmlFor="otp-name">FULL NAME (FOR CERTIFICATES)</label>
-                        <input
-                          id="otp-name"
-                          type="text"
-                          value={otpName}
-                          onChange={(e) => setOtpName(e.target.value)}
-                          placeholder="Enter your first and last name"
-                          disabled={submitting}
-                        />
-                      </div>
-                      <div className="entry-field">
-                        <label htmlFor="otp-email">EMAIL ADDRESS (PERMANENTLY LINKED TO +91-{otpPhone})</label>
-                        <input
-                          id="otp-email"
-                          type="email"
-                          value={otpEmail}
-                          onChange={(e) => setOtpEmail(e.target.value)}
-                          placeholder="yourname@gmail.com"
-                          disabled={submitting}
-                        />
-                        <span style={{ fontSize: 11.5, color: '#64748b', marginTop: 4, display: 'block' }}>
-                          🔒 Once linked, this Email and Mobile Number cannot be changed by the user (Admin-only change via email).
-                        </span>
-                      </div>
-                      <TermsConsent
-                        inputRef={otpTermsRef}
-                        checked={otpTerms}
-                        onChange={setOtpTerms}
-                        action="creating an account"
-                        showError={otpTermsTried}
-                      />
-                    </>
-                  ) : null}
+                  <TermsConsent
+                    inputRef={otpTermsRef}
+                    checked={otpTerms}
+                    onChange={setOtpTerms}
+                    action="creating an account"
+                    showError={otpTermsTried}
+                  />
 
                   <button className="entry-submit" type="submit" disabled={submitting}>
-                    {submitting ? 'Verifying OTP…' : 'Verify & Continue →'}
+                    {submitting ? 'Creating Account…' : 'Sign Up & Continue →'}
                   </button>
 
                   <p className="entry-alt">

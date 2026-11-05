@@ -9,7 +9,7 @@ import {
 } from "react-router-dom"
 import { globalCSS } from "./components/shared"
 
-import { AuthProvider } from "./context/AuthContext"
+import { AuthProvider, useAuth } from "./context/AuthContext"
 import { RoleRouteGuard } from "./components/routing/RoleRouteGuard"
 import { DemoStateProvider } from "./demo/DemoStateContext"
 import RouteFallback from "./components/RouteFallback"
@@ -208,7 +208,57 @@ function CoursesIndexRedirect() {
   return <Navigate to="/programmes" replace />
 }
 
+function isAllowedPostLoginPath(pathname: string, search: string): boolean {
+  if (
+    pathname === "/dashboard" ||
+    pathname.startsWith("/dashboard/") ||
+    pathname.startsWith("/learn/") ||
+    pathname === "/os" ||
+    pathname.startsWith("/os/") ||
+    pathname === "/career-os" ||
+    pathname.startsWith("/career-os/") ||
+    pathname === "/account/password" ||
+    pathname === "/verify" ||
+    pathname.startsWith("/verify/") ||
+    pathname === "/terms" ||
+    pathname === "/privacy"
+  ) {
+    return true
+  }
+  if (
+    (pathname === "/login" || pathname === "/signup") &&
+    (search.includes("oauth=success") || search.includes("sessionToken="))
+  ) {
+    return true
+  }
+  return false
+}
+
 function AppRoutes() {
+  const { user, ready } = useAuth()
+  const location = useLocation()
+
+  if (ready && user && !isAllowedPostLoginPath(location.pathname, location.search)) {
+    if (
+      location.pathname.startsWith("/program") ||
+      location.pathname.startsWith("/course") ||
+      location.pathname.startsWith("/skills")
+    ) {
+      return <Navigate to="/dashboard/student#explore-programmes" replace />
+    }
+    const targetDashboard =
+      user.role === "faculty"
+        ? "/dashboard/faculty"
+        : user.role === "college"
+          ? "/dashboard/college"
+          : user.role === "recruiter"
+            ? "/dashboard/recruiter"
+            : user.role === "organisation"
+              ? "/dashboard/organisation"
+              : "/dashboard/student"
+    return <Navigate to={targetDashboard} replace />
+  }
+
   return (
     <Suspense fallback={<RouteFallback />}>
       <DocumentTitle />

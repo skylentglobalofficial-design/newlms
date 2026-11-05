@@ -17,6 +17,7 @@ import { fetchMyCertificates, issueCertificate, issueProgrammeCertificate, type 
 import { fetchSkylentAiStatus } from '../lib/skylent-ai-api'
 import ElixirWalletPanel from '../components/learner/ElixirWallet'
 import StudentProfileAndSettingsPanel from '../components/learner/StudentProfileAndSettingsPanel'
+import InDashboardProgrammesCatalog from '../components/learner/InDashboardProgrammesCatalog'
 import { computeLearnerExecutionStreak } from '../lib/execution-streak'
 import { truthOf } from '../lib/truth'
 import { courseProductProfile } from '../lib/course-product'
@@ -89,7 +90,7 @@ const SLICE = ['Learn', 'Practice', 'Build', 'Prove'] as const
 
 type Loaded<T> = { status: 'loading' } | { status: 'ready'; data: T } | { status: 'error' }
 type AiAvailability = 'checking' | 'available' | 'unavailable' | 'unknown'
-type StudentTabId = 'overview' | 'courses' | 'projects' | 'certificates' | 'wallet' | 'profile'
+type StudentTabId = 'overview' | 'courses' | 'projects' | 'programmes' | 'certificates' | 'wallet' | 'profile'
 
 function ListError({ what, onRetry }: { what: string; onRetry: () => void }) {
   return (
@@ -131,9 +132,11 @@ export default function DashboardStudentPage() {
   const { pathname, hash } = useLocation()
   const activeNav = learnerNavId(pathname, hash)
   const previousHash = useRef(hash)
-  const [studentTab, setStudentTab] = useState<StudentTabId>(() =>
-    hash === '#profile-settings' ? 'profile' : 'overview'
-  )
+  const [studentTab, setStudentTab] = useState<StudentTabId>(() => {
+    if (hash === '#profile-settings') return 'profile'
+    if (hash === '#explore-programmes') return 'programmes'
+    return 'overview'
+  })
   const [enrollments, setEnrollments] = useState<Loaded<ApiEnrollmentSummary[]>>({ status: 'loading' })
   const [projects, setProjects] = useState<Loaded<ProjectSummary[]>>({ status: 'loading' })
   const [certificates, setCertificates] = useState<Loaded<SkylentCertificate[]>>({ status: 'loading' })
@@ -149,13 +152,18 @@ export default function DashboardStudentPage() {
   useEffect(() => {
     if (hash === '#profile-settings') {
       setStudentTab('profile')
+    } else if (hash === '#explore-programmes') {
+      setStudentTab('programmes')
     } else if (hash === '#sh-my-learning') {
       setStudentTab('courses')
     } else if (hash === '#student-projects') {
       setStudentTab('projects')
     }
     const sectionId =
-      hash === '#sh-my-learning' || hash === '#student-projects' || hash === '#profile-settings'
+      hash === '#sh-my-learning' ||
+      hash === '#student-projects' ||
+      hash === '#profile-settings' ||
+      hash === '#explore-programmes'
         ? hash.slice(1)
         : ''
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -164,7 +172,8 @@ export default function DashboardStudentPage() {
     } else if (
       previousHash.current === '#sh-my-learning' ||
       previousHash.current === '#student-projects' ||
-      previousHash.current === '#profile-settings'
+      previousHash.current === '#profile-settings' ||
+      previousHash.current === '#explore-programmes'
     ) {
       window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' })
     }
@@ -359,7 +368,7 @@ export default function DashboardStudentPage() {
     >
       <header className="sh-card-head">
         <h2 id="sh-my-learning-heading">My Courses</h2>
-        <Link className="os-link" to="/programmes">Explore programmes <ArrowRight /></Link>
+        {/* to="/programmes" */}<Link className="os-link" to="/dashboard/student#explore-programmes">Explore programmes <ArrowRight /></Link>
       </header>
       {enrollments.status === 'loading' ? (
         <div className="sh-rows" aria-label="Loading your courses">
@@ -420,7 +429,7 @@ export default function DashboardStudentPage() {
         </ul>
       ) : (
         <p className="sh-empty">
-          You have not started a course yet. <Link className="os-link" to="/programmes">Explore programmes <ArrowRight /></Link>
+          You have not started a course yet. {/* to="/programmes" */}<Link className="os-link" to="/dashboard/student#explore-programmes">Explore programmes <ArrowRight /></Link>
         </p>
       )}
     </section>
@@ -557,8 +566,10 @@ export default function DashboardStudentPage() {
             }}
           >
             {[
-              { id: 'overview' as const, label: '1. Start Learning & Elixir Wallet' },
-              { id: 'profile' as const, label: '2. ⚙️ My Profile, Mobile & Password Settings' },
+              { id: 'overview' as const, label: '1. Learning Dashboard & All Programmes' },
+              { id: 'programmes' as const, label: '2. Explore Programmes & Career Tracks' },
+              { id: 'wallet' as const, label: '3. Elixir Wallet & Case Store' },
+              { id: 'profile' as const, label: '4. ⚙️ My Profile, Mobile & Password Settings' },
             ].map((t) => {
               const active = studentTab === t.id
               return (
@@ -570,6 +581,7 @@ export default function DashboardStudentPage() {
                   onClick={() => {
                     setStudentTab(t.id)
                     if (t.id === 'profile') navigate('/dashboard/student#profile-settings')
+                    else if (t.id === 'programmes') navigate('/dashboard/student#explore-programmes')
                     else navigate('/dashboard/student')
                   }}
                   style={{
@@ -591,29 +603,18 @@ export default function DashboardStudentPage() {
 
           {studentTab === 'profile' ? (
             <StudentProfileAndSettingsPanel />
+          ) : studentTab === 'wallet' ? (
+            <section className="sh-card" aria-label="Elixir wallet" style={{ marginTop: 12 }}><ElixirWalletPanel /></section>
           ) : (
             <>
-              <p className="os-eyebrow">My Courses</p>
-              <h1>Start with a course</h1>
-              <div className="sh-next sh-royal-hero">
-                <p className="sh-next-label"><span aria-hidden="true" />Next step · Free Pilot Access</p>
-                <h2>Choose what to learn first</h2>
-                <p className="sh-body">You are signed in and ready to start. Pick any of our 6 career tracks and its first lesson and browser lab open immediately.</p>
-                <div className="os-actions">
-                  <Link className="os-btn os-btn-primary os-btn-lg sh-royal-cta" to="/programmes">Explore programmes <ArrowRight /></Link>
-                  <button
-                    type="button"
-                    className="os-btn os-btn-ghost sh-royal-secondary"
-                    onClick={() => {
-                      setStudentTab('profile')
-                      navigate('/dashboard/student#profile-settings')
-                    }}
-                  >
-                    ⚙️ Complete My Profile &amp; Settings
-                  </button>
-                </div>
-              </div>
-              {enrolmentRows.length > 0 ? <div className="sh-stack">{myLearning}<CareerRiseCard />{evidence}</div> : null}
+              <InDashboardProgrammesCatalog
+                enrollments={enrolmentRows}
+                onEnrolled={() => {
+                  void reload()
+                  retryLists()
+                }}
+              />
+              {enrolmentRows.length > 0 ? <div className="sh-stack" style={{ marginTop: 22 }}>{myLearning}<CareerRiseCard />{evidence}</div> : null}
               <section className="sh-card" aria-label="Elixir wallet" style={{ marginTop: 22 }}><ElixirWalletPanel /></section>
             </>
           )}
@@ -770,9 +771,10 @@ export default function DashboardStudentPage() {
             { id: 'overview' as const, label: '1. Full Workspace (Overview)' },
             { id: 'courses' as const, label: '2. My Active Courses' },
             { id: 'projects' as const, label: '3. Capstone & Browser Labs' },
-            { id: 'certificates' as const, label: '4. Certificates & Flight Recorder' },
-            { id: 'wallet' as const, label: '5. Elixir Wallet & Case Store' },
-            { id: 'profile' as const, label: '6. ⚙️ My Profile & Settings' },
+            { id: 'programmes' as const, label: '4. Explore Programmes (In-Dashboard)' },
+            { id: 'certificates' as const, label: '5. Certificates & Flight Recorder' },
+            { id: 'wallet' as const, label: '6. Elixir Wallet & Case Store' },
+            { id: 'profile' as const, label: '7. ⚙️ My Profile & Settings' },
           ].map((t) => {
             const active = studentTab === t.id
             return (
@@ -784,7 +786,8 @@ export default function DashboardStudentPage() {
                 onClick={() => {
                   setStudentTab(t.id)
                   if (t.id === 'profile') navigate('/dashboard/student#profile-settings')
-                  else if (hash === '#profile-settings') navigate('/dashboard/student')
+                  else if (t.id === 'programmes') navigate('/dashboard/student#explore-programmes')
+                  else if (hash === '#profile-settings' || hash === '#explore-programmes') navigate('/dashboard/student')
                 }}
                 style={{
                   padding: '8px 14px',
@@ -807,7 +810,21 @@ export default function DashboardStudentPage() {
           <StudentProfileAndSettingsPanel />
         ) : null}
 
-        {studentTab !== 'profile' ? (
+        {studentTab === 'programmes' ? (
+          <InDashboardProgrammesCatalog
+            enrollments={enrolmentRows}
+            activeCourseSlug={course.slug}
+            activeCourseTitle={course.title}
+            progressPct={progressPct}
+            resumeHref={resumeHref}
+            onEnrolled={() => {
+              void reload()
+              retryLists()
+            }}
+          />
+        ) : null}
+
+        {studentTab !== 'profile' && studentTab !== 'programmes' ? (
         <div className="sh-top-head">
           <div>
             <p className="os-eyebrow">My Learning Workspace</p>
@@ -1109,6 +1126,21 @@ export default function DashboardStudentPage() {
               ))}
             </div>
           </section>
+        ) : null}
+
+        {/* 4B. In-Dashboard Programmes & Career Tracks (AlmaBetter Style) */}
+        {studentTab === 'overview' ? (
+          <InDashboardProgrammesCatalog
+            enrollments={enrolmentRows}
+            activeCourseSlug={course.slug}
+            activeCourseTitle={course.title}
+            progressPct={progressPct}
+            resumeHref={resumeHref}
+            onEnrolled={() => {
+              void reload()
+              retryLists()
+            }}
+          />
         ) : null}
 
         {/* 5. Elixir Wallet & Case Study Store */}

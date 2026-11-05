@@ -312,11 +312,17 @@ export type MobileOtpSendResponse = {
   ok: boolean
   phone: string
   isExistingUser: boolean
+  directSignIn?: boolean
   existingName: string | null
   boundEmailHint?: string | null
   expiresInSeconds: number
-  demoOtp?: string
   message: string
+  user?: ApiAuthUser
+  roles?: ApiRole[]
+  role?: ApiRole
+  mustChangePassword?: boolean
+  csrfToken?: string
+  sessionToken?: string
 }
 
 export async function sendMobileOtpRequest(phone: string): Promise<MobileOtpSendResponse> {

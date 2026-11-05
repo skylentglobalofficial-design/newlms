@@ -2,114 +2,133 @@ import { useEffect, useState } from "react"
 import { Link, Outlet, useLocation } from "react-router-dom"
 import { useAuth } from "../../context/AuthContext"
 import { apiV1 } from "../../lib/api-base"
-import { PageShell } from "../../components/shared"
-import { CareerPublicSubnav } from "../../components/product/Architecture"
 import CareerOSShell from "../../components/career/CareerOSShell"
 import CareerOSPublicPage from "./CareerOSPublicPage"
 import CareerOSPublicAreaPage from "./CareerOSPublicAreaPage"
 import "./CareerOS.css"
 
-function CareerOsLockedDashboard() {
+function AlmaXStyleCareerUnlockBanner({ locked }: { locked: boolean }) {
+  if (!locked) return null
   return (
-    <PageShell aurora={false}>
-      <div className="cos-public-page">
-        <section className="cos-public-area" aria-labelledby="cos-locked-title">
-          <div className="sk-rail" style={{ maxWidth: 860, paddingBlock: "36px 64px" }}>
-            <CareerPublicSubnav current="overview" />
-            <div
+    <div
+      role="region"
+      aria-label="Career OS Merit Gate Progress"
+      style={{
+        marginBottom: 22,
+        padding: "20px 24px",
+        borderRadius: 16,
+        background: "linear-gradient(135deg, #fffbeb 0%, #fef3c7 55%, #ffffff 100%)",
+        border: "1px solid #fde68a",
+        boxShadow: "0 10px 26px -14px rgba(180, 83, 9, 0.18)",
+        display: "flex",
+        flexWrap: "wrap",
+        alignItems: "center",
+        justifyContent: "space-between",
+        gap: 18,
+      }}
+    >
+      <div style={{ display: "flex", alignItems: "flex-start", gap: 16, maxWidth: 640 }}>
+        <div
+          aria-hidden="true"
+          style={{
+            width: 48,
+            height: 48,
+            borderRadius: "50%",
+            background: "#ffffff",
+            border: "1px solid #fcd34d",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: 20,
+            flexShrink: 0,
+          }}
+        >
+          🔒
+        </div>
+        <div>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginBottom: 4 }}>
+            <strong style={{ fontSize: 17, color: "#0f172a" }}>
+              Unlock Career OS Placement &amp; Recruiter Referrals
+            </strong>
+            <span
               style={{
-                marginTop: 24,
-                padding: "28px 28px",
-                borderRadius: 16,
-                border: "1px solid #e2e8f0",
-                background: "#ffffff",
-                boxShadow: "0 10px 28px rgba(15, 23, 42, 0.05)",
+                fontSize: 11,
+                fontWeight: 700,
+                padding: "3px 9px",
+                borderRadius: 999,
+                background: "#92400e",
+                color: "#ffffff",
               }}
             >
-              <span
-                style={{
-                  display: "inline-block",
-                  fontSize: 11.5,
-                  fontWeight: 700,
-                  textTransform: "uppercase",
-                  letterSpacing: "0.06em",
-                  color: "#5142B5",
-                  background: "#f3f0ff",
-                  padding: "4px 10px",
-                  borderRadius: 999,
-                  marginBottom: 12,
-                }}
-              >
-                Career OS · Merit-Gated Workspace
-              </span>
-              <h1 id="cos-locked-title" style={{ margin: "0 0 10px", fontSize: "clamp(24px, 3vw, 32px)", color: "#0f172a" }}>
-                Unlock Career OS by completing 60% of your course modules
-              </h1>
-              <p style={{ margin: "0 0 22px", fontSize: 15, lineHeight: 1.6, color: "#475569", maxWidth: 680 }}>
-                Career OS connects your verified SQL queries, product specifications, and graded capstones directly into an employer-ready portfolio and application tracker. Complete the 3 steps below in your learning workspace to unlock full access:
-              </p>
-
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-                  gap: 14,
-                  marginBottom: 24,
-                }}
-              >
-                <div style={{ padding: 16, borderRadius: 12, border: "1px solid #dcfce7", background: "#f0fdf4" }}>
-                  <div style={{ fontSize: 11.5, fontWeight: 700, color: "#15803d", textTransform: "uppercase" }}>
-                    Step 01 · Account Ready
-                  </div>
-                  <strong style={{ display: "block", marginTop: 4, fontSize: 15, color: "#0f172a" }}>
-                    Enrol in a Flagship Track
-                  </strong>
-                  <p style={{ margin: "6px 0 0", fontSize: 13, lineHeight: 1.5, color: "#334155" }}>
-                    Start Data Analytics, Product Management, Python, GenAI, or Full-Stack in Skylent OS.
-                  </p>
-                </div>
-
-                <div style={{ padding: 16, borderRadius: 12, border: "1px solid #ddd7ff", background: "#faf9ff" }}>
-                  <div style={{ fontSize: 11.5, fontWeight: 700, color: "#5142B5", textTransform: "uppercase" }}>
-                    Step 02 · Merit Gate (60%)
-                  </div>
-                  <strong style={{ display: "block", marginTop: 4, fontSize: 15, color: "#0f172a" }}>
-                    Complete 3 of 5 Course Modules
-                  </strong>
-                  <p style={{ margin: "6px 0 0", fontSize: 13, lineHeight: 1.5, color: "#334155" }}>
-                    Pass module concept checks and submit applied briefs inside your course player.
-                  </p>
-                </div>
-
-                <div style={{ padding: 16, borderRadius: 12, border: "1px solid #e2e8f0", background: "#f8fafc" }}>
-                  <div style={{ fontSize: 11.5, fontWeight: 700, color: "#475569", textTransform: "uppercase" }}>
-                    Step 03 · Portfolio Unlock
-                  </div>
-                  <strong style={{ display: "block", marginTop: 4, fontSize: 15, color: "#0f172a" }}>
-                    Activate Career Rise &amp; Career OS
-                  </strong>
-                  <p style={{ margin: "6px 0 0", fontSize: 13, lineHeight: 1.5, color: "#334155" }}>
-                    Publish your verified capstone dossier, track role applications, and rehearse interviews.
-                  </p>
-                </div>
-              </div>
-
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
-                <Link className="sk-btn sk-btn-primary" to="/dashboard/student">
-                  Continue in My Learning Dashboard →
-                </Link>
-                <Link className="sk-btn sk-btn-secondary" to="/programmes">
-                  Explore Open Programmes
-                </Link>
-                <Link className="sk-btn sk-btn-secondary" to="/verify">
-                  Inspect Verified Graduate Dossiers (/verify)
-                </Link>
-              </div>
-            </div>
+              60% Course Gate
+            </span>
           </div>
-        </section>
+          <p style={{ margin: "0 0 12px", fontSize: 13.5, color: "#475569", lineHeight: 1.55 }}>
+            Complete 60% of your active course modules and submit your Capstone Project inside your Learning Dashboard to unlock direct recruiter applications. You can build your Career Profile, inspect Projects, and preview Job Board roles below right now.
+          </p>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+            <Link
+              to="/dashboard/student"
+              style={{
+                padding: "9px 16px",
+                borderRadius: 10,
+                background: "#5142b5",
+                color: "#ffffff",
+                fontWeight: 700,
+                fontSize: 13,
+                textDecoration: "none",
+              }}
+            >
+              Continue Learning →
+            </Link>
+            <Link
+              to="/dashboard/student#explore-programmes"
+              style={{
+                padding: "9px 16px",
+                borderRadius: 10,
+                background: "#ffffff",
+                border: "1px solid #cbd5e1",
+                color: "#0f172a",
+                fontWeight: 700,
+                fontSize: 13,
+                textDecoration: "none",
+              }}
+            >
+              Switch / Explore Programmes Inside Dashboard
+            </Link>
+          </div>
+        </div>
       </div>
-    </PageShell>
+
+      <div
+        style={{
+          minWidth: 230,
+          padding: "14px 18px",
+          borderRadius: 12,
+          background: "rgba(255, 255, 255, 0.88)",
+          border: "1px solid #fde68a",
+        }}
+      >
+        <div style={{ fontSize: 11.5, fontWeight: 700, color: "#92400e", marginBottom: 4 }}>
+          Learn Track Completion
+        </div>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 13, color: "#0f172a", fontWeight: 700 }}>
+          <span>Target Unlock Gate</span>
+          <span>60% Modules</span>
+        </div>
+        <div
+          style={{
+            marginTop: 8,
+            height: 7,
+            borderRadius: 999,
+            background: "#fef3c7",
+            overflow: "hidden",
+          }}
+        >
+          <div style={{ width: "35%", height: "100%", background: "#d97706", borderRadius: 999 }} />
+        </div>
+      </div>
+    </div>
   )
 }
 
@@ -128,7 +147,7 @@ export default function CareerOSLayout() {
           setAccess("unavailable")
           return
         }
-        const body = await response.json() as { data?: { entitled?: boolean } }
+        const body = (await response.json()) as { data?: { entitled?: boolean } }
         setAccess(body.data?.entitled === true ? "open" : "locked")
       })
       .catch(() => {
@@ -151,24 +170,10 @@ export default function CareerOSLayout() {
     return <CareerOSPublicAreaPage />
   }
 
-  if (access === "loading") {
-    return (
-      <PageShell aurora={false}>
-        <main style={{ maxWidth: 640, margin: "64px auto", padding: 24 }}>
-          <p className="os-eyebrow">Career OS</p>
-          <h1>Checking your Career OS workspace…</h1>
-          <p>Verifying your curriculum progress and Career OS entitlement.</p>
-        </main>
-      </PageShell>
-    )
-  }
-
-  if (access !== "open") {
-    return <CareerOsLockedDashboard />
-  }
-
+  // Signed-in learners NEVER leave AuthDashboardShell / CareerOSShell!
   return (
     <CareerOSShell>
+      <AlmaXStyleCareerUnlockBanner locked={access !== "open" && access !== "loading"} />
       <Outlet />
     </CareerOSShell>
   )

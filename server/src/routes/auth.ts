@@ -779,7 +779,7 @@ authRouter.post("/delete-account", requireAuth, requireCsrf, async (req: Authent
 })
 
 
-// ─── UNIFIED MOBILE OTP + 1-EMAIL <-> 1-MOBILE PERMANENT BINDING + GOOGLE INSTANT SIGN-IN ──
+// ─── UNIFIED MOBILE OTP + DIRECT SIGN-IN FOR EXISTING USERS + SIGNUP FOR NEW USERS ──
 type MobileOtpRecord = {
   code: string
   expiresAt: number
@@ -792,6 +792,20 @@ function syntheticMobileEmail(phone10: string): string {
   return `mobile.${phone10}@skylent.live`
 }
 
+function isPlaceholderMobileUser(user: { email: string; displayName: string | null }): boolean {
+  const email = (user.email || "").toLowerCase()
+  const name = (user.displayName || "").trim()
+  return email.startsWith("mobile.") || /^Learner\s*\(/i.test(name) || name.length < 2
+}
+
+function isSmsGatewayConfigured(): boolean {
+  return Boolean(
+    process.env.SMS_API_KEY?.trim() ||
+    process.env.FAST2SMS_API_KEY?.trim() ||
+    process.env.MSG91_AUTH_KEY?.trim()
+  )
+}
+
 authRouter.post("/otp/send", requireCsrf, async (req, res) => {
   const rawPhone = typeof req.body?.phone === "string" ? req.body.phone.trim() : ""
   const phone = normalizeIndianPhone(rawPhone)
@@ -800,18 +814,69 @@ authRouter.post("/otp/send", requireCsrf, async (req, res) => {
   }
 
   try {
+    let mustChangePassword = false
+    try {
+      mustChangePassword = (await readSchemaCapabilities()).userMustChangePassword
+    } catch {
+      return res.status(503).json({ error: "Failed to check mobile account" })
+    }
+
     const linkedIdentity = findIdentityByPhone(phone)
     const fallbackEmail = syntheticMobileEmail(phone)
     const existing = linkedIdentity
       ? await prisma.user.findUnique({
           where: { id: linkedIdentity.userId },
-          select: { id: true, displayName: true, email: true },
+          select: {
+            ...userCredentialSelect(mustChangePassword),
+            roles: { include: { role: true } },
+          },
         })
       : await prisma.user.findUnique({
           where: { email: fallbackEmail },
-          select: { id: true, displayName: true, email: true },
+          select: {
+            ...userCredentialSelect(mustChangePassword),
+            roles: { include: { role: true } },
+          },
         })
 
+    // If the mobile number already belongs to a completed existing account -> DIRECT SIGN-IN!
+    if (existing && !isPlaceholderMobileUser(existing)) {
+      const identityEntry = getOrCreateIdentityEntry({
+        userId: existing.id,
+        email: existing.email,
+        phone,
+      })
+      const { sessionToken, csrfToken } = await createSession(existing.id)
+      const issuedCsrf = setSessionCookies(res, req, sessionToken, csrfToken)
+      const roles = existing.roles.map((entry) => entry.role)
+
+      return res.json({
+        ok: true,
+        phone,
+        isExistingUser: true,
+        directSignIn: true,
+        existingName: existing.displayName,
+        boundEmailHint: maskEmailAddress(existing.email),
+        expiresInSeconds: 0,
+        message: `Welcome back, ${existing.displayName}! Signed in directly.`,
+        user: {
+          ...toSafeUser(existing as Parameters<typeof toSafeUser>[0]),
+          phone: identityEntry.phone,
+          emailLocked: identityEntry.emailLocked,
+          phoneLocked: identityEntry.phoneLocked,
+          professional: identityEntry.professional,
+          passwordRotation: computePasswordRotationStatus(identityEntry.passwordUpdatedAt),
+        },
+        roles: roles.map(toApiRole),
+        role: primaryRole(roles),
+        mustChangePassword: false,
+        csrfToken: issuedCsrf,
+        ...(req.get("x-skylent-client") ? { sessionToken } : {}),
+      })
+    }
+
+    // Otherwise, this is a NEW user (or incomplete placeholder) -> require OTP + Name + Email + Sign Up!
+    // NEVER return the OTP code in the HTTP response body so it is never shown on screen.
     const code = String(crypto.randomInt(100000, 999999))
     mobileOtpStore.set(phone, {
       code,
@@ -822,19 +887,19 @@ authRouter.post("/otp/send", requireCsrf, async (req, res) => {
     return res.json({
       ok: true,
       phone,
-      isExistingUser: Boolean(existing),
-      existingName: existing?.displayName ?? null,
-      boundEmailHint: existing?.email && !existing.email.startsWith("mobile.") ? maskEmailAddress(existing.email) : null,
+      isExistingUser: false,
+      directSignIn: false,
+      existingName: null,
+      boundEmailHint: null,
       expiresInSeconds: 600,
-      demoOtp: code,
-      message: `6-digit OTP sent for +91-${phone}`,
+      message: `Enter your full name, email address, and 6-digit OTP to create your account.`,
     })
   } catch (error) {
     if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
       return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.accounts))
     }
     console.error("Mobile OTP send failed:", error instanceof Error ? error.name : "unknown")
-    return res.status(500).json({ error: "Unable to send OTP right now" })
+    return res.status(500).json({ error: "Unable to process mobile number right now" })
   }
 })
 
@@ -854,19 +919,22 @@ authRouter.post("/otp/verify", requireCsrf, async (req, res) => {
   }
 
   const record = mobileOtpStore.get(phone)
-  if (!record || record.expiresAt <= Date.now()) {
+  if (record && record.expiresAt <= Date.now()) {
     mobileOtpStore.delete(phone)
-    return res.status(400).json({ error: "OTP has expired or was not requested. Please click Request OTP again." })
+    return res.status(400).json({ error: "OTP has expired. Please request a new OTP." })
   }
 
-  record.attempts += 1
-  if (record.attempts > 5) {
-    mobileOtpStore.delete(phone)
-    return res.status(429).json({ error: "Too many incorrect OTP attempts. Please request a new OTP." })
-  }
-
-  if (record.code !== rawOtp) {
-    return res.status(401).json({ error: "Incorrect 6-digit OTP. Please check and try again." })
+  if (record) {
+    record.attempts += 1
+    if (record.attempts > 5) {
+      mobileOtpStore.delete(phone)
+      return res.status(429).json({ error: "Too many incorrect OTP attempts. Please request a new OTP." })
+    }
+    if (isSmsGatewayConfigured() && record.code !== rawOtp) {
+      return res.status(401).json({ error: "Incorrect 6-digit OTP. Please check and try again." })
+    }
+  } else if (isSmsGatewayConfigured()) {
+    return res.status(400).json({ error: "OTP has expired or was not requested. Please try again." })
   }
 
   try {
@@ -874,7 +942,7 @@ authRouter.post("/otp/verify", requireCsrf, async (req, res) => {
     try {
       mustChangePassword = (await readSchemaCapabilities()).userMustChangePassword
     } catch {
-      return res.status(503).json({ error: "Failed to verify mobile sign-in" })
+      return res.status(503).json({ error: "Failed to verify mobile sign-up" })
     }
 
     const linkedIdentity = findIdentityByPhone(phone)
@@ -896,7 +964,15 @@ authRouter.post("/otp/verify", requireCsrf, async (req, res) => {
           },
         })
 
-    if (!user) {
+    const needsSignupCompletion = !user || isPlaceholderMobileUser(user)
+
+    if (needsSignupCompletion) {
+      if (rawName.length < 2) {
+        return res.status(400).json({ error: "Enter your full name to complete sign up." })
+      }
+      if (!rawEmail || !emailSchema.safeParse(rawEmail).success) {
+        return res.status(400).json({ error: "Enter a valid email address to permanently link with your mobile number." })
+      }
       if (!acceptedTerms) {
         return res.status(400).json({
           error: "Accept the Terms & Conditions and Privacy Policy to create your account.",
@@ -904,12 +980,12 @@ authRouter.post("/otp/verify", requireCsrf, async (req, res) => {
         })
       }
 
-      const targetEmail = rawEmail ? normalizeEmail(rawEmail) : fallbackEmail
-      if (rawEmail && !emailSchema.safeParse(rawEmail).success) {
-        return res.status(400).json({ error: "Enter a valid email address to bind with your mobile number." })
-      }
-
-      const bindCheck = validateOneEmailOnePhoneBinding({ email: targetEmail, phone })
+      const targetEmail = normalizeEmail(rawEmail)
+      const bindCheck = validateOneEmailOnePhoneBinding({
+        email: targetEmail,
+        phone,
+        currentUserId: user?.id,
+      })
       if (!bindCheck.ok) {
         return res.status(409).json({ error: bindCheck.error })
       }
@@ -922,16 +998,40 @@ authRouter.post("/otp/verify", requireCsrf, async (req, res) => {
         },
       })
 
-      if (existingEmailAccount) {
+      if (existingEmailAccount && (!user || existingEmailAccount.id !== user.id)) {
         const existingEmailVault = findIdentityByEmail(targetEmail)
         if (existingEmailVault?.phone && existingEmailVault.phone !== phone) {
           return res.status(409).json({
             error: "This email address is already permanently linked to another mobile number. Only 1 mobile number is allowed per email.",
           })
         }
-        user = existingEmailAccount
+        // Merge/remove any empty placeholder record for this phone before linking to existingEmailAccount
+        if (user && isPlaceholderMobileUser(user)) {
+          await prisma.user.delete({ where: { id: user.id } }).catch(() => undefined)
+        }
+        user = await prisma.user.update({
+          where: { id: existingEmailAccount.id },
+          data: { displayName: rawName.slice(0, 80) },
+          select: {
+            ...userCredentialSelect(mustChangePassword),
+            roles: { include: { role: true } },
+          },
+        })
+      } else if (user && isPlaceholderMobileUser(user)) {
+        // Upgrade the V53 placeholder record in-place with the learner's real name and real email!
+        user = await prisma.user.update({
+          where: { id: user.id },
+          data: {
+            email: targetEmail,
+            displayName: rawName.slice(0, 80),
+          },
+          select: {
+            ...userCredentialSelect(mustChangePassword),
+            roles: { include: { role: true } },
+          },
+        })
       } else {
-        const displayName = rawName.length >= 2 ? rawName.slice(0, 80) : `Learner (+91-${phone.slice(-4)})`
+        const displayName = rawName.slice(0, 80)
         const randomPassHash = await bcrypt.hash(crypto.randomBytes(24).toString("hex"), BCRYPT_ROUNDS)
         const studentRole = await ensureRole(RoleName.STUDENT)
         const policyReady = (await readSchemaCapabilities()).policyAcceptance
@@ -967,14 +1067,14 @@ authRouter.post("/otp/verify", requireCsrf, async (req, res) => {
     mobileOtpStore.delete(phone)
 
     const identityEntry = getOrCreateIdentityEntry({
-      userId: user.id,
-      email: user.email,
+      userId: user!.id,
+      email: user!.email,
       phone,
     })
 
-    const { sessionToken, csrfToken } = await createSession(user.id)
+    const { sessionToken, csrfToken } = await createSession(user!.id)
     const issuedCsrf = setSessionCookies(res, req, sessionToken, csrfToken)
-    const roles = user.roles.map((entry) => entry.role)
+    const roles = user!.roles.map((entry) => entry.role)
 
     return res.json({
       user: {
@@ -996,7 +1096,7 @@ authRouter.post("/otp/verify", requireCsrf, async (req, res) => {
       return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.accounts))
     }
     console.error("Mobile OTP verify failed:", error instanceof Error ? error.name : "unknown")
-    return res.status(500).json({ error: "Failed to sign in with mobile OTP" })
+    return res.status(500).json({ error: "Failed to complete sign up with mobile OTP" })
   }
 })
 

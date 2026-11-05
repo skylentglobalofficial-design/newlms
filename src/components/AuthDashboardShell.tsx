@@ -126,7 +126,7 @@ export function AuthDashboardShell({
 
   const railContent = (
     <>
-      <Link to="/" className="auth-shell-brand">
+      <Link to="/dashboard/student" className="auth-shell-brand">
         <span className="auth-shell-wordmark">Skylent</span>
         <span className="auth-shell-workspace">{workspaceLabel}</span>
       </Link>

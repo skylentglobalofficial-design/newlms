@@ -25,7 +25,7 @@ export const LEARNER_NAV: AuthNavItem[] = [
     id: "explore-programmes",
     label: "Explore Programmes",
     short: "Explore",
-    href: "/programmes",
+    href: "/dashboard/student#explore-programmes",
   },
   { id: "career-os", label: "Career OS", short: "Career", href: "/career-os" },
 ]
@@ -35,6 +35,7 @@ export function learnerNavId(pathname: string, hash: string): string {
     return "career-os"
   if (hash === "#sh-my-learning") return "my-courses"
   if (hash === "#student-projects") return "projects"
+  if (hash === "#explore-programmes") return "explore-programmes"
   return "dashboard"
 }
 
