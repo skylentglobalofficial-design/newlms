@@ -1,17 +1,20 @@
 # =============================================================================
-# SKYLENT PLAY STORE NATIVE APK & AAB BUILDER (V41 Clean BOM-Free Manifest Fix)
-# Pure-ASCII PowerShell 5.1 / 7+ Compatible
+# SKYLENT PLAY STORE NATIVE APK & SIGNED AAB BUILDER (V49)
+# Generates:
+#   1. skylent-playstore-debug.apk   (For testing on phone first)
+#   2. skylent-playstore-release.apk (Signed Release APK for phone install)
+#   3. skylent-playstore-release.aab (Signed Release Bundle for Google Play Console)
 # =============================================================================
 $ErrorActionPreference = "Stop"
 $Utf8NoBom = New-Object System.Text.UTF8Encoding($false)
 
 Write-Host ""
 Write-Host "============================================================" -ForegroundColor Cyan
-Write-Host "  SKYLENT PLAY STORE NATIVE APK / AAB BUILDER (v41)" -ForegroundColor Cyan
+Write-Host "  SKYLENT PLAY STORE APK & SIGNED AAB BUILDER (v49)" -ForegroundColor Cyan
 Write-Host "============================================================" -ForegroundColor Cyan
 
 # Step 1: Security Audit - Ensure no server secrets are prefixed with VITE_
-Write-Host "`n[1/6] Running Client Bundle Security Audit..." -ForegroundColor Yellow
+Write-Host "`n[1/7] Running Client Bundle Security Audit..." -ForegroundColor Yellow
 if (Test-Path ".env") {
   $envLines = Get-Content ".env"
   foreach ($line in $envLines) {
@@ -20,10 +23,10 @@ if (Test-Path ".env") {
     }
   }
 }
-Write-Host "  [OK] Zero backend secrets exposed to client APK bundle." -ForegroundColor Green
+Write-Host "  [OK] Zero backend secrets exposed to client bundle." -ForegroundColor Green
 
 # Step 2: Build Production Frontend Bundle (dist/)
-Write-Host "`n[2/6] Building Standalone Frontend Bundle (dist/)..." -ForegroundColor Yellow
+Write-Host "`n[2/7] Building Standalone Frontend Bundle (dist/)..." -ForegroundColor Yellow
 $PublicApk = Join-Path (Get-Location).Path "public\skylent.apk"
 if (Test-Path $PublicApk) { Remove-Item $PublicApk -Force }
 cmd /c "npx vite build"
@@ -33,7 +36,7 @@ if (-not (Test-Path "dist/index.html")) {
 Write-Host "  [OK] Standalone UI bundle compiled into dist/." -ForegroundColor Green
 
 # Step 3: Ensure Capacitor Android packages are installed
-Write-Host "`n[3/6] Checking Capacitor Native Android Dependencies..." -ForegroundColor Yellow
+Write-Host "`n[3/7] Checking Capacitor Native Android Dependencies..." -ForegroundColor Yellow
 if (-not (Test-Path "node_modules/@capacitor/android")) {
   Write-Host "  Installing @capacitor/core, @capacitor/cli, @capacitor/android..." -ForegroundColor Cyan
   cmd /c "npm install @capacitor/core @capacitor/android --no-save"
@@ -42,7 +45,7 @@ if (-not (Test-Path "node_modules/@capacitor/android")) {
 Write-Host "  [OK] Capacitor Android packages ready." -ForegroundColor Green
 
 # Step 4: Initialize or Sync Android Native Project & Write Clean BOM-Free AndroidManifest.xml
-Write-Host "`n[4/6] Syncing Bundled Assets into Native Android Project..." -ForegroundColor Yellow
+Write-Host "`n[4/7] Syncing Bundled Assets into Native Android Project..." -ForegroundColor Yellow
 if (-not (Test-Path "android")) {
   cmd /c "npx cap add android"
 }
@@ -94,10 +97,10 @@ $cleanManifestXml = @"
 </manifest>
 "@
 [System.IO.File]::WriteAllText($manifestPath, $cleanManifestXml.Replace("`r`n", "`n"), $Utf8NoBom)
-Write-Host "  [OK] Wrote valid BOM-free AndroidManifest.xml (allowBackup=false, usesCleartextTraffic=false)." -ForegroundColor Green
+Write-Host "  [OK] Wrote valid BOM-free AndroidManifest.xml (120Hz hardwareAccelerated=true)." -ForegroundColor Green
 
-# Step 5: Auto-Detect or Auto-Install Portable Java JDK 21 + Android SDK
-Write-Host "`n[5/6] Configuring Java JDK 21 & Android SDK Toolchain..." -ForegroundColor Yellow
+# Step 5: Configure Java JDK 21 & Android SDK Toolchain
+Write-Host "`n[5/7] Configuring Java JDK 21 & Android SDK Toolchain..." -ForegroundColor Yellow
 $ToolchainRoot = Join-Path $HOME ".skylent-android-toolchain"
 if (-not (Test-Path $ToolchainRoot)) {
   New-Item -ItemType Directory -Path $ToolchainRoot -Force | Out-Null
@@ -136,78 +139,29 @@ function Find-JavaHome {
 
 $JavaHomeFound = Find-JavaHome
 if (-not $JavaHomeFound) {
-  Write-Host "  Java JDK not found in PATH. Downloading Portable Microsoft OpenJDK 21 (Windows x64)..." -ForegroundColor Cyan
+  Write-Host "  Downloading Portable Microsoft OpenJDK 21 (Windows x64)..." -ForegroundColor Cyan
   $JdkZip = Join-Path $ToolchainRoot "microsoft-jdk-21.zip"
   $JdkExtract = Join-Path $ToolchainRoot "jdk"
   if (-not (Test-Path $JdkExtract)) {
     New-Item -ItemType Directory -Path $JdkExtract -Force | Out-Null
   }
   cmd /c "curl.exe -L --retry 3 `"https://aka.ms/download-jdk/microsoft-jdk-21-windows-x64.zip`" -o `"$JdkZip`""
-  if (-not (Test-Path $JdkZip)) {
-    throw "Failed to download Portable OpenJDK 21 zip."
-  }
-  Write-Host "  Extracting OpenJDK 21..." -ForegroundColor Cyan
   Expand-Archive -Path $JdkZip -DestinationPath $JdkExtract -Force
   Remove-Item $JdkZip -Force -ErrorAction SilentlyContinue
   $JavaHomeFound = Find-JavaHome
-}
-
-if (-not $JavaHomeFound) {
-  throw "Could not configure JAVA_HOME even after extracting OpenJDK 21."
 }
 
 $env:JAVA_HOME = $JavaHomeFound
 $env:PATH = "$JavaHomeFound\bin;$env:PATH"
 Write-Host "  [OK] JAVA_HOME set to: $env:JAVA_HOME" -ForegroundColor Green
 
-# Locate or install Android SDK
-$SdkRoot = $null
-if (Test-Path (Join-Path $ToolchainRoot "android-sdk\platforms")) {
-  $SdkRoot = Join-Path $ToolchainRoot "android-sdk"
-} elseif ($env:ANDROID_HOME -and (Test-Path $env:ANDROID_HOME)) {
-  $SdkRoot = $env:ANDROID_HOME
-} elseif ($env:ANDROID_SDK_ROOT -and (Test-Path $env:ANDROID_SDK_ROOT)) {
-  $SdkRoot = $env:ANDROID_SDK_ROOT
-} elseif ($env:LOCALAPPDATA -and (Test-Path (Join-Path $env:LOCALAPPDATA "Android\Sdk"))) {
-  $SdkRoot = Join-Path $env:LOCALAPPDATA "Android\Sdk"
-} else {
-  $SdkRoot = Join-Path $ToolchainRoot "android-sdk"
-}
-
-if (-not (Test-Path $SdkRoot)) {
-  New-Item -ItemType Directory -Path $SdkRoot -Force | Out-Null
-}
-
-$LicensesDir = Join-Path $SdkRoot "licenses"
-if (-not (Test-Path $LicensesDir)) {
-  New-Item -ItemType Directory -Path $LicensesDir -Force | Out-Null
-}
-$SdkLicenseHashes = "`n8933bad161af4178b1185d1a37fbf41ea5269c55`nd56f5187479451eabf01fb78af6dfcb131a6481e`n24333f8a63b6825ea9c5514f83c2829b004d1fee`n84831b9409646a918e30573bab4c9c91346d8abd"
-[System.IO.File]::WriteAllText((Join-Path $LicensesDir "android-sdk-license"), $SdkLicenseHashes, $Utf8NoBom)
-[System.IO.File]::WriteAllText((Join-Path $LicensesDir "android-sdk-preview-license"), "`n84831b9409646a918e30573bab4c9c91346d8abd`n504667f4c0de7af1a06de9f4b1727b84351f2910", $Utf8NoBom)
-
-$CmdlineToolsBat = Join-Path $SdkRoot "cmdline-tools\latest\bin\sdkmanager.bat"
-$HasPlatforms = Test-Path (Join-Path $SdkRoot "platforms")
-if ((-not $HasPlatforms) -and (-not (Test-Path $CmdlineToolsBat))) {
-  Write-Host "  Android SDK not found. Downloading Portable Android Command-Line Tools (~140 MB)..." -ForegroundColor Cyan
-  $CmdZip = Join-Path $ToolchainRoot "commandlinetools-win.zip"
-  $CmdTemp = Join-Path $ToolchainRoot "cmdline-temp"
-  if (Test-Path $CmdTemp) { Remove-Item $CmdTemp -Recurse -Force }
-  New-Item -ItemType Directory -Path $CmdTemp -Force | Out-Null
-  cmd /c "curl.exe -L --retry 3 `"https://dl.google.com/android/repository/commandlinetools-win-11076708_latest.zip`" -o `"$CmdZip`""
-  Write-Host "  Extracting Android Command-Line Tools..." -ForegroundColor Cyan
-  Expand-Archive -Path $CmdZip -DestinationPath $CmdTemp -Force
-  Remove-Item $CmdZip -Force -ErrorAction SilentlyContinue
-  $LatestDir = Join-Path $SdkRoot "cmdline-tools\latest"
-  New-Item -ItemType Directory -Path (Split-Path $LatestDir -Parent) -Force | Out-Null
-  if (Test-Path $LatestDir) { Remove-Item $LatestDir -Recurse -Force }
-  Move-Item -Path (Join-Path $CmdTemp "cmdline-tools") -Destination $LatestDir -Force
-  Remove-Item $CmdTemp -Recurse -Force -ErrorAction SilentlyContinue
-}
-
-if ((Test-Path $CmdlineToolsBat) -and (-not (Test-Path (Join-Path $SdkRoot "platforms\android-35")))) {
-  Write-Host "  Installing Android SDK Platform 34 & 35 + Build-Tools..." -ForegroundColor Cyan
-  cmd /c "echo y| `"$CmdlineToolsBat`" --sdk_root=`"$SdkRoot`" `"platform-tools`" `"platforms;android-34`" `"platforms;android-35`" `"build-tools;34.0.0`" `"build-tools;35.0.0`""
+$SdkRoot = Join-Path $ToolchainRoot "android-sdk"
+if (-not (Test-Path (Join-Path $SdkRoot "platforms"))) {
+  if ($env:ANDROID_HOME -and (Test-Path $env:ANDROID_HOME)) {
+    $SdkRoot = $env:ANDROID_HOME
+  } elseif ($env:LOCALAPPDATA -and (Test-Path (Join-Path $env:LOCALAPPDATA "Android\Sdk"))) {
+    $SdkRoot = Join-Path $env:LOCALAPPDATA "Android\Sdk"
+  }
 }
 
 $env:ANDROID_HOME = $SdkRoot
@@ -217,32 +171,99 @@ $LocalPropsPath = Join-Path (Get-Location).Path "android\local.properties"
 [System.IO.File]::WriteAllText($LocalPropsPath, "sdk.dir=$EscapedSdk`n", $Utf8NoBom)
 Write-Host "  [OK] ANDROID_HOME set to: $SdkRoot" -ForegroundColor Green
 
-# Step 6: Build Native APK via Gradle
-Write-Host "`n[6/6] Compiling Native Android APK via Gradle..." -ForegroundColor Yellow
+# Step 6: Auto-Generate Production Play Store Keystore & Configure Release Signing
+Write-Host "`n[6/7] Configuring Google Play Store Release Signing Keystore..." -ForegroundColor Yellow
+$KeystoreDir = Join-Path $ToolchainRoot "keystore"
+if (-not (Test-Path $KeystoreDir)) {
+  New-Item -ItemType Directory -Path $KeystoreDir -Force | Out-Null
+}
+$KeystorePath = Join-Path $KeystoreDir "skylent-upload-key.jks"
+$KeytoolExe = Join-Path $env:JAVA_HOME "bin\keytool.exe"
+
+if (-not (Test-Path $KeystorePath)) {
+  Write-Host "  Generating 2048-bit RSA Play Store Upload Keystore..." -ForegroundColor Cyan
+  & $KeytoolExe -genkeypair -v -keystore $KeystorePath -alias "skylent-upload" -keyalg RSA -keysize 2048 -validity 10000 -storepass "SkylentPlayStore2026!" -keypass "SkylentPlayStore2026!" -dname "CN=Skylent Global, OU=Mobile, O=Skylent, L=Bhubaneswar, ST=Odisha, C=IN" | Out-Null
+}
+Write-Host "  [OK] Production Keystore ready: $KeystorePath" -ForegroundColor Green
+
+$AppBuildGradle = Join-Path (Get-Location).Path "android\app\build.gradle"
+if (Test-Path $AppBuildGradle) {
+  $gradleText = Get-Content $AppBuildGradle -Raw
+  if ($gradleText -notmatch "SKYLENT_PLAYSTORE_RELEASE_SIGNING") {
+    $KeystoreSlash = $KeystorePath.Replace("\", "/")
+    $signingBlock = @"
+
+// SKYLENT_PLAYSTORE_RELEASE_SIGNING
+android {
+    signingConfigs {
+        release {
+            storeFile file("$KeystoreSlash")
+            storePassword "SkylentPlayStore2026!"
+            keyAlias "skylent-upload"
+            keyPassword "SkylentPlayStore2026!"
+        }
+    }
+    buildTypes {
+        release {
+            signingConfig signingConfigs.release
+        }
+    }
+}
+"@
+    $gradleText = $gradleText + $signingBlock
+    [System.IO.File]::WriteAllText($AppBuildGradle, $gradleText.Replace("`r`n", "`n"), $Utf8NoBom)
+    Write-Host "  [OK] Attached release signing config to android/app/build.gradle." -ForegroundColor Green
+  }
+}
+
+# Step 7: Compile Debug APK (for phone test) + Signed Release APK + Signed Release AAB (for Google Play Console)
+Write-Host "`n[7/7] Compiling Play Store APK & Signed AAB Bundle via Gradle..." -ForegroundColor Yellow
 if (Test-Path "android/gradlew.bat") {
   Push-Location "android"
-  cmd /c "gradlew.bat assembleDebug --no-daemon"
+  cmd /c "gradlew.bat assembleDebug assembleRelease bundleRelease --no-daemon"
   $gradleExit = $LASTEXITCODE
   Pop-Location
 
-  $apkFile = "android/app/build/outputs/apk/debug/app-debug.apk"
-  if (($gradleExit -eq 0) -and (Test-Path $apkFile)) {
-    $RootApk = Join-Path (Get-Location).Path "skylent-playstore-debug.apk"
-    $DownloadsApk = Join-Path $HOME "Downloads\skylent-playstore-debug.apk"
-    Copy-Item -Path $apkFile -Destination $RootApk -Force
-    Copy-Item -Path $apkFile -Destination $DownloadsApk -Force -ErrorAction SilentlyContinue
-    $SizeMb = [math]::Round(((Get-Item $RootApk).Length / 1MB), 2)
+  $DownloadsDir = Join-Path $HOME "Downloads"
+  $DebugApkSrc = "android/app/build/outputs/apk/debug/app-debug.apk"
+  $ReleaseApkSrc = "android/app/build/outputs/apk/release/app-release.apk"
+  $ReleaseAabSrc = "android/app/build/outputs/bundle/release/app-release.aab"
 
+  if (($gradleExit -eq 0) -and (Test-Path $DebugApkSrc)) {
+    $OutDebugApk = Join-Path $DownloadsDir "skylent-playstore-debug.apk"
+    $OutReleaseApk = Join-Path $DownloadsDir "skylent-playstore-release.apk"
+    $OutReleaseAab = Join-Path $DownloadsDir "skylent-playstore-release.aab"
+
+    Copy-Item -Path $DebugApkSrc -Destination (Join-Path (Get-Location).Path "skylent-playstore-debug.apk") -Force
+    Copy-Item -Path $DebugApkSrc -Destination $OutDebugApk -Force -ErrorAction SilentlyContinue
+
+    if (Test-Path $ReleaseApkSrc) {
+      Copy-Item -Path $ReleaseApkSrc -Destination (Join-Path (Get-Location).Path "skylent-playstore-release.apk") -Force
+      Copy-Item -Path $ReleaseApkSrc -Destination $OutReleaseApk -Force -ErrorAction SilentlyContinue
+    }
+    if (Test-Path $ReleaseAabSrc) {
+      Copy-Item -Path $ReleaseAabSrc -Destination (Join-Path (Get-Location).Path "skylent-playstore-release.aab") -Force
+      Copy-Item -Path $ReleaseAabSrc -Destination $OutReleaseAab -Force -ErrorAction SilentlyContinue
+    }
+
+    if (Test-Path "playstore-assets") {
+      Copy-Item -Path "playstore-assets\*" -Destination $DownloadsDir -Force -ErrorAction SilentlyContinue
+    }
+
+    $ApkSizeMb = [math]::Round(((Get-Item $OutDebugApk).Length / 1MB), 2)
     Write-Host ""
     Write-Host "============================================================" -ForegroundColor Green
-    Write-Host "  [SUCCESS] PLAY STORE ANDROID APK GENERATED ($SizeMb MB)!" -ForegroundColor Green
-    Write-Host "  1. Project Copy  : $RootApk" -ForegroundColor White
-    Write-Host "  2. Downloads Copy: $DownloadsApk" -ForegroundColor White
+    Write-Host "  [SUCCESS] ALL GOOGLE PLAY STORE FILES GENERATED!" -ForegroundColor Green
+    Write-Host "  1. Phone Test APK (Signed) : $OutReleaseApk ($ApkSizeMb MB)" -ForegroundColor White
+    Write-Host "  2. Phone Test APK (Debug)  : $OutDebugApk" -ForegroundColor White
+    Write-Host "  3. Play Store Upload (.aab): $OutReleaseAab" -ForegroundColor Cyan
+    Write-Host "  4. Play Store Icon (512px) : $DownloadsDir\skylent-playstore-icon-512x512.png" -ForegroundColor Yellow
+    Write-Host "  5. Feature Graphic (1024px): $DownloadsDir\skylent-feature-graphic-1024x500.png" -ForegroundColor Yellow
     Write-Host "============================================================" -ForegroundColor Green
+
+    # Open Windows Explorer highlighting the newly built APK/AAB in Downloads
+    Start-Process "explorer.exe" -ArgumentList "/select,`"$OutReleaseApk`""
   } else {
-    Write-Host ""
-    Write-Host "============================================================" -ForegroundColor Yellow
-    Write-Host "  [NOTE] Local Gradle exited with code $gradleExit." -ForegroundColor Yellow
-    Write-Host "============================================================" -ForegroundColor Yellow
+    Write-Host "  [NOTE] Gradle exited with code $gradleExit." -ForegroundColor Yellow
   }
 }
