@@ -15,6 +15,25 @@
     <link rel="manifest" href="/manifest.webmanifest" />
     <title>Skylent — Learn. Practise. Build.</title>
     <meta name="description" content="Learn useful skills, practise through real work, and keep evidence of what you learn." />
+    <script>
+      (function () {
+        try {
+          if ('caches' in window) {
+            caches.keys().then(function (keys) {
+              keys.forEach(function (k) {
+                if (k.indexOf('v42') === -1) caches.delete(k);
+              });
+            });
+          }
+          window.addEventListener('vite:preloadError', function () {
+            if (!sessionStorage.getItem('skylent:chunk-reload')) {
+              sessionStorage.setItem('skylent:chunk-reload', '1');
+              window.location.reload();
+            }
+          });
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <!-- figma:body-start -->
@@ -23,7 +42,9 @@
     <script>
       if ('serviceWorker' in navigator && window.location.protocol === 'https:') {
         window.addEventListener('load', function () {
-          navigator.serviceWorker.register('/sw.js').catch(function () {});
+          navigator.serviceWorker.register('/sw.js').then(function (reg) {
+            reg.update();
+          }).catch(function () {});
         });
       }
     </script>

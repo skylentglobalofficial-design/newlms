@@ -13,6 +13,32 @@ import { AuthProvider } from "./context/AuthContext"
 import { RoleRouteGuard } from "./components/routing/RoleRouteGuard"
 import { DemoStateProvider } from "./demo/DemoStateContext"
 import RouteFallback from "./components/RouteFallback"
+import HomePage from "./pages/HomePage"
+
+function lazyWithRetry<T extends React.ComponentType<any>>(
+  factory: () => Promise<{ default: T }>,
+) {
+  return lazy(async () => {
+    try {
+      return await factory()
+    } catch (err) {
+      if (typeof window !== "undefined") {
+        const key = "skylent_chunk_reload_v42"
+        if (!sessionStorage.getItem(key)) {
+          sessionStorage.setItem(key, "1")
+          if ("caches" in window) {
+            try {
+              const names = await caches.keys()
+              await Promise.all(names.map((n) => caches.delete(n)))
+            } catch {}
+          }
+          window.location.reload()
+        }
+      }
+      throw err
+    }
+  })
+}
 
 const DEFAULT_TITLE = "Skylent — Learn. Practise. Build."
 
@@ -92,88 +118,87 @@ function DocumentTitle() {
   return null
 }
 
-const HomePage = lazy(() => import("./pages/HomePage"))
-const HomeDirectionPreview = lazy(() => import("./pages/home/HomeDirectionPreview"))
-const LegalPage = lazy(() => import("./pages/LegalPage"))
-const PathPage = lazy(() => import("./pages/path/PathPage"))
-const PathResultPage = lazy(() => import("./pages/path/PathResultPage"))
-const EducationPage = lazy(() => import("./pages/EducationPage"))
-const SchoolingPage = lazy(() => import("./pages/education/SchoolingPage"))
-const DegreeDetailPage = lazy(
+const HomeDirectionPreview = lazyWithRetry(() => import("./pages/home/HomeDirectionPreview"))
+const LegalPage = lazyWithRetry(() => import("./pages/LegalPage"))
+const PathPage = lazyWithRetry(() => import("./pages/path/PathPage"))
+const PathResultPage = lazyWithRetry(() => import("./pages/path/PathResultPage"))
+const EducationPage = lazyWithRetry(() => import("./pages/EducationPage"))
+const SchoolingPage = lazyWithRetry(() => import("./pages/education/SchoolingPage"))
+const DegreeDetailPage = lazyWithRetry(
   () => import("./pages/education/DegreeDetailPage"),
 )
-const ExamsPage = lazy(() => import("./pages/education/ExamsPage"))
-const OSPage = lazy(() => import("./pages/OSPage"))
-const InstitutionsPage = lazy(() => import("./pages/InstitutionsPage"))
-const UniversitiesPage = lazy(() => import("./pages/UniversitiesPage"))
-const LabsPage = lazy(() => import("./pages/LabsPage"))
-const StoriesPage = lazy(() => import("./pages/StoriesPage"))
-const AboutPage = lazy(() => import("./pages/AboutPage"))
-const ProgramPage = lazy(() => import("./pages/ProgramPage"))
-const ProgramsPage = lazy(() => import("./pages/ProgramsPage"))
-const SkillsPage = lazy(() => import("./pages/SkillsPage"))
-const CoursesPage = lazy(() => import("./pages/CoursesPage"))
-const CourseDetailPage = lazy(() => import("./pages/CourseDetailPage"))
-const WorkshopsPage = lazy(() => import("./pages/WorkshopsPage"))
-const WorkshopDetailPage = lazy(() => import("./pages/WorkshopDetailPage"))
-const EventsPage = lazy(() => import("./pages/EventsPage"))
-const EventDetailPage = lazy(() => import("./pages/EventDetailPage"))
-const CareerOSLayout = lazy(() => import("./pages/career/CareerOSLayout"))
-const CareerOSOverviewPage = lazy(
+const ExamsPage = lazyWithRetry(() => import("./pages/education/ExamsPage"))
+const OSPage = lazyWithRetry(() => import("./pages/OSPage"))
+const InstitutionsPage = lazyWithRetry(() => import("./pages/InstitutionsPage"))
+const UniversitiesPage = lazyWithRetry(() => import("./pages/UniversitiesPage"))
+const LabsPage = lazyWithRetry(() => import("./pages/LabsPage"))
+const StoriesPage = lazyWithRetry(() => import("./pages/StoriesPage"))
+const AboutPage = lazyWithRetry(() => import("./pages/AboutPage"))
+const ProgramPage = lazyWithRetry(() => import("./pages/ProgramPage"))
+const ProgramsPage = lazyWithRetry(() => import("./pages/ProgramsPage"))
+const SkillsPage = lazyWithRetry(() => import("./pages/SkillsPage"))
+const CoursesPage = lazyWithRetry(() => import("./pages/CoursesPage"))
+const CourseDetailPage = lazyWithRetry(() => import("./pages/CourseDetailPage"))
+const WorkshopsPage = lazyWithRetry(() => import("./pages/WorkshopsPage"))
+const WorkshopDetailPage = lazyWithRetry(() => import("./pages/WorkshopDetailPage"))
+const EventsPage = lazyWithRetry(() => import("./pages/EventsPage"))
+const EventDetailPage = lazyWithRetry(() => import("./pages/EventDetailPage"))
+const CareerOSLayout = lazyWithRetry(() => import("./pages/career/CareerOSLayout"))
+const CareerOSOverviewPage = lazyWithRetry(
   () => import("./pages/career/CareerOSOverviewPage"),
 )
-const CareerOSProfilePage = lazy(
+const CareerOSProfilePage = lazyWithRetry(
   () => import("./pages/career/CareerOSProfilePage"),
 )
-const CareerOSProjectsPage = lazy(
+const CareerOSProjectsPage = lazyWithRetry(
   () => import("./pages/career/CareerOSProjectsPage"),
 )
-const CareerOSProjectDetailPage = lazy(
+const CareerOSProjectDetailPage = lazyWithRetry(
   () => import("./pages/career/CareerOSProjectDetailPage"),
 )
-const CareerOSJobsPage = lazy(() => import("./pages/career/CareerOSJobsPage"))
-const CareerOSApplicationsPage = lazy(
+const CareerOSJobsPage = lazyWithRetry(() => import("./pages/career/CareerOSJobsPage"))
+const CareerOSApplicationsPage = lazyWithRetry(
   () => import("./pages/career/CareerOSApplicationsPage"),
 )
-const CareerOSApplicationDetailPage = lazy(
+const CareerOSApplicationDetailPage = lazyWithRetry(
   () => import("./pages/career/CareerOSApplicationDetailPage"),
 )
-const CareerOSInterviewsPage = lazy(
+const CareerOSInterviewsPage = lazyWithRetry(
   () => import("./pages/career/CareerOSInterviewsPage"),
 )
-const CareerOSInterviewDetailPage = lazy(
+const CareerOSInterviewDetailPage = lazyWithRetry(
   () => import("./pages/career/CareerOSInterviewDetailPage"),
 )
-const CareerOSSupportPage = lazy(
+const CareerOSSupportPage = lazyWithRetry(
   () => import("./pages/career/CareerOSSupportPage"),
 )
-const CareerOSSupportDetailPage = lazy(
+const CareerOSSupportDetailPage = lazyWithRetry(
   () => import("./pages/career/CareerOSSupportDetailPage"),
 )
-const BlogPage = lazy(() => import("./pages/BlogPage"))
-const BlogPostPage = lazy(() => import("./pages/BlogPostPage"))
-const ContactPage = lazy(() => import("./pages/ContactPage"))
-const VerifyPage = lazy(() => import("./pages/VerifyPage"))
-const LoginPage = lazy(() => import("./pages/LoginPage"))
-const ResetPasswordPage = lazy(() => import("./pages/ResetPasswordPage"))
-const PathComingPage = lazy(() => import("./pages/PathComingPage"))
-const DashboardStudentPage = lazy(() => import("./pages/DashboardStudentPage"))
-const DashboardFacultyPage = lazy(() => import("./pages/DashboardFacultyPage"))
-const DashboardOrgPage = lazy(() => import("./pages/DashboardOrgPage"))
-const DashboardCollegePage = lazy(() => import("./pages/DashboardCollegePage"))
-const DashboardRecruiterPage = lazy(
+const BlogPage = lazyWithRetry(() => import("./pages/BlogPage"))
+const BlogPostPage = lazyWithRetry(() => import("./pages/BlogPostPage"))
+const ContactPage = lazyWithRetry(() => import("./pages/ContactPage"))
+const VerifyPage = lazyWithRetry(() => import("./pages/VerifyPage"))
+const LoginPage = lazyWithRetry(() => import("./pages/LoginPage"))
+const ResetPasswordPage = lazyWithRetry(() => import("./pages/ResetPasswordPage"))
+const PathComingPage = lazyWithRetry(() => import("./pages/PathComingPage"))
+const DashboardStudentPage = lazyWithRetry(() => import("./pages/DashboardStudentPage"))
+const DashboardFacultyPage = lazyWithRetry(() => import("./pages/DashboardFacultyPage"))
+const DashboardOrgPage = lazyWithRetry(() => import("./pages/DashboardOrgPage"))
+const DashboardCollegePage = lazyWithRetry(() => import("./pages/DashboardCollegePage"))
+const DashboardRecruiterPage = lazyWithRetry(
   () => import("./pages/DashboardRecruiterPage"),
 )
-const DashboardAdminPage = lazy(() => import("./pages/DashboardAdminPage"))
-const CourseBuilderPage = lazy(() => import("./pages/CourseBuilderPage"))
-const ChangePasswordPage = lazy(() => import("./pages/ChangePasswordPage"))
-const LearnPage = lazy(() => import("./pages/LearnPage"))
-const NorthwindLabPage = lazy(() => import("./pages/NorthwindLabPage"))
-const NorthwindProjectPage = lazy(() => import("./pages/NorthwindProjectPage"))
-const PracticeWorkspacePage = lazy(
+const DashboardAdminPage = lazyWithRetry(() => import("./pages/DashboardAdminPage"))
+const CourseBuilderPage = lazyWithRetry(() => import("./pages/CourseBuilderPage"))
+const ChangePasswordPage = lazyWithRetry(() => import("./pages/ChangePasswordPage"))
+const LearnPage = lazyWithRetry(() => import("./pages/LearnPage"))
+const NorthwindLabPage = lazyWithRetry(() => import("./pages/NorthwindLabPage"))
+const NorthwindProjectPage = lazyWithRetry(() => import("./pages/NorthwindProjectPage"))
+const PracticeWorkspacePage = lazyWithRetry(
   () => import("./pages/PracticeWorkspacePage"),
 )
-const NotFoundPage = lazy(() => import("./pages/NotFoundPage"))
+const NotFoundPage = lazyWithRetry(() => import("./pages/NotFoundPage"))
 
 function CoursesIndexRedirect() {
   const [params] = useSearchParams()
