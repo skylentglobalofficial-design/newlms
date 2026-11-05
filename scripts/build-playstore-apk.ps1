@@ -229,21 +229,15 @@ if (Test-Path "android/gradlew.bat") {
   if (($gradleExit -eq 0) -and (Test-Path $apkFile)) {
     $RootApk = Join-Path (Get-Location).Path "skylent-playstore-debug.apk"
     $DownloadsApk = Join-Path $HOME "Downloads\skylent-playstore-debug.apk"
-    $DistApk = Join-Path (Get-Location).Path "dist\skylent.apk"
     Copy-Item -Path $apkFile -Destination $RootApk -Force
     Copy-Item -Path $apkFile -Destination $DownloadsApk -Force -ErrorAction SilentlyContinue
-    Copy-Item -Path $apkFile -Destination $PublicApk -Force -ErrorAction SilentlyContinue
-    if (Test-Path "dist") {
-      Copy-Item -Path $apkFile -Destination $DistApk -Force -ErrorAction SilentlyContinue
-    }
     $SizeMb = [math]::Round(((Get-Item $RootApk).Length / 1MB), 2)
 
     Write-Host ""
     Write-Host "============================================================" -ForegroundColor Green
-    Write-Host "  [SUCCESS] NATIVE ANDROID APK GENERATED ($SizeMb MB)!" -ForegroundColor Green
+    Write-Host "  [SUCCESS] PLAY STORE ANDROID APK GENERATED ($SizeMb MB)!" -ForegroundColor Green
     Write-Host "  1. Project Copy  : $RootApk" -ForegroundColor White
     Write-Host "  2. Downloads Copy: $DownloadsApk" -ForegroundColor White
-    Write-Host "  3. Web Link Copy : $PublicApk -> https://skylent.live/skylent.apk" -ForegroundColor Cyan
     Write-Host "============================================================" -ForegroundColor Green
   } else {
     Write-Host ""

@@ -8,26 +8,40 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="Skylent" />
     <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="application-name" content="Skylent" />
+    <meta name="msapplication-TileColor" content="#5142b5" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="apple-touch-icon" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/icon-192.png" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <title>Skylent — Learn. Practise. Build.</title>
     <meta name="description" content="Learn useful skills, practise through real work, and keep evidence of what you learn." />
     <script>
       (function () {
         try {
-          if ('caches' in window) {
+          // Capture native Windows / Android beforeinstallprompt immediately before React mounts
+          window.__skylentDeferredInstallPrompt = null;
+          window.addEventListener("beforeinstallprompt", function (e) {
+            e.preventDefault();
+            window.__skylentDeferredInstallPrompt = e;
+            window.dispatchEvent(new CustomEvent("skylent:install-ready"));
+          });
+          window.addEventListener("appinstalled", function () {
+            window.__skylentDeferredInstallPrompt = null;
+            window.dispatchEvent(new CustomEvent("skylent:app-installed"));
+          });
+
+          if ("caches" in window) {
             caches.keys().then(function (keys) {
               keys.forEach(function (k) {
-                if (k.indexOf('v42') === -1) caches.delete(k);
+                if (k.indexOf("v48") === -1) caches.delete(k);
               });
             });
           }
-          window.addEventListener('vite:preloadError', function () {
-            if (!sessionStorage.getItem('skylent:chunk-reload')) {
-              sessionStorage.setItem('skylent:chunk-reload', '1');
+          window.addEventListener("vite:preloadError", function () {
+            if (!sessionStorage.getItem("skylent:chunk-reload")) {
+              sessionStorage.setItem("skylent:chunk-reload", "1");
               window.location.reload();
             }
           });
@@ -40,18 +54,24 @@
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
     <script>
-      // Strictly prevent Service Worker execution inside Android WebView / Capacitor
-      var isNativeEnv = Boolean(
+      // Register Service Worker on web (HTTPS or localhost) so Windows Desktop & Android Chrome enable 1-Click App Install
+      var isNativeCapacitor = Boolean(
         window.Capacitor ||
-        window.location.hostname === "localhost" ||
         window.location.hostname === "app.skylent.local" ||
         (navigator.userAgent && navigator.userAgent.indexOf("SkylentNativeApp") !== -1)
       );
-      if (!isNativeEnv && "serviceWorker" in navigator && window.location.protocol === "https:") {
+      if (
+        !isNativeCapacitor &&
+        "serviceWorker" in navigator &&
+        (window.location.protocol === "https:" || window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
+      ) {
         window.addEventListener("load", function () {
-          navigator.serviceWorker.register("/sw.js").then(function (reg) {
-            reg.update();
-          }).catch(function () {});
+          navigator.serviceWorker
+            .register("/sw.js")
+            .then(function (reg) {
+              reg.update();
+            })
+            .catch(function () {});
         });
       }
     </script>

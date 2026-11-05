@@ -1,20 +1,41 @@
 {
-  "name": "Skylent — Learn. Practise. Build. Prove it.",
+  "id": "/",
+  "name": "Skylent — Learn. Practise. Build.",
   "short_name": "Skylent",
   "description": "Career tracks, ₹99 Live Workshops with 100% Elixir Coin cashback, 20-Min TA Doubt SLA, Verified Certificates, and Direct Recruiter Shortlists.",
   "start_url": "/?source=pwa",
   "scope": "/",
   "display": "standalone",
-  "orientation": "portrait-primary",
-  "background_color": "#ffffff",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
+  "orientation": "any",
+  "background_color": "#1e1b4b",
   "theme_color": "#5142b5",
   "categories": ["education", "productivity", "business"],
+  "prefer_related_applications": false,
   "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
     {
       "src": "/favicon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "purpose": "any"
     }
   ],
   "shortcuts": [
@@ -23,28 +44,28 @@
       "short_name": "Dashboard",
       "description": "Open your active course modules, labs, and certificates",
       "url": "/dashboard/student",
-      "icons": [{ "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml" }]
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" }]
     },
     {
       "name": "₹99 Live Workshops",
       "short_name": "Workshops",
       "description": "Join a ₹99 Live Weekend Workshop and earn 99 Elixir Coins",
       "url": "/events",
-      "icons": [{ "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml" }]
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" }]
     },
     {
       "name": "Practice & SQL Labs",
       "short_name": "SQL Lab",
       "description": "Practise SQL, Python, and AI inside browser-graded labs",
-      "url": "/practice",
-      "icons": [{ "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml" }]
+      "url": "/labs",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" }]
     },
     {
       "name": "Verify Certificate",
       "short_name": "Verify ID",
       "description": "Verify any Skylent QR Certificate ID instantly",
       "url": "/verify",
-      "icons": [{ "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml" }]
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" }]
     }
   ]
 }

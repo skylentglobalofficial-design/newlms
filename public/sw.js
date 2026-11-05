@@ -1,7 +1,9 @@
-const CACHE_NAME = 'skylent-app-shell-v42';
+const CACHE_NAME = 'skylent-app-shell-v48';
 const PRECACHE_URLS = [
   '/manifest.webmanifest',
   '/favicon.svg',
+  '/icon-192.png',
+  '/icon-512.png',
 ];
 
 self.addEventListener('install', (event) => {
@@ -34,11 +36,10 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
 
-  // Never intercept API, health, APK downloads, HTML navigation, or Vite hashed JS/CSS chunks
+  // Never cache HTML navigation or Vite hashed JS/CSS chunks so deployments never cause a white screen
   if (
     url.pathname.startsWith('/api/') ||
     url.pathname.startsWith('/health') ||
-    url.pathname.endsWith('.apk') ||
     request.mode === 'navigate' ||
     (request.headers.get('accept') || '').includes('text/html') ||
     url.pathname.startsWith('/assets/')
