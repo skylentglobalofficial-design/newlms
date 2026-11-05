@@ -1,4 +1,4 @@
-/* Clean, centered, distraction-free Skylent Authentication Card */
+/* Clean, centered, distraction-free Skylent Authentication Card (Zero black header bar) */
 
 .entry {
   display: grid;
@@ -21,7 +21,7 @@
   gap: 7px;
   min-height: 44px;
   color: #475569;
-  font: 500 13.5px/1 var(--font-body);
+  font: 600 13.5px/1 var(--font-body);
   text-decoration: none;
 }
 
@@ -38,7 +38,7 @@
 
 .entry-col {
   width: 100%;
-  max-width: 460px;
+  max-width: 450px;
 }
 
 .entry-mark {
@@ -55,34 +55,13 @@
   overflow: hidden;
   background: #ffffff;
   border: 1px solid #e2e8f0;
+  border-top: 4px solid #5142b5;
   border-radius: 16px;
-  box-shadow: 0 20px 50px -18px rgba(15, 23, 42, 0.12), inset 0 3px 0 #5142b5;
-}
-
-.entry-frame-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 12px 20px;
-  background: #0f172a;
-}
-
-.entry-frame-bar b {
-  color: #ffffff;
-  font: 600 11px/1 var(--font-mono);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
-.entry-frame-bar span {
-  color: #cbd5e1;
-  font: 500 11px/1 var(--font-mono);
-  letter-spacing: 0.06em;
+  box-shadow: 0 20px 50px -18px rgba(15, 23, 42, 0.12);
 }
 
 .entry-pane {
-  padding: clamp(24px, 4vw, 34px) clamp(22px, 4vw, 34px);
+  padding: clamp(26px, 4vw, 34px) clamp(24px, 4vw, 34px);
   min-width: 0;
 }
 
@@ -90,7 +69,7 @@
   margin: 0;
   color: #0f172a;
   font-family: var(--skylent-font-heading, var(--font-display));
-  font-size: clamp(24px, 3.2vw, 29px);
+  font-size: clamp(24px, 3.2vw, 28px);
   font-weight: 700;
   letter-spacing: -0.02em;
   line-height: 1.15;

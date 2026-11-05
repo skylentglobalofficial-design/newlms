@@ -69,6 +69,7 @@ import {
   isValidPasswordResetTokenFormat,
 } from "../lib/password-reset.js"
 import {
+  ensureEmailConfigHydrated,
   isEmailConfigured,
   isSmsGatewayConfigured,
   sendEmail,
@@ -93,6 +94,8 @@ const signupSchema = z
     name: displayNameSchema.optional(),
     email: emailSchema,
     password: passwordSchema,
+    emailOtp: z.string().trim().optional(),
+    requireEmailOtp: z.boolean().optional(),
   })
   .refine((data) => Boolean(data.displayName ?? data.name), {
     message: "Display name is required",
@@ -105,6 +108,24 @@ const loginSchema = z.object({
 })
 
 const AUTH_FAILURE = { error: "Invalid email or password" }
+
+// ─── Email & Mobile OTP Store (HMAC-SHA256 hashed, 10-min expiry) ──
+type OtpRecord = {
+  codeHash: string
+  email: string
+  expiresAt: number
+  attempts: number
+}
+
+const emailOtpStore = new Map<string, OtpRecord>()
+const mobileOtpStore = new Map<string, OtpRecord>()
+
+function hashOtpCode(target: string, code: string): string {
+  return crypto
+    .createHmac("sha256", process.env.SESSION_SECRET || "skylent-otp-secret")
+    .update(`${target.toLowerCase()}:${code}`)
+    .digest("hex")
+}
 
 authRouter.get("/csrf", (req, res) => {
   const existing = parseCookies(req)[CSRF_COOKIE]
@@ -253,6 +274,178 @@ authRouter.get("/google/callback", async (req, res) => {
   }
 })
 
+// ─── Send 6-Digit Email OTP (For Signup Verification or Passwordless Login) ──
+authRouter.post("/email-otp/send", requireCsrf, async (req, res) => {
+  const rawEmail = typeof req.body?.email === "string" ? req.body.email.trim() : ""
+  const purpose = req.body?.purpose === "signup" ? "signup" : "login"
+  const parsedEmail = emailSchema.safeParse(rawEmail)
+  if (!parsedEmail.success) {
+    return res.status(400).json({ error: "Enter a valid email address." })
+  }
+  const email = normalizeEmail(parsedEmail.data)
+
+  try {
+    await ensureEmailConfigHydrated()
+    const existing = await prisma.user.findUnique({
+      where: { email },
+      select: { id: true, displayName: true },
+    })
+
+    if (purpose === "signup" && existing) {
+      return res.status(409).json({
+        error: "An account with this email already exists. Please sign in instead.",
+      })
+    }
+
+    const code = String(crypto.randomInt(100000, 999999))
+    emailOtpStore.set(email, {
+      codeHash: hashOtpCode(email, code),
+      email,
+      expiresAt: Date.now() + 10 * 60 * 1000,
+      attempts: 0,
+    })
+
+    if (!isEmailConfigured()) {
+      return res.status(503).json({
+        error: "Email OTP service is not configured on this server yet. Please sign in with Email & Password or Google.",
+      })
+    }
+
+    const otpMail = buildLoginOtpEmail(code, email)
+    await sendEmail({
+      to: email,
+      ...otpMail,
+    })
+
+    return res.json({
+      ok: true,
+      email,
+      isExistingUser: Boolean(existing),
+      existingName: existing?.displayName ?? null,
+      expiresInSeconds: 600,
+      message: `6-digit verification code sent to ${email} from Skylent <noreply@skylent.live>.`,
+    })
+  } catch (error) {
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+      return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.accounts))
+    }
+    console.error("Email OTP send failed:", error instanceof Error ? error.name : "unknown")
+    return res.status(502).json({
+      error: "Unable to send verification email right now. Please check your email address and try again.",
+    })
+  }
+})
+
+// ─── Verify 6-Digit Email OTP for Sign-In ──
+authRouter.post("/email-otp/verify", requireCsrf, async (req, res) => {
+  const rawEmail = typeof req.body?.email === "string" ? req.body.email.trim() : ""
+  const rawOtp = typeof req.body?.otp === "string" ? req.body.otp.trim() : ""
+  const rawName = typeof req.body?.name === "string" ? req.body.name.trim() : ""
+  const acceptedTerms = req.body?.acceptedTerms === true || Boolean(req.body?.consent)
+
+  const parsedEmail = emailSchema.safeParse(rawEmail)
+  if (!parsedEmail.success) {
+    return res.status(400).json({ error: "Enter a valid email address." })
+  }
+  if (!/^\d{6}$/.test(rawOtp)) {
+    return res.status(400).json({ error: "Enter the 6-digit OTP sent to your email." })
+  }
+
+  const email = normalizeEmail(parsedEmail.data)
+  const record = emailOtpStore.get(email)
+  if (!record || record.expiresAt <= Date.now()) {
+    emailOtpStore.delete(email)
+    return res.status(400).json({ error: "OTP has expired or was not requested. Please request a new OTP." })
+  }
+
+  record.attempts += 1
+  if (record.attempts > 5) {
+    emailOtpStore.delete(email)
+    return res.status(429).json({ error: "Too many incorrect OTP attempts. Please request a new OTP." })
+  }
+
+  if (record.codeHash !== hashOtpCode(email, rawOtp)) {
+    return res.status(401).json({ error: "Incorrect 6-digit OTP. Please check your email inbox and try again." })
+  }
+
+  emailOtpStore.delete(email)
+
+  try {
+    let mustChangePassword = false
+    try {
+      mustChangePassword = (await readSchemaCapabilities()).userMustChangePassword
+    } catch {
+      return res.status(503).json({ error: "Failed to verify email sign-in" })
+    }
+
+    let user = await prisma.user.findUnique({
+      where: { email },
+      select: {
+        ...userCredentialSelect(mustChangePassword),
+        roles: { include: { role: true } },
+      },
+    })
+
+    if (!user) {
+      if (!acceptedTerms) {
+        return res.status(400).json({
+          error: "Accept the Terms & Conditions and Privacy Policy to create your account.",
+          code: "consent_required",
+        })
+      }
+      const displayName = rawName.length >= 2 ? rawName.slice(0, 80) : email.split("@")[0] || "Learner"
+      const randomPassHash = await bcrypt.hash(crypto.randomBytes(24).toString("hex"), BCRYPT_ROUNDS)
+      const studentRole = await ensureRole(RoleName.STUDENT)
+      const policyReady = (await readSchemaCapabilities()).policyAcceptance
+
+      const created = await prisma.$transaction(async (tx) => {
+        const u = await tx.user.create({
+          data: {
+            email,
+            displayName,
+            passwordHash: randomPassHash,
+            roles: {
+              create: { roleId: studentRole.id },
+            },
+          },
+          select: {
+            ...userCredentialSelect(mustChangePassword),
+            roles: { include: { role: true } },
+          },
+        })
+        if (policyReady) {
+          await recordPolicyAcceptance(tx, {
+            context: "signup",
+            policyVersion: CURRENT_POLICY_VERSION,
+            userId: u.id,
+          })
+        }
+        return u
+      })
+      user = created
+    }
+
+    const { sessionToken, csrfToken } = await createSession(user.id)
+    const issuedCsrf = setSessionCookies(res, req, sessionToken, csrfToken)
+    const roles = user.roles.map((entry) => entry.role)
+
+    return res.json({
+      user: toSafeUser(user as Parameters<typeof toSafeUser>[0]),
+      roles: roles.map(toApiRole),
+      role: primaryRole(roles),
+      mustChangePassword: false,
+      csrfToken: issuedCsrf,
+      ...(req.get("x-skylent-client") ? { sessionToken } : {}),
+    })
+  } catch (error) {
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+      return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.accounts))
+    }
+    console.error("Email OTP verify failed:", error instanceof Error ? error.name : "unknown")
+    return res.status(500).json({ error: "Failed to sign in with email OTP" })
+  }
+})
+
 authRouter.post("/signup", requireCsrf, async (req, res) => {
   const parsed = signupSchema.safeParse(req.body)
   if (!parsed.success) {
@@ -268,6 +461,28 @@ authRouter.post("/signup", requireCsrf, async (req, res) => {
   }
 
   const email = normalizeEmail(parsed.data.email)
+
+  // Verify Email OTP when required by the Signup UI (anti-spam email verification)
+  if (parsed.data.requireEmailOtp || parsed.data.emailOtp !== undefined) {
+    const rawOtp = (parsed.data.emailOtp ?? "").trim()
+    if (!/^\d{6}$/.test(rawOtp)) {
+      return res.status(400).json({ error: "Enter the 6-digit verification OTP sent to your email." })
+    }
+    const record = emailOtpStore.get(email)
+    if (!record || record.expiresAt <= Date.now()) {
+      emailOtpStore.delete(email)
+      return res.status(400).json({ error: "Email verification OTP has expired. Please click Send OTP again." })
+    }
+    record.attempts += 1
+    if (record.attempts > 5) {
+      emailOtpStore.delete(email)
+      return res.status(429).json({ error: "Too many incorrect OTP attempts. Please request a new OTP." })
+    }
+    if (record.codeHash !== hashOtpCode(email, rawOtp)) {
+      return res.status(400).json({ error: "Incorrect 6-digit OTP. Please check your email inbox and try again." })
+    }
+    emailOtpStore.delete(email)
+  }
 
   try {
     const existing = await prisma.user.findUnique({ where: { email } })
@@ -502,7 +717,7 @@ authRouter.patch("/me", requireAuth, requireCsrf, async (req: AuthenticatedReque
 
 const passwordResetRateLimit = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 5,
+  max: 8,
   standardHeaders: true,
   legacyHeaders: false,
   handler(_request, response) {
@@ -513,6 +728,18 @@ const passwordResetRateLimit = rateLimit({
 const passwordResetRequestSchema = z.object({
   email: z.string().trim().email("Enter a valid email address"),
 })
+
+function resolveResetFrontendOrigin(req: import("express").Request): string {
+  const configured = process.env.FRONTEND_URL?.trim().replace(/\/+$/, "")
+  if (configured && !configured.includes("localhost") && !configured.includes("127.0.0.1")) {
+    return configured
+  }
+  const host = (req.hostname || "").toLowerCase()
+  if (host === "skylent.live" || host === "www.skylent.live" || process.env.NODE_ENV === "production") {
+    return "https://skylent.live"
+  }
+  return configured || "http://localhost:8443"
+}
 
 authRouter.post("/password-reset/request", passwordResetRateLimit, async (req, res) => {
   const parsed = passwordResetRequestSchema.safeParse(req.body)
@@ -525,10 +752,11 @@ authRouter.post("/password-reset/request", passwordResetRateLimit, async (req, r
   }
 
   try {
+    await ensureEmailConfigHydrated()
     const result = await createPasswordResetToken(parsed.data.email)
 
     if (result && isEmailConfigured()) {
-      const frontendUrl = process.env.FRONTEND_URL || "http://localhost:8443"
+      const frontendUrl = resolveResetFrontendOrigin(req)
       const resetUrl = `${frontendUrl}/reset-password?token=${result.token}`
       const emailContent = buildPasswordResetEmail(resetUrl)
 
@@ -632,7 +860,8 @@ authRouter.post("/password-reset/complete", passwordResetRateLimit, async (req, 
   }
 })
 
-authRouter.get("/password-reset/config", (_req, res) => {
+authRouter.get("/password-reset/config", async (_req, res) => {
+  await ensureEmailConfigHydrated()
   res.json({
     emailConfigured: isEmailConfigured(),
     message: isEmailConfigured()
@@ -641,7 +870,6 @@ authRouter.get("/password-reset/config", (_req, res) => {
   })
 })
 
-// Google Play Store Mandatory User Data & Account Deletion Endpoint
 authRouter.post("/delete-account", requireAuth, requireCsrf, async (req: AuthenticatedRequest, res) => {
   const auth = req.auth
   if (!auth) {
@@ -670,23 +898,6 @@ authRouter.post("/delete-account", requireAuth, requireCsrf, async (req: Authent
   }
 })
 
-// ─── REAL 6-DIGIT MOBILE & EMAIL OTP AUTHENTICATION (ZERO ON-SCREEN LEAK) ──
-type MobileOtpRecord = {
-  codeHash: string
-  email: string | null
-  expiresAt: number
-  attempts: number
-}
-
-const mobileOtpStore = new Map<string, MobileOtpRecord>()
-
-function hashOtpCode(phone10: string, code: string): string {
-  return crypto
-    .createHmac("sha256", process.env.SESSION_SECRET || "skylent-otp-secret")
-    .update(`${phone10}:${code}`)
-    .digest("hex")
-}
-
 function normalizeIndianMobile(raw: string): string | null {
   const digits = raw.replace(/\D/g, "")
   if (digits.length === 10 && /^[6-9]\d{9}$/.test(digits)) return digits
@@ -705,82 +916,49 @@ authRouter.post("/otp/send", requireCsrf, async (req, res) => {
   const rawEmail = typeof req.body?.email === "string" ? req.body.email.trim().toLowerCase() : ""
   const phone = normalizeIndianMobile(rawPhone)
   if (!phone) {
-    return res.status(400).json({ error: "Enter a valid 10-digit Indian mobile number (starting with 6, 7, 8, or 9)." })
-  }
-  if (rawEmail && !emailSchema.safeParse(rawEmail).success) {
-    return res.status(400).json({ error: "Enter a valid email address for OTP delivery." })
+    return res.status(400).json({ error: "Enter a valid 10-digit Indian mobile number." })
   }
 
   try {
+    await ensureEmailConfigHydrated()
     const mobileEmail = syntheticMobileEmail(phone)
-    const existingByMobile = await prisma.user.findUnique({
-      where: { email: mobileEmail },
+    const existing = await prisma.user.findUnique({
+      where: { email: rawEmail || mobileEmail },
       select: { id: true, displayName: true, email: true },
     })
-    const existingByEmail = rawEmail
-      ? await prisma.user.findUnique({
-          where: { email: rawEmail },
-          select: { id: true, displayName: true, email: true },
-        })
-      : null
-    const existing = existingByEmail ?? existingByMobile
 
     const code = String(crypto.randomInt(100000, 999999))
-    const deliveryEmail = rawEmail || (existing && !existing.email.endsWith("@skylent.live") ? existing.email : null)
+    const deliveryEmail = rawEmail || (existing && !existing.email.endsWith("@skylent.live") ? existing.email : "")
 
     mobileOtpStore.set(phone, {
       codeHash: hashOtpCode(phone, code),
-      email: deliveryEmail,
+      email: deliveryEmail || mobileEmail,
       expiresAt: Date.now() + 10 * 60 * 1000,
       attempts: 0,
     })
 
     const channels: string[] = []
-    let smsError: string | null = null
-    let emailError: string | null = null
-
     if (isSmsGatewayConfigured()) {
       try {
         const smsRes = await sendSmsOtp(phone, code)
         if (smsRes.sent) channels.push(`SMS (+91-${phone})`)
-      } catch (err) {
-        smsError = err instanceof Error ? err.message : "SMS send failed"
-        console.error("SMS OTP send error:", smsError)
+      } catch {
+        // fallback to email
       }
     }
-
     if (deliveryEmail && isEmailConfigured()) {
       try {
-        const otpMail = buildLoginOtpEmail(code, phone)
-        await sendEmail({
-          to: deliveryEmail,
-          ...otpMail,
-        })
+        const otpMail = buildLoginOtpEmail(code, deliveryEmail)
+        await sendEmail({ to: deliveryEmail, ...otpMail })
         channels.push(`Email (${deliveryEmail})`)
-      } catch (err) {
-        emailError = err instanceof Error ? err.message : "Email send failed"
-        console.error("Email OTP send error:", emailError)
+      } catch {
+        // ignore
       }
     }
 
-    // Log on the backend server console only (never returned in the HTTP response!)
-    console.info(`[Skylent OTP] +91-${phone}${deliveryEmail ? ` / ${deliveryEmail}` : ""} -> 6-digit OTP generated (channels: ${channels.join(", ") || "server-log"})`)
-
     if (channels.length === 0) {
-      if (!isSmsGatewayConfigured() && !isEmailConfigured()) {
-        return res.status(503).json({
-          error:
-            "OTP gateway is not configured on this server yet. Add GMAIL_USER + GMAIL_APP_PASSWORD (free Email OTP) or FAST2SMS_API_KEY (SMS OTP) in .env, or sign in with Email & Password / Google.",
-        })
-      }
-      if (!isSmsGatewayConfigured() && isEmailConfigured() && !deliveryEmail) {
-        return res.status(400).json({
-          error: "Enter your email address below so we can send your 6-digit verification OTP to your inbox immediately.",
-          requireEmailForOtp: true,
-        })
-      }
-      return res.status(502).json({
-        error: "Unable to deliver the 6-digit OTP to your number/email right now. Please check your details or use Email & Password / Google.",
+      return res.status(503).json({
+        error: "Unable to deliver OTP right now. Please use Email OTP or Email & Password.",
       })
     }
 
@@ -809,28 +987,24 @@ authRouter.post("/otp/verify", requireCsrf, async (req, res) => {
   const acceptedTerms = req.body?.acceptedTerms === true || Boolean(req.body?.consent)
 
   const phone = normalizeIndianMobile(rawPhone)
-  if (!phone) {
-    return res.status(400).json({ error: "Enter a valid 10-digit Indian mobile number." })
-  }
-  if (!/^\d{6}$/.test(rawOtp)) {
-    return res.status(400).json({ error: "Enter the 6-digit OTP sent to your phone/email." })
+  if (!phone || !/^\d{6}$/.test(rawOtp)) {
+    return res.status(400).json({ error: "Enter a valid mobile number and 6-digit OTP." })
   }
 
   const record = mobileOtpStore.get(phone)
   if (!record || record.expiresAt <= Date.now()) {
     mobileOtpStore.delete(phone)
-    return res.status(400).json({ error: "OTP has expired or was not requested. Please request a new OTP." })
+    return res.status(400).json({ error: "OTP has expired. Please request a new OTP." })
   }
 
   record.attempts += 1
   if (record.attempts > 5) {
     mobileOtpStore.delete(phone)
-    return res.status(429).json({ error: "Too many incorrect OTP attempts. Please request a new OTP." })
+    return res.status(429).json({ error: "Too many incorrect OTP attempts." })
   }
 
-  const expectedHash = hashOtpCode(phone, rawOtp)
-  if (record.codeHash !== expectedHash) {
-    return res.status(401).json({ error: "Incorrect 6-digit OTP. Please check your SMS/email inbox and try again." })
+  if (record.codeHash !== hashOtpCode(phone, rawOtp)) {
+    return res.status(401).json({ error: "Incorrect 6-digit OTP." })
   }
 
   const verifiedEmail = record.email || syntheticMobileEmail(phone)
@@ -841,7 +1015,7 @@ authRouter.post("/otp/verify", requireCsrf, async (req, res) => {
     try {
       mustChangePassword = (await readSchemaCapabilities()).userMustChangePassword
     } catch {
-      return res.status(503).json({ error: "Failed to verify mobile sign-in" })
+      return res.status(503).json({ error: "Failed to verify sign-in" })
     }
 
     let user = await prisma.user.findUnique({
@@ -851,16 +1025,6 @@ authRouter.post("/otp/verify", requireCsrf, async (req, res) => {
         roles: { include: { role: true } },
       },
     })
-
-    if (!user && verifiedEmail !== syntheticMobileEmail(phone)) {
-      user = await prisma.user.findUnique({
-        where: { email: syntheticMobileEmail(phone) },
-        select: {
-          ...userCredentialSelect(mustChangePassword),
-          roles: { include: { role: true } },
-        },
-      })
-    }
 
     if (!user) {
       if (!acceptedTerms) {
@@ -918,6 +1082,6 @@ authRouter.post("/otp/verify", requireCsrf, async (req, res) => {
       return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.accounts))
     }
     console.error("Mobile OTP verify failed:", error instanceof Error ? error.name : "unknown")
-    return res.status(500).json({ error: "Failed to sign in with mobile OTP" })
+    return res.status(500).json({ error: "Failed to sign in with OTP" })
   }
 })

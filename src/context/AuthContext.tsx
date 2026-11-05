@@ -4,6 +4,7 @@ import {
   loginRequest,
   logoutRequest,
   signupRequest,
+  verifyEmailOtpRequest,
   verifyMobileOtpRequest,
   updateProfileRequest,
   clearAuthClientState,
@@ -11,7 +12,6 @@ import {
 } from "../lib/auth-api"
 import { setUnauthorizedHandler } from "../lib/http"
 
-// ─── TYPES ────────────────────────────────────────────────────────────────────
 export type UserRole = ApiRole
 
 export type AuthUser = {
@@ -34,7 +34,8 @@ type AuthContextValue = {
   roles: UserRole[]
   ready: boolean
   login: (email: string, password: string) => Promise<UserRole>
-  signup: (name: string, email: string, password: string, acceptedTerms: boolean) => Promise<UserRole>
+  signup: (name: string, email: string, password: string, acceptedTerms: boolean, emailOtp?: string) => Promise<UserRole>
+  loginWithEmailOtp: (input: { email: string; otp: string; name?: string; acceptedTerms?: boolean }) => Promise<UserRole>
   loginWithMobileOtp: (input: { phone: string; otp: string; name?: string; acceptedTerms?: boolean }) => Promise<UserRole>
   refreshSession: () => Promise<AuthUser | null>
   updateDisplayName: (displayName: string) => Promise<void>
@@ -43,7 +44,6 @@ type AuthContextValue = {
   logout: () => Promise<void>
 }
 
-// ─── CONTEXT ─────────────────────────────────────────────────────────────────
 const AuthContext = createContext<AuthContextValue | null>(null)
 
 const isDemoMode = import.meta.env.VITE_DEMO_MODE === "true"
@@ -86,7 +86,6 @@ function toAuthUser(response: {
   }
 }
 
-// ─── PROVIDER ─────────────────────────────────────────────────────────────────
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(() => readStoredDemoUser())
   const [roles, setRoles] = useState<UserRole[]>(() => {
@@ -156,8 +155,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return nextUser.role
   }, [])
 
-  const signup = useCallback(async (name: string, email: string, password: string, acceptedTerms: boolean) => {
-    const session = await signupRequest({ name, email, password, acceptedTerms })
+  const signup = useCallback(async (name: string, email: string, password: string, acceptedTerms: boolean, emailOtp?: string) => {
+    const session = await signupRequest({ name, email, password, acceptedTerms, emailOtp })
+    const nextUser = toAuthUser(session)
+    writeStoredDemoUser(null)
+    setUser(nextUser)
+    setRoles(session.roles)
+    return nextUser.role
+  }, [])
+
+  const loginWithEmailOtp = useCallback(async (input: { email: string; otp: string; name?: string; acceptedTerms?: boolean }) => {
+    const session = await verifyEmailOtpRequest(input)
     const nextUser = toAuthUser(session)
     writeStoredDemoUser(null)
     setUser(nextUser)
@@ -220,19 +228,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   return (
-    <AuthContext.Provider value={{ user, roles, ready, login, signup, loginWithMobileOtp, refreshSession, updateDisplayName, markPasswordChanged, loginDemo, logout }}>
+    <AuthContext.Provider value={{ user, roles, ready, login, signup, loginWithEmailOtp, loginWithMobileOtp, refreshSession, updateDisplayName, markPasswordChanged, loginDemo, logout }}>
       {children}
     </AuthContext.Provider>
   )
 }
 
-// ─── HOOK ─────────────────────────────────────────────────────────────────────
 const SAFE_DEFAULT: AuthContextValue = {
   user: null,
   roles: [],
   ready: true,
   login: async () => "student",
   signup: async () => "student",
+  loginWithEmailOtp: async () => "student",
+  loginWithMobileOtp: async () => "student",
+  refreshSession: async () => null,
   updateDisplayName: async () => {},
   markPasswordChanged: () => {},
   loginDemo: () => {},

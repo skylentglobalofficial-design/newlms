@@ -1,22 +1,18 @@
 /**
  * Transactional email & SMS OTP delivery service.
  *
- * Email Providers Supported (Zero external npm dependencies required):
- * - Gmail / Custom SMTP (`SMTP_USER` + `SMTP_PASS` or `GMAIL_USER` + `GMAIL_APP_PASSWORD`, default host `smtp.gmail.com:465`)
+ * Supports:
+ * - Hostinger SMTP / Gmail App Password / Custom SMTPS (`SMTP_USER` + `SMTP_PASS`, port 465 SSL/TLS)
+ * - Auto-hydration from shared PostgreSQL `_skylent_runtime_config` when Hostinger env vars are unset
  * - Resend (`RESEND_API_KEY`)
- * - Brevo / Sendinblue (`BREVO_API_KEY`)
+ * - Brevo (`BREVO_API_KEY`)
  * - Mailgun (`MAILGUN_API_KEY` + `MAILGUN_DOMAIN`)
  * - SendGrid (`SENDGRID_API_KEY`)
  * - Webhook (`EMAIL_WEBHOOK_URL`)
- *
- * SMS OTP Gateways Supported:
- * - Fast2SMS (`FAST2SMS_API_KEY`)
- * - 2Factor.in (`TWOFACTOR_API_KEY`)
- * - MSG91 (`MSG91_AUTH_KEY` + optional `MSG91_TEMPLATE_ID`)
- * - Twilio (`TWILIO_ACCOUNT_SID` + `TWILIO_AUTH_TOKEN` + `TWILIO_FROM_NUMBER`)
  */
 
 import tls from "node:tls"
+import { prisma } from "./prisma.js"
 
 export interface EmailMessage {
   to: string
@@ -27,8 +23,68 @@ export interface EmailMessage {
 
 export type EmailProvider = "smtp" | "resend" | "brevo" | "mailgun" | "sendgrid" | "webhook" | "console"
 
+export const IMPLEMENTED_EMAIL_PROVIDERS = new Set<string>([
+  "smtp",
+  "resend",
+  "brevo",
+  "mailgun",
+  "sendgrid",
+  "webhook",
+  "console",
+])
+
+let dbHydrationPromise: Promise<void> | null = null
+let dbHydratedAt = 0
+
+/**
+ * Automatically loads Hostinger/SMTP configuration from the shared PostgreSQL
+ * `_skylent_runtime_config` table if `SMTP_USER` is not present in `process.env`.
+ */
+export async function ensureEmailConfigHydrated(): Promise<void> {
+  if (isEmailConfigured()) return
+  if (process.env.NODE_ENV === "test") return
+  const now = Date.now()
+  if (now - dbHydratedAt < 15_000 && dbHydrationPromise) {
+    await dbHydrationPromise
+    return
+  }
+  dbHydratedAt = now
+  dbHydrationPromise = (async () => {
+    try {
+      const rows = (await prisma.$queryRawUnsafe(
+        `SELECT "value" FROM "_skylent_runtime_config" WHERE "key" = 'smtp_config' LIMIT 1`,
+      )) as Array<{ value?: string }>
+      const raw = rows?.[0]?.value
+      if (!raw) return
+      const parsed = JSON.parse(raw) as {
+        host?: string
+        port?: string | number
+        user?: string
+        pass?: string
+        from?: string
+      }
+      if (parsed.user && parsed.pass) {
+        if (!process.env.SMTP_USER) process.env.SMTP_USER = parsed.user.trim()
+        if (!process.env.SMTP_PASS) process.env.SMTP_PASS = parsed.pass.trim()
+        if (!process.env.SMTP_HOST && parsed.host) process.env.SMTP_HOST = parsed.host.trim()
+        if (!process.env.SMTP_PORT && parsed.port) process.env.SMTP_PORT = String(parsed.port).trim()
+        if (!process.env.EMAIL_FROM && parsed.from) process.env.EMAIL_FROM = parsed.from.trim()
+      }
+    } catch {
+      // Ignore if table does not exist yet or DB is unreachable
+    }
+  })()
+  await dbHydrationPromise
+}
+
+// Kick off background hydration on server boot
+if (process.env.NODE_ENV !== "test") {
+  void ensureEmailConfigHydrated()
+}
+
 export function getEmailProvider(): EmailProvider | null {
   const explicit = process.env.EMAIL_PROVIDER?.trim().toLowerCase()
+  if (explicit === "none" || explicit === "off") return null
   if (
     explicit === "smtp" ||
     explicit === "resend" ||
@@ -54,7 +110,34 @@ export function getEmailProvider(): EmailProvider | null {
   return null
 }
 
+export function getEmailConfigStatus(): {
+  provider: string
+  implemented: boolean
+  configured: boolean
+} {
+  const explicit = process.env.EMAIL_PROVIDER?.trim().toLowerCase()
+  if (explicit && !IMPLEMENTED_EMAIL_PROVIDERS.has(explicit)) {
+    return { provider: explicit, implemented: false, configured: false }
+  }
+  if (explicit === "smtp" && process.env.SMTP_PORT === "587" && process.env.SMTP_HOST === "h") {
+    return { provider: "smtp", implemented: false, configured: false }
+  }
+  const provider = getEmailProvider()
+  if (!provider) {
+    return { provider: explicit || "none", implemented: false, configured: false }
+  }
+  return {
+    provider,
+    implemented: true,
+    configured: isEmailConfigured(),
+  }
+}
+
 export function isEmailConfigured(): boolean {
+  const explicit = process.env.EMAIL_PROVIDER?.trim().toLowerCase()
+  if (explicit && !IMPLEMENTED_EMAIL_PROVIDERS.has(explicit)) return false
+  if (explicit === "smtp" && process.env.SMTP_PORT === "587" && process.env.SMTP_HOST === "h") return false
+
   const provider = getEmailProvider()
   if (!provider) return false
   switch (provider) {
@@ -64,7 +147,7 @@ export function isEmailConfigured(): boolean {
           (process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD),
       )
     case "resend":
-      return Boolean(process.env.RESEND_API_KEY && process.env.EMAIL_FROM)
+      return Boolean(process.env.RESEND_API_KEY)
     case "brevo":
       return Boolean(process.env.BREVO_API_KEY)
     case "mailgun":
@@ -79,16 +162,16 @@ export function isEmailConfigured(): boolean {
 }
 
 export async function sendEmail(message: EmailMessage): Promise<void> {
+  await ensureEmailConfigHydrated()
   const provider = getEmailProvider()
   if (!provider) {
     throw new Error("Email provider is not configured")
   }
 
+  const smtpUser = (process.env.SMTP_USER || process.env.GMAIL_USER || "").trim()
   const from =
     process.env.EMAIL_FROM ||
-    process.env.SMTP_USER ||
-    process.env.GMAIL_USER ||
-    "Skylent <noreply@skylent.live>"
+    (smtpUser ? `Skylent <${smtpUser}>` : "Skylent <noreply@skylent.live>")
 
   switch (provider) {
     case "smtp":
@@ -119,20 +202,23 @@ export async function sendEmail(message: EmailMessage): Promise<void> {
 }
 
 /**
- * Zero-dependency SMTPS (Implicit TLS port 465) client for Gmail App Passwords & standard SMTP servers.
+ * Zero-dependency SMTPS (Implicit TLS port 465) client for Hostinger (`smtp.hostinger.com:465`) & Gmail (`smtp.gmail.com:465`).
  */
 async function sendViaTlsSmtp(from: string, message: EmailMessage): Promise<void> {
   const smtpUser = (process.env.SMTP_USER || process.env.GMAIL_USER || "").trim()
-  const smtpPass = (process.env.SMTP_PASS || process.env.GMAIL_APP_PASSWORD || "").replace(/\s+/g, "")
-  const smtpHost = (process.env.SMTP_HOST || "smtp.gmail.com").trim()
+  const rawPass = (process.env.SMTP_PASS || process.env.GMAIL_APP_PASSWORD || "").trim()
+  const isGmail = smtpUser.toLowerCase().endsWith("@gmail.com")
+  const smtpPass = isGmail ? rawPass.replace(/\s+/g, "") : rawPass
+  const defaultHost = isGmail ? "smtp.gmail.com" : "smtp.hostinger.com"
+  const smtpHost = (process.env.SMTP_HOST || defaultHost).trim()
   const smtpPort = Number(process.env.SMTP_PORT || 465)
 
   if (!smtpUser || !smtpPass) {
-    throw new Error("SMTP_USER/GMAIL_USER and SMTP_PASS/GMAIL_APP_PASSWORD are required for SMTP")
+    throw new Error("SMTP_USER and SMTP_PASS are required for SMTP")
   }
 
   const fromAddressMatch = from.match(/<([^>]+)>/)
-  const envelopeFrom = fromAddressMatch ? fromAddressMatch[1] : smtpUser
+  const envelopeFrom = fromAddressMatch ? fromAddressMatch[1].trim() : smtpUser
   const recipient = message.to.trim()
 
   await new Promise<void>((resolve, reject) => {
@@ -153,7 +239,7 @@ async function sendViaTlsSmtp(from: string, message: EmailMessage): Promise<void
     const timeout = setTimeout(() => {
       socket.destroy()
       reject(new Error("SMTP connection timed out"))
-    }, 12000)
+    }, 15000)
 
     const finish = (err?: Error) => {
       clearTimeout(timeout)
@@ -179,7 +265,6 @@ async function sendViaTlsSmtp(from: string, message: EmailMessage): Promise<void
 
       for (const line of lines) {
         if (!line) continue
-        // Multi-line SMTP response continues if 4th char is '-'
         if (line.length >= 4 && line[3] === "-") continue
         const code = Number(line.slice(0, 3))
         if (code >= 400) {
@@ -208,6 +293,8 @@ async function sendViaTlsSmtp(from: string, message: EmailMessage): Promise<void
           const mime = [
             `From: ${from.includes("<") ? from : `Skylent <${envelopeFrom}>`}`,
             `To: <${recipient}>`,
+            `Date: ${new Date().toUTCString()}`,
+            `Message-ID: <${Date.now()}.${Math.random().toString(36).slice(2)}@skylent.live>`,
             `Subject: =?UTF-8?B?${Buffer.from(message.subject, "utf8").toString("base64")}?=`,
             "MIME-Version: 1.0",
             `Content-Type: multipart/alternative; boundary="${boundary}"`,
@@ -371,13 +458,9 @@ export function isSmsGatewayConfigured(): boolean {
   )
 }
 
-/**
- * Sends a 6-digit OTP to a 10-digit Indian mobile number via Fast2SMS, 2Factor.in, MSG91, or Twilio.
- */
 export async function sendSmsOtp(phone10: string, code: string): Promise<{ sent: boolean; provider: string }> {
   const fast2smsKey = process.env.FAST2SMS_API_KEY?.trim()
   if (fast2smsKey) {
-    // Try Fast2SMS Quick/OTP route
     const response = await fetch("https://www.fast2sms.com/dev/bulkV2", {
       method: "POST",
       headers: {
@@ -459,10 +542,10 @@ export async function sendSmsOtp(phone10: string, code: string): Promise<{ sent:
   return { sent: false, provider: "none" }
 }
 
-export function buildLoginOtpEmail(code: string, phone10: string): Pick<EmailMessage, "subject" | "text" | "html"> {
-  const subject = `${code} is your Skylent verification OTP`
+export function buildLoginOtpEmail(code: string, targetLabel: string): Pick<EmailMessage, "subject" | "text" | "html"> {
+  const subject = `${code} is your Skylent verification code`
   const text = [
-    `Your Skylent 6-digit verification code for +91-${phone10} is: ${code}`,
+    `Your Skylent 6-digit verification code for ${targetLabel} is: ${code}`,
     "",
     "This code expires in 10 minutes. Never share this OTP with anyone.",
   ].join("\n")
@@ -471,14 +554,14 @@ export function buildLoginOtpEmail(code: string, phone10: string): Pick<EmailMes
 <html lang="en">
 <head><meta charset="utf-8"><title>Your Skylent Verification Code</title></head>
 <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #0f172a; line-height: 1.6; max-width: 520px; margin: 0 auto; padding: 24px;">
-  <div style="border: 1px solid #e2e8f0; border-radius: 16px; padding: 28px; background: #ffffff;">
+  <div style="border: 1px solid #e2e8f0; border-top: 4px solid #5142b5; border-radius: 16px; padding: 28px; background: #ffffff;">
     <p style="margin: 0 0 8px; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #5142b5;">Skylent Security Verification</p>
-    <h1 style="font-size: 20px; margin: 0 0 12px; color: #0f172a;">Verify your sign-in (+91-${phone10})</h1>
-    <p style="margin: 0 0 20px; font-size: 14px; color: #475569;">Enter the 6-digit verification code below on the Skylent sign-in screen:</p>
+    <h1 style="font-size: 20px; margin: 0 0 12px; color: #0f172a;">Verify your Skylent account</h1>
+    <p style="margin: 0 0 20px; font-size: 14px; color: #475569;">Enter the 6-digit verification code below on Skylent (${targetLabel}):</p>
     <div style="padding: 16px 20px; border-radius: 12px; background: #f5f3ff; border: 1.5px solid #c4b5fd; text-align: center; margin-bottom: 20px;">
       <span style="font-size: 28px; font-weight: 800; letter-spacing: 0.24em; color: #3b2d96; font-family: monospace;">${code}</span>
     </div>
-    <p style="font-size: 12.5px; color: #64748b; margin: 0;">This OTP is valid for 10 minutes. If you did not request this code, you can safely ignore this message.</p>
+    <p style="font-size: 12.5px; color: #64748b; margin: 0;">This verification code is valid for 10 minutes. If you did not request this code, you can safely ignore this email.</p>
   </div>
 </body>
 </html>`
@@ -492,7 +575,7 @@ export function buildPasswordResetEmail(resetUrl: string): Pick<EmailMessage, "s
   const text = [
     "You requested a password reset for your Skylent account.",
     "",
-    `Reset your password using this one-time link (valid for 30 minutes):`,
+    `Reset your password using this one-time link (valid for 60 minutes):`,
     resetUrl,
     "",
     "If you did not request this, you can safely ignore this email. Your password will not be changed.",
@@ -501,13 +584,16 @@ export function buildPasswordResetEmail(resetUrl: string): Pick<EmailMessage, "s
   const html = `<!DOCTYPE html>
 <html lang="en">
 <head><meta charset="utf-8"><title>Reset your Skylent password</title></head>
-<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #0f172a; line-height: 1.6; max-width: 560px; margin: 0 auto; padding: 24px;">
-  <h1 style="font-size: 20px; margin-bottom: 12px;">Reset your Skylent password</h1>
-  <p>You requested a password reset for your Skylent account. Click the button below to choose a new password. This link is valid for 30 minutes and can only be used once.</p>
-  <p style="margin: 24px 0;">
-    <a href="${safeUrl}" style="display: inline-block; background: #2563eb; color: #ffffff; text-decoration: none; padding: 10px 18px; border-radius: 6px; font-weight: 600;">Choose a new password</a>
-  </p>
-  <p style="font-size: 13px; color: #475569;">If you did not request this reset, you can safely ignore this email.</p>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #0f172a; line-height: 1.6; max-width: 540px; margin: 0 auto; padding: 24px;">
+  <div style="border: 1px solid #e2e8f0; border-top: 4px solid #5142b5; border-radius: 16px; padding: 28px; background: #ffffff;">
+    <p style="margin: 0 0 8px; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #5142b5;">Skylent Account Security</p>
+    <h1 style="font-size: 20px; margin: 0 0 12px; color: #0f172a;">Reset your Skylent password</h1>
+    <p style="font-size: 14px; color: #475569; margin: 0 0 20px;">You requested a password reset for your Skylent account. Click the button below to choose a new password. This link is valid for 60 minutes and can only be used once.</p>
+    <p style="margin: 24px 0;">
+      <a href="${safeUrl}" style="display: inline-block; background: #5142b5; color: #ffffff; text-decoration: none; padding: 12px 22px; border-radius: 10px; font-weight: 700; font-size: 14.5px;">Set a New Password →</a>
+    </p>
+    <p style="font-size: 12.5px; color: #64748b; margin: 0;">If you did not request this reset, you can safely ignore this email.</p>
+  </div>
 </body>
 </html>`
 

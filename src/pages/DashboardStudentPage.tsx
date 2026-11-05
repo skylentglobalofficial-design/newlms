@@ -3,7 +3,7 @@ import { useLocation, useNavigate, Link } from 'react-router-dom'
 import { AuthDashboardShell } from '../components/AuthDashboardShell'
 import { LEARNER_NAV, LearnerNavIcon, learnerNavId } from '../components/learner/learner-nav'
 import { useAuth } from '../context/AuthContext'
-import { isCapstoneLesson, learnerErrorMessage, lessonTypeLabel } from '../components/lms/lms-utils'
+import { learnerErrorMessage } from '../components/lms/lms-utils'
 import { useLmsDashboard } from '../hooks/useLms'
 import {
   canOpenEnrollment,
@@ -22,7 +22,7 @@ import { courseProductProfile } from '../lib/course-product'
 import { dashboardSqlLabHref, practiceEnvironmentForCourse } from '../lib/practice-environments'
 import { isAuthoredCourse } from '../lib/authored-courses'
 import { EnrollmentModal } from '../components/shared'
-import { AiMark, AI_NAME, ArrowRight, ProductSlice, TruthChip } from '../components/skylent/primitives'
+import { AiMark, AI_NAME, ArrowRight, TruthChip } from '../components/skylent/primitives'
 import analyticsVisual from '@/assets/site/home/program-analytics-800.webp'
 import productVisual from '@/assets/site/home/program-product-800.webp'
 import scienceVisual from '@/assets/site/degree-computing.jpg'
@@ -286,8 +286,6 @@ function CertificateName() {
   )
 }
 
-const SLICE = ['Learn', 'Practice', 'Build', 'Prove'] as const
-
 type Loaded<T> = { status: 'loading' } | { status: 'ready'; data: T } | { status: 'error' }
 type AiAvailability = 'checking' | 'available' | 'unavailable' | 'unknown'
 type StudentTabId = 'overview' | 'courses' | 'explore' | 'projects' | 'certificates' | 'wallet'
@@ -463,10 +461,7 @@ export default function DashboardStudentPage() {
     },
     renderNavIcon: (id: string) => <LearnerNavIcon id={id} />,
     bar: (
-      <>
-        <span className="sh-crumb">Learner Workspace <span aria-hidden="true">/</span> <b>{crumbSection}</b></span>
-        <ProductSlice steps={SLICE} current={studentTab === 'projects' ? 'Build' : studentTab === 'certificates' ? 'Prove' : 'Learn'} label="Where this screen sits in the product model" />
-      </>
+      <strong style={{ fontSize: 15, fontWeight: 700, color: '#0f172a' }}>{crumbSection}</strong>
     ),
   }
 
@@ -1414,57 +1409,6 @@ export default function DashboardStudentPage() {
   return (
     <AuthDashboardShell {...shell}>
       <div className="sh">
-        {/* Clean Student Workspace Sub-Navigation Bar */}
-        <div
-          role="tablist"
-          aria-label="Learner Workspace Views"
-          style={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            gap: 8,
-            padding: '8px 10px',
-            marginBottom: 18,
-            borderRadius: 12,
-            background: '#ffffff',
-            border: '1px solid #e2e8f0',
-          }}
-        >
-          {[
-            { id: 'overview' as const, label: 'Dashboard' },
-            { id: 'courses' as const, label: 'My Courses' },
-            { id: 'explore' as const, label: 'Explore Programmes' },
-            { id: 'projects' as const, label: 'Projects & Labs' },
-            { id: 'certificates' as const, label: 'Certificates' },
-            { id: 'wallet' as const, label: 'Elixir Wallet' },
-          ].map((t) => {
-            const active = studentTab === t.id
-            return (
-              <button
-                key={t.id}
-                type="button"
-                role="tab"
-                aria-selected={active}
-                onClick={() => {
-                  setStudentTab(t.id)
-                  setSelectedExploreDetail(null)
-                }}
-                style={{
-                  padding: '8px 14px',
-                  borderRadius: 8,
-                  border: active ? '1px solid #5142b5' : '1px solid transparent',
-                  background: active ? '#5142b5' : 'transparent',
-                  color: active ? '#ffffff' : '#475569',
-                  fontSize: 13,
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                }}
-              >
-                {t.label}
-              </button>
-            )
-          })}
-        </div>
-
         {/* Top Streak & Profile Readiness Strip (Matching Image 6) */}
         {studentTab === 'overview' ? (
           <div

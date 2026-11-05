@@ -94,127 +94,162 @@ export default function ResetPasswordPage() {
   return (
     <div className="entry">
       <div className="entry-top">
-        <Link className="entry-back" to="/">← Back to Skylent</Link>
+        <Link className="entry-back" to="/login">← Back to Sign In</Link>
       </div>
       <main className="entry-main">
         <div className="entry-col">
-          <Link className="entry-mark" to="/">Skylent</Link>
+          <div style={{ textAlign: "center", marginBottom: 18 }}>
+            <Link className="entry-mark" to="/" style={{ margin: 0 }}>Skylent</Link>
+          </div>
+
           <div className="entry-frame">
-            <div className="entry-frame-bar">
-              <b>My learning</b>
-              <span>Reset password</span>
-            </div>
-            <div className="entry-frame-body">
-              <div className="entry-rail" aria-hidden="true">
-                <p>Waiting inside</p>
-                <ul>
-                  {["Learning", "Practice", "Projects", "Evidence", "Career"].map((stage) => (
-                    <li key={stage}>{stage}</li>
-                  ))}
-                </ul>
-              </div>
-              <div className="entry-pane">
-                <h1 className="entry-title">{hasToken ? "Choose a new password." : "Reset your password."}</h1>
-                <p className="entry-lead">
+            <div className="entry-pane" style={{ padding: "32px 28px" }}>
+              <div style={{ textAlign: "center", marginBottom: 20 }}>
+                <span
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    width: 48,
+                    height: 48,
+                    borderRadius: 12,
+                    background: "#f5f3ff",
+                    color: "#5142b5",
+                    fontSize: 22,
+                    marginBottom: 12,
+                  }}
+                >
+                  🔑
+                </span>
+                <h1 className="entry-title" style={{ fontSize: 24 }}>
+                  {hasToken ? "Set New Password" : "Forgot Password?"}
+                </h1>
+                <p className="entry-lead" style={{ fontSize: 13.5 }}>
                   {hasToken
-                    ? "This link works once. After the password is saved, sign in with it."
-                    : "Enter the email on your account. If it matches, a reset link is sent."}
+                    ? "Choose a strong password of at least 8 characters."
+                    : "Enter your registered email address and we will send you a password reset link."}
                 </p>
-                {error ? (
-                  <div className="entry-error" role="alert">{error}</div>
-                ) : null}
-
-                {!hasToken && requestNote ? (
-                  <div role="status">
-                    <p className="entry-lead">{requestNote}</p>
-                    {mailConfigured === false ? (
-                      <p className="entry-note">
-                        Password reset email is not configured on this server, so the link may not arrive.{" "}
-                        <Link to="/contact">Contact us</Link> if you still cannot sign in.
-                      </p>
-                    ) : null}
-                    <p className="entry-alt">
-                      <Link to="/login">Back to sign in</Link>
-                    </p>
-                  </div>
-                ) : null}
-
-                {!hasToken && !requestNote ? (
-                  <form className="entry-form" onSubmit={(event) => { void submitRequest(event) }} noValidate>
-                    <div className="entry-field">
-                      <label htmlFor="reset-email">EMAIL</label>
-                      <input
-                        id="reset-email"
-                        type="email"
-                        autoComplete="email"
-                        value={email}
-                        onChange={(event) => setEmail(event.target.value)}
-                        placeholder="you@example.com"
-                        disabled={submitting}
-                      />
-                    </div>
-                    <button className="entry-submit" type="submit" disabled={submitting}>
-                      {submitting ? "Sending…" : "Send reset link"}
-                    </button>
-                    <p className="entry-alt">
-                      <Link to="/login">Back to sign in</Link>
-                    </p>
-                  </form>
-                ) : null}
-
-                {hasToken && tokenState === "checking" ? (
-                  <p className="entry-lead" role="status">Checking this reset link.</p>
-                ) : null}
-
-                {hasToken && tokenState === "invalid" ? (
-                  <p className="entry-alt">
-                    <Link to="/reset-password">Request a new link</Link>
-                  </p>
-                ) : null}
-
-                {hasToken && tokenState === "ready" && done ? (
-                  <div role="status">
-                    <p className="entry-lead">Password has been reset. You can now sign in.</p>
-                    <p className="entry-alt">
-                      <Link to="/login">Sign in</Link>
-                    </p>
-                  </div>
-                ) : null}
-
-                {hasToken && tokenState === "ready" && !done ? (
-                  <form className="entry-form" onSubmit={(event) => { void submitNewPassword(event) }} noValidate>
-                    <div className="entry-field">
-                      <label htmlFor="reset-password">NEW PASSWORD</label>
-                      <input
-                        id="reset-password"
-                        type="password"
-                        autoComplete="new-password"
-                        value={password}
-                        onChange={(event) => setPassword(event.target.value)}
-                        disabled={submitting}
-                      />
-                    </div>
-                    <div className="entry-field">
-                      <label htmlFor="reset-confirm">CONFIRM PASSWORD</label>
-                      <input
-                        id="reset-confirm"
-                        type="password"
-                        autoComplete="new-password"
-                        value={confirm}
-                        onChange={(event) => setConfirm(event.target.value)}
-                        disabled={submitting}
-                      />
-                    </div>
-                    <button className="entry-submit" type="submit" disabled={submitting}>
-                      {submitting ? "Saving…" : "Save password"}
-                    </button>
-                  </form>
-                ) : null}
               </div>
+
+              {error ? (
+                <div className="entry-error" role="alert" style={{ marginBottom: 16 }}>{error}</div>
+              ) : null}
+
+              {!hasToken && requestNote ? (
+                <div
+                  role="status"
+                  style={{
+                    padding: 16,
+                    borderRadius: 10,
+                    background: "#f0fdf4",
+                    border: "1px solid #86efac",
+                    textAlign: "center",
+                  }}
+                >
+                  <p style={{ margin: "0 0 10px", fontSize: 14, color: "#166534", fontWeight: 600 }}>
+                    ✓ {requestNote}
+                  </p>
+                  {mailConfigured === false ? (
+                    <p style={{ margin: "0 0 10px", fontSize: 12.5, color: "#64748b" }}>
+                      Note: Email provider is not configured on this server yet.{" "}
+                      <Link to="/contact">Contact support</Link> if you need help.
+                    </p>
+                  ) : (
+                    <p style={{ margin: "0 0 10px", fontSize: 12.5, color: "#475569" }}>
+                      Please check your inbox (and spam folder) for the reset link.
+                    </p>
+                  )}
+                  <p className="entry-alt" style={{ marginTop: 12 }}>
+                    <Link to="/login" style={{ color: "#5142b5", fontWeight: 700 }}>← Return to Sign In</Link>
+                  </p>
+                </div>
+              ) : null}
+
+              {!hasToken && !requestNote ? (
+                <form className="entry-form" onSubmit={(event) => { void submitRequest(event) }} noValidate style={{ margin: 0 }}>
+                  <div className="entry-field">
+                    <label htmlFor="reset-email">YOUR REGISTERED EMAIL</label>
+                    <input
+                      id="reset-email"
+                      type="email"
+                      autoComplete="email"
+                      value={email}
+                      onChange={(event) => setEmail(event.target.value)}
+                      placeholder="you@gmail.com"
+                      disabled={submitting}
+                    />
+                  </div>
+                  <button className="entry-submit" type="submit" disabled={submitting}>
+                    {submitting ? "Sending Reset Link…" : "Send Reset Link →"}
+                  </button>
+                  <p className="entry-alt">
+                    Remember your password?{" "}
+                    <Link to="/login" style={{ color: "#5142b5", fontWeight: 700 }}>
+                      Sign In
+                    </Link>
+                  </p>
+                </form>
+              ) : null}
+
+              {hasToken && tokenState === "checking" ? (
+                <p className="entry-lead" role="status" style={{ textAlign: "center" }}>Verifying reset link…</p>
+              ) : null}
+
+              {hasToken && tokenState === "invalid" ? (
+                <p className="entry-alt" style={{ textAlign: "center" }}>
+                  <Link to="/reset-password" style={{ color: "#5142b5", fontWeight: 700 }}>Request a new link</Link>
+                </p>
+              ) : null}
+
+              {hasToken && tokenState === "ready" && done ? (
+                <div role="status" style={{ textAlign: "center" }}>
+                  <p className="entry-lead" style={{ color: "#166534", fontWeight: 600 }}>
+                    ✓ Password has been reset successfully!
+                  </p>
+                  <p className="entry-alt" style={{ marginTop: 14 }}>
+                    <Link to="/login" className="entry-submit" style={{ display: "inline-block", textDecoration: "none" }}>
+                      Sign In Now →
+                    </Link>
+                  </p>
+                </div>
+              ) : null}
+
+              {hasToken && tokenState === "ready" && !done ? (
+                <form className="entry-form" onSubmit={(event) => { void submitNewPassword(event) }} noValidate style={{ margin: 0 }}>
+                  <div className="entry-field">
+                    <label htmlFor="reset-password">NEW PASSWORD</label>
+                    <input
+                      id="reset-password"
+                      type="password"
+                      autoComplete="new-password"
+                      value={password}
+                      onChange={(event) => setPassword(event.target.value)}
+                      placeholder="At least 8 characters"
+                      disabled={submitting}
+                    />
+                  </div>
+                  <div className="entry-field">
+                    <label htmlFor="reset-confirm">CONFIRM PASSWORD</label>
+                    <input
+                      id="reset-confirm"
+                      type="password"
+                      autoComplete="new-password"
+                      value={confirm}
+                      onChange={(event) => setConfirm(event.target.value)}
+                      placeholder="Re-enter password"
+                      disabled={submitting}
+                    />
+                  </div>
+                  <button className="entry-submit" type="submit" disabled={submitting}>
+                    {submitting ? "Saving Password…" : "Save New Password"}
+                  </button>
+                </form>
+              ) : null}
             </div>
           </div>
-          <p className="entry-note">
-            Read the <Link to="/terms">Terms &amp; Conditions</Link> and <Link to="/privacy">Privacy Policy</Link>.
+
+          <p className="entry-note" style={{ textAlign: "center", marginInline: "auto" }}>
+            Read our <Link to="/terms">Terms</Link> &amp; <Link to="/privacy">Privacy Policy</Link>.
           </p>
         </div>
       </main>

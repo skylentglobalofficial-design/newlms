@@ -8,7 +8,6 @@ export type ApiRole = "student" | "faculty" | "organisation" | "college" | "recr
 
 export type GoogleOAuthStartOptions = {
   returnTo?: string
-  /** Set on the sign-up form once the terms checkbox is ticked. A new account is refused without it. */
   acceptedTerms?: boolean
   enrollTarget?: {
     kind: "course" | "program"
@@ -137,9 +136,10 @@ async function authRequest<T>(
 async function credentialFailureMessage(path: string, response: Response): Promise<string | null> {
   if (
     response.status !== 400 &&
+    response.status !== 409 &&
     response.status !== 502 &&
     response.status !== 503 &&
-    !(response.status === 401 && (path === "/auth/login" || path === "/auth/otp/verify"))
+    !(response.status === 401 && (path === "/auth/login" || path === "/auth/otp/verify" || path === "/auth/email-otp/verify"))
   ) {
     return null
   }
@@ -173,6 +173,7 @@ export async function signupRequest(input: {
   email: string
   password: string
   acceptedTerms: boolean
+  emailOtp?: string
 }): Promise<AuthResponse> {
   return authRequest<AuthResponse>("/auth/signup", {
     method: "POST",
@@ -180,6 +181,7 @@ export async function signupRequest(input: {
       displayName: input.name,
       email: input.email,
       password: input.password,
+      ...(input.emailOtp ? { emailOtp: input.emailOtp, requireEmailOtp: true } : {}),
       ...(input.acceptedTerms ? { consent: consentPayload() } : {}),
     },
   })
@@ -264,6 +266,40 @@ export async function completePasswordReset(token: string, password: string): Pr
     throw new Error(authErrorMessage(data, "The password could not be reset. Try again."))
   }
   return typeof data.message === "string" ? data.message : "Password has been reset. You can now sign in."
+}
+
+export type EmailOtpSendResponse = {
+  ok: boolean
+  email: string
+  isExistingUser: boolean
+  existingName: string | null
+  expiresInSeconds: number
+  message: string
+}
+
+export async function sendEmailOtpRequest(email: string, purpose: "signup" | "login" = "login"): Promise<EmailOtpSendResponse> {
+  return authRequest<EmailOtpSendResponse>("/auth/email-otp/send", {
+    method: "POST",
+    body: { email: email.trim(), purpose },
+  })
+}
+
+export async function verifyEmailOtpRequest(input: {
+  email: string
+  otp: string
+  name?: string
+  acceptedTerms?: boolean
+}): Promise<AuthResponse> {
+  return authRequest<AuthResponse>("/auth/email-otp/verify", {
+    method: "POST",
+    body: {
+      email: input.email.trim(),
+      otp: input.otp.trim(),
+      ...(input.name ? { name: input.name } : {}),
+      acceptedTerms: Boolean(input.acceptedTerms),
+      ...(input.acceptedTerms ? { consent: consentPayload() } : {}),
+    },
+  })
 }
 
 export type MobileOtpSendResponse = {

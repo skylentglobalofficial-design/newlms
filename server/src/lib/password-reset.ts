@@ -26,7 +26,7 @@ function rethrowIfSchemaMissing(error: unknown): never {
 }
 
 const TOKEN_EXPIRY_MINUTES = 60
-const MAX_TOKENS_PER_USER_WINDOW = 3
+const MAX_TOKENS_PER_USER_WINDOW = 5
 const USER_RATE_WINDOW_MS = 15 * 60 * 1000
 
 export class PasswordResetStorageUnavailableError extends Error {
@@ -52,11 +52,7 @@ export class PasswordResetError extends Error {
 }
 
 /**
- * Creates a reset token for a known password-account user.
- * Returns null for unknown emails or OAuth-only accounts (no passwordHash)
- * so callers can return a generic response either way.
- * Never logs or returns the plaintext token except as the function return value
- * for the email sender.
+ * Creates a reset token for any existing user account (including accounts initially created via Google OAuth).
  */
 export async function createPasswordResetToken(email: string): Promise<{
   token: string
@@ -70,7 +66,7 @@ export async function createPasswordResetToken(email: string): Promise<{
     select: { id: true, passwordHash: true },
   }).catch(rethrowIfSchemaMissing)
 
-  if (!user || !user.passwordHash) {
+  if (!user) {
     return null
   }
 
@@ -132,8 +128,7 @@ export async function validatePasswordResetToken(token: string): Promise<{
 }
 
 /**
- * Atomically claims the token (usedAt) then updates the password and clears sessions.
- * Concurrent callers racing the same token: only one updateMany succeeds.
+ * Atomically claims the token (usedAt) then updates the password in the database and clears old sessions.
  */
 export async function resetPasswordWithToken(token: string, newPassword: string): Promise<void> {
   if (!isValidPasswordResetTokenFormat(token)) {
@@ -145,68 +140,53 @@ export async function resetPasswordWithToken(token: string, newPassword: string)
   const passwordHash = await bcrypt.hash(newPassword, BCRYPT_ROUNDS)
 
   try {
-  await prisma.$transaction(async (tx) => {
-    const claimed = await tx.passwordResetToken.updateMany({
-      where: {
-        tokenHash,
-        usedAt: null,
-        expiresAt: { gt: now },
-      },
-      data: { usedAt: now },
-    })
-
-    if (claimed.count !== 1) {
-      const existing = await tx.passwordResetToken.findUnique({
-        where: { tokenHash },
-        select: { usedAt: true, expiresAt: true },
+    await prisma.$transaction(async (tx) => {
+      const claimed = await tx.passwordResetToken.updateMany({
+        where: {
+          tokenHash,
+          usedAt: null,
+          expiresAt: { gt: now },
+        },
+        data: { usedAt: now },
       })
-      if (!existing) {
-        throw new PasswordResetError("Invalid password reset token", "INVALID_TOKEN")
-      }
-      if (existing.usedAt) {
-        throw new PasswordResetError("Password reset token has already been used", "USED_TOKEN")
-      }
-      if (existing.expiresAt <= now) {
+
+      if (claimed.count !== 1) {
+        const existing = await tx.passwordResetToken.findUnique({
+          where: { tokenHash },
+          select: { usedAt: true, expiresAt: true },
+        })
+        if (!existing) {
+          throw new PasswordResetError("Invalid password reset token", "INVALID_TOKEN")
+        }
+        if (existing.usedAt) {
+          throw new PasswordResetError("Password reset token has already been used", "USED_TOKEN")
+        }
         throw new PasswordResetError("Password reset token has expired", "EXPIRED_TOKEN")
       }
-      throw new PasswordResetError("Invalid password reset token", "INVALID_TOKEN")
-    }
 
-    const resetToken = await tx.passwordResetToken.findUniqueOrThrow({
-      where: { tokenHash },
-      select: { id: true, userId: true },
-    })
+      const tokenRecord = await tx.passwordResetToken.findUniqueOrThrow({
+        where: { tokenHash },
+        select: { userId: true },
+      })
 
-    await tx.user.update({
-      where: { id: resetToken.userId },
-      data: { passwordHash },
-    })
+      await tx.user.update({
+        where: { id: tokenRecord.userId },
+        data: { passwordHash, mustChangePassword: false },
+      })
 
-    await tx.session.deleteMany({
-      where: { userId: resetToken.userId },
-    })
+      await tx.session.deleteMany({
+        where: { userId: tokenRecord.userId },
+      })
 
-    await tx.passwordResetToken.updateMany({
-      where: {
-        userId: resetToken.userId,
-        id: { not: resetToken.id },
-        usedAt: null,
-      },
-      data: { usedAt: now },
+      await tx.passwordResetToken.updateMany({
+        where: {
+          userId: tokenRecord.userId,
+          usedAt: null,
+        },
+        data: { usedAt: now },
+      })
     })
-  })
   } catch (error) {
     rethrowIfSchemaMissing(error)
   }
 }
-
-export async function cleanupExpiredTokens(): Promise<number> {
-  const result = await prisma.passwordResetToken.deleteMany({
-    where: {
-      OR: [{ expiresAt: { lt: new Date() } }, { usedAt: { not: null } }],
-      createdAt: { lt: new Date(Date.now() - 24 * 60 * 60 * 1000) },
-    },
-  })
-  return result.count
-}
-

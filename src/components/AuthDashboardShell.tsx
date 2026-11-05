@@ -114,7 +114,6 @@ export function AuthDashboardShell({
     <>
       <Link to="/" className="auth-shell-brand">
         <span className="auth-shell-wordmark">Skylent</span>
-        <span className="auth-shell-workspace">{workspaceLabel}</span>
       </Link>
 
       <nav className="auth-shell-nav" aria-label={`${workspaceLabel} sections`}>
@@ -214,7 +213,6 @@ export function AuthDashboardShell({
             </svg>
           </button>
           <span className="auth-shell-wordmark">Skylent</span>
-          <span className="auth-shell-workspace">{workspaceLabel}</span>
           <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
             <HeaderWalletAndNotifications variant="dashboard" />
           </div>
@@ -234,29 +232,9 @@ export function AuthDashboardShell({
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0, flexWrap: 'wrap' }}>
             {bar ?? (
-              <>
-                <span
-                  style={{
-                    fontSize: 11,
-                    fontFamily: 'var(--font-mono)',
-                    fontWeight: 700,
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.08em',
-                    color: '#5142b5',
-                    background: '#f5f3ff',
-                    border: '1px solid #ddd6fe',
-                    padding: '3px 10px',
-                    borderRadius: 999,
-                  }}
-                >
-                  {workspaceLabel} OS
-                </span>
-                {activeItem ? (
-                  <span style={{ fontSize: 13, fontWeight: 600, color: '#334155' }}>
-                    Active Tab: <strong style={{ color: '#0f172a' }}>{activeItem.label}</strong>
-                  </span>
-                ) : null}
-              </>
+              activeItem ? (
+                <strong style={{ fontSize: 15, fontWeight: 700, color: '#0f172a' }}>{activeItem.label}</strong>
+              ) : null
             )}
           </div>
           <div className="auth-shell-bar__desktop-actions" style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 12 }}>
