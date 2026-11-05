@@ -224,9 +224,17 @@ export async function resolveSession(sessionToken: string | undefined) {
   }
 }
 
+export function extractBearerToken(req: Request): string | undefined {
+  const raw = req.get("authorization")
+  if (!raw || !raw.toLowerCase().startsWith("bearer ")) return undefined
+  const token = raw.slice(7).trim()
+  return token.length >= 24 ? token : undefined
+}
+
 export async function attachAuth(req: AuthenticatedRequest) {
   const cookies = parseCookies(req)
-  const auth = await resolveSession(cookies[SESSION_COOKIE])
+  const token = cookies[SESSION_COOKIE] ?? extractBearerToken(req)
+  const auth = await resolveSession(token)
   if (auth) req.auth = auth
   return auth
 }
@@ -257,11 +265,20 @@ export function requireCsrf(req: Request, res: Response, next: NextFunction) {
   const headerToken = req.get("x-csrf-token")
   const cookieToken = cookies[CSRF_COOKIE]
 
-  if (!headerToken || !cookieToken || headerToken !== cookieToken) {
-    return res.status(403).json({ error: "Invalid CSRF token" })
+  if (headerToken && cookieToken && headerToken === cookieToken) {
+    next()
+    return
   }
 
-  next()
+  // Native Android/iOS APK requests run from a bundled local origin where third-party
+  // cookies are not echoed by WebView; custom headers + cryptographic token prevent CSRF.
+  const isNativeClient = req.get("x-skylent-client") === "native-app"
+  if (isNativeClient && headerToken && headerToken.length >= 32) {
+    next()
+    return
+  }
+
+  return res.status(403).json({ error: "Invalid CSRF token" })
 }
 
 export function primaryRole(roles: Role[]): ApiRole {

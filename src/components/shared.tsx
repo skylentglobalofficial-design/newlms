@@ -20,6 +20,7 @@ import { PublicCanvas, useAuroraTheme } from './foundation'
 import { getDomainAccent, type AuroraThemeId } from '../aurora-themes'
 import { ArrowRight, TruthChip, type JourneyStage, type TruthState } from './skylent/primitives'
 import SiteAssistant from './skylent/SiteAssistant'
+import { InstallAppPrompt } from './skylent/InstallAppPrompt'
 import { TermsConsent } from './legal/TermsConsent'
 import { rememberEnrolConsent } from '../lib/policy'
 
@@ -767,6 +768,8 @@ export function Nav() {
               </Link>
             </>
           )}
+
+          <InstallAppPrompt variant="nav" />
 
           <Link to={pathCta.to} className="skn__cta sk-btn sk-btn-primary">
             {pathCta.label}

@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import type { AuroraThemeId } from '../aurora-themes'
 import { useAuth } from '../context/AuthContext'
 import { HeaderWalletAndNotifications } from './learner/HeaderWalletAndNotifications'
+import { InstallAppPrompt } from './skylent/InstallAppPrompt'
 import './AuthDashboardShell.css'
 
 export type AuthNavItem = {
@@ -259,6 +260,7 @@ export function AuthDashboardShell({
             )}
           </div>
           <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 12 }}>
+            <InstallAppPrompt variant="dashboard" />
             <HeaderWalletAndNotifications variant="dashboard" />
           </div>
         </div>

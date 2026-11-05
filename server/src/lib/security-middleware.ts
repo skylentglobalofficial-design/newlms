@@ -42,14 +42,23 @@ export function getAllowedOrigins(): string[] {
   return expandSkylentSiteOrigins([...origins])
 }
 
-/** Apex and www are the same public site. Credentialed calls must work from both. */
+/**
+ * Apex, www, and compiled Skylent Native APK shells (`https://app.skylent.local` & `capacitor://localhost`)
+ * are first-party origins. External/untrusted web domains are strictly rejected.
+ */
 function expandSkylentSiteOrigins(origins: string[]): string[] {
   const next = new Set(origins)
   for (const origin of origins) {
     try {
       const url = new URL(origin)
-      if (url.hostname === "skylent.live") next.add(`${url.protocol}//www.skylent.live`)
-      if (url.hostname === "www.skylent.live") next.add(`${url.protocol}//skylent.live`)
+      if (url.hostname === "skylent.live" || url.hostname === "www.skylent.live") {
+        next.add(`${url.protocol}//www.skylent.live`)
+        next.add(`${url.protocol}//skylent.live`)
+        next.add("https://app.skylent.local")
+        next.add("capacitor://localhost")
+        next.add("http://localhost")
+        next.add("https://localhost")
+      }
     } catch {
       // Ignore malformed allow-list entries; cors will reject them as usual.
     }
@@ -73,6 +82,14 @@ export function createCorsMiddleware() {
       callback(null, false)
     },
     credentials: true,
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+      "X-CSRF-Token",
+      "X-Request-Id",
+      "X-Skylent-Client",
+      "X-Skylent-App-Version",
+    ],
   })
 }
 

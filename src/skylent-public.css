@@ -1121,3 +1121,42 @@ body:has(.skylent-public-canvas) {
     font-size: 12px !important;
   }
 }
+
+/* ── V37 60-FPS Fast Funnel & Below-the-Fold Paint Optimization ── */
+.skylent-public-canvas .hm-page > section:nth-of-type(n+3),
+.skylent-public-canvas .hx-page--home > section:nth-of-type(n+3),
+.skylent-public-canvas .cat-section:nth-of-type(n+3),
+.skylent-public-canvas .pe-section:nth-of-type(n+3) {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 560px;
+}
+
+.skylent-public-canvas .skn {
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+/* ── V38 True Native APK Shell Mode (data-native-app="true") ── */
+html[data-native-app="true"],
+html[data-native-app="true"] body {
+  overscroll-behavior-y: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+/* Hide website marketing footer & web install prompt inside the compiled APK */
+html[data-native-app="true"] .skf,
+html[data-native-app="true"] .skylent-install-app-btn {
+  display: none !important;
+}
+
+html[data-native-app="true"] .skylent-public-canvas .skylent-public-main {
+  padding-bottom: calc(74px + env(safe-area-inset-bottom)) !important;
+}
+
+html[data-native-app="true"] .skn,
+html[data-native-app="true"] .auth-shell-rail,
+html[data-native-app="true"] .skylent-native-bottom-bar {
+  user-select: none;
+  -webkit-user-select: none;
+}

@@ -8,6 +8,7 @@ import {
   BCRYPT_ROUNDS,
   clearSessionCookies,
   createSession,
+  extractBearerToken,
   ensureRole,
   generateCsrfToken,
   hashSessionToken,
@@ -251,6 +252,7 @@ authRouter.post("/signup", requireCsrf, async (req, res) => {
       role: primaryRole(roles),
       mustChangePassword: user.mustChangePassword,
       csrfToken: issuedCsrf,
+      ...(req.get("x-skylent-client") === "native-app" ? { sessionToken } : {}),
     })
   } catch (error) {
     if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
@@ -307,6 +309,7 @@ authRouter.post("/login", requireCsrf, async (req, res) => {
       role: primaryRole(roles),
       mustChangePassword: "mustChangePassword" in user ? user.mustChangePassword : false,
       csrfToken: issuedCsrf,
+      ...(req.get("x-skylent-client") === "native-app" ? { sessionToken } : {}),
     })
   } catch (error) {
     if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
@@ -320,7 +323,7 @@ authRouter.post("/login", requireCsrf, async (req, res) => {
 
 authRouter.post("/logout", requireCsrf, async (req, res) => {
   const cookies = parseCookies(req)
-  const sessionToken = cookies[SESSION_COOKIE]
+  const sessionToken = cookies[SESSION_COOKIE] ?? extractBearerToken(req)
 
   if (sessionToken) {
     const secretHash = hashSessionToken(sessionToken)
@@ -578,3 +581,34 @@ authRouter.get("/password-reset/config", (_req, res) => {
       : "Password reset emails are not configured. Contact an administrator.",
   })
 })
+
+// Google Play Store Mandatory User Data & Account Deletion Endpoint
+authRouter.post("/delete-account", requireAuth, requireCsrf, async (req: AuthenticatedRequest, res) => {
+  const auth = req.auth
+  if (!auth) {
+    return res.status(401).json({ error: "Unauthorized" })
+  }
+  try {
+    await prisma.session.deleteMany({ where: { userId: auth.user.id } }).catch(() => undefined)
+    await prisma.user.delete({ where: { id: auth.user.id } }).catch(async () => {
+      // If user has immutable academic/certificate records, anonymize PII per GDPR/DPDP/Play Store rules
+      await prisma.user.update({
+        where: { id: auth.user.id },
+        data: {
+          email: `deleted-${auth.user.id}@deleted.skylent.local`,
+          displayName: "Deleted Learner",
+          passwordHash: null,
+        },
+      })
+    })
+    clearSessionCookies(res, req)
+    return res.json({ ok: true, deleted: true })
+  } catch (error) {
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+      return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.accounts))
+    }
+    console.error("Account deletion failed:", error instanceof Error ? error.name : "unknown")
+    return res.status(500).json({ error: "Unable to delete account right now" })
+  }
+})
+

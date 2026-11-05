@@ -60,6 +60,24 @@ router.get("/live", (_request, response) => {
   response.json({ status: "ok", live: true, ...readinessFields() })
 })
 
+/**
+ * Remote App Config & OTA Version Gate for Skylent Android/iOS Native APK builds.
+ * Allows instant announcements or force-updating outdated APKs via server env vars
+ * without waiting for a Play Store rebuild.
+ */
+router.get("/app-config", (_request, response) => {
+  response.json({
+    appVersion: process.env.SKYLENT_APP_VERSION?.trim() || "1.0.0",
+    minSupportedAppVersion: process.env.SKYLENT_MIN_APP_VERSION?.trim() || "1.0.0",
+    playStoreUrl:
+      process.env.SKYLENT_PLAY_STORE_URL?.trim() ||
+      "https://play.google.com/store/apps/details?id=live.skylent.app",
+    announcement: process.env.SKYLENT_APP_BANNER?.trim() || null,
+    maintenanceMode: process.env.SKYLENT_MAINTENANCE_MODE === "true",
+    ...readinessFields(),
+  })
+})
+
 router.get("/ready", handleReadiness)
 router.get("/", handleReadiness)
 

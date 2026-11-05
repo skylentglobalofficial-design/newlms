@@ -186,6 +186,7 @@ function AppRoutes() {
   return (
     <Suspense fallback={<RouteFallback />}>
       <DocumentTitle />
+      <NativeAppShellController />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/preview/homepage" element={<HomeDirectionPreview />} />
