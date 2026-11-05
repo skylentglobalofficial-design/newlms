@@ -259,7 +259,7 @@ export function AuthDashboardShell({
               </>
             )}
           </div>
-          <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div className="auth-shell-bar__desktop-actions" style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 12 }}>
             <InstallAppPrompt variant="dashboard" />
             <HeaderWalletAndNotifications variant="dashboard" />
           </div>

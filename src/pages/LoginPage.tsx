@@ -13,7 +13,7 @@ import { TermsConsent } from '../components/legal/TermsConsent'
 
 // Compile-time flag (Vite replaces import.meta.env.VITE_*). Production builds set
 // VITE_DEMO_MODE=false via .env.production so the picker is tree-shaken out of dist.
-const DEMO_MODE = true
+const DEMO_MODE = import.meta.env.VITE_DEMO_MODE === 'true'
 
 /** The workspace stages on the other side of this form. Must match Skylent OS. */
 const WORKSPACE_STAGES = ['Learning', 'Practice', 'Projects', 'Evidence', 'Career'] as const

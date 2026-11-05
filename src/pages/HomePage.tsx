@@ -1,10 +1,10 @@
 /**
- * HomePage — the public homepage (V50 Visual EdTech Funnel — Coursera/Udemy/PW Standard).
+ * HomePage — the public homepage (V51 Human-Crafted EdTech Standard).
  *
- * Scroll 1: Hero (Crisp Value Prop + Quick Goal Chips + Live Platform Stats)
- * Scroll 2: Programmes & Courses Explorer (Interactive Category Filter Pills + Visual Cards)
- * Scroll 3: Interactive 4-Tab "Explore Skylent" Hub (Workshops · Inside LMS · AI & 20-Min TA · Career Proof & Degrees)
- * Scroll 4: Closing CTA
+ * 1. Hero (Clear value proposition + direct navigation links)
+ * 2. Courses & Career Tracks (Category filter tabs + clean course cards)
+ * 3. Platform Overview (Clean 4-tab switcher: Workspace · Live Workshops · Mentor Support · Career & Degrees)
+ * 4. Closing CTA
  */
 import { useState } from "react"
 import { PageShell } from "@/components/shared"
@@ -29,27 +29,23 @@ import "./HomeRepolish.css"
 const EXPLORE_TABS = [
   {
     id: "workspace" as const,
-    icon: "🖥️",
-    label: "Inside the Workspace",
-    sub: "Interactive SQL Lab & 5-Stage LMS",
+    label: "Course Workspace",
+    sub: "Lessons, labs & projects",
   },
   {
     id: "workshops" as const,
-    icon: "🪙",
-    label: "₹99 Live Workshops",
-    sub: "100% Elixir Coin Cashback",
+    label: "Live Workshops",
+    sub: "₹99 weekend sessions",
   },
   {
     id: "ai" as const,
-    icon: "🤖",
-    label: "AI Coach + 20-Min TA",
-    sub: "English & Hinglish Doubt Help",
+    label: "Doubt Support",
+    sub: "AI coach & 20-min TA",
   },
   {
     id: "career" as const,
-    icon: "🎓",
-    label: "Career Proof & Degrees",
-    sub: "Verified Dossiers & UG/PG Tracks",
+    label: "Certificates & Degrees",
+    sub: "Portfolios & university tracks",
   },
 ] as const
 
@@ -75,12 +71,12 @@ export default function HomePage() {
         />
         <ZeroLoginInteractiveTryout />
 
-        {/* Interactive 4-Tab Platform Explorer: Eliminates the 9,500px wall of text on Desktop & Mobile Web */}
+        {/* Clean 4-Tab Platform Switcher (Zero Emojis, Zero AI Slogans) */}
         <section
           className="hx-platform-hub"
-          aria-label="Explore how Skylent works"
+          aria-label="How Skylent works"
           style={{
-            background: "#f8f7ff",
+            background: "#f8fafc",
             borderTop: "1px solid #e2e8f0",
             borderBottom: "1px solid #e2e8f0",
             padding: "clamp(28px, 4vw, 44px) 0 8px",
@@ -94,42 +90,33 @@ export default function HomePage() {
                 alignItems: "flex-end",
                 gap: 16,
                 flexWrap: "wrap",
-                marginBottom: 18,
+                marginBottom: 20,
               }}
             >
               <div>
-                <p
-                  style={{
-                    margin: "0 0 4px",
-                    fontSize: 11.5,
-                    fontWeight: 800,
-                    letterSpacing: "0.08em",
-                    textTransform: "uppercase",
-                    color: "#5142b5",
-                  }}
-                >
-                   interactive platform tour · zero fluff
-                </p>
                 <h2
                   style={{
-                    margin: 0,
-                    fontSize: "clamp(22px, 2.6vw, 32px)",
-                    fontWeight: 800,
+                    margin: "0 0 6px",
+                    fontSize: "clamp(22px, 2.5vw, 30px)",
+                    fontWeight: 700,
                     color: "#0f172a",
                     letterSpacing: "-0.02em",
                   }}
                 >
-                  Everything you need to learn, practise &amp; prove your skills.
+                  How learning works on Skylent
                 </h2>
+                <p style={{ margin: 0, fontSize: 14.5, color: "#475569" }}>
+                  Select a tab below to preview the course workspace, weekend workshops, mentor support, or verified credentials.
+                </p>
               </div>
 
               <div
                 role="tablist"
-                aria-label="Skylent platform features"
+                aria-label="Platform sections"
                 className="hx-hub-tabs"
                 style={{
                   display: "grid",
-                  gridTemplateColumns: "repeat(4, minmax(165px, 1fr))",
+                  gridTemplateColumns: "repeat(4, minmax(150px, 1fr))",
                   gap: 8,
                   width: "100%",
                   overflowX: "auto",
@@ -146,50 +133,38 @@ export default function HomePage() {
                       aria-selected={isActive}
                       onClick={() => setActiveTab(tab.id)}
                       style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 10,
                         textAlign: "left",
-                        padding: "11px 14px",
-                        borderRadius: 14,
-                        border: isActive ? "2px solid #5142b5" : "1px solid #cbd5e1",
-                        background: isActive
-                          ? "linear-gradient(135deg, #3B2D96 0%, #5142B5 100%)"
-                          : "#ffffff",
+                        padding: "12px 14px",
+                        borderRadius: 10,
+                        border: isActive ? "1.5px solid #5142b5" : "1px solid #cbd5e1",
+                        background: isActive ? "#5142b5" : "#ffffff",
                         color: isActive ? "#ffffff" : "#0f172a",
                         cursor: "pointer",
-                        boxShadow: isActive
-                          ? "0 10px 24px -8px rgba(59, 45, 150, 0.4)"
-                          : "0 2px 6px rgba(15, 23, 42, 0.04)",
-                        transition: "all 150ms ease",
+                        transition: "background-color 140ms ease, border-color 140ms ease",
                       }}
                     >
-                      <span style={{ fontSize: 20, lineHeight: 1 }} aria-hidden="true">
-                        {tab.icon}
-                      </span>
-                      <span style={{ minWidth: 0 }}>
-                        <strong
-                          style={{
-                            display: "block",
-                            fontSize: 13.5,
-                            fontWeight: 800,
-                            color: isActive ? "#ffffff" : "#0f172a",
-                            whiteSpace: "nowrap",
-                          }}
-                        >
-                          {tab.label}
-                        </strong>
-                        <small
-                          style={{
-                            display: "block",
-                            fontSize: 11,
-                            color: isActive ? "#ddd6fe" : "#64748b",
-                            whiteSpace: "nowrap",
-                          }}
-                        >
-                          {tab.sub}
-                        </small>
-                      </span>
+                      <strong
+                        style={{
+                          display: "block",
+                          fontSize: 13.5,
+                          fontWeight: 600,
+                          color: isActive ? "#ffffff" : "#0f172a",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        {tab.label}
+                      </strong>
+                      <small
+                        style={{
+                          display: "block",
+                          marginTop: 2,
+                          fontSize: 11.5,
+                          color: isActive ? "#e0e7ff" : "#64748b",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        {tab.sub}
+                      </small>
                     </button>
                   )
                 })}

@@ -69,7 +69,7 @@ export function HomeHero({
       <div className="sky-container hxw-hero__grid">
         <div className="hxw-hero__copy">
           <h1 id="hx-hero-title" className="hxw-hero__title hx-rise">
-            Learn beyond the classroom. <em>Build the ability to do real work.</em>
+            Practical courses with browser labs and verified projects.
           </h1>
           <span className="hx-sr" style={{ display: "none" }}>Learn. Practise. Build. <em>Prove it.</em></span>
           <p className="hxw-hero__lead hx-rise">
@@ -77,14 +77,13 @@ export function HomeHero({
           </p>
           <p className="hx-sr" aria-live="polite">{availability}</p>
 
-          <div className="hxw-hero__goal-pills hx-rise" style={{ display: "flex", flexWrap: "wrap", gap: 8, margin: "12px 0 16px" }}>
+          <div className="hxw-hero__goal-pills hx-rise" style={{ display: "flex", flexWrap: "wrap", gap: 6, margin: "12px 0 18px" }}>
             {[
-              { label: "📊 Data & SQL", to: "/programmes/data-analytics-pro" },
-              { label: "🤖 GenAI & LLM", to: "/programmes/generative-ai-program" },
-              { label: "🐍 Python & Data Science", to: "/programmes/data-science-ai" },
-              { label: "📦 Product Mgmt", to: "/programmes/product-management" },
-              { label: "💻 Full-Stack", to: "/programmes/full-stack" },
-              { label: "🪙 ₹99 Live Batch", to: "/events" },
+              { label: "Data Analytics", to: "/programmes/data-analytics-pro" },
+              { label: "Generative AI", to: "/programmes/generative-ai-program" },
+              { label: "Python & Data Science", to: "/programmes/data-science-ai" },
+              { label: "Product Management", to: "/programmes/product-management" },
+              { label: "Full-Stack Web", to: "/programmes/full-stack" },
             ].map((pill) => (
               <Link
                 key={pill.label}
@@ -92,13 +91,13 @@ export function HomeHero({
                 style={{
                   display: "inline-flex",
                   alignItems: "center",
-                  padding: "6px 12px",
-                  borderRadius: 999,
-                  background: "#f5f3ff",
-                  border: "1px solid #ddd6fe",
-                  color: "#43349f",
+                  padding: "5px 11px",
+                  borderRadius: 6,
+                  background: "#f8fafc",
+                  border: "1px solid #e2e8f0",
+                  color: "#334155",
                   fontSize: 12.5,
-                  fontWeight: 700,
+                  fontWeight: 500,
                   textDecoration: "none",
                 }}
               >
@@ -109,15 +108,15 @@ export function HomeHero({
 
           <div className="hxw-hero__actions hx-rise" style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
             <Link className="sk-btn sk-btn-primary hx-btn" to="/programmes">
-              Explore programmes
+              Explore courses
               <ArrowRight />
             </Link>
             <Link
               className="sk-btn sk-btn-secondary hx-btn"
               to="/path"
-              style={{ border: "1.5px solid #c4b5fd", background: "#ffffff", color: "#43349f", fontWeight: 700 }}
+              style={{ border: "1px solid #cbd5e1", background: "#ffffff", color: "#0f172a", fontWeight: 600 }}
             >
-              ⚡ 90s Skill Diagnostic
+              Take 90-second skill check
             </Link>
           </div>
           <ul
@@ -147,9 +146,9 @@ export function HomeHero({
 
             <div className="hxw-ws" aria-label="Skylent OS workspace summary">
               <div className="hxw-ws__top">
-                <span className="hxw-ws__mark" aria-hidden="true">★ 4.9</span>
+                <span className="hxw-ws__mark" aria-hidden="true">OS</span>
                 <div>
-                  <span className="hxw-ws__title">6 Job-Ready Tracks · Live Browser Labs · ₹0 Free Pilot</span>
+                  <span className="hxw-ws__title">6 Career Tracks · Browser SQL &amp; Code Labs · Free Pilot</span>
                   <span className="hxw-ws__note">20-Min Faculty TA Doubt SLA · Hinglish AI Coach · Verified Certificate ID</span>
                 </div>
               </div>
@@ -293,7 +292,7 @@ function LmsCanvas({ stage }: { stage: number }) {
           </div>
           <div className="hx-lms-mock__badges">
             <span className="hx-lms-pill hx-lms-pill--green">✓ 60% Career OS Gate Unlocked</span>
-            <span className="hx-lms-pill hx-lms-pill--purple">Streak: 5 Days 🔥 (+15 Elixir)</span>
+            <span className="hx-lms-pill hx-lms-pill--purple">Streak: 5 Days (+15 Elixir)</span>
           </div>
         </div>
         <div className="hx-lms-mock__grid2">
@@ -689,7 +688,7 @@ export function InsideProgramme() {
           <div>
             <p className="hx-eyebrow hx-eyebrow--dark">Inside a Skylent Course</p>
             <h2 id="hx-inside-title" className="hx-h2 hx-h2--sm">
-              See what happens after you <em>start a course.</em>
+              Inside the learning workspace
             </h2>
           </div>
           <p className="hx-head__aside">
@@ -883,16 +882,16 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
           <div data-reveal-group>
             <p className="hx-eyebrow hx-eyebrow--dark">6 Job-Ready Career Tracks</p>
             <h2 id="hx-programmes-title" className="hx-h2">
-              Pick a career track &amp; <em>build real proof.</em>
+              Choose a career track
             </h2>
             <p className="hx-programmes__lead">{homepageProgrammeLead(loading, confirmed)}</p>
           </div>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center" }}>
             {[
-              { id: "all" as const, label: "All Tracks (6)" },
-              { id: "data" as const, label: "📊 Data & SQL" },
-              { id: "ai" as const, label: "🤖 AI & Python" },
-              { id: "product-web" as const, label: "💻 Product & Full-Stack" },
+              { id: "all" as const, label: "All (6)" },
+              { id: "data" as const, label: "Data & SQL" },
+              { id: "ai" as const, label: "AI & Python" },
+              { id: "product-web" as const, label: "Product & Web" },
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -948,12 +947,12 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
                   slug: "data-analytics",
                   group: "data",
                   to: "/programmes/data-analytics-pro",
-                  category: "★ 4.9 · DATA ANALYTICS",
-                  status: "₹0 Free Pilot · 15 Lessons",
+                  category: "DATA & SQL",
+                  status: "Open · 15 lessons",
                   title: "Data Analytics & SQL",
                   desc: "Master SQL joins, CTEs & revenue audits in a live browser database.",
                   skills: ["SQL Workbench", "Spreadsheets", "1 Capstone"],
-                  meta: "⏱ 5 Modules · Verified ID",
+                  meta: "5 modules · 1 capstone",
                   img: photoAnalytics,
                   alt: "Data Analytics workspace preview",
                 },
@@ -961,12 +960,12 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
                   slug: "product-management",
                   group: "product-web",
                   to: "/programmes/product-management",
-                  category: "★ 4.9 · PRODUCT MANAGEMENT",
-                  status: "₹0 Free Pilot · 15 Lessons",
+                  category: "PRODUCT STRATEGY",
+                  status: "Open · 15 lessons",
                   title: "Product Management",
                   desc: "Scope real user problems, triage metrics & ship an engineering PRD.",
                   skills: ["PRD Studio", "Metrics", "1 Capstone"],
-                  meta: "⏱ 5 Modules · Verified ID",
+                  meta: "5 modules · 1 capstone",
                   img: photoProduct,
                   alt: "Product Management studio preview",
                 },
@@ -974,12 +973,12 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
                   slug: "python-programming",
                   group: "ai",
                   to: "/courses/python-programming",
-                  category: "★ 4.8 · PYTHON & BACKEND",
-                  status: "₹0 Free Pilot · 15 Lessons",
+                  category: "PYTHON & ETL",
+                  status: "Open · 15 lessons",
                   title: "Python & Automation",
                   desc: "Write data validators, automation scripts & tested ETL pipelines.",
                   skills: ["Python 3", "ETL Lab", "1 Capstone"],
-                  meta: "⏱ 5 Modules · Verified ID",
+                  meta: "5 modules · 1 capstone",
                   img: photoScience,
                   alt: "Python engineering workspace preview",
                 },
@@ -987,12 +986,12 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
                   slug: "data-science-ai",
                   group: "data",
                   to: "/programmes/data-science-ai",
-                  category: "★ 4.9 · SQL + PYTHON DUAL TRACK",
-                  status: "₹0 Free Pilot · 30 Lessons",
+                  category: "DATA SCIENCE",
+                  status: "Open · 30 lessons",
                   title: "Data Science & AI",
                   desc: "Combine SQL analytics and Python pipelines to model cohort retention.",
                   skills: ["SQL + Python", "Cohorts", "2 Capstones"],
-                  meta: "⏱ 10 Modules · Verified ID",
+                  meta: "10 modules · 2 capstones",
                   img: photoClass,
                   alt: "Data Science cohort analysis preview",
                 },
@@ -1000,12 +999,12 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
                   slug: "generative-ai",
                   group: "ai",
                   to: "/programmes/generative-ai-program",
-                  category: "★ 4.9 · APPLIED GENAI",
-                  status: "₹0 Free Pilot · 15 Lessons",
+                  category: "GENERATIVE AI",
+                  status: "Open · 15 lessons",
                   title: "Generative AI & RAG",
                   desc: "Build citation-grounded AI assistants, prompt guardrails & evals.",
                   skills: ["Grounded RAG", "LLM Evals", "1 Capstone"],
-                  meta: "⏱ 5 Modules · Verified ID",
+                  meta: "5 modules · 1 capstone",
                   img: photoCampusPg,
                   alt: "Generative AI evaluation preview",
                 },
@@ -1013,12 +1012,12 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
                   slug: "full-stack-web",
                   group: "product-web",
                   to: "/programmes/full-stack",
-                  category: "★ 4.8 · FULL-STACK WEB",
-                  status: "₹0 Free Pilot · 15 Lessons",
+                  category: "WEB ENGINEERING",
+                  status: "Open · 15 lessons",
                   title: "Full Stack TypeScript",
                   desc: "Ship React UIs, Node/Express APIs & PostgreSQL payment ledgers.",
                   skills: ["React + TS", "Node APIs", "PostgreSQL"],
-                  meta: "⏱ 5 Modules · Verified ID",
+                  meta: "5 modules · 1 capstone",
                   img: heroStudent720,
                   alt: "Full-stack engineering preview",
                 },
@@ -1090,7 +1089,7 @@ export function HomeDegrees() {
           <div data-reveal-group>
             <p className="hx-eyebrow hx-eyebrow--dark">University &amp; Institutional Pathways</p>
             <h2 id="hx-degrees-title" className="hx-h2">
-              Undergraduate &amp; <em>postgraduate pathways.</em>
+              Undergraduate and postgraduate pathways
             </h2>
           </div>
           <p className="hx-head__aside">Academic curriculum tracks built for university articulation and autonomous campus integration. Partner institutions confer the degree while Skylent powers the applied lab and Career OS stack.</p>
@@ -1449,7 +1448,7 @@ export function HomeCareer() {
           <div>
             <p className="hx-eyebrow hx-eyebrow--dark">Step-by-Step From Beginner to Job-Ready</p>
             <h2 id="hx-career-title" className="hx-h2 hx-h2--sm">
-              How your learning turns into a <em>recruiter-ready portfolio.</em>
+              From your first lesson to a verified portfolio
             </h2>
           </div>
           <p className="hx-head__aside">
@@ -1596,7 +1595,7 @@ export function HomeCareer() {
 const AI_DEMO_SCENARIOS = [
   {
     id: "hinglish",
-    tabLabel: "🇮🇳 Explain in Simple Hinglish",
+    tabLabel: "Explain in Simple Hinglish",
     badge: "Hinglish + English Intuition",
     studentQ: "Bhai, SQL mein WHERE aur HAVING dono filter karte hain toh dono mein asli fark kya hai? Simple Hinglish mein samjhao.",
     coachTitle: "Skylent AI Mentor · Instant Hinglish Breakdown",
@@ -1606,7 +1605,7 @@ const AI_DEMO_SCENARIOS = [
   },
   {
     id: "debug",
-    tabLabel: "🛠️ Fix My SQL / Code Bug",
+    tabLabel: "Debug SQL & Code",
     badge: "Live Code & Query Debugger",
     studentQ: "Why is my Northwind category revenue total showing ₹9,40,000 instead of ₹8,12,020 when I run SUM(units * unit_price)?",
     coachTitle: "Skylent AI Mentor · Line-by-Line Bug Catch",
@@ -1616,7 +1615,7 @@ const AI_DEMO_SCENARIOS = [
   },
   {
     id: "human",
-    tabLabel: "👨‍🏫 20-Min Human Expert Help",
+    tabLabel: "20-Minute Faculty Review",
     badge: "Guaranteed 20-Min Faculty TA SLA",
     studentQ: "I finished my Capstone SQL query and executive memo, but I'm not sure if my Q2 margin recommendation is strong enough for recruiters.",
     coachTitle: "Human Faculty TA Desk · Verified Mentor Response (11 mins)",
@@ -1645,7 +1644,7 @@ export function HomeAi() {
               </span>
             </div>
             <h2 id="hx-ai-title" className="hx-h2 hx-h2--sm" style={{ marginTop: 14 }}>
-              Stuck on a concept or bug? <em>Get unstuck in seconds.</em>
+              AI guidance and 20-minute faculty support
             </h2>
           </div>
           <p className="hx-head__aside">
@@ -1795,7 +1794,7 @@ export function HomeClosing() {
       <div className="sky-container hx-close__layout">
         <div>
           <h2 id="hx-close-title" className="hx-close__title">
-            Ready to build real proof of work? <em>Start free today.</em>
+            Start learning for free today
           </h2>
           <p className="hx-close__lead">
             Start any of our 6 self-paced flagship courses for ₹0 during the pilot, book a live ₹99 weekend workshop (with 100% Coin Back), or find your best-fit career track in 90 seconds.
@@ -1888,7 +1887,7 @@ export function HomeElixirFlywheel() {
               Live Weekend Workshops &amp; Masterclasses · Zero-Risk Entry
             </p>
             <h2 id="hx-flywheel-title" className="hx-h2 hx-h2--sm">
-              Start with a <em>₹99 Live Workshop.</em> Get 100% Back as Learning Credits.
+              Weekend live workshops for ₹99
             </h2>
             <p className="hx-royal-showcase__sub">
               Join a 2-hour weekend workshop for ₹99 — earn a verified certificate plus 99 Elixir Coins (100% cashback) to unlock case studies.
