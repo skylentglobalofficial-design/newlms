@@ -3,7 +3,6 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import type { AuroraThemeId } from '../aurora-themes'
 import { useAuth } from '../context/AuthContext'
 import { HeaderWalletAndNotifications } from './learner/HeaderWalletAndNotifications'
-import { InstallAppPrompt } from './skylent/InstallAppPrompt'
 import './AuthDashboardShell.css'
 
 export type AuthNavItem = {
@@ -72,6 +71,8 @@ export function AuthDashboardShell({
     user?.role === 'admin' ||
     user?.email?.toLowerCase() === 'tariniprasadtripathy17@gmail.com'
 
+  const isProfileOpen = location.pathname === '/dashboard/student' && location.hash === '#profile-settings'
+
   useEffect(() => {
     if (!mobileOpen) return
     const onKey = (event: KeyboardEvent) => {
@@ -103,6 +104,19 @@ export function AuthDashboardShell({
     })
   }
 
+  function openProfileAndSettings() {
+    setMobileOpen(false)
+    navigate('/dashboard/student#profile-settings')
+    requestAnimationFrame(() => {
+      const el = document.getElementById('profile-settings')
+      if (el) {
+        el.scrollIntoView({ behavior: prefersReducedMotion() ? 'auto' : 'smooth', block: 'start' })
+      } else {
+        window.scrollTo({ top: 0, behavior: prefersReducedMotion() ? 'auto' : 'smooth' })
+      }
+    })
+  }
+
   async function handleLogout() {
     await logout()
     navigate('/login')
@@ -124,7 +138,7 @@ export function AuthDashboardShell({
               <button
                 type="button"
                 className="auth-shell-nav-item"
-                aria-current={activeNav === item.id ? 'page' : undefined}
+                aria-current={activeNav === item.id && !isProfileOpen ? 'page' : undefined}
                 onClick={() => handleNav(item)}
               >
                 {item.label}
@@ -156,14 +170,85 @@ export function AuthDashboardShell({
       ) : null}
 
       <div className="auth-shell-user">
-        <div className="auth-shell-user-row">
-          <span className="auth-shell-avatar" aria-hidden="true">{user?.avatar || '··'}</span>
-          <div style={{ minWidth: 0 }}>
-            <div className="auth-shell-user-name">{user?.name || 'Signed in'}</div>
-            <div className="auth-shell-user-role">{isSuperOrAdmin ? 'SUPERADMIN · ALL ACCESS' : roleLabel}</div>
+        <button
+          type="button"
+          onClick={openProfileAndSettings}
+          title="Open My Profile, Professional Details & Password Settings"
+          aria-label="Open My Profile & Settings"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: 10,
+            width: '100%',
+            padding: '8px 10px',
+            margin: '-4px -6px 8px',
+            borderRadius: 10,
+            border: isProfileOpen ? '1px solid #8b5cf6' : '1px solid rgba(196, 184, 255, 0.18)',
+            background: isProfileOpen ? 'rgba(139, 92, 246, 0.22)' : 'rgba(255, 255, 255, 0.05)',
+            color: '#ffffff',
+            textAlign: 'left',
+            cursor: 'pointer',
+            transition: 'background 150ms ease, border-color 150ms ease',
+          }}
+        >
+          <div className="auth-shell-user-row" style={{ flex: 1, minWidth: 0 }}>
+            <span className="auth-shell-avatar" aria-hidden="true">{user?.avatar || '··'}</span>
+            <div style={{ minWidth: 0 }}>
+              <div className="auth-shell-user-name">{user?.name || 'Signed in'}</div>
+              <div className="auth-shell-user-role">
+                {isSuperOrAdmin ? 'SUPERADMIN · PROFILE' : `${roleLabel} · VIEW PROFILE`}
+              </div>
+            </div>
           </div>
-        </div>
-        <button type="button" className="auth-shell-signout" onClick={handleLogout}>
+          <span
+            aria-hidden="true"
+            style={{
+              fontSize: 13,
+              color: '#c4b8ff',
+              fontWeight: 700,
+              flexShrink: 0,
+            }}
+          >
+            ⚙️
+          </span>
+        </button>
+
+        <button
+          type="button"
+          onClick={openProfileAndSettings}
+          style={{
+            width: '100%',
+            minHeight: 38,
+            marginTop: 4,
+            border: isProfileOpen ? '1px solid #a78bfa' : '1px solid rgba(196, 184, 255, 0.26)',
+            borderRadius: 8,
+            background: isProfileOpen ? '#5142b5' : 'rgba(81, 66, 181, 0.25)',
+            color: '#ffffff',
+            font: '600 12.5px/1 var(--font-body)',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 6,
+          }}
+        >
+          <span>⚙️ Profile &amp; Settings</span>
+          {user?.passwordRotation?.rotationDue ? (
+            <span
+              style={{
+                width: 8,
+                height: 8,
+                borderRadius: 999,
+                background: '#f59e0b',
+                display: 'inline-block',
+              }}
+              title="3-month password update due"
+            />
+          ) : null}
+        </button>
+
+        <button type="button" className="auth-shell-signout" onClick={handleLogout} style={{ marginTop: 8 }}>
           Sign out
         </button>
       </div>
@@ -215,7 +300,23 @@ export function AuthDashboardShell({
           </button>
           <span className="auth-shell-wordmark">Skylent</span>
           <span className="auth-shell-workspace">{workspaceLabel}</span>
-          <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
+          <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 8 }}>
+            <button
+              type="button"
+              onClick={openProfileAndSettings}
+              style={{
+                padding: '6px 10px',
+                borderRadius: 999,
+                border: '1px solid rgba(196, 184, 255, 0.35)',
+                background: 'rgba(81, 66, 181, 0.35)',
+                color: '#ffffff',
+                fontSize: 12,
+                fontWeight: 700,
+                cursor: 'pointer',
+              }}
+            >
+              ⚙️ Profile
+            </button>
             <HeaderWalletAndNotifications variant="dashboard" />
           </div>
         </header>
@@ -251,7 +352,11 @@ export function AuthDashboardShell({
                 >
                   {workspaceLabel} OS
                 </span>
-                {activeItem ? (
+                {isProfileOpen ? (
+                  <span style={{ fontSize: 13, fontWeight: 600, color: '#334155' }}>
+                    Active Tab: <strong style={{ color: '#0f172a' }}>My Profile &amp; Settings</strong>
+                  </span>
+                ) : activeItem ? (
                   <span style={{ fontSize: 13, fontWeight: 600, color: '#334155' }}>
                     Active Tab: <strong style={{ color: '#0f172a' }}>{activeItem.label}</strong>
                   </span>
@@ -260,7 +365,25 @@ export function AuthDashboardShell({
             )}
           </div>
           <div className="auth-shell-bar__desktop-actions" style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 12 }}>
-            <InstallAppPrompt variant="dashboard" />
+            <button
+              type="button"
+              onClick={openProfileAndSettings}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                padding: '6px 12px',
+                borderRadius: 999,
+                border: isProfileOpen ? '1px solid #5142b5' : '1px solid #cbd5e1',
+                background: isProfileOpen ? '#5142b5' : '#f8fafc',
+                color: isProfileOpen ? '#ffffff' : '#0f172a',
+                fontSize: 12.5,
+                fontWeight: 700,
+                cursor: 'pointer',
+              }}
+            >
+              <span>⚙️ {user?.name?.split(' ')[0] || 'My'} Profile &amp; Settings</span>
+            </button>
             <HeaderWalletAndNotifications variant="dashboard" />
           </div>
         </div>

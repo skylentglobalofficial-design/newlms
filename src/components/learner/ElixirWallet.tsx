@@ -120,12 +120,12 @@ export default function ElixirWalletPanel() {
       >
         <div>
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <span style={{ fontSize: 13, fontWeight: 800, padding: "6px 10px", borderRadius: 8, background: "#5142b5", color: "#0F172A", border: "1px solid rgba(196, 184, 255, 0.45)" }}>ELX</span>
+            <span style={{ fontSize: 13, fontWeight: 800, padding: "6px 10px", borderRadius: 8, background: "#5142b5", color: "#FFFFFF", border: "1px solid rgba(196, 184, 255, 0.45)" }}>ELX</span>
             <div>
               <span style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "#5142B5" }}>
                 Elixir Learning Wallet · 100% Workshop Coin Back
               </span>
-              <h2 style={{ margin: "2px 0 0", fontSize: 24, fontWeight: 800, color: "#ffffff" }}>
+              <h2 style={{ margin: "2px 0 0", fontSize: 24, fontWeight: 800, color: "#0F172A" }}>
                 {wallet.balance} Elixir Coins
               </h2>
             </div>

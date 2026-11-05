@@ -23,7 +23,7 @@
           if ("caches" in window) {
             caches.keys().then(function (keys) {
               keys.forEach(function (k) {
-                if (k.indexOf("v53") === -1) caches.delete(k);
+                if (k.indexOf("v54") === -1) caches.delete(k);
               });
             });
           }
@@ -55,7 +55,7 @@
       ) {
         window.addEventListener("load", function () {
           navigator.serviceWorker
-            .register("/sw.js")
+            .register("/sw.js?v=54")
             .then(function (reg) {
               reg.update();
             })

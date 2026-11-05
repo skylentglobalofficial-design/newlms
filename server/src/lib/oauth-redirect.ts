@@ -32,7 +32,7 @@ export function requestPublicOrigin(req: OAuthRequestOrigin | undefined): string
 }
 
 function publicFrontendOrigin(env: NodeJS.ProcessEnv): string | null {
-  const configured = env.FRONTEND_URL?.trim().replace(/\/$/, "") ?? ""
+  const configured = (env.FRONTEND_URL ?? "").trim().replace(/^['"]+|['"]+$/g, "").trim().replace(/\/$/, "")
   if (!configured || !isPublicHttpsUrl(configured)) return null
   return configured
 }
@@ -43,7 +43,7 @@ function publicFrontendOrigin(env: NodeJS.ProcessEnv): string | null {
  * Localhost remains valid only when NODE_ENV is not production.
  */
 export function resolveGoogleRedirectUri(env: NodeJS.ProcessEnv, req?: OAuthRequestOrigin): string | null {
-  const configured = env.GOOGLE_REDIRECT_URI?.trim()
+  const configured = (env.GOOGLE_REDIRECT_URI ?? "").trim().replace(/^['"]+|['"]+$/g, "").trim()
   const production = env.NODE_ENV === "production"
   if (configured && (!production || isPublicHttpsUrl(configured))) return configured
   if (!production) return null

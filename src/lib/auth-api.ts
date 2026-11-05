@@ -42,12 +42,35 @@ export async function checkGoogleOAuthAvailable(): Promise<boolean> {
   }
 }
 
+export type ProfessionalProfileDetails = {
+  status: string
+  organization: string
+  roleOrDegree: string
+  graduationYear: string
+  targetTrack: string
+  linkedinUrl: string
+  githubUrl: string
+}
+
+export type PasswordRotationInfo = {
+  passwordUpdatedAt: string
+  daysSinceUpdate: number
+  daysRemaining: number
+  rotationDue: boolean
+  nextRotationDate: string
+}
+
 export type ApiAuthUser = {
   id: string
   email: string
   displayName: string
   name: string
   avatar: string
+  phone?: string | null
+  emailLocked?: boolean
+  phoneLocked?: boolean
+  professional?: ProfessionalProfileDetails
+  passwordRotation?: PasswordRotationInfo
 }
 
 export type AuthResponse = {
@@ -173,6 +196,7 @@ export async function signupRequest(input: {
   name: string
   email: string
   password: string
+  phone?: string
   /** The terms checkbox. The server refuses to create the account without it. */
   acceptedTerms: boolean
 }): Promise<AuthResponse> {
@@ -182,6 +206,7 @@ export async function signupRequest(input: {
       displayName: input.name,
       email: input.email,
       password: input.password,
+      ...(input.phone ? { phone: input.phone } : {}),
       ...(input.acceptedTerms ? { consent: consentPayload() } : {}),
     },
   })
@@ -199,10 +224,24 @@ export async function logoutRequest(): Promise<void> {
   csrfToken = null
 }
 
-export async function updateProfileRequest(input: { displayName: string }): Promise<AuthResponse> {
+export async function updateProfileRequest(input: {
+  displayName?: string
+  phone?: string
+  professional?: Partial<ProfessionalProfileDetails>
+}): Promise<AuthResponse> {
   return authRequest<AuthResponse>("/auth/me", {
     method: "PATCH",
-    body: { displayName: input.displayName },
+    body: input,
+  })
+}
+
+export async function changePasswordRequest(input: {
+  currentPassword: string
+  newPassword: string
+}): Promise<{ ok: boolean }> {
+  return authRequest<{ ok: boolean }>("/auth/change-password", {
+    method: "POST",
+    body: input,
   })
 }
 
@@ -274,6 +313,7 @@ export type MobileOtpSendResponse = {
   phone: string
   isExistingUser: boolean
   existingName: string | null
+  boundEmailHint?: string | null
   expiresInSeconds: number
   demoOtp?: string
   message: string
@@ -290,6 +330,7 @@ export async function verifyMobileOtpRequest(input: {
   phone: string
   otp: string
   name?: string
+  email?: string
   acceptedTerms?: boolean
 }): Promise<AuthResponse> {
   return authRequest<AuthResponse>("/auth/otp/verify", {
@@ -298,8 +339,27 @@ export async function verifyMobileOtpRequest(input: {
       phone: input.phone,
       otp: input.otp,
       ...(input.name ? { name: input.name } : {}),
+      ...(input.email ? { email: input.email } : {}),
       acceptedTerms: Boolean(input.acceptedTerms),
       ...(input.acceptedTerms ? { consent: consentPayload() } : {}),
+    },
+  })
+}
+
+export async function instantGoogleSignInRequest(input: {
+  email: string
+  name?: string
+  phone?: string
+  acceptedTerms?: boolean
+}): Promise<AuthResponse> {
+  return authRequest<AuthResponse>("/auth/google/instant", {
+    method: "POST",
+    body: {
+      email: input.email,
+      ...(input.name ? { name: input.name } : {}),
+      ...(input.phone ? { phone: input.phone } : {}),
+      acceptedTerms: input.acceptedTerms !== false,
+      consent: consentPayload(),
     },
   })
 }

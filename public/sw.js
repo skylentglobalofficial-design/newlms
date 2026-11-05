@@ -1,4 +1,4 @@
-const CACHE_NAME = 'skylent-app-shell-v48';
+const CACHE_NAME = 'skylent-app-shell-v54';
 const PRECACHE_URLS = [
   '/manifest.webmanifest',
   '/favicon.svg',

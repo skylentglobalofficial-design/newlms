@@ -16,6 +16,7 @@ import { findProjectForCourse, listLearnerProjects, learnerProjectPath, projectS
 import { fetchMyCertificates, issueCertificate, issueProgrammeCertificate, type SkylentCertificate } from '../lib/skylent-api'
 import { fetchSkylentAiStatus } from '../lib/skylent-ai-api'
 import ElixirWalletPanel from '../components/learner/ElixirWallet'
+import StudentProfileAndSettingsPanel from '../components/learner/StudentProfileAndSettingsPanel'
 import { computeLearnerExecutionStreak } from '../lib/execution-streak'
 import { truthOf } from '../lib/truth'
 import { courseProductProfile } from '../lib/course-product'
@@ -88,7 +89,7 @@ const SLICE = ['Learn', 'Practice', 'Build', 'Prove'] as const
 
 type Loaded<T> = { status: 'loading' } | { status: 'ready'; data: T } | { status: 'error' }
 type AiAvailability = 'checking' | 'available' | 'unavailable' | 'unknown'
-type StudentTabId = 'overview' | 'courses' | 'projects' | 'certificates' | 'wallet'
+type StudentTabId = 'overview' | 'courses' | 'projects' | 'certificates' | 'wallet' | 'profile'
 
 function ListError({ what, onRetry }: { what: string; onRetry: () => void }) {
   return (
@@ -130,7 +131,9 @@ export default function DashboardStudentPage() {
   const { pathname, hash } = useLocation()
   const activeNav = learnerNavId(pathname, hash)
   const previousHash = useRef(hash)
-  const [studentTab, setStudentTab] = useState<StudentTabId>('overview')
+  const [studentTab, setStudentTab] = useState<StudentTabId>(() =>
+    hash === '#profile-settings' ? 'profile' : 'overview'
+  )
   const [enrollments, setEnrollments] = useState<Loaded<ApiEnrollmentSummary[]>>({ status: 'loading' })
   const [projects, setProjects] = useState<Loaded<ProjectSummary[]>>({ status: 'loading' })
   const [certificates, setCertificates] = useState<Loaded<SkylentCertificate[]>>({ status: 'loading' })
@@ -144,13 +147,25 @@ export default function DashboardStudentPage() {
   }, [ready, user, navigate])
 
   useEffect(() => {
-    if (hash === '#sh-my-learning') setStudentTab('courses')
-    else if (hash === '#student-projects') setStudentTab('projects')
-    const sectionId = hash === '#sh-my-learning' || hash === '#student-projects' ? hash.slice(1) : ''
+    if (hash === '#profile-settings') {
+      setStudentTab('profile')
+    } else if (hash === '#sh-my-learning') {
+      setStudentTab('courses')
+    } else if (hash === '#student-projects') {
+      setStudentTab('projects')
+    }
+    const sectionId =
+      hash === '#sh-my-learning' || hash === '#student-projects' || hash === '#profile-settings'
+        ? hash.slice(1)
+        : ''
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     if (sectionId) {
       document.getElementById(sectionId)?.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' })
-    } else if (previousHash.current === '#sh-my-learning' || previousHash.current === '#student-projects') {
+    } else if (
+      previousHash.current === '#sh-my-learning' ||
+      previousHash.current === '#student-projects' ||
+      previousHash.current === '#profile-settings'
+    ) {
       window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' })
     }
     previousHash.current = hash
@@ -223,69 +238,66 @@ export default function DashboardStudentPage() {
     }
   }
 
-  const crumbSection =
-    studentTab === 'courses' || hash === '#sh-my-learning'
-      ? 'Active Courses'
-      : studentTab === 'projects' || hash === '#student-projects'
-        ? 'Projects & Labs'
-        : studentTab === 'certificates'
-          ? 'Certificates & Proof'
-          : studentTab === 'wallet'
-            ? 'Elixir Wallet'
-            : 'Dashboard'
-
   const shell = {
-    themeId: 'data-science' as const,
+    themeId: 'student' as const,
     workspace: 'learning' as const,
-    workspaceLabel: 'My Courses',
-    roleLabel: user?.role === 'superadmin' ? 'Superadmin' : user?.role === 'admin' ? 'Admin' : 'Learner',
+    workspaceLabel: 'Learning',
+    roleLabel: 'Learner',
     navItems: LEARNER_NAV,
     bottomNavItems: LEARNER_NAV,
     activeNav,
-    onNavChange: (id: string) => {
-      if (id === 'dashboard') setStudentTab('overview')
-      else if (id === 'courses') setStudentTab('courses')
-      else if (id === 'projects') setStudentTab('projects')
-    },
+    onNavChange: () => {},
     renderNavIcon: (id: string) => <LearnerNavIcon id={id} />,
-    bar: (
-      <>
-        <span className="sh-crumb">My Courses <span aria-hidden="true">/</span> <b>{crumbSection}</b></span>
-        <ProductSlice steps={SLICE} current={studentTab === 'projects' || hash === '#student-projects' ? 'Build' : studentTab === 'certificates' ? 'Prove' : 'Learn'} label="Where this screen sits in the product model" />
-      </>
-    ),
   }
 
-  if (!ready || !user) return null
+  const passwordRotationBanner = user?.passwordRotation?.rotationDue ? (
+    <div
+      role="alert"
+      style={{
+        display: 'flex',
+        flexWrap: 'wrap',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: 12,
+        padding: '14px 18px',
+        marginBottom: 18,
+        borderRadius: 14,
+        background: '#fffbeb',
+        border: '1px solid #fde68a',
+        color: '#92400e',
+      }}
+    >
+      <div>
+        <strong style={{ display: 'block', fontSize: 14 }}>
+          🔐 3-Month (90-Day) Password Security Update Due
+        </strong>
+        <span style={{ fontSize: 12.5 }}>
+          For account security, Skylent requires learners to rotate their password every 90 days. Please update your password in Profile &amp; Settings.
+        </span>
+      </div>
+      <button
+        type="button"
+        onClick={() => {
+          setStudentTab('profile')
+          navigate('/dashboard/student#profile-settings')
+        }}
+        style={{
+          padding: '8px 14px',
+          borderRadius: 10,
+          border: 'none',
+          background: '#d97706',
+          color: '#ffffff',
+          fontSize: 12.5,
+          fontWeight: 700,
+          cursor: 'pointer',
+        }}
+      >
+        Update Password Now →
+      </button>
+    </div>
+  ) : null
 
-  if (error && !workspace) {
-    return (
-      <AuthDashboardShell {...shell}>
-        <div className="sh sh-state" id="student-learning">
-          <p className="os-eyebrow">My Courses</p>
-          {error === 'Sign in to continue.' ? (
-            <>
-              <h1>Your session has ended</h1>
-              <p className="os-lead">Sign in again to see your learning. Nothing has been lost.</p>
-              <div className="os-actions">
-                <Link className="os-btn os-btn-primary" to="/login" state={{ returnTo: '/dashboard/student' }}>Sign in</Link>
-              </div>
-            </>
-          ) : (
-            <>
-              <h1>Your learning could not be loaded</h1>
-              <p className="os-lead">{learnerErrorMessage(new Error(error))}</p>
-              <div className="os-actions">
-                <button type="button" className="os-btn os-btn-primary" onClick={() => void reload()}>Try again</button>
-              </div>
-            </>
-          )}
-        </div>
-      </AuthDashboardShell>
-    )
-  }
-
-  if (loading) {
+  if (!ready || (loading && !workspace)) {
     return (
       <AuthDashboardShell {...shell}>
         <div className="sh"><Skeleton /></div>
@@ -293,115 +305,135 @@ export default function DashboardStudentPage() {
     )
   }
 
+  if (error && !workspace) {
+    return (
+      <AuthDashboardShell {...shell}>
+        <div className="sh">
+          <div className="os-alert" role="alert">
+            <div>
+              <strong>Your learning workspace did not load</strong>
+              <p>{learnerErrorMessage(error, 'Check your connection and try again.')}</p>
+            </div>
+            <button type="button" className="os-btn os-btn-primary" onClick={() => void reload()}>Try again</button>
+          </div>
+        </div>
+      </AuthDashboardShell>
+    )
+  }
+
   const enrolmentRows = enrollments.status === 'ready' ? enrollments.data : []
   const certificateRows = certificates.status === 'ready' ? certificates.data : []
+  const issuedSlugs = new Set(certificateRows.map((item) => item.courseSlug))
+  const myCourses = myCourseRows(enrolmentRows, workspace)
+  const claimable = enrollments.status === 'ready' && certificates.status === 'ready'
+    ? enrolmentRows.flatMap((item) =>
+        (item.courses ?? [])
+          .filter((linked) => linked.progress.allComplete && !issuedSlugs.has(linked.slug))
+          .map((linked) => ({
+            key: `${item.id}:${linked.slug}`,
+            courseSlug: linked.slug,
+            courseTitle: linked.title,
+          })),
+      )
+    : []
+
+  const claimableProgrammes = enrollments.status === 'ready' && certificates.status === 'ready'
+    ? enrolmentRows
+        .filter((item) => {
+          const courses = item.courses ?? []
+          const masterSlug = `programme-${item.programSlug}`
+          return courses.length >= 2 && courses.every((c) => c.progress.allComplete) && !issuedSlugs.has(masterSlug)
+        })
+        .map((item) => ({
+          key: `master:${item.id}:${item.programSlug}`,
+          programSlug: item.programSlug,
+          programName: item.programName,
+        }))
+    : []
 
   const myLearning = (
     <section
-      className={hash === '#sh-my-learning' || studentTab === 'courses' ? 'sh-card sh-card--focused' : 'sh-card'}
-      aria-labelledby="sh-my-learning"
+      className={hash === '#sh-my-learning' ? 'sh-card sh-card--focused' : 'sh-card'}
+      id="sh-my-learning"
+      aria-labelledby="sh-my-learning-heading"
     >
       <header className="sh-card-head">
-        <h2 id="sh-my-learning">My learning</h2>
-        {enrollments.status === 'ready' ? (
-          <span className="sh-note">{myCourseRows(enrollments.data).length} {myCourseRows(enrollments.data).length === 1 ? 'course' : 'courses'}</span>
-        ) : null}
+        <h2 id="sh-my-learning-heading">My Courses</h2>
+        <Link className="os-link" to="/programmes">Explore programmes <ArrowRight /></Link>
       </header>
       {enrollments.status === 'loading' ? (
-        <div className="sh-row"><span className="os-skeleton" style={{ width: '60%' }} /></div>
+        <div className="sh-rows" aria-label="Loading your courses">
+          <div className="sh-row"><span className="os-skeleton" style={{ width: '62%' }} /></div>
+          <div className="sh-row"><span className="os-skeleton" style={{ width: '48%' }} /></div>
+        </div>
       ) : enrollments.status === 'error' ? (
-        <ListError what="Your enrolments" onRetry={retryLists} />
-      ) : myCourseRows(enrollments.data).length === 0 ? (
-        <p className="sh-empty">You are not enrolled in anything yet. <Link className="os-link" to="/programmes">Browse programmes</Link></p>
-      ) : (
+        <ListError what="Your courses" onRetry={retryLists} />
+      ) : myCourses.length > 0 ? (
         <ul className="sh-rows">
-          {myCourseRows(enrollments.data).map((item) => {
-            const title = item.title
-            const progress = item.progressPct == null || item.completedCount == null || item.totalLessons == null
-              ? null
-              : { progressPct: item.progressPct, completedCount: item.completedCount, totalLessons: item.totalLessons }
-            const openHref = canOpenEnrollment(item.status) && item.slug ? `/learn/${item.slug}` : null
-            const note = progress
-              ? `${item.programmeName ? `${item.programmeName} · ` : ''}${progress.completedCount} of ${progress.totalLessons} lessons complete (${progress.progressPct}%)`
-              : `Enrolled ${formatDate(item.createdAt)}`
+          {myCourses.map((row) => {
+            const truth = truthOf('course', row.courseSlug)
+            const authored = isAuthoredCourse(row.courseSlug)
+            const actionHref = row.continueHref
+            const actionLabel = row.progress
+              ? row.progress.allComplete
+                ? 'Review course'
+                : row.progress.completedCount > 0 || row.currentLessonStarted
+                  ? 'Continue'
+                  : 'Start course'
+              : 'Open course'
             return (
-              <li key={item.key} className="sh-row">
+              <li key={row.key} className="sh-row sh-course-row">
                 <div className="sh-row-main">
-                  <strong>{title}</strong>
-                  <span className="sh-note">{note}</span>
-                  {progress ? (
-                    <div className="os-progress-bar sh-row-bar" role="progressbar" aria-label={`${title} progress`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={progress.progressPct}>
-                      <span style={{ width: `${progress.progressPct}%` }} />
+                  <div className="sh-row-title">
+                    <strong>{row.courseTitle}</strong>
+                    <span className={row.status === 'completed' ? 'os-status is-done' : 'os-status'}>
+                      {enrolmentStatusLabel(row.status)}
+                    </span>
+                    {truth && !authored ? <TruthChip truth={truth} /> : null}
+                  </div>
+                  <span className="sh-note">
+                    {row.programName && row.programName !== row.courseTitle ? `${row.programName} · ` : ''}
+                    {row.progress
+                      ? `${row.progress.completedCount} of ${row.progress.totalLessons} lessons (${row.progress.progressPct}%)`
+                      : row.Schedule}
+                    {row.currentLessonTitle && !row.progress?.allComplete ? ` · Current: ${row.currentLessonTitle}` : ''}
+                  </span>
+                  {row.progress ? (
+                    <div className="os-progress-bar sh-row-bar" role="progressbar" aria-label={`${row.courseTitle} progress`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={row.progress.progressPct}>
+                      <span style={{ width: `${row.progress.progressPct}%` }} />
                     </div>
                   ) : null}
+                  {authored ? <ProductSlice active={SLICE} /> : null}
                 </div>
-                <span className={item.status === 'completed' ? 'os-status is-done' : 'os-status'}>{enrolmentStatusLabel(item.status)}</span>
-                {openHref ? (
-                  <Link className="os-link sh-row-link" to={openHref} aria-label={`Continue ${title}`}>
-                    {progress && progress.completedCount > 0 && progress.completedCount < progress.totalLessons ? 'Resume' : 'Open'} <ArrowRight />
+                {canOpenEnrollment(row.enrolment) ? (
+                  <Link className="os-link sh-row-link" to={actionHref}>
+                    {actionLabel} <ArrowRight />
                   </Link>
-                ) : null}
+                ) : (
+                  <Link className="os-link sh-row-link" to={`/programmes/${row.programSlug}`}>
+                    Programme <ArrowRight />
+                  </Link>
+                )}
               </li>
             )
           })}
         </ul>
+      ) : (
+        <p className="sh-empty">
+          You have not started a course yet. <Link className="os-link" to="/programmes">Explore programmes <ArrowRight /></Link>
+        </p>
       )}
     </section>
   )
 
-  const issuedFor = (slug: string, title: string) =>
-    certificateRows.some((cert) => (cert.courseSlug ? cert.courseSlug === slug : cert.courseTitle === title))
-  const claimable: Array<{ key: string; courseSlug: string; courseTitle: string }> = []
-  const claimableProgrammes: Array<{ key: string; programSlug: string; programName: string }> = []
-  const seenClaims = new Set<string>()
-  const seenProgrammeClaims = new Set<string>()
-  for (const item of enrolmentRows) {
-    const linked = item.courses ?? []
-    if (linked.length > 0) {
-      for (const courseRow of linked) {
-        if (!isAuthoredCourse(courseRow.slug) || !courseRow.progress.allComplete) continue
-        if (issuedFor(courseRow.slug, courseRow.title) || seenClaims.has(courseRow.slug)) continue
-        seenClaims.add(courseRow.slug)
-        claimable.push({ key: `${item.id}:${courseRow.slug}`, courseSlug: courseRow.slug, courseTitle: courseRow.title })
-      }
-      const authoredLinked = linked.filter((courseRow) => isAuthoredCourse(courseRow.slug))
-      if (
-        item.programSlug &&
-        authoredLinked.length > 0 &&
-        authoredLinked.every((courseRow) => courseRow.progress.allComplete) &&
-        !seenProgrammeClaims.has(item.programSlug) &&
-        !certificateRows.some((cert) => (cert.code.includes('-PGM') || cert.code.includes('-PRG-')) && cert.courseTitle === (item.programName ?? item.programSlug))
-      ) {
-        seenProgrammeClaims.add(item.programSlug)
-        claimableProgrammes.push({
-          key: `prg:${item.id}:${item.programSlug}`,
-          programSlug: item.programSlug,
-          programName: item.programName ?? item.programSlug,
-        })
-      }
-      continue
-    }
-    if (
-      item.certificateEligible &&
-      item.courseSlug &&
-      !item.programSlug &&
-      isAuthoredCourse(item.courseSlug) &&
-      !issuedFor(item.courseSlug, item.courseTitle ?? '') &&
-      !seenClaims.has(item.courseSlug)
-    ) {
-      seenClaims.add(item.courseSlug)
-      claimable.push({ key: item.id, courseSlug: item.courseSlug, courseTitle: item.courseTitle ?? item.courseSlug })
-    }
-  }
-
   const evidence = (
-    <section className="sh-card sh-proof" id="student-evidence" aria-labelledby="sh-evidence">
+    <section className="sh-card sh-evidence" id="student-evidence" aria-labelledby="sh-certs">
       <header className="sh-card-head">
-        <h2 id="sh-evidence">Evidence and certificates</h2>
-        {certificates.status === 'ready' ? <TruthChip state={truthOf('certificates')} /> : null}
+        <h2 id="sh-certs">Certificates &amp; Verified Proof</h2>
+        <Link className="os-link" to="/verify">Public verification <ArrowRight /></Link>
       </header>
       {certificates.status === 'loading' ? (
-        <div className="sh-row"><span className="os-skeleton" style={{ width: '50%' }} /></div>
+        <div className="sh-row"><span className="os-skeleton" style={{ width: '58%' }} /></div>
       ) : certificates.status === 'error' ? (
         <ListError what="Your certificates" onRetry={retryLists} />
       ) : (
@@ -411,10 +443,13 @@ export default function DashboardStudentPage() {
               {certificateRows.map((cert) => (
                 <li key={cert.code} className="sh-row">
                   <div className="sh-row-main">
-                    <strong>{cert.courseTitle}</strong>
-                    <span className="sh-note">{cert.code} · issued {formatDate(cert.issuedAt)}</span>
+                    <strong>{cert.courseTitle}{cert.code.includes('-PGM') ? " · Programme Master Certificate" : ""}</strong>
+                    <span className="sh-note">
+                      <code className="sh-code">{cert.code}</code> ·{' '}
+                      {cert.status === 'revoked' ? 'Revoked' : `Issued ${formatDate(cert.issuedAt)}`}
+                    </span>
                   </div>
-                  {cert.revoked ? (
+                  {cert.status === 'revoked' ? (
                     <span className="os-status is-idle">Revoked</span>
                   ) : (
                     <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
@@ -504,18 +539,84 @@ export default function DashboardStudentPage() {
     return (
       <AuthDashboardShell {...shell}>
         <div className="sh" id="student-learning">
-          <p className="os-eyebrow">My Courses</p>
-          <h1>Start with a course</h1>
-          <div className="sh-next sh-royal-hero">
-            <p className="sh-next-label"><span aria-hidden="true" />Next step · ₹0 Free Pilot</p>
-            <h2>Choose what to learn first</h2>
-            <p className="sh-body">You are signed in and ready to start. Pick any of our 6 career tracks and its first lesson and browser lab open immediately.</p>
-            <div className="os-actions">
-              <Link className="os-btn os-btn-primary os-btn-lg sh-royal-cta" to="/programmes">Explore programmes <ArrowRight /></Link>
-            </div>
+          {passwordRotationBanner}
+
+          {/* Workspace View Switcher even when 0 courses are enrolled */}
+          <div
+            role="tablist"
+            aria-label="Learner Workspace Views"
+            style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: 8,
+              padding: '10px 12px',
+              marginBottom: 16,
+              borderRadius: 14,
+              background: '#f6f4ff',
+              border: '1px solid #ddd6fe',
+            }}
+          >
+            {[
+              { id: 'overview' as const, label: '1. Start Learning & Elixir Wallet' },
+              { id: 'profile' as const, label: '2. ⚙️ My Profile, Mobile & Password Settings' },
+            ].map((t) => {
+              const active = studentTab === t.id
+              return (
+                <button
+                  key={t.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={active}
+                  onClick={() => {
+                    setStudentTab(t.id)
+                    if (t.id === 'profile') navigate('/dashboard/student#profile-settings')
+                    else navigate('/dashboard/student')
+                  }}
+                  style={{
+                    padding: '8px 14px',
+                    borderRadius: 999,
+                    border: active ? '1px solid #5142b5' : '1px solid #cbd5e1',
+                    background: active ? '#5142b5' : '#ffffff',
+                    color: active ? '#ffffff' : '#334155',
+                    fontSize: 12.5,
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                  }}
+                >
+                  {t.label}
+                </button>
+              )
+            })}
           </div>
-          {enrolmentRows.length > 0 ? <div className="sh-stack">{myLearning}<CareerRiseCard />{evidence}</div> : null}
-          <section className="sh-card" aria-label="Elixir wallet" style={{ marginTop: 22 }}><ElixirWalletPanel /></section>
+
+          {studentTab === 'profile' ? (
+            <StudentProfileAndSettingsPanel />
+          ) : (
+            <>
+              <p className="os-eyebrow">My Courses</p>
+              <h1>Start with a course</h1>
+              <div className="sh-next sh-royal-hero">
+                <p className="sh-next-label"><span aria-hidden="true" />Next step · Free Pilot Access</p>
+                <h2>Choose what to learn first</h2>
+                <p className="sh-body">You are signed in and ready to start. Pick any of our 6 career tracks and its first lesson and browser lab open immediately.</p>
+                <div className="os-actions">
+                  <Link className="os-btn os-btn-primary os-btn-lg sh-royal-cta" to="/programmes">Explore programmes <ArrowRight /></Link>
+                  <button
+                    type="button"
+                    className="os-btn os-btn-ghost sh-royal-secondary"
+                    onClick={() => {
+                      setStudentTab('profile')
+                      navigate('/dashboard/student#profile-settings')
+                    }}
+                  >
+                    ⚙️ Complete My Profile &amp; Settings
+                  </button>
+                </div>
+              </div>
+              {enrolmentRows.length > 0 ? <div className="sh-stack">{myLearning}<CareerRiseCard />{evidence}</div> : null}
+              <section className="sh-card" aria-label="Elixir wallet" style={{ marginTop: 22 }}><ElixirWalletPanel /></section>
+            </>
+          )}
         </div>
       </AuthDashboardShell>
     )
@@ -648,6 +749,8 @@ export default function DashboardStudentPage() {
   return (
     <AuthDashboardShell {...shell}>
       <div className="sh">
+        {passwordRotationBanner}
+
         {/* Multi-Tab Student Workspace Switcher Bar */}
         <div
           role="tablist"
@@ -669,6 +772,7 @@ export default function DashboardStudentPage() {
             { id: 'projects' as const, label: '3. Capstone & Browser Labs' },
             { id: 'certificates' as const, label: '4. Certificates & Flight Recorder' },
             { id: 'wallet' as const, label: '5. Elixir Wallet & Case Store' },
+            { id: 'profile' as const, label: '6. ⚙️ My Profile & Settings' },
           ].map((t) => {
             const active = studentTab === t.id
             return (
@@ -677,7 +781,11 @@ export default function DashboardStudentPage() {
                 type="button"
                 role="tab"
                 aria-selected={active}
-                onClick={() => setStudentTab(t.id)}
+                onClick={() => {
+                  setStudentTab(t.id)
+                  if (t.id === 'profile') navigate('/dashboard/student#profile-settings')
+                  else if (hash === '#profile-settings') navigate('/dashboard/student')
+                }}
                 style={{
                   padding: '8px 14px',
                   borderRadius: 999,
@@ -695,6 +803,11 @@ export default function DashboardStudentPage() {
           })}
         </div>
 
+        {studentTab === 'profile' ? (
+          <StudentProfileAndSettingsPanel />
+        ) : null}
+
+        {studentTab !== 'profile' ? (
         <div className="sh-top-head">
           <div>
             <p className="os-eyebrow">My Learning Workspace</p>
@@ -720,6 +833,7 @@ export default function DashboardStudentPage() {
             </li>
           </ul>
         </div>
+        ) : null}
 
         {/* 1. Primary Action Above the Fold: Royal Purple Continue Learning Hero Card */}
         {studentTab === 'overview' || studentTab === 'courses' ? (

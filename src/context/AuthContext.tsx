@@ -5,9 +5,12 @@ import {
   logoutRequest,
   signupRequest,
   verifyMobileOtpRequest,
+  instantGoogleSignInRequest,
   updateProfileRequest,
   clearAuthClientState,
   type ApiRole,
+  type ProfessionalProfileDetails,
+  type PasswordRotationInfo,
 } from "../lib/auth-api"
 import { setUnauthorizedHandler } from "../lib/http"
 
@@ -20,6 +23,11 @@ export type AuthUser = {
   email: string
   role: UserRole
   avatar: string
+  phone?: string | null
+  emailLocked?: boolean
+  phoneLocked?: boolean
+  professional?: ProfessionalProfileDetails
+  passwordRotation?: PasswordRotationInfo
   mustChangePassword?: boolean
   program?: string
   progress?: number
@@ -34,10 +42,12 @@ type AuthContextValue = {
   roles: UserRole[]
   ready: boolean
   login: (email: string, password: string) => Promise<UserRole>
-  signup: (name: string, email: string, password: string, acceptedTerms: boolean) => Promise<UserRole>
-  loginWithMobileOtp: (input: { phone: string; otp: string; name?: string; acceptedTerms?: boolean }) => Promise<UserRole>
+  signup: (name: string, email: string, password: string, acceptedTerms: boolean, phone?: string) => Promise<UserRole>
+  loginWithMobileOtp: (input: { phone: string; otp: string; name?: string; email?: string; acceptedTerms?: boolean }) => Promise<UserRole>
+  loginWithGoogleInstant: (input: { email: string; name?: string; phone?: string; acceptedTerms?: boolean }) => Promise<UserRole>
   refreshSession: () => Promise<AuthUser | null>
   updateDisplayName: (displayName: string) => Promise<void>
+  updateProfileDetails: (input: { displayName?: string; phone?: string; professional?: Partial<ProfessionalProfileDetails> }) => Promise<void>
   markPasswordChanged: () => void
   loginDemo: (user: AuthUser) => void
   logout: () => Promise<void>
@@ -71,7 +81,18 @@ function writeStoredDemoUser(user: AuthUser | null) {
 }
 
 function toAuthUser(response: {
-  user: { id: string; name: string; displayName?: string; email: string; avatar: string }
+  user: {
+    id: string
+    name: string
+    displayName?: string
+    email: string
+    avatar: string
+    phone?: string | null
+    emailLocked?: boolean
+    phoneLocked?: boolean
+    professional?: ProfessionalProfileDetails
+    passwordRotation?: PasswordRotationInfo
+  }
   role: UserRole
   mustChangePassword?: boolean
 }): AuthUser {
@@ -82,6 +103,11 @@ function toAuthUser(response: {
     email: response.user.email,
     avatar: response.user.avatar,
     role: response.role,
+    phone: response.user.phone ?? null,
+    emailLocked: response.user.emailLocked ?? true,
+    phoneLocked: Boolean(response.user.phoneLocked ?? response.user.phone),
+    professional: response.user.professional,
+    passwordRotation: response.user.passwordRotation,
     mustChangePassword: response.mustChangePassword === true,
   }
 }
@@ -156,8 +182,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return nextUser.role
   }, [])
 
-  const signup = useCallback(async (name: string, email: string, password: string, acceptedTerms: boolean) => {
-    const session = await signupRequest({ name, email, password, acceptedTerms })
+  const signup = useCallback(async (name: string, email: string, password: string, acceptedTerms: boolean, phone?: string) => {
+    const session = await signupRequest({ name, email, password, acceptedTerms, phone })
     const nextUser = toAuthUser(session)
     writeStoredDemoUser(null)
     setUser(nextUser)
@@ -165,8 +191,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return nextUser.role
   }, [])
 
-  const loginWithMobileOtp = useCallback(async (input: { phone: string; otp: string; name?: string; acceptedTerms?: boolean }) => {
+  const loginWithMobileOtp = useCallback(async (input: { phone: string; otp: string; name?: string; email?: string; acceptedTerms?: boolean }) => {
     const session = await verifyMobileOtpRequest(input)
+    const nextUser = toAuthUser(session)
+    writeStoredDemoUser(null)
+    setUser(nextUser)
+    setRoles(session.roles)
+    return nextUser.role
+  }, [])
+
+  const loginWithGoogleInstant = useCallback(async (input: { email: string; name?: string; phone?: string; acceptedTerms?: boolean }) => {
+    const session = await instantGoogleSignInRequest(input)
     const nextUser = toAuthUser(session)
     writeStoredDemoUser(null)
     setUser(nextUser)
@@ -191,11 +226,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   const markPasswordChanged = useCallback(() => {
-    setUser((current) => current ? { ...current, mustChangePassword: false } : current)
+    setUser((current) =>
+      current
+        ? {
+            ...current,
+            mustChangePassword: false,
+            passwordRotation: {
+              passwordUpdatedAt: new Date().toISOString(),
+              daysSinceUpdate: 0,
+              daysRemaining: 90,
+              rotationDue: false,
+              nextRotationDate: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(),
+            },
+          }
+        : current,
+    )
   }, [])
 
   const updateDisplayName = useCallback(async (displayName: string) => {
     const session = await updateProfileRequest({ displayName })
+    setUser(toAuthUser(session))
+    setRoles(session.roles)
+  }, [])
+
+  const updateProfileDetails = useCallback(async (input: { displayName?: string; phone?: string; professional?: Partial<ProfessionalProfileDetails> }) => {
+    const session = await updateProfileRequest(input)
     setUser(toAuthUser(session))
     setRoles(session.roles)
   }, [])
@@ -220,7 +275,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   return (
-    <AuthContext.Provider value={{ user, roles, ready, login, signup, loginWithMobileOtp, refreshSession, updateDisplayName, markPasswordChanged, loginDemo, logout }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        roles,
+        ready,
+        login,
+        signup,
+        loginWithMobileOtp,
+        loginWithGoogleInstant,
+        refreshSession,
+        updateDisplayName,
+        updateProfileDetails,
+        markPasswordChanged,
+        loginDemo,
+        logout,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   )
@@ -233,7 +304,11 @@ const SAFE_DEFAULT: AuthContextValue = {
   ready: true,
   login: async () => "student",
   signup: async () => "student",
+  loginWithMobileOtp: async () => "student",
+  loginWithGoogleInstant: async () => "student",
+  refreshSession: async () => null,
   updateDisplayName: async () => {},
+  updateProfileDetails: async () => {},
   markPasswordChanged: () => {},
   loginDemo: () => {},
   logout: async () => {},

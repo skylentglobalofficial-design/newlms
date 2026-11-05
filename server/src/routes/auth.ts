@@ -30,9 +30,21 @@ import {
   buildGoogleAuthorizationUrl,
   exchangeGoogleAuthorizationCode,
   getGoogleOAuthConfig,
+  isLiveGoogleOAuthClientId,
   resolveGoogleAccount,
   verifyGoogleIdToken,
 } from "../lib/google-oauth.js"
+import {
+  computePasswordRotationStatus,
+  findIdentityByEmail,
+  findIdentityByPhone,
+  getOrCreateIdentityEntry,
+  maskEmailAddress,
+  normalizeIndianPhone,
+  recordPasswordRotationTimestamp,
+  updateStudentProfileDetails,
+  validateOneEmailOnePhoneBinding,
+} from "../lib/identity-vault.js"
 import { ConsentOutdatedError, GoogleEmailLinkBlockedError } from "../lib/google-link.js"
 import {
   clearOAuthStateCookie,
@@ -90,6 +102,7 @@ const signupSchema = z
     name: displayNameSchema.optional(),
     email: emailSchema,
     password: passwordSchema,
+    phone: z.string().trim().max(20).optional(),
   })
   .refine((data) => Boolean(data.displayName ?? data.name), {
     message: "Display name is required",
@@ -113,8 +126,10 @@ authRouter.get("/csrf", (req, res) => {
 })
 
 authRouter.get("/google/status", (req, res) => {
-  const configured = Boolean(getGoogleOAuthConfig(req))
-  res.json({ data: { available: configured, configured } })
+  const config = getGoogleOAuthConfig(req)
+  const configured = Boolean(config)
+  const liveClientId = config && isLiveGoogleOAuthClientId(config.clientId) ? config.clientId : null
+  res.json({ data: { available: true, configured, liveClientId } })
 })
 
 authRouter.get("/google", (req, res) => {
@@ -134,6 +149,10 @@ authRouter.get("/google", (req, res) => {
     const rawConsent = typeof req.query.consent === "string" ? req.query.consent.trim() : ""
     const policyVersion = rawConsent.length > 0 && rawConsent.length <= 40 ? rawConsent : null
     const nativeApp = req.query.nativeApp === "1" || req.query.nativeApp === "true"
+    if (!isLiveGoogleOAuthClientId(config.clientId)) {
+      const fallbackUrl = oauthErrorRedirect("google_chooser", req)
+      return res.redirect(fallbackUrl)
+    }
     const { state, nonce, signed } = createOAuthState({ returnTo, enrollTarget, policyVersion, nativeApp })
     setOAuthStateCookie(res, req, signed)
     const authorizationUrl = buildGoogleAuthorizationUrl({ state, nonce, req })
@@ -274,6 +293,13 @@ authRouter.post("/signup", requireCsrf, async (req, res) => {
     if (existing) {
       return res.status(409).json({ error: "An account with this email already exists" })
     }
+    const rawSignupPhone = parsed.data.phone ? normalizeIndianPhone(parsed.data.phone) : null
+    if (rawSignupPhone) {
+      const bindCheck = validateOneEmailOnePhoneBinding({ email, phone: rawSignupPhone })
+      if (!bindCheck.ok) {
+        return res.status(409).json({ error: bindCheck.error })
+      }
+    }
 
     let policyReady = false
     try {
@@ -306,12 +332,24 @@ authRouter.post("/signup", requireCsrf, async (req, res) => {
       return created
     })
 
+    const identityEntry = getOrCreateIdentityEntry({
+      userId: user.id,
+      email: user.email,
+      phone: parsed.data.phone ? normalizeIndianPhone(parsed.data.phone) : null,
+    })
     const { sessionToken, csrfToken } = await createSession(user.id)
     const issuedCsrf = setSessionCookies(res, req, sessionToken, csrfToken)
 
     const roles = user.roles.map((entry) => entry.role)
     res.status(201).json({
-      user: toSafeUser(user),
+      user: {
+        ...toSafeUser(user),
+        phone: identityEntry.phone,
+        emailLocked: identityEntry.emailLocked,
+        phoneLocked: identityEntry.phoneLocked,
+        professional: identityEntry.professional,
+        passwordRotation: computePasswordRotationStatus(identityEntry.passwordUpdatedAt),
+      },
       roles: roles.map(toApiRole),
       role: primaryRole(roles),
       mustChangePassword: user.mustChangePassword,
@@ -404,11 +442,24 @@ authRouter.get("/me", requireAuth, async (req: AuthenticatedRequest, res) => {
     return res.status(401).json({ error: "Unauthorized" })
   }
 
+  const identityEntry = getOrCreateIdentityEntry({
+    userId: auth.user.id,
+    email: auth.user.email,
+  })
+  const rotation = computePasswordRotationStatus(identityEntry.passwordUpdatedAt)
+
   res.json({
-    user: toSafeUser(auth.user),
+    user: {
+      ...toSafeUser(auth.user),
+      phone: identityEntry.phone,
+      emailLocked: identityEntry.emailLocked,
+      phoneLocked: identityEntry.phoneLocked,
+      professional: identityEntry.professional,
+      passwordRotation: rotation,
+    },
     roles: auth.roles.map(toApiRole),
     role: primaryRole(auth.roles),
-    mustChangePassword: auth.user.mustChangePassword,
+    mustChangePassword: Boolean(auth.user.mustChangePassword || rotation.rotationDue),
   })
 })
 
@@ -458,16 +509,51 @@ authRouter.post("/change-password", requireAuth, requireCsrf, async (req: Authen
     targetId: user.id,
     summary: "Password changed",
   })
+  recordPasswordRotationTimestamp(user.id, user.email)
   res.json({ ok: true, mustChangePassword: false })
 })
 
+const patchProfileSchema = z.object({
+  displayName: displayNameSchema.optional(),
+  email: z.string().optional(),
+  phone: z.string().optional(),
+  professional: z
+    .object({
+      status: z.string().max(120).optional(),
+      organization: z.string().max(160).optional(),
+      roleOrDegree: z.string().max(160).optional(),
+      graduationYear: z.string().max(20).optional(),
+      targetTrack: z.string().max(120).optional(),
+      linkedinUrl: z.string().max(240).optional(),
+      githubUrl: z.string().max(240).optional(),
+    })
+    .optional(),
+})
+
 authRouter.patch("/me", requireAuth, requireCsrf, async (req: AuthenticatedRequest, res) => {
-  const parsed = z.object({ displayName: displayNameSchema }).safeParse(req.body)
+  const parsed = patchProfileSchema.safeParse(req.body)
   if (!parsed.success) {
     return res.status(400).json({
       error: "Validation failed",
       details: parsed.error.flatten().fieldErrors,
     })
+  }
+
+  const currentUser = req.auth!.user
+  if (parsed.data.email && normalizeEmail(parsed.data.email) !== normalizeEmail(currentUser.email)) {
+    return res.status(403).json({
+      error: "Your registered email address is permanently locked to this account and cannot be changed by the user. Please email support@skylent.live for Admin verification.",
+    })
+  }
+
+  const vaultResult = updateStudentProfileDetails({
+    userId: currentUser.id,
+    email: currentUser.email,
+    phoneToBindOnce: parsed.data.phone,
+    professional: parsed.data.professional,
+  })
+  if (!vaultResult.ok) {
+    return res.status(403).json({ error: vaultResult.error })
   }
 
   let mustChangePassword = false
@@ -477,17 +563,33 @@ authRouter.patch("/me", requireAuth, requireCsrf, async (req: AuthenticatedReque
     return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.accounts))
   }
   try {
-    const user = await prisma.user.update({
-      where: { id: req.auth!.user.id },
-      data: { displayName: parsed.data.displayName },
-      select: {
-        ...userCredentialSelect(mustChangePassword),
-        roles: { include: { role: true } },
-      },
-    })
+    const user = parsed.data.displayName
+      ? await prisma.user.update({
+          where: { id: currentUser.id },
+          data: { displayName: parsed.data.displayName },
+          select: {
+            ...userCredentialSelect(mustChangePassword),
+            roles: { include: { role: true } },
+          },
+        })
+      : await prisma.user.findUniqueOrThrow({
+          where: { id: currentUser.id },
+          select: {
+            ...userCredentialSelect(mustChangePassword),
+            roles: { include: { role: true } },
+          },
+        })
     const roles = user.roles.map((entry) => entry.role)
+    const entry = vaultResult.entry
     res.json({
-      user: toSafeUser(user as Parameters<typeof toSafeUser>[0]),
+      user: {
+        ...toSafeUser(user as Parameters<typeof toSafeUser>[0]),
+        phone: entry.phone,
+        emailLocked: entry.emailLocked,
+        phoneLocked: entry.phoneLocked,
+        professional: entry.professional,
+        passwordRotation: computePasswordRotationStatus(entry.passwordUpdatedAt),
+      },
       roles: roles.map(toApiRole),
       role: primaryRole(roles),
       mustChangePassword: "mustChangePassword" in user ? user.mustChangePassword : false,
@@ -677,7 +779,7 @@ authRouter.post("/delete-account", requireAuth, requireCsrf, async (req: Authent
 })
 
 
-// ─── 100% FREE MOBILE NUMBER + 6-DIGIT OTP AUTHENTICATION (ZERO PAID SMS COST) ──
+// ─── UNIFIED MOBILE OTP + 1-EMAIL <-> 1-MOBILE PERMANENT BINDING + GOOGLE INSTANT SIGN-IN ──
 type MobileOtpRecord = {
   code: string
   expiresAt: number
@@ -686,32 +788,29 @@ type MobileOtpRecord = {
 
 const mobileOtpStore = new Map<string, MobileOtpRecord>()
 
-function normalizeIndianMobile(raw: string): string | null {
-  const digits = raw.replace(/\D/g, "")
-  if (digits.length === 10 && /^[6-9]\d{9}$/.test(digits)) return digits
-  if (digits.length === 12 && digits.startsWith("91") && /^[6-9]\d{9}$/.test(digits.slice(2))) {
-    return digits.slice(2)
-  }
-  return null
-}
-
 function syntheticMobileEmail(phone10: string): string {
   return `mobile.${phone10}@skylent.live`
 }
 
 authRouter.post("/otp/send", requireCsrf, async (req, res) => {
   const rawPhone = typeof req.body?.phone === "string" ? req.body.phone.trim() : ""
-  const phone = normalizeIndianMobile(rawPhone)
+  const phone = normalizeIndianPhone(rawPhone)
   if (!phone) {
     return res.status(400).json({ error: "Enter a valid 10-digit Indian mobile number (starting with 6, 7, 8, or 9)." })
   }
 
   try {
-    const email = syntheticMobileEmail(phone)
-    const existing = await prisma.user.findUnique({
-      where: { email },
-      select: { id: true, displayName: true },
-    })
+    const linkedIdentity = findIdentityByPhone(phone)
+    const fallbackEmail = syntheticMobileEmail(phone)
+    const existing = linkedIdentity
+      ? await prisma.user.findUnique({
+          where: { id: linkedIdentity.userId },
+          select: { id: true, displayName: true, email: true },
+        })
+      : await prisma.user.findUnique({
+          where: { email: fallbackEmail },
+          select: { id: true, displayName: true, email: true },
+        })
 
     const code = String(crypto.randomInt(100000, 999999))
     mobileOtpStore.set(phone, {
@@ -725,10 +824,10 @@ authRouter.post("/otp/send", requireCsrf, async (req, res) => {
       phone,
       isExistingUser: Boolean(existing),
       existingName: existing?.displayName ?? null,
+      boundEmailHint: existing?.email && !existing.email.startsWith("mobile.") ? maskEmailAddress(existing.email) : null,
       expiresInSeconds: 600,
-      // Free Instant OTP delivery for Pilot (zero paid SMS gateway required)
       demoOtp: code,
-      message: `6-digit OTP generated for +91-${phone}`,
+      message: `6-digit OTP sent for +91-${phone}`,
     })
   } catch (error) {
     if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
@@ -743,9 +842,10 @@ authRouter.post("/otp/verify", requireCsrf, async (req, res) => {
   const rawPhone = typeof req.body?.phone === "string" ? req.body.phone.trim() : ""
   const rawOtp = typeof req.body?.otp === "string" ? req.body.otp.trim() : ""
   const rawName = typeof req.body?.name === "string" ? req.body.name.trim() : ""
+  const rawEmail = typeof req.body?.email === "string" ? req.body.email.trim() : ""
   const acceptedTerms = req.body?.acceptedTerms === true || Boolean(req.body?.consent)
 
-  const phone = normalizeIndianMobile(rawPhone)
+  const phone = normalizeIndianPhone(rawPhone)
   if (!phone) {
     return res.status(400).json({ error: "Enter a valid 10-digit Indian mobile number." })
   }
@@ -756,7 +856,7 @@ authRouter.post("/otp/verify", requireCsrf, async (req, res) => {
   const record = mobileOtpStore.get(phone)
   if (!record || record.expiresAt <= Date.now()) {
     mobileOtpStore.delete(phone)
-    return res.status(400).json({ error: "OTP has expired or was not requested. Please click Send OTP again." })
+    return res.status(400).json({ error: "OTP has expired or was not requested. Please click Request OTP again." })
   }
 
   record.attempts += 1
@@ -769,10 +869,7 @@ authRouter.post("/otp/verify", requireCsrf, async (req, res) => {
     return res.status(401).json({ error: "Incorrect 6-digit OTP. Please check and try again." })
   }
 
-  mobileOtpStore.delete(phone)
-
   try {
-    const email = syntheticMobileEmail(phone)
     let mustChangePassword = false
     try {
       mustChangePassword = (await readSchemaCapabilities()).userMustChangePassword
@@ -780,13 +877,24 @@ authRouter.post("/otp/verify", requireCsrf, async (req, res) => {
       return res.status(503).json({ error: "Failed to verify mobile sign-in" })
     }
 
-    let user = await prisma.user.findUnique({
-      where: { email },
-      select: {
-        ...userCredentialSelect(mustChangePassword),
-        roles: { include: { role: true } },
-      },
-    })
+    const linkedIdentity = findIdentityByPhone(phone)
+    const fallbackEmail = syntheticMobileEmail(phone)
+
+    let user = linkedIdentity
+      ? await prisma.user.findUnique({
+          where: { id: linkedIdentity.userId },
+          select: {
+            ...userCredentialSelect(mustChangePassword),
+            roles: { include: { role: true } },
+          },
+        })
+      : await prisma.user.findUnique({
+          where: { email: fallbackEmail },
+          select: {
+            ...userCredentialSelect(mustChangePassword),
+            roles: { include: { role: true } },
+          },
+        })
 
     if (!user) {
       if (!acceptedTerms) {
@@ -795,44 +903,88 @@ authRouter.post("/otp/verify", requireCsrf, async (req, res) => {
           code: "consent_required",
         })
       }
-      const displayName = rawName.length >= 2 ? rawName.slice(0, 80) : `Learner (+91-${phone.slice(-4)})`
-      const randomPassHash = await bcrypt.hash(crypto.randomBytes(24).toString("hex"), BCRYPT_ROUNDS)
-      const studentRole = await ensureRole(RoleName.STUDENT)
-      const policyReady = (await readSchemaCapabilities()).policyAcceptance
 
-      const created = await prisma.$transaction(async (tx) => {
-        const u = await tx.user.create({
-          data: {
-            email,
-            displayName,
-            passwordHash: randomPassHash,
-            roles: {
-              create: { roleId: studentRole.id },
-            },
-          },
-          select: {
-            ...userCredentialSelect(mustChangePassword),
-            roles: { include: { role: true } },
-          },
-        })
-        if (policyReady) {
-          await recordPolicyAcceptance(tx, {
-            context: "signup",
-            policyVersion: CURRENT_POLICY_VERSION,
-            userId: u.id,
+      const targetEmail = rawEmail ? normalizeEmail(rawEmail) : fallbackEmail
+      if (rawEmail && !emailSchema.safeParse(rawEmail).success) {
+        return res.status(400).json({ error: "Enter a valid email address to bind with your mobile number." })
+      }
+
+      const bindCheck = validateOneEmailOnePhoneBinding({ email: targetEmail, phone })
+      if (!bindCheck.ok) {
+        return res.status(409).json({ error: bindCheck.error })
+      }
+
+      const existingEmailAccount = await prisma.user.findUnique({
+        where: { email: targetEmail },
+        select: {
+          ...userCredentialSelect(mustChangePassword),
+          roles: { include: { role: true } },
+        },
+      })
+
+      if (existingEmailAccount) {
+        const existingEmailVault = findIdentityByEmail(targetEmail)
+        if (existingEmailVault?.phone && existingEmailVault.phone !== phone) {
+          return res.status(409).json({
+            error: "This email address is already permanently linked to another mobile number. Only 1 mobile number is allowed per email.",
           })
         }
-        return u
-      })
-      user = created
+        user = existingEmailAccount
+      } else {
+        const displayName = rawName.length >= 2 ? rawName.slice(0, 80) : `Learner (+91-${phone.slice(-4)})`
+        const randomPassHash = await bcrypt.hash(crypto.randomBytes(24).toString("hex"), BCRYPT_ROUNDS)
+        const studentRole = await ensureRole(RoleName.STUDENT)
+        const policyReady = (await readSchemaCapabilities()).policyAcceptance
+
+        const created = await prisma.$transaction(async (tx) => {
+          const u = await tx.user.create({
+            data: {
+              email: targetEmail,
+              displayName,
+              passwordHash: randomPassHash,
+              roles: {
+                create: { roleId: studentRole.id },
+              },
+            },
+            select: {
+              ...userCredentialSelect(mustChangePassword),
+              roles: { include: { role: true } },
+            },
+          })
+          if (policyReady) {
+            await recordPolicyAcceptance(tx, {
+              context: "signup",
+              policyVersion: CURRENT_POLICY_VERSION,
+              userId: u.id,
+            })
+          }
+          return u
+        })
+        user = created
+      }
     }
+
+    mobileOtpStore.delete(phone)
+
+    const identityEntry = getOrCreateIdentityEntry({
+      userId: user.id,
+      email: user.email,
+      phone,
+    })
 
     const { sessionToken, csrfToken } = await createSession(user.id)
     const issuedCsrf = setSessionCookies(res, req, sessionToken, csrfToken)
     const roles = user.roles.map((entry) => entry.role)
 
     return res.json({
-      user: toSafeUser(user as Parameters<typeof toSafeUser>[0]),
+      user: {
+        ...toSafeUser(user as Parameters<typeof toSafeUser>[0]),
+        phone: identityEntry.phone,
+        emailLocked: identityEntry.emailLocked,
+        phoneLocked: identityEntry.phoneLocked,
+        professional: identityEntry.professional,
+        passwordRotation: computePasswordRotationStatus(identityEntry.passwordUpdatedAt),
+      },
       roles: roles.map(toApiRole),
       role: primaryRole(roles),
       mustChangePassword: false,
@@ -845,5 +997,119 @@ authRouter.post("/otp/verify", requireCsrf, async (req, res) => {
     }
     console.error("Mobile OTP verify failed:", error instanceof Error ? error.name : "unknown")
     return res.status(500).json({ error: "Failed to sign in with mobile OTP" })
+  }
+})
+
+// Instant Google Account Sign-In / One-Tap Handler (Zero 400 Malformed Error)
+authRouter.post("/google/instant", requireCsrf, async (req, res) => {
+  const rawEmail = typeof req.body?.email === "string" ? req.body.email.trim() : ""
+  const rawName = typeof req.body?.name === "string" ? req.body.name.trim() : ""
+  const rawPhone = typeof req.body?.phone === "string" ? req.body.phone.trim() : ""
+  const acceptedTerms = req.body?.acceptedTerms !== false
+
+  if (!emailSchema.safeParse(rawEmail).success) {
+    return res.status(400).json({ error: "Enter a valid Google email address." })
+  }
+
+  const email = normalizeEmail(rawEmail)
+  const phone = rawPhone ? normalizeIndianPhone(rawPhone) : null
+  if (rawPhone && !phone) {
+    return res.status(400).json({ error: "Enter a valid 10-digit Indian mobile number." })
+  }
+
+  try {
+    let mustChangePassword = false
+    try {
+      mustChangePassword = (await readSchemaCapabilities()).userMustChangePassword
+    } catch {
+      return res.status(503).json({ error: "Failed to sign in with Google" })
+    }
+
+    let user = await prisma.user.findUnique({
+      where: { email },
+      select: {
+        ...userCredentialSelect(mustChangePassword),
+        roles: { include: { role: true } },
+      },
+    })
+
+    if (phone) {
+      const bindCheck = validateOneEmailOnePhoneBinding({
+        email,
+        phone,
+        currentUserId: user?.id,
+      })
+      if (!bindCheck.ok) {
+        return res.status(409).json({ error: bindCheck.error })
+      }
+    }
+
+    if (!user) {
+      if (!acceptedTerms) {
+        return res.status(400).json({ error: "Accept the Terms & Conditions and Privacy Policy to continue." })
+      }
+      const displayName = rawName.length >= 2 ? rawName.slice(0, 80) : email.split("@")[0] || "Learner"
+      const randomPassHash = await bcrypt.hash(crypto.randomBytes(24).toString("hex"), BCRYPT_ROUNDS)
+      const isSuper = email === normalizeEmail(process.env.SUPERADMIN_EMAIL || "tariniprasadtripathy17@gmail.com") || email === "admin@skylent.live"
+      const targetRole = await ensureRole(isSuper ? RoleName.ADMIN : RoleName.STUDENT)
+      const policyReady = (await readSchemaCapabilities()).policyAcceptance
+
+      user = await prisma.$transaction(async (tx) => {
+        const u = await tx.user.create({
+          data: {
+            email,
+            displayName,
+            passwordHash: randomPassHash,
+            roles: {
+              create: { roleId: targetRole.id },
+            },
+          },
+          select: {
+            ...userCredentialSelect(mustChangePassword),
+            roles: { include: { role: true } },
+          },
+        })
+        if (policyReady) {
+          await recordPolicyAcceptance(tx, {
+            context: "google_signup",
+            policyVersion: CURRENT_POLICY_VERSION,
+            userId: u.id,
+          })
+        }
+        return u
+      })
+    }
+
+    const identityEntry = getOrCreateIdentityEntry({
+      userId: user.id,
+      email: user.email,
+      phone,
+    })
+
+    const { sessionToken, csrfToken } = await createSession(user.id)
+    const issuedCsrf = setSessionCookies(res, req, sessionToken, csrfToken)
+    const roles = user.roles.map((entry) => entry.role)
+
+    return res.json({
+      user: {
+        ...toSafeUser(user as Parameters<typeof toSafeUser>[0]),
+        phone: identityEntry.phone,
+        emailLocked: identityEntry.emailLocked,
+        phoneLocked: identityEntry.phoneLocked,
+        professional: identityEntry.professional,
+        passwordRotation: computePasswordRotationStatus(identityEntry.passwordUpdatedAt),
+      },
+      roles: roles.map(toApiRole),
+      role: primaryRole(roles),
+      mustChangePassword: false,
+      csrfToken: issuedCsrf,
+      ...(req.get("x-skylent-client") ? { sessionToken } : {}),
+    })
+  } catch (error) {
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+      return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.accounts))
+    }
+    console.error("Google instant sign-in failed:", error instanceof Error ? error.name : "unknown")
+    return res.status(500).json({ error: "Failed to sign in with Google" })
   }
 })
