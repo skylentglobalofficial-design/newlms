@@ -129,7 +129,7 @@ authRouter.get("/google/status", (req, res) => {
   const config = getGoogleOAuthConfig(req)
   const configured = Boolean(config)
   const liveClientId = config && isLiveGoogleOAuthClientId(config.clientId) ? config.clientId : null
-  res.json({ data: { available: true, configured, liveClientId } })
+  res.json({ data: { available: configured, configured, instantChooserAvailable: true, liveClientId } })
 })
 
 authRouter.get("/google", (req, res) => {

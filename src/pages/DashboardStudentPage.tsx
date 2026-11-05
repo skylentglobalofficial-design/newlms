@@ -7,6 +7,7 @@ import { isCapstoneLesson, learnerErrorMessage, lessonTypeLabel } from '../compo
 import { useLmsDashboard } from '../hooks/useLms'
 import {
   canOpenEnrollment,
+  enrollInCourse,
   fetchLmsEnrollments,
   type ApiEnrollmentSummary,
 } from '../lib/lms-api'
@@ -17,7 +18,6 @@ import { fetchMyCertificates, issueCertificate, issueProgrammeCertificate, type 
 import { fetchSkylentAiStatus } from '../lib/skylent-ai-api'
 import ElixirWalletPanel from '../components/learner/ElixirWallet'
 import StudentProfileAndSettingsPanel from '../components/learner/StudentProfileAndSettingsPanel'
-import InDashboardProgrammesCatalog from '../components/learner/InDashboardProgrammesCatalog'
 import { computeLearnerExecutionStreak } from '../lib/execution-streak'
 import { truthOf } from '../lib/truth'
 import { courseProductProfile } from '../lib/course-product'
@@ -122,6 +122,550 @@ function Skeleton() {
       <span className="os-skeleton" style={{ height: 96 }} />
       <span className="os-skeleton" style={{ height: 96 }} />
     </div>
+  )
+}
+
+
+type DashboardTrackItem = {
+  courseSlug: string
+  programSlug: string
+  title: string
+  programTitle: string
+  category: "data" | "ai-eng" | "product"
+  lessonsCount: number
+  durationLabel: string
+  labName: string
+  summary: string
+}
+
+const DASHBOARD_CAREER_TRACKS: DashboardTrackItem[] = [
+  {
+    courseSlug: "data-analytics",
+    programSlug: "data-analytics-pro",
+    title: "Data Analytics & SQL",
+    programTitle: "Data Analytics Pro Programme",
+    category: "data",
+    lessonsCount: 15,
+    durationLabel: "900 min",
+    labName: "Northwind SQL Browser Lab",
+    summary: "Master SQL joins, revenue reconciliation, cohort retention, and executive KPI reporting.",
+  },
+  {
+    courseSlug: "python-programming",
+    programSlug: "data-science-ai",
+    title: "Python Programming & Automation",
+    programTitle: "Data Science & AI Programme",
+    category: "data",
+    lessonsCount: 15,
+    durationLabel: "960 min",
+    labName: "Python Pipeline Audit Sandbox",
+    summary: "Build clean data pipelines, automated ETL validators, and anomaly quarantine scripts.",
+  },
+  {
+    courseSlug: "data-science-ai",
+    programSlug: "data-science-ai",
+    title: "Data Science & Machine Learning",
+    programTitle: "Data Science & AI Programme",
+    category: "data",
+    lessonsCount: 15,
+    durationLabel: "1080 min",
+    labName: "Churn Cohort ML Sandbox",
+    summary: "Design feature pipelines, out-of-time validation splits, and precision-recall thresholds.",
+  },
+  {
+    courseSlug: "generative-ai",
+    programSlug: "generative-ai-program",
+    title: "Generative AI & LLM Systems",
+    programTitle: "Generative AI Engineering Programme",
+    category: "ai-eng",
+    lessonsCount: 15,
+    durationLabel: "1020 min",
+    labName: "Enterprise RAG Evaluation Lab",
+    summary: "Ship grounded RAG pipelines, metadata citation filters, and hallucination guardrails.",
+  },
+  {
+    courseSlug: "full-stack-web",
+    programSlug: "full-stack",
+    title: "Full-Stack Web Engineering",
+    programTitle: "Full-Stack Web Programme",
+    category: "ai-eng",
+    lessonsCount: 15,
+    durationLabel: "1140 min",
+    labName: "Idempotent Ledger Architecture Lab",
+    summary: "Architect resilient REST APIs, transactional state machines, and production React UIs.",
+  },
+  {
+    courseSlug: "product-management",
+    programSlug: "product-management",
+    title: "Product Management & PRD Studio",
+    programTitle: "Product Management Programme",
+    category: "product",
+    lessonsCount: 15,
+    durationLabel: "900 min",
+    labName: "Harbor Desk PRD Studio",
+    summary: "Write rigorous PRDs, onboarding funnel teardowns, and prioritization trade-off memos.",
+  },
+]
+
+function InDashboardProgrammesCatalog({
+  enrollments,
+  activeCourseSlug,
+  activeCourseTitle,
+  progressPct = 0,
+  resumeHref = "/dashboard/student",
+  onEnrolled,
+}: {
+  enrollments: ApiEnrollmentSummary[]
+  activeCourseSlug?: string | null
+  activeCourseTitle?: string | null
+  progressPct?: number
+  resumeHref?: string
+  onEnrolled?: () => void
+}) {
+  const navigate = useNavigate()
+  const [filter, setFilter] = useState<"all" | "data" | "ai-eng" | "product">("all")
+  const [enrollingSlug, setEnrollingSlug] = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(null)
+
+  const enrolledCourseSlugs = new Set<string>()
+  for (const item of enrollments) {
+    if (item.courseSlug) enrolledCourseSlugs.add(item.courseSlug)
+    for (const linked of item.linkedCourses ?? []) {
+      enrolledCourseSlugs.add(linked.slug)
+    }
+    for (const c of item.courses ?? []) {
+      enrolledCourseSlugs.add(c.slug)
+    }
+  }
+  if (activeCourseSlug) enrolledCourseSlugs.add(activeCourseSlug)
+
+  const visibleTracks = DASHBOARD_CAREER_TRACKS.filter(
+    (t) => filter === "all" || t.category === filter,
+  )
+
+  async function handleStartOrOpenTrack(track: DashboardTrackItem) {
+    setError(null)
+    if (enrolledCourseSlugs.has(track.courseSlug)) {
+      navigate(`/learn/${track.courseSlug}`)
+      return
+    }
+    setEnrollingSlug(track.courseSlug)
+    try {
+      await enrollInCourse(track.courseSlug, true)
+      onEnrolled?.()
+      navigate(`/learn/${track.courseSlug}`)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not enrol in this track right now.")
+    } finally {
+      setEnrollingSlug(null)
+    }
+  }
+
+  return (
+    <section
+      id="explore-programmes"
+      aria-label="In-Dashboard Programmes and Career Tracks"
+      style={{ display: "grid", gap: 20, marginTop: 18 }}
+    >
+      <div
+        style={{
+          display: "flex",
+          flexWrap: "wrap",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: 14,
+          padding: "14px 20px",
+          borderRadius: 14,
+          background: "#ffffff",
+          border: "1px solid #e2e8f0",
+          boxShadow: "0 6px 20px -12px rgba(15, 23, 42, 0.08)",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+          <span
+            style={{
+              fontSize: 12,
+              fontWeight: 700,
+              color: "#64748b",
+              paddingRight: 10,
+              borderRight: "1px solid #cbd5e1",
+            }}
+          >
+            My Course
+          </span>
+          <select
+            aria-label="Switch active course track inside dashboard"
+            value={activeCourseSlug || ""}
+            onChange={(e) => {
+              const target = DASHBOARD_CAREER_TRACKS.find((t) => t.courseSlug === e.target.value)
+              if (target) void handleStartOrOpenTrack(target)
+            }}
+            style={{
+              border: "none",
+              background: "transparent",
+              fontSize: 14,
+              fontWeight: 800,
+              color: "#0f172a",
+              cursor: "pointer",
+              outline: "none",
+            }}
+          >
+            {!activeCourseSlug ? (
+              <option value="">Select a Career Track to Start…</option>
+            ) : null}
+            {DASHBOARD_CAREER_TRACKS.map((t) => (
+              <option key={t.courseSlug} value={t.courseSlug}>
+                {t.title} ({enrolledCourseSlugs.has(t.courseSlug) ? "Enrolled" : "Start Free Pilot"})
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+          <span style={{ fontSize: 12.5, color: "#475569", fontWeight: 600 }}>
+            {activeCourseTitle
+              ? `Complete ${Math.max(0, 60 - progressPct)}% more to unlock Career OS Exclusive`
+              : "Pick any track below to unlock your interactive browser lab immediately"}
+          </span>
+          {activeCourseSlug ? (
+            <Link
+              to={resumeHref}
+              style={{
+                padding: "8px 16px",
+                borderRadius: 8,
+                border: "1.5px solid #5142b5",
+                background: "#ffffff",
+                color: "#5142b5",
+                fontWeight: 700,
+                fontSize: 13,
+                textDecoration: "none",
+              }}
+            >
+              Continue Learning
+            </Link>
+          ) : null}
+        </div>
+      </div>
+
+      <div
+        style={{
+          position: "relative",
+          padding: "22px 26px",
+          borderRadius: 16,
+          background: "linear-gradient(135deg, #fffbeb 0%, #fef3c7 52%, #fffbeb 100%)",
+          border: "1px solid #fde68a",
+          display: "flex",
+          flexWrap: "wrap",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: 20,
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: 18, maxWidth: 560 }}>
+          <div
+            aria-hidden="true"
+            style={{
+              width: 52,
+              height: 52,
+              borderRadius: "50%",
+              background: "#ffffff",
+              border: "1px solid #fcd34d",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: 22,
+              flexShrink: 0,
+            }}
+          >
+            🔒
+          </div>
+          <div>
+            <h3 style={{ margin: "0 0 4px", fontSize: 17, fontWeight: 800, color: "#0f172a" }}>
+              <span style={{ color: "#dc2626" }}>Unlock</span> Career OS Exclusive
+            </h3>
+            <p style={{ margin: "0 0 14px", fontSize: 13, color: "#475569", lineHeight: 1.5 }}>
+              To unlock placement resources, recruiter referrals, and AI Mock Defense, complete 60% of your active track modules inside this dashboard.
+            </p>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 12, alignItems: "center" }}>
+              <Link
+                to={activeCourseSlug ? resumeHref : "/dashboard/student#explore-programmes"}
+                style={{
+                  padding: "9px 18px",
+                  borderRadius: 8,
+                  background: "#ffffff",
+                  border: "1.5px solid #dc2626",
+                  color: "#dc2626",
+                  fontWeight: 700,
+                  fontSize: 13,
+                  textDecoration: "none",
+                }}
+              >
+                Continue Learning
+              </Link>
+              <Link
+                to="/career-os"
+                style={{
+                  fontSize: 13,
+                  fontWeight: 700,
+                  color: "#dc2626",
+                  textDecoration: "underline",
+                }}
+              >
+                Career OS Batch &amp; Portfolio Details
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        <div
+          style={{
+            minWidth: 250,
+            padding: "14px 18px",
+            borderRadius: 12,
+            background: "rgba(255, 255, 255, 0.85)",
+            border: "1px solid #fde68a",
+          }}
+        >
+          <div style={{ fontSize: 11.5, fontWeight: 700, color: "#92400e", marginBottom: 6 }}>
+            Learn Track Completion
+          </div>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 13, fontWeight: 800, color: "#0f172a" }}>
+            <span>My Progress</span>
+            <span>{progressPct}%</span>
+          </div>
+          <div
+            style={{
+              marginTop: 8,
+              height: 6,
+              borderRadius: 999,
+              background: "#fef3c7",
+              overflow: "hidden",
+            }}
+          >
+            <div
+              style={{
+                width: `${Math.max(progressPct, 4)}%`,
+                height: "100%",
+                background: "#d97706",
+                borderRadius: 999,
+              }}
+            />
+          </div>
+        </div>
+      </div>
+
+      <div
+        style={{
+          padding: "22px 24px",
+          borderRadius: 16,
+          background: "#ffffff",
+          border: "1px solid #e2e8f0",
+          boxShadow: "0 10px 28px -16px rgba(15, 23, 42, 0.08)",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 12,
+            marginBottom: 16,
+          }}
+        >
+          <div>
+            <h2 style={{ margin: 0, fontSize: 18, fontWeight: 800, color: "#0f172a" }}>
+              Career Tracks &amp; Programmes (In-Dashboard Access)
+            </h2>
+            <p style={{ margin: "4px 0 0", fontSize: 13, color: "#64748b" }}>
+              Browse and start any Skylent programme directly inside your dashboard without leaving your learning workspace.
+            </p>
+          </div>
+        </div>
+
+        <div
+          role="tablist"
+          aria-label="Career Track Categories"
+          style={{ display: "flex", flexWrap: "wrap", gap: 10, marginBottom: 20 }}
+        >
+          {[
+            { id: "all" as const, label: "All Career Tracks (6)" },
+            { id: "data" as const, label: "Data & Analytics Engineering" },
+            { id: "ai-eng" as const, label: "AI & Full-Stack Engineering" },
+            { id: "product" as const, label: "Product Management & Strategy" },
+          ].map((tab) => {
+            const active = filter === tab.id
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                role="tab"
+                aria-selected={active}
+                onClick={() => setFilter(tab.id)}
+                style={{
+                  padding: "8px 16px",
+                  borderRadius: 8,
+                  border: active ? "1.5px solid #dc2626" : "1px solid #e2e8f0",
+                  background: active ? "#fff1f2" : "#f8fafc",
+                  color: active ? "#dc2626" : "#475569",
+                  fontSize: 13,
+                  fontWeight: 700,
+                  cursor: "pointer",
+                }}
+              >
+                {tab.label}
+              </button>
+            )
+          })}
+        </div>
+
+        {error ? (
+          <div
+            role="alert"
+            style={{
+              padding: "10px 14px",
+              marginBottom: 16,
+              borderRadius: 10,
+              background: "#fef2f2",
+              border: "1px solid #fecaca",
+              color: "#991b1b",
+              fontSize: 13,
+              fontWeight: 600,
+            }}
+          >
+            {error}
+          </div>
+        ) : null}
+
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
+            gap: 16,
+          }}
+        >
+          {visibleTracks.map((track) => {
+            const isEnrolled = enrolledCourseSlugs.has(track.courseSlug)
+            const isCurrent = activeCourseSlug === track.courseSlug
+            const busy = enrollingSlug === track.courseSlug
+            return (
+              <div
+                key={track.courseSlug}
+                style={{
+                  borderRadius: 14,
+                  border: isCurrent ? "2px solid #5142b5" : "1px solid #e2e8f0",
+                  background: "#ffffff",
+                  overflow: "hidden",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                  boxShadow: "0 6px 18px -10px rgba(15, 23, 42, 0.08)",
+                }}
+              >
+                <div>
+                  <div
+                    style={{
+                      padding: "8px 14px",
+                      textAlign: "center",
+                      fontSize: 12,
+                      fontWeight: 700,
+                      background: isEnrolled ? "#ecfdf5" : "#fff1f2",
+                      color: isEnrolled ? "#047857" : "#e11d48",
+                      borderBottom: isEnrolled ? "1px solid #a7f3d0" : "1px solid #ffe4e6",
+                    }}
+                  >
+                    {isCurrent
+                      ? `Active Course · ${progressPct}% Complete`
+                      : isEnrolled
+                        ? "Enrolled · Ready to Continue"
+                        : "Not Started · Free Pilot"}
+                  </div>
+
+                  <div style={{ padding: "18px 18px 14px" }}>
+                    <div
+                      style={{
+                        fontSize: 11,
+                        fontWeight: 700,
+                        color: "#5142b5",
+                        textTransform: "uppercase",
+                        letterSpacing: "0.06em",
+                        marginBottom: 4,
+                      }}
+                    >
+                      {track.programTitle}
+                    </div>
+                    <h3 style={{ margin: "0 0 8px", fontSize: 16, fontWeight: 800, color: "#0f172a", lineHeight: 1.3 }}>
+                      {track.title}
+                    </h3>
+                    <p style={{ margin: "0 0 12px", fontSize: 12.5, color: "#475569", lineHeight: 1.5 }}>
+                      {track.summary}
+                    </p>
+                    <div
+                      style={{
+                        display: "inline-block",
+                        padding: "3px 9px",
+                        borderRadius: 6,
+                        background: "#f5f3ff",
+                        border: "1px solid #ddd6fe",
+                        color: "#4338ca",
+                        fontSize: 11,
+                        fontWeight: 700,
+                        marginBottom: 10,
+                      }}
+                    >
+                      🧪 {track.labName}
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ padding: "0 18px 18px" }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 10,
+                      fontSize: 12,
+                      color: "#64748b",
+                      marginBottom: 12,
+                      paddingTop: 10,
+                      borderTop: "1px solid #f1f5f9",
+                    }}
+                  >
+                    <span>📄 {track.lessonsCount} lessons</span>
+                    <span>|</span>
+                    <span>⏱ {track.durationLabel}</span>
+                  </div>
+
+                  <button
+                    type="button"
+                    disabled={busy}
+                    onClick={() => void handleStartOrOpenTrack(track)}
+                    style={{
+                      background: "transparent",
+                      border: "none",
+                      padding: 0,
+                      color: isEnrolled ? "#5142b5" : "#e11d48",
+                      fontSize: 13.5,
+                      fontWeight: 800,
+                      cursor: busy ? "wait" : "pointer",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: 4,
+                    }}
+                  >
+                    {busy
+                      ? "Opening Workspace…"
+                      : isEnrolled
+                        ? "Continue Track ›"
+                        : "View & Start Track ›"}
+                  </button>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+    </section>
   )
 }
 
