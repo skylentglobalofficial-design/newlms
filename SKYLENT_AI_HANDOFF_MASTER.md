@@ -99,22 +99,31 @@ npx tsx scripts/test-dashboard-navigation.ts
 npx tsx scripts/test-release-readiness-hardening.ts
 npm run build
 
+
 ```
 
-
----
-
-## 5. V34 Complete Multi-Tab Dashboard Architecture & End-to-End Course / Module / Lecture Authoring Studio (`skylent-v34-multi-tab-dashboards-and-course-studio.zip`)
+## 5. V34–V35 Complete Zero-Gap Multi-Tab Dashboard Architecture, Full Course/Lecture Studio & Secondary Public Page Unification & End-to-End Course / Module / Lecture Authoring Studio (`skylent-v35-complete-zero-gap-master.zip`)
 
 1. **True Left-Sidebar & Top-Bar Multi-Tab Switching Across All 6 Role Dashboards (`Admin OS`, `Faculty TA`, `Student`, `College`, `Recruiter`, `Org L&D`):**
+
    * **Superadmin Command OS (`/dashboard/admin` & `AdminPlatform.tsx`):** Left sidebar and top tab bar switch cleanly across 11 dedicated views: `1. Overview & KPIs` (with 6 Quick-Launch Module Cards), `2. Course & Lecture Studio` (embedded full authoring studio), `3. Users & Roles`, `4. Colleges & Orgs`, `5. Employers & Hiring`, `6. Inbound Enquiries`, `7. Practice Sandboxes`, `8. Lesson Video (Mux)`, `9. Payments & Elixir`, `10. System & Audit Log`, and `11. All Modules (Stacked)`.
+
    * **Faculty TA & Instructor Dashboard (`/dashboard/faculty`):** Switches across 7 dedicated views: `Overview & SLA`, `Assigned Courses`, `Add Lectures & PDFs` (interactive Faculty Lecture & Study Material Authoring Studio), `V1→V2 Grading Studio` (inline student submission viewer + 0–100 score & Red-Line feedback grader), `20-Min Doubt Queue`, `Learner Cohort`, and `Rubric & Settings`.
+
    * **Student Learning Dashboard (`/dashboard/student` & `StudentHome.css`):** Switches across 5 dedicated views (`1. Full Workspace (Overview)`, `2. My Active Courses`, `3. Capstone & Browser Labs`, `4. Certificates & Flight Recorder`, `5. Elixir Wallet & Case Store`) synced with `LEARNER_NAV`.
+
    * **College HoD/TPO (`/dashboard/college`), Recruiter (`/dashboard/recruiter`), & Organisation L&D (`/dashboard/organisation`):** All upgraded with multi-tab switching (`Overview`, `Cohort/Jobs/Programs`, `Roster/Applications/Batches`, `Compliance/Verify/Settings`).
+
 2. **End-to-End Course, Module, Lecture, Quiz, PDF Material & Faculty Assignment Studio (`CourseBuilderPage.tsx` + `admin-curriculum.ts` + `faculty.ts`):**
+
    * **Step 01 · Admin Creates Course (`POST /api/v1/admin/curriculum/courses`):** Creates a `DRAFT` course with Title, auto-generated Slug, Category, Level, Duration, Mode, Price (₹), Outcomes, Target Audience, and optional Course Cover Image (`POST /courses/:courseId/cover`).
+
    * **Step 02 · Structure & Reorder Modules (`POST /courses/:courseId/modules`, `POST /modules/order`):** Add modules with title, objective description, and position; reorder modules (`↑` / `↓`) or delete modules with 1 click.
+
    * **Step 03 · Author Multi-Modal Lectures (`POST /modules/:moduleId/lectures` & `POST /lectures/:lectureId/materials`):** Supports all 6 Skylent node types: `NOTES` (Reading + Hinglish AI Notes), `VIDEO` (Video URL / Mux Playback ID + summary), `LAB` (Browser SQL/Python/RAG/Ledger Sandbox), `ASSIGNMENT` (Graded Case Brief routed to Faculty V1→V2 Review), `PROJECT` (Capstone Studio), and `QUIZ` (Interactive Multi-Question Quiz Builder with options, correct answer radio, explanations, passing score %, and max attempts) + 1-click PDF/PPTX/Markdown attachment upload!
+
    * **Step 04 · Assign Faculty TA & Publish Live (`POST /courses/:courseId/faculty`, `POST /courses/:courseId/publish`):** Assign Faculty accounts to specific courses so they can co-author lectures/materials and grade student submissions in `/dashboard/faculty`, then 1-click Publish directly to `/courses/:slug` and `/learn/:slug`!
+
 3. **Persistent 20-Minute Faculty Doubt SLA Store (`server/src/lib/doubt-sla.ts`):**
+
    * Added automatic JSON snapshot persistence (`.cache/doubt-sla-tickets.json` when `NODE_ENV !== "test"`) so student lesson doubts and Faculty TA resolutions survive server restarts.

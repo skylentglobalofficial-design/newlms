@@ -41,11 +41,6 @@ export default function OSPage() {
   return (
     <PageShell aurora={false}>
       <div className="cat-page">
-        <div className="cat-pillar-bar">
-          <div className="cat-rail">
-            <PracticePillarSubnav current="os" />
-          </div>
-        </div>
         <section className="cat-hero">
           <div className="cat-rail cat-hero-split">
             <div>
