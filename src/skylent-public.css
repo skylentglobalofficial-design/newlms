@@ -1173,3 +1173,44 @@ html[data-native-app="true"] .skylent-native-bottom-bar {
   user-select: none;
   -webkit-user-select: none;
 }
+
+/* ── V50 EdTech Visual Density & Responsive Mobile Web Carousels (Udemy / Coursera / PW Standard) ── */
+.skylent-public-canvas .hx-live-course-card__desc,
+.skylent-public-canvas .hx-royal-card__quote {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+@media (max-width: 768px) {
+  /* Turn stacked course & workshop grids into thumb-friendly horizontal swipe carousels on mobile web */
+  .skylent-public-canvas .hx-live-courses-grid,
+  .skylent-public-canvas .hx-royal-grid {
+    display: grid !important;
+    grid-auto-flow: column !important;
+    grid-auto-columns: 84vw !important;
+    grid-template-columns: none !important;
+    gap: 12px !important;
+    overflow-x: auto !important;
+    scroll-snap-type: x mandatory !important;
+    padding-bottom: 10px !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .skylent-public-canvas .hx-live-courses-grid > li,
+  .skylent-public-canvas .hx-royal-grid > * {
+    scroll-snap-align: start;
+  }
+
+  /* Compact hero photo & text density on mobile screens */
+  .skylent-public-canvas .hxw-hero__lead {
+    font-size: 14.5px !important;
+    line-height: 1.5 !important;
+  }
+
+  .skylent-public-canvas .hx-head__aside {
+    font-size: 13.5px !important;
+    line-height: 1.45 !important;
+  }
+}

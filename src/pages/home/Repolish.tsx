@@ -73,14 +73,51 @@ export function HomeHero({
           </h1>
           <span className="hx-sr" style={{ display: "none" }}>Learn. Practise. Build. <em>Prove it.</em></span>
           <p className="hxw-hero__lead hx-rise">
-            Master SQL, Python, Product Management, Full-Stack, and GenAI by solving real company problems in your browser — progress from Simulated Enterprise Labs to supervised MSME &amp; startup fieldwork, and graduate with a verifiable Execution Flight Recorder.
+            Practise SQL, Python, Product, Full-Stack &amp; GenAI in live browser labs — with 20-minute TA doubt support and recruiter-verified certificates.
           </p>
           <p className="hx-sr" aria-live="polite">{availability}</p>
 
-          <div className="hxw-hero__actions hx-rise">
+          <div className="hxw-hero__goal-pills hx-rise" style={{ display: "flex", flexWrap: "wrap", gap: 8, margin: "12px 0 16px" }}>
+            {[
+              { label: "📊 Data & SQL", to: "/programmes/data-analytics-pro" },
+              { label: "🤖 GenAI & LLM", to: "/programmes/generative-ai-program" },
+              { label: "🐍 Python & Data Science", to: "/programmes/data-science-ai" },
+              { label: "📦 Product Mgmt", to: "/programmes/product-management" },
+              { label: "💻 Full-Stack", to: "/programmes/full-stack" },
+              { label: "🪙 ₹99 Live Batch", to: "/events" },
+            ].map((pill) => (
+              <Link
+                key={pill.label}
+                to={pill.to}
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  padding: "6px 12px",
+                  borderRadius: 999,
+                  background: "#f5f3ff",
+                  border: "1px solid #ddd6fe",
+                  color: "#43349f",
+                  fontSize: 12.5,
+                  fontWeight: 700,
+                  textDecoration: "none",
+                }}
+              >
+                {pill.label}
+              </Link>
+            ))}
+          </div>
+
+          <div className="hxw-hero__actions hx-rise" style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
             <Link className="sk-btn sk-btn-primary hx-btn" to="/programmes">
               Explore programmes
               <ArrowRight />
+            </Link>
+            <Link
+              className="sk-btn sk-btn-secondary hx-btn"
+              to="/path"
+              style={{ border: "1.5px solid #c4b5fd", background: "#ffffff", color: "#43349f", fontWeight: 700 }}
+            >
+              ⚡ 90s Skill Diagnostic
             </Link>
           </div>
           <ul
@@ -110,10 +147,10 @@ export function HomeHero({
 
             <div className="hxw-ws" aria-label="Skylent OS workspace summary">
               <div className="hxw-ws__top">
-                <span className="hxw-ws__mark" aria-hidden="true">OS</span>
+                <span className="hxw-ws__mark" aria-hidden="true">★ 4.9</span>
                 <div>
-                  <span className="hxw-ws__title">Institute of Applied Learning · Env A (Simulations) + Env B (Fieldwork Exchange)</span>
-                  <span className="hxw-ws__note">L1 → L5 Competency Progression · V1 → V2 Faculty Red-Line Diff · Execution Flight Recorder</span>
+                  <span className="hxw-ws__title">6 Job-Ready Tracks · Live Browser Labs · ₹0 Free Pilot</span>
+                  <span className="hxw-ws__note">20-Min Faculty TA Doubt SLA · Hinglish AI Coach · Verified Certificate ID</span>
                 </div>
               </div>
             </div>
@@ -836,6 +873,7 @@ export function confirmedOpenTitles(programmes: CatalogProgramSummary[]): string
 }
 
 export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { programmes: CatalogProgramSummary[]; loading: boolean; confirmed: boolean; onRetry?: () => void }) {
+  const [trackFilter, setTrackFilter] = useState<"all" | "data" | "ai" | "product-web">("all")
   const rows = homeRows(programmes).filter((row) => FOCUS_SLUGS.includes(row.program.slug as (typeof FOCUS_SLUGS)[number]))
   const ordered = [...rows].sort((a, b) => FOCUS_SLUGS.indexOf(a.program.slug as (typeof FOCUS_SLUGS)[number]) - FOCUS_SLUGS.indexOf(b.program.slug as (typeof FOCUS_SLUGS)[number]))
   return (
@@ -849,10 +887,36 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
             </h2>
             <p className="hx-programmes__lead">{homepageProgrammeLead(loading, confirmed)}</p>
           </div>
-          <Link className="hx-more" to="/programmes">
-            Compare all 6 programmes
-            <ArrowRight />
-          </Link>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center" }}>
+            {[
+              { id: "all" as const, label: "All Tracks (6)" },
+              { id: "data" as const, label: "📊 Data & SQL" },
+              { id: "ai" as const, label: "🤖 AI & Python" },
+              { id: "product-web" as const, label: "💻 Product & Full-Stack" },
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setTrackFilter(tab.id)}
+                style={{
+                  padding: "7px 14px",
+                  borderRadius: 999,
+                  border: trackFilter === tab.id ? "1.5px solid #5142b5" : "1px solid #cbd5e1",
+                  background: trackFilter === tab.id ? "#5142b5" : "#ffffff",
+                  color: trackFilter === tab.id ? "#ffffff" : "#334155",
+                  fontSize: 12.5,
+                  fontWeight: 700,
+                  cursor: "pointer",
+                }}
+              >
+                {tab.label}
+              </button>
+            ))}
+            <Link className="hx-more" to="/programmes" style={{ marginLeft: 6 }}>
+              Compare all
+              <ArrowRight />
+            </Link>
+          </div>
         </Reveal>
         {loading ? (
           <div className="hx-prog-grid" aria-busy="true" aria-label="Loading programmes">
@@ -882,77 +946,83 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
               {[
                 {
                   slug: "data-analytics",
+                  group: "data",
                   to: "/programmes/data-analytics-pro",
-                  category: "DATA & SQL · FOR FUTURE DATA ANALYSTS",
-                  status: "✓ Open · 15 Lessons",
-                  title: "Data Analytics",
-                  desc: "Go from cleaning raw spreadsheets to writing real SQL queries and defending a commercial revenue review.",
-                  skills: ["SQL Joins & CTEs", "Spreadsheets", "Margin Audit"],
-                  meta: "5 modules · 15 lessons · 1 capstone",
+                  category: "★ 4.9 · DATA ANALYTICS",
+                  status: "₹0 Free Pilot · 15 Lessons",
+                  title: "Data Analytics & SQL",
+                  desc: "Master SQL joins, CTEs & revenue audits in a live browser database.",
+                  skills: ["SQL Workbench", "Spreadsheets", "1 Capstone"],
+                  meta: "⏱ 5 Modules · Verified ID",
                   img: photoAnalytics,
                   alt: "Data Analytics workspace preview",
                 },
                 {
                   slug: "product-management",
+                  group: "product-web",
                   to: "/programmes/product-management",
-                  category: "PRODUCT STRATEGY · FOR FUTURE PMs",
-                  status: "✓ Open · 15 Lessons",
+                  category: "★ 4.9 · PRODUCT MANAGEMENT",
+                  status: "₹0 Free Pilot · 15 Lessons",
                   title: "Product Management",
-                  desc: "Investigate real store operations bottlenecks, frame the user problem, and write a 6-week engineering PRD.",
-                  skills: ["PRD Writing", "User Research", "Feature Triage"],
-                  meta: "5 modules · 15 lessons · 1 capstone",
+                  desc: "Scope real user problems, triage metrics & ship an engineering PRD.",
+                  skills: ["PRD Studio", "Metrics", "1 Capstone"],
+                  meta: "⏱ 5 Modules · Verified ID",
                   img: photoProduct,
                   alt: "Product Management studio preview",
                 },
                 {
                   slug: "python-programming",
+                  group: "ai",
                   to: "/courses/python-programming",
-                  category: "PYTHON & ETL · FOR BACKEND & DATA ROLES",
-                  status: "✓ Open · 15 Lessons",
-                  title: "Python Programming & Automation",
-                  desc: "Build automated data cleaning scripts, schema validators, and resilient ETL pipelines with pytest.",
-                  skills: ["Python 3", "ETL Pipelines", "Automated Tests"],
-                  meta: "5 modules · 15 lessons · 1 capstone",
+                  category: "★ 4.8 · PYTHON & BACKEND",
+                  status: "₹0 Free Pilot · 15 Lessons",
+                  title: "Python & Automation",
+                  desc: "Write data validators, automation scripts & tested ETL pipelines.",
+                  skills: ["Python 3", "ETL Lab", "1 Capstone"],
+                  meta: "⏱ 5 Modules · Verified ID",
                   img: photoScience,
                   alt: "Python engineering workspace preview",
                 },
                 {
                   slug: "data-science-ai",
+                  group: "data",
                   to: "/programmes/data-science-ai",
-                  category: "DUAL TRACK · SQL + PYTHON COMBINED",
-                  status: "✓ Open · 30 Lessons",
+                  category: "★ 4.9 · SQL + PYTHON DUAL TRACK",
+                  status: "₹0 Free Pilot · 30 Lessons",
                   title: "Data Science & AI",
-                  desc: "Master both SQL revenue analytics and Python automation pipelines to build and validate retention models.",
-                  skills: ["SQL + Python", "Cohort Analysis", "Churn Modelling"],
-                  meta: "10 modules · 30 lessons · 2 capstones",
+                  desc: "Combine SQL analytics and Python pipelines to model cohort retention.",
+                  skills: ["SQL + Python", "Cohorts", "2 Capstones"],
+                  meta: "⏱ 10 Modules · Verified ID",
                   img: photoClass,
                   alt: "Data Science cohort analysis preview",
                 },
                 {
                   slug: "generative-ai",
+                  group: "ai",
                   to: "/programmes/generative-ai-program",
-                  category: "APPLIED AI · FOR AI & LLM ENGINEERS",
-                  status: "✓ Open · 15 Lessons",
-                  title: "Generative AI & LLM Systems",
-                  desc: "Build citation-backed RAG search assistants, prompt guardrails, and automated accuracy benchmarks.",
-                  skills: ["Grounded RAG", "Prompt Guardrails", "LLM Evals"],
-                  meta: "5 modules · 15 lessons · 1 capstone",
+                  category: "★ 4.9 · APPLIED GENAI",
+                  status: "₹0 Free Pilot · 15 Lessons",
+                  title: "Generative AI & RAG",
+                  desc: "Build citation-grounded AI assistants, prompt guardrails & evals.",
+                  skills: ["Grounded RAG", "LLM Evals", "1 Capstone"],
+                  meta: "⏱ 5 Modules · Verified ID",
                   img: photoCampusPg,
                   alt: "Generative AI evaluation preview",
                 },
                 {
                   slug: "full-stack-web",
+                  group: "product-web",
                   to: "/programmes/full-stack",
-                  category: "WEB ENGINEERING · FOR FULL-STACK DEVS",
-                  status: "✓ Open · 15 Lessons",
-                  title: "Full Stack Web Engineering",
-                  desc: "Ship end-to-end React + TypeScript interfaces, Node/Express APIs, and safe PostgreSQL payment ledgers.",
-                  skills: ["React & TypeScript", "Node REST APIs", "PostgreSQL"],
-                  meta: "5 modules · 15 lessons · 1 capstone",
+                  category: "★ 4.8 · FULL-STACK WEB",
+                  status: "₹0 Free Pilot · 15 Lessons",
+                  title: "Full Stack TypeScript",
+                  desc: "Ship React UIs, Node/Express APIs & PostgreSQL payment ledgers.",
+                  skills: ["React + TS", "Node APIs", "PostgreSQL"],
+                  meta: "⏱ 5 Modules · Verified ID",
                   img: heroStudent720,
                   alt: "Full-stack engineering preview",
                 },
-              ].map((item) => (
+              ].filter((item) => trackFilter === "all" || item.group === trackFilter).map((item) => (
                 <li key={item.slug}>
                   <Link to={item.to} className="hx-live-course-card">
                     <span className="hx-live-course-card__media">
@@ -1440,7 +1510,7 @@ export function HomeCareer() {
                 See How Skylent Flight Recorders Capture V1 → V2 Revisions &amp; Lab Telemetry
               </h3>
               <p className="hx-royal-showcase__sub">
-                Every learner builds a defended project dossier and a public verification ID. Below are three illustrative benchmark dossiers demonstrating the public `/verify` Flight Recorder format.
+                Every completed capstone issues a public `/verify` ID showing your real code, SQL queries, and rubric score.
               </p>
             </div>
             <Link className="sk-btn sk-btn-secondary" to="/verify">
@@ -1457,7 +1527,7 @@ export function HomeCareer() {
                 score: "96/100 Project Score",
                 track: "Data Analytics · Built in Northwind SQL Lab",
                 projectBuilt: "Project Built: Retail Revenue & Discount Leakage Audit",
-                finding: "Cleaned 180 raw retail orders in SQL, isolated a 14.5% promo discount leak across ₹8,12,020 net revenue, and presented a Q3 pricing fix.",
+                finding: "Audited 180 orders in SQL and isolated a 14.5% discount leak on ₹8.12L revenue.",
                 skills: ["SQL Joins & CTEs", "Spreadsheet Audit", "Commercial BI"],
               },
               {
@@ -1467,7 +1537,7 @@ export function HomeCareer() {
                 score: "95/100 Project Score",
                 track: "Product Management · Built in Harbor Desk Studio",
                 projectBuilt: "Project Built: 12-Store Exception Triage PRD",
-                finding: "Analysed 18 store manager interviews and 34 weekend delivery failures to scope a 2-engineer, 6-week mobile triage workflow.",
+                finding: "Scoped a 6-week mobile exception triage PRD from 18 store interviews.",
                 skills: ["PRD Scoping", "Problem Framing", "Rollout Governance"],
               },
               {
@@ -1477,7 +1547,7 @@ export function HomeCareer() {
                 score: "97/100 Project Score",
                 track: "Generative AI · Built in Grounded RAG Lab",
                 projectBuilt: "Project Built: Citation-Grounded Policy Assistant",
-                finding: "Built an enterprise RAG pipeline with strict document date filtering and mandatory [doc_id] citations, cutting ungrounded answers to 0%.",
+                finding: "Built a citation-gated RAG pipeline cutting ungrounded LLM answers to 0%.",
                 skills: ["Grounded RAG", "Citation Gates", "Prompt Defense"],
               },
             ].map((dossier) => (
@@ -1755,7 +1825,7 @@ export function HomeElixirFlywheel() {
       priceBadge: "₹99 · 100% Coin Back",
       title: "AI Systems & Grounded RAG Masterclass",
       audience: "For Aspiring AI & Software Engineers · Live Build + Q&A",
-      desc: "Build a citation-grounded AI assistant from scratch, eliminate LLM hallucinations, and ship a working RAG pipeline in 120 minutes.",
+      desc: "Build a citation-grounded RAG assistant & evaluation pipeline in 120 minutes.",
       skills: ["Grounded RAG", "Prompt Guardrails", "Workshop Certificate"],
       cta: "Book ₹99 Seat & Get 99 Coins →",
     },
@@ -1765,7 +1835,7 @@ export function HomeElixirFlywheel() {
       priceBadge: "₹99 · 100% Coin Back",
       title: "Commercial SQL & Revenue Analytics Bootcamp",
       audience: "For Future Data & Business Analysts · Browser SQL Lab",
-      desc: "Write real multi-table SQL joins, CTEs, and window functions on a 180-row retail dataset to isolate hidden discount leakage.",
+      desc: "Write multi-table SQL joins & CTEs on 180 retail orders to find margin leaks.",
       skills: ["Multi-Table SQL", "Margin Audit", "Workshop Certificate"],
       cta: "Book ₹99 Seat & Get 99 Coins →",
     },
@@ -1775,7 +1845,7 @@ export function HomeElixirFlywheel() {
       priceBadge: "₹99 · 100% Coin Back",
       title: "Product Strategy & PRD Teardown Workshop",
       audience: "For Future Product Managers & Founders · Real Case Study",
-      desc: "Turn messy customer complaints and store operations bottlenecks into a sharp, engineering-ready Product Requirements Document (PRD).",
+      desc: "Turn customer escalations into a scoped, engineering-ready PRD in 2 hours.",
       skills: ["PRD Writing", "Feature Prioritisation", "Workshop Certificate"],
       cta: "Book ₹99 Seat & Get 99 Coins →",
     },
@@ -1821,7 +1891,7 @@ export function HomeElixirFlywheel() {
               Start with a <em>₹99 Live Workshop.</em> Get 100% Back as Learning Credits.
             </h2>
             <p className="hx-royal-showcase__sub">
-              Want to experience Skylent live before committing to a full track? Join a 2-hour weekend builder workshop for just ₹99 — you get a Workshop Certificate plus all 99 Elixir Coins credited back to your wallet to unlock industry Case Studies.
+              Join a 2-hour weekend workshop for ₹99 — earn a verified certificate plus 99 Elixir Coins (100% cashback) to unlock case studies.
             </p>
           </div>
           <Link className="sk-btn sk-btn-primary hx-btn" to="/events">

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { Link, useLocation, useNavigate } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
 import { useAuth, type AuthUser, type UserRole } from "../../context/AuthContext"
 import { apiV1, isNativeAppShell } from "../../lib/api-base"
 import { APP_VERSION } from "../../lib/native-app-bridge"
@@ -11,6 +11,8 @@ type AppConfigPayload = {
   announcement: string | null
   maintenanceMode: boolean
 }
+
+type NativeHubTab = "home" | "batches" | "practice" | "live"
 
 function compareSemver(a: string, b: string): number {
   const pa = a.split(".").map((n) => parseInt(n, 10) || 0)
@@ -49,7 +51,7 @@ const QUICK_ROLE_ACCOUNTS: Array<{
   {
     role: "superadmin",
     label: "Admin C-Suite",
-    subtitle: "CEO/CFO Telemetry & Users",
+    subtitle: "Course Studio & Telemetry",
     badge: "🛡️",
     path: "/dashboard/admin",
     user: {
@@ -62,8 +64,8 @@ const QUICK_ROLE_ACCOUNTS: Array<{
   },
   {
     role: "faculty",
-    label: "Faculty SLA",
-    subtitle: "20-Min Doubt Queue & Grading",
+    label: "Faculty TA",
+    subtitle: "20-Min Doubt SLA & Grading",
     badge: "👩‍🏫",
     path: "/dashboard/faculty",
     user: {
@@ -77,7 +79,7 @@ const QUICK_ROLE_ACCOUNTS: Array<{
   {
     role: "college",
     label: "College TPO",
-    subtitle: "Cohort Placement & NEP CSV",
+    subtitle: "Cohort Placement & CSV",
     badge: "🏛️",
     path: "/dashboard/college",
     user: {
@@ -91,12 +93,12 @@ const QUICK_ROLE_ACCOUNTS: Array<{
   {
     role: "recruiter",
     label: "Recruiter",
-    subtitle: "Verified Proof-of-Work Dossiers",
+    subtitle: "Verified Proof Dossiers",
     badge: "💼",
     path: "/dashboard/recruiter",
     user: {
       id: "demo-recruiter",
-      name: "Rohan Verma (Hiring Partner)",
+      name: "Rohan Verma (Hiring)",
       email: "recruiter@demo.skylent.in",
       role: "recruiter",
       avatar: "RV",
@@ -104,8 +106,8 @@ const QUICK_ROLE_ACCOUNTS: Array<{
   },
   {
     role: "organisation",
-    label: "Enterprise Org",
-    subtitle: "Team Upskilling & L&D",
+    label: "Enterprise L&D",
+    subtitle: "Team Upskilling & ROI",
     badge: "🏢",
     path: "/dashboard/organisation",
     user: {
@@ -118,81 +120,188 @@ const QUICK_ROLE_ACCOUNTS: Array<{
   },
 ]
 
-const MOBILE_APP_TRACKS = [
+const MOBILE_APP_BATCHES = [
   {
-    slug: "data-analytics",
-    courseSlug: "sql-analytics-foundations",
-    title: "Data Analytics & Business Intelligence",
-    tag: "MOST POPULAR · SQL + PYTHON + BI",
-    duration: "24 Weeks",
-    projects: "4 Graded Capstones",
-    fee: "₹2,999 / self-paced",
+    slug: "data-analytics-pro",
+    courseSlug: "data-analytics",
+    category: "data",
+    icon: "📊",
+    title: "Data Analytics & SQL Bootcamp",
+    oneLiner: "SQL Joins, CTEs & Northwind Margin Audit",
+    rating: "4.9",
+    learners: "1.4k",
+    lessons: "15 Lessons",
+    capstone: "1 Graded Capstone",
+    price: "₹0 Free Pilot",
     accent: "#5142b5",
-    bg: "#f5f3ff",
+    bg: "linear-gradient(135deg, #3B2D96 0%, #5142B5 100%)",
+    chipBg: "#f5f3ff",
   },
   {
-    slug: "product-management",
-    courseSlug: "product-management-foundations",
-    title: "Product Management & AI Execution",
-    tag: "HARBOR DESK PRD + METRICS",
-    duration: "20 Weeks",
-    projects: "3 Live Case Dossiers",
-    fee: "₹2,999 / self-paced",
-    accent: "#0284c7",
-    bg: "#f0f9ff",
+    slug: "generative-ai-program",
+    courseSlug: "generative-ai",
+    category: "ai",
+    icon: "🤖",
+    title: "Generative AI & RAG Systems",
+    oneLiner: "Citation-Grounded RAG & Prompt Guardrails",
+    rating: "4.9",
+    learners: "1.1k",
+    lessons: "15 Lessons",
+    capstone: "1 Graded Capstone",
+    price: "₹0 Free Pilot",
+    accent: "#4f46e5",
+    bg: "linear-gradient(135deg, #312e81 0%, #4f46e5 100%)",
+    chipBg: "#eef2ff",
   },
   {
     slug: "data-science-ai",
-    courseSlug: "python-for-data-science",
-    title: "Data Science & Applied GenAI",
-    tag: "PYTHON + ML + RAG PIPELINES",
-    duration: "28 Weeks",
-    projects: "5 Portfolio Systems",
-    fee: "₹3,499 / self-paced",
+    courseSlug: "data-science-ai",
+    category: "data",
+    icon: "🧬",
+    title: "Data Science & Applied AI",
+    oneLiner: "SQL + Python Pipelines & Cohort Churn Models",
+    rating: "4.9",
+    learners: "980",
+    lessons: "30 Lessons",
+    capstone: "2 Capstones",
+    price: "₹0 Free Pilot",
     accent: "#059669",
-    bg: "#ecfdf5",
+    bg: "linear-gradient(135deg, #065f46 0%, #059669 100%)",
+    chipBg: "#ecfdf5",
   },
   {
-    slug: "full-stack-web",
-    courseSlug: "full-stack-typescript",
-    title: "Full-Stack TypeScript & Cloud Systems",
-    tag: "REACT + NODE + POSTGRESQL",
-    duration: "26 Weeks",
-    projects: "4 Production Apps",
-    fee: "₹3,499 / self-paced",
+    slug: "product-management",
+    courseSlug: "product-management",
+    category: "product",
+    icon: "📦",
+    title: "Product Management & Strategy",
+    oneLiner: "Harbor Desk Triage, Metrics & 6-Week PRD",
+    rating: "4.8",
+    learners: "860",
+    lessons: "15 Lessons",
+    capstone: "1 Graded PRD",
+    price: "₹0 Free Pilot",
+    accent: "#0284c7",
+    bg: "linear-gradient(135deg, #075985 0%, #0284c7 100%)",
+    chipBg: "#f0f9ff",
+  },
+  {
+    slug: "full-stack",
+    courseSlug: "full-stack-web",
+    category: "web",
+    icon: "💻",
+    title: "Full-Stack TypeScript & Cloud",
+    oneLiner: "React, Node/Express APIs & PostgreSQL Ledgers",
+    rating: "4.8",
+    learners: "920",
+    lessons: "15 Lessons",
+    capstone: "1 Production App",
+    price: "₹0 Free Pilot",
     accent: "#7c3aed",
-    bg: "#faf5ff",
+    bg: "linear-gradient(135deg, #4c1d95 0%, #7c3aed 100%)",
+    chipBg: "#faf5ff",
   },
   {
-    slug: "business-ai",
-    courseSlug: "business-analytics-strategy",
-    title: "Business Strategy & AI Operations",
-    tag: "BOARDROOM COLD CALLS + P&L",
-    duration: "18 Weeks",
-    projects: "3 Executive Dossiers",
-    fee: "₹2,499 / self-paced",
+    slug: "python-programming",
+    courseSlug: "python-programming",
+    category: "ai",
+    icon: "🐍",
+    title: "Python Programming & ETL",
+    oneLiner: "Automated Data Hygiene, Validators & Pytest",
+    rating: "4.9",
+    learners: "1.2k",
+    lessons: "15 Lessons",
+    capstone: "1 ETL Capstone",
+    price: "₹0 Free Pilot",
     accent: "#d97706",
-    bg: "#fffbeb",
+    bg: "linear-gradient(135deg, #78350f 0%, #d97706 100%)",
+    chipBg: "#fffbeb",
+  },
+] as const
+
+const MOBILE_PRACTICE_LABS = [
+  {
+    id: "sql",
+    icon: "🗄️",
+    badge: "POSTGRESQL IN-BROWSER",
+    title: "Northwind SQL Workbench",
+    sub: "Query 180 retail orders & isolate discount leaks",
+    xp: "+15 Coins",
+    to: "/os/labs/data-analytics/northwind",
+    accent: "#5142b5",
   },
   {
-    slug: "applied-ai-engineering",
-    courseSlug: "applied-genai-systems",
-    title: "Applied GenAI & Agentic Engineering",
-    tag: "LLM EVALS + CITATION GUARDRAILS",
-    duration: "24 Weeks",
-    projects: "4 AI Agent Builds",
-    fee: "₹3,499 / self-paced",
-    accent: "#4f46e5",
-    bg: "#eef2ff",
+    id: "diagnostic",
+    icon: "🧭",
+    badge: "90-SECOND TEST",
+    title: "Career Skill Diagnostic",
+    sub: "3 real scenarios to benchmark your percentile",
+    xp: "Instant Report",
+    to: "/path",
+    accent: "#059669",
   },
-]
+  {
+    id: "harbor",
+    icon: "📋",
+    badge: "PRODUCT STUDIO",
+    title: "Harbor Desk PRD Case Lab",
+    sub: "Scope a 6-week triage fix from 18 store interviews",
+    xp: "+25 Coins",
+    to: "/os/projects/product-management/harbor-desk-case",
+    accent: "#0284c7",
+  },
+  {
+    id: "sandbox",
+    icon: "⚡",
+    badge: "MULTI-TRACK SANDBOX",
+    title: "Python, RAG & Ledger Labs",
+    sub: "Run automated evaluators on Python & GenAI tasks",
+    xp: "+20 Coins",
+    to: "/labs",
+    accent: "#7c3aed",
+  },
+] as const
+
+const MOBILE_LIVE_WORKSHOPS = [
+  {
+    slug: "ai-systems-rag-workshop",
+    tag: "SATURDAY · 2 HOURS LIVE",
+    title: "AI Systems & Grounded RAG Masterclass",
+    mentor: "Live Build + Q&A · Certificate Included",
+    price: "₹99",
+    cashback: "100% Back (99 Coins)",
+    to: "/events",
+  },
+  {
+    slug: "commercial-sql-analytics-workshop",
+    tag: "SUNDAY · 2 HOURS LIVE",
+    title: "Commercial SQL & Margin Audit Bootcamp",
+    mentor: "Hands-On SQL Lab · Certificate Included",
+    price: "₹99",
+    cashback: "100% Back (99 Coins)",
+    to: "/events",
+  },
+  {
+    slug: "product-triage-prd-workshop",
+    tag: "WEEKEND · 2 HOURS LIVE",
+    title: "Product Strategy & PRD Teardown",
+    mentor: "Live Case Study · Certificate Included",
+    price: "₹99",
+    cashback: "100% Back (99 Coins)",
+    to: "/events",
+  },
+] as const
 
 export function NativeAppShellController() {
   const location = useLocation()
   const navigate = useNavigate()
   const { user, loginDemo, logout } = useAuth()
   const [isNative, setIsNative] = useState(() => isNativeAppShell())
+  const [hubTab, setHubTab] = useState<NativeHubTab>("home")
   const [showWebBrochureOnHome, setShowWebBrochureOnHome] = useState(false)
+  const [roleDrawerOpen, setRoleDrawerOpen] = useState(false)
+  const [categoryFilter, setCategoryFilter] = useState<"all" | "data" | "ai" | "product" | "web">("all")
+  const [searchQuery, setSearchQuery] = useState("")
   const [isOffline, setIsOffline] = useState(() => (typeof navigator !== "undefined" ? !navigator.onLine : false))
   const [appConfig, setAppConfig] = useState<AppConfigPayload | null>(null)
   const [dismissedBanner, setDismissedBanner] = useState(false)
@@ -234,7 +343,6 @@ export function NativeAppShellController() {
     }
   }, [])
 
-  // Fetch remote app config for OTA version gate & live announcements
   useEffect(() => {
     let cancelled = false
     fetch(`${apiV1()}/health/app-config`, { credentials: "include" })
@@ -271,9 +379,23 @@ export function NativeAppShellController() {
 
   function handleQuickRoleSwitch(entry: (typeof QUICK_ROLE_ACCOUNTS)[number]) {
     loginDemo(entry.user)
+    setRoleDrawerOpen(false)
     navigate(entry.path)
     window.scrollTo({ top: 0, behavior: "smooth" })
   }
+
+  function openAppRoute(to: string) {
+    setShowWebBrochureOnHome(false)
+    navigate(to)
+    window.scrollTo({ top: 0, behavior: "smooth" })
+  }
+
+  const filteredBatches = MOBILE_APP_BATCHES.filter((b) => {
+    const matchesCat = categoryFilter === "all" || b.category === categoryFilter
+    const q = searchQuery.trim().toLowerCase()
+    const matchesSearch = !q || b.title.toLowerCase().includes(q) || b.oneLiner.toLowerCase().includes(q)
+    return matchesCat && matchesSearch
+  })
 
   return (
     <>
@@ -290,7 +412,7 @@ export function NativeAppShellController() {
             background: "#0f172a",
             color: "#f8fafc",
             padding: "8px 16px",
-            fontSize: 12.5,
+            fontSize: 12,
             fontWeight: 600,
             display: "flex",
             alignItems: "center",
@@ -313,7 +435,7 @@ export function NativeAppShellController() {
             background: "linear-gradient(90deg, #3B2D96 0%, #5142B5 100%)",
             color: "#ffffff",
             padding: "7px 16px",
-            fontSize: 12.5,
+            fontSize: 12,
             fontWeight: 600,
             display: "flex",
             alignItems: "center",
@@ -376,7 +498,7 @@ export function NativeAppShellController() {
               New Skylent App Update Required
             </h3>
             <p style={{ margin: "0 0 18px", fontSize: 13.5, lineHeight: 1.55, color: "#475569" }}>
-              We have upgraded Skylent to version <strong>v{appConfig.minSupportedAppVersion}</strong> with new labs and faster performance.
+              Update to version <strong>v{appConfig.minSupportedAppVersion}</strong> on Google Play Store to continue.
             </p>
             <a
               href={appConfig.playStoreUrl}
@@ -399,7 +521,7 @@ export function NativeAppShellController() {
         </div>
       ) : null}
 
-      {/* 4. Native Play Store App Top Bar (Shown in Native App Mode across public & catalogue screens) */}
+      {/* 4. Clean Consumer EdTech Mobile App Top Bar (PW / Unacademy / Udemy Standard) */}
       {isNative ? (
         <header
           style={{
@@ -407,18 +529,19 @@ export function NativeAppShellController() {
             top: 0,
             left: 0,
             right: 0,
-            height: 58,
+            height: 56,
             zIndex: 995,
-            background: "linear-gradient(90deg, #1e1b4b 0%, #3B2D96 55%, #5142B5 100%)",
-            color: "#ffffff",
+            background: "#ffffff",
+            color: "#0f172a",
+            borderBottom: "1px solid #e2e8f0",
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
-            padding: "0 14px",
-            boxShadow: "0 4px 18px rgba(30, 27, 75, 0.25)",
+            padding: "0 12px",
+            boxShadow: "0 2px 10px rgba(15, 23, 42, 0.04)",
           }}
         >
-          <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 9, minWidth: 0 }}>
             {location.pathname !== "/" ? (
               <button
                 type="button"
@@ -428,9 +551,9 @@ export function NativeAppShellController() {
                   width: 34,
                   height: 34,
                   borderRadius: 10,
-                  border: "1px solid rgba(255,255,255,0.22)",
-                  background: "rgba(255,255,255,0.12)",
-                  color: "#ffffff",
+                  border: "1px solid #e2e8f0",
+                  background: "#f8fafc",
+                  color: "#0f172a",
                   fontSize: 16,
                   fontWeight: 800,
                   cursor: "pointer",
@@ -447,55 +570,40 @@ export function NativeAppShellController() {
                   width: 34,
                   height: 34,
                   borderRadius: 10,
-                  background: "linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)",
-                  color: "#1e1b4b",
+                  background: "linear-gradient(135deg, #3B2D96 0%, #5142B5 100%)",
+                  color: "#ffffff",
                   fontWeight: 900,
                   fontSize: 16,
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  boxShadow: "0 2px 8px rgba(251, 191, 36, 0.35)",
                 }}
               >
                 S
               </div>
             )}
             <div style={{ minWidth: 0 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                <span style={{ fontWeight: 800, fontSize: 15.5, letterSpacing: "-0.02em", color: "#ffffff" }}>
-                  Skylent
-                </span>
-                <span
-                  style={{
-                    fontSize: 9.5,
-                    fontWeight: 800,
-                    padding: "2px 6px",
-                    borderRadius: 999,
-                    background: "rgba(52, 211, 153, 0.22)",
-                    color: "#6ee7b7",
-                    border: "1px solid rgba(52, 211, 153, 0.4)",
-                  }}
-                >
-                  APP
-                </span>
+              <div style={{ fontWeight: 800, fontSize: 14.5, color: "#0f172a", lineHeight: 1.15 }}>
+                {user ? `Hi, ${user.name.split(" ")[0]} 👋` : "Skylent"}
               </div>
-              <div style={{ fontSize: 10.5, color: "#c4b5fd", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                {user ? `${user.name} · ${user.role.toUpperCase()}` : "Learn · Practise · Build"}
+              <div style={{ fontSize: 11, color: "#64748b", fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                {user ? `${user.role.toUpperCase()} WORKSPACE` : " Data · AI · Product · Web"}
               </div>
             </div>
           </div>
 
-          <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            {/* Clean 1-Tap Role Switcher Drawer Trigger (Keeps developer role buttons off the main student feed!) */}
             <button
               type="button"
-              onClick={() => navigate("/events")}
+              onClick={() => setRoleDrawerOpen(true)}
               style={{
-                background: "rgba(251, 191, 36, 0.16)",
-                border: "1px solid rgba(251, 191, 36, 0.45)",
-                color: "#fde68a",
+                background: "#f5f3ff",
+                border: "1px solid #ddd6fe",
+                color: "#5142b5",
                 borderRadius: 999,
                 padding: "5px 10px",
-                fontSize: 11.5,
+                fontSize: 11,
                 fontWeight: 800,
                 cursor: "pointer",
                 display: "inline-flex",
@@ -503,35 +611,41 @@ export function NativeAppShellController() {
                 gap: 4,
               }}
             >
+              <span>🎭</span>
+              <span>Role</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setShowWebBrochureOnHome(false)
+                setHubTab("live")
+                if (location.pathname !== "/") navigate("/")
+              }}
+              style={{
+                background: "#fffbeb",
+                border: "1px solid #fde68a",
+                color: "#b45309",
+                borderRadius: 999,
+                padding: "5px 9px",
+                fontSize: 11.5,
+                fontWeight: 800,
+                cursor: "pointer",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 3,
+              }}
+            >
               <span>🪙</span>
               <span>{elixirBonus}</span>
             </button>
-
-            {location.pathname === "/" ? (
-              <button
-                type="button"
-                onClick={() => setShowWebBrochureOnHome((v) => !v)}
-                style={{
-                  background: "rgba(255,255,255,0.12)",
-                  border: "1px solid rgba(255,255,255,0.24)",
-                  color: "#ffffff",
-                  borderRadius: 999,
-                  padding: "5px 10px",
-                  fontSize: 11,
-                  fontWeight: 700,
-                  cursor: "pointer",
-                }}
-              >
-                {showWebBrochureOnHome ? "📱 App Hub" : "🌐 Web View"}
-              </button>
-            ) : null}
 
             <button
               type="button"
               onClick={() => navigate(dashHref)}
               style={{
-                background: "#ffffff",
-                color: "#3B2D96",
+                background: "#5142b5",
+                color: "#ffffff",
                 border: "none",
                 borderRadius: 999,
                 padding: "5px 11px",
@@ -540,165 +654,68 @@ export function NativeAppShellController() {
                 cursor: "pointer",
               }}
             >
-              {user ? user.avatar : "Sign In"}
+              {user ? user.avatar : "Login"}
             </button>
           </div>
         </header>
       ) : null}
 
-      {/* 5. Google Play Store Native Mobile App Home Hub (Rendered on / in Native App Mode) */}
-      {isAppHomeHubActive ? (
+      {/* Role Switcher Bottom Sheet Drawer */}
+      {isNative && roleDrawerOpen ? (
         <div
-          className="skylent-playstore-home-hub"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Switch Role Workspace"
+          onClick={() => setRoleDrawerOpen(false)}
           style={{
-            paddingTop: 68,
-            paddingBottom: "calc(90px + env(safe-area-inset-bottom))",
-            paddingInline: 14,
-            maxWidth: 560,
-            margin: "0 auto",
-            background: "#f8f7ff",
-            minHeight: "100vh",
-            color: "#0f172a",
-            fontFamily: "var(--font-body, Inter, system-ui, sans-serif)",
+            position: "fixed",
+            inset: 0,
+            zIndex: 9999,
+            background: "rgba(15, 23, 42, 0.55)",
+            display: "flex",
+            alignItems: "flex-end",
+            justifyContent: "center",
           }}
         >
-          {/* A. Hero Welcome + Active Track Resume Card */}
           <div
-            style={{
-              background: "linear-gradient(135deg, #1e1b4b 0%, #3B2D96 52%, #5142B5 100%)",
-              borderRadius: 20,
-              padding: "20px 18px",
-              color: "#ffffff",
-              boxShadow: "0 16px 36px -12px rgba(59, 45, 150, 0.45)",
-              marginBottom: 16,
-            }}
-          >
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, marginBottom: 10 }}>
-              <span
-                style={{
-                  fontSize: 11,
-                  fontWeight: 800,
-                  letterSpacing: "0.06em",
-                  textTransform: "uppercase",
-                  background: "rgba(255,255,255,0.14)",
-                  padding: "4px 10px",
-                  borderRadius: 999,
-                  color: "#e0e7ff",
-                }}
-              >
-                🔥 5-Day Execution Streak
-              </span>
-              <span style={{ fontSize: 11.5, fontWeight: 700, color: "#fde68a" }}>
-                ⚡ 20-Min TA SLA Live
-              </span>
-            </div>
-
-            <h1 style={{ margin: "0 0 6px", fontSize: 22, fontWeight: 800, lineHeight: 1.2, color: "#ffffff" }}>
-              {user ? `Welcome back, ${user.name.split(" ")[0]} 👋` : "Namaste! Ready to build real proof-of-work?"}
-            </h1>
-            <p style={{ margin: "0 0 14px", fontSize: 13, color: "#ddd6fe", lineHeight: 1.45 }}>
-              Practise SQL, Python, Product & GenAI in real sandboxes and graduate with a recruiter-verified dossier.
-            </p>
-
-            {/* Active Lesson Resume Strip */}
-            <div
-              style={{
-                background: "rgba(255,255,255,0.11)",
-                border: "1px solid rgba(255,255,255,0.2)",
-                borderRadius: 14,
-                padding: "12px 14px",
-                marginBottom: 14,
-              }}
-            >
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11.5, color: "#e0e7ff", marginBottom: 5 }}>
-                <span style={{ fontWeight: 700 }}>ACTIVE TRACK · SQL & DATA ANALYTICS</span>
-                <span style={{ fontWeight: 800, color: "#34d399" }}>42% Complete</span>
-              </div>
-              <div style={{ fontSize: 13.5, fontWeight: 700, color: "#ffffff", marginBottom: 8 }}>
-                Module 1 · Lesson 3: Order Grain & Fanout Joins
-              </div>
-              <div style={{ height: 6, borderRadius: 999, background: "rgba(255,255,255,0.18)", overflow: "hidden" }}>
-                <div style={{ width: "42%", height: "100%", background: "#34d399", borderRadius: 999 }} />
-              </div>
-            </div>
-
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-              <button
-                type="button"
-                onClick={() => navigate("/courses/sql-analytics-foundations")}
-                style={{
-                  background: "#fbbf24",
-                  color: "#1e1b4b",
-                  border: "none",
-                  borderRadius: 12,
-                  padding: "11px 12px",
-                  fontSize: 13,
-                  fontWeight: 800,
-                  cursor: "pointer",
-                }}
-              >
-                ▶ Resume Course
-              </button>
-              <button
-                type="button"
-                onClick={() => navigate("/labs")}
-                style={{
-                  background: "rgba(255,255,255,0.15)",
-                  color: "#ffffff",
-                  border: "1px solid rgba(255,255,255,0.3)",
-                  borderRadius: 12,
-                  padding: "11px 12px",
-                  fontSize: 13,
-                  fontWeight: 800,
-                  cursor: "pointer",
-                }}
-              >
-                ⚡ Open SQL Lab
-              </button>
-            </div>
-          </div>
-
-          {/* B. 1-Tap Instant Role Switcher (Test All 6 Dashboards on Phone Without Typing Passwords) */}
-          <div
+            onClick={(e) => e.stopPropagation()}
             style={{
               background: "#ffffff",
-              border: "1px solid #ddd6fe",
-              borderRadius: 18,
-              padding: "15px 14px",
-              marginBottom: 16,
-              boxShadow: "0 8px 24px -12px rgba(59, 45, 150, 0.12)",
+              width: "100%",
+              maxWidth: 520,
+              borderTopLeftRadius: 22,
+              borderTopRightRadius: 22,
+              padding: "18px 16px calc(22px + env(safe-area-inset-bottom))",
+              boxShadow: "0 -12px 36px rgba(15, 23, 42, 0.25)",
             }}
           >
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
               <div>
-                <div style={{ fontSize: 11, fontWeight: 800, color: "#5142b5", textTransform: "uppercase", letterSpacing: "0.06em" }}>
-                  ⚡ Instant Mobile Role Switcher
+                <div style={{ fontSize: 11, fontWeight: 800, color: "#5142b5", textTransform: "uppercase" }}>
+                  INSTANT WORKSPACE SWITCHER
                 </div>
-                <div style={{ fontSize: 14.5, fontWeight: 800, color: "#0f172a" }}>
-                  Tap Any Role to Open Its Live Dashboard
+                <div style={{ fontSize: 16, fontWeight: 800, color: "#0f172a" }}>
+                  Preview Any Skylent Role
                 </div>
               </div>
-              {user ? (
-                <button
-                  type="button"
-                  onClick={() => void logout()}
-                  style={{
-                    background: "#fee2e2",
-                    color: "#b91c1c",
-                    border: "none",
-                    borderRadius: 8,
-                    padding: "5px 10px",
-                    fontSize: 11,
-                    fontWeight: 800,
-                    cursor: "pointer",
-                  }}
-                >
-                  Sign Out
-                </button>
-              ) : null}
+              <button
+                type="button"
+                onClick={() => setRoleDrawerOpen(false)}
+                style={{
+                  background: "#f1f5f9",
+                  border: "none",
+                  borderRadius: 999,
+                  width: 32,
+                  height: 32,
+                  fontWeight: 800,
+                  cursor: "pointer",
+                }}
+              >
+                ✕
+              </button>
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 12 }}>
               {QUICK_ROLE_ACCOUNTS.map((item) => {
                 const isActiveRole = user?.role === item.role
                 return (
@@ -718,11 +735,9 @@ export function NativeAppShellController() {
                       cursor: "pointer",
                     }}
                   >
-                    <span style={{ fontSize: 20, lineHeight: 1 }}>{item.badge}</span>
+                    <span style={{ fontSize: 20 }}>{item.badge}</span>
                     <div style={{ minWidth: 0 }}>
-                      <div style={{ fontSize: 12.5, fontWeight: 800, color: "#1e1b4b", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                        {item.label}
-                      </div>
+                      <div style={{ fontSize: 12.5, fontWeight: 800, color: "#0f172a" }}>{item.label}</div>
                       <div style={{ fontSize: 10.5, color: "#64748b", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                         {item.subtitle}
                       </div>
@@ -731,269 +746,703 @@ export function NativeAppShellController() {
                 )
               })}
             </div>
-          </div>
 
-          {/* C. 4 Quick-Action Native App Tiles (2x2 Grid) */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 16 }}>
-            {[
-              {
-                icon: "🧭",
-                title: "90s Skill Diagnostic",
-                sub: "Find your career track",
-                to: "/path",
-                bg: "#f5f3ff",
-                border: "#c4b5fd",
-              },
-              {
-                icon: "⚡",
-                title: "Practice Sandbox",
-                sub: "SQL, Python & GenAI",
-                to: "/labs",
-                bg: "#ecfdf5",
-                border: "#a7f3d0",
-              },
-              {
-                icon: "🪙",
-                title: "₹99 Live Workshops",
-                sub: "100% Elixir Cashback",
-                to: "/events",
-                bg: "#fffbeb",
-                border: "#fde68a",
-              },
-              {
-                icon: "📜",
-                title: "Verify Certificate",
-                sub: "Check Proof-of-Work",
-                to: "/verify",
-                bg: "#f0f9ff",
-                border: "#bae6fd",
-              },
-            ].map((tile) => (
+            <div style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
               <button
-                key={tile.title}
                 type="button"
-                onClick={() => navigate(tile.to)}
+                onClick={() => {
+                  setRoleDrawerOpen(false)
+                  setShowWebBrochureOnHome((v) => !v)
+                  if (location.pathname !== "/") navigate("/")
+                }}
                 style={{
-                  background: tile.bg,
-                  border: `1px solid ${tile.border}`,
-                  borderRadius: 16,
-                  padding: "14px 13px",
-                  textAlign: "left",
+                  flex: 1,
+                  padding: "10px",
+                  borderRadius: 10,
+                  border: "1px solid #cbd5e1",
+                  background: "#f8fafc",
+                  color: "#334155",
+                  fontSize: 12,
+                  fontWeight: 700,
                   cursor: "pointer",
                 }}
               >
-                <div style={{ fontSize: 22, marginBottom: 6 }}>{tile.icon}</div>
-                <div style={{ fontSize: 13.5, fontWeight: 800, color: "#0f172a", marginBottom: 2 }}>
-                  {tile.title}
-                </div>
-                <div style={{ fontSize: 11.5, color: "#475569" }}>{tile.sub}</div>
+                {showWebBrochureOnHome ? "📱 Switch to App UI" : "🌐 Preview Website Mode"}
               </button>
-            ))}
+              {user ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    void logout()
+                    setRoleDrawerOpen(false)
+                  }}
+                  style={{
+                    padding: "10px 14px",
+                    borderRadius: 10,
+                    border: "none",
+                    background: "#fee2e2",
+                    color: "#b91c1c",
+                    fontSize: 12,
+                    fontWeight: 800,
+                    cursor: "pointer",
+                  }}
+                >
+                  Sign Out
+                </button>
+              ) : null}
+            </div>
           </div>
+        </div>
+      ) : null}
 
-          {/* D. Interactive In-App 30-Second SQL & Cold Call Challenge */}
-          <div
-            style={{
-              background: "#ffffff",
-              border: "1px solid #e2e8f0",
-              borderLeft: "4px solid #5142b5",
-              borderRadius: 18,
-              padding: "16px 15px",
-              marginBottom: 16,
-              boxShadow: "0 8px 24px -14px rgba(15, 23, 42, 0.1)",
-            }}
-          >
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-              <span style={{ fontSize: 11, fontWeight: 800, color: "#5142b5", textTransform: "uppercase", letterSpacing: "0.06em" }}>
-                ⚡ Daily 30-Sec App Challenge
-              </span>
-              <span style={{ fontSize: 11, fontWeight: 800, color: "#059669", background: "#dcfce7", padding: "2px 8px", borderRadius: 999 }}>
-                +25 Elixir Coins
-              </span>
-            </div>
-            <div style={{ fontSize: 14.5, fontWeight: 800, color: "#0f172a", marginBottom: 6 }}>
-              Why did Northwind Q3 Gross Revenue inflate by 2.4x after joining `orders` to `order_items`?
-            </div>
-            <div style={{ display: "grid", gap: 7, marginBottom: 10 }}>
-              {[
-                { id: "fanout", text: "A. 1-to-many join fanout duplicated order-level shipping fees" },
-                { id: "nulls", text: "B. LEFT JOIN dropped NULL customer rows" },
-              ].map((opt) => {
-                const picked = coldCallChoice === opt.id
-                return (
+      {/* 5. Unacademy / PW / Udemy / Coursera Style Native Mobile App Screens */}
+      {isAppHomeHubActive ? (
+        <div
+          className="skylent-playstore-home-hub"
+          style={{
+            paddingTop: 64,
+            paddingBottom: "calc(84px + env(safe-area-inset-bottom))",
+            paddingInline: 14,
+            maxWidth: 520,
+            margin: "0 auto",
+            background: "#f8fafc",
+            minHeight: "100vh",
+            color: "#0f172a",
+            fontFamily: "var(--font-body, Inter, system-ui, sans-serif)",
+          }}
+        >
+          {/* Search + Category Filter Pills (Shown on Home & Batches tabs) */}
+          {hubTab === "home" || hubTab === "batches" ? (
+            <div style={{ marginBottom: 14 }}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                  background: "#ffffff",
+                  border: "1px solid #cbd5e1",
+                  borderRadius: 12,
+                  padding: "9px 12px",
+                  marginBottom: 10,
+                  boxShadow: "0 2px 6px rgba(15, 23, 42, 0.03)",
+                }}
+              >
+                <span style={{ fontSize: 14, color: "#64748b" }}>🔍</span>
+                <input
+                  type="search"
+                  value={searchQuery}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value)
+                    if (hubTab === "home" && e.target.value.trim()) setHubTab("batches")
+                  }}
+                  placeholder="Search SQL, Python, GenAI, Product..."
+                  style={{
+                    border: "none",
+                    outline: "none",
+                    width: "100%",
+                    fontSize: 13,
+                    color: "#0f172a",
+                    background: "transparent",
+                  }}
+                />
+                {searchQuery ? (
                   <button
-                    key={opt.id}
                     type="button"
-                    onClick={() => {
-                      setColdCallChoice(opt.id)
-                      if (opt.id === "fanout" && !sqlOutputReady) {
-                        setSqlOutputReady(true)
-                        setElixirBonus((c) => c + 25)
-                      }
-                    }}
+                    onClick={() => setSearchQuery("")}
+                    style={{ border: "none", background: "none", color: "#64748b", fontSize: 12, cursor: "pointer" }}
+                  >
+                    ✕
+                  </button>
+                ) : null}
+              </div>
+
+              {/* Horizontal Swipe Category Pills */}
+              <div
+                style={{
+                  display: "flex",
+                  gap: 7,
+                  overflowX: "auto",
+                  paddingBottom: 2,
+                  scrollbarWidth: "none",
+                }}
+              >
+                {[
+                  { id: "all" as const, label: "All (6)" },
+                  { id: "data" as const, label: "📊 Data & SQL" },
+                  { id: "ai" as const, label: "🤖 AI & Python" },
+                  { id: "product" as const, label: "📦 Product" },
+                  { id: "web" as const, label: "💻 Full-Stack" },
+                ].map((cat) => {
+                  const active = categoryFilter === cat.id
+                  return (
+                    <button
+                      key={cat.id}
+                      type="button"
+                      onClick={() => setCategoryFilter(cat.id)}
+                      style={{
+                        padding: "6px 13px",
+                        borderRadius: 999,
+                        border: active ? "1.5px solid #5142b5" : "1px solid #e2e8f0",
+                        background: active ? "#5142b5" : "#ffffff",
+                        color: active ? "#ffffff" : "#334155",
+                        fontSize: 12,
+                        fontWeight: 700,
+                        whiteSpace: "nowrap",
+                        cursor: "pointer",
+                      }}
+                    >
+                      {cat.label}
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+          ) : null}
+
+          {/* ==================== TAB 1: HOME ==================== */}
+          {hubTab === "home" ? (
+            <>
+              {/* Compact Resume Learning Banner (Coursera / PW Style) */}
+              <div
+                style={{
+                  background: "linear-gradient(135deg, #1e1b4b 0%, #3B2D96 55%, #5142B5 100%)",
+                  borderRadius: 18,
+                  padding: "16px",
+                  color: "#ffffff",
+                  boxShadow: "0 12px 28px -10px rgba(59, 45, 150, 0.45)",
+                  marginBottom: 16,
+                }}
+              >
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                  <span style={{ fontSize: 10.5, fontWeight: 800, background: "rgba(255,255,255,0.16)", padding: "3px 9px", borderRadius: 999 }}>
+                    🔥 5-DAY STREAK · ACTIVE BATCH
+                  </span>
+                  <span style={{ fontSize: 11.5, fontWeight: 800, color: "#34d399" }}>42% Done</span>
+                </div>
+                <div style={{ fontSize: 16.5, fontWeight: 800, marginBottom: 4 }}>
+                  Data Analytics &amp; SQL Bootcamp
+                </div>
+                <div style={{ fontSize: 12, color: "#ddd6fe", marginBottom: 10 }}>
+                  Next: Module 1 · Order Grain &amp; Fanout Joins
+                </div>
+                <div style={{ height: 5, borderRadius: 999, background: "rgba(255,255,255,0.2)", marginBottom: 12 }}>
+                  <div style={{ width: "42%", height: "100%", background: "#34d399", borderRadius: 999 }} />
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+                  <button
+                    type="button"
+                    onClick={() => openAppRoute("/courses/data-analytics")}
                     style={{
-                      textAlign: "left",
-                      padding: "10px 12px",
+                      background: "#fbbf24",
+                      color: "#1e1b4b",
+                      border: "none",
                       borderRadius: 10,
-                      border: picked ? "2px solid #5142b5" : "1px solid #cbd5e1",
-                      background: picked ? "#f5f3ff" : "#f8fafc",
-                      color: "#0f172a",
+                      padding: "10px",
                       fontSize: 12.5,
-                      fontWeight: 700,
+                      fontWeight: 800,
                       cursor: "pointer",
                     }}
                   >
-                    {opt.text}
+                    ▶ Resume Lesson
                   </button>
-                )
-              })}
-            </div>
-            {coldCallChoice === "fanout" ? (
-              <div style={{ fontSize: 12, fontWeight: 700, color: "#065f46", background: "#ecfdf5", padding: "9px 12px", borderRadius: 10 }}>
-                ✓ Spot on! Aggregate `order_items` to `order_id` grain first before joining. (+25 Elixir credited!)
+                  <button
+                    type="button"
+                    onClick={() => setHubTab("practice")}
+                    style={{
+                      background: "rgba(255,255,255,0.14)",
+                      color: "#ffffff",
+                      border: "1px solid rgba(255,255,255,0.28)",
+                      borderRadius: 10,
+                      padding: "10px",
+                      fontSize: 12.5,
+                      fontWeight: 800,
+                      cursor: "pointer",
+                    }}
+                  >
+                    ⚡ Practice Labs
+                  </button>
+                </div>
               </div>
-            ) : coldCallChoice === "nulls" ? (
-              <div style={{ fontSize: 12, fontWeight: 700, color: "#92400e", background: "#fffbeb", padding: "9px 12px", borderRadius: 10 }}>
-                Hint: When 1 order has 4 line items, an unaggregated join multiplies order-level columns 4x. Try Option A!
-              </div>
-            ) : null}
-          </div>
 
-          {/* E. 6 Flagship Career Tracks (Native Mobile Cards) */}
-          <div style={{ marginBottom: 16 }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
-              <h2 style={{ margin: 0, fontSize: 16.5, fontWeight: 800, color: "#0f172a" }}>
-                🎓 Flagship Career Tracks
-              </h2>
-              <button
-                type="button"
-                onClick={() => navigate("/programmes")}
+              {/* Horizontal Swipe Carousel: Popular Job-Ready Batches (Udemy / PW Style) */}
+              <div style={{ marginBottom: 18 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+                  <h2 style={{ margin: 0, fontSize: 15.5, fontWeight: 800, color: "#0f172a" }}>
+                    🎓 Popular Job-Ready Batches
+                  </h2>
+                  <button
+                    type="button"
+                    onClick={() => setHubTab("batches")}
+                    style={{ background: "none", border: "none", color: "#5142b5", fontSize: 12, fontWeight: 800, cursor: "pointer" }}
+                  >
+                    View All ({filteredBatches.length}) →
+                  </button>
+                </div>
+
+                <div
+                  style={{
+                    display: "grid",
+                    gridAutoFlow: "column",
+                    gridAutoColumns: "82%",
+                    gap: 12,
+                    overflowX: "auto",
+                    scrollSnapType: "x mandatory",
+                    paddingBottom: 6,
+                  }}
+                >
+                  {filteredBatches.map((batch) => (
+                    <div
+                      key={batch.slug}
+                      style={{
+                        scrollSnapAlign: "start",
+                        background: "#ffffff",
+                        border: "1px solid #e2e8f0",
+                        borderRadius: 16,
+                        overflow: "hidden",
+                        boxShadow: "0 4px 14px -6px rgba(15, 23, 42, 0.08)",
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "space-between",
+                      }}
+                    >
+                      <div>
+                        <div
+                          style={{
+                            background: batch.bg,
+                            padding: "12px 14px",
+                            color: "#ffffff",
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                          }}
+                        >
+                          <span style={{ fontSize: 22 }}>{batch.icon}</span>
+                          <span
+                            style={{
+                              fontSize: 10.5,
+                              fontWeight: 800,
+                              background: "rgba(255,255,255,0.2)",
+                              padding: "3px 8px",
+                              borderRadius: 999,
+                            }}
+                          >
+                            ★ {batch.rating} ({batch.learners})
+                          </span>
+                        </div>
+                        <div style={{ padding: "12px 14px 8px" }}>
+                          <div style={{ fontSize: 14.5, fontWeight: 800, color: "#0f172a", marginBottom: 3 }}>
+                            {batch.title}
+                          </div>
+                          <div style={{ fontSize: 12, color: "#475569", marginBottom: 8 }}>
+                            {batch.oneLiner}
+                          </div>
+                          <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 6 }}>
+                            <span style={{ fontSize: 10.5, fontWeight: 700, background: "#f1f5f9", color: "#334155", padding: "3px 8px", borderRadius: 6 }}>
+                              📚 {batch.lessons}
+                            </span>
+                            <span style={{ fontSize: 10.5, fontWeight: 700, background: "#ecfdf5", color: "#065f46", padding: "3px 8px", borderRadius: 6 }}>
+                              ✓ {batch.price}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <div style={{ padding: "0 14px 12px", display: "flex", gap: 8 }}>
+                        <button
+                          type="button"
+                          onClick={() => openAppRoute(`/courses/${batch.courseSlug}`)}
+                          style={{
+                            flex: 1,
+                            background: "#5142b5",
+                            color: "#ffffff",
+                            border: "none",
+                            borderRadius: 9,
+                            padding: "8px 10px",
+                            fontSize: 12,
+                            fontWeight: 800,
+                            cursor: "pointer",
+                          }}
+                        >
+                          Start Free →
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => openAppRoute(`/programmes/${batch.slug}`)}
+                          style={{
+                            background: "#f8fafc",
+                            color: "#334155",
+                            border: "1px solid #cbd5e1",
+                            borderRadius: 9,
+                            padding: "8px 10px",
+                            fontSize: 12,
+                            fontWeight: 700,
+                            cursor: "pointer",
+                          }}
+                        >
+                          Syllabus
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* 4 Compact Quick-Action Pills (2x2 Grid) */}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 9, marginBottom: 16 }}>
+                {[
+                  { icon: "🧭", title: "90s Skill Test", sub: "Find your best track", action: () => openAppRoute("/path"), bg: "#f5f3ff", border: "#ddd6fe" },
+                  { icon: "⚡", title: "SQL & Code Labs", sub: "Practise in browser", action: () => setHubTab("practice"), bg: "#ecfdf5", border: "#a7f3d0" },
+                  { icon: "🪙", title: "₹99 Live Classes", sub: "100% Coin Cashback", action: () => setHubTab("live"), bg: "#fffbeb", border: "#fde68a" },
+                  { icon: "📜", title: "Verify Certificate", sub: "Check SKL ID", action: () => openAppRoute("/verify"), bg: "#f0f9ff", border: "#bae6fd" },
+                ].map((tile) => (
+                  <button
+                    key={tile.title}
+                    type="button"
+                    onClick={tile.action}
+                    style={{
+                      background: tile.bg,
+                      border: `1px solid ${tile.border}`,
+                      borderRadius: 14,
+                      padding: "11px 12px",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 10,
+                      textAlign: "left",
+                      cursor: "pointer",
+                    }}
+                  >
+                    <span style={{ fontSize: 22 }}>{tile.icon}</span>
+                    <div style={{ minWidth: 0 }}>
+                      <div style={{ fontSize: 13, fontWeight: 800, color: "#0f172a" }}>{tile.title}</div>
+                      <div style={{ fontSize: 11, color: "#475569" }}>{tile.sub}</div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+
+              {/* Compact Daily 1-Tap Quiz Poll (+25 Coins) */}
+              <div
                 style={{
-                  background: "none",
-                  border: "none",
-                  color: "#5142b5",
-                  fontSize: 12.5,
-                  fontWeight: 800,
-                  cursor: "pointer",
+                  background: "#ffffff",
+                  border: "1px solid #e2e8f0",
+                  borderLeft: "4px solid #5142b5",
+                  borderRadius: 16,
+                  padding: "13px 14px",
                 }}
               >
-                See All 6 →
-              </button>
-            </div>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+                  <span style={{ fontSize: 10.5, fontWeight: 800, color: "#5142b5", textTransform: "uppercase" }}>
+                    ⚡ DAILY 1-TAP POLL
+                  </span>
+                  <span style={{ fontSize: 10.5, fontWeight: 800, color: "#059669", background: "#dcfce7", padding: "2px 8px", borderRadius: 999 }}>
+                    +25 Coins
+                  </span>
+                </div>
+                <div style={{ fontSize: 13.5, fontWeight: 800, color: "#0f172a", marginBottom: 8 }}>
+                  Why did revenue inflate 2.4x after joining `orders` to `order_items`?
+                </div>
+                <div style={{ display: "grid", gap: 6 }}>
+                  {[
+                    { id: "fanout", text: "A. 1-to-many join fanout duplicated order shipping" },
+                    { id: "nulls", text: "B. LEFT JOIN dropped NULL customer rows" },
+                  ].map((opt) => {
+                    const picked = coldCallChoice === opt.id
+                    return (
+                      <button
+                        key={opt.id}
+                        type="button"
+                        onClick={() => {
+                          setColdCallChoice(opt.id)
+                          if (opt.id === "fanout" && !sqlOutputReady) {
+                            setSqlOutputReady(true)
+                            setElixirBonus((c) => c + 25)
+                          }
+                        }}
+                        style={{
+                          textAlign: "left",
+                          padding: "8px 11px",
+                          borderRadius: 9,
+                          border: picked ? "2px solid #5142b5" : "1px solid #cbd5e1",
+                          background: picked ? "#f5f3ff" : "#f8fafc",
+                          color: "#0f172a",
+                          fontSize: 12,
+                          fontWeight: 700,
+                          cursor: "pointer",
+                        }}
+                      >
+                        {opt.text}
+                      </button>
+                    )
+                  })}
+                </div>
+                {coldCallChoice === "fanout" ? (
+                  <div style={{ marginTop: 8, fontSize: 11.5, fontWeight: 700, color: "#065f46", background: "#ecfdf5", padding: "7px 10px", borderRadius: 8 }}>
+                    ✓ Correct! Aggregate `order_items` first before joining (+25 Coins added!).
+                  </div>
+                ) : coldCallChoice === "nulls" ? (
+                  <div style={{ marginTop: 8, fontSize: 11.5, fontWeight: 700, color: "#92400e", background: "#fffbeb", padding: "7px 10px", borderRadius: 8 }}>
+                    Hint: 1 order with 4 items multiplies order-level columns 4x. Try Option A!
+                  </div>
+                ) : null}
+              </div>
+            </>
+          ) : null}
 
-            <div style={{ display: "grid", gap: 10 }}>
-              {MOBILE_APP_TRACKS.map((track) => (
+          {/* ==================== TAB 2: BATCHES & COURSES ==================== */}
+          {hubTab === "batches" ? (
+            <div style={{ display: "grid", gap: 11 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <h2 style={{ margin: 0, fontSize: 16, fontWeight: 800, color: "#0f172a" }}>
+                  🎓 All Job-Ready Batches ({filteredBatches.length})
+                </h2>
+                <button
+                  type="button"
+                  onClick={() => openAppRoute("/education")}
+                  style={{ background: "#f5f3ff", border: "1px solid #ddd6fe", color: "#5142b5", borderRadius: 999, padding: "4px 10px", fontSize: 11, fontWeight: 800, cursor: "pointer" }}
+                >
+                  🏛️ UG/PG Degrees →
+                </button>
+              </div>
+
+              {filteredBatches.map((batch) => (
                 <div
-                  key={track.slug}
+                  key={batch.slug}
                   style={{
                     background: "#ffffff",
                     border: "1px solid #e2e8f0",
                     borderRadius: 16,
-                    padding: "14px 15px",
-                    boxShadow: "0 4px 14px -6px rgba(15, 23, 42, 0.06)",
+                    padding: "13px 14px",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 8,
+                    boxShadow: "0 2px 10px rgba(15, 23, 42, 0.04)",
                   }}
                 >
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, marginBottom: 5 }}>
-                    <span
-                      style={{
-                        fontSize: 10,
-                        fontWeight: 800,
-                        color: track.accent,
-                        background: track.bg,
-                        padding: "3px 8px",
-                        borderRadius: 999,
-                      }}
-                    >
-                      {track.tag}
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 10 }}>
+                    <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+                      <div
+                        style={{
+                          width: 42,
+                          height: 42,
+                          borderRadius: 12,
+                          background: batch.bg,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          fontSize: 20,
+                          flexShrink: 0,
+                        }}
+                      >
+                        {batch.icon}
+                      </div>
+                      <div>
+                        <div style={{ fontSize: 14.5, fontWeight: 800, color: "#0f172a" }}>{batch.title}</div>
+                        <div style={{ fontSize: 12, color: "#475569" }}>{batch.oneLiner}</div>
+                      </div>
+                    </div>
+                    <span style={{ fontSize: 11, fontWeight: 800, color: "#065f46", background: "#ecfdf5", padding: "3px 8px", borderRadius: 999, whiteSpace: "nowrap" }}>
+                      ★ {batch.rating}
                     </span>
-                    <span style={{ fontSize: 11.5, fontWeight: 800, color: "#0f172a" }}>{track.fee}</span>
                   </div>
-                  <div style={{ fontSize: 15, fontWeight: 800, color: "#0f172a", marginBottom: 6 }}>
-                    {track.title}
+
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid #f1f5f9", paddingTop: 8 }}>
+                    <span style={{ fontSize: 11.5, color: "#64748b", fontWeight: 600 }}>
+                      📚 {batch.lessons} · 🏆 {batch.capstone}
+                    </span>
+                    <div style={{ display: "flex", gap: 6 }}>
+                      <button
+                        type="button"
+                        onClick={() => openAppRoute(`/programmes/${batch.slug}`)}
+                        style={{
+                          background: "#f8fafc",
+                          color: "#334155",
+                          border: "1px solid #cbd5e1",
+                          borderRadius: 8,
+                          padding: "6px 10px",
+                          fontSize: 11.5,
+                          fontWeight: 700,
+                          cursor: "pointer",
+                        }}
+                      >
+                        Details
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => openAppRoute(`/courses/${batch.courseSlug}`)}
+                        style={{
+                          background: "#5142b5",
+                          color: "#ffffff",
+                          border: "none",
+                          borderRadius: 8,
+                          padding: "6px 12px",
+                          fontSize: 11.5,
+                          fontWeight: 800,
+                          cursor: "pointer",
+                        }}
+                      >
+                        Start Free →
+                      </button>
+                    </div>
                   </div>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 12, color: "#64748b" }}>
-                    <span>⏱ {track.duration} · 🛠 {track.projects}</span>
+                </div>
+              ))}
+            </div>
+          ) : null}
+
+          {/* ==================== TAB 3: PRACTICE ARENA ==================== */}
+          {hubTab === "practice" ? (
+            <div style={{ display: "grid", gap: 11 }}>
+              <div
+                style={{
+                  background: "linear-gradient(135deg, #1e1b4b 0%, #3B2D96 100%)",
+                  borderRadius: 16,
+                  padding: "14px 16px",
+                  color: "#ffffff",
+                }}
+              >
+                <div style={{ fontSize: 10.5, fontWeight: 800, color: "#a5b4fc", textTransform: "uppercase" }}>
+                  ZERO-SETUP MOBILE LABS
+                </div>
+                <div style={{ fontSize: 16.5, fontWeight: 800, marginTop: 2 }}>
+                  Practise SQL, Python, PRDs &amp; GenAI
+                </div>
+                <div style={{ fontSize: 12, color: "#ddd6fe", marginTop: 3 }}>
+                  Tap any workbench below to run real queries and earn Elixir Coins.
+                </div>
+              </div>
+
+              {MOBILE_PRACTICE_LABS.map((lab) => (
+                <button
+                  key={lab.id}
+                  type="button"
+                  onClick={() => openAppRoute(lab.to)}
+                  style={{
+                    background: "#ffffff",
+                    border: "1px solid #e2e8f0",
+                    borderLeft: `4px solid ${lab.accent}`,
+                    borderRadius: 14,
+                    padding: "13px 14px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    gap: 10,
+                    textAlign: "left",
+                    cursor: "pointer",
+                    boxShadow: "0 2px 8px rgba(15, 23, 42, 0.04)",
+                  }}
+                >
+                  <div style={{ display: "flex", alignItems: "center", gap: 11 }}>
+                    <span style={{ fontSize: 24 }}>{lab.icon}</span>
+                    <div>
+                      <span style={{ fontSize: 10, fontWeight: 800, color: lab.accent }}>{lab.badge}</span>
+                      <div style={{ fontSize: 14, fontWeight: 800, color: "#0f172a" }}>{lab.title}</div>
+                      <div style={{ fontSize: 11.5, color: "#64748b" }}>{lab.sub}</div>
+                    </div>
+                  </div>
+                  <span
+                    style={{
+                      background: "#f5f3ff",
+                      color: "#5142b5",
+                      fontSize: 11,
+                      fontWeight: 800,
+                      padding: "5px 9px",
+                      borderRadius: 999,
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {lab.xp} →
+                  </span>
+                </button>
+              ))}
+            </div>
+          ) : null}
+
+          {/* ==================== TAB 4: ₹99 LIVE WORKSHOPS ==================== */}
+          {hubTab === "live" ? (
+            <div style={{ display: "grid", gap: 11 }}>
+              <div
+                style={{
+                  background: "linear-gradient(135deg, #3B2D96 0%, #5142B5 100%)",
+                  borderRadius: 16,
+                  padding: "14px 16px",
+                  color: "#ffffff",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <div>
+                  <div style={{ fontSize: 10.5, fontWeight: 800, color: "#fde68a" }}>
+                    100% ELIXIR COIN CASHBACK
+                  </div>
+                  <div style={{ fontSize: 16, fontWeight: 800, marginTop: 2 }}>
+                    ₹99 Weekend Live Workshops
+                  </div>
+                  <div style={{ fontSize: 11.5, color: "#ddd6fe", marginTop: 2 }}>
+                    Attend a 2-hr live build &amp; get all 99 Coins back!
+                  </div>
+                </div>
+                <div
+                  style={{
+                    background: "rgba(255,255,255,0.14)",
+                    borderRadius: 12,
+                    padding: "8px 12px",
+                    textAlign: "center",
+                  }}
+                >
+                  <div style={{ fontSize: 16, fontWeight: 900, color: "#fde68a" }}>🪙 {elixirBonus}</div>
+                  <div style={{ fontSize: 9.5, color: "#ffffff", fontWeight: 700 }}>WALLET</div>
+                </div>
+              </div>
+
+              {MOBILE_LIVE_WORKSHOPS.map((ws) => (
+                <div
+                  key={ws.slug}
+                  style={{
+                    background: "#ffffff",
+                    border: "1px solid #e2e8f0",
+                    borderRadius: 16,
+                    padding: "13px 14px",
+                    boxShadow: "0 2px 8px rgba(15, 23, 42, 0.04)",
+                  }}
+                >
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 5 }}>
+                    <span style={{ fontSize: 10, fontWeight: 800, color: "#5142b5", background: "#f5f3ff", padding: "3px 8px", borderRadius: 999 }}>
+                      {ws.tag}
+                    </span>
+                    <span style={{ fontSize: 11, fontWeight: 800, color: "#065f46", background: "#ecfdf5", padding: "3px 8px", borderRadius: 999 }}>
+                      ★ {ws.cashback}
+                    </span>
+                  </div>
+                  <div style={{ fontSize: 14.5, fontWeight: 800, color: "#0f172a", marginBottom: 3 }}>
+                    {ws.title}
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 8 }}>
+                    <span style={{ fontSize: 11.5, color: "#64748b" }}>{ws.mentor}</span>
                     <button
                       type="button"
-                      onClick={() => navigate(`/programmes/${track.slug}`)}
+                      onClick={() => openAppRoute(ws.to)}
                       style={{
                         background: "#5142b5",
                         color: "#ffffff",
                         border: "none",
                         borderRadius: 8,
-                        padding: "6px 12px",
+                        padding: "7px 12px",
                         fontSize: 12,
                         fontWeight: 800,
                         cursor: "pointer",
                       }}
                     >
-                      Open →
+                      Book {ws.price} →
                     </button>
                   </div>
                 </div>
               ))}
             </div>
-          </div>
-
-          {/* F. University Degrees & Exam Prep Strip */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 16 }}>
-            <button
-              type="button"
-              onClick={() => navigate("/education")}
-              style={{
-                background: "#ffffff",
-                border: "1px solid #e2e8f0",
-                borderRadius: 14,
-                padding: "13px",
-                textAlign: "left",
-                cursor: "pointer",
-              }}
-            >
-              <div style={{ fontSize: 11, fontWeight: 800, color: "#5142b5" }}>UG & PG DEGREES</div>
-              <div style={{ fontSize: 13.5, fontWeight: 800, color: "#0f172a", marginTop: 2 }}>
-                University Pathways →
-              </div>
-            </button>
-            <button
-              type="button"
-              onClick={() => navigate("/education/exams")}
-              style={{
-                background: "#ffffff",
-                border: "1px solid #e2e8f0",
-                borderRadius: 14,
-                padding: "13px",
-                textAlign: "left",
-                cursor: "pointer",
-              }}
-            >
-              <div style={{ fontSize: 11, fontWeight: 800, color: "#059669" }}>90s DIAGNOSTIC</div>
-              <div style={{ fontSize: 13.5, fontWeight: 800, color: "#0f172a", marginTop: 2 }}>
-                Exam Prep Hub →
-              </div>
-            </button>
-          </div>
-
-          <button
-            type="button"
-            onClick={() => setShowWebBrochureOnHome(true)}
-            style={{
-              width: "100%",
-              background: "#f1f5f9",
-              color: "#475569",
-              border: "1px solid #cbd5e1",
-              borderRadius: 12,
-              padding: "11px",
-              fontSize: 12.5,
-              fontWeight: 700,
-              cursor: "pointer",
-            }}
-          >
-            🌐 Switch to Full Marketing Website View
-          </button>
+          ) : null}
         </div>
       ) : null}
 
-      {/* 6. 5-Tab Google Play Store Bottom Navigation Bar */}
+      {/* 6. 5-Tab Consumer EdTech Bottom Navigation Bar (Unacademy / PW / Udemy Standard) */}
       {isNative ? (
         <nav
           aria-label="Skylent App Navigation"
@@ -1009,47 +1458,99 @@ export function NativeAppShellController() {
             boxShadow: "0 -6px 24px rgba(15, 23, 42, 0.08)",
             display: "grid",
             gridTemplateColumns: "repeat(5, 1fr)",
-            padding: "6px 6px calc(6px + env(safe-area-inset-bottom))",
+            padding: "5px 6px calc(5px + env(safe-area-inset-bottom))",
           }}
         >
           {[
-            { to: "/", label: "Home", icon: "🏠", match: (p: string) => p === "/" },
-            { to: "/programmes", label: "Courses", icon: "🎓", match: (p: string) => p.startsWith("/programme") || p.startsWith("/course") },
-            { to: "/labs", label: "Practice", icon: "⚡", match: (p: string) => p.startsWith("/labs") || p.startsWith("/os/labs") || p.startsWith("/os/practice") },
-            { to: "/career-os", label: "Career OS", icon: "💼", match: (p: string) => p.startsWith("/career") },
-            { to: dashHref, label: user ? "My OS" : "Account", icon: "👤", match: (p: string) => p.startsWith("/dashboard") || p.startsWith("/login") },
-          ].map((tab) => {
-            const active = tab.match(location.pathname)
-            return (
-              <Link
-                key={tab.label}
-                to={tab.to}
-                onClick={(e) => {
-                  e.preventDefault()
-                  if (tab.to === "/") setShowWebBrochureOnHome(false)
-                  navigate(tab.to)
-                  window.scrollTo({ top: 0, behavior: "smooth" })
-                }}
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: 2,
-                  textDecoration: "none",
-                  padding: "5px 2px",
-                  borderRadius: 10,
-                  color: active ? "#5142b5" : "#64748b",
-                  fontWeight: active ? 800 : 600,
-                  fontSize: 11,
-                  background: active ? "#f5f3ff" : "transparent",
-                }}
-              >
-                <span style={{ fontSize: 17, lineHeight: 1 }} aria-hidden="true">{tab.icon}</span>
-                <span>{tab.label}</span>
-              </Link>
-            )
-          })}
+            {
+              id: "home",
+              label: "Home",
+              icon: "🏠",
+              active: isAppHomeHubActive ? hubTab === "home" : location.pathname === "/",
+              onClick: () => {
+                setShowWebBrochureOnHome(false)
+                setHubTab("home")
+                if (location.pathname !== "/") navigate("/")
+                window.scrollTo({ top: 0, behavior: "smooth" })
+              },
+            },
+            {
+              id: "batches",
+              label: "Batches",
+              icon: "🎓",
+              active: isAppHomeHubActive
+                ? hubTab === "batches"
+                : location.pathname.startsWith("/programme") || location.pathname.startsWith("/course"),
+              onClick: () => {
+                setShowWebBrochureOnHome(false)
+                setHubTab("batches")
+                if (location.pathname !== "/") navigate("/")
+                window.scrollTo({ top: 0, behavior: "smooth" })
+              },
+            },
+            {
+              id: "practice",
+              label: "Practice",
+              icon: "⚡",
+              active: isAppHomeHubActive
+                ? hubTab === "practice"
+                : location.pathname.startsWith("/labs") || location.pathname.startsWith("/os/") || location.pathname.startsWith("/path"),
+              onClick: () => {
+                setShowWebBrochureOnHome(false)
+                setHubTab("practice")
+                if (location.pathname !== "/") navigate("/")
+                window.scrollTo({ top: 0, behavior: "smooth" })
+              },
+            },
+            {
+              id: "live",
+              label: "₹99 Live",
+              icon: "🪙",
+              active: isAppHomeHubActive
+                ? hubTab === "live"
+                : location.pathname.startsWith("/event") || location.pathname.startsWith("/workshop"),
+              onClick: () => {
+                setShowWebBrochureOnHome(false)
+                setHubTab("live")
+                if (location.pathname !== "/") navigate("/")
+                window.scrollTo({ top: 0, behavior: "smooth" })
+              },
+            },
+            {
+              id: "myos",
+              label: user ? "My OS" : "Account",
+              icon: "👤",
+              active: location.pathname.startsWith("/dashboard") || location.pathname.startsWith("/login"),
+              onClick: () => {
+                navigate(dashHref)
+                window.scrollTo({ top: 0, behavior: "smooth" })
+              },
+            },
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={tab.onClick}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 2,
+                border: "none",
+                padding: "5px 2px",
+                borderRadius: 10,
+                color: tab.active ? "#5142b5" : "#64748b",
+                fontWeight: tab.active ? 800 : 600,
+                fontSize: 11,
+                background: tab.active ? "#f5f3ff" : "transparent",
+                cursor: "pointer",
+              }}
+            >
+              <span style={{ fontSize: 17, lineHeight: 1 }} aria-hidden="true">{tab.icon}</span>
+              <span>{tab.label}</span>
+            </button>
+          ))}
         </nav>
       ) : null}
     </>
