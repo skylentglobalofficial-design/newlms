@@ -1,12 +1,13 @@
 # =============================================================================
-# SKYLENT PLAY STORE NATIVE APK & AAB BUILDER (V40 Zero-Touch Auto JDK + SDK)
+# SKYLENT PLAY STORE NATIVE APK & AAB BUILDER (V41 Clean BOM-Free Manifest Fix)
 # Pure-ASCII PowerShell 5.1 / 7+ Compatible
 # =============================================================================
 $ErrorActionPreference = "Stop"
+$Utf8NoBom = New-Object System.Text.UTF8Encoding($false)
 
 Write-Host ""
 Write-Host "============================================================" -ForegroundColor Cyan
-Write-Host "  SKYLENT PLAY STORE NATIVE APK / AAB BUILDER (v40)" -ForegroundColor Cyan
+Write-Host "  SKYLENT PLAY STORE NATIVE APK / AAB BUILDER (v41)" -ForegroundColor Cyan
 Write-Host "============================================================" -ForegroundColor Cyan
 
 # Step 1: Security Audit - Ensure no server secrets are prefixed with VITE_
@@ -38,23 +39,58 @@ if (-not (Test-Path "node_modules/@capacitor/android")) {
 }
 Write-Host "  [OK] Capacitor Android packages ready." -ForegroundColor Green
 
-# Step 4: Initialize or Sync Android Native Project
+# Step 4: Initialize or Sync Android Native Project & Write Clean BOM-Free AndroidManifest.xml
 Write-Host "`n[4/6] Syncing Bundled Assets into Native Android Project..." -ForegroundColor Yellow
 if (-not (Test-Path "android")) {
   cmd /c "npx cap add android"
 }
 cmd /c "npx cap sync android"
 
-$manifestPath = "android/app/src/main/AndroidManifest.xml"
-if (Test-Path $manifestPath) {
-  $manifest = Get-Content $manifestPath -Raw
-  if ($manifest -notmatch "usesCleartextTraffic") {
-    $replacement = '<application android:usesCleartextTraffic="false" android:allowBackup="false"'
-    $manifest = $manifest.Replace("<application", $replacement)
-    Set-Content -Path $manifestPath -Value $manifest -Encoding UTF8
-    Write-Host "  [OK] Hardened AndroidManifest.xml (usesCleartextTraffic=false, allowBackup=false)." -ForegroundColor Green
-  }
-}
+$manifestPath = Join-Path (Get-Location).Path "android\app\src\main\AndroidManifest.xml"
+$cleanManifestXml = @"
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application
+        android:allowBackup="false"
+        android:usesCleartextTraffic="false"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+
+        <activity
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode|navigation"
+            android:name=".MainActivity"
+            android:label="@string/title_activity_main"
+            android:theme="@style/AppTheme.NoActionBarLaunch"
+            android:launchMode="singleTask"
+            android:exported="true">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+        </activity>
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="`${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths"></meta-data>
+        </provider>
+    </application>
+
+    <uses-permission android:name="android.permission.INTERNET" />
+</manifest>
+"@
+[System.IO.File]::WriteAllText($manifestPath, $cleanManifestXml.Replace("`r`n", "`n"), $Utf8NoBom)
+Write-Host "  [OK] Wrote valid BOM-free AndroidManifest.xml (allowBackup=false, usesCleartextTraffic=false)." -ForegroundColor Green
 
 # Step 5: Auto-Detect or Auto-Install Portable Java JDK 21 + Android SDK
 Write-Host "`n[5/6] Configuring Java JDK 21 & Android SDK Toolchain..." -ForegroundColor Yellow
@@ -65,21 +101,18 @@ if (-not (Test-Path $ToolchainRoot)) {
 
 function Find-JavaHome {
   $candidates = @()
-  if ($env:JAVA_HOME -and (Test-Path (Join-Path $env:JAVA_HOME "bin\java.exe"))) {
-    $candidates += $env:JAVA_HOME
-  }
-  $asJbr = "C:\Program Files\Android\Android Studio\jbr"
-  if (Test-Path (Join-Path $asJbr "bin\java.exe")) {
-    $candidates += $asJbr
-  }
   $searchRoots = @(
     (Join-Path $ToolchainRoot "jdk"),
+    "C:\Program Files\Android\Android Studio",
     "C:\Program Files\Microsoft",
     "C:\Program Files\Eclipse Adoptium",
     "C:\Program Files\Java"
   )
   foreach ($root in $searchRoots) {
     if (Test-Path $root) {
+      if (Test-Path (Join-Path $root "jbr\bin\java.exe")) {
+        $candidates += (Join-Path $root "jbr")
+      }
       $dirs = Get-ChildItem -Path $root -Directory -ErrorAction SilentlyContinue | Sort-Object Name -Descending
       foreach ($d in $dirs) {
         if (Test-Path (Join-Path $d.FullName "bin\java.exe")) {
@@ -87,6 +120,9 @@ function Find-JavaHome {
         }
       }
     }
+  }
+  if ($env:JAVA_HOME -and (Test-Path (Join-Path $env:JAVA_HOME "bin\java.exe"))) {
+    $candidates += $env:JAVA_HOME
   }
   foreach ($c in $candidates) {
     return $c
@@ -122,7 +158,9 @@ Write-Host "  [OK] JAVA_HOME set to: $env:JAVA_HOME" -ForegroundColor Green
 
 # Locate or install Android SDK
 $SdkRoot = $null
-if ($env:ANDROID_HOME -and (Test-Path $env:ANDROID_HOME)) {
+if (Test-Path (Join-Path $ToolchainRoot "android-sdk\platforms")) {
+  $SdkRoot = Join-Path $ToolchainRoot "android-sdk"
+} elseif ($env:ANDROID_HOME -and (Test-Path $env:ANDROID_HOME)) {
   $SdkRoot = $env:ANDROID_HOME
 } elseif ($env:ANDROID_SDK_ROOT -and (Test-Path $env:ANDROID_SDK_ROOT)) {
   $SdkRoot = $env:ANDROID_SDK_ROOT
@@ -136,22 +174,14 @@ if (-not (Test-Path $SdkRoot)) {
   New-Item -ItemType Directory -Path $SdkRoot -Force | Out-Null
 }
 
-# Pre-write official Android SDK license hashes so Gradle auto-downloads required platforms/build-tools without prompts
 $LicensesDir = Join-Path $SdkRoot "licenses"
 if (-not (Test-Path $LicensesDir)) {
   New-Item -ItemType Directory -Path $LicensesDir -Force | Out-Null
 }
-$SdkLicenseHashes = @(
-  "",
-  "8933bad161af4178b1185d1a37fbf41ea5269c55",
-  "d56f5187479451eabf01fb78af6dfcb131a6481e",
-  "24333f8a63b6825ea9c5514f83c2829b004d1fee",
-  "84831b9409646a918e30573bab4c9c91346d8abd"
-) -join "`n"
-Set-Content -Path (Join-Path $LicensesDir "android-sdk-license") -Value $SdkLicenseHashes -Encoding ASCII -NoNewline
-Set-Content -Path (Join-Path $LicensesDir "android-sdk-preview-license") -Value "`n84831b9409646a918e30573bab4c9c91346d8abd`n504667f4c0de7af1a06de9f4b1727b84351f2910" -Encoding ASCII -NoNewline
+$SdkLicenseHashes = "`n8933bad161af4178b1185d1a37fbf41ea5269c55`nd56f5187479451eabf01fb78af6dfcb131a6481e`n24333f8a63b6825ea9c5514f83c2829b004d1fee`n84831b9409646a918e30573bab4c9c91346d8abd"
+[System.IO.File]::WriteAllText((Join-Path $LicensesDir "android-sdk-license"), $SdkLicenseHashes, $Utf8NoBom)
+[System.IO.File]::WriteAllText((Join-Path $LicensesDir "android-sdk-preview-license"), "`n84831b9409646a918e30573bab4c9c91346d8abd`n504667f4c0de7af1a06de9f4b1727b84351f2910", $Utf8NoBom)
 
-# If neither platforms nor cmdline-tools exist, download portable Android commandlinetools
 $CmdlineToolsBat = Join-Path $SdkRoot "cmdline-tools\latest\bin\sdkmanager.bat"
 $HasPlatforms = Test-Path (Join-Path $SdkRoot "platforms")
 if ((-not $HasPlatforms) -and (-not (Test-Path $CmdlineToolsBat))) {
@@ -179,7 +209,8 @@ if ((Test-Path $CmdlineToolsBat) -and (-not (Test-Path (Join-Path $SdkRoot "plat
 $env:ANDROID_HOME = $SdkRoot
 $env:ANDROID_SDK_ROOT = $SdkRoot
 $EscapedSdk = $SdkRoot.Replace("\", "\\")
-Set-Content -Path "android/local.properties" -Value "sdk.dir=$EscapedSdk`n" -Encoding ASCII
+$LocalPropsPath = Join-Path (Get-Location).Path "android\local.properties"
+[System.IO.File]::WriteAllText($LocalPropsPath, "sdk.dir=$EscapedSdk`n", $Utf8NoBom)
 Write-Host "  [OK] ANDROID_HOME set to: $SdkRoot" -ForegroundColor Green
 
 # Step 6: Build Native APK via Gradle
@@ -201,15 +232,13 @@ if (Test-Path "android/gradlew.bat") {
     Write-Host ""
     Write-Host "============================================================" -ForegroundColor Green
     Write-Host "  [SUCCESS] NATIVE ANDROID APK GENERATED ($SizeMb MB)!" -ForegroundColor Green
-    Write-Host "  1. Project Copy : $RootApk" -ForegroundColor White
+    Write-Host "  1. Project Copy  : $RootApk" -ForegroundColor White
     Write-Host "  2. Downloads Copy: $DownloadsApk" -ForegroundColor White
     Write-Host "============================================================" -ForegroundColor Green
   } else {
     Write-Host ""
     Write-Host "============================================================" -ForegroundColor Yellow
     Write-Host "  [NOTE] Local Gradle exited with code $gradleExit." -ForegroundColor Yellow
-    Write-Host "  Your GitHub Actions Cloud Builder (.github/workflows/build-android-apk.yml)" -ForegroundColor Cyan
-    Write-Host "  also builds the APK & Play Store AAB automatically on 'git push'!" -ForegroundColor Cyan
     Write-Host "============================================================" -ForegroundColor Yellow
   }
 }

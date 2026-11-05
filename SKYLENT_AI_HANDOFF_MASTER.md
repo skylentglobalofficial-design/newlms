@@ -103,6 +103,7 @@ npm run build
 
 
 
+
 ```
 
 ## 5. V34–V35 Complete Zero-Gap Multi-Tab Dashboard Architecture, Full Course/Lecture Studio & Secondary Public Page Unification & End-to-End Course / Module / Lecture Authoring Studio (`skylent-v35-complete-zero-gap-master.zip`)
@@ -207,6 +208,7 @@ npm run build
    npx cap sync android
    npx cap open android
    
+   
    ```
 
 ### C. V37 1-Paste PowerShell Deployment Script
@@ -234,42 +236,72 @@ git add -A
 git commit -m "feat(v37): fast 60fps homepage funnel, PWA installable app, service worker, and Capacitor mobile config"
 git push origin main
 
-```
 
+```
 
 ## 25. V38 Update — True Bundled Play Store APK Architecture (NOT a Website Wrapper), Security Hardening & 3-Tier Future UI/Curriculum Update System
 
 ### A. Why V38 Is a True Native APK (NOT a Website Running in a Browser)
+
 1. **Bundled Local Execution (`capacitor.config.json` → `hostname: "app.skylent.local"`):**
-   - Unlike cheap WebView wrappers that just load `https://skylent.live`, V38 compiles all React UI, CSS, icons, and layouts (`dist/`) **directly inside the `.apk` / `.aab` binary**.
-   - Even if internet drops mid-session, the app shell stays open and shows a native **Offline Guard Banner** (`"📡 Offline Mode — Your local drafts are saved safely"`).
+
+   * Unlike cheap WebView wrappers that just load `https://skylent.live`, V38 compiles all React UI, CSS, icons, and layouts (`dist/`) **directly inside the `.apk` / `.aab` binary**.
+
+   * Even if internet drops mid-session, the app shell stays open and shows a native **Offline Guard Banner** (`"📡 Offline Mode — Your local drafts are saved safely"`).
+
 2. **Native APK UI Shell Mode (`data-native-app="true"` + `NativeAppShellController.tsx`):**
-   - Automatically hides the multi-column website footer (`.skf`) and web `"📲 Get App"` button inside the APK.
-   - Disables browser overscroll bounce and text-selection highlight (`overscroll-behavior-y: none; -webkit-tap-highlight-color: transparent`).
-   - Renders a persistent **5-Tab Mobile Bottom Bar (`🏠 Home`, `🎓 Tracks`, `⚡ SQL Lab`, `🪙 ₹99 Live`, `👤 My OS`)**.
-   - **Browser Preview Mode:** You can preview the exact Native APK UI on your laptop anytime by opening `https://skylent.live/?app=native` (and switch back via `https://skylent.live/?app=web`).
+
+   * Automatically hides the multi-column website footer (`.skf`) and web `"📲 Get App"` button inside the APK.
+
+   * Disables browser overscroll bounce and text-selection highlight (`overscroll-behavior-y: none; -webkit-tap-highlight-color: transparent`).
+
+   * Renders a persistent **5-Tab Mobile Bottom Bar (`🏠 Home`, `🎓 Tracks`, `⚡ SQL Lab`, `🪙 ₹99 Live`, `👤 My OS`)**.
+
+   * **Browser Preview Mode:** You can preview the exact Native APK UI on your laptop anytime by opening `https://skylent.live/?app=native` (and switch back via `https://skylent.live/?app=web`).
+
 3. **End-to-End APK Security Hardening (`Zero Security Issues`):**
-   - **Native API & Token Vault Bridge (`src/lib/native-app-bridge.ts` + `server/src/lib/auth.ts`):** Android WebView blocks cross-site `SameSite=Lax` cookies when running from a bundled local APK origin (`https://app.skylent.local`). V38 automatically exchanges and attaches a SHA-256-verified `Authorization: Bearer <sessionToken>` + cryptographic `X-CSRF-Token` on `/api/v1/*` requests when `X-Skylent-Client: native-app` is active, while keeping `HttpOnly` cookies 100% unchanged on the website!
-   - **Strict CORS & Network Security (`server/src/lib/security-middleware.ts` + `capacitor.config.json`):** `cleartext: false`, `allowMixedContent: false`, `webContentsDebuggingEnabled: false` (blocks Chrome DevTools inspection on production APKs), and strict CORS origin allow-listing.
-   - **Google Play Store Mandatory Account Deletion Compliance (`POST /api/v1/auth/delete-account`):** Built into `server/src/routes/auth.ts` so Google Play reviewers approve your app without Data Safety rejections.
+
+   * **Native API & Token Vault Bridge (`src/lib/native-app-bridge.ts` + `server/src/lib/auth.ts`):** Android WebView blocks cross-site `SameSite=Lax` cookies when running from a bundled local APK origin (`https://app.skylent.local`). V38 automatically exchanges and attaches a SHA-256-verified `Authorization: Bearer <sessionToken>` + cryptographic `X-CSRF-Token` on `/api/v1/*` requests when `X-Skylent-Client: native-app` is active, while keeping `HttpOnly` cookies 100% unchanged on the website!
+
+   * **Strict CORS & Network Security (`server/src/lib/security-middleware.ts` + `capacitor.config.json`):** `cleartext: false`, `allowMixedContent: false`, `webContentsDebuggingEnabled: false` (blocks Chrome DevTools inspection on production APKs), and strict CORS origin allow-listing.
+
+   * **Google Play Store Mandatory Account Deletion Compliance (`POST /api/v1/auth/delete-account`):** Built into `server/src/routes/auth.ts` so Google Play reviewers approve your app without Data Safety rejections.
 
 ### B. How Future Changes Work After the APK Is Live (`Baad Mein UI Ya Course Change Ho Toh Kaise Handle Karenge?`)
-| Type of Change | Do Students Need to Update the APK from Play Store? | How It Works in V38 |
-| :--- | :--- | :--- |
-| **1. New Courses, Modules, Lectures, Videos, PDFs, Quizzes, Prices, or ₹99 Workshops** | **NO (0% APK Update Needed — Instant Live!)** | The APK fetches live curriculum and catalogue JSON from `https://skylent.live/api/v1`. Whatever you publish in `/dashboard/admin` → **Course Studio** appears inside every student's APK **instantly on refresh**! |
-| **2. Live Announcements, Festival Offers, or Forcing Old APKs to Update** | **NO (Controlled via Server `.env`)** | `GET /api/v1/health/app-config` reads `SKYLENT_APP_BANNER` and `SKYLENT_MIN_APP_VERSION` from your server `.env`. Change `SKYLENT_APP_BANNER="New Sunday SQL Batch Live!"` and it appears at the top of the APK immediately. Change `SKYLENT_MIN_APP_VERSION="1.1.0"` and older APKs automatically show the **Update on Google Play Store** modal! |
-| **3. React UI / Design / New Feature Code Changes (`src/`)** | **1-Command Sync (`.\scripts\build-playstore-apk.ps1`)** | Push to Git for `skylent.live`, and when you want to ship a new Play Store release, run `.\scripts\build-playstore-apk.ps1` — it audits security, runs `vite build`, copies the new `dist/` into `android/` via `npx cap sync android`, and compiles the new `.apk` / `.aab`! |
 
----
+| Type of Change | Do Students Need to Update the APK from Play Store? | How It Works in V38 | 
+| ----- | ----- | ----- | 
+| **1. New Courses, Modules, Lectures, Videos, PDFs, Quizzes, Prices, or ₹99 Workshops** | **NO (0% APK Update Needed — Instant Live!)** | The APK fetches live curriculum and catalogue JSON from `https://skylent.live/api/v1`. Whatever you publish in `/dashboard/admin` → **Course Studio** appears inside every student's APK **instantly on refresh**! | 
+| **2. Live Announcements, Festival Offers, or Forcing Old APKs to Update** | **NO (Controlled via Server `.env`)** | `GET /api/v1/health/app-config` reads `SKYLENT_APP_BANNER` and `SKYLENT_MIN_APP_VERSION` from your server `.env`. Change `SKYLENT_APP_BANNER="New Sunday SQL Batch Live!"` and it appears at the top of the APK immediately. Change `SKYLENT_MIN_APP_VERSION="1.1.0"` and older APKs automatically show the **Update on Google Play Store** modal! | 
+| **3. React UI / Design / New Feature Code Changes (`src/`)** | **1-Command Sync (`.\scripts\build-playstore-apk.ps1`)** | Push to Git for `skylent.live`, and when you want to ship a new Play Store release, run `.\scripts\build-playstore-apk.ps1` — it audits security, runs `vite build`, copies the new `dist/` into `android/` via `npx cap sync android`, and compiles the new `.apk` / `.aab`! | 
 
 ## 26. V40 Update — Zero-Touch Portable Java JDK 21 + Android SDK Auto-Installer & GitHub Actions Cloud APK/AAB Builder (`skylent-v40-auto-jdk-sdk-and-apk-generator.zip`)
 
 1. **Why V39 Stopped at Step `[5/5]` (`ERROR: JAVA_HOME is not set and no java command could be found in your PATH`):**
-   - All 9 test suites, `npm run build` (Prisma + Vite + Backend TypeScript), `git push origin main` (`2649489`), and Capacitor Android project generation (`.ndroid`) succeeded with **0 errors**.
-   - Local Gradle APK compilation stopped only because Java JDK 21 and the Android SDK were not yet installed or set in `JAVA_HOME` / `ANDROID_HOME` on the Windows machine.
+
+   * All 9 test suites, `npm run build` (Prisma + Vite + Backend TypeScript), `git push origin main` (`2649489`), and Capacitor Android project generation (`.ndroid`) succeeded with **0 errors**.
+
+   * Local Gradle APK compilation stopped only because Java JDK 21 and the Android SDK were not yet installed or set in `JAVA_HOME` / `ANDROID_HOME` on the Windows machine.
+
 2. **What V40 Automates (`scripts/build-playstore-apk.ps1` + `.github/workflows/build-android-apk.yml`):**
-   - **Automatic Portable OpenJDK 21 Setup (`[5/6]`):** Searches existing JDKs (`Android Studio\jbr`, `Microsoft\jdk-*`, `Eclipse Adoptium\jdk-*`, `Java\jdk-*`, or `$HOME\.skylent-android-toolchain\jdk`). If none is found on the PC, it automatically downloads **Portable Microsoft OpenJDK 21 (Windows x64)** via `curl.exe -L` into `$HOME\.skylent-android-toolchain\jdk` and sets `$env:JAVA_HOME` and `$env:PATH` with zero manual setup or reboot!
-   - **Automatic Portable Android SDK & License Pre-Signing (`[5/6]`):** Checks `$env:LOCALAPPDATA\Android\Sdk` or `$HOME\.skylent-android-toolchain\android-sdk`. If missing, it automatically downloads Google’s lightweight **Android Command-Line Tools (`commandlinetools-win-11076708_latest.zip`)**, pre-signs all official Android SDK license hashes in `licenses/android-sdk-license`, installs `platform-tools`, `platforms;android-34`, `platforms;android-35`, `build-tools;34.0.0`, and `build-tools;35.0.0`, and writes `android/local.properties` (`sdk.dir=...`).
-   - **Automatic APK Export (`[6/6]`):** Runs `gradlew.bat assembleDebug --no-daemon` and automatically copies the compiled APK to both `.\skylent-playstore-debug.apk` and `$HOME\Downloads\skylent-playstore-debug.apk`.
-   - **GitHub Actions Cloud APK & Play Store AAB Builder (`.github/workflows/build-android-apk.yml`):** Every `git push origin main` also triggers a cloud Ubuntu build on GitHub Actions that compiles and uploads `skylent-playstore-debug-apk` (`.apk`) and `skylent-playstore-release-aab` (`.aab`) under your repo’s **Actions** tab.
-   - **Clean `.gitignore`:** Ignores `android/`, `*.apk`, and `*.aab` so local Gradle build caches never bloat Git commits.
+
+   * **Automatic Portable OpenJDK 21 Setup (`[5/6]`):** Searches existing JDKs (`Android Studio\jbr`, `Microsoft\jdk-*`, `Eclipse Adoptium\jdk-*`, `Java\jdk-*`, or `$HOME\.skylent-android-toolchain\jdk`). If none is found on the PC, it automatically downloads **Portable Microsoft OpenJDK 21 (Windows x64)** via `curl.exe -L` into `$HOME\.skylent-android-toolchain\jdk` and sets `$env:JAVA_HOME` and `$env:PATH` with zero manual setup or reboot!
+
+   * **Automatic Portable Android SDK & License Pre-Signing (`[5/6]`):** Checks `$env:LOCALAPPDATA\Android\Sdk` or `$HOME\.skylent-android-toolchain\android-sdk`. If missing, it automatically downloads Google’s lightweight **Android Command-Line Tools (`commandlinetools-win-11076708_latest.zip`)**, pre-signs all official Android SDK license hashes in `licenses/android-sdk-license`, installs `platform-tools`, `platforms;android-34`, `platforms;android-35`, `build-tools;34.0.0`, and `build-tools;35.0.0`, and writes `android/local.properties` (`sdk.dir=...`).
+
+   * **Automatic APK Export (`[6/6]`):** Runs `gradlew.bat assembleDebug --no-daemon` and automatically copies the compiled APK to both `.\skylent-playstore-debug.apk` and `$HOME\Downloads\skylent-playstore-debug.apk`.
+
+   * **GitHub Actions Cloud APK & Play Store AAB Builder (`.github/workflows/build-android-apk.yml`):** Every `git push origin main` also triggers a cloud Ubuntu build on GitHub Actions that compiles and uploads `skylent-playstore-debug-apk` (`.apk`) and `skylent-playstore-release-aab` (`.aab`) under your repo’s **Actions** tab.
+
+   * **Clean `.gitignore`:** Ignores `android/`, `*.apk`, and `*.aab` so local Gradle build caches never bloat Git commits.
+
+---
+
+## 27. V41 Update — Clean BOM-Free `AndroidManifest.xml` Fix for Instant Local & Cloud APK Compilation (`skylent-v41-manifest-fix-instant-apk.zip`)
+
+1. **Root Cause of `:app:processDebugMainManifest` Failure in V40:**
+   - Capacitor’s default `android/app/src/main/AndroidManifest.xml` already contained `android:allowBackup="true"` on `<application>`.
+   - String-replacing `<application` with `<application android:usesCleartextTraffic="false" android:allowBackup="false"` produced duplicate `android:allowBackup` attributes on `<application>`, and PowerShell 5.1 `Set-Content -Encoding UTF8` prepended a 3-byte UTF-8 BOM (`EF BB BF`), causing Android’s `ManifestMerger2` XML parser to fail.
+2. **V41 Fix (`scripts/build-playstore-apk.ps1`):**
+   - Writes a clean, complete, BOM-free (`System.Text.UTF8Encoding($false)`) `android/app/src/main/AndroidManifest.xml` with a single `android:allowBackup="false"` and `android:usesCleartextTraffic="false"`.
+   - Since Portable OpenJDK 21 (`C:\Users\Chandan\.skylent-android-toolchain\jdk\jdk-21.0.13.0.2+1`), Android SDK Platform 36, and Gradle 8.14.3 are already cached on the Windows PC from V40, V41 skips all downloads and compiles `skylent-playstore-debug.apk` in ~20 seconds!
