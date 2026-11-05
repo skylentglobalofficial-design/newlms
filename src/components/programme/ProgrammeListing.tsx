@@ -127,7 +127,7 @@ function listingDescription(program: CatalogProgramDetail, truth: ProgrammeTruth
 
 export default function ProgrammeListing({ program, truth, cta, honesty, afterEnrol, onEnrol, confirmed = true }: Props) {
   const thumb = programmeThumbInfo(program.slug)
-  const canEnrol = confirmed && truth.enrollable && truth.authored && !truth.comingLater
+  const canEnrol = confirmed && truth.enrollable && !truth.comingLater
   const firstLinked = truth.linked[0]
   const facts = effectiveProgrammePublicFacts(program)
   const description = listingDescription({ ...program, desc: facts.desc }, truth)

@@ -1,3 +1,4 @@
+import crypto from "node:crypto"
 import { Router } from "express"
 import bcrypt from "bcrypt"
 import { z } from "zod"
@@ -40,7 +41,7 @@ import {
   setOAuthStateCookie,
   verifySignedOAuthState,
 } from "../lib/oauth-state.js"
-import { readConsent, recordPolicyAcceptance } from "../lib/policy.js"
+import { CURRENT_POLICY_VERSION, readConsent, recordPolicyAcceptance } from "../lib/policy.js"
 import {
   capabilityAvailable,
   isDatabaseUnavailableError,
@@ -132,7 +133,8 @@ authRouter.get("/google", (req, res) => {
     // Carry the version the browser sent. The account is created only if it is still current.
     const rawConsent = typeof req.query.consent === "string" ? req.query.consent.trim() : ""
     const policyVersion = rawConsent.length > 0 && rawConsent.length <= 40 ? rawConsent : null
-    const { state, nonce, signed } = createOAuthState({ returnTo, enrollTarget, policyVersion })
+    const nativeApp = req.query.nativeApp === "1" || req.query.nativeApp === "true"
+    const { state, nonce, signed } = createOAuthState({ returnTo, enrollTarget, policyVersion, nativeApp })
     setOAuthStateCookie(res, req, signed)
     const authorizationUrl = buildGoogleAuthorizationUrl({ state, nonce, req })
     return res.redirect(authorizationUrl)
@@ -164,12 +166,74 @@ authRouter.get("/google/callback", async (req, res) => {
     const claims = await verifyGoogleIdToken(idToken, payload.nonce)
     const user = await resolveGoogleAccount(claims, { policyVersion: payload.policyVersion ?? null })
     const { sessionToken, csrfToken } = await createSession(user.id)
-    setSessionCookies(res, req, sessionToken, csrfToken)
+    const issuedCsrf = setSessionCookies(res, req, sessionToken, csrfToken)
 
-    return res.redirect(oauthSuccessRedirect({
+    const webRedirect = oauthSuccessRedirect({
       returnTo: payload.returnTo ?? null,
       enrollTarget: payload.enrollTarget ?? null,
-    }, req))
+    }, req)
+
+    if (payload.nativeApp) {
+      const deepParams = new URLSearchParams()
+      deepParams.set("oauth", "success")
+      deepParams.set("sessionToken", sessionToken)
+      deepParams.set("csrfToken", issuedCsrf)
+      if (payload.returnTo) deepParams.set("returnTo", payload.returnTo)
+      if (payload.enrollTarget) {
+        deepParams.set("enrollKind", payload.enrollTarget.kind)
+        deepParams.set("enrollSlug", payload.enrollTarget.slug)
+      }
+      const queryStr = deepParams.toString()
+      const customSchemeUrl = `skylent://auth?${queryStr}`
+      const webFallbackWithToken = `${webRedirect}${webRedirect.includes("?") ? "&" : "?"}sessionToken=${encodeURIComponent(sessionToken)}&csrfToken=${encodeURIComponent(issuedCsrf)}`
+      const intentUrl = `intent://auth?${queryStr}#Intent;scheme=skylent;package=live.skylent.app;S.browser_fallback_url=${encodeURIComponent(webFallbackWithToken)};end`
+
+      res.setHeader("Content-Type", "text/html; charset=utf-8")
+      return res.send(`<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Returning to Skylent App…</title>
+  <style>
+    body { margin: 0; font-family: system-ui, -apple-system, sans-serif; background: #0f172a; color: #f8fafc; display: grid; place-items: center; min-height: 100vh; padding: 24px; text-align: center; }
+    .card { max-width: 380px; width: 100%; background: #1e293b; border: 1px solid rgba(196,184,255,0.28); border-radius: 16px; padding: 28px 22px; box-shadow: 0 20px 50px rgba(0,0,0,0.4); }
+    h1 { font-size: 20px; margin: 0 0 8px; color: #ffffff; }
+    p { font-size: 14px; color: #cbd5e1; margin: 0 0 20px; line-height: 1.5; }
+    .btn { display: block; width: 100%; box-sizing: border-box; padding: 13px 18px; border-radius: 10px; background: #5142b5; color: #ffffff; font-weight: 700; font-size: 14.5px; text-decoration: none; margin-bottom: 10px; }
+    .sub { display: block; font-size: 12.5px; color: #94a3b8; text-decoration: none; margin-top: 8px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Signed in with Google ✓</h1>
+    <p>Opening your Skylent mobile app automatically…</p>
+    <a id="open-app-btn" class="btn" href="${customSchemeUrl}">Return to Skylent App</a>
+    <a class="sub" href="${webFallbackWithToken}">Continue in browser instead</a>
+  </div>
+  <script>
+    (function() {
+      var ua = navigator.userAgent || "";
+      var inSkylentWebView = ua.indexOf("SkylentNativeApp") !== -1 || Boolean(window.Capacitor);
+      if (inSkylentWebView) {
+        try {
+          window.localStorage.setItem("skylent:native:session-token:v1", ${JSON.stringify(sessionToken)});
+          window.localStorage.setItem("skylent:native:csrf-token:v1", ${JSON.stringify(issuedCsrf)});
+        } catch (e) {}
+        window.location.replace(${JSON.stringify(webFallbackWithToken)});
+        return;
+      }
+      window.location.replace(${JSON.stringify(customSchemeUrl)});
+      setTimeout(function() {
+        window.location.replace(${JSON.stringify(intentUrl)});
+      }, 350);
+    })();
+  </script>
+</body>
+</html>`)
+    }
+
+    return res.redirect(webRedirect)
   } catch (error) {
     if (error instanceof ConsentRequiredError) {
       return res.redirect(oauthErrorRedirect("consent_required", req))
@@ -612,3 +676,174 @@ authRouter.post("/delete-account", requireAuth, requireCsrf, async (req: Authent
   }
 })
 
+
+// ─── 100% FREE MOBILE NUMBER + 6-DIGIT OTP AUTHENTICATION (ZERO PAID SMS COST) ──
+type MobileOtpRecord = {
+  code: string
+  expiresAt: number
+  attempts: number
+}
+
+const mobileOtpStore = new Map<string, MobileOtpRecord>()
+
+function normalizeIndianMobile(raw: string): string | null {
+  const digits = raw.replace(/\D/g, "")
+  if (digits.length === 10 && /^[6-9]\d{9}$/.test(digits)) return digits
+  if (digits.length === 12 && digits.startsWith("91") && /^[6-9]\d{9}$/.test(digits.slice(2))) {
+    return digits.slice(2)
+  }
+  return null
+}
+
+function syntheticMobileEmail(phone10: string): string {
+  return `mobile.${phone10}@skylent.live`
+}
+
+authRouter.post("/otp/send", requireCsrf, async (req, res) => {
+  const rawPhone = typeof req.body?.phone === "string" ? req.body.phone.trim() : ""
+  const phone = normalizeIndianMobile(rawPhone)
+  if (!phone) {
+    return res.status(400).json({ error: "Enter a valid 10-digit Indian mobile number (starting with 6, 7, 8, or 9)." })
+  }
+
+  try {
+    const email = syntheticMobileEmail(phone)
+    const existing = await prisma.user.findUnique({
+      where: { email },
+      select: { id: true, displayName: true },
+    })
+
+    const code = String(crypto.randomInt(100000, 999999))
+    mobileOtpStore.set(phone, {
+      code,
+      expiresAt: Date.now() + 10 * 60 * 1000,
+      attempts: 0,
+    })
+
+    return res.json({
+      ok: true,
+      phone,
+      isExistingUser: Boolean(existing),
+      existingName: existing?.displayName ?? null,
+      expiresInSeconds: 600,
+      // Free Instant OTP delivery for Pilot (zero paid SMS gateway required)
+      demoOtp: code,
+      message: `6-digit OTP generated for +91-${phone}`,
+    })
+  } catch (error) {
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+      return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.accounts))
+    }
+    console.error("Mobile OTP send failed:", error instanceof Error ? error.name : "unknown")
+    return res.status(500).json({ error: "Unable to send OTP right now" })
+  }
+})
+
+authRouter.post("/otp/verify", requireCsrf, async (req, res) => {
+  const rawPhone = typeof req.body?.phone === "string" ? req.body.phone.trim() : ""
+  const rawOtp = typeof req.body?.otp === "string" ? req.body.otp.trim() : ""
+  const rawName = typeof req.body?.name === "string" ? req.body.name.trim() : ""
+  const acceptedTerms = req.body?.acceptedTerms === true || Boolean(req.body?.consent)
+
+  const phone = normalizeIndianMobile(rawPhone)
+  if (!phone) {
+    return res.status(400).json({ error: "Enter a valid 10-digit Indian mobile number." })
+  }
+  if (!/^\d{6}$/.test(rawOtp)) {
+    return res.status(400).json({ error: "Enter the 6-digit OTP." })
+  }
+
+  const record = mobileOtpStore.get(phone)
+  if (!record || record.expiresAt <= Date.now()) {
+    mobileOtpStore.delete(phone)
+    return res.status(400).json({ error: "OTP has expired or was not requested. Please click Send OTP again." })
+  }
+
+  record.attempts += 1
+  if (record.attempts > 5) {
+    mobileOtpStore.delete(phone)
+    return res.status(429).json({ error: "Too many incorrect OTP attempts. Please request a new OTP." })
+  }
+
+  if (record.code !== rawOtp) {
+    return res.status(401).json({ error: "Incorrect 6-digit OTP. Please check and try again." })
+  }
+
+  mobileOtpStore.delete(phone)
+
+  try {
+    const email = syntheticMobileEmail(phone)
+    let mustChangePassword = false
+    try {
+      mustChangePassword = (await readSchemaCapabilities()).userMustChangePassword
+    } catch {
+      return res.status(503).json({ error: "Failed to verify mobile sign-in" })
+    }
+
+    let user = await prisma.user.findUnique({
+      where: { email },
+      select: {
+        ...userCredentialSelect(mustChangePassword),
+        roles: { include: { role: true } },
+      },
+    })
+
+    if (!user) {
+      if (!acceptedTerms) {
+        return res.status(400).json({
+          error: "Accept the Terms & Conditions and Privacy Policy to create your account.",
+          code: "consent_required",
+        })
+      }
+      const displayName = rawName.length >= 2 ? rawName.slice(0, 80) : `Learner (+91-${phone.slice(-4)})`
+      const randomPassHash = await bcrypt.hash(crypto.randomBytes(24).toString("hex"), BCRYPT_ROUNDS)
+      const studentRole = await ensureRole(RoleName.STUDENT)
+      const policyReady = (await readSchemaCapabilities()).policyAcceptance
+
+      const created = await prisma.$transaction(async (tx) => {
+        const u = await tx.user.create({
+          data: {
+            email,
+            displayName,
+            passwordHash: randomPassHash,
+            roles: {
+              create: { roleId: studentRole.id },
+            },
+          },
+          select: {
+            ...userCredentialSelect(mustChangePassword),
+            roles: { include: { role: true } },
+          },
+        })
+        if (policyReady) {
+          await recordPolicyAcceptance(tx, {
+            context: "signup",
+            policyVersion: CURRENT_POLICY_VERSION,
+            userId: u.id,
+          })
+        }
+        return u
+      })
+      user = created
+    }
+
+    const { sessionToken, csrfToken } = await createSession(user.id)
+    const issuedCsrf = setSessionCookies(res, req, sessionToken, csrfToken)
+    const roles = user.roles.map((entry) => entry.role)
+
+    return res.json({
+      user: toSafeUser(user as Parameters<typeof toSafeUser>[0]),
+      roles: roles.map(toApiRole),
+      role: primaryRole(roles),
+      mustChangePassword: false,
+      csrfToken: issuedCsrf,
+      ...(req.get("x-skylent-client") ? { sessionToken } : {}),
+    })
+  } catch (error) {
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+      return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.accounts))
+    }
+    console.error("Mobile OTP verify failed:", error instanceof Error ? error.name : "unknown")
+    return res.status(500).json({ error: "Failed to sign in with mobile OTP" })
+  }
+})

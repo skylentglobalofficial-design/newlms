@@ -20,22 +20,10 @@
     <script>
       (function () {
         try {
-          // Capture native Windows / Android beforeinstallprompt immediately before React mounts
-          window.__skylentDeferredInstallPrompt = null;
-          window.addEventListener("beforeinstallprompt", function (e) {
-            e.preventDefault();
-            window.__skylentDeferredInstallPrompt = e;
-            window.dispatchEvent(new CustomEvent("skylent:install-ready"));
-          });
-          window.addEventListener("appinstalled", function () {
-            window.__skylentDeferredInstallPrompt = null;
-            window.dispatchEvent(new CustomEvent("skylent:app-installed"));
-          });
-
           if ("caches" in window) {
             caches.keys().then(function (keys) {
               keys.forEach(function (k) {
-                if (k.indexOf("v52") === -1) caches.delete(k);
+                if (k.indexOf("v53") === -1) caches.delete(k);
               });
             });
           }
@@ -54,7 +42,7 @@
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
     <script>
-      // Register Service Worker on web (HTTPS or localhost) so Windows Desktop & Android Chrome enable 1-Click App Install
+      // Register Service Worker on web so Chrome/Edge shows the native YouTube-style Install / Open in app button in the URL address bar
       var isNativeCapacitor = Boolean(
         window.Capacitor ||
         window.location.hostname === "app.skylent.local" ||

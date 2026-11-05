@@ -4,6 +4,12 @@
   "webDir": "dist",
   "bundledWebRuntime": false,
   "server": {
-    "androidScheme": "https"
+    "androidScheme": "https",
+    "allowNavigation": [
+      "skylent.live",
+      "*.skylent.live",
+      "accounts.google.com",
+      "*.google.com"
+    ]
   }
 }

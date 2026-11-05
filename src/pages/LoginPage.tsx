@@ -5,7 +5,8 @@ import type { AuthUser, UserRole } from '../context/AuthContext'
 import { cataloguePathForTarget, fulfillCatalogEnrollment, learnPathForWorkspace, type CatalogEnrollTarget, type LoginRedirectState } from '../lib/catalog-enrollment'
 import { takeEnrolConsent } from '../lib/policy'
 import { sanitizeReturnTo } from '../lib/safe-return'
-import { buildGoogleOAuthStartUrl, checkGoogleOAuthAvailable } from '../lib/auth-api'
+import { buildGoogleOAuthStartUrl, checkGoogleOAuthAvailable, sendMobileOtpRequest } from '../lib/auth-api'
+import { setNativeCsrfToken, setNativeSessionToken } from '../lib/native-app-bridge'
 import { courseBySlug } from '../lib/catalog-maturity'
 import { programmeDiscoveryFor } from '../lib/programme-discovery'
 import './LoginPage.css'
@@ -105,11 +106,12 @@ function mergeRedirectState(
 }
 
 export default function LoginPage() {
-  const { login, signup, loginDemo, user, ready } = useAuth()
+  const { login, signup, loginWithMobileOtp, refreshSession, loginDemo, user, ready } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
 
   const [tab, setTab] = useState<'signin' | 'signup'>('signin')
+  const [authMethod, setAuthMethod] = useState<'email' | 'otp'>('email')
 
   const [siEmail, setSiEmail] = useState('')
   const [siPassword, setSiPassword] = useState('')
@@ -119,6 +121,17 @@ export default function LoginPage() {
   const [suPassword, setSuPassword] = useState('')
   const [suTerms, setSuTerms] = useState(false)
   const [suTermsTried, setSuTermsTried] = useState(false)
+
+  // Free Mobile OTP State
+  const [otpPhone, setOtpPhone] = useState('')
+  const [otpSent, setOtpSent] = useState(false)
+  const [otpCode, setOtpCode] = useState('')
+  const [otpPreviewCode, setOtpPreviewCode] = useState<string | null>(null)
+  const [otpExistingUser, setOtpExistingUser] = useState(true)
+  const [otpName, setOtpName] = useState('')
+  const [otpTerms, setOtpTerms] = useState(true)
+  const [otpTermsTried, setOtpTermsTried] = useState(false)
+  const otpTermsRef = useRef<HTMLInputElement>(null)
 
   const [error, setError] = useState<string | null>(null)
   const errorRef = useRef<HTMLDivElement>(null)
@@ -150,6 +163,11 @@ export default function LoginPage() {
 
   useEffect(() => {
     const params = new URLSearchParams(location.search)
+    const incomingSessionToken = params.get('sessionToken')
+    const incomingCsrfToken = params.get('csrfToken')
+    if (incomingSessionToken) setNativeSessionToken(incomingSessionToken)
+    if (incomingCsrfToken) setNativeCsrfToken(incomingCsrfToken)
+
     const errorParam = params.get('error')
     if (errorParam === 'consent_required') {
       setTab('signup')
@@ -171,12 +189,12 @@ export default function LoginPage() {
     }
     if (errorParam === 'oauth_not_configured') {
       setGoogleAvailable(false)
-      setError('Google sign-in is not enabled on this server yet. Please sign in with your email and password.')
+      setError('Google sign-in is not enabled on this server yet. Please sign in with Mobile OTP or email and password.')
       navigate(location.pathname, { replace: true, state: location.state })
       return
     }
     if (errorParam?.startsWith('oauth')) {
-      setError('Google sign-in failed. Please try again or use email and password.')
+      setError('Google sign-in failed. Please try again or use Mobile OTP or email and password.')
       navigate(location.pathname, { replace: true, state: location.state })
       return
     }
@@ -184,20 +202,24 @@ export default function LoginPage() {
     if (params.get('oauth') !== 'success' || !ready || oauthHandled) return
 
     setOauthHandled(true)
-    if (!user) {
-      setError('Google sign-in could not restore your session. Please try again.')
-      navigate(location.pathname, { replace: true, state: location.state })
-      return
+    const finalizeOAuth = async () => {
+      const activeUser = user ?? (await refreshSession())
+      if (!activeUser) {
+        setError('Google sign-in could not restore your session. Please try again or use Mobile OTP.')
+        navigate(location.pathname, { replace: true, state: location.state })
+        return
+      }
+      await finishAuthNavigation(
+        navigate,
+        activeUser.role,
+        mergeRedirectState((location.state ?? null) as LoginRedirectState | null, params),
+      )
     }
 
-    void finishAuthNavigation(
-      navigate,
-      user.role,
-      mergeRedirectState((location.state ?? null) as LoginRedirectState | null, params),
-    ).catch((err) => {
+    void finalizeOAuth().catch((err) => {
       setError(err instanceof Error ? err.message : "Unable to enrol right now.")
     })
-  }, [location.pathname, location.search, location.state, navigate, oauthHandled, ready, user])
+  }, [location.pathname, location.search, location.state, navigate, oauthHandled, ready, refreshSession, user])
 
   useEffect(() => {
     if (!error) return
@@ -208,7 +230,7 @@ export default function LoginPage() {
 
   function startGoogleAuth(acceptedTerms = false) {
     if (googleAvailable === false) {
-      reportError('Google sign-in is not enabled on this server yet. Please use email and password above.')
+      reportError('Google sign-in is not enabled on this server yet. Please use Mobile OTP or email and password above.')
       return
     }
     setError(null)
@@ -239,6 +261,66 @@ export default function LoginPage() {
       return
     }
     setError(message)
+  }
+
+  async function handleSendOtp(e: FormEvent) {
+    e.preventDefault()
+    if (submittingRef.current) return
+    const digits = otpPhone.replace(/\D/g, '')
+    if (digits.length !== 10 && !(digits.length === 12 && digits.startsWith('91'))) {
+      reportError('Enter a valid 10-digit mobile number.', document.getElementById('otp-phone'))
+      return
+    }
+    setError(null)
+    submittingRef.current = true
+    setSubmitting(true)
+    try {
+      const res = await sendMobileOtpRequest(otpPhone.trim())
+      setOtpPhone(res.phone)
+      setOtpExistingUser(res.isExistingUser)
+      if (res.existingName) setOtpName(res.existingName)
+      setOtpSent(true)
+      if (res.demoOtp) {
+        setOtpPreviewCode(res.demoOtp)
+        setOtpCode(res.demoOtp)
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unable to send OTP right now.')
+    } finally {
+      submittingRef.current = false
+      setSubmitting(false)
+    }
+  }
+
+  async function handleVerifyOtp(e: FormEvent) {
+    e.preventDefault()
+    if (submittingRef.current) return
+    if (!/^\d{6}$/.test(otpCode.trim())) {
+      reportError('Enter the 6-digit OTP.', document.getElementById('otp-code'))
+      return
+    }
+    if (!otpExistingUser && !otpTerms) {
+      setOtpTermsTried(true)
+      reportError('Accept the Terms & Conditions and Privacy Policy to continue.', otpTermsRef.current)
+      return
+    }
+    setError(null)
+    submittingRef.current = true
+    setSubmitting(true)
+    try {
+      const role = await loginWithMobileOtp({
+        phone: otpPhone.trim(),
+        otp: otpCode.trim(),
+        name: otpName.trim() || undefined,
+        acceptedTerms: otpExistingUser ? true : otpTerms,
+      })
+      await finishAuthNavigation(navigate, role, redirectState)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Invalid OTP. Please check and try again.')
+    } finally {
+      submittingRef.current = false
+      setSubmitting(false)
+    }
   }
 
   async function handleSignIn(e: FormEvent) {
@@ -335,9 +417,68 @@ export default function LoginPage() {
                 <h1 className="entry-title">{signingIn ? 'Welcome back.' : 'Create your account.'}</h1>
                 <p className="entry-lead">
                   {signingIn
-                    ? 'Continue where you left off.'
+                    ? 'Sign in with Email, Free Mobile OTP, or Google to continue.'
                     : 'One account for your learning, your practice, and the work you keep.'}
                 </p>
+
+                {/* Method Switcher: Email & Password vs Free Mobile OTP */}
+                <div
+                  role="tablist"
+                  aria-label="Sign-in method"
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: '1fr 1fr',
+                    gap: 6,
+                    padding: 4,
+                    borderRadius: 10,
+                    background: '#f1f5f9',
+                    border: '1px solid #cbd5e1',
+                    marginBottom: 16,
+                  }}
+                >
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected={authMethod === 'email'}
+                    onClick={() => {
+                      setAuthMethod('email')
+                      setError(null)
+                    }}
+                    style={{
+                      padding: '8px 10px',
+                      borderRadius: 7,
+                      border: 'none',
+                      background: authMethod === 'email' ? '#5142b5' : 'transparent',
+                      color: authMethod === 'email' ? '#ffffff' : '#334155',
+                      fontWeight: 700,
+                      fontSize: 12.5,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    Email &amp; Password
+                  </button>
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected={authMethod === 'otp'}
+                    onClick={() => {
+                      setAuthMethod('otp')
+                      setError(null)
+                    }}
+                    style={{
+                      padding: '8px 10px',
+                      borderRadius: 7,
+                      border: 'none',
+                      background: authMethod === 'otp' ? '#5142b5' : 'transparent',
+                      color: authMethod === 'otp' ? '#ffffff' : '#334155',
+                      fontWeight: 700,
+                      fontSize: 12.5,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    Mobile OTP (Free)
+                  </button>
+                </div>
 
                 {pendingTitle ? (
                   <div className="entry-context">
@@ -350,7 +491,165 @@ export default function LoginPage() {
                   <div className="entry-error" role="alert" aria-live="polite" ref={errorRef} tabIndex={-1}>{error}</div>
                 ) : null}
 
-                {signingIn ? (
+                {authMethod === 'otp' ? (
+                  !otpSent ? (
+                    <form className="entry-form" onSubmit={handleSendOtp} noValidate>
+                      <div className="entry-field">
+                        <label htmlFor="otp-phone">MOBILE NUMBER (+91 INDIA)</label>
+                        <div style={{ display: 'flex', gap: 8 }}>
+                          <span
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              padding: '0 12px',
+                              borderRadius: 8,
+                              background: '#f8fafc',
+                              border: '1px solid #cbd5e1',
+                              color: '#0f172a',
+                              fontWeight: 700,
+                              fontSize: 13.5,
+                            }}
+                          >
+                            +91
+                          </span>
+                          <input
+                            id="otp-phone"
+                            type="tel"
+                            inputMode="numeric"
+                            maxLength={10}
+                            value={otpPhone}
+                            onChange={(e) => setOtpPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
+                            placeholder="98765 43210"
+                            disabled={submitting}
+                            style={{ flex: 1 }}
+                          />
+                        </div>
+                      </div>
+                      <button className="entry-submit" type="submit" disabled={submitting}>
+                        {submitting ? 'Generating OTP…' : 'Get 6-Digit OTP (Free)'}
+                      </button>
+
+                      <div className="entry-or"><span>or</span></div>
+
+                      <button
+                        className="entry-google"
+                        type="button"
+                        onClick={() => startGoogleAuth(true)}
+                        disabled={submitting || googleLoading || googleAvailable === false}
+                      >
+                        {googleLoading
+                          ? 'Redirecting to Google…'
+                          : googleAvailable === false
+                            ? 'Google sign-in unavailable'
+                            : 'Continue with Google'}
+                      </button>
+                    </form>
+                  ) : (
+                    <form className="entry-form" onSubmit={handleVerifyOtp} noValidate>
+                      {otpPreviewCode ? (
+                        <div
+                          role="status"
+                          style={{
+                            padding: '12px 14px',
+                            borderRadius: 10,
+                            background: '#ecfdf5',
+                            border: '1.5px solid #34d399',
+                            color: '#065f46',
+                            fontSize: 13,
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            gap: 10,
+                            flexWrap: 'wrap',
+                          }}
+                        >
+                          <div>
+                            <strong style={{ display: 'block', fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                              Skylent Instant Free OTP (+91-{otpPhone})
+                            </strong>
+                            <span>
+                              Your 6-digit verification code is <strong style={{ fontSize: 16, letterSpacing: '0.1em' }}>{otpPreviewCode}</strong>
+                            </span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setOtpCode(otpPreviewCode)}
+                            style={{
+                              padding: '5px 10px',
+                              borderRadius: 6,
+                              background: '#059669',
+                              color: '#ffffff',
+                              border: 'none',
+                              fontWeight: 700,
+                              fontSize: 11.5,
+                              cursor: 'pointer',
+                            }}
+                          >
+                            Auto-Filled ✓
+                          </button>
+                        </div>
+                      ) : null}
+
+                      <div className="entry-field">
+                        <label htmlFor="otp-code">6-DIGIT OTP FOR +91-{otpPhone}</label>
+                        <input
+                          id="otp-code"
+                          type="text"
+                          inputMode="numeric"
+                          maxLength={6}
+                          value={otpCode}
+                          onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                          placeholder="Enter 6-digit OTP"
+                          disabled={submitting}
+                          style={{ letterSpacing: '0.18em', fontWeight: 700, fontSize: 16 }}
+                        />
+                      </div>
+
+                      {!otpExistingUser ? (
+                        <>
+                          <div className="entry-field">
+                            <label htmlFor="otp-name">YOUR FULL NAME</label>
+                            <input
+                              id="otp-name"
+                              type="text"
+                              value={otpName}
+                              onChange={(e) => setOtpName(e.target.value)}
+                              placeholder="Enter your name for certificates"
+                              disabled={submitting}
+                            />
+                          </div>
+                          <TermsConsent
+                            inputRef={otpTermsRef}
+                            checked={otpTerms}
+                            onChange={setOtpTerms}
+                            action="creating an account"
+                            showError={otpTermsTried}
+                          />
+                        </>
+                      ) : null}
+
+                      <button className="entry-submit" type="submit" disabled={submitting}>
+                        {submitting ? 'Verifying OTP…' : 'Verify OTP & Sign In'}
+                      </button>
+
+                      <p className="entry-alt">
+                        Wrong number?{' '}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setOtpSent(false)
+                            setOtpCode('')
+                            setOtpPreviewCode(null)
+                            setError(null)
+                          }}
+                        >
+                          Change mobile number
+                        </button>
+                      </p>
+                    </form>
+                  )
+                ) : signingIn ? (
                 <form className="entry-form" onSubmit={handleSignIn} noValidate>
                   <div className="entry-field">
                     <label htmlFor="si-email">EMAIL</label>

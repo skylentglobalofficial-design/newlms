@@ -1,20 +1,21 @@
 # =============================================================================
-# SKYLENT PLAY STORE NATIVE APK & SIGNED AAB BUILDER (V52)
+# SKYLENT PLAY STORE NATIVE APK & SIGNED AAB BUILDER (V53)
 # Generates:
 #   1. skylent-playstore-debug.apk   (For testing on phone first)
 #   2. skylent-playstore-release.apk (Signed Release APK for phone install)
 #   3. skylent-playstore-release.aab (Signed Release Bundle for Google Play Console)
 # Includes:
+#   - In-App Google Sign-In + Deep-Link Return (skylent://auth -> stays in APK, never stuck in Chrome!)
+#   - Free Mobile OTP Sign-In + Bearer Token Vault Support
 #   - Android 14/15 Status Bar Safe-Area Fix (setDecorFitsSystemWindows = true)
 #   - Hardware Back Button Navigation Fix (Navigates in-app history + double-back exit)
-#   - Third-Party Cookie + Bearer Token Vault Support for 100% Login Reliability
 # =============================================================================
 $ErrorActionPreference = "Stop"
 $Utf8NoBom = New-Object System.Text.UTF8Encoding($false)
 
 Write-Host ""
 Write-Host "============================================================" -ForegroundColor Cyan
-Write-Host "  SKYLENT PLAY STORE APK & SIGNED AAB BUILDER (v52)" -ForegroundColor Cyan
+Write-Host "  SKYLENT PLAY STORE APK & SIGNED AAB BUILDER (v53)" -ForegroundColor Cyan
 Write-Host "============================================================" -ForegroundColor Cyan
 
 # Step 1: Security Audit - Ensure no server secrets are prefixed with VITE_
@@ -49,7 +50,7 @@ if (-not (Test-Path "node_modules/@capacitor/android")) {
 Write-Host "  [OK] Capacitor Android packages ready." -ForegroundColor Green
 
 # Step 4: Initialize or Sync Android Native Project & Write Manifest + MainActivity + Styles
-Write-Host "`n[4/7] Syncing Bundled Assets & Native Back/Status-Bar Fixes into Android Project..." -ForegroundColor Yellow
+Write-Host "`n[4/7] Syncing Bundled Assets & Native OAuth/Back/Status-Bar Fixes into Android Project..." -ForegroundColor Yellow
 $capConfigPath = Join-Path (Get-Location).Path "capacitor.config.json"
 $capConfigJson = @"
 {
@@ -58,7 +59,13 @@ $capConfigJson = @"
   "webDir": "dist",
   "bundledWebRuntime": false,
   "server": {
-    "androidScheme": "https"
+    "androidScheme": "https",
+    "allowNavigation": [
+      "skylent.live",
+      "*.skylent.live",
+      "accounts.google.com",
+      "*.google.com"
+    ]
   }
 }
 "@
@@ -99,6 +106,13 @@ $cleanManifestXml = @"
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="skylent" android:host="auth" />
+            </intent-filter>
+
         </activity>
 
         <provider
@@ -117,7 +131,7 @@ $cleanManifestXml = @"
 "@
 [System.IO.File]::WriteAllText($manifestPath, $cleanManifestXml.Replace("`r`n", "`n"), $Utf8NoBom)
 
-# Write custom MainActivity.java (Fixes Status Bar Top Overlap + Hardware Back Button Navigation)
+# Write custom MainActivity.java (Fixes In-App Google OAuth + Deep-Link Return + Status Bar + Hardware Back Button)
 $mainActivityDir = Join-Path (Get-Location).Path "android\app\src\main\java\live\skylent\app"
 if (-not (Test-Path $mainActivityDir)) {
   New-Item -ItemType Directory -Path $mainActivityDir -Force | Out-Null
@@ -126,9 +140,12 @@ $mainActivityPath = Join-Path $mainActivityDir "MainActivity.java"
 $mainActivityJava = @"
 package live.skylent.app;
 
+import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.webkit.CookieManager;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.Toast;
 import androidx.activity.OnBackPressedCallback;
@@ -152,14 +169,27 @@ public class MainActivity extends BridgeActivity {
             insetsController.setAppearanceLightStatusBars(false);
         }
 
-        // 2. Enable cookies + third-party cookies for WebView session continuity
+        // 2. Configure WebView: enable third-party cookies & strip "; wv" so Google Sign-In works directly inside the APK
         if (getBridge() != null && getBridge().getWebView() != null) {
+            WebView webView = getBridge().getWebView();
             CookieManager cookieManager = CookieManager.getInstance();
             cookieManager.setAcceptCookie(true);
-            cookieManager.setAcceptThirdPartyCookies(getBridge().getWebView(), true);
+            cookieManager.setAcceptThirdPartyCookies(webView, true);
+
+            WebSettings settings = webView.getSettings();
+            settings.setJavaScriptEnabled(true);
+            settings.setDomStorageEnabled(true);
+            String ua = settings.getUserAgentString();
+            if (ua != null) {
+                String cleanUa = ua.replace("; wv", "").replace("wv)", ")");
+                settings.setUserAgentString(cleanUa + " SkylentNativeApp/1.3");
+            }
         }
 
-        // 3. Intercept Android Back button: close modals -> navigate back in router -> double-back to exit on Home
+        // 3. Handle skylent://auth deep link if launched from Google OAuth callback
+        handleAuthDeepLink(getIntent());
+
+        // 4. Intercept Android Back button: close modals -> navigate back in router -> double-back to exit on Home
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
@@ -199,6 +229,42 @@ public class MainActivity extends BridgeActivity {
             }
         });
     }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        handleAuthDeepLink(intent);
+    }
+
+    private void handleAuthDeepLink(Intent intent) {
+        if (intent == null) return;
+        Uri data = intent.getData();
+        if (data == null || !"skylent".equalsIgnoreCase(data.getScheme())) return;
+
+        final String query = data.getEncodedQuery();
+        final String sessionToken = data.getQueryParameter("sessionToken");
+        final String csrfToken = data.getQueryParameter("csrfToken");
+
+        if (getBridge() != null && getBridge().getWebView() != null) {
+            final WebView webView = getBridge().getWebView();
+            final String targetUrl = "https://localhost/login" + (query != null && !query.isEmpty() ? "?" + query : "?oauth=success");
+            webView.post(() -> {
+                if (sessionToken != null && !sessionToken.isEmpty()) {
+                    String js = "(function(){" +
+                        "try {" +
+                        "  localStorage.setItem('skylent:native:session-token:v1', '" + sessionToken.replace("'", "") + "');" +
+                        (csrfToken != null ? "  localStorage.setItem('skylent:native:csrf-token:v1', '" + csrfToken.replace("'", "") + "');" : "") +
+                        "} catch(e){}" +
+                        "window.location.replace('" + targetUrl.replace("'", "") + "');" +
+                        "})();";
+                    webView.evaluateJavascript(js, null);
+                } else {
+                    webView.loadUrl(targetUrl);
+                }
+            });
+        }
+    }
 }
 "@
 [System.IO.File]::WriteAllText($mainActivityPath, $mainActivityJava.Replace("`r`n", "`n"), $Utf8NoBom)
@@ -232,7 +298,7 @@ $cleanStylesXml = @"
 </resources>
 "@
 [System.IO.File]::WriteAllText($stylesXmlPath, $cleanStylesXml.Replace("`r`n", "`n"), $Utf8NoBom)
-Write-Host "  [OK] Wrote AndroidManifest.xml, MainActivity.java (Back + Status-Bar fix), and styles.xml." -ForegroundColor Green
+Write-Host "  [OK] Wrote AndroidManifest.xml, MainActivity.java (In-App Google OAuth + DeepLink + Back + StatusBar), and styles.xml." -ForegroundColor Green
 
 # Step 5: Configure Java JDK 21 & Android SDK Toolchain
 Write-Host "`n[5/7] Configuring Java JDK 21 & Android SDK Toolchain..." -ForegroundColor Yellow
@@ -388,7 +454,7 @@ if (Test-Path "android/gradlew.bat") {
     $ApkSizeMb = [math]::Round(((Get-Item $OutDebugApk).Length / 1MB), 2)
     Write-Host ""
     Write-Host "============================================================" -ForegroundColor Green
-    Write-Host "  [SUCCESS] ALL GOOGLE PLAY STORE FILES GENERATED (V52)!" -ForegroundColor Green
+    Write-Host "  [SUCCESS] ALL GOOGLE PLAY STORE FILES GENERATED (V53)!" -ForegroundColor Green
     Write-Host "  1. Phone Test APK (Signed) : $OutReleaseApk ($ApkSizeMb MB)" -ForegroundColor White
     Write-Host "  2. Phone Test APK (Debug)  : $OutDebugApk" -ForegroundColor White
     Write-Host "  3. Play Store Upload (.aab): $OutReleaseAab" -ForegroundColor Cyan

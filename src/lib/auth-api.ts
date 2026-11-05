@@ -1,4 +1,4 @@
-import { apiV1 } from "./api-base"
+import { apiV1, isNativeAppShell } from "./api-base"
 import { parseApiJson, readJsonBody } from "./http"
 import { POLICY_VERSION, consentPayload } from "./policy"
 
@@ -24,6 +24,7 @@ export function buildGoogleOAuthStartUrl(options: GoogleOAuthStartOptions = {}):
     params.set("enrollSlug", options.enrollTarget.slug)
   }
   if (options.acceptedTerms) params.set("consent", POLICY_VERSION)
+  if (isNativeAppShell()) params.set("nativeApp", "1")
   const query = params.toString()
   return `${API_BASE}/auth/google${query ? `?${query}` : ""}`
 }
@@ -142,7 +143,7 @@ async function authRequest<T>(
  * means wrong credentials, so the server's own sentence is shown. A 400 shows the first field error.
  */
 async function credentialFailureMessage(path: string, response: Response): Promise<string | null> {
-  if (response.status !== 400 && !(response.status === 401 && path === "/auth/login")) return null
+  if (response.status !== 400 && !(response.status === 401 && (path === "/auth/login" || path === "/auth/otp/verify"))) return null
   const data = (await readJsonBody(response.clone()).catch(() => null)) as
     | { error?: unknown; details?: Record<string, unknown> }
     | null
@@ -266,4 +267,39 @@ export async function completePasswordReset(token: string, password: string): Pr
     throw new Error(authErrorMessage(data, "The password could not be reset. Try again."))
   }
   return typeof data.message === "string" ? data.message : "Password has been reset. You can now sign in."
+}
+
+export type MobileOtpSendResponse = {
+  ok: boolean
+  phone: string
+  isExistingUser: boolean
+  existingName: string | null
+  expiresInSeconds: number
+  demoOtp?: string
+  message: string
+}
+
+export async function sendMobileOtpRequest(phone: string): Promise<MobileOtpSendResponse> {
+  return authRequest<MobileOtpSendResponse>("/auth/otp/send", {
+    method: "POST",
+    body: { phone },
+  })
+}
+
+export async function verifyMobileOtpRequest(input: {
+  phone: string
+  otp: string
+  name?: string
+  acceptedTerms?: boolean
+}): Promise<AuthResponse> {
+  return authRequest<AuthResponse>("/auth/otp/verify", {
+    method: "POST",
+    body: {
+      phone: input.phone,
+      otp: input.otp,
+      ...(input.name ? { name: input.name } : {}),
+      acceptedTerms: Boolean(input.acceptedTerms),
+      ...(input.acceptedTerms ? { consent: consentPayload() } : {}),
+    },
+  })
 }

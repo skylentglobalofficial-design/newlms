@@ -4,6 +4,7 @@ import {
   loginRequest,
   logoutRequest,
   signupRequest,
+  verifyMobileOtpRequest,
   updateProfileRequest,
   clearAuthClientState,
   type ApiRole,
@@ -34,6 +35,8 @@ type AuthContextValue = {
   ready: boolean
   login: (email: string, password: string) => Promise<UserRole>
   signup: (name: string, email: string, password: string, acceptedTerms: boolean) => Promise<UserRole>
+  loginWithMobileOtp: (input: { phone: string; otp: string; name?: string; acceptedTerms?: boolean }) => Promise<UserRole>
+  refreshSession: () => Promise<AuthUser | null>
   updateDisplayName: (displayName: string) => Promise<void>
   markPasswordChanged: () => void
   loginDemo: (user: AuthUser) => void
@@ -162,6 +165,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return nextUser.role
   }, [])
 
+  const loginWithMobileOtp = useCallback(async (input: { phone: string; otp: string; name?: string; acceptedTerms?: boolean }) => {
+    const session = await verifyMobileOtpRequest(input)
+    const nextUser = toAuthUser(session)
+    writeStoredDemoUser(null)
+    setUser(nextUser)
+    setRoles(session.roles)
+    return nextUser.role
+  }, [])
+
+  const refreshSession = useCallback(async () => {
+    try {
+      const session = await fetchCurrentUser()
+      if (session) {
+        const nextUser = toAuthUser(session)
+        writeStoredDemoUser(null)
+        setUser(nextUser)
+        setRoles(session.roles)
+        return nextUser
+      }
+    } catch {
+      // ignore
+    }
+    return null
+  }, [])
+
   const markPasswordChanged = useCallback(() => {
     setUser((current) => current ? { ...current, mustChangePassword: false } : current)
   }, [])
@@ -192,7 +220,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   return (
-    <AuthContext.Provider value={{ user, roles, ready, login, signup, updateDisplayName, markPasswordChanged, loginDemo, logout }}>
+    <AuthContext.Provider value={{ user, roles, ready, login, signup, loginWithMobileOtp, refreshSession, updateDisplayName, markPasswordChanged, loginDemo, logout }}>
       {children}
     </AuthContext.Provider>
   )

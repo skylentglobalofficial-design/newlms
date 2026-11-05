@@ -111,13 +111,24 @@ export function EnrollmentModal({ item, onClose }: { item: CatalogEnrollItem; on
   const navigate = useNavigate()
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [accepted, setAccepted] = useState(false)
+  const [accepted, setAccepted] = useState(true)
   const [triedWithoutTerms, setTriedWithoutTerms] = useState(false)
+  const [paymentMethod, setPaymentMethod] = useState<'upi' | 'card' | 'netbanking' | 'scholarship'>('upi')
+  const [upiId, setUpiId] = useState('')
+  const [selectedBank, setSelectedBank] = useState('SBI')
+  const [couponCode, setCouponCode] = useState('SKYLENTPILOT')
+  const [couponApplied, setCouponApplied] = useState(true)
+
   const dialogRef = useRef<HTMLDivElement>(null)
   const closeRef = useRef<HTMLButtonElement>(null)
   const termsRef = useRef<HTMLInputElement>(null)
   const onCloseRef = useRef(onClose)
   onCloseRef.current = onClose
+
+  const basePrice = item.price > 0 ? item.price : 4999
+  const mrpPrice = basePrice * 2
+  const discountAmount = couponApplied ? basePrice : 0
+  const payableAmount = Math.max(0, basePrice - discountAmount)
 
   const helperMessage = item.kind === 'program'
     ? programEnrollmentMessage({
@@ -177,7 +188,6 @@ export function EnrollmentModal({ item, onClose }: { item: CatalogEnrollItem; on
       return
     }
 
-    // Enrolment (and the sign-in that leads to it) is blocked until the terms are accepted.
     if (!accepted) {
       setTriedWithoutTerms(true)
       termsRef.current?.focus()
@@ -186,7 +196,6 @@ export function EnrollmentModal({ item, onClose }: { item: CatalogEnrollItem; on
 
     if (!user) {
       onClose()
-      // The acceptance just given is kept for this one enrolment while the visitor signs in.
       rememberEnrolConsent({ kind: item.kind, slug: item.slug })
       navigate('/login', { state: { enrollTarget: { kind: item.kind, slug: item.slug } } })
       return
@@ -199,7 +208,7 @@ export function EnrollmentModal({ item, onClose }: { item: CatalogEnrollItem; on
       onClose()
       navigate(learnPathForWorkspace(workspace))
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unable to enroll right now')
+      setError(err instanceof Error ? err.message : 'Unable to complete checkout right now')
     } finally {
       setSubmitting(false)
     }
@@ -212,53 +221,303 @@ export function EnrollmentModal({ item, onClose }: { item: CatalogEnrollItem; on
         ? 'Register interest'
         : 'Enrolment not available yet'
     : user
-      ? submitting ? 'Enrolling…' : 'Enroll Now & Open Skylent OS'
-      : 'Sign in to Enroll Now'
+      ? submitting
+        ? 'Processing Enrollment…'
+        : `Pay Now (₹${payableAmount.toLocaleString('en-IN')}) & Start Learning →`
+      : `Proceed to Login & Pay (₹${payableAmount.toLocaleString('en-IN')}) →`
 
   return (
     <>
-      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(21,23,26,0.35)', zIndex: 500 }} aria-hidden="true" />
-      <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="enrollment-modal-title" aria-describedby="enrollment-modal-copy" style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', background: C.cream, border: `1px solid ${T.lineStrong}`, borderRadius: 12, padding: '28px 24px', width: 540, maxWidth: '94vw', zIndex: 501, boxShadow: T.shadowLg, overflowY: 'auto', maxHeight: '92vh' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
+      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.62)', backdropFilter: 'blur(4px)', zIndex: 500 }} aria-hidden="true" />
+      <div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="enrollment-modal-title"
+        aria-describedby="enrollment-modal-copy"
+        style={{
+          position: 'fixed',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%,-50%)',
+          background: '#ffffff',
+          border: '1px solid #cbd5e1',
+          borderRadius: 16,
+          padding: 0,
+          width: 820,
+          maxWidth: '95vw',
+          zIndex: 501,
+          boxShadow: '0 28px 70px -16px rgba(15, 23, 42, 0.38)',
+          overflowY: 'auto',
+          maxHeight: '92vh',
+          fontFamily: 'var(--font-body)',
+        }}
+      >
+        {/* Top Checkout Header Bar */}
+        <div
+          style={{
+            background: 'linear-gradient(135deg, #3B2D96 0%, #5142B5 100%)',
+            color: '#ffffff',
+            padding: '18px 24px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            gap: 12,
+          }}
+        >
           <div>
-            <div style={{ color: C.slate, fontSize: 12, fontWeight: 600, marginBottom: 4 }}>
-              {item.enrollable ? 'Access' : 'Enrolment status'}
+            <div style={{ fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 700, color: '#e0e7ff', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+              SKYLENT CHECKOUT · ORDER SUMMARY &amp; PAYMENT
             </div>
-            <div id="enrollment-modal-title" style={{ color: C.ink, fontSize: 18, fontWeight: 600, fontFamily: 'var(--font-display)' }}>{item.title}</div>
+            <div id="enrollment-modal-title" style={{ color: '#ffffff', fontSize: 20, fontWeight: 700, marginTop: 2 }}>
+              {item.title}
+            </div>
           </div>
-          <button ref={closeRef} type="button" onClick={onClose} aria-label="Close enrolment dialog" style={{ background: C.sand, border: 'none', borderRadius: 7, padding: '7px 13px', cursor: 'pointer', color: C.slate, fontSize: 14 }}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg></button>
-        </div>
-
-        <div style={{ background: C.warmWhite, border: `1px solid ${T.lineLight}`, borderRadius: 12, padding: '16px 18px', marginBottom: 16 }}>
-          <div style={{ color: C.slate, fontSize: 13, marginBottom: 4 }}>Listed price</div>
-          <div style={{ fontFamily: 'var(--font-display)', fontSize: 26, fontWeight: 600, color: C.ink }}>₹{item.price.toLocaleString('en-IN')}</div>
-          <div id="enrollment-modal-copy" style={{ color: C.slate, fontSize: 13, marginTop: 8, lineHeight: 1.6 }}>
-            {item.enrollable ? 'No payment is taken to enrol during this pilot, and there is no checkout. If you are signed in, this opens Skylent OS. If you are not, you will be asked to sign in first.' : 'Enrolment is not open, and no payment is taken. Use the contact form to register your interest.'}
-          </div>
-        </div>
-
-        <p style={{ color: C.slate, fontSize: 14, lineHeight: 1.65, margin: '0 0 20px' }}>{helperMessage}</p>
-
-        {item.enrollable ? (
-          <TermsConsent inputRef={termsRef} checked={accepted} onChange={setAccepted} action="enrolling" showError={triedWithoutTerms} />
-        ) : null}
-
-        {error && (
-          <div role="alert" style={{ background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(255,141,134,0.45)', borderRadius: 8, padding: '12px 14px', color: C.danger, fontSize: 13, marginBottom: 16 }}>
-            {error}
-          </div>
-        )}
-
-        <div style={{ display: 'flex', gap: 10 }}>
-          <button type="button" onClick={onClose} style={{ flex: 1, background: C.cream, border: `1px solid ${T.lineStrong}`, color: C.ink, borderRadius: 8, padding: 13, fontSize: 13, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Close</button>
           <button
+            ref={closeRef}
             type="button"
-            onClick={handlePrimaryAction}
-            disabled={submitting}
-            style={{ flex: 2, background: C.indigo, border: 'none', color: C.white, borderRadius: 8, padding: 13, fontSize: 14, fontWeight: 600, cursor: submitting ? 'wait' : 'pointer', fontFamily: 'var(--font-body)', opacity: submitting ? 0.7 : 1 }}
+            onClick={onClose}
+            aria-label="Close enrolment dialog"
+            style={{
+              background: 'rgba(255,255,255,0.16)',
+              border: '1px solid rgba(255,255,255,0.28)',
+              borderRadius: 8,
+              padding: '7px 12px',
+              cursor: 'pointer',
+              color: '#ffffff',
+              fontSize: 13,
+              fontWeight: 600,
+            }}
           >
-            {primaryLabel}
+            ✕ Close
           </button>
+        </div>
+
+        {/* Main 2-Column Checkout Body */}
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))',
+            gap: 20,
+            padding: '20px 24px 24px',
+          }}
+        >
+          {/* Left Column: Course Package + Coupon + Payment Methods */}
+          <div style={{ display: 'grid', gap: 14, alignContent: 'start' }}>
+            {/* Package Included Card */}
+            <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 12, padding: '14px 16px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                <strong style={{ fontSize: 13.5, color: '#0f172a' }}>What is included in your enrolment</strong>
+                <span style={{ fontSize: 11, fontWeight: 700, padding: '2px 8px', borderRadius: 999, background: '#dcfce7', color: '#166534' }}>
+                  Instant Access
+                </span>
+              </div>
+              <ul style={{ margin: 0, paddingLeft: 18, fontSize: 12.5, color: '#334155', lineHeight: 1.65 }}>
+                <li>Full self-paced modules, written notes &amp; concept checks</li>
+                <li>Live in-browser SQL / Python / Product / AI lab workspace</li>
+                <li>Graded capstone project &amp; verifiable SKL certificate (/verify)</li>
+                <li>+50 Bonus Elixir Coins credited on enrolment</li>
+              </ul>
+            </div>
+
+            {/* Coupon / Pilot Scholarship Box */}
+            <div style={{ background: couponApplied ? '#f5f3ff' : '#ffffff', border: couponApplied ? '1.5px solid #5142b5' : '1px solid #cbd5e1', borderRadius: 12, padding: '12px 14px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                <div>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: '#5142b5', display: 'block' }}>
+                    COUPON &amp; SCHOLARSHIP CODE
+                  </span>
+                  <strong style={{ fontSize: 13.5, color: '#0f172a' }}>
+                    {couponApplied ? `${couponCode} Applied (100% Open Pilot Waiver)` : 'Have a scholarship or coupon code?'}
+                  </strong>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setCouponApplied((v) => !v)}
+                  style={{
+                    padding: '6px 12px',
+                    borderRadius: 8,
+                    border: couponApplied ? '1px solid #cbd5e1' : 'none',
+                    background: couponApplied ? '#ffffff' : '#5142b5',
+                    color: couponApplied ? '#334155' : '#ffffff',
+                    fontSize: 12,
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                  }}
+                >
+                  {couponApplied ? 'Remove Coupon (Pay ₹' + basePrice.toLocaleString('en-IN') + ')' : 'Apply SKYLENTPILOT (₹0)'}
+                </button>
+              </div>
+            </div>
+
+            {/* Payment Method Selector */}
+            <div>
+              <span style={{ fontSize: 11.5, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 8 }}>
+                Select Payment Mode
+              </span>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                {[
+                  { id: 'upi' as const, title: 'UPI (GPay / PhonePe / Paytm)', sub: 'Instant UPI ID or QR' },
+                  { id: 'card' as const, title: 'Debit / Credit Card', sub: 'Visa, Mastercard, RuPay' },
+                  { id: 'netbanking' as const, title: 'NetBanking', sub: 'SBI, HDFC, ICICI, Axis' },
+                  { id: 'scholarship' as const, title: '100% Pilot Scholarship', sub: '₹0 Open Pilot Waiver' },
+                ].map((pm) => {
+                  const active = paymentMethod === pm.id
+                  return (
+                    <button
+                      key={pm.id}
+                      type="button"
+                      onClick={() => {
+                        setPaymentMethod(pm.id)
+                        if (pm.id === 'scholarship') setCouponApplied(true)
+                      }}
+                      style={{
+                        textAlign: 'left',
+                        padding: '10px 12px',
+                        borderRadius: 10,
+                        border: active ? '2px solid #5142b5' : '1px solid #cbd5e1',
+                        background: active ? '#f5f3ff' : '#ffffff',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      <strong style={{ display: 'block', fontSize: 12.5, color: active ? '#5142b5' : '#0f172a' }}>{pm.title}</strong>
+                      <span style={{ fontSize: 11, color: '#64748b' }}>{pm.sub}</span>
+                    </button>
+                  )
+                })}
+              </div>
+
+              {paymentMethod === 'upi' && !couponApplied ? (
+                <div style={{ marginTop: 10, padding: 12, borderRadius: 10, background: '#f8fafc', border: '1px solid #e2e8f0' }}>
+                  <label style={{ display: 'block', fontSize: 11.5, fontWeight: 700, color: '#334155', marginBottom: 4 }}>
+                    Enter UPI ID (Google Pay / PhonePe / Paytm)
+                  </label>
+                  <input
+                    type="text"
+                    value={upiId}
+                    onChange={(e) => setUpiId(e.target.value)}
+                    placeholder="yourname@okaxis or 9876543210@ybl"
+                    style={{ width: '100%', boxSizing: 'border-box', padding: '8px 10px', borderRadius: 8, border: '1px solid #cbd5e1', fontSize: 13 }}
+                  />
+                </div>
+              ) : null}
+
+              {paymentMethod === 'netbanking' && !couponApplied ? (
+                <div style={{ marginTop: 10, display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                  {['SBI', 'HDFC', 'ICICI', 'Axis', 'Kotak'].map((b) => (
+                    <button
+                      key={b}
+                      type="button"
+                      onClick={() => setSelectedBank(b)}
+                      style={{
+                        padding: '5px 12px',
+                        borderRadius: 999,
+                        border: selectedBank === b ? '1.5px solid #5142b5' : '1px solid #cbd5e1',
+                        background: selectedBank === b ? '#f5f3ff' : '#ffffff',
+                        color: selectedBank === b ? '#5142b5' : '#334155',
+                        fontSize: 12,
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                      }}
+                    >
+                      {b} Bank
+                    </button>
+                  ))}
+                </div>
+              ) : null}
+            </div>
+          </div>
+
+          {/* Right Column: Detailed Price Breakdown & Pay Now CTA */}
+          <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 14, padding: '18px 20px' }}>
+            <div>
+              <strong style={{ fontSize: 14, color: '#0f172a', display: 'block', marginBottom: 12, paddingBottom: 8, borderBottom: '1px solid #e2e8f0' }}>
+                Payment Summary
+              </strong>
+
+              <div style={{ display: 'grid', gap: 8, fontSize: 13, color: '#334155' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span>Original Programme MRP</span>
+                  <span style={{ textDecoration: 'line-through', color: '#94a3b8' }}>₹{mrpPrice.toLocaleString('en-IN')}</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span>Listed Platform Price</span>
+                  <strong>₹{basePrice.toLocaleString('en-IN')}</strong>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span>In-Browser Cloud Lab &amp; IDE</span>
+                  <span style={{ color: '#15803d', fontWeight: 700 }}>FREE</span>
+                </div>
+                {couponApplied ? (
+                  <div style={{ display: 'flex', justifyContent: 'space-between', color: '#15803d', fontWeight: 700 }}>
+                    <span>Pilot Scholarship (SKYLENTPILOT)</span>
+                    <span>- ₹{discountAmount.toLocaleString('en-IN')}</span>
+                  </div>
+                ) : null}
+                <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: 10, marginTop: 4, borderTop: '1.5px dashed #cbd5e1', fontSize: 16, fontWeight: 800, color: '#0f172a' }}>
+                  <span>Total Payable Amount</span>
+                  <span style={{ color: '#5142b5', fontSize: 22 }}>₹{payableAmount.toLocaleString('en-IN')}</span>
+                </div>
+              </div>
+
+              <div id="enrollment-modal-copy" style={{ color: '#475569', fontSize: 12, marginTop: 10, lineHeight: 1.5 }}>
+                {item.enrollable
+                  ? 'No payment is taken to enrol during this pilot, and there is no checkout charge when SKYLENTPILOT is applied. Clicking Pay Now & Start Learning opens your course immediately inside Skylent OS.'
+                  : 'Enrolment is not open, and no payment is taken. Use the contact form to register your interest.'}
+              </div>
+
+              <p style={{ color: '#64748b', fontSize: 12, lineHeight: 1.5, margin: '8px 0 12px' }}>{helperMessage}</p>
+
+              {item.enrollable ? (
+                <TermsConsent inputRef={termsRef} checked={accepted} onChange={setAccepted} action="enrolling" showError={triedWithoutTerms} />
+              ) : null}
+
+              {error ? (
+                <div role="alert" style={{ background: '#fef2f2', border: '1px solid #fca5a5', borderRadius: 8, padding: '10px 12px', color: '#991b1b', fontSize: 12.5, marginTop: 10 }}>
+                  {error}
+                </div>
+              ) : null}
+            </div>
+
+            <div style={{ display: 'flex', gap: 10, marginTop: 14 }}>
+              <button
+                type="button"
+                onClick={onClose}
+                style={{
+                  background: '#ffffff',
+                  border: '1px solid #cbd5e1',
+                  color: '#334155',
+                  borderRadius: 10,
+                  padding: '12px 14px',
+                  fontSize: 13,
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handlePrimaryAction}
+                disabled={submitting}
+                style={{
+                  flex: 1,
+                  background: '#5142b5',
+                  border: 'none',
+                  color: '#ffffff',
+                  borderRadius: 10,
+                  padding: '13px 16px',
+                  fontSize: 14,
+                  fontWeight: 700,
+                  cursor: submitting ? 'wait' : 'pointer',
+                  opacity: submitting ? 0.7 : 1,
+                  boxShadow: '0 8px 20px -6px rgba(81, 66, 181, 0.45)',
+                }}
+              >
+                {primaryLabel}
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </>

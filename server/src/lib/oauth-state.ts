@@ -14,6 +14,8 @@ export type OAuthStatePayload = {
   enrollTarget?: OAuthEnrollTarget
   /** Set only when the sign-up page sent the accepted policy version. */
   policyVersion?: string
+  /** Set when OAuth was initiated from the native Android/iOS APK shell. */
+  nativeApp?: boolean
 }
 
 function signingSecret(): string {
@@ -59,6 +61,7 @@ export function createOAuthState(input: {
   returnTo?: string | null
   enrollTarget?: OAuthEnrollTarget | null
   policyVersion?: string | null
+  nativeApp?: boolean
 }): { state: string; nonce: string; signed: string } {
   const state = crypto.randomBytes(32).toString("base64url")
   const nonce = crypto.randomBytes(32).toString("base64url")
@@ -69,8 +72,9 @@ export function createOAuthState(input: {
     ...(input.returnTo ? { returnTo: input.returnTo } : {}),
     ...(input.enrollTarget ? { enrollTarget: input.enrollTarget } : {}),
     ...(input.policyVersion ? { policyVersion: input.policyVersion } : {}),
+    ...(input.nativeApp ? { nativeApp: true } : {}),
   }
-  return { state, nonce, signed: signPayload(payload) }
+  return { state, nonce: nonce, signed: signPayload(payload) }
 }
 
 export function setOAuthStateCookie(res: Response, req: Request, signed: string) {

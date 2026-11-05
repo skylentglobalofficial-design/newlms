@@ -16,6 +16,11 @@ const PROGRAMME_LINKED_COURSES: Record<string, readonly string[]> = {
   "sql-certificate": ["data-analytics"],
 }
 
+const AUTHORED_PROGRAMME_FALLBACK_COURSE: Record<string, string> = {
+  "data-analytics-pro": "data-analytics",
+  "product-management": "product-management",
+}
+
 export function learnPathForWorkspace(workspace: ApiCourseWorkspace): string {
   const courseSlug = workspace.program?.resume.courseSlug ?? workspace.enrollment.courseSlug
   const lessonId = workspace.program?.resume.lessonId ?? workspace.resume.lessonId
@@ -41,8 +46,9 @@ export async function fulfillCatalogEnrollment(
   try {
     return await enrollInProgram(target.slug, acceptedTerms)
   } catch (error) {
-    if (fallbackCourses && fallbackCourses.length > 0) {
-      return enrollInCourse(fallbackCourses[0], acceptedTerms)
+    const directFallback = AUTHORED_PROGRAMME_FALLBACK_COURSE[target.slug]
+    if (directFallback) {
+      return enrollInCourse(directFallback, acceptedTerms)
     }
     throw error
   }

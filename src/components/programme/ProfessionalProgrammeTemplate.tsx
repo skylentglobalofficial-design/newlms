@@ -230,7 +230,7 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
   const courseUnconfirmed = !course.loading && (course.offline || Boolean(course.error))
   const verified = confirmed && !courseUnconfirmed
   const canEnrol = verified && truth.enrollable && !truth.comingLater
-  const canStartTrack = canEnrol || (verified && program.slug === "sql-certificate")
+  const canStartTrack = canEnrol || (confirmed && truth.enrollable && !truth.comingLater) || (confirmed && program.slug === "sql-certificate")
 
   const enrolChip = !verified ? (
     <TruthChip state="development" label={STATUS_NOT_CONFIRMED} />
