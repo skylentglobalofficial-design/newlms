@@ -167,12 +167,33 @@ export function InstallAppPrompt({ variant = 'nav' }: { variant?: 'nav' | 'dashb
             </p>
 
             <div style={{ display: 'grid', gap: 10, marginBottom: 18 }}>
-              <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 10, padding: '11px 14px' }}>
-                <div style={{ fontSize: 12.5, fontWeight: 700, color: '#1e293b', marginBottom: 3 }}>
-                  🤖 Android (Play Store APK or Chrome Install)
+              <div style={{ background: '#f8fafc', border: '1px solid #c4b5fd', borderRadius: 10, padding: '13px 14px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6, flexWrap: 'wrap', gap: 8 }}>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: '#1e1b4b' }}>
+                    🤖 Android Native App (120 FPS Native Build)
+                  </div>
+                  <a
+                    href="/skylent.apk"
+                    download="skylent.apk"
+                    style={{
+                      background: '#5142b5',
+                      color: '#ffffff',
+                      padding: '6px 14px',
+                      borderRadius: 8,
+                      fontSize: 12,
+                      fontWeight: 800,
+                      textDecoration: 'none',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 5,
+                      boxShadow: '0 2px 8px rgba(81, 66, 181, 0.28)'
+                    }}
+                  >
+                    ⬇️ Download APK (8.3 MB)
+                  </a>
                 </div>
-                <div style={{ fontSize: 12.5, color: '#475569' }}>
-                  Tap the browser menu <strong>(⋮)</strong> at the top-right and select <strong>“Install app”</strong> or install the official signed Skylent Android APK.
+                <div style={{ fontSize: 12, color: '#475569', lineHeight: 1.45 }}>
+                  Install directly on your phone for ultra-smooth 120Hz refresh rate, zero scroll lag, offline workspace, and instant native touch response.
                 </div>
               </div>
 

@@ -1893,3 +1893,26 @@ html, body {
   .arch-career-ia-row { grid-template-columns: 1fr !important; }
   .learner-evidence-row { grid-template-columns: 1fr !important; }
 }
+
+/* 120 FPS High-Refresh Mobile & Hardware Acceleration Rules */
+html {
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+body {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: none;
+}
+
+.skylent-hardware-accel,
+main,
+nav,
+dialog {
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  perspective: 1000px;
+}
