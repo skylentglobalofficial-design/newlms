@@ -8,6 +8,7 @@ dist-server/
 android/
 ios/
 *.apk
+!public/skylent.apk
 *.aab
 *.log
 .DS_Store
