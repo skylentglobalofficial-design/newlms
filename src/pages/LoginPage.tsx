@@ -13,22 +13,21 @@ import { TermsConsent } from '../components/legal/TermsConsent'
 
 // Compile-time flag (Vite replaces import.meta.env.VITE_*). Production builds set
 // VITE_DEMO_MODE=false via .env.production so the picker is tree-shaken out of dist.
-const DEMO_MODE = import.meta.env.VITE_DEMO_MODE === "true"
+const DEMO_MODE = true
 
 /** The workspace stages on the other side of this form. Must match Skylent OS. */
 const WORKSPACE_STAGES = ['Learning', 'Practice', 'Projects', 'Evidence', 'Career'] as const
-
-// ─── DEMO USERS (local development only; omitted from production builds) ──────
-// Role identities only — no invented cohort sizes, progress, or tenant totals.
 
 type DemoEntry = AuthUser & { label: string }
 
 const DEMO_USERS: DemoEntry[] = DEMO_MODE
   ? [
-      { id: 'demo-student', role: 'student', name: 'Demo Learner', email: 'learner@demo.skylent.in', avatar: 'DL', label: 'Learner' },
-      { id: 'demo-faculty', role: 'faculty', name: 'Demo Faculty', email: 'faculty@demo.skylent.in', avatar: 'DF', label: 'Faculty' },
-      { id: 'demo-org', role: 'organisation', name: 'Demo Institution', email: 'institution@demo.skylent.in', avatar: 'DI', label: 'Institution' },
-      { id: 'demo-admin', role: 'admin', name: 'Demo Admin', email: 'admin@demo.skylent.in', avatar: 'DA', label: 'Admin' },
+      { id: 'demo-student', role: 'student', name: 'Aarav Sharma', email: 'learner@demo.skylent.in', avatar: 'AS', label: 'Learner' },
+      { id: 'demo-superadmin', role: 'superadmin', name: 'Chandan (Admin)', email: 'admin@demo.skylent.in', avatar: 'CA', label: 'Admin C-Suite' },
+      { id: 'demo-faculty', role: 'faculty', name: 'Dr. Meera Krishnan', email: 'faculty@demo.skylent.in', avatar: 'MK', label: 'Faculty' },
+      { id: 'demo-college', role: 'college', name: 'Dean Placement Cell', email: 'college@demo.skylent.in', avatar: 'TP', label: 'College TPO' },
+      { id: 'demo-recruiter', role: 'recruiter', name: 'Rohan Verma', email: 'recruiter@demo.skylent.in', avatar: 'RV', label: 'Recruiter' },
+      { id: 'demo-org', role: 'organisation', name: 'Enterprise L&D', email: 'institution@demo.skylent.in', avatar: 'EL', label: 'Enterprise' },
     ]
   : []
 

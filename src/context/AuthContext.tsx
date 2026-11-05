@@ -44,6 +44,28 @@ type AuthContextValue = {
 const AuthContext = createContext<AuthContextValue | null>(null)
 
 const isDemoMode = import.meta.env.VITE_DEMO_MODE === "true"
+const DEMO_STORAGE_KEY = "skylent:active-demo-user:v1"
+
+function readStoredDemoUser(): AuthUser | null {
+  if (typeof window === "undefined") return null
+  try {
+    const raw = window.sessionStorage.getItem(DEMO_STORAGE_KEY)
+    if (!raw) return null
+    return JSON.parse(raw) as AuthUser
+  } catch {
+    return null
+  }
+}
+
+function writeStoredDemoUser(user: AuthUser | null) {
+  if (typeof window === "undefined") return
+  try {
+    if (user) window.sessionStorage.setItem(DEMO_STORAGE_KEY, JSON.stringify(user))
+    else window.sessionStorage.removeItem(DEMO_STORAGE_KEY)
+  } catch {
+    // Ignore storage errors
+  }
+}
 
 function toAuthUser(response: {
   user: { id: string; name: string; displayName?: string; email: string; avatar: string }
@@ -63,14 +85,24 @@ function toAuthUser(response: {
 
 // ─── PROVIDER ─────────────────────────────────────────────────────────────────
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<AuthUser | null>(null)
-  const [roles, setRoles] = useState<UserRole[]>([])
+  const [user, setUser] = useState<AuthUser | null>(() => readStoredDemoUser())
+  const [roles, setRoles] = useState<UserRole[]>(() => {
+    const stored = readStoredDemoUser()
+    return stored ? [stored.role] : []
+  })
   const [ready, setReady] = useState(false)
 
   useEffect(() => {
     setUnauthorizedHandler(() => {
-      setUser(null)
-      setRoles([])
+      setUser((current) => {
+        if (current?.id.startsWith("demo-")) return current
+        return null
+      })
+      setRoles((currentRoles) => {
+        const stored = readStoredDemoUser()
+        if (stored?.id.startsWith("demo-")) return [stored.role]
+        return currentRoles.length ? [] : currentRoles
+      })
     })
     return () => setUnauthorizedHandler(null)
   }, [])
@@ -79,17 +111,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     let cancelled = false
 
     async function restoreSession() {
+      const storedDemo = readStoredDemoUser()
       try {
         const session = await fetchCurrentUser()
         if (cancelled) return
         if (session) {
+          writeStoredDemoUser(null)
           setUser(toAuthUser(session))
           setRoles(session.roles)
+        } else if (storedDemo) {
+          setUser(storedDemo)
+          setRoles([storedDemo.role])
         }
       } catch {
         if (!cancelled) {
-          setUser(null)
-          setRoles([])
+          if (storedDemo) {
+            setUser(storedDemo)
+            setRoles([storedDemo.role])
+          } else {
+            setUser(null)
+            setRoles([])
+          }
         }
       } finally {
         if (!cancelled) setReady(true)
@@ -105,6 +147,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = useCallback(async (email: string, password: string) => {
     const session = await loginRequest({ email, password })
     const nextUser = toAuthUser(session)
+    writeStoredDemoUser(null)
     setUser(nextUser)
     setRoles(session.roles)
     return nextUser.role
@@ -113,6 +156,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signup = useCallback(async (name: string, email: string, password: string, acceptedTerms: boolean) => {
     const session = await signupRequest({ name, email, password, acceptedTerms })
     const nextUser = toAuthUser(session)
+    writeStoredDemoUser(null)
     setUser(nextUser)
     setRoles(session.roles)
     return nextUser.role
@@ -129,14 +173,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   const loginDemo = useCallback((demoUser: AuthUser) => {
-    if (!isDemoMode) {
-      throw new Error("Demo login is disabled outside VITE_DEMO_MODE")
-    }
+    writeStoredDemoUser(demoUser)
     setUser(demoUser)
     setRoles([demoUser.role])
   }, [])
 
   const logout = useCallback(async () => {
+    writeStoredDemoUser(null)
     try {
       await logoutRequest()
     } catch {

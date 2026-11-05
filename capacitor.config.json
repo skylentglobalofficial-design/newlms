@@ -4,9 +4,9 @@
   "webDir": "dist",
   "bundledWebRuntime": false,
   "server": {
-    "url": "https://skylent.live",
-    "cleartext": false,
     "androidScheme": "https",
+    "hostname": "localhost",
+    "cleartext": false,
     "allowNavigation": [
       "skylent.live",
       "*.skylent.live",
@@ -15,25 +15,25 @@
   },
   "android": {
     "allowMixedContent": false,
-    "captureInput": true,
+    "captureInput": false,
     "webContentsDebuggingEnabled": true,
-    "backgroundColor": "#3B2D96"
+    "backgroundColor": "#1e1b4b"
   },
   "ios": {
     "contentInset": "automatic",
     "limitsNavigationsToAppBoundDomains": true,
-    "backgroundColor": "#3B2D96"
+    "backgroundColor": "#1e1b4b"
   },
   "plugins": {
     "SplashScreen": {
-      "launchShowDuration": 1200,
-      "backgroundColor": "#3B2D96",
+      "launchShowDuration": 900,
+      "backgroundColor": "#1e1b4b",
       "showSpinner": false,
       "androidScaleType": "CENTER_CROP"
     },
     "StatusBar": {
       "style": "DARK",
-      "backgroundColor": "#3B2D96"
+      "backgroundColor": "#1e1b4b"
     }
   },
   "appendUserAgent": "SkylentNativeApp/1.0.0"

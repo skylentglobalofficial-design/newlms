@@ -1894,25 +1894,22 @@ html, body {
   .learner-evidence-row { grid-template-columns: 1fr !important; }
 }
 
-/* 120 FPS High-Refresh Mobile & Hardware Acceleration Rules */
-html {
-  -webkit-text-size-adjust: 100%;
-  -webkit-tap-highlight-color: transparent;
-  touch-action: manipulation;
-}
-
-body {
+/* Native 120Hz Smooth Touch & Wheel Scrolling Restoration (V47) */
+html, body {
+  overflow-x: hidden;
+  overflow-y: auto !important;
+  height: auto !important;
+  min-height: 100%;
   -webkit-overflow-scrolling: touch;
-  overscroll-behavior-y: none;
+  touch-action: pan-y pinch-zoom !important;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.skylent-hardware-accel,
-main,
-nav,
-dialog {
-  transform: translateZ(0);
-  -webkit-transform: translateZ(0);
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-  perspective: 1000px;
+#root,
+.skylent-public-canvas,
+.skylent-public-main {
+  overflow-y: visible !important;
+  height: auto !important;
+  transform: none !important;
+  perspective: none !important;
 }

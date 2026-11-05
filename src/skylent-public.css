@@ -1136,12 +1136,15 @@ body:has(.skylent-public-canvas) {
   backface-visibility: hidden;
 }
 
-/* ── V38 True Native APK Shell Mode (data-native-app="true") ── */
+/* ── V47 True Google Play Store Native APK Shell Mode (data-native-app="true") ── */
 html[data-native-app="true"],
 html[data-native-app="true"] body {
-  overscroll-behavior-y: none;
+  overflow-x: hidden;
+  overflow-y: auto !important;
+  height: auto !important;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y pinch-zoom !important;
   -webkit-tap-highlight-color: transparent;
-  -webkit-touch-callout: none;
 }
 
 /* Hide website marketing footer & web install prompt inside the compiled APK */
@@ -1150,12 +1153,22 @@ html[data-native-app="true"] .skylent-install-app-btn {
   display: none !important;
 }
 
-html[data-native-app="true"] .skylent-public-canvas .skylent-public-main {
-  padding-bottom: calc(74px + env(safe-area-inset-bottom)) !important;
+/* Hide desktop/website marketing header inside Native App Mode because NativeAppShellController renders the Play Store App Top Bar */
+html[data-native-app="true"] .skn,
+html[data-native-app="true"] .sk-shell-locator {
+  display: none !important;
 }
 
-html[data-native-app="true"] .skn,
-html[data-native-app="true"] .auth-shell-rail,
+/* When on the Native App Home Hub (/ in app view), hide the marketing brochure main so the Play Store App Home Hub is the primary view */
+html[data-native-app="true"][data-native-home-hub="true"] .skylent-public-canvas .skylent-public-main {
+  display: none !important;
+}
+
+html[data-native-app="true"] .skylent-public-canvas .skylent-public-main {
+  padding-top: 60px !important;
+  padding-bottom: calc(82px + env(safe-area-inset-bottom)) !important;
+}
+
 html[data-native-app="true"] .skylent-native-bottom-bar {
   user-select: none;
   -webkit-user-select: none;
