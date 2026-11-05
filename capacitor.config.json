@@ -4,12 +4,13 @@
   "webDir": "dist",
   "bundledWebRuntime": false,
   "server": {
-    "androidScheme": "https",
-    "hostname": "localhost",
+    "url": "https://skylent.live",
     "cleartext": false,
+    "androidScheme": "https",
     "allowNavigation": [
       "skylent.live",
-      "*.skylent.live"
+      "*.skylent.live",
+      "accounts.google.com"
     ]
   },
   "android": {
