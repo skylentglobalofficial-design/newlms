@@ -100,6 +100,7 @@ npx tsx scripts/test-release-readiness-hardening.ts
 npm run build
 
 
+
 ```
 
 ## 5. V34–V35 Complete Zero-Gap Multi-Tab Dashboard Architecture, Full Course/Lecture Studio & Secondary Public Page Unification & End-to-End Course / Module / Lecture Authoring Studio (`skylent-v35-complete-zero-gap-master.zip`)
@@ -127,3 +128,14 @@ npm run build
 3. **Persistent 20-Minute Faculty Doubt SLA Store (`server/src/lib/doubt-sla.ts`):**
 
    * Added automatic JSON snapshot persistence (`.cache/doubt-sla-tickets.json` when `NODE_ENV !== "test"`) so student lesson doubts and Faculty TA resolutions survive server restarts.
+
+
+---
+
+## 6. V36 Navbar Mega-Dropdown Clipping Fix, Singular Route Aliases (`/workshop`) & Page-by-Page EdTech Competitive Benchmark (`skylent-v36-dropdown-and-routing-master.zip`)
+
+1. **Screenshot 1 Fix (`skylent.live/workshop` 404 → Singular Route Aliases + Smart 404 Recovery Hub in `src/App.tsx` & `src/pages/NotFoundPage.tsx`):**
+   * Added singular/alias route redirects in `src/App.tsx` so `/workshop`, `/workshop/:slug`, `/event`, `/event/:slug`, `/programme`, `/programme/:slug`, `/program`, `/course`, `/course/:slug`, `/degree`, `/degrees`, `/certificate`, and `/certificates` resolve immediately without hitting 404.
+   * Upgraded `src/pages/NotFoundPage.tsx` into a Royal Purple + Soft Lavender + Crisp White **Smart Route Recovery Hub** with 6 instant destination cards (`Explore Programmes`, `Workshops & Masterclasses`, `Scheduled Events & Case Store`, `90s Skill Diagnostic`, `Verify a Certificate`, `My Learning Dashboard`).
+2. **Screenshot 2 Fix (`Programmes ⌄` Mega-Dropdown Left-Edge Viewport Clipping in `src/skylent-public.css` & `src/components/shared.tsx`):**
+   * Fixed `.skylent-public-canvas .skn-menu--sections` in `src/skylent-public.css` (changed `left: 50%; transform: translateX(-50%);` to `left: 0; width: min(620px, calc(100vw - 48px)); transform: none; padding: 12px 14px;`) so the 620px 2-column `Programmes` Mega-Dropdown aligns cleanly with the left edge of the `Programmes` trigger instead of shifting 300px left off the viewport edge.

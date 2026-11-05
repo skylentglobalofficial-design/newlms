@@ -279,16 +279,16 @@ const PUBLIC_NAV: readonly PublicNavGroup[] = [
     label: 'Programmes',
     to: '/programmes',
     tagline: 'Choose by career track, in-browser lab, or weekend live sprint',
-    match: ['/programmes', '/programs', '/courses', '/skills', '/workshops', '/labs', '/events'],
+    match: ['/programmes', '/programs', '/courses', '/skills', '/workshops', '/workshop', '/labs', '/events'],
     items: [],
     sections: [
       {
         heading: 'Data, AI & Software Tracks',
         items: [
           { label: 'Data Analytics', sub: 'SQL, Spreadsheets, Northwind Lab & Commercial Capstone · 5 Modules.', to: '/programmes/data-analytics-pro', mark: 'live' },
-          { label: 'Data Science & AI', sub: 'SQL + Python ETL + Out-of-Time Churn Cohort Sandbox.', to: '/programmes/data-science-ai' },
-          { label: 'Generative AI & LLM Systems', sub: 'Grounded RAG, Vector Retrieval & Accuracy Evaluation Suite.', to: '/programmes/generative-ai-program' },
-          { label: 'Full-Stack Web Development', sub: 'React 18, TypeScript, Node/Express & PostgreSQL Ledger Lab.', to: '/programmes/full-stack' },
+          { label: 'Data Science & AI', sub: 'SQL + Python ETL + Out-of-Time Churn Cohort Sandbox.', to: '/programmes/data-science-ai', mark: 'live' },
+          { label: 'Generative AI & LLM Systems', sub: 'Grounded RAG, Vector Retrieval & Accuracy Evaluation Suite.', to: '/programmes/generative-ai-program', mark: 'live' },
+          { label: 'Full-Stack Web Development', sub: 'React 18, TypeScript, Node/Express & PostgreSQL Ledger Lab.', to: '/programmes/full-stack', mark: 'live' },
         ],
       },
       {
@@ -296,7 +296,7 @@ const PUBLIC_NAV: readonly PublicNavGroup[] = [
         items: [
           { label: 'Product Management', sub: 'User Research, PRD Scoping & Harbor Desk Studio · 5 Modules.', to: '/programmes/product-management', mark: 'live' },
           { label: 'Python Programming & Automation', sub: 'Python 3, Pandas, Pytest Validators & Pipeline Audit · 5 Modules.', to: '/courses/python-programming', mark: 'live' },
-          { label: '₹99 Weekend Live Workshops', sub: '90-min weekend sprints with 100% Elixir Coin cashback (99 Coins).', to: '/events', mark: 'live' },
+          { label: '₹99 Weekend Live Workshops', sub: '90-min weekend sprints with 100% Elixir Coin cashback (99 Coins).', to: '/workshops', mark: 'live' },
           { label: 'Explore All Programmes & Goal Finder →', sub: 'Compare all 6 tracks, pricing plans, and career goal pathways.', to: '/programmes' },
         ],
       },
@@ -308,8 +308,8 @@ const PUBLIC_NAV: readonly PublicNavGroup[] = [
     tagline: 'University & Institutional Degree Pathways',
     match: ['/education', '/exams'],
     items: [
-      { label: 'Undergraduate (UG)', sub: 'Bachelor’s degree tracks (B.Sc., BCA, BBA) with integrated Skylent OS labs.', to: '/education?level=ug' },
-      { label: 'Postgraduate (PG)', sub: 'Master’s & postgraduate specialisations (M.Sc., MCA, MBA) with applied capstones.', to: '/education?level=pg' },
+      { label: 'Undergraduate (UG)', sub: 'BCA, BBA, B.Sc & B.Tech applied university pathways (Online & Campus).', to: '/education?level=ug' },
+      { label: 'Postgraduate (PG)', sub: 'MCA, MBA & M.Sc executive and postgraduate specialisations.', to: '/education?level=pg' },
     ],
   },
   {
@@ -324,15 +324,16 @@ const PUBLIC_NAV: readonly PublicNavGroup[] = [
       { label: 'Applications & prep', sub: 'Track role applications and rehearse interview defense.', to: '/career-os/applications' },
     ],
   },
-  // Institutions is reached from the footer, the search and the homepage partner section, not the top bar.
   {
     label: 'About',
     to: '/about',
-    tagline: 'Who we are and how to reach us',
-    match: ['/about', '/stories', '/blog', '/contact', '/terms', '/privacy'],
+    tagline: 'Who we are, verified student proof, and how to reach us',
+    match: ['/about', '/stories', '/blog', '/contact', '/terms', '/privacy', '/institutions'],
     items: [
-      { label: 'About Skylent', sub: 'What we are building and why.', to: '/about' },
-      { label: 'Contact', sub: 'Ask a question or request a call.', to: '/contact' },
+      { label: 'About Skylent', sub: 'Institutional Charter, 3 Operating Environments & Applied Work Model.', to: '/about' },
+      { label: 'For Colleges & Institutions', sub: 'Autonomous Campus OS, NEP 2020 credit mapping & NAAC CSV reporting.', to: '/institutions' },
+      { label: 'Verify a Certificate (/verify)', sub: 'Inspect public Proof-of-Work Dossiers and Flight Recorder logs.', to: '/verify' },
+      { label: 'Contact', sub: 'Ask a question or request an institutional walkthrough.', to: '/contact' },
     ],
   },
 ]

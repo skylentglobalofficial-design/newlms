@@ -1,9 +1,7 @@
 import { useState } from "react"
 import { Link } from "react-router-dom"
 import { PageShell } from "../components/shared"
-import { CapabilityRail, PracticePillarSubnav } from "../components/product/Architecture"
 import TrackInteractiveSandbox from "../components/labs/TrackInteractiveSandbox"
-import { LAB_PATHWAY } from "../lib/product-architecture"
 import { PRACTICE_ENVIRONMENTS } from "../lib/practice-environments"
 import "./Catalog.css"
 
@@ -45,62 +43,165 @@ export default function LabsPage() {
   return (
     <PageShell aurora={false}>
       <div className="cat-page">
-        <div className="cat-pillar-bar">
+        <section className="cat-hero" style={{ paddingBottom: 24 }}>
           <div className="cat-rail">
-            <PracticePillarSubnav current="labs" />
-          </div>
-        </div>
-        <section className="cat-hero">
-          <div className="cat-rail">
-            <p className="cat-label">Skylent Labs · Browser Workspaces across All 6 Courses</p>
-            <h1>Labs live inside the learning path.</h1>
-            <p className="cat-lead">
-              Every flagship course pairs written lessons with an interactive workspace where you execute queries, audit code pipelines, or defend product specifications before submitting your capstone.
-            </p>
-            <div className="cat-actions">
-              <Link className="cat-btn cat-btn-primary" to="/courses/data-analytics">Open Data Analytics (Northwind SQL Lab)</Link>
-              <Link className="cat-btn cat-btn-ghost" to="/courses/product-management">Open Product Management (Harbor Desk Case)</Link>
-              <Link className="cat-btn cat-btn-ghost" to="/courses">Browse all 6 courses</Link>
+            <div
+              style={{
+                background: "linear-gradient(135deg, #3b2d96 0%, #5142b5 100%)",
+                border: "1px solid rgba(196, 184, 255, 0.45)",
+                borderRadius: 20,
+                padding: "clamp(26px, 4vw, 38px)",
+                color: "#ffffff",
+                boxShadow: "0 20px 44px -16px rgba(59, 45, 150, 0.35)",
+              }}
+            >
+              <p style={{ margin: "0 0 8px", color: "#e9d5ff", font: "700 11.5px/1.4 var(--font-mono)", letterSpacing: "0.12em", textTransform: "uppercase" }}>
+                SKYLENT LABS · IN-BROWSER EXECUTION WORKSPACES ACROSS ALL 6 COURSES
+              </p>
+              <h1 style={{ margin: "0 0 10px", fontSize: "clamp(26px, 3.4vw, 40px)", color: "#ffffff", fontFamily: "var(--font-display)", lineHeight: 1.12 }}>
+                Labs live inside the learning path.
+              </h1>
+              <p style={{ margin: "0 0 20px", color: "rgba(255,255,255,0.9)", fontSize: 15.5, lineHeight: 1.6, maxWidth: 720 }}>
+                Every flagship course pairs written lessons with an interactive browser workspace where you execute SQL queries, audit Python pipelines, evaluate RAG citations, or defend product specifications before submitting your capstone.
+              </p>
+              <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+                <Link
+                  to="/courses/data-analytics"
+                  style={{
+                    padding: "11px 20px",
+                    borderRadius: 999,
+                    background: "#ffffff",
+                    color: "#5142b5",
+                    fontWeight: 800,
+                    fontSize: 13.5,
+                    textDecoration: "none",
+                    boxShadow: "0 8px 20px rgba(0,0,0,0.16)",
+                  }}
+                >
+                  Open Data Analytics (Northwind SQL Lab) →
+                </Link>
+                <Link
+                  to="/courses/product-management"
+                  style={{
+                    padding: "11px 18px",
+                    borderRadius: 999,
+                    background: "rgba(255,255,255,0.14)",
+                    border: "1px solid rgba(255,255,255,0.34)",
+                    color: "#ffffff",
+                    fontWeight: 700,
+                    fontSize: 13.5,
+                    textDecoration: "none",
+                  }}
+                >
+                  Open Product Management (Harbor Desk Case)
+                </Link>
+                <Link
+                  to="/programmes"
+                  style={{
+                    padding: "11px 18px",
+                    borderRadius: 999,
+                    background: "rgba(255,255,255,0.14)",
+                    border: "1px solid rgba(255,255,255,0.34)",
+                    color: "#ffffff",
+                    fontWeight: 700,
+                    fontSize: 13.5,
+                    textDecoration: "none",
+                  }}
+                >
+                  Browse all 6 tracks
+                </Link>
+              </div>
             </div>
           </div>
         </section>
 
         <section className="cat-section" aria-labelledby="labs-live-title">
           <div className="cat-rail">
-            <p className="cat-label">Dedicated Course Workspaces</p>
+            <p className="cat-label" style={{ color: "#5142b5" }}>Dedicated Course Workspaces</p>
             <h2 id="labs-live-title">Each authored course includes a graded practice environment.</h2>
-            <ul className="practice-env">
+            <ul
+              style={{
+                listStyle: "none",
+                margin: "18px 0 0",
+                padding: 0,
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 320px), 1fr))",
+                gap: 18,
+              }}
+            >
               {PRACTICE_ENVIRONMENTS.map((environment) => (
-                <li key={environment.id}>
-                  <p className="cat-label">{environment.statusLabel}</p>
-                  <h3>{environment.title}</h3>
-                  <p className="cat-fine">{environment.summary}</p>
-                  <p className="cat-fine">{environment.tools.join(" · ")}</p>
-                  <p className="cat-fine" style={{ marginTop: 8 }}>
-                    <Link to={`/courses/${environment.courseSlug}`} style={{ fontWeight: 600, color: "#0f172a" }}>
-                      Inspect course curriculum →
-                    </Link>
-                  </p>
+                <li
+                  key={environment.id}
+                  style={{
+                    padding: "20px 22px",
+                    borderRadius: 16,
+                    background: "linear-gradient(180deg, #f6f4ff 0%, #ffffff 100%)",
+                    border: "1px solid #ddd6fe",
+                    borderTop: "4px solid #5142b5",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "space-between",
+                    gap: 10,
+                  }}
+                >
+                  <div>
+                    <span style={{ fontSize: 11, fontFamily: "var(--font-mono)", fontWeight: 700, color: "#5142b5", textTransform: "uppercase" }}>
+                      {environment.statusLabel}
+                    </span>
+                    <h3 style={{ margin: "4px 0 6px", fontSize: 18, color: "#0f172a" }}>{environment.title}</h3>
+                    <p style={{ margin: 0, fontSize: 13.5, color: "#475569", lineHeight: 1.55 }}>{environment.summary}</p>
+                    <p style={{ margin: "8px 0 0", fontSize: 12, fontWeight: 700, color: "#5142b5" }}>
+                      {environment.tools.join(" · ")}
+                    </p>
+                  </div>
+                  <Link to={`/courses/${environment.courseSlug}`} style={{ fontWeight: 800, fontSize: 13, color: "#5142b5", textDecoration: "none" }}>
+                    Inspect course curriculum →
+                  </Link>
                 </li>
               ))}
               {MULTI_TRACK_SANDBOXES.map((item) => (
-                <li key={item.projectType}>
-                  <p className="cat-label">In-browser evaluator · {item.courseTitle}</p>
-                  <h3>{item.label}</h3>
-                  <p className="cat-fine">{item.summary}</p>
-                  <p className="cat-fine" style={{ marginTop: 8 }}>
-                    <Link to={`/courses/${item.courseSlug}`} style={{ fontWeight: 600, color: "#0f172a" }}>
-                      Inspect {item.courseTitle} →
-                    </Link>
-                  </p>
+                <li
+                  key={item.projectType}
+                  style={{
+                    padding: "20px 22px",
+                    borderRadius: 16,
+                    background: "linear-gradient(180deg, #f6f4ff 0%, #ffffff 100%)",
+                    border: "1px solid #ddd6fe",
+                    borderTop: "4px solid #5142b5",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "space-between",
+                    gap: 10,
+                  }}
+                >
+                  <div>
+                    <span style={{ fontSize: 11, fontFamily: "var(--font-mono)", fontWeight: 700, color: "#5142b5", textTransform: "uppercase" }}>
+                      In-browser evaluator · {item.courseTitle}
+                    </span>
+                    <h3 style={{ margin: "4px 0 6px", fontSize: 18, color: "#0f172a" }}>{item.label}</h3>
+                    <p style={{ margin: 0, fontSize: 13.5, color: "#475569", lineHeight: 1.55 }}>{item.summary}</p>
+                  </div>
+                  <Link to={`/courses/${item.courseSlug}`} style={{ fontWeight: 800, fontSize: 13, color: "#5142b5", textDecoration: "none" }}>
+                    Inspect {item.courseTitle} →
+                  </Link>
                 </li>
               ))}
             </ul>
 
-            <div style={{ marginTop: 36, padding: "24px", borderRadius: 14, border: "1px solid #e2e8f0", background: "#f8fafc" }}>
+            <div
+              style={{
+                marginTop: 32,
+                padding: "24px",
+                borderRadius: 16,
+                border: "1px solid #ddd6fe",
+                borderTop: "4px solid #5142b5",
+                background: "#ffffff",
+                boxShadow: "0 12px 30px -14px rgba(81, 66, 181, 0.14)",
+              }}
+            >
               <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: 12, marginBottom: 16 }}>
                 <div>
-                  <p className="cat-label" style={{ margin: 0 }}>Live Interactive Sandbox Preview</p>
+                  <p className="cat-label" style={{ margin: 0, color: "#5142b5" }}>Live Interactive Sandbox Preview</p>
                   <h3 style={{ margin: "4px 0 0", fontSize: 20, fontWeight: 700, color: "#0f172a" }}>
                     Test-drive multi-track code &amp; architecture evaluators
                   </h3>
@@ -122,18 +223,6 @@ export default function LabsPage() {
               </div>
               <TrackInteractiveSandbox projectType={currentTrack.projectType} />
             </div>
-
-            <p className="cat-label" style={{ marginTop: 32 }}>How a lab fits the path</p>
-            <CapabilityRail
-              items={[
-                { label: "Lab model", status: "live", note: LAB_PATHWAY.map((step) => step.label).join(" → ") },
-                {
-                  label: "Course-integrated",
-                  status: "live",
-                  note: "Workspaces open directly from the lessons and capstones that use them.",
-                },
-              ]}
-            />
           </div>
         </section>
       </div>

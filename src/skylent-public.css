@@ -7,7 +7,7 @@
 
    Palette: light-first violet identity, Oct 2026:
    paper #FFFFFF, ink #171717, action #5142B5, hover #43349F,
-   deep navy #3B2D96 / #43349F for compact product chrome, AI mark #6657E8.
+   deep navy #10263D / #183750 for compact product chrome, AI mark #6657E8.
    ===================================================================== */
 
 html,
@@ -40,7 +40,7 @@ body:has(.skylent-public-canvas) {
   --site-border: 220 14% 90%;
   --site-border-strong: 252 30% 85.5%;
   --site-ink: 0 0% 9%;
-  --site-navy: 249 54% 38%;
+  --site-navy: 210 60% 20%;
   --site-deep: 252 42% 48%;
   --site-ocean: 252 48% 44%;
   --site-highlight: 249 76% 62%;
@@ -60,7 +60,7 @@ body:has(.skylent-public-canvas) {
   --skylent-surface-soft: #f7f6fc;
   --skylent-surface-sand: #eae6ff;
   --skylent-surface-elevated: #ffffff;
-  --skylent-surface-inverse: #3B2D96;
+  --skylent-surface-inverse: #10263d;
 
   --skylent-color-paper: var(--skylent-surface-paper);
   --skylent-color-cream: var(--skylent-surface-cream);
@@ -198,7 +198,22 @@ body:has(.skylent-public-canvas) {
   color: #ffffff !important;
 }
 
-/* Removed destructive inline white-text override that caused dark-grey text on purple/dark cards */
+.skylent-public-canvas main p[style*="color: rgba(255"],
+.skylent-public-canvas main div[style*="color: rgba(255, 255, 255"],
+.skylent-public-canvas main div[style*="color: rgba(255,255,255"],
+.skylent-public-canvas main span[style*="color: rgba(255, 255, 255"],
+.skylent-public-canvas main span[style*="color: rgba(255,255,255"] {
+  color: var(--skylent-color-slate) !important;
+}
+
+.skylent-public-canvas main div[style*="color: #FFFFFF"],
+.skylent-public-canvas main span[style*="color: #FFFFFF"],
+.skylent-public-canvas main p[style*="color: #FFFFFF"],
+.skylent-public-canvas main li[style*="color: #FFFFFF"],
+.skylent-public-canvas main strong[style*="color: #FFFFFF"],
+.skylent-public-canvas main td[style*="color: #FFFFFF"] {
+  color: var(--skylent-color-ink) !important;
+}
 
 .skylent-public-canvas main input,
 .skylent-public-canvas main textarea,
@@ -377,9 +392,10 @@ body:has(.skylent-public-canvas) {
   to { opacity: 1; translate: 0 0; }
 }
 .skylent-public-canvas .skn-menu--sections {
-  left: 50%;
-  width: min(600px, calc(100vw - 32px));
-  transform: translateX(-50%);
+  left: 0;
+  width: min(620px, calc(100vw - 48px));
+  transform: none;
+  padding: 12px 14px;
 }
 .skylent-public-canvas .skn-menu--account {
   left: auto;

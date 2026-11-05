@@ -276,6 +276,19 @@ function AppRoutes() {
         <Route path="/courses/:slug" element={<CourseDetailPage />} />
         <Route path="/workshops" element={<WorkshopsPage />} />
         <Route path="/workshops/:slug" element={<WorkshopDetailPage />} />
+        <Route path="/workshop" element={<Navigate to="/workshops" replace />} />
+        <Route path="/workshop/:slug" element={<WorkshopDetailPage />} />
+        <Route path="/event" element={<Navigate to="/events" replace />} />
+        <Route path="/event/:slug" element={<EventDetailPage />} />
+        <Route path="/programme" element={<Navigate to="/programmes" replace />} />
+        <Route path="/programme/:slug" element={<ProgramPage />} />
+        <Route path="/program" element={<Navigate to="/programmes" replace />} />
+        <Route path="/course" element={<Navigate to="/courses" replace />} />
+        <Route path="/course/:slug" element={<CourseDetailPage />} />
+        <Route path="/degree" element={<Navigate to="/education" replace />} />
+        <Route path="/degrees" element={<Navigate to="/education" replace />} />
+        <Route path="/certificate" element={<Navigate to="/verify" replace />} />
+        <Route path="/certificates" element={<Navigate to="/verify" replace />} />
         <Route path="/events" element={<EventsPage />} />
         <Route path="/events/:slug" element={<EventDetailPage />} />
         <Route path="/stories" element={<StoriesPage />} />
