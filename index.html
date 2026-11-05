@@ -40,9 +40,16 @@
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
     <script>
-      if ('serviceWorker' in navigator && window.location.protocol === 'https:') {
-        window.addEventListener('load', function () {
-          navigator.serviceWorker.register('/sw.js').then(function (reg) {
+      // Strictly prevent Service Worker execution inside Android WebView / Capacitor
+      var isNativeEnv = Boolean(
+        window.Capacitor ||
+        window.location.hostname === "localhost" ||
+        window.location.hostname === "app.skylent.local" ||
+        (navigator.userAgent && navigator.userAgent.indexOf("SkylentNativeApp") !== -1)
+      );
+      if (!isNativeEnv && "serviceWorker" in navigator && window.location.protocol === "https:") {
+        window.addEventListener("load", function () {
+          navigator.serviceWorker.register("/sw.js").then(function (reg) {
             reg.update();
           }).catch(function () {});
         });

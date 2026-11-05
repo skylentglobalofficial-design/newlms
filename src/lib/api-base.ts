@@ -16,7 +16,13 @@ export function isNativeAppShell(): boolean {
     return true
   }
   const { protocol, hostname, search } = window.location
-  if (protocol === "capacitor:" || protocol === "ionic:" || hostname === "app.skylent.local") {
+  if (
+    protocol === "capacitor:" ||
+    protocol === "ionic:" ||
+    hostname === "app.skylent.local" ||
+    (hostname === "localhost" && (window as unknown as { Capacitor?: { isNativePlatform?: () => boolean } }).Capacitor) ||
+    (typeof navigator !== "undefined" && navigator.userAgent.includes("SkylentNativeApp"))
+  ) {
     return true
   }
   try {

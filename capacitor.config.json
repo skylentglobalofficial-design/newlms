@@ -5,7 +5,7 @@
   "bundledWebRuntime": false,
   "server": {
     "androidScheme": "https",
-    "hostname": "app.skylent.local",
+    "hostname": "localhost",
     "cleartext": false,
     "allowNavigation": [
       "skylent.live",
@@ -15,7 +15,7 @@
   "android": {
     "allowMixedContent": false,
     "captureInput": true,
-    "webContentsDebuggingEnabled": false,
+    "webContentsDebuggingEnabled": true,
     "backgroundColor": "#3B2D96"
   },
   "ios": {
@@ -34,5 +34,6 @@
       "style": "DARK",
       "backgroundColor": "#3B2D96"
     }
-  }
+  },
+  "appendUserAgent": "SkylentNativeApp/1.0.0"
 }
