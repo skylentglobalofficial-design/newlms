@@ -42,7 +42,7 @@ careerRouter.post("/activate", requireAuth, requireCsrf, async (req: Authenticat
     await prisma.careerOsAccess.upsert({
       where: { userId },
       update: {},
-      create: { userId },
+      create: { userId, reason: "learner_workspace_activation" },
     })
     res.json({ data: { entitled: true, locked: false } })
   } catch (error) {

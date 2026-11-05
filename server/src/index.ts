@@ -1,181 +1,229 @@
 import "dotenv/config"
-import express from "express"
-import cors from "cors"
-import fs from "node:fs"
-import path from "node:path"
+import { existsSync, readFileSync } from "node:fs"
+import { dirname, extname, resolve, sep } from "node:path"
 import { fileURLToPath } from "node:url"
-import { getCorsOrigins, logProductionEnvWarnings, redactSecrets, validateEnv } from "./lib/env.js"
+
+import express from "express"
+
+import { assertProductionEnv, redactSecrets } from "./lib/env.js"
+import { describeAiReadiness } from "./lib/skylent-ai/service.js"
+import { apexRedirectLocation, injectCanonicalLink } from "./lib/public-host.js"
+import { checkMigrationState, decideStartup } from "./lib/migration-guard.js"
 import { prisma } from "./lib/prisma.js"
-import { isDatabaseUnavailableError, isMissingSchemaError, unavailableBody } from "./lib/schema-capabilities.js"
-import { renderRouteHtml } from "./lib/route-meta.js"
-import { apexRedirectLocation, canonicalOriginRedirect, injectCanonicalLink, resolvePublicOrigin } from "./lib/public-host.js"
-import { apiRateLimiter, authRateLimiter, requestContextMiddleware, securityHeaders } from "./lib/security-middleware.js"
+import { isDatabaseUnavailableError, isMissingSchemaError } from "./lib/schema-capabilities.js"
+import {
+  authCredentialsRateLimit,
+  createCorsMiddleware,
+  jsonBodyParser,
+  securityHeaders,
+} from "./lib/security-middleware.js"
+import catalogRouter from "./routes/catalog.js"
+import healthRouter from "./routes/health.js"
+import { adminRouter } from "./routes/admin.js"
+import { adminPlatformRouter } from "./routes/admin-platform.js"
+import { elixirRouter } from "./routes/elixir.js"
+import { practiceAdminRouter } from "./routes/practice-admin.js"
+import { practiceRouter } from "./routes/practice.js"
+import { adminEmployersRouter } from "./routes/admin-employers.js"
+import { adminMediaRouter } from "./routes/admin-media.js"
 import { authRouter } from "./routes/auth.js"
-import { coursesRouter } from "./routes/courses.js"
-import { programsRouter } from "./routes/programs.js"
 import { lmsRouter } from "./routes/lms.js"
-import { lmsMaterialsRouter } from "./routes/lms-materials.js"
-import { projectsRouter } from "./routes/projects.js"
+import { skylentAiRouter } from "./routes/skylent-ai.js"
 import { labsRouter } from "./routes/labs.js"
+import { projectsRouter } from "./routes/projects.js"
 import { facultyRouter } from "./routes/faculty.js"
 import { organisationRouter } from "./routes/organisation.js"
 import { collegeRouter } from "./routes/college.js"
-import { adminRouter } from "./routes/admin.js"
-import { adminCurriculumRouter } from "./routes/admin-curriculum.js"
-import { adminEmployersRouter } from "./routes/admin-employers.js"
-import { adminMediaRouter } from "./routes/admin-media.js"
-import { adminPlatformRouter } from "./routes/admin-platform.js"
-import { practiceRouter } from "./routes/practice.js"
-import { practiceAdminRouter } from "./routes/practice-admin.js"
-import { skylentRouter } from "./routes/skylent/index.js"
+import { lmsMaterialsRouter } from "./routes/lms-materials.js"
 import { careerRouter } from "./routes/career/index.js"
 import { careerRiseRouter } from "./routes/career-rise.js"
-import { elixirRouter } from "./routes/elixir.js"
+import { adminCurriculumRouter } from "./routes/admin-curriculum.js"
+import { skylentCertificatesRouter } from "./routes/skylent/certificates.js"
+import { skylentEnquiriesRouter } from "./routes/skylent/enquiries.js"
+import { revaRouter } from "./routes/skylent/reva.js"
 import { eventsRouter } from "./routes/events.js"
-import { appConfigRouter } from "./routes/app-config.js"
-import healthRouter from "./routes/health.js"
+import { degreesRouter } from "./routes/degrees.js"
 
-validateEnv()
-logProductionEnvWarnings()
+assertProductionEnv()
 
 const app = express()
-const port = Number(process.env.PORT ?? 8443)
-const host = process.env.HOST ?? "0.0.0.0"
-
-// Trust first proxy (Render, Railway, Fly, nginx) so req.ip and secure cookies work behind TLS termination
-if (process.env.NODE_ENV === "production" || process.env.TRUST_PROXY === "1") {
-  app.set("trust proxy", 1)
-}
+const port = Number(process.env.PORT ?? 3000)
 
 app.disable("x-powered-by")
-app.use(requestContextMiddleware)
-app.use((req, res, next) => {
-  const redirect = canonicalOriginRedirect(req) ?? apexRedirectLocation(req.hostname, req.originalUrl)
-  if (redirect) {
-    return res.redirect(308, redirect)
-  }
-  next()
-})
+
+if (process.env.NODE_ENV === "production") {
+  const hops = Number(process.env.TRUST_PROXY ?? 1)
+  app.set("trust proxy", Number.isFinite(hops) && hops >= 0 ? hops : 1)
+}
+
 app.use(securityHeaders)
-
-const allowedOrigins = getCorsOrigins()
-app.use(
-  cors({
-    origin(origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
-        return callback(null, true)
-      }
-      // Capacitor / Android WebView / Desktop WebView origins
-      if (
-        origin === "https://localhost" ||
-        origin === "http://localhost" ||
-        origin === "capacitor://localhost" ||
-        origin.startsWith("http://localhost:") ||
-        origin.startsWith("http://127.0.0.1:")
-      ) {
-        return callback(null, true)
-      }
-      return callback(new Error("Origin not allowed by CORS"))
-    },
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "X-CSRF-Token", "X-Requested-With", "Authorization", "X-Skylent-Client"],
-  }),
-)
-
-app.use(express.json({ limit: "256kb" }))
-
+app.use((request, response, next) => {
+  const location = apexRedirectLocation(request.hostname, request.originalUrl)
+  if (!location) {
+    next()
+    return
+  }
+  const status = request.method === "GET" || request.method === "HEAD" ? 301 : 308
+  response.redirect(status, location)
+})
+app.use(createCorsMiddleware())
+app.use(jsonBodyParser())
+app.use("/api/v1/auth/login", authCredentialsRateLimit)
+app.use("/api/v1/auth/signup", authCredentialsRateLimit)
 app.use("/api/v1/health", healthRouter)
-app.use("/api/v1/auth", authRateLimiter, authRouter)
-app.use("/api/v1/courses", apiRateLimiter, coursesRouter)
-app.use("/api/v1/programs", apiRateLimiter, programsRouter)
-app.use("/api/v1/lms", apiRateLimiter, lmsRouter)
-app.use("/api/v1/lms", apiRateLimiter, lmsMaterialsRouter)
-app.use("/api/v1/projects", apiRateLimiter, projectsRouter)
-app.use("/api/v1/labs", apiRateLimiter, labsRouter)
-app.use("/api/v1/faculty", apiRateLimiter, facultyRouter)
-app.use("/api/v1/organisation", apiRateLimiter, organisationRouter)
-app.use("/api/v1/college", apiRateLimiter, collegeRouter)
-app.use("/api/v1/admin/curriculum", apiRateLimiter, adminCurriculumRouter)
-app.use("/api/v1/admin/employers", apiRateLimiter, adminEmployersRouter)
-app.use("/api/v1/admin/media", apiRateLimiter, adminMediaRouter)
-app.use("/api/v1/admin/platform", apiRateLimiter, adminPlatformRouter)
-app.use("/api/v1/admin", apiRateLimiter, adminRouter)
-app.use("/api/v1/practice", apiRateLimiter, practiceRouter)
-app.use("/api/v1/admin/practice", apiRateLimiter, practiceAdminRouter)
-app.use("/api/v1/career", apiRateLimiter, careerRouter)
-app.use("/api/v1/career-rise", apiRateLimiter, careerRiseRouter)
-app.use("/api/v1/elixir", apiRateLimiter, elixirRouter)
-app.use("/api/v1/events", apiRateLimiter, eventsRouter)
-app.use("/api/v1/app-config", apiRateLimiter, appConfigRouter)
-app.use("/api/v1", apiRateLimiter, skylentRouter)
+app.use("/api/v1/catalog", catalogRouter)
+app.use("/api/v1/auth", authRouter)
+app.use("/api/v1/lms", skylentAiRouter)
+app.use("/api/v1/lms/projects", projectsRouter)
+app.use("/api/v1/lms", lmsRouter)
+app.use("/api/v1/labs", labsRouter)
+app.use("/api/v1/faculty", facultyRouter)
+app.use("/api/v1/organisation", organisationRouter)
+app.use("/api/v1/college", collegeRouter)
+app.use("/api/v1/lms", lmsMaterialsRouter)
+app.use("/api/v1/career", careerRouter)
+app.use("/api/v1/career-rise", careerRiseRouter)
+app.use("/api/v1/admin/curriculum", adminCurriculumRouter)
+app.use("/api/v1/admin", adminRouter)
+app.use("/api/v1/admin", adminPlatformRouter)
+app.use("/api/v1/elixir", elixirRouter)
+app.use("/api/v1/admin", practiceAdminRouter)
+app.use("/api/v1/practice", practiceRouter)
+app.use("/api/v1/admin", adminEmployersRouter)
+app.use("/api/v1/admin", adminMediaRouter)
+app.use("/api/v1/certificates", skylentCertificatesRouter)
+app.use("/api/v1/enquiries", skylentEnquiriesRouter)
+app.use("/api/v1/reva", revaRouter)
+app.use("/api/v1/events", eventsRouter)
+app.use("/api/v1/degrees", degreesRouter)
+app.use("/api", (_request, response) => {
+  response.status(404).json({ error: "Not found" })
+})
 
-// Serve built SPA in production when dist/ exists alongside server
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const distPath = path.resolve(__dirname, "../../dist")
-const indexPath = path.join(distPath, "index.html")
-if (fs.existsSync(distPath)) {
+if (process.env.NODE_ENV === "production") {
+  const clientDist = resolve(dirname(fileURLToPath(import.meta.url)), "../../dist")
+
   app.use(
-    express.static(distPath, {
+    express.static(clientDist, {
       index: false,
-      setHeaders(res, filePath) {
-        if (filePath.endsWith(".html") || filePath.endsWith("sw.js") || filePath.endsWith("manifest.webmanifest")) {
-          res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate")
-          res.setHeader("Pragma", "no-cache")
-          res.setHeader("Expires", "0")
-        } else if (filePath.includes(`${path.sep}assets${path.sep}`)) {
-          res.setHeader("Cache-Control", "public, max-age=31536000, immutable")
+      setHeaders(response, filePath) {
+        if (filePath.endsWith("index.html") || filePath.endsWith("sw.js") || filePath.endsWith("manifest.webmanifest")) {
+          response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate")
+          response.setHeader("Pragma", "no-cache")
+          response.setHeader("Expires", "0")
+          return
+        }
+        if (filePath.includes(`${sep}assets${sep}`)) {
+          response.setHeader("Cache-Control", "public, max-age=31536000, immutable")
         }
       },
     }),
   )
-  app.get("/{*splat}", (req, res, next) => {
-    if (req.path.startsWith("/api/")) return next()
-    try {
-      res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate")
-      res.setHeader("Pragma", "no-cache")
-      res.setHeader("Expires", "0")
-      const template = fs.readFileSync(indexPath, "utf8")
-      const html = injectCanonicalLink(renderRouteHtml(template, req.path, resolvePublicOrigin(req)), req.path)
-      res.type("html").send(html)
-    } catch {
-      res.sendFile(indexPath)
+
+  app.get(/^(?!\/api(?:\/|$)).*/, (request, response, next) => {
+    if (request.method !== "GET" && request.method !== "HEAD") {
+      next()
+      return
     }
+    const extension = extname(request.path)
+    if (extension && extension !== ".html") {
+      response.status(404).end()
+      return
+    }
+    const indexPath = resolve(clientDist, "index.html")
+    if (!existsSync(indexPath)) {
+      next()
+      return
+    }
+    let html = ""
+    try {
+      html = readFileSync(indexPath, "utf8")
+    } catch (error) {
+      next(error)
+      return
+    }
+    response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate")
+    response.setHeader("Pragma", "no-cache")
+    response.setHeader("Expires", "0")
+    response.type("html").send(injectCanonicalLink(html, request.path))
   })
 }
 
-app.use((_req, res) => {
-  res.status(404).json({ error: "Not found" })
-})
-
-app.use((error: Error, req: express.Request, res: express.Response, _next: express.NextFunction) => {
-  const requestId = res.locals?.requestId ?? "unknown"
-  if (error.message === "Origin not allowed by CORS") {
-    return res.status(403).json({ error: "Forbidden origin", requestId })
+app.use((error: unknown, _request: express.Request, response: express.Response, next: express.NextFunction) => {
+  if (
+    error &&
+    typeof error === "object" &&
+    "type" in error &&
+    error.type === "entity.too.large"
+  ) {
+    response.status(413).json({ error: "Request body too large" })
+    return
+  }
+  const requestId = typeof response.locals?.requestId === "string" ? response.locals.requestId : undefined
+  const detail = redactSecrets(error instanceof Error ? error.message : String(error))
+  console.error("Unhandled request error:", requestId ? `[requestId=${requestId}] ${detail}` : detail)
+  if (response.headersSent) {
+    next(error)
+    return
   }
   if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
-    console.warn(
-      `[req:${requestId}] Workspace schema/database unavailable on ${req.method} ${req.originalUrl}: ${error.name}`,
-    )
-    return res.status(503).json({ ...unavailableBody(), requestId })
+    response.status(503).json({
+      error: "This service is temporarily unavailable.",
+      code: "unavailable",
+      ...(requestId ? { requestId } : {}),
+    })
+    return
   }
-  console.error(
-    `[req:${requestId}] Unhandled error on ${req.method} ${req.originalUrl}: ${error.name}: ${redactSecrets(error.message)}`,
-  )
-  res.status(500).json({ error: "Internal server error", requestId })
+  response.status(500).json({ error: "Internal server error", ...(requestId ? { requestId } : {}) })
 })
 
-const server = app.listen(port, host, () => {
-  console.log(`Skylent API listening on http://${host}:${port}`)
-})
+let server: ReturnType<typeof app.listen> | undefined
 
-async function shutdown(signal: string) {
-  console.log(`${signal} received, closing server...`)
-  server.close(async () => {
+async function start(): Promise<void> {
+  const state = await checkMigrationState()
+  if (decideStartup(state, process.env.SKYLENT_SEPTEMBER_COMPAT) !== "listen") {
+    const detail =
+      state.status === "unknown"
+        ? redactSecrets(state.reason)
+        : `Pending: ${state.pending.join(", ") || "none"}. Failed: ${state.failed.join(", ") || "none"}.`
+    console.error(
+      `Refusing to listen. Database schema is not ready for this release. ${detail} Run \`npx prisma migrate deploy\` before starting the API.`,
+    )
     await prisma.$disconnect()
-    process.exit(0)
+    process.exit(1)
+  }
+  if (state.status === "pending") {
+    console.error("September compatibility listen. Migrations remain pending. Health stays unavailable.")
+  }
+
+  server = app.listen(port, "0.0.0.0", () => {
+    const ai = describeAiReadiness()
+    const release = process.env.SKYLENT_RELEASE_SHA?.trim()
+    console.log(`API listening on port ${port}`)
+    console.log(`AI readiness: ${ai.publicStatus} (${ai.reason}). Release: ${release && /^[0-9a-f]{7,40}$/i.test(release) ? release : "unknown"}`)
   })
 }
 
-process.on("SIGTERM", () => void shutdown("SIGTERM"))
-process.on("SIGINT", () => void shutdown("SIGINT"))
+void start()
+
+let shuttingDown = false
+function shutdown(signal: string) {
+  if (shuttingDown) return
+  shuttingDown = true
+  console.log(`Received ${signal}, shutting down`)
+  const finish = (closeError?: Error | null) => {
+    void prisma.$disconnect().finally(() => {
+      process.exit(closeError ? 1 : 0)
+    })
+  }
+  if (!server) {
+    finish()
+    return
+  }
+  const timer = setTimeout(() => finish(new Error("shutdown timeout")), 10_000)
+  timer.unref()
+  server.close((error) => finish(error))
+}
+
+process.on("SIGTERM", () => shutdown("SIGTERM"))
+process.on("SIGINT", () => shutdown("SIGINT"))
