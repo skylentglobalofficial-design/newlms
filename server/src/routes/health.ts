@@ -6,11 +6,9 @@ import { describeAiReadiness } from "../lib/skylent-ai/service.js"
 
 const router = Router()
 
-// Dynamic boot version ensures EVERY `git push origin main` on Hostinger automatically
-// increments appVersion (> any installed APK version) and FORCES a mandatory update!
 const BOOT_MINUTE = Math.max(1, Math.floor(Date.now() / 60000) - 29900000)
 export const DEPLOYED_APP_VERSION = `85.${BOOT_MINUTE}.0`
-export const DEPLOYED_BUILD_ID = `v77-${Date.now()}`
+export const DEPLOYED_BUILD_ID = `v78-${Date.now()}`
 
 function releaseSha(): string {
   const sha = process.env.SKYLENT_RELEASE_SHA?.trim() ?? ""
@@ -67,11 +65,9 @@ router.get("/live", (_request, response) => {
 })
 
 /**
- * Mandatory Force-Update OTA Gate for Skylent Native APK & Web Clients.
- * If the client's `installedBuild` does not match the current `DEPLOYED_BUILD_ID`:
- * `minSupportedAppVersion` is set to `DEPLOYED_APP_VERSION` (`85.x.0`), which forces
- * a non-dismissible full-screen "Update Required" lock screen (no "Later" button)
- * across both new and older installed APKs so no user can stay on an outdated build.
+ * YouTube/Facebook-Style Seamless Auto-Update Config for Skylent Native APK builds.
+ * Whenever a new deployment is pushed, installed APKs detect the new buildId and
+ * automatically sync & reload into the latest build so users always run the newest version.
  */
 router.get("/app-config", (request, response) => {
   response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate")
@@ -82,9 +78,9 @@ router.get("/app-config", (request, response) => {
   response.json({
     appVersion: DEPLOYED_APP_VERSION,
     minSupportedAppVersion: isUpToDate ? "1.0.0" : DEPLOYED_APP_VERSION,
-    forceUpdate: !isUpToDate,
+    autoSyncUpdate: !isUpToDate,
     buildId: DEPLOYED_BUILD_ID,
-    updateTitle: "Mandatory Skylent Security & Feature Update",
+    updateTitle: "Updating Skylent to the latest version…",
     apkDownloadUrl: "https://skylent.live/skylent-latest.apk",
     playStoreUrl:
       process.env.SKYLENT_PLAY_STORE_URL?.trim() ||

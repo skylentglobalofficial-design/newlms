@@ -517,3 +517,125 @@
     padding: 8px 14px !important;
   }
 }
+
+
+/* ── V78 Premium Auto-Adaptive Mobile & 5-Inch Phone Viewport Engine + Notification Bar Safe-Area Guard ── */
+:root {
+  --sk-safe-top: env(safe-area-inset-top, 0px);
+  --sk-safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.auth-shell,
+.auth-shell-main {
+  min-height: 100dvh;
+}
+
+@media (max-width: 900px) {
+  /* Ensure slide-out mobile drawer never overlaps top notification bar */
+  .auth-shell-rail--drawer {
+    padding-top: var(--sk-safe-top);
+    height: 100dvh;
+    max-height: 100dvh;
+    box-sizing: border-box;
+  }
+
+  /* Single sleek glassmorphic top app bar on mobile — hide redundant second .auth-shell-bar to save 44px height on 5-inch phones! */
+  .auth-shell-topbar {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 150 !important;
+    min-height: calc(50px + var(--sk-safe-top)) !important;
+    padding: var(--sk-safe-top) 12px 0 6px !important;
+    background: linear-gradient(90deg, #161336 0%, #312582 60%, #4636a3 100%) !important;
+    box-shadow: 0 4px 18px rgba(15, 23, 42, 0.18) !important;
+  }
+
+  .auth-shell-bar {
+    display: none !important;
+  }
+
+  /* Frosted-glass premium bottom navigation bar */
+  .auth-shell-bottom-nav {
+    height: calc(56px + var(--sk-safe-bottom)) !important;
+    padding: 4px 6px calc(4px + var(--sk-safe-bottom)) !important;
+    background: rgba(255, 255, 255, 0.96) !important;
+    backdrop-filter: blur(14px) !important;
+    -webkit-backdrop-filter: blur(14px) !important;
+    border-top: 1px solid rgba(226, 232, 240, 0.9) !important;
+    box-shadow: 0 -6px 24px rgba(15, 23, 42, 0.08) !important;
+  }
+
+  .auth-shell-bottom-nav button {
+    min-height: 44px !important;
+    border-radius: 10px !important;
+    font-size: clamp(10px, 2.7vw, 11px) !important;
+    gap: 2px !important;
+  }
+}
+
+/* Compact & 5-Inch Phone Auto-Adaptive Scaling (320px–480px width & compact height) */
+@media (max-width: 480px) {
+  .auth-shell-content {
+    padding: 10px 10px calc(74px + var(--sk-safe-bottom)) !important;
+  }
+
+  .sh h1 {
+    font-size: clamp(20px, 5.5vw, 24px) !important;
+    line-height: 1.2 !important;
+  }
+
+  .sh h2 {
+    font-size: clamp(16px, 4.5vw, 19px) !important;
+    line-height: 1.25 !important;
+  }
+
+  .sh-card,
+  .sh-next,
+  .sh-royal-hero {
+    padding: clamp(12px, 3.5vw, 16px) !important;
+    border-radius: 14px !important;
+  }
+
+  .sh-grid,
+  .sh-stack {
+    gap: 12px !important;
+    margin-top: 12px !important;
+  }
+
+  .os-btn,
+  .sh-royal-cta {
+    padding: 9px 14px !important;
+    font-size: 13px !important;
+    border-radius: 10px !important;
+  }
+}
+
+/* Ultra-compact 5-inch phones (<= 375px width or <= 680px height) */
+@media (max-width: 375px), (max-height: 680px) and (max-width: 900px) {
+  .auth-shell-topbar {
+    min-height: calc(46px + var(--sk-safe-top)) !important;
+  }
+
+  .auth-shell-topbar .auth-shell-wordmark {
+    font-size: 14.5px !important;
+    letter-spacing: 0.1em !important;
+  }
+
+  .auth-shell-topbar .auth-shell-workspace {
+    display: none !important;
+  }
+
+  .auth-shell-bottom-nav {
+    height: calc(52px + var(--sk-safe-bottom)) !important;
+  }
+
+  .auth-shell-bottom-nav button {
+    min-height: 40px !important;
+    font-size: 9.8px !important;
+    padding: 3px 1px !important;
+  }
+
+  .auth-shell-content {
+    padding: 8px 8px calc(66px + var(--sk-safe-bottom)) !important;
+  }
+}
