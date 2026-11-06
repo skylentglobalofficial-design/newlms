@@ -14,7 +14,7 @@ const PRODUCTS = [
     code: "PILLAR 01 · 6 CAREER TRACKS",
     title: "Applied Programmes & Browser Labs",
     text: "5-module, 15-lesson career tracks in Data Analytics, Product Management, Python, Data Science, GenAI, and Full-Stack Web with zero-setup browser sandboxes.",
-    badge: "✓ ₹0 Open Pilot",
+    badge: "✓ Guest Lab Free · From ₹1,499",
     to: "/programmes",
   },
   {
@@ -80,7 +80,7 @@ const COMPARISON_ROWS = [
   {
     dimension: "Financial Transparency",
     legacy: "High-pressure ₹1.5L–₹2.5L NBFC loan contracts and inflated placement claims.",
-    skylent: "Start Module 1 on a ₹0 Free Pilot, attend ₹99 weekend sprints with 100% Elixir Coin cashback, and upgrade transparently.",
+    skylent: "Try our interactive Guest Browser Labs free, attend ₹99 weekend sprints with 100% Elixir Coin cashback, and enrol in full tracks from ₹1,499.",
   },
   {
     dimension: "What Employers See",
@@ -180,7 +180,7 @@ export default function AboutPage() {
                 </div>
                 <div>
                   <span>ENTRY MODEL</span>
-                  <strong>₹0 Free Pilot</strong>
+                  <strong>Guest Lab Free · From ₹1,499</strong>
                 </div>
               </div>
             </aside>

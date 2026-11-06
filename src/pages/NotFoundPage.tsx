@@ -3,7 +3,7 @@ import { PageShell } from "../components/shared"
 
 const QUICK_DESTINATIONS = [
   {
-    badge: "6 FLAGSHIP TRACKS · ₹0 PILOT",
+    badge: "6 FLAGSHIP TRACKS · FROM ₹1,499",
     title: "Explore Career Programmes",
     desc: "Data Analytics, Product Management, Python, Data Science & AI, Generative AI, and Full-Stack Web.",
     to: "/programmes",

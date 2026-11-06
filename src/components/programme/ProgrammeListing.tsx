@@ -188,7 +188,7 @@ export default function ProgrammeListing({ program, truth, cta, honesty, afterEn
                 </span>
                 {enrolChip}
                 <span className="pp-badge pp-badge--pilot">
-                  Pilot Access · ₹0
+                  Guest Lab Free · From ₹1,499
                 </span>
               </div>
 
@@ -442,7 +442,7 @@ export default function ProgrammeListing({ program, truth, cta, honesty, afterEn
                   <span style={{ fontSize: 11.5, fontWeight: 700, color: "#15803D", background: "#DCFCE7", border: "1px solid #86EFAC", padding: "3px 10px", borderRadius: 999 }}>
                     ✓ Open now · 5 Modules · 15 Lessons
                   </span>
-                  <span style={{ fontSize: 11.5, fontWeight: 800, color: "#5142B5", fontFamily: "var(--font-mono)" }}>₹0 Pilot</span>
+                  <span style={{ fontSize: 11.5, fontWeight: 800, color: "#5142B5", fontFamily: "var(--font-mono)" }}>From ₹1,499</span>
                 </div>
                 <strong style={{ fontSize: 19, fontWeight: 800, color: "#0F172A" }}>{item.title}</strong>
                 <span style={{ fontSize: 13.5, color: "#475569" }}>

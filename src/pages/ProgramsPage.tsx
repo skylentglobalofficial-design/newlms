@@ -360,7 +360,7 @@ export default function ProgramsPage() {
               <div className="pgx-royal-hero-card__metrics">
                 <div>
                   <span>ENTRY COST</span>
-                  <strong>₹0 Free Pilot</strong>
+                  <strong>Guest Lab Free · Plans From ₹1,499</strong>
                 </div>
                 <div>
                   <span>WORKSHOP CREDITS</span>

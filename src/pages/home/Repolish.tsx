@@ -1263,7 +1263,7 @@ function HomeCareerPlate({ step }: { step: JourneyKey }) {
         <div className="hx-royal-plate__metrics">
           <div>
             <span>Cost to Start</span>
-            <strong>₹0 (Free Pilot)</strong>
+            <strong>Guest Lab Free · Tracks From ₹1,499</strong>
           </div>
           <div>
             <span>First Lesson</span>
@@ -1797,7 +1797,7 @@ export function HomeClosing() {
             Start learning for free today
           </h2>
           <p className="hx-close__lead">
-            Start any of our 6 self-paced flagship courses for ₹0 during the pilot, book a live ₹99 weekend workshop (with 100% Coin Back), or find your best-fit career track in 90 seconds.
+            Try our interactive Guest Browser Labs free, enrol in any of our 6 self-paced flagship courses from ₹1,499, or book a live ₹99 weekend workshop (with 100% Coin Back).
           </p>
         </div>
         <div className="hx-close__actions">

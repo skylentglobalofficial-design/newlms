@@ -62,12 +62,12 @@ export default function OSPage() {
               <p className="cat-label os-scope-label">In the workspace today</p>
               <div className="cat-facts os-scope">
                 {[
-                  ["Authored courses", workspaceScope.courses],
-                  ["Modules", workspaceScope.modules],
-                  ["Lessons", workspaceScope.lessons],
-                  ["Checks", workspaceScope.checks],
-                  ["Assignments", workspaceScope.assignments],
-                  ["Capstones", workspaceScope.capstones],
+                  ["Authored courses", 6],
+                  ["Modules", 30],
+                  ["Lessons", 90],
+                  ["Checks", 18],
+                  ["Assignments", 12],
+                  ["Capstones", 6],
                 ].map(([label, value]) => (
                   <div className="cat-fact" key={label}>
                     <span>{label}</span>

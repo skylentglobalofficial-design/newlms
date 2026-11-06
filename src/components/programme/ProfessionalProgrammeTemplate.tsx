@@ -342,7 +342,7 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
                 </span>
                 {enrolChip}
                 <span className="pp-badge pp-badge--pilot">
-                  Pilot Access · ₹0
+                  Guest Lab Free · From ₹1,499
                 </span>
               </div>
 
