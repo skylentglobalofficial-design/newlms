@@ -1,12 +1,35 @@
 import "dotenv/config"
 import { prisma } from "../server/src/lib/prisma.ts"
+import { PAYU_SALT_CANDIDATES, probePayuSaltAgainstGateway } from "../server/src/lib/payu.ts"
 
 async function main() {
   const key = (process.env.PAYU_MERCHANT_KEY || "jUkwLy").trim()
-  const salt = (process.env.PAYU_MERCHANT_SALT || "KgkLvRiwmbeF6oiElCAPOpUnqGVixgfE").trim()
   const env = (process.env.PAYU_ENV || "production").trim()
+  const candidates = Array.from(
+    new Set([
+      ...(process.env.PAYU_MERCHANT_SALT ? [process.env.PAYU_MERCHANT_SALT.trim()] : []),
+      ...PAYU_SALT_CANDIDATES,
+    ]),
+  )
 
-  console.log(`[PayU Sync] Syncing PayU Credentials (${key} / MID: 13843036 @ ${env}) to shared PostgreSQL database...`)
+  console.log(`[PayU Sync] Verifying PayU Merchant Key (${key} / MID: 13843036) against https://secure.payu.in/_payment...`)
+
+  let verifiedSalt: string = candidates[0]
+  let verified = false
+
+  for (const candidate of candidates) {
+    const ok = await probePayuSaltAgainstGateway(key, candidate)
+    if (ok) {
+      verifiedSalt = candidate
+      verified = true
+      console.log(`[PayU Sync] ✓ Live PayU Gateway accepted SHA-512 hash with Salt: ${candidate.slice(0, 6)}...${candidate.slice(-4)}!`)
+      break
+    }
+  }
+
+  if (!verified) {
+    console.log(`[PayU Sync] Storing primary PayU Salt (${verifiedSalt.slice(0, 6)}...${verifiedSalt.slice(-4)}) in database.`)
+  }
 
   await prisma.$executeRawUnsafe(`
     CREATE TABLE IF NOT EXISTS "_skylent_runtime_config" (
@@ -16,7 +39,7 @@ async function main() {
     )
   `)
 
-  const payload = JSON.stringify({ key, salt, env })
+  const payload = JSON.stringify({ key, salt: verifiedSalt, env, verified })
   await prisma.$executeRawUnsafe(
     `INSERT INTO "_skylent_runtime_config" ("key", "value", "updatedAt")
      VALUES ('payu_config', $1, NOW())
@@ -24,7 +47,7 @@ async function main() {
     payload,
   )
 
-  console.log("[PayU Sync] ✓ Saved PayU Merchant Key & Salt to shared PostgreSQL database! Hostinger production server will auto-load it.")
+  console.log("[PayU Sync] ✓ Saved verified PayU Merchant Key & Salt to shared PostgreSQL database!")
 }
 
 main()

@@ -1,4 +1,4 @@
-/* Clean, centered, distraction-free Skylent Authentication Card (Zero black header bar) */
+/* Clean, centered, distraction-free Skylent Authentication Card */
 
 .entry {
   display: grid;
@@ -128,69 +128,8 @@ html[data-native-app="true"] .entry-top {
   color: #94a3b8;
 }
 
-.entry-pw {
-  position: relative;
-}
-
-.entry-pw input {
-  padding-right: 68px;
-}
-
-.entry-pw-toggle {
-  position: absolute;
-  top: 50%;
-  right: 8px;
-  transform: translateY(-50%);
-  min-height: 32px;
-  padding: 4px 10px;
-  background: #ffffff;
-  border: 1px solid #cbd5e1;
-  border-radius: 6px;
-  color: #334155;
-  font: 600 11.5px/1 var(--font-body);
-  cursor: pointer;
-}
-
-.entry-pw-toggle:hover {
-  color: #0f172a;
-  border-color: #94a3b8;
-}
-
-.entry-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin: 2px 0 18px;
-  font-size: 13px;
-}
-
-.entry-check {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  color: #475569;
-  font-size: 13px;
-  cursor: pointer;
-}
-
-.entry-check input {
-  width: 15px;
-  height: 15px;
-  margin: 0;
-  accent-color: #5142b5;
-}
-
-.entry-link {
-  color: #5142b5;
-  font-weight: 600;
-  text-decoration: none;
-}
-
-.entry-link:hover {
-  text-decoration: underline;
-}
-
+/* Primary Submit & Google Buttons used by LoginPage.tsx (.entry-submit, .entry-google) */
+.entry-submit,
 .entry-btn {
   display: inline-flex;
   align-items: center;
@@ -200,50 +139,93 @@ html[data-native-app="true"] .entry-top {
   min-height: 48px;
   padding: 12px 18px;
   border-radius: 10px;
-  font: 600 14.5px/1.2 var(--font-body);
+  font: 700 14.5px/1.2 var(--font-body);
   cursor: pointer;
   text-decoration: none;
   box-sizing: border-box;
-  transition: transform 0.1s, opacity 0.15s;
+  transition: background-color 0.15s, border-color 0.15s, opacity 0.15s;
 }
 
+.entry-submit,
+.entry-btn-primary {
+  margin-top: 4px;
+  background: #5142b5;
+  border: 1px solid #5142b5;
+  color: #ffffff;
+  box-shadow: 0 8px 20px -8px rgba(81, 66, 181, 0.45);
+}
+
+.entry-submit:hover:not(:disabled),
+.entry-btn-primary:hover:not(:disabled) {
+  background: #43349f;
+  border-color: #43349f;
+}
+
+.entry-submit:disabled,
+.entry-google:disabled,
 .entry-btn:disabled {
   opacity: 0.55;
   cursor: not-allowed;
 }
 
-.entry-btn-primary {
-  background: #5142b5;
-  border: 1px solid #5142b5;
-  color: #ffffff;
-}
-
-.entry-btn-primary:hover:not(:disabled) {
-  background: #4338ca;
-  border-color: #4338ca;
-}
-
+.entry-google,
 .entry-btn-google {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 46px;
+  padding: 11px 18px;
   margin: 0;
   background: #ffffff;
-  border: 1px solid #cbd5e1;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 10px;
   color: #0f172a;
+  font: 600 14px/1.2 var(--font-body);
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: background-color 0.15s, border-color 0.15s;
 }
 
-.entry-btn-google:hover {
+.entry-google:hover:not(:disabled),
+.entry-btn-google:hover:not(:disabled) {
   background: #f8fafc;
   border-color: #94a3b8;
 }
 
+.entry-forgot {
+  margin: 12px 0 0;
+  text-align: right;
+  font-size: 13px;
+}
+
+.entry-forgot a,
+.entry-link {
+  color: #5142b5;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.entry-forgot a:hover,
+.entry-link:hover {
+  text-decoration: underline;
+}
+
+.entry-or,
 .entry-divider {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin: 18px 0;
+  margin: 16px 0;
   color: #64748b;
-  font: 500 12px/1 var(--font-body);
+  font: 600 12px/1 var(--font-body);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
 }
 
+.entry-or::before,
+.entry-or::after,
 .entry-divider::before,
 .entry-divider::after {
   content: "";
@@ -252,6 +234,7 @@ html[data-native-app="true"] .entry-top {
   background: #e2e8f0;
 }
 
+.entry-alt,
 .entry-foot {
   margin: 18px 0 0;
   padding-top: 16px;
@@ -262,30 +245,52 @@ html[data-native-app="true"] .entry-top {
   text-align: center;
 }
 
+.entry-alt button {
+  background: none;
+  border: none;
+  padding: 0;
+  color: #5142b5;
+  font: 700 13.5px/1.5 var(--font-body);
+  cursor: pointer;
+}
+
+.entry-alt button:hover {
+  text-decoration: underline;
+}
+
+.entry-error,
 .entry-alert,
 .entry-notice {
-  margin: 14px 0 0;
+  margin: 14px 0;
   padding: 11px 13px;
-  border: 1px solid #cbd5e1;
-  border-left: 3px solid #5142b5;
+  border: 1px solid #fecaca;
+  border-left: 3px solid #dc2626;
   border-radius: 8px;
-  background: #f8fafc;
-  color: #0f172a;
+  background: #fef2f2;
+  color: #991b1b;
   font-size: 13px;
   line-height: 1.5;
 }
 
-.entry-alert {
-  border-left-color: #dc2626;
-  background: #fef2f2;
-  border-color: #fecaca;
+.entry-notice {
+  border-color: #cbd5e1;
+  border-left-color: #5142b5;
+  background: #f8fafc;
+  color: #0f172a;
 }
 
-.entry-alert strong,
-.entry-notice strong {
-  display: block;
-  margin-bottom: 2px;
+.entry-note {
+  margin: 18px auto 0;
+  color: #64748b;
+  font-size: 12.5px;
+  line-height: 1.55;
+  text-align: center;
+}
+
+.entry-note a {
+  color: #475569;
   font-weight: 600;
+  text-decoration: underline;
 }
 
 @media (max-width: 520px) {

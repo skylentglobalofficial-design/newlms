@@ -22,7 +22,7 @@ import { courseProductProfile } from '../lib/course-product'
 import { dashboardSqlLabHref, practiceEnvironmentForCourse } from '../lib/practice-environments'
 import { isAuthoredCourse } from '../lib/authored-courses'
 import { EnrollmentModal } from '../components/shared'
-import { getCourseTierRecord, tierLabelFor } from '../lib/enrolment-tiers'
+import { buildSkylentTiersForPrice, getCourseTierRecord, saveStoredCourseTier, tierLabelFor } from '../lib/enrolment-tiers'
 import { AiMark, AI_NAME, ArrowRight, TruthChip } from '../components/skylent/primitives'
 import analyticsVisual from '@/assets/site/home/program-analytics-800.webp'
 import productVisual from '@/assets/site/home/program-product-800.webp'
@@ -711,6 +711,110 @@ export default function DashboardStudentPage() {
               ))}
             </div>
           </div>
+
+          {/* Inline 3-Card Choose Your Plan Section inside Dashboard Course View */}
+          {!allMyCourses.some((r) => r.slug === selectedExploreDetail.slug) ? (
+            <div
+              id="dashboard-choose-plan"
+              style={{
+                padding: '24px 28px 28px',
+                background: '#f8fafc',
+                borderTop: '1px solid #e2e8f0',
+              }}
+            >
+              <h3 style={{ margin: '0 0 16px', fontSize: 20, fontWeight: 800, color: '#0f172a' }}>
+                Choose Your Plan
+              </h3>
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 265px), 1fr))',
+                  gap: 16,
+                  alignItems: 'stretch',
+                }}
+              >
+                {buildSkylentTiersForPrice(selectedExploreDetail.price).map((tier) => {
+                  const isProCard = tier.id === 'flagship'
+                  const displayTitle =
+                    tier.id === 'certificate'
+                      ? 'Basic Plan'
+                      : tier.id === 'professional'
+                        ? 'Premium Plan'
+                        : 'Pro Plan'
+                  return (
+                    <article
+                      key={tier.id}
+                      style={{
+                        borderRadius: 16,
+                        padding: '22px 20px',
+                        background: isProCard
+                          ? 'linear-gradient(160deg, #2e1065 0%, #4c1d95 55%, #5142b5 100%)'
+                          : '#ffffff',
+                        color: isProCard ? '#ffffff' : '#0f172a',
+                        border: isProCard ? '2px solid #6d28d9' : '1px solid #e2e8f0',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'space-between',
+                        gap: 14,
+                      }}
+                    >
+                      <div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+                          <strong style={{ fontSize: 18, fontWeight: 800 }}>{displayTitle}</strong>
+                          {isProCard ? (
+                            <span style={{ fontSize: 11, fontWeight: 800, padding: '3px 9px', borderRadius: 999, background: 'rgba(255,255,255,0.22)', color: '#ffffff' }}>
+                              Recommended
+                            </span>
+                          ) : (
+                            <span style={{ fontSize: 11, fontWeight: 700, padding: '3px 9px', borderRadius: 999, background: tier.includesCareerOS ? '#f5f3ff' : '#f1f5f9', color: tier.includesCareerOS ? '#5142b5' : '#475569' }}>
+                              {tier.includesCareerOS ? 'Career OS' : 'Self-Paced'}
+                            </span>
+                          )}
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 14 }}>
+                          <strong style={{ fontSize: 26, fontWeight: 800 }}>
+                            ₹{tier.price.toLocaleString('en-IN')}
+                          </strong>
+                          <span style={{ fontSize: 13, color: isProCard ? 'rgba(255,255,255,0.65)' : '#94a3b8', textDecoration: 'line-through' }}>
+                            ₹{tier.mrp.toLocaleString('en-IN')}
+                          </span>
+                        </div>
+                        <Link
+                          to={`/checkout?kind=course&slug=${encodeURIComponent(selectedExploreDetail.slug)}&tier=${tier.id}&price=${selectedExploreDetail.price}`}
+                          onClick={() => saveStoredCourseTier(selectedExploreDetail.slug, tier.id)}
+                          style={{
+                            display: 'block',
+                            textAlign: 'center',
+                            textDecoration: 'none',
+                            width: '100%',
+                            boxSizing: 'border-box',
+                            padding: '11px 16px',
+                            borderRadius: 10,
+                            border: isProCard ? 'none' : '1px solid #ddd6fe',
+                            background: isProCard ? '#ffffff' : '#ede9fe',
+                            color: isProCard ? '#3b0764' : '#5142b5',
+                            fontSize: 14,
+                            fontWeight: 800,
+                            marginBottom: 14,
+                          }}
+                        >
+                          Buy Now
+                        </Link>
+                        <div style={{ borderTop: isProCard ? '1px solid rgba(255,255,255,0.18)' : '1px solid #f1f5f9', paddingTop: 12, display: 'grid', gap: 8 }}>
+                          {tier.features.map((feat) => (
+                            <div key={feat} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, fontSize: 12.5, lineHeight: 1.4, color: isProCard ? '#f8fafc' : '#334155' }}>
+                              <span style={{ fontWeight: 800, color: isProCard ? '#ffffff' : '#15803d' }}>✓</span>
+                              <span>{feat}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </article>
+                  )
+                })}
+              </div>
+            </div>
+          ) : null}
         </div>
       ) : (
         <div style={{ display: 'grid', gap: 20 }}>

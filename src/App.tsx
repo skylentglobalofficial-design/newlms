@@ -53,6 +53,7 @@ const PAGE_TITLES: Array<[string, string]> = [
   ["/dashboard/admin", "Admin"],
   ["/dashboard/curriculum", "Course builder"],
   ["/account/password", "Change password"],
+  ["/checkout", "Order Details"],
   ["/learn", "Lesson"],
   ["/os/labs", "Lab"],
   ["/os/projects", "Project"],
@@ -144,6 +145,7 @@ const WorkshopsPage = lazyWithRetry(() => import("./pages/WorkshopsPage"))
 const WorkshopDetailPage = lazyWithRetry(() => import("./pages/WorkshopDetailPage"))
 const EventsPage = lazyWithRetry(() => import("./pages/EventsPage"))
 const EventDetailPage = lazyWithRetry(() => import("./pages/EventDetailPage"))
+const CheckoutPage = lazyWithRetry(() => import("./pages/CheckoutPage"))
 const CareerOSLayout = lazyWithRetry(() => import("./pages/career/CareerOSLayout"))
 const CareerOSOverviewPage = lazyWithRetry(
   () => import("./pages/career/CareerOSOverviewPage"),
@@ -171,7 +173,7 @@ const CareerOSInterviewDetailPage = lazyWithRetry(
   () => import("./pages/career/CareerOSInterviewDetailPage"),
 )
 const CareerOSSupportPage = lazyWithRetry(
-  () => import("./pages/career/CareerOSSupportPage"),
+  () => import("./pages/career/CareerOSupportPage" in {} ? "./pages/career/CareerOSSupportPage" : "./pages/career/CareerOSSupportPage"),
 )
 const CareerOSSupportDetailPage = lazyWithRetry(
   () => import("./pages/career/CareerOSSupportDetailPage"),
@@ -216,6 +218,9 @@ function AppRoutes() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/preview/homepage" element={<HomeDirectionPreview />} />
+
+        {/* Dedicated Order Details & Real PayU Checkout */}
+        <Route path="/checkout" element={<CheckoutPage />} />
 
         {/* Core Skylent path product */}
         <Route path="/path" element={<PathPage />} />

@@ -327,24 +327,13 @@ export default function EventDetailPage() {
                       Event is full
                     </button>
                   ) : (
-                    <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                      <button
-                        className="cat-btn cat-btn-primary cat-btn-lg"
-                        onClick={() => void handlePayuCheckout(99)}
-                        disabled={registering}
-                      >
-                        {registering ? "Opening PayU Gateway…" : "Pay ₹99 & Register (100% Coin Back) →"}
-                      </button>
-                      <button
-                        type="button"
-                        className="cat-btn cat-btn-ghost"
-                        style={{ border: "1.5px solid #059669", color: "#059669", fontWeight: 700 }}
-                        onClick={() => void handlePayuCheckout(1)}
-                        disabled={registering}
-                      >
-                        ⚡ Test PayU Gateway (₹1 Live Verification)
-                      </button>
-                    </div>
+                    <button
+                      className="cat-btn cat-btn-primary cat-btn-lg"
+                      onClick={() => void handlePayuCheckout(99)}
+                      disabled={registering}
+                    >
+                      {registering ? "Opening PayU Gateway…" : "Pay ₹99 & Register (100% Coin Back) →"}
+                    </button>
                   )}
                 </div>
               </div>

@@ -109,158 +109,62 @@ export type CatalogEnrollItem = {
 }
 
 export function EnrollmentModal({ item, onClose }: { item: CatalogEnrollItem; onClose: () => void; themeId?: AuroraThemeId }) {
-  const { user } = useAuth()
   const navigate = useNavigate()
   const tiers = useMemo(() => buildSkylentTiersForPrice(item.price > 0 ? item.price : 3499), [item.price])
-  const [selectedTierId, setSelectedTierId] = useState<SkylentTierId>(item.initialTier ?? 'professional')
-  const [submitting, setSubmitting] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [accepted, setAccepted] = useState(true)
-  const [triedWithoutTerms, setTriedWithoutTerms] = useState(false)
-  const [paymentMethod, setPaymentMethod] = useState<'upi' | 'card' | 'netbanking' | 'scholarship'>('upi')
-  const [upiId, setUpiId] = useState('')
-  const [selectedBank, setSelectedBank] = useState('SBI')
-  const [couponCode] = useState('SKYLENTPILOT')
-  const [couponApplied, setCouponApplied] = useState(true)
-  const [testPayuOneRupee, setTestPayuOneRupee] = useState(false)
-
   const dialogRef = useRef<HTMLDivElement>(null)
   const closeRef = useRef<HTMLButtonElement>(null)
-  const termsRef = useRef<HTMLInputElement>(null)
   const onCloseRef = useRef(onClose)
   onCloseRef.current = onClose
 
-  const activeTier = tiers.find((t) => t.id === selectedTierId) ?? tiers[1]
-  const basePrice = activeTier.price
-  const mrpPrice = activeTier.mrp
-  const discountAmount = couponApplied && !testPayuOneRupee ? basePrice : 0
-  const payableAmount = testPayuOneRupee ? 1 : Math.max(0, basePrice - discountAmount)
-
-  const helperMessage = item.kind === 'program'
-    ? programEnrollmentMessage({
-        enrollmentStatus: item.enrollmentStatus ?? null,
-        linkedCourseSlugs: item.linkedCourseSlugs ?? [],
-      })
-    : courseEnrollmentMessage()
-
   useEffect(() => {
     const previouslyFocused = document.activeElement instanceof HTMLElement ? document.activeElement : null
-    document.body.style.overflow = 'hidden'
+    document.body.style.overflow = "hidden"
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
+      if (e.key === "Escape") {
         e.preventDefault()
         onCloseRef.current()
       }
     }
-    window.addEventListener('keydown', onKey)
+    window.addEventListener("keydown", onKey)
     closeRef.current?.focus()
     return () => {
-      document.body.style.overflow = ''
-      window.removeEventListener('keydown', onKey)
+      document.body.style.overflow = ""
+      window.removeEventListener("keydown", onKey)
       previouslyFocused?.focus()
     }
   }, [])
 
-  async function handlePrimaryAction() {
+  function handleBuyPlan(tierId: SkylentTierId) {
     if (!item.enrollable) {
       onClose()
-      navigate('/contact')
+      navigate("/contact")
       return
     }
-
-    if (!accepted) {
-      setTriedWithoutTerms(true)
-      termsRef.current?.focus()
-      return
-    }
-
-    saveStoredCourseTier(item.slug, selectedTierId)
+    saveStoredCourseTier(item.slug, tierId)
     for (const linked of item.linkedCourseSlugs ?? []) {
-      saveStoredCourseTier(linked, selectedTierId)
+      saveStoredCourseTier(linked, tierId)
     }
-
-    if (!user) {
-      onClose()
-      rememberEnrolConsent({ kind: item.kind, slug: item.slug })
-      navigate('/login', { state: { enrollTarget: { kind: item.kind, slug: item.slug } } })
-      return
+    onClose()
+    const params = new URLSearchParams({
+      kind: item.kind,
+      slug: item.slug,
+      tier: tierId,
+    })
+    if (item.price > 0) {
+      params.set("price", String(item.price))
     }
-
-    setSubmitting(true)
-    setError(null)
-
-    // If payment is required (or PayU test mode), route through PayU Hosted Checkout
-    if (payableAmount > 0) {
-      try {
-        const res = await fetch("/api/v1/payments/payu/initiate", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify({
-            targetKind: item.kind,
-            targetSlug: item.slug,
-            tier: selectedTierId,
-            amount: payableAmount,
-            firstname: user?.name,
-            email: user?.email,
-          }),
-        })
-        const payload = await res.json().catch(() => ({}))
-        if (!res.ok) {
-          throw new Error(payload.error || "Unable to initiate PayU payment")
-        }
-        // Dynamically create and submit PayU form
-        const form = document.createElement("form")
-        form.method = "POST"
-        form.action = payload.actionUrl
-        for (const [k, v] of Object.entries(payload.params)) {
-          const input = document.createElement("input")
-          input.type = "hidden"
-          input.name = k
-          input.value = String(v ?? "")
-          form.appendChild(input)
-        }
-        document.body.appendChild(form)
-        form.submit()
-        return
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Unable to initiate payment with PayU")
-        setSubmitting(false)
-        return
-      }
-    }
-
-    try {
-      const workspace = await fulfillCatalogEnrollment({ kind: item.kind, slug: item.slug }, accepted)
-      onClose()
-      navigate(learnPathForWorkspace(workspace))
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unable to complete checkout right now')
-    } finally {
-      setSubmitting(false)
-    }
+    navigate(`/checkout?${params.toString()}`)
   }
-
-  const primaryLabel = !item.enrollable
-    ? item.enrollmentStatus === 'waitlist'
-      ? 'Talk to us about the waitlist'
-      : item.enrollmentStatus === 'coming_soon'
-        ? 'Register interest'
-        : 'Enrolment not available yet'
-    : user
-      ? submitting
-        ? 'Activating Your Enrolment…'
-        : `Enrol in ${activeTier.name.replace(/^[0-9]+\.\s*/, "")} (₹${payableAmount.toLocaleString('en-IN')}) →`
-      : `Proceed to Login & Enrol (₹${payableAmount.toLocaleString('en-IN')}) →`
 
   return (
     <>
       <div
         onClick={onClose}
         style={{
-          position: 'fixed',
+          position: "fixed",
           inset: 0,
-          background: 'rgba(15, 23, 42, 0.72)',
+          background: "rgba(15, 23, 42, 0.72)",
+          backdropFilter: "blur(4px)",
           zIndex: 500,
         }}
         aria-hidden="true"
@@ -270,404 +174,304 @@ export function EnrollmentModal({ item, onClose }: { item: CatalogEnrollItem; on
         role="dialog"
         aria-modal="true"
         aria-labelledby="enrollment-modal-title"
-        aria-describedby="enrollment-modal-copy"
         style={{
-          position: 'fixed',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%,-50%)',
-          background: '#ffffff',
-          border: '1px solid #cbd5e1',
-          borderRadius: 16,
+          position: "fixed",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%,-50%)",
+          background: "#f8fafc",
+          border: "1px solid #e2e8f0",
+          borderRadius: 20,
           padding: 0,
-          width: 960,
-          maxWidth: '96vw',
+          width: 1040,
+          maxWidth: "96vw",
           zIndex: 501,
-          boxShadow: '0 24px 60px -12px rgba(15, 23, 42, 0.42)',
-          overflowY: 'auto',
-          maxHeight: '92vh',
-          fontFamily: 'var(--font-body)',
+          boxShadow: "0 28px 70px -12px rgba(15, 23, 42, 0.45)",
+          overflowY: "auto",
+          maxHeight: "92vh",
+          fontFamily: "var(--font-body)",
         }}
       >
-        {/* Top Checkout Header Bar */}
+        {/* Clean Header */}
         <div
           style={{
-            background: 'linear-gradient(135deg, #1e1b4b 0%, #3b2d96 55%, #5142b5 100%)',
-            color: '#ffffff',
-            padding: '16px 24px',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            gap: 12,
+            background: "#ffffff",
+            borderBottom: "1px solid #e2e8f0",
+            padding: "20px 28px",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            gap: 16,
           }}
         >
           <div>
-            <div style={{ fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 700, color: '#c4b8ff', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
-              CHOOSE YOUR SKYLENT LEARNING TIER · INSTANT ACCESS
-            </div>
-            <div id="enrollment-modal-title" style={{ color: '#ffffff', fontSize: 20, fontWeight: 700, marginTop: 2 }}>
+            <span
+              style={{
+                fontSize: 11.5,
+                fontWeight: 800,
+                color: "#5142b5",
+                letterSpacing: "0.08em",
+                textTransform: "uppercase",
+                display: "block",
+                marginBottom: 4,
+              }}
+            >
               {item.title}
-            </div>
+            </span>
+            <h2
+              id="enrollment-modal-title"
+              style={{
+                margin: 0,
+                fontSize: "clamp(20px, 2.4vw, 26px)",
+                fontWeight: 800,
+                color: "#0f172a",
+                fontFamily: "var(--font-display)",
+              }}
+            >
+              Choose Your Plan
+            </h2>
           </div>
           <button
             ref={closeRef}
             type="button"
             onClick={onClose}
-            aria-label="Close enrolment dialog"
+            aria-label="Close plan selection dialog"
             style={{
-              background: 'rgba(255,255,255,0.14)',
-              border: '1px solid rgba(255,255,255,0.28)',
-              borderRadius: 8,
-              padding: '7px 12px',
-              cursor: 'pointer',
-              color: '#ffffff',
+              background: "#f1f5f9",
+              border: "1px solid #cbd5e1",
+              borderRadius: 10,
+              padding: "8px 14px",
+              cursor: "pointer",
+              color: "#334155",
               fontSize: 13,
-              fontWeight: 600,
+              fontWeight: 700,
             }}
           >
             ✕ Close
           </button>
         </div>
 
-        <div style={{ padding: '18px 24px 24px', display: 'grid', gap: 18 }}>
-          {/* Step 1: 3-Tier Enrolment Plan Selector */}
-          <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8, marginBottom: 10 }}>
-              <strong style={{ fontSize: 13.5, color: '#0f172a', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                Step 1: Select Your Enrolment Plan (Career OS is included in Plans 2 &amp; 3)
-              </strong>
-              <span style={{ fontSize: 12, color: '#047857', fontWeight: 700, background: '#ecfdf5', padding: '3px 10px', borderRadius: 999 }}>
-                ✓ Career OS: 6-Month Active Window + 3-Month Practice Extension on 60% Completion
-              </span>
-            </div>
-
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 260px), 1fr))',
-                gap: 12,
-              }}
-            >
-              {tiers.map((tier) => {
-                const selected = tier.id === selectedTierId
-                return (
-                  <button
-                    key={tier.id}
-                    type="button"
-                    onClick={() => setSelectedTierId(tier.id)}
-                    style={{
-                      textAlign: 'left',
-                      padding: '14px 16px',
-                      borderRadius: 14,
-                      border: selected ? '2px solid #5142b5' : '1px solid #cbd5e1',
-                      background: selected ? '#f5f3ff' : '#ffffff',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      justifyContent: 'space-between',
-                      gap: 10,
-                      position: 'relative',
-                    }}
-                  >
-                    <div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+        {/* 3 Side-by-Side Plan Cards (Basic / Premium / Pro Recommended) */}
+        <div style={{ padding: "24px 28px 28px" }}>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 285px), 1fr))",
+              gap: 18,
+              alignItems: "stretch",
+            }}
+          >
+            {tiers.map((tier) => {
+              const isProCard = tier.id === "flagship"
+              const displayTitle =
+                tier.id === "certificate"
+                  ? "Basic Plan"
+                  : tier.id === "professional"
+                    ? "Premium Plan"
+                    : "Pro Plan"
+              return (
+                <article
+                  key={tier.id}
+                  style={{
+                    borderRadius: 16,
+                    padding: "24px 22px",
+                    background: isProCard
+                      ? "linear-gradient(160deg, #2e1065 0%, #4c1d95 55%, #5142b5 100%)"
+                      : "#ffffff",
+                    color: isProCard ? "#ffffff" : "#0f172a",
+                    border: isProCard ? "2px solid #6d28d9" : "1px solid #e2e8f0",
+                    boxShadow: isProCard
+                      ? "0 20px 44px -14px rgba(76, 29, 149, 0.45)"
+                      : "0 8px 24px -12px rgba(15, 23, 42, 0.08)",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "space-between",
+                    gap: 18,
+                  }}
+                >
+                  <div>
+                    {/* Plan Name + Recommended Badge */}
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        gap: 8,
+                        marginBottom: 12,
+                      }}
+                    >
+                      <h3
+                        style={{
+                          margin: 0,
+                          fontSize: 19,
+                          fontWeight: 800,
+                          color: isProCard ? "#ffffff" : "#0f172a",
+                        }}
+                      >
+                        {displayTitle}
+                      </h3>
+                      {isProCard ? (
                         <span
                           style={{
-                            fontSize: 10.5,
+                            fontSize: 11,
                             fontWeight: 800,
-                            padding: '2px 8px',
+                            padding: "4px 10px",
                             borderRadius: 999,
-                            background: tier.includesCareerOS ? (tier.popular ? '#5142b5' : '#0f172a') : '#e2e8f0',
-                            color: tier.includesCareerOS ? '#ffffff' : '#334155',
-                            textTransform: 'uppercase',
+                            background: "rgba(255,255,255,0.2)",
+                            color: "#ffffff",
                           }}
                         >
-                          {tier.popular ? '★ Most Popular · Final Year' : tier.shortBadge}
+                          Recommended
                         </span>
+                      ) : (
                         <span
                           style={{
                             fontSize: 11,
                             fontWeight: 700,
-                            color: tier.includesCareerOS ? '#047857' : '#64748b',
+                            padding: "3px 9px",
+                            borderRadius: 999,
+                            background: tier.includesCareerOS ? "#f5f3ff" : "#f1f5f9",
+                            color: tier.includesCareerOS ? "#5142b5" : "#475569",
                           }}
                         >
-                          {tier.includesCareerOS ? '✓ Career OS Included' : 'No Career OS'}
+                          {tier.includesCareerOS ? "Career OS Included" : "Self-Paced"}
                         </span>
-                      </div>
-
-                      <strong style={{ fontSize: 15.5, color: '#0f172a', display: 'block', marginBottom: 4 }}>
-                        {tier.name}
-                      </strong>
-                      <p style={{ margin: '0 0 8px', fontSize: 12, color: '#475569', lineHeight: 1.45 }}>
-                        {tier.tagline}
-                      </p>
-
-                      <ul style={{ margin: 0, paddingLeft: 16, fontSize: 11.5, color: '#334155', lineHeight: 1.55 }}>
-                        {tier.features.map((f) => (
-                          <li key={f} style={{ marginBottom: 2 }}>{f}</li>
-                        ))}
-                        {(tier.notIncluded ?? []).map((nf) => (
-                          <li key={nf} style={{ color: '#94a3b8', marginBottom: 2 }}>{nf}</li>
-                        ))}
-                      </ul>
+                      )}
                     </div>
 
-                    <div style={{ paddingTop: 8, borderTop: '1px solid rgba(148, 163, 184, 0.25)', display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
-                      <div>
-                        <strong style={{ fontSize: 18, color: selected ? '#5142b5' : '#0f172a' }}>
-                          ₹{tier.price.toLocaleString('en-IN')}
-                        </strong>
-                        <span style={{ fontSize: 11.5, color: '#94a3b8', textDecoration: 'line-through', marginLeft: 6 }}>
-                          ₹{tier.mrp.toLocaleString('en-IN')}
-                        </span>
-                      </div>
-                      <span style={{ fontSize: 11.5, fontWeight: 700, color: selected ? '#5142b5' : '#64748b' }}>
-                        {selected ? '● Selected' : 'Select Plan'}
+                    {/* Price + Strikethrough MRP */}
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "baseline",
+                        gap: 10,
+                        marginBottom: 16,
+                      }}
+                    >
+                      <strong
+                        style={{
+                          fontSize: 28,
+                          fontWeight: 800,
+                          color: isProCard ? "#ffffff" : "#0f172a",
+                        }}
+                      >
+                        ₹{tier.price.toLocaleString("en-IN")}
+                      </strong>
+                      <span
+                        style={{
+                          fontSize: 14,
+                          color: isProCard ? "rgba(255,255,255,0.65)" : "#94a3b8",
+                          textDecoration: "line-through",
+                          fontWeight: 600,
+                        }}
+                      >
+                        ₹{tier.mrp.toLocaleString("en-IN")}
                       </span>
                     </div>
-                  </button>
-                )
-              })}
-            </div>
-          </div>
 
-          {/* Step 2: Payment & Scholarship Summary */}
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))',
-              gap: 18,
-            }}
-          >
-            {/* Left Column: Coupon + Payment Mode */}
-            <div style={{ display: 'grid', gap: 12, alignContent: 'start' }}>
-              <div style={{ background: couponApplied && !testPayuOneRupee ? '#f5f3ff' : '#ffffff', border: couponApplied && !testPayuOneRupee ? '1.5px solid #5142b5' : '1px solid #cbd5e1', borderRadius: 12, padding: '12px 14px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-                  <div>
-                    <span style={{ fontSize: 11, fontWeight: 700, color: '#5142b5', display: 'block' }}>
-                      SCHOLARSHIP &amp; PILOT COUPON
-                    </span>
-                    <strong style={{ fontSize: 13, color: '#0f172a' }}>
-                      {couponApplied && !testPayuOneRupee ? `${couponCode} Applied (100% Open Pilot Waiver)` : 'Apply 100% Pilot Scholarship Waiver?'}
-                    </strong>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setTestPayuOneRupee(false)
-                      setCouponApplied((v) => !v)
-                    }}
-                    style={{
-                      padding: '6px 12px',
-                      borderRadius: 8,
-                      border: couponApplied && !testPayuOneRupee ? '1px solid #cbd5e1' : 'none',
-                      background: couponApplied && !testPayuOneRupee ? '#ffffff' : '#5142b5',
-                      color: couponApplied && !testPayuOneRupee ? '#334155' : '#ffffff',
-                      fontSize: 12,
-                      fontWeight: 700,
-                      cursor: 'pointer',
-                    }}
-                  >
-                    {couponApplied && !testPayuOneRupee ? 'Pay Regular Price (₹' + basePrice.toLocaleString('en-IN') + ')' : 'Apply SKYLENTPILOT (₹0)'}
-                  </button>
-                </div>
-              </div>
+                    {/* Buy Now Button */}
+                    <button
+                      type="button"
+                      onClick={() => handleBuyPlan(tier.id)}
+                      style={{
+                        width: "100%",
+                        padding: "12px 18px",
+                        borderRadius: 10,
+                        border: isProCard ? "none" : "1px solid #ddd6fe",
+                        background: isProCard ? "#ffffff" : "#ede9fe",
+                        color: isProCard ? "#3b0764" : "#5142b5",
+                        fontSize: 14.5,
+                        fontWeight: 800,
+                        cursor: "pointer",
+                        marginBottom: 18,
+                        transition: "transform 120ms ease",
+                      }}
+                    >
+                      Buy Now
+                    </button>
 
-              {/* PayU ₹1 Verification Test Option */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 14px', borderRadius: 10, background: testPayuOneRupee ? '#ecfdf5' : '#f8fafc', border: testPayuOneRupee ? '1.5px solid #059669' : '1px solid #e2e8f0' }}>
-                <div>
-                  <span style={{ fontSize: 11, fontWeight: 700, color: testPayuOneRupee ? '#047857' : '#5142b5', textTransform: 'uppercase' }}>
-                    PayU ₹1 Live Account Activation
-                  </span>
-                  <strong style={{ fontSize: 12.5, color: '#0f172a', display: 'block' }}>
-                    {testPayuOneRupee ? '✓ PayU ₹1 Test Active (Verifies PayU Dashboard)' : 'Complete ₹1 live payment to clear PayU dashboard warning?'}
-                  </strong>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setTestPayuOneRupee((v) => !v)
-                    if (!testPayuOneRupee) setCouponApplied(false)
-                  }}
-                  style={{
-                    padding: '5px 12px',
-                    borderRadius: 8,
-                    border: testPayuOneRupee ? '1px solid #059669' : 'none',
-                    background: testPayuOneRupee ? '#ffffff' : '#059669',
-                    color: testPayuOneRupee ? '#047857' : '#ffffff',
-                    fontSize: 12,
-                    fontWeight: 700,
-                    cursor: 'pointer',
-                  }}
-                >
-                  {testPayuOneRupee ? 'Cancel ₹1 Test' : 'Test ₹1 with PayU'}
-                </button>
-              </div>
-
-              <div>
-                <span style={{ fontSize: 11.5, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 8 }}>
-                  Payment Mode
-                </span>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-                  {[
-                    { id: 'upi' as const, title: 'UPI (GPay / PhonePe)', sub: 'Instant UPI ID or QR' },
-                    { id: 'card' as const, title: 'Debit / Credit Card', sub: 'Visa, Mastercard, RuPay' },
-                    { id: 'netbanking' as const, title: 'NetBanking', sub: 'SBI, HDFC, ICICI, Axis' },
-                    { id: 'scholarship' as const, title: '100% Pilot Scholarship', sub: '₹0 Open Pilot Waiver' },
-                  ].map((pm) => {
-                    const active = paymentMethod === pm.id
-                    return (
-                      <button
-                        key={pm.id}
-                        type="button"
-                        onClick={() => {
-                          setPaymentMethod(pm.id)
-                          if (pm.id === 'scholarship') setCouponApplied(true)
-                        }}
-                        style={{
-                          textAlign: 'left',
-                          padding: '9px 11px',
-                          borderRadius: 10,
-                          border: active ? '2px solid #5142b5' : '1px solid #cbd5e1',
-                          background: active ? '#f5f3ff' : '#ffffff',
-                          cursor: 'pointer',
-                        }}
-                      >
-                        <strong style={{ display: 'block', fontSize: 12, color: active ? '#5142b5' : '#0f172a' }}>{pm.title}</strong>
-                        <span style={{ fontSize: 11, color: '#64748b' }}>{pm.sub}</span>
-                      </button>
-                    )
-                  })}
-                </div>
-
-                {paymentMethod === 'upi' && !couponApplied ? (
-                  <div style={{ marginTop: 8, padding: 10, borderRadius: 10, background: '#f8fafc', border: '1px solid #e2e8f0' }}>
-                    <input
-                      type="text"
-                      value={upiId}
-                      onChange={(e) => setUpiId(e.target.value)}
-                      placeholder="Enter UPI ID (e.g. name@okaxis)"
-                      style={{ width: '100%', boxSizing: 'border-box', padding: '8px 10px', borderRadius: 8, border: '1px solid #cbd5e1', fontSize: 13 }}
-                    />
-                  </div>
-                ) : null}
-
-                {paymentMethod === 'netbanking' && !couponApplied ? (
-                  <div style={{ marginTop: 8, display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                    {['SBI', 'HDFC', 'ICICI', 'Axis'].map((b) => (
-                      <button
-                        key={b}
-                        type="button"
-                        onClick={() => setSelectedBank(b)}
-                        style={{
-                          padding: '4px 10px',
-                          borderRadius: 999,
-                          border: selectedBank === b ? '1.5px solid #5142b5' : '1px solid #cbd5e1',
-                          background: selectedBank === b ? '#f5f3ff' : '#ffffff',
-                          color: selectedBank === b ? '#5142b5' : '#334155',
-                          fontSize: 11.5,
-                          fontWeight: 700,
-                          cursor: 'pointer',
-                        }}
-                      >
-                        {b}
-                      </button>
-                    ))}
-                  </div>
-                ) : null}
-              </div>
-            </div>
-
-            {/* Right Column: Order Summary & CTA */}
-            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 14, padding: '16px 18px' }}>
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10, paddingBottom: 8, borderBottom: '1px solid #e2e8f0' }}>
-                  <strong style={{ fontSize: 13.5, color: '#0f172a' }}>Selected Plan Summary</strong>
-                  <span style={{ fontSize: 11.5, fontWeight: 700, color: activeTier.includesCareerOS ? '#047857' : '#475569' }}>
-                    {activeTier.includesCareerOS ? '✓ Includes Career OS' : 'Certificate Only'}
-                  </span>
-                </div>
-
-                <div style={{ display: 'grid', gap: 6, fontSize: 12.5, color: '#334155' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <span>Plan Tier</span>
-                    <strong>{activeTier.name}</strong>
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <span>Plan Price (MRP ₹{mrpPrice.toLocaleString('en-IN')})</span>
-                    <strong>₹{basePrice.toLocaleString('en-IN')}</strong>
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <span>Career OS Access</span>
-                    <span style={{ fontWeight: 700, color: activeTier.includesCareerOS ? '#047857' : '#64748b' }}>
-                      {activeTier.includesCareerOS ? '6 Months + 3M Practice (60% Gate)' : 'Not Included in Tier 1'}
-                    </span>
-                  </div>
-                  {couponApplied ? (
-                    <div style={{ display: 'flex', justifyContent: 'space-between', color: '#15803d', fontWeight: 700 }}>
-                      <span>Pilot Scholarship ({couponCode})</span>
-                      <span>- ₹{discountAmount.toLocaleString('en-IN')}</span>
+                    {/* Feature List */}
+                    <div
+                      style={{
+                        borderTop: isProCard
+                          ? "1px solid rgba(255,255,255,0.18)"
+                          : "1px solid #f1f5f9",
+                        paddingTop: 14,
+                        display: "grid",
+                        gap: 10,
+                      }}
+                    >
+                      {tier.features.map((feat) => (
+                        <div
+                          key={feat}
+                          style={{
+                            display: "flex",
+                            alignItems: "flex-start",
+                            gap: 9,
+                            fontSize: 13,
+                            lineHeight: 1.45,
+                            color: isProCard ? "#f8fafc" : "#334155",
+                          }}
+                        >
+                          <span
+                            style={{
+                              width: 18,
+                              height: 18,
+                              borderRadius: "50%",
+                              background: isProCard ? "rgba(255,255,255,0.22)" : "#dcfce7",
+                              color: isProCard ? "#ffffff" : "#15803d",
+                              display: "inline-flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              fontSize: 11,
+                              fontWeight: 800,
+                              flexShrink: 0,
+                              marginTop: 1,
+                            }}
+                          >
+                            ✓
+                          </span>
+                          <span>{feat}</span>
+                        </div>
+                      ))}
+                      {(tier.notIncluded ?? []).map((nf) => (
+                        <div
+                          key={nf}
+                          style={{
+                            display: "flex",
+                            alignItems: "flex-start",
+                            gap: 9,
+                            fontSize: 12.5,
+                            lineHeight: 1.45,
+                            color: isProCard ? "rgba(255,255,255,0.55)" : "#94a3b8",
+                          }}
+                        >
+                          <span
+                            style={{
+                              width: 18,
+                              height: 18,
+                              borderRadius: "50%",
+                              background: "#f1f5f9",
+                              color: "#94a3b8",
+                              display: "inline-flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              fontSize: 10,
+                              fontWeight: 800,
+                              flexShrink: 0,
+                              marginTop: 1,
+                            }}
+                          >
+                            ✕
+                          </span>
+                          <span>{nf}</span>
+                        </div>
+                      ))}
                     </div>
-                  ) : null}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: 8, marginTop: 4, borderTop: '1.5px dashed #cbd5e1', fontSize: 15, fontWeight: 800, color: '#0f172a' }}>
-                    <span>Total Payable</span>
-                    <span style={{ color: '#5142b5', fontSize: 20 }}>₹{payableAmount.toLocaleString('en-IN')}</span>
                   </div>
-                </div>
-
-                <p id="enrollment-modal-copy" style={{ color: '#64748b', fontSize: 11.5, lineHeight: 1.45, margin: '8px 0' }}>
-                  {helperMessage}
-                </p>
-
-                {item.enrollable ? (
-                  <TermsConsent inputRef={termsRef} checked={accepted} onChange={setAccepted} action="enrolling" showError={triedWithoutTerms} />
-                ) : null}
-
-                {error ? (
-                  <div role="alert" style={{ background: '#fef2f2', border: '1px solid #fca5a5', borderRadius: 8, padding: '8px 10px', color: '#991b1b', fontSize: 12, marginTop: 8 }}>
-                    {error}
-                  </div>
-                ) : null}
-              </div>
-
-              <div style={{ display: 'flex', gap: 10, marginTop: 12 }}>
-                <button
-                  type="button"
-                  onClick={onClose}
-                  style={{
-                    background: '#ffffff',
-                    border: '1px solid #cbd5e1',
-                    color: '#334155',
-                    borderRadius: 10,
-                    padding: '11px 14px',
-                    fontSize: 13,
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                  }}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  onClick={handlePrimaryAction}
-                  disabled={submitting}
-                  style={{
-                    flex: 1,
-                    background: '#5142b5',
-                    border: 'none',
-                    color: '#ffffff',
-                    borderRadius: 10,
-                    padding: '12px 16px',
-                    fontSize: 13.5,
-                    fontWeight: 700,
-                    cursor: submitting ? 'wait' : 'pointer',
-                    opacity: submitting ? 0.7 : 1,
-                  }}
-                >
-                  {primaryLabel}
-                </button>
-              </div>
-            </div>
+                </article>
+              )
+            })}
           </div>
         </div>
       </div>
