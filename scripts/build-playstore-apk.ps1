@@ -435,13 +435,25 @@ $env:JAVA_HOME = $JavaHomeFound
 $env:PATH = "$JavaHomeFound\bin;$env:PATH"
 Write-Host "  [OK] JAVA_HOME set to: $env:JAVA_HOME" -ForegroundColor Green
 
-$SdkRoot = Join-Path $ToolchainRoot "android-sdk"
-if (-not (Test-Path (Join-Path $SdkRoot "platforms"))) {
-  if ($env:ANDROID_HOME -and (Test-Path $env:ANDROID_HOME)) {
-    $SdkRoot = $env:ANDROID_HOME
-  } elseif ($env:LOCALAPPDATA -and (Test-Path (Join-Path $env:LOCALAPPDATA "Android\Sdk"))) {
-    $SdkRoot = Join-Path $env:LOCALAPPDATA "Android\Sdk"
+$sdkCandidates = @(
+  $env:ANDROID_HOME,
+  $env:ANDROID_SDK_ROOT,
+  (Join-Path $env:LOCALAPPDATA "Android\Sdk"),
+  (Join-Path $HOME "AppData\Local\Android\Sdk"),
+  "C:\Users\Chandan\AppData\Local\Android\Sdk",
+  "C:\Android\Sdk",
+  "C:\Program Files (x86)\Android\android-sdk",
+  (Join-Path $ToolchainRoot "android-sdk")
+)
+$SdkRoot = $null
+foreach ($c in $sdkCandidates) {
+  if ($c -and (Test-Path $c)) {
+    $SdkRoot = $c
+    break
   }
+}
+if (-not $SdkRoot) {
+  $SdkRoot = Join-Path $env:LOCALAPPDATA "Android\Sdk"
 }
 
 $env:ANDROID_HOME = $SdkRoot
@@ -509,7 +521,12 @@ if (Test-Path "android/gradlew.bat") {
   $ReleaseApkSrc = "android/app/build/outputs/apk/release/app-release.apk"
   $ReleaseAabSrc = "android/app/build/outputs/bundle/release/app-release.aab"
 
-  if (($gradleExit -eq 0) -and (Test-Path $DebugApkSrc)) {
+  if (-not (Test-Path $DebugApkSrc)) {
+    Write-Host "  [DEBUG BUILD RETRY] Running verbose gradle assembleDebug for diagnostics..." -ForegroundColor Cyan
+    cmd /c "gradlew.bat assembleDebug --no-daemon --stacktrace"
+    $gradleExit = $LASTEXITCODE
+  }
+  if (Test-Path $DebugApkSrc) {
     $OutDebugApk = Join-Path $DownloadsDir "skylent-playstore-debug.apk"
     $OutReleaseApk = Join-Path $DownloadsDir "skylent-playstore-release.apk"
     $OutReleaseAab = Join-Path $DownloadsDir "skylent-playstore-release.aab"

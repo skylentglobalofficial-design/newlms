@@ -12,10 +12,26 @@ type AdminCoupon = {
   discountType: "FLAT" | "PERCENT"
   discountValue: number
   counselorName: string
+  approvedBy?: string
   applicableSlug: string
   showOnCheckout: boolean
   active: boolean
   createdAt: string
+}
+
+type CounselorCouponRequest = {
+  id: string
+  counselorName: string
+  counselorEmail: string
+  studentEmail: string
+  targetSlug: string
+  requestedDiscountType: "FLAT" | "PERCENT"
+  requestedDiscountValue: number
+  reason: string
+  status: "PENDING" | "APPROVED" | "REJECTED"
+  approvedCode?: string
+  createdAt: string
+  reviewedAt?: string
 }
 
 type GatewayConfig = {
@@ -52,6 +68,7 @@ const inputStyle = {
 
 export default function AdminPricingAndCouponsPanel() {
   const [coupons, setCoupons] = useState<AdminCoupon[]>([])
+  const [requests, setRequests] = useState<CounselorCouponRequest[]>([])
   const [overrides, setOverrides] = useState<Record<string, LocalPriceOverride>>(() =>
     readAdminPriceOverrides(),
   )
@@ -74,13 +91,22 @@ export default function AdminPricingAndCouponsPanel() {
     Record<string, { certPrice: string; proPrice: string; flagshipPrice: string; mrp: string }>
   >({})
 
-  // New coupon form state
-  const [couponCode, setCouponCode] = useState("")
+  // Direct Admin Master Coupon Creation
+  const [adminCouponCode, setAdminCouponCode] = useState("")
   const [discountType, setDiscountType] = useState<"FLAT" | "PERCENT">("FLAT")
   const [discountValue, setDiscountValue] = useState("1000")
-  const [counselorName, setCounselorName] = useState("Admin / Academic Counselor")
+  const [counselorAttribution, setCounselorAttribution] = useState("Admissions Team")
   const [applicableSlug, setApplicableSlug] = useState("ALL")
   const [showOnCheckout, setShowOnCheckout] = useState(false)
+
+  // Counselor Request Submission form state (Counselor requesting Admin approval)
+  const [reqCounselorName, setReqCounselorName] = useState("Counselor Rohit")
+  const [reqStudentEmail, setReqStudentEmail] = useState("")
+  const [reqTargetCourse, setReqTargetCourse] = useState("data-analytics")
+  const [reqDiscountType, setReqDiscountType] = useState<"FLAT" | "PERCENT">("FLAT")
+  const [reqDiscountValue, setReqDiscountValue] = useState("1500")
+  const [reqReason, setReqReason] = useState("Learner ready to enroll today if ₹1,500 concession is authorized.")
+  const [showCounselorRequestForm, setShowCounselorRequestForm] = useState(false)
 
   async function loadConfig() {
     try {
@@ -89,6 +115,7 @@ export default function AdminPricingAndCouponsPanel() {
       const payload = await res.json().catch(() => ({}))
       if (payload?.data) {
         if (Array.isArray(payload.data.coupons)) setCoupons(payload.data.coupons)
+        if (Array.isArray(payload.data.couponRequests)) setRequests(payload.data.couponRequests)
         if (payload.data.priceOverrides) {
           setOverrides(payload.data.priceOverrides)
           saveAdminPriceOverridesLocal(payload.data.priceOverrides)
@@ -130,7 +157,6 @@ export default function AdminPricingAndCouponsPanel() {
   ) {
     const current = getRowPrices(slug, defaultBase)
     const next = { ...current, [field]: value }
-    // When Admin changes the main Course Price (proPrice), auto-calculate sensible defaults if others weren't manually edited
     if (field === "proPrice") {
       const num = Number(value) || 0
       if (num > 0) {
@@ -185,13 +211,87 @@ export default function AdminPricingAndCouponsPanel() {
     }
   }
 
-  async function handleCreateCoupon(e: FormEvent) {
+  // Admin approves counselor request with 1-click
+  async function handleApproveCounselorRequest(id: string) {
+    setStatusMsg(null)
+    setErrorMsg(null)
+    try {
+      const csrf = await ensureCsrfToken()
+      const res = await fetch(`/api/v1/payments/admin/coupon-requests/${encodeURIComponent(id)}/approve`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "X-CSRF-Token": csrf },
+      })
+      const payload = await res.json().catch(() => ({}))
+      if (!res.ok) throw new Error(payload.error || "Failed to approve coupon request")
+      if (Array.isArray(payload.data?.couponRequests)) setRequests(payload.data.couponRequests)
+      if (Array.isArray(payload.data?.coupons)) setCoupons(payload.data.coupons)
+      setStatusMsg(
+        `✓ Approved! Generated active coupon code "${payload.data?.coupon?.code}" for ${payload.data?.coupon?.counselorName}. Student can now apply it on /checkout.`,
+      )
+    } catch (err) {
+      setErrorMsg(err instanceof Error ? err.message : "Could not approve request")
+    }
+  }
+
+  // Admin rejects counselor request
+  async function handleRejectCounselorRequest(id: string) {
+    setStatusMsg(null)
+    setErrorMsg(null)
+    try {
+      const csrf = await ensureCsrfToken()
+      const res = await fetch(`/api/v1/payments/admin/coupon-requests/${encodeURIComponent(id)}/reject`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "X-CSRF-Token": csrf },
+      })
+      const payload = await res.json().catch(() => ({}))
+      if (!res.ok) throw new Error(payload.error || "Failed to reject coupon request")
+      if (Array.isArray(payload.data?.couponRequests)) setRequests(payload.data.couponRequests)
+      setStatusMsg("Marked counselor request as Rejected.")
+    } catch (err) {
+      setErrorMsg(err instanceof Error ? err.message : "Could not reject request")
+    }
+  }
+
+  // Counselor submits a request to Admin
+  async function handleSubmitCounselorRequest(e: FormEvent) {
     e.preventDefault()
     setStatusMsg(null)
     setErrorMsg(null)
-    const clean = couponCode.trim().toUpperCase()
+    try {
+      const res = await fetch("/api/v1/payments/counselor/request-coupon", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          counselorName: reqCounselorName,
+          studentEmail: reqStudentEmail,
+          targetSlug: reqTargetCourse,
+          requestedDiscountType: reqDiscountType,
+          requestedDiscountValue: Number(reqDiscountValue) || 1000,
+          reason: reqReason,
+        }),
+      })
+      const payload = await res.json().catch(() => ({}))
+      if (!res.ok) throw new Error(payload.error || "Failed to submit request")
+      setStatusMsg(`✓ Request submitted to Admin! Admin will review and authorize the code.`)
+      setReqStudentEmail("")
+      setShowCounselorRequestForm(false)
+      await loadConfig()
+    } catch (err) {
+      setErrorMsg(err instanceof Error ? err.message : "Could not submit counselor request")
+    }
+  }
+
+  // Direct Admin Master Coupon Generation
+  async function handleCreateAdminCoupon(e: FormEvent) {
+    e.preventDefault()
+    setStatusMsg(null)
+    setErrorMsg(null)
+    const clean = adminCouponCode.trim().toUpperCase()
     if (!clean) {
-      setErrorMsg("Please enter a coupon code (e.g. SKYLENT2000 or COUNSELOR50).")
+      setErrorMsg("Please enter a coupon code.")
       return
     }
     try {
@@ -207,7 +307,7 @@ export default function AdminPricingAndCouponsPanel() {
           code: clean,
           discountType,
           discountValue: Number(discountValue) || 500,
-          counselorName: counselorName.trim() || "Admin",
+          counselorName: counselorAttribution.trim() || "Admin Master",
           applicableSlug,
           showOnCheckout,
         }),
@@ -215,8 +315,8 @@ export default function AdminPricingAndCouponsPanel() {
       const payload = await res.json().catch(() => ({}))
       if (!res.ok) throw new Error(payload.error || "Failed to create coupon")
       if (Array.isArray(payload.coupons)) setCoupons(payload.coupons)
-      setCouponCode("")
-      setStatusMsg(`✓ Coupon code "${clean}" created and active on Skylent Checkout!`)
+      setAdminCouponCode("")
+      setStatusMsg(`✓ Admin-authorized coupon "${clean}" is now live and valid on Checkout!`)
     } catch (err) {
       setErrorMsg(err instanceof Error ? err.message : "Could not create coupon")
     }
@@ -269,6 +369,8 @@ export default function AdminPricingAndCouponsPanel() {
       setErrorMsg(err instanceof Error ? err.message : "Could not save gateway settings")
     }
   }
+
+  const pendingRequests = requests.filter((r) => r.status === "PENDING")
 
   return (
     <div style={{ display: "grid", gap: 22 }}>
@@ -413,213 +515,459 @@ export default function AdminPricingAndCouponsPanel() {
         </div>
       </section>
 
-      {/* SECTION 2: ADMIN & COUNSELOR COUPON CODE GENERATOR */}
+      {/* SECTION 2: COUNSELOR REQUEST QUEUE & ADMIN-ONLY COUPON APPROVAL */}
       <section style={cardStyle}>
-        <span style={{ fontSize: 11, fontFamily: "var(--font-mono)", fontWeight: 800, color: "#059669", textTransform: "uppercase" }}>
-          COUNSELOR &amp; ADMIN SCHOLARSHIP CODES
-        </span>
-        <h2 style={{ margin: "4px 0 4px", fontSize: 19, color: "#0f172a" }}>
-          Create &amp; Manage Coupon Codes for Students &amp; Counselors
-        </h2>
-        <p style={{ margin: "0 0 16px", fontSize: 13, color: "#475569" }}>
-          Generate custom coupon codes (flat ₹ discount or % discount) that your Admissions Counselors or Admin can share with learners to apply on <code>/checkout</code>.
-        </p>
-
-        <form
-          onSubmit={(e) => void handleCreateCoupon(e)}
+        {/* Strict Authority Warning Banner */}
+        <div
           style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
-            gap: 12,
-            padding: 16,
-            borderRadius: 14,
-            background: "#f8fafc",
-            border: "1px solid #e2e8f0",
+            padding: "14px 18px",
+            borderRadius: 12,
+            background: "#fffbeb",
+            border: "1.5px solid #fde68a",
+            color: "#92400e",
             marginBottom: 18,
+            display: "flex",
+            alignItems: "flex-start",
+            gap: 12,
           }}
         >
-          <label style={{ display: "grid", gap: 4, fontSize: 12, fontWeight: 700, color: "#334155" }}>
-            <span>Coupon Code *</span>
-            <input
-              type="text"
-              value={couponCode}
-              onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
-              placeholder="e.g. COUNSELOR2000"
-              required
-              style={inputStyle}
-            />
-          </label>
-
-          <label style={{ display: "grid", gap: 4, fontSize: 12, fontWeight: 700, color: "#334155" }}>
-            <span>Discount Type</span>
-            <select
-              value={discountType}
-              onChange={(e) => setDiscountType(e.target.value as "FLAT" | "PERCENT")}
-              style={inputStyle}
-            >
-              <option value="FLAT">Flat Rupees Off (₹)</option>
-              <option value="PERCENT">Percentage Off (%)</option>
-            </select>
-          </label>
-
-          <label style={{ display: "grid", gap: 4, fontSize: 12, fontWeight: 700, color: "#334155" }}>
-            <span>{discountType === "FLAT" ? "Discount Amount (₹)" : "Discount Percent (%)"}</span>
-            <input
-              type="number"
-              min="1"
-              value={discountValue}
-              onChange={(e) => setDiscountValue(e.target.value)}
-              required
-              style={inputStyle}
-            />
-          </label>
-
-          <label style={{ display: "grid", gap: 4, fontSize: 12, fontWeight: 700, color: "#334155" }}>
-            <span>Issued By (Counselor / Admin)</span>
-            <input
-              type="text"
-              value={counselorName}
-              onChange={(e) => setCounselorName(e.target.value)}
-              placeholder="e.g. Counselor Rahul"
-              style={inputStyle}
-            />
-          </label>
-
-          <label style={{ display: "grid", gap: 4, fontSize: 12, fontWeight: 700, color: "#334155" }}>
-            <span>Applicable Course</span>
-            <select
-              value={applicableSlug}
-              onChange={(e) => setApplicableSlug(e.target.value)}
-              style={inputStyle}
-            >
-              <option value="ALL">All Courses &amp; Programmes</option>
-              {staticCourses.slice(0, 8).map((c) => (
-                <option key={c.slug} value={c.slug}>
-                  {c.title}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <div style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", gap: 8 }}>
-            <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12, fontWeight: 700, color: "#334155", marginTop: 4 }}>
-              <input
-                type="checkbox"
-                checked={showOnCheckout}
-                onChange={(e) => setShowOnCheckout(e.target.checked)}
-              />
-              <span>Show as public chip on Checkout</span>
-            </label>
-            <button
-              type="submit"
-              style={{
-                padding: "10px 16px",
-                borderRadius: 10,
-                border: "none",
-                background: "#059669",
-                color: "#ffffff",
-                fontSize: 13.5,
-                fontWeight: 800,
-                cursor: "pointer",
-              }}
-            >
-              + Create Coupon Code
-            </button>
+          <span style={{ fontSize: 18, lineHeight: 1 }}>🔒</span>
+          <div>
+            <strong style={{ fontSize: 14, display: "block", marginBottom: 2 }}>
+              Strict Rule: Counselors Cannot Generate Coupons Without Admin Approval
+            </strong>
+            <span style={{ fontSize: 12.5, lineHeight: 1.45, opacity: 0.95 }}>
+              Admissions Counselors cannot create or distribute discount codes directly. If a counselor needs to offer a fee concession to a prospective learner, they must submit a formal request to the Admin. Only the Admin can review the justification, approve the discount, and issue an authorized code.
+            </span>
           </div>
-        </form>
+        </div>
 
-        {/* Active Coupons Table */}
-        <div style={{ display: "grid", gap: 8 }}>
-          {coupons.map((c) => (
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12, marginBottom: 14 }}>
+          <div>
+            <span style={{ fontSize: 11, fontFamily: "var(--font-mono)", fontWeight: 800, color: "#059669", textTransform: "uppercase" }}>
+              STEP 1: REVIEW &amp; APPROVE COUNSELOR REQUESTS
+            </span>
+            <h2 style={{ margin: "2px 0 0", fontSize: 19, color: "#0f172a" }}>
+              Pending Counselor Discount Requests ({pendingRequests.length})
+            </h2>
+          </div>
+          <button
+            type="button"
+            onClick={() => setShowCounselorRequestForm((v) => !v)}
+            style={{
+              padding: "7px 14px",
+              borderRadius: 8,
+              border: "1px solid #5142b5",
+              background: showCounselorRequestForm ? "#5142b5" : "#ffffff",
+              color: showCounselorRequestForm ? "#ffffff" : "#5142b5",
+              fontSize: 12.5,
+              fontWeight: 700,
+              cursor: "pointer",
+            }}
+          >
+            {showCounselorRequestForm ? "✕ Close Form" : "+ Submit New Counselor Request to Admin"}
+          </button>
+        </div>
+
+        {/* Counselor Request Form */}
+        {showCounselorRequestForm ? (
+          <form
+            onSubmit={(e) => void handleSubmitCounselorRequest(e)}
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+              gap: 12,
+              padding: 16,
+              borderRadius: 14,
+              background: "#f8fafc",
+              border: "1.5px solid #cbd5e1",
+              marginBottom: 18,
+            }}
+          >
+            <label style={{ display: "grid", gap: 4, fontSize: 12, fontWeight: 700, color: "#334155" }}>
+              <span>Counselor Name *</span>
+              <input
+                type="text"
+                value={reqCounselorName}
+                onChange={(e) => setReqCounselorName(e.target.value)}
+                required
+                style={inputStyle}
+              />
+            </label>
+
+            <label style={{ display: "grid", gap: 4, fontSize: 12, fontWeight: 700, color: "#334155" }}>
+              <span>Student / Lead Email *</span>
+              <input
+                type="email"
+                value={reqStudentEmail}
+                onChange={(e) => setReqStudentEmail(e.target.value)}
+                placeholder="learner@gmail.com"
+                required
+                style={inputStyle}
+              />
+            </label>
+
+            <label style={{ display: "grid", gap: 4, fontSize: 12, fontWeight: 700, color: "#334155" }}>
+              <span>Course / Programme</span>
+              <select
+                value={reqTargetCourse}
+                onChange={(e) => setReqTargetCourse(e.target.value)}
+                style={inputStyle}
+              >
+                <option value="ALL">All Courses</option>
+                {staticCourses.slice(0, 8).map((c) => (
+                  <option key={c.slug} value={c.slug}>
+                    {c.title}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label style={{ display: "grid", gap: 4, fontSize: 12, fontWeight: 700, color: "#334155" }}>
+              <span>Requested Concession</span>
+              <div style={{ display: "flex", gap: 6 }}>
+                <select
+                  value={reqDiscountType}
+                  onChange={(e) => setReqDiscountType(e.target.value as "FLAT" | "PERCENT")}
+                  style={{ ...inputStyle, width: "auto" }}
+                >
+                  <option value="FLAT">₹ Flat</option>
+                  <option value="PERCENT">% Off</option>
+                </select>
+                <input
+                  type="number"
+                  min="1"
+                  value={reqDiscountValue}
+                  onChange={(e) => setReqDiscountValue(e.target.value)}
+                  style={inputStyle}
+                />
+              </div>
+            </label>
+
+            <div style={{ gridColumn: "1 / -1", display: "grid", gap: 4 }}>
+              <label style={{ fontSize: 12, fontWeight: 700, color: "#334155" }}>
+                <span>Justification for Admin Approval *</span>
+                <input
+                  type="text"
+                  value={reqReason}
+                  onChange={(e) => setReqReason(e.target.value)}
+                  placeholder="e.g. Merit background; closing enrollment today if fee concession approved."
+                  required
+                  style={inputStyle}
+                />
+              </label>
+            </div>
+
+            <div>
+              <button
+                type="submit"
+                style={{
+                  padding: "10px 18px",
+                  borderRadius: 10,
+                  border: "none",
+                  background: "#5142b5",
+                  color: "#ffffff",
+                  fontSize: 13.5,
+                  fontWeight: 800,
+                  cursor: "pointer",
+                }}
+              >
+                Submit Request to Admin →
+              </button>
+            </div>
+          </form>
+        ) : null}
+
+        {/* Pending Requests List */}
+        <div style={{ display: "grid", gap: 10, marginBottom: 20 }}>
+          {pendingRequests.map((req) => (
             <div
-              key={c.code}
+              key={req.id}
               style={{
-                padding: "12px 16px",
+                padding: "14px 18px",
                 borderRadius: 12,
-                border: "1px solid #e2e8f0",
-                background: "#ffffff",
+                border: "1.5px solid #fde68a",
+                background: "#fffdf5",
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
                 flexWrap: "wrap",
-                gap: 10,
+                gap: 12,
               }}
             >
-              <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-                <strong
-                  style={{
-                    fontSize: 14,
-                    fontFamily: "var(--font-mono)",
-                    padding: "4px 10px",
-                    borderRadius: 8,
-                    background: "#f5f3ff",
-                    border: "1px solid #ddd6fe",
-                    color: "#5142b5",
-                  }}
-                >
-                  {c.code}
-                </strong>
-                <span style={{ fontSize: 13.5, fontWeight: 700, color: "#0f172a" }}>
-                  {c.discountType === "PERCENT"
-                    ? `${c.discountValue}% OFF`
-                    : `₹${Number(c.discountValue).toLocaleString("en-IN")} OFF`}
-                </span>
-                <span style={{ fontSize: 12.5, color: "#475569" }}>
-                  Issued by: <strong>{c.counselorName}</strong> · Target: <strong>{c.applicableSlug}</strong>
-                </span>
-                <span
-                  style={{
-                    fontSize: 11,
-                    fontWeight: 700,
-                    padding: "2px 8px",
-                    borderRadius: 999,
-                    background: c.showOnCheckout ? "#ecfdf5" : "#f1f5f9",
-                    color: c.showOnCheckout ? "#047857" : "#475569",
-                  }}
-                >
-                  {c.showOnCheckout ? "Public on Checkout" : "Counselor Private Code"}
-                </span>
+              <div>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+                  <span style={{ fontSize: 11, fontWeight: 800, padding: "2px 8px", borderRadius: 999, background: "#fef3c7", color: "#92400e", textTransform: "uppercase" }}>
+                    Pending Admin Approval
+                  </span>
+                  <strong style={{ fontSize: 14, color: "#0f172a" }}>
+                    {req.counselorName} requested {req.requestedDiscountType === "PERCENT" ? `${req.requestedDiscountValue}% OFF` : `₹${req.requestedDiscountValue.toLocaleString("en-IN")} OFF`}
+                  </strong>
+                </div>
+                <div style={{ fontSize: 12.5, color: "#475569" }}>
+                  Learner: <strong>{req.studentEmail}</strong> · Target: <strong>{req.targetSlug}</strong>
+                </div>
+                <div style={{ fontSize: 12, color: "#78350f", marginTop: 4 }}>
+                  <em>&ldquo;{req.reason}&rdquo;</em>
+                </div>
               </div>
 
               <div style={{ display: "flex", gap: 8 }}>
                 <button
                   type="button"
-                  onClick={() => {
-                    void navigator.clipboard?.writeText(c.code)
-                    setStatusMsg(`Copied coupon code "${c.code}" to clipboard!`)
-                  }}
+                  onClick={() => void handleApproveCounselorRequest(req.id)}
                   style={{
-                    padding: "6px 12px",
+                    padding: "8px 16px",
                     borderRadius: 8,
-                    border: "1px solid #cbd5e1",
-                    background: "#ffffff",
-                    color: "#334155",
-                    fontSize: 12,
-                    fontWeight: 700,
+                    border: "none",
+                    background: "#059669",
+                    color: "#ffffff",
+                    fontSize: 13,
+                    fontWeight: 800,
                     cursor: "pointer",
                   }}
                 >
-                  Copy Code
+                  ✓ Approve &amp; Generate Code
                 </button>
                 <button
                   type="button"
-                  onClick={() => void handleDeleteCoupon(c.code)}
+                  onClick={() => void handleRejectCounselorRequest(req.id)}
                   style={{
-                    padding: "6px 12px",
+                    padding: "8px 14px",
                     borderRadius: 8,
-                    border: "1px solid #fca5a5",
-                    background: "#fef2f2",
-                    color: "#991b1b",
-                    fontSize: 12,
+                    border: "1px solid #cbd5e1",
+                    background: "#ffffff",
+                    color: "#64748b",
+                    fontSize: 12.5,
                     fontWeight: 700,
                     cursor: "pointer",
                   }}
                 >
-                  Delete
+                  Reject
                 </button>
               </div>
             </div>
           ))}
+          {pendingRequests.length === 0 ? (
+            <div style={{ padding: "14px 16px", borderRadius: 10, background: "#f8fafc", border: "1px dashed #cbd5e1", color: "#64748b", fontSize: 13 }}>
+              No pending counselor requests right now. Counselors must submit requests before discount codes are issued.
+            </div>
+          ) : null}
+        </div>
+
+        {/* STEP 2: DIRECT ADMIN MASTER COUPON CREATION */}
+        <div style={{ borderTop: "1px solid #e2e8f0", paddingTop: 18 }}>
+          <span style={{ fontSize: 11, fontFamily: "var(--font-mono)", fontWeight: 800, color: "#5142b5", textTransform: "uppercase" }}>
+            STEP 2: DIRECT ADMIN MASTER COUPON GENERATOR
+          </span>
+          <h3 style={{ margin: "4px 0 4px", fontSize: 17, color: "#0f172a" }}>
+            Create Official Admin Coupon Code
+          </h3>
+          <p style={{ margin: "0 0 14px", fontSize: 12.5, color: "#475569" }}>
+            As Superadmin, you can directly authorize and publish an official platform discount or counselor-attributed coupon.
+          </p>
+
+          <form
+            onSubmit={(e) => void handleCreateAdminCoupon(e)}
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))",
+              gap: 12,
+              padding: 16,
+              borderRadius: 14,
+              background: "#f8fafc",
+              border: "1px solid #e2e8f0",
+              marginBottom: 18,
+            }}
+          >
+            <label style={{ display: "grid", gap: 4, fontSize: 12, fontWeight: 700, color: "#334155" }}>
+              <span>Coupon Code *</span>
+              <input
+                type="text"
+                value={adminCouponCode}
+                onChange={(e) => setAdminCouponCode(e.target.value.toUpperCase())}
+                placeholder="e.g. ADM-CHANDAN-2000"
+                required
+                style={inputStyle}
+              />
+            </label>
+
+            <label style={{ display: "grid", gap: 4, fontSize: 12, fontWeight: 700, color: "#334155" }}>
+              <span>Discount Type</span>
+              <select
+                value={discountType}
+                onChange={(e) => setDiscountType(e.target.value as "FLAT" | "PERCENT")}
+                style={inputStyle}
+              >
+                <option value="FLAT">Flat Rupees Off (₹)</option>
+                <option value="PERCENT">Percentage Off (%)</option>
+              </select>
+            </label>
+
+            <label style={{ display: "grid", gap: 4, fontSize: 12, fontWeight: 700, color: "#334155" }}>
+              <span>{discountType === "FLAT" ? "Discount Amount (₹)" : "Discount Percent (%)"}</span>
+              <input
+                type="number"
+                min="1"
+                value={discountValue}
+                onChange={(e) => setDiscountValue(e.target.value)}
+                required
+                style={inputStyle}
+              />
+            </label>
+
+            <label style={{ display: "grid", gap: 4, fontSize: 12, fontWeight: 700, color: "#334155" }}>
+              <span>Attributed To (Counselor / Policy)</span>
+              <input
+                type="text"
+                value={counselorAttribution}
+                onChange={(e) => setCounselorAttribution(e.target.value)}
+                placeholder="e.g. Counselor Priya / Superadmin"
+                style={inputStyle}
+              />
+            </label>
+
+            <label style={{ display: "grid", gap: 4, fontSize: 12, fontWeight: 700, color: "#334155" }}>
+              <span>Applicable Course</span>
+              <select
+                value={applicableSlug}
+                onChange={(e) => setApplicableSlug(e.target.value)}
+                style={inputStyle}
+              >
+                <option value="ALL">All Courses &amp; Programmes</option>
+                {staticCourses.slice(0, 8).map((c) => (
+                  <option key={c.slug} value={c.slug}>
+                    {c.title}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <div style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", gap: 8 }}>
+              <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12, fontWeight: 700, color: "#334155", marginTop: 4 }}>
+                <input
+                  type="checkbox"
+                  checked={showOnCheckout}
+                  onChange={(e) => setShowOnCheckout(e.target.checked)}
+                />
+                <span>Show as public chip on Checkout</span>
+              </label>
+              <button
+                type="submit"
+                style={{
+                  padding: "10px 16px",
+                  borderRadius: 10,
+                  border: "none",
+                  background: "#5142b5",
+                  color: "#ffffff",
+                  fontSize: 13.5,
+                  fontWeight: 800,
+                  cursor: "pointer",
+                }}
+              >
+                + Authorize &amp; Save Code
+              </button>
+            </div>
+          </form>
+        </div>
+
+        {/* ACTIVE ADMIN-APPROVED COUPONS TABLE */}
+        <div>
+          <span style={{ fontSize: 11, fontFamily: "var(--font-mono)", fontWeight: 800, color: "#5142b5", textTransform: "uppercase" }}>
+            ACTIVE ADMIN-APPROVED COUPONS ({coupons.length})
+          </span>
+          <div style={{ display: "grid", gap: 8, marginTop: 8 }}>
+            {coupons.map((c) => (
+              <div
+                key={c.code}
+                style={{
+                  padding: "12px 16px",
+                  borderRadius: 12,
+                  border: "1px solid #e2e8f0",
+                  background: "#ffffff",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  flexWrap: "wrap",
+                  gap: 10,
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+                  <strong
+                    style={{
+                      fontSize: 14,
+                      fontFamily: "var(--font-mono)",
+                      padding: "4px 10px",
+                      borderRadius: 8,
+                      background: "#f5f3ff",
+                      border: "1px solid #ddd6fe",
+                      color: "#5142b5",
+                    }}
+                  >
+                    {c.code}
+                  </strong>
+                  <span style={{ fontSize: 13.5, fontWeight: 700, color: "#0f172a" }}>
+                    {c.discountType === "PERCENT"
+                      ? `${c.discountValue}% OFF`
+                      : `₹${Number(c.discountValue).toLocaleString("en-IN")} OFF`}
+                  </span>
+                  <span style={{ fontSize: 12.5, color: "#475569" }}>
+                    Attributed: <strong>{c.counselorName}</strong> · Approved: <strong style={{ color: "#047857" }}>{c.approvedBy || "Superadmin"}</strong>
+                  </span>
+                  <span
+                    style={{
+                      fontSize: 11,
+                      fontWeight: 700,
+                      padding: "2px 8px",
+                      borderRadius: 999,
+                      background: c.showOnCheckout ? "#ecfdf5" : "#f1f5f9",
+                      color: c.showOnCheckout ? "#047857" : "#475569",
+                    }}
+                  >
+                    {c.showOnCheckout ? "Public Chip on Checkout" : "Private Authorized Code"}
+                  </span>
+                </div>
+
+                <div style={{ display: "flex", gap: 8 }}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      void navigator.clipboard?.writeText(c.code)
+                      setStatusMsg(`Copied coupon code "${c.code}" to clipboard!`)
+                    }}
+                    style={{
+                      padding: "6px 12px",
+                      borderRadius: 8,
+                      border: "1px solid #cbd5e1",
+                      background: "#ffffff",
+                      color: "#334155",
+                      fontSize: 12,
+                      fontWeight: 700,
+                      cursor: "pointer",
+                    }}
+                  >
+                    Copy Code
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => void handleDeleteCoupon(c.code)}
+                    style={{
+                      padding: "6px 12px",
+                      borderRadius: 8,
+                      border: "1px solid #fca5a5",
+                      background: "#fef2f2",
+                      color: "#991b1b",
+                      fontSize: 12,
+                      fontWeight: 700,
+                      cursor: "pointer",
+                    }}
+                  >
+                    Revoke Code
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 

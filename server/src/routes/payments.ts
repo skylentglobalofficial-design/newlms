@@ -26,10 +26,26 @@ export type AdminCouponRecord = {
   discountType: "FLAT" | "PERCENT"
   discountValue: number
   counselorName: string
+  approvedBy: string
   applicableSlug: string
   showOnCheckout: boolean
   active: boolean
   createdAt: string
+}
+
+export type CounselorCouponRequest = {
+  id: string
+  counselorName: string
+  counselorEmail: string
+  studentEmail: string
+  targetSlug: string
+  requestedDiscountType: "FLAT" | "PERCENT"
+  requestedDiscountValue: number
+  reason: string
+  status: "PENDING" | "APPROVED" | "REJECTED"
+  approvedCode?: string
+  createdAt: string
+  reviewedAt?: string
 }
 
 export type AdminGatewaySettings = {
@@ -49,20 +65,25 @@ let cachedCoupons: AdminCouponRecord[] = [
     code: "SKYLENT10",
     discountType: "PERCENT",
     discountValue: 10,
-    counselorName: "Skylent Admissions",
+    counselorName: "Admissions Team",
+    approvedBy: "Superadmin (Official Platform Policy)",
     applicableSlug: "ALL",
     showOnCheckout: true,
     active: true,
     createdAt: new Date().toISOString(),
   },
+]
+let cachedCouponRequests: CounselorCouponRequest[] = [
   {
-    code: "COUNSELOR20",
-    discountType: "PERCENT",
-    discountValue: 20,
-    counselorName: "Senior Academic Counselor",
-    applicableSlug: "ALL",
-    showOnCheckout: false,
-    active: true,
+    id: "req-1",
+    counselorName: "Counselor Priya Sharma",
+    counselorEmail: "counselor.priya@skylent.in",
+    studentEmail: "aarav.student@gmail.com",
+    targetSlug: "data-analytics",
+    requestedDiscountType: "FLAT",
+    requestedDiscountValue: 1000,
+    reason: "Final-year merit scholarship discussion; ready to enroll if ₹1,000 concession approved.",
+    status: "PENDING",
     createdAt: new Date().toISOString(),
   },
 ]
@@ -93,7 +114,7 @@ async function hydratePaymentsAdminConfig() {
   try {
     await ensureRuntimeTable()
     const rows = (await prisma.$queryRawUnsafe(
-      `SELECT "key", "value" FROM "_skylent_runtime_config" WHERE "key" IN ('price_overrides', 'admin_coupons', 'gateway_settings')`,
+      `SELECT "key", "value" FROM "_skylent_runtime_config" WHERE "key" IN ('price_overrides', 'admin_coupons', 'gateway_settings', 'counselor_coupon_requests')`,
     )) as Array<{ key?: string; value?: string }>
     for (const row of rows) {
       if (!row.key || !row.value) continue
@@ -103,6 +124,9 @@ async function hydratePaymentsAdminConfig() {
       } else if (row.key === "admin_coupons") {
         const parsed = JSON.parse(row.value)
         if (Array.isArray(parsed)) cachedCoupons = parsed
+      } else if (row.key === "counselor_coupon_requests") {
+        const parsed = JSON.parse(row.value)
+        if (Array.isArray(parsed)) cachedCouponRequests = parsed
       } else if (row.key === "gateway_settings") {
         const parsed = JSON.parse(row.value)
         if (parsed && typeof parsed === "object") {
@@ -163,7 +187,7 @@ paymentsRouter.get("/catalog-config", async (_req, res) => {
   }
 })
 
-// 2. Public Endpoint: Validate Admin / Counselor Coupon Code on Checkout
+// 2. Public Endpoint: Validate Admin-Approved Coupon Code on Checkout
 const validateCouponSchema = z.object({
   code: z.string().trim().min(1).max(40),
   slug: z.string().trim().optional().default("ALL"),
@@ -185,7 +209,7 @@ paymentsRouter.post("/coupons/validate", async (req, res) => {
         (c.applicableSlug === "ALL" || c.applicableSlug === parsed.data.slug),
     )
     if (!match) {
-      return res.status(404).json({ error: "Invalid or expired Admin/Counselor coupon code." })
+      return res.status(404).json({ error: "Invalid or expired coupon code. (Codes must be authorized and issued by Skylent Admin)." })
     }
     const discountAmount = computeCouponDiscount(match, parsed.data.subtotal)
     const finalPayable = Math.max(1, parsed.data.subtotal - discountAmount)
@@ -198,6 +222,7 @@ paymentsRouter.post("/coupons/validate", async (req, res) => {
         discountAmount,
         finalPayable,
         counselorName: match.counselorName,
+        approvedBy: match.approvedBy || "Superadmin",
       },
     })
   } catch (error) {
@@ -209,7 +234,53 @@ paymentsRouter.post("/coupons/validate", async (req, res) => {
   }
 })
 
-// 3. Admin Endpoints: Manage Coupons, Course Prices & Payment Gateway Methods
+// 3. Counselor Endpoint: Submit a Coupon Request to Admin (Counselors CANNOT generate codes directly)
+const requestCouponSchema = z.object({
+  counselorName: z.string().trim().min(2).max(80),
+  counselorEmail: z.string().trim().email().optional(),
+  studentEmail: z.string().trim().email().optional(),
+  targetSlug: z.string().trim().min(1).max(80).default("ALL"),
+  requestedDiscountType: z.enum(["FLAT", "PERCENT"]).default("FLAT"),
+  requestedDiscountValue: z.coerce.number().min(1).max(500000),
+  reason: z.string().trim().min(5).max(1000),
+})
+
+paymentsRouter.post("/counselor/request-coupon", async (req: AuthenticatedRequest, res) => {
+  try {
+    await hydratePaymentsAdminConfig()
+    const parsed = requestCouponSchema.safeParse(req.body)
+    if (!parsed.success) {
+      return res.status(400).json({ error: "Invalid request payload", details: parsed.error.flatten().fieldErrors })
+    }
+    const id = `req-${Date.now()}`
+    const record: CounselorCouponRequest = {
+      id,
+      counselorName: parsed.data.counselorName,
+      counselorEmail: parsed.data.counselorEmail || "counselor@skylent.in",
+      studentEmail: parsed.data.studentEmail || "student@lead.skylent.in",
+      targetSlug: parsed.data.targetSlug,
+      requestedDiscountType: parsed.data.requestedDiscountType,
+      requestedDiscountValue: parsed.data.requestedDiscountValue,
+      reason: parsed.data.reason,
+      status: "PENDING",
+      createdAt: new Date().toISOString(),
+    }
+    cachedCouponRequests = [record, ...cachedCouponRequests]
+    await saveRuntimeKey("counselor_coupon_requests", cachedCouponRequests).catch(() => undefined)
+    res.status(201).json({
+      data: record,
+      message: "Coupon request submitted to Admin! Admin approval is required before the code can be used.",
+    })
+  } catch (error) {
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+      return res.status(503).json({ error: "Database temporarily unavailable" })
+    }
+    console.error("[Counselor Request Coupon] Failed:", error instanceof Error ? error.name : "unknown")
+    res.status(500).json({ error: "Unable to submit coupon request right now" })
+  }
+})
+
+// 4. Admin Endpoints: Manage Coupons, Review Requests, Course Prices & Payment Gateway Methods
 const adminGuards = [requireAuth, requireRoles("superadmin", "admin")] as const
 const adminWriteGuards = [requireAuth, requireRoles("superadmin", "admin"), requireCsrf] as const
 
@@ -219,6 +290,7 @@ paymentsRouter.get("/admin/coupons", ...adminGuards, async (_req: AuthenticatedR
     res.json({
       data: {
         coupons: cachedCoupons,
+        couponRequests: cachedCouponRequests,
         priceOverrides: cachedPriceOverrides,
         gatewaySettings: cachedGatewaySettings,
       },
@@ -232,11 +304,93 @@ paymentsRouter.get("/admin/coupons", ...adminGuards, async (_req: AuthenticatedR
   }
 })
 
+// Admin Approves Counselor Request and Issues Code
+paymentsRouter.post("/admin/coupon-requests/:id/approve", ...adminWriteGuards, async (req: AuthenticatedRequest, res) => {
+  try {
+    await hydratePaymentsAdminConfig()
+    const id = String(req.params.id)
+    const target = cachedCouponRequests.find((r) => r.id === id)
+    if (!target) return res.status(404).json({ error: "Coupon request not found" })
+
+    const counselorClean = target.counselorName.replace(/[^a-zA-Z]/g, "").toUpperCase().slice(0, 8) || "CNSLR"
+    const generatedCode = `ADM-${counselorClean}-${target.requestedDiscountValue}`.toUpperCase()
+
+    const coupon: AdminCouponRecord = {
+      code: generatedCode,
+      discountType: target.requestedDiscountType,
+      discountValue: target.requestedDiscountValue,
+      counselorName: target.counselorName,
+      approvedBy: req.auth?.user?.displayName ? `Superadmin (${req.auth.user.displayName})` : "Superadmin",
+      applicableSlug: target.targetSlug,
+      showOnCheckout: false,
+      active: true,
+      createdAt: new Date().toISOString(),
+    }
+
+    cachedCoupons = [coupon, ...cachedCoupons.filter((c) => c.code !== generatedCode)]
+    cachedCouponRequests = cachedCouponRequests.map((r) =>
+      r.id === id
+        ? {
+            ...r,
+            status: "APPROVED",
+            approvedCode: generatedCode,
+            reviewedAt: new Date().toISOString(),
+          }
+        : r,
+    )
+
+    await Promise.allSettled([
+      saveRuntimeKey("admin_coupons", cachedCoupons),
+      saveRuntimeKey("counselor_coupon_requests", cachedCouponRequests),
+    ])
+
+    res.json({
+      data: {
+        approved: true,
+        coupon,
+        couponRequests: cachedCouponRequests,
+        coupons: cachedCoupons,
+      },
+    })
+  } catch (error) {
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+      return res.status(503).json({ error: "Database temporarily unavailable" })
+    }
+    console.error("[Admin Approve Coupon] Failed:", error instanceof Error ? error.name : "unknown")
+    res.status(500).json({ error: "Failed to approve coupon request" })
+  }
+})
+
+// Admin Rejects Counselor Request
+paymentsRouter.post("/admin/coupon-requests/:id/reject", ...adminWriteGuards, async (req: AuthenticatedRequest, res) => {
+  try {
+    await hydratePaymentsAdminConfig()
+    const id = String(req.params.id)
+    cachedCouponRequests = cachedCouponRequests.map((r) =>
+      r.id === id
+        ? {
+            ...r,
+            status: "REJECTED",
+            reviewedAt: new Date().toISOString(),
+          }
+        : r,
+    )
+    await saveRuntimeKey("counselor_coupon_requests", cachedCouponRequests).catch(() => undefined)
+    res.json({ data: { rejected: true, couponRequests: cachedCouponRequests } })
+  } catch (error) {
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+      return res.status(503).json({ error: "Database temporarily unavailable" })
+    }
+    console.error("[Admin Reject Coupon] Failed:", error instanceof Error ? error.name : "unknown")
+    res.status(500).json({ error: "Failed to reject coupon request" })
+  }
+})
+
 const createCouponSchema = z.object({
   code: z.string().trim().min(2).max(32).regex(/^[A-Za-z0-9_-]+$/),
   discountType: z.enum(["FLAT", "PERCENT"]),
   discountValue: z.coerce.number().min(1).max(500000),
-  counselorName: z.string().trim().min(1).max(80).default("Admin"),
+  counselorName: z.string().trim().min(1).max(80).default("Admin Master"),
   applicableSlug: z.string().trim().min(1).max(80).default("ALL"),
   showOnCheckout: z.boolean().optional().default(false),
 })
@@ -254,6 +408,7 @@ paymentsRouter.post("/admin/coupons", ...adminWriteGuards, async (req: Authentic
       discountType: parsed.data.discountType,
       discountValue: parsed.data.discountValue,
       counselorName: parsed.data.counselorName,
+      approvedBy: req.auth?.user?.displayName ? `Superadmin (${req.auth.user.displayName})` : "Superadmin",
       applicableSlug: parsed.data.applicableSlug,
       showOnCheckout: Boolean(parsed.data.showOnCheckout),
       active: true,
@@ -522,7 +677,7 @@ paymentsRouter.post("/payu/initiate", async (req: AuthenticatedRequest, res) => 
     if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
       return res.status(503).json({ error: "Payment service is temporarily unavailable" })
     }
-    console.error("[PayU Initiate] Failed:", error instanceof Error ? error.name : "unknown")
+    console.error("[PayU Initiate] Failed:", error instanceof Error ? error.message : "unknown")
     res.status(500).json({ error: "Unable to initiate payment right now" })
   }
 })

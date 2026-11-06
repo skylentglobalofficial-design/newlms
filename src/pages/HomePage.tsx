@@ -6,7 +6,9 @@
  * 3. Platform Overview (Clean 4-tab switcher: Workspace · Live Workshops · Mentor Support · Career & Degrees)
  * 4. Closing CTA
  */
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { useNavigate, useSearchParams } from "react-router-dom"
+import { useAuth } from "@/context/AuthContext"
 import { PageShell } from "@/components/shared"
 import { homeCataloguePhase } from "@/lib/catalogue-availability"
 import { useCatalogPrograms } from "@/hooks/useCatalog"
@@ -52,6 +54,28 @@ const EXPLORE_TABS = [
 type ExploreTabId = (typeof EXPLORE_TABS)[number]["id"]
 
 export default function HomePage() {
+  const { user, ready } = useAuth()
+  const navigate = useNavigate()
+  const [params] = useSearchParams()
+
+  useEffect(() => {
+    if (!ready || !user) return
+    if (params.get("public") === "1" || params.get("home") === "1") return
+    const target =
+      user.role === "admin" || user.role === "superadmin"
+        ? "/dashboard/admin"
+        : user.role === "faculty"
+          ? "/dashboard/faculty"
+          : user.role === "college"
+            ? "/dashboard/college"
+            : user.role === "recruiter"
+              ? "/dashboard/recruiter"
+              : user.role === "organisation"
+                ? "/dashboard/organisation"
+                : "/dashboard/student"
+    navigate(target, { replace: true })
+  }, [ready, user, params, navigate])
+
   const catalog = useCatalogPrograms()
   const catalogue = homeCataloguePhase(catalog.loading, catalog.offline)
   const [activeTab, setActiveTab] = useState<ExploreTabId>("workspace")

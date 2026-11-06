@@ -113,10 +113,13 @@
     "typescript": "^5.7.0",
     "@types/cors": "^2.8.19",
     "@types/node": "^22.0.0",
-    "@types/sql.js": "^1.4.11"
+    "@types/sql.js": "^1.4.11",
+    "@capacitor/core": "^6.2.0",
+    "@capacitor/android": "^6.2.0"
   },
   "devDependencies": {
-    "oxfmt": "^0.2.0"
+    "oxfmt": "^0.2.0",
+    "@capacitor/cli": "^6.2.0"
   },
   "overrides": {
     "deepmerge-ts": "8.0.2",

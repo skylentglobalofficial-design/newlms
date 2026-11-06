@@ -56,7 +56,7 @@ async function finishAuthNavigation(
     return
   }
   const returnTo = sanitizeReturnTo(redirectState?.returnTo)
-  if (returnTo) {
+  if (returnTo && returnTo !== "/" && returnTo !== "/login" && returnTo !== "/signup" && returnTo !== "/preview/homepage") {
     navigate(returnTo)
     return
   }
@@ -148,6 +148,18 @@ export default function LoginPage() {
     if (location.pathname === '/signup') setTab('signup')
     else if (location.pathname === '/login') setTab('signin')
   }, [location.pathname])
+
+  // If user is already authenticated, take them directly to their role dashboard
+  useEffect(() => {
+    if (ready && user && !location.search.includes("error=") && !location.search.includes("oauth=")) {
+      const returnTo = sanitizeReturnTo(redirectState?.returnTo)
+      if (returnTo && returnTo !== "/" && returnTo !== "/login" && returnTo !== "/signup" && returnTo !== "/preview/homepage") {
+        navigate(returnTo, { replace: true })
+      } else {
+        navigate(roleRoute(user.role), { replace: true })
+      }
+    }
+  }, [ready, user, redirectState, location.search, navigate])
 
   useEffect(() => {
     const params = new URLSearchParams(location.search)

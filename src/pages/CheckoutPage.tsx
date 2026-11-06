@@ -621,10 +621,10 @@ export default function CheckoutPage() {
                   marginBottom: 4,
                 }}
               >
-                Have an Admin or Counselor Coupon Code?
+                Have an Admin-Approved Coupon Code?
               </label>
               <span style={{ display: "block", fontSize: 11.5, color: "#64748b", marginBottom: 10 }}>
-                Enter the scholarship or discount code provided by your Skylent Admissions Counselor or Admin.
+                Discounts are strictly authorized by Skylent Admin. If your Admissions Counselor discussed a fee concession, enter the approved code provided after Admin authorization.
               </span>
               <div style={{ display: "flex", gap: 8 }}>
                 <input
@@ -632,7 +632,7 @@ export default function CheckoutPage() {
                   type="text"
                   value={couponInput}
                   onChange={(e) => setCouponInput(e.target.value.toUpperCase())}
-                  placeholder="Enter Counselor / Admin Code"
+                  placeholder="Enter Admin-Approved Code (e.g. ADM-...)"
                   style={{
                     flex: 1,
                     padding: "10px 12px",
