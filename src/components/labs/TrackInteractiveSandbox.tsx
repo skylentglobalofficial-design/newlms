@@ -21,8 +21,8 @@ const NORTHWIND_PRESET: SandboxPreset = {
   sampleLabel: "SQL query on northwind_sales (180 order lines · Jan–Jun 2026)",
   defaultInput: [
     "SELECT category,",
-    \"COUNT(*) AS valid_orders,",
-    \"ROUND(SUM(units * unit_price * (1 - discount_pct / 100.0))) AS net_revenue_inr",
+    "  COUNT(*) AS valid_orders,",
+    "  ROUND(SUM(units * unit_price * (1 - discount_pct / 100.0))) AS net_revenue_inr",
     "FROM northwind_sales",
     "WHERE units >0 AND unit_price >0 AND returned = 'no'",
     "GROUP BY category",
@@ -60,10 +60,10 @@ const NORTHWIND_PRESET: SandboxPreset = {
     const diagnostics: string[] = [
       filtersReturned && filtersPositive
         ? "✓ Row hygiene verified: 14 returned/zero-unit rows excluded → 166 valid rows."
-        : \"Missing WHERE units >0 AND unit_price >0 AND returned = 'no' (14 invalid rows still included).",
+        : "Missing WHERE units >0 AND unit_price >0 AND returned = 'no' (14 invalid rows still included).",
       hasDiscount
         ? "✓ Net revenue formula applied: ₹8,12,020 total across 4 categories."
-        : \"Apply (1 - discount_pct / 100.0) to isolate net revenue after promotional discounts.",
+        : "Apply (1 - discount_pct / 100.0) to isolate net revenue after promotional discounts.",
       groupsByMonth
         ? "✓ Monthly trend (Jan–Jun): May peaks at ₹1,58,240 · Feb dips to ₹1,18,900."
         : "✓ Category mix: Beverages ₹2,74,560 (33.8%) · Dairy ₹1,98,410 · Confections ₹1,76,890 · Seafood ₹1,62,160.",
@@ -383,7 +383,7 @@ export default function TrackInteractiveSandbox({ projectType }: { projectType: 
       }}
     >
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, flexWrap: "wrap", marginBottom: 6 }}>
-        <span className="os-eyebrow\"style={{ margin: 0, color: "#5142b5", fontWeight: 700 }}>{preset.badge}</span>
+        <span className="os-eyebrow" style={{ margin: 0, color: "#5142b5", fontWeight: 700 }}>{preset.badge}</span>
         <button
           type="button"
           className="os-btn os-btn-ghost"
@@ -397,7 +397,7 @@ export default function TrackInteractiveSandbox({ projectType }: { projectType: 
         </button>
       </div>
       <h3 style={{ margin: "0 0 4px", fontSize: 16, color: "#0f172a" }}>{preset.title}</h3>
-      <p className="lab-note\"style={{ marginTop: 0, marginBottom: 10, fontSize: 13, color: "#475569" }}>{preset.subtitle}</p>
+      <p className="lab-note" style={{ marginTop: 0, marginBottom: 10, fontSize: 13, color: "#475569" }}>{preset.subtitle}</p>
       <label htmlFor={`sandbox-input-${projectType}`} style={{ display: "block", fontSize: 12, fontWeight: 600, marginBottom: 4, color: "#334155" }}>
         {preset.sampleLabel}
       </label>
@@ -420,7 +420,7 @@ export default function TrackInteractiveSandbox({ projectType }: { projectType: 
         }}
       />
       <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12, flexWrap: "wrap" }}>
-        <button type="button\"className="os-btn os-btn-primary\"style={{ minHeight: 36, fontSize: 13 }} onClick={() =>setResult(preset.evaluate(input))}>
+        <button type="button" className="os-btn os-btn-primary" style={{ minHeight: 36, fontSize: 13 }} onClick={() =>setResult(preset.evaluate(input))}>
           ▶ Run Verification Check
         </button>
         {result ? (

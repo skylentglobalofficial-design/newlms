@@ -79,7 +79,7 @@ export default function CareerOSJobsPage() {
   )
 
   return (
-    <div className="career-jobs-page cos-work\"style={{ maxWidth: 1200, margin: "0 auto", minWidth: 0, overflowX: "hidden" }}>
+    <div className="career-jobs-page cos-work" style={{ maxWidth: 1200, margin: "0 auto", minWidth: 0, overflowX: "hidden" }}>
       <PageHead
         eyebrow="Career OS · Recruiter Job Board"
         title="Recruiter Job Board & Verified Shortlists"
@@ -278,7 +278,7 @@ export default function CareerOSJobsPage() {
 
           {board.error && (
             <div style={{ marginBottom: 16 }}>
-              <FeedbackBanner tone="error\"message={board.error} />
+              <FeedbackBanner tone="error" message={board.error} />
               <button
                 type="button"
                 onClick={() =>void board.reload()}
@@ -289,13 +289,13 @@ export default function CareerOSJobsPage() {
             </div>
           )}
 
-          <div className="career-jobs-layout\"style={{
+          <div className="career-jobs-layout" style={{
             display: "grid",
             gridTemplateColumns: "minmax(0, 1fr) minmax(280px, 380px)",
             gap: "clamp(16px, 2vw, 24px)",
             alignItems: "start",
           }}>
-            <div className="career-jobs-results\"style={{ minWidth: 0 }}>
+            <div className="career-jobs-results" style={{ minWidth: 0 }}>
               {board.loading ? (
                 <LoadingBlock label="Loading roles…" />
               ) : (
@@ -335,7 +335,7 @@ export default function CareerOSJobsPage() {
               )}
             </div>
 
-            <aside className="career-jobs-detail\"style={{ minWidth: 0, position: "sticky", top: 20 }}>
+            <aside className="career-jobs-detail" style={{ minWidth: 0, position: "sticky", top: 20 }}>
               {detailJob ? (
                 <JobDetailPanel
                   job={detailJob}

@@ -45,13 +45,13 @@ export type CourseProductProfile = {
 }
 
 const SHARED_FAQ_PAYMENT: CourseFaq = {
-  q: "Do I pay when I click Enrol?",
-  a: "No. A listed price is shown, but payment is not collected in this environment. Enrolment opens the course workspace.",
+  q: "How do course plans and browser lab access work?",
+  a: "You can test the browser labs (/labs) free as a guest. Full course plans (Basic ₹1,499 · Flagship ₹3,499 · Pro ₹6,499) unlock all 15 lessons, graded assignments, capstone project review, and PayU / UPI / EMI checkout.",
 }
 
 const SHARED_FAQ_CERT: CourseFaq = {
-  q: "Is a certificate issued?",
-  a: "When every lesson in the course is complete, you can claim a certificate from My learning. It carries a code anyone can check on the Verify page. It confirms course completion, not a job outcome, and the feature is still being checked before launch.",
+  q: "How do I earn my verified SKL certificate and unlock Career OS?",
+  a: "When you complete 60% of the course along with your module quizzes and capstone project, Career OS unlocks automatically. Completing all 15 lessons and the capstone issues your verifiable SKL certificate (/verify).",
 }
 
 const DATA_ANALYTICS_PROFILE: CourseProductProfile = {
@@ -63,7 +63,7 @@ const DATA_ANALYTICS_PROFILE: CourseProductProfile = {
     { filename: "northwind_hr.csv", href: "/content/data-analytics/northwind_hr.csv", detail: "56 staff rows used where the briefs ask for a companion HR extract." },
   ],
   learningSteps: [
-    { label: "Learning", detail: "Written lessons in Skylent OS. Self-paced. No video stream and no live classroom." },
+    { label: "Learning", detail: "Interactive written lessons, worked examples, and English + Hinglish study notes in Skylent OS." },
     { label: "Practice", detail: "Short checks after a block of lessons." },
     { label: "Assignment", detail: "Applied spreadsheet, SQL, and dashboard work on Northwind." },
     { label: "Capstone", detail: "A commercial review you keep as a work sample." },
@@ -80,7 +80,7 @@ const DATA_ANALYTICS_PROFILE: CourseProductProfile = {
       a: "A synthetic Northwind Retail dataset: spreadsheet analysis, SQL, data cleaning, a one-question dashboard, and a commercial-review capstone.",
     },
   ],
-  practiceIntro: "Practice uses a synthetic Northwind Retail dataset. There is no live classroom and no video stream.",
+  practiceIntro: "Practice runs directly in the browser SQL workbench on the 166-row Northwind Retail dataset.",
   visual: "northwind",
   lab: {
     label: "Open Lab",
@@ -109,7 +109,7 @@ const PRODUCT_MANAGEMENT_PROFILE: CourseProductProfile = {
     },
   ],
   learningSteps: [
-    { label: "Learning", detail: "Written lessons in Skylent OS. Self-paced. No video stream and no live classroom." },
+    { label: "Learning", detail: "Interactive written lessons, worked examples, and English + Hinglish study notes in Skylent OS." },
     { label: "Practice", detail: "Short checks after a block of lessons." },
     { label: "Assignment", detail: "Research notes, a priority memo, and a product-case recommendation on Harbor Desk." },
     { label: "Capstone", detail: "A product case you can keep as a work sample." },
@@ -130,7 +130,7 @@ const PRODUCT_MANAGEMENT_PROFILE: CourseProductProfile = {
       a: "Harbor Desk — a fictional shared inbox for Harbor Retail store operations. You write a research note, a priority memo, and a product-case recommendation. There is no SQL and no dashboard assignment.",
     },
   ],
-  practiceIntro: "Practice uses a fictional Harbor Retail operations case. There is no live classroom, no video stream, and no analytics lab.",
+  practiceIntro: "Practice uses the Harbor Retail operations case studio — user interview synthesis, problem framing, and PRD specification.",
   visual: "harbor-desk",
   lab: null,
   project: {
@@ -155,7 +155,7 @@ const PYTHON_PROGRAMMING_PROFILE: CourseProductProfile = {
   ],
   learningSteps: [
     { label: "Learning", detail: "15 authored engineering lessons in Skylent OS covering data structures, ETL validation, and CLI packaging." },
-    { label: "Practice", detail: "Checkpoint quizzes and Socratic cold-call trade-off scenarios." },
+    { label: "Practice", detail: "Checkpoint quizzes and interactive engineering trade-off scenarios." },
     { label: "Assignment", detail: "Idempotent ingestion, dead-letter quarantine, and pytest test suites." },
     { label: "Capstone", detail: "Python Transaction Pipeline & Anomaly Audit saved in your project studio." },
   ],

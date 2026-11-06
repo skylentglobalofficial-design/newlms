@@ -409,7 +409,7 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
                 <p className="pp-note">
                   {!verified
                     ? `${confirmed && courseUnconfirmed ? `${STATUS_NOT_CONFIRMED}. Enrolment is paused until the catalogue can be checked. ` : ""}${afterEnrol}`
-                    : `No payment collected during pilot · Immediate access to Lesson 1, ${content.specSheet.material.value} lab, and graded capstone.`}
+                    : `Immediate access to Lesson 1, ${content.specSheet.material.value} browser lab, and graded capstone · Guest lab free, full plans from ₹1,499.`}
                 </p>
               </div>
             </div>
@@ -926,9 +926,9 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
           </div>
           <Reveal delay={180} className="pp-actions">
             {primaryAction}
-            <button type="button" className="sk-btn sk-btn-secondary" onClick={() => openSkylentAi("finder")}>
+            <Link className="sk-btn sk-btn-secondary" to="/path">
               {canEnrol ? "Not sure yet? Find your path in 90 seconds" : "Find your path in 90 seconds"}
-            </button>
+            </Link>
           </Reveal>
         </Reveal>
       </section>

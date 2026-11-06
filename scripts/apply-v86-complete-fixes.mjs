@@ -1,5 +1,5 @@
 /**
- * V86 Complete Surgical Patcher (Includes all V73-V78 fixes + APK Infinite-Loop & Status-Bar Dedup Fixes)
+ * V87 Complete Surgical Patcher (Includes all V73-V78 fixes + APK Infinite-Loop & Status-Bar Dedup Fixes)
  */
 import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs"
 import { resolve } from "node:path"
@@ -9,14 +9,14 @@ const root = process.cwd()
 // 1. Stamp server/src/routes/health.ts with a stable build stamp for this deployment
 const healthPath = resolve(root, "server/src/routes/health.ts")
 if (existsSync(healthPath)) {
-  const buildStamp = `v86-${new Date().toISOString().replace(/[-:T.Z]/g, "").slice(0, 12)}`
+  const buildStamp = `v87-${new Date().toISOString().replace(/[-:T.Z]/g, "").slice(0, 12)}`
   let hSrc = readFileSync(healthPath, "utf8")
   hSrc = hSrc.replace(
     /export const DEPLOYED_BUILD_ID = [^\n]+/,
     `export const DEPLOYED_BUILD_ID = "${buildStamp}"`,
   )
   writeFileSync(healthPath, hSrc, "utf8")
-  console.log(`[V86 Fix] ✓ Stamped server/src/routes/health.ts with stable buildId: ${buildStamp}`)
+  console.log(`[V87 Fix] ✓ Stamped server/src/routes/health.ts with stable buildId: ${buildStamp}`)
 }
 
 // 2. Make HomePage route-lazy in src/App.tsx
@@ -30,7 +30,7 @@ if (existsSync(appPath)) {
       'const HomePage = lazyWithRetry(() => import("./pages/HomePage"))\nconst HomeDirectionPreview =',
     )
     writeFileSync(appPath, appSrc, "utf8")
-    console.log("[V86 Fix] ✓ Converted HomePage to lazyWithRetry() in src/App.tsx")
+    console.log("[V87 Fix] ✓ Converted HomePage to lazyWithRetry() in src/App.tsx")
   }
 }
 
@@ -40,11 +40,11 @@ if (existsSync(indexCssPath)) {
   let cssSrc = readFileSync(indexCssPath, "utf8")
   const cleanedCss = cssSrc.replace(
     /@import\s+url\(["']https:\/\/fonts\.googleapis\.com\/[^"']+["']\)\s*;/g,
-    "/* [V86] Consolidated Google Fonts in index.html */",
+    "/* [V87] Consolidated Google Fonts in index.html */",
   )
   if (cleanedCss !== cssSrc) {
     writeFileSync(indexCssPath, cleanedCss, "utf8")
-    console.log("[V86 Fix] ✓ Consolidated duplicate Google Font @import declarations in src/index.css")
+    console.log("[V87 Fix] ✓ Consolidated duplicate Google Font @import declarations in src/index.css")
   }
 }
 
@@ -90,9 +90,9 @@ if (existsSync(routesDir)) {
 
     if (changed) {
       writeFileSync(filePath, content, "utf8")
-      console.log(`[V86 Fix] ✓ Verified TypeScript role check in server/src/routes/${name}`)
+      console.log(`[V87 Fix] ✓ Verified TypeScript role check in server/src/routes/${name}`)
     }
   }
 }
 
-console.log("[V86 Fix] ✓ All V86 APK & Web fixes verified!")
+console.log("[V87 Fix] ✓ All V87 APK & Web fixes verified!")

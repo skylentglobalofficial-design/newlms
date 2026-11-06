@@ -44,7 +44,7 @@ function BarRow({ name, value, max }: { name: string; value?: number; max?: numb
   return (
     <div className={structural ? "pl-bar-row is-struct" : "pl-bar-row"}>
       <span>{name}</span>
-      <div className="pl-bar-track\"aria-hidden="true">
+      <div className="pl-bar-track" aria-hidden="true">
         <span className={structural ? "is-struct" : undefined} style={{ width: `${pct}%` }} />
       </div>
       {structural || value == null ? <b aria-hidden="true"> </b> : <b>{formatInr(value)}</b>}
@@ -100,10 +100,10 @@ function NorthwindTable() {
 function NorthwindExtract({ compact = false }: { compact?: boolean }) {
   return (
     <div className={compact ? "pl-nw is-compact" : "pl-nw"}>
-      <div className="pl-stat-row\"aria-label="Analytics workspace structure">
-        <VisualStat label="Dataset\"value="Source" />
-        <VisualStat label="Quality\"value="Checks" />
-        <VisualStat label="Output\"value="Read" />
+      <div className="pl-stat-row" aria-label="Analytics workspace structure">
+        <VisualStat label="Dataset" value="Source" />
+        <VisualStat label="Quality" value="Checks" />
+        <VisualStat label="Output" value="Read" />
       </div>
       <div className="pl-nw-split">
         <div>
@@ -119,7 +119,7 @@ function NorthwindExtract({ compact = false }: { compact?: boolean }) {
         </div>
       </div>
       {!compact ? (
-        <pre className="pl-sql\"tabIndex={0}>
+        <pre className="pl-sql" tabIndex={0}>
           <code>{"SELECT column\nFROM table\nGROUP BY column"}</code>
         </pre>
       ) : null}
@@ -129,7 +129,7 @@ function NorthwindExtract({ compact = false }: { compact?: boolean }) {
 
 export function NorthwindWorkspace({ compact = false, meta }: { compact?: boolean; meta?: string }) {
   return (
-    <ProductFrame title="Data Analytics\"meta={meta ?? "Example structure"} compact={compact}>
+    <ProductFrame title="Data Analytics" meta={meta ?? "Example structure"} compact={compact}>
       <NorthwindExtract compact={compact} />
     </ProductFrame>
   )
@@ -146,7 +146,7 @@ const HARBOR = {
 
 function HarborStores() {
   return (
-    <div className="pl-hd-stores\"aria-hidden="true">
+    <div className="pl-hd-stores" aria-hidden="true">
       {Array.from({ length: 6 }, (_, index) => (
         <span key={index} />
       ))}
@@ -157,10 +157,10 @@ function HarborStores() {
 function HarborDeskBoard({ compact = false }: { compact?: boolean }) {
   return (
     <div className={compact ? "pl-hd is-compact" : "pl-hd"}>
-      <div className="pl-stat-row\"aria-label="Product case structure">
-        <VisualStat label="Evidence\"value="Notes" />
-        <VisualStat label="Frame\"value="Problem" />
-        <VisualStat label="Spec\"value="Write" />
+      <div className="pl-stat-row" aria-label="Product case structure">
+        <VisualStat label="Evidence" value="Notes" />
+        <VisualStat label="Frame" value="Problem" />
+        <VisualStat label="Spec" value="Write" />
       </div>
       <div className="pl-hd-board">
         <div>
@@ -175,7 +175,7 @@ function HarborDeskBoard({ compact = false }: { compact?: boolean }) {
           </p>
         </div>
       </div>
-      <ol className="pl-hd-flow\"aria-label="Product case path">
+      <ol className="pl-hd-flow" aria-label="Product case path">
         <li>
           <span>01</span>
           <strong>Evidence</strong>
@@ -209,7 +209,7 @@ export function HarborDeskWorkspace({
   meta?: string
 }) {
   return (
-    <ProductFrame title="Product Management\"meta={meta ?? "Example structure"} compact={compact}>
+    <ProductFrame title="Product Management" meta={meta ?? "Example structure"} compact={compact}>
       <HarborDeskBoard compact={compact} />
     </ProductFrame>
   )
@@ -235,15 +235,15 @@ const WORKFLOW_STAGES = [
 
 export function SkylentWorkflowStory() {
   return (
-    <ProductFrame title="Data Analytics\"meta={`${NW.filename} · one pathway through Skylent OS`}>
-      <div className="pl-workflow-rail\"aria-hidden="true">
+    <ProductFrame title="Data Analytics" meta={`${NW.filename} · one pathway through Skylent OS`}>
+      <div className="pl-workflow-rail" aria-hidden="true">
         {WORKFLOW_STAGES.map((stage, index) => (
           <span key={stage.id} className={index === 0 ? "is-on" : undefined}>
             {stage.label}
           </span>
         ))}
       </div>
-      <div className="pl-workflow-strip\"aria-label="One pathway from lesson to evidence">
+      <div className="pl-workflow-strip" aria-label="One pathway from lesson to evidence">
         <article className="pl-workflow-pane is-learn">
           <p className="pl-kicker">01 · Learn</p>
           <div className="pl-flow-visual is-learn">
@@ -256,7 +256,7 @@ export function SkylentWorkflowStory() {
             </div>
           </div>
         </article>
-        <span className="pl-workflow-join\"aria-hidden="true" />
+        <span className="pl-workflow-join" aria-hidden="true" />
         <article className="pl-workflow-pane is-practise">
           <p className="pl-kicker">02 · Practise</p>
           <div className="pl-flow-visual is-practice">
@@ -268,7 +268,7 @@ export function SkylentWorkflowStory() {
             </div>
           </div>
         </article>
-        <span className="pl-workflow-join\"aria-hidden="true" />
+        <span className="pl-workflow-join" aria-hidden="true" />
         <article className="pl-workflow-pane is-project">
           <p className="pl-kicker">03 · Project</p>
           <div className="pl-flow-visual is-build">
@@ -277,7 +277,7 @@ export function SkylentWorkflowStory() {
             <p className="pl-fine">{NW.topCategory} leads {NW.netRevenueLabel} in this extract.</p>
           </div>
         </article>
-        <span className="pl-workflow-join\"aria-hidden="true" />
+        <span className="pl-workflow-join" aria-hidden="true" />
         <article className="pl-workflow-pane is-evidence">
           <p className="pl-kicker">04 · Evidence</p>
           <div className="pl-flow-visual is-keep">
@@ -286,8 +286,8 @@ export function SkylentWorkflowStory() {
               <strong>{WORKFLOW_STAGES[3].lesson}</strong>
             </div>
             <div className="pl-workflow-evidence">
-              <VisualStat label="Dataset\"value={NW.filename.replace(".csv", "")} />
-              <VisualStat label="Net revenue\"value={NW.netRevenueLabel} />
+              <VisualStat label="Dataset" value={NW.filename.replace(".csv", "")} />
+              <VisualStat label="Net revenue" value={NW.netRevenueLabel} />
             </div>
           </div>
         </article>
@@ -298,8 +298,8 @@ export function SkylentWorkflowStory() {
 
 export function SkylentOsPreview() {
   return (
-    <ProductFrame title="Progress\"meta="Learning · Practice · Projects · Evidence">
-      <div className="pl-os-layers\"aria-label="Skylent OS layers">
+    <ProductFrame title="Progress" meta="Learning · Practice · Projects · Evidence">
+      <div className="pl-os-layers" aria-label="Skylent OS layers">
         <article className="pl-os-layer">
           <div className="pl-flow-visual is-learn">
             <div className="pl-flow-lesson">
@@ -325,7 +325,7 @@ export function SkylentOsPreview() {
           <div className="pl-flow-visual is-build">
             <em>Projects</em>
             <b>Work you produce</b>
-            <span className="pl-os-bars\"aria-hidden="true">
+            <span className="pl-os-bars" aria-hidden="true">
               <i />
               <i />
               <i />
@@ -347,34 +347,34 @@ export function SkylentOsPreview() {
 }
 
 const CERTIFICATE_JOURNEY = [
-  { id: "learn", label: "Learn", note: "Structured courses", state: "done\"as const },
-  { id: "practise", label: "Practise", note: "Checks on the work", state: "done\"as const },
-  { id: "build", label: "Build", note: "A project you produce", state: "now\"as const },
-  { id: "evidence", label: "Evidence", note: "Work you keep", state: "next\"as const },
+  { id: "learn", label: "Learn", note: "Structured courses", state: "done" as const },
+  { id: "practise", label: "Practise", note: "Checks on the work", state: "done" as const },
+  { id: "build", label: "Build", note: "A project you produce", state: "now" as const },
+  { id: "evidence", label: "Evidence", note: "Work you keep", state: "next" as const },
 ]
 
 function JourneyMark({ state }: { state: "done" | "now" | "next" }) {
   if (state === "done") {
     return (
-      <span className="pl-cert-mark is-done\"aria-hidden="true">
-        <svg width="10\"height="10\"viewBox="0 0 12 12\"fill="none">
-          <path d="M2.2 6.2 4.7 8.6 9.8 3.4\"stroke="currentColor\"strokeWidth="1.8\"strokeLinecap="round\"strokeLinejoin="round" />
+      <span className="pl-cert-mark is-done" aria-hidden="true">
+        <svg width="10" height="10" viewBox="0 0 12 12" fill="none">
+          <path d="M2.2 6.2 4.7 8.6 9.8 3.4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </span>
     )
   }
   if (state === "now") {
-    return <span className="pl-cert-mark is-now\"aria-hidden="true" />
+    return <span className="pl-cert-mark is-now" aria-hidden="true" />
   }
-  return <span className="pl-cert-mark is-next\"aria-hidden="true" />
+  return <span className="pl-cert-mark is-next" aria-hidden="true" />
 }
 
 /** Generic Professional Certificate workspace — not a named course. */
 export function CertificateOsPreview() {
   return (
-    <ProductFrame title="Professional learning\"meta="Programme workspace">
+    <ProductFrame title="Professional learning" meta="Programme workspace">
       <div className="pl-cert">
-        <ol className="pl-cert-rail\"aria-label="Learner journey in Skylent OS">
+        <ol className="pl-cert-rail" aria-label="Learner journey in Skylent OS">
           {CERTIFICATE_JOURNEY.map((step) => (
             <li key={step.id} className={`is-${step.state}`}>
               <JourneyMark state={step.state} />
@@ -389,7 +389,7 @@ export function CertificateOsPreview() {
           <p className="pl-kicker">Current work</p>
           <p className="pl-cert-stage-title">Project workspace</p>
           <p className="pl-fine">Produce work from what the courses taught. Nothing here is a grade or a job claim.</p>
-          <div className="pl-cert-paper\"aria-hidden="true">
+          <div className="pl-cert-paper" aria-hidden="true">
             <em>Brief</em>
             <span />
             <span />
@@ -428,7 +428,7 @@ export function CourseWorkspacePreview({
       meta={lessonCount ? `${lessonCount} lessons · not started` : "Course workspace"}
     >
       <div className="pl-ws">
-        <ol className="pl-ws-rail\"aria-label="Modules">
+        <ol className="pl-ws-rail" aria-label="Modules">
           {modules.map((title, index) => (
             <li key={title} className={index === 0 ? "is-on" : undefined}>
               <span>{String(index + 1).padStart(2, "0")}</span>
@@ -447,17 +447,17 @@ export function CourseWorkspacePreview({
             </p>
           </div>
           {visual === "harbor-desk" ? (
-            <div className="pl-ws-extract\"aria-label="Harbor Desk case">
+            <div className="pl-ws-extract" aria-label="Harbor Desk case">
               <p className="pl-kicker">harbor-desk-case.md</p>
               <HarborDeskBoard compact />
             </div>
           ) : (
-            <div className="pl-ws-extract\"aria-label="Northwind extract">
+            <div className="pl-ws-extract" aria-label="Northwind extract">
               <p className="pl-kicker">{NW.filename}</p>
               <div className="pl-stat-row">
-                <VisualStat label="Valid rows\"value={String(NW.validRows)} />
+                <VisualStat label="Valid rows" value={String(NW.validRows)} />
                 <VisualStat label={marketing ? "Sample KPI" : "Net revenue"} value={marketing ? "Category mix" : NW.netRevenueLabel} />
-                <VisualStat label="Top category\"value={NW.topCategory} />
+                <VisualStat label="Top category" value={NW.topCategory} />
               </div>
               <div className="pl-ws-viz">
                 <Spark mini values={NW.months.map((item) =>item.value)} />
@@ -583,7 +583,7 @@ export function PathwayTrack({
       {steps.map((step, index) => (
         <li key={step.label} className={step.live ? "is-live" : "is-later"}>
           <span className="pl-path-index">{String(index + 1).padStart(2, "0")}</span>
-          <span className="pl-path-mark\"aria-hidden="true" />
+          <span className="pl-path-mark" aria-hidden="true" />
           <div>
             <strong>{step.label}</strong>
             <p>{step.note}</p>
@@ -632,7 +632,7 @@ export function evidenceVisualFor(title: string, context = ""): "northwind" | "h
 
 export function PathwayThumb() {
   return (
-    <div className="pl-thumb\"aria-hidden="true">
+    <div className="pl-thumb" aria-hidden="true">
       <div className="pl-mini-path">
         <i className="is-live" />
         <i className="is-live" />
@@ -655,7 +655,7 @@ export function ModuleLane({ modules }: { modules: ModuleLaneItem[] }) {
   return (
     <ol className="pl-lane">
       {modules.map((module) => (
-        <li key={module.id} className={`pl-lane-item${module.index === 1 ? \"is-start" : ""}`}>
+        <li key={module.id} className={`pl-lane-item${module.index === 1 ? " is-start" : ""}`}>
           <span className="pl-lane-num">{String(module.index).padStart(2, "0")}</span>
           <div className="pl-lane-copy">
             <strong>{module.title}</strong>
@@ -761,7 +761,7 @@ export const COLD_CALL_SCENARIOS: Record<string, ColdCallScenario> = {
       },
       {
         id: "prompt-adjective",
-        label: "Adding \"be very accurate\\"to the system prompt without retrieval checks",
+        label: "Adding \"be very accurate\" to the system prompt without retrieval checks",
         peerPercent: 23,
         takeaway: "Chosen by 23% of learners. Prompt adjectives alone cannot guarantee factual grounding when retrieval context is missing.",
       },
@@ -794,7 +794,7 @@ export function BoardroomColdCallCard({ courseSlug }: { courseSlug: string }) {
   if (!scenario) return null
   const chosen = scenario.options.find((opt) =>opt.id === selectedId) ?? null
   return (
-    <aside className="os-cold-call\"aria-label={scenario.kicker} style={{ padding: "10px 14px", marginBottom: 12 }}>
+    <aside className="os-cold-call" aria-label={scenario.kicker} style={{ padding: "10px 14px", marginBottom: 12 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
         <span style={{ fontSize: 12, fontWeight: 700, color: "#5142b5" }}>Quick Case Poll · {scenario.kicker.split("·").pop()?.trim()}</span>
         <button
@@ -816,8 +816,8 @@ export function BoardroomColdCallCard({ courseSlug }: { courseSlug: string }) {
       </div>
       {open ? (
         <div style={{ marginTop: 10 }}>
-          <p className="os-cold-call__prompt\"style={{ margin: "0 0 8px", fontSize: 13 }}><strong>{scenario.prompt}</strong></p>
-          <div className="os-cold-call__actions\"role="group\"aria-label="Decision options">
+          <p className="os-cold-call__prompt" style={{ margin: "0 0 8px", fontSize: 13 }}><strong>{scenario.prompt}</strong></p>
+          <div className="os-cold-call__actions" role="group" aria-label="Decision options">
             {scenario.options.map((opt) => (
               <button
                 key={opt.id}
@@ -831,7 +831,7 @@ export function BoardroomColdCallCard({ courseSlug }: { courseSlug: string }) {
             ))}
           </div>
           {chosen ? (
-            <p className="os-cold-call__takeaway\"role="status\"style={{ fontSize: 12.5, marginTop: 8 }}>{chosen.takeaway}</p>
+            <p className="os-cold-call__takeaway" role="status" style={{ fontSize: 12.5, marginTop: 8 }}>{chosen.takeaway}</p>
           ) : null}
         </div>
       ) : null}

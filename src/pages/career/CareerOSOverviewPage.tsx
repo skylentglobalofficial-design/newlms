@@ -7,7 +7,7 @@
  *       1. Course Curriculum >= 60% completed within the 6-Month Course Window
  *       2. Module Quizzes Passed
  *       3. Capstone Project Completed
- *   - Only when all 3 are met does the "Enroll Now\"button unlock!
+ *   - Only when all 3 are met does the "Enroll Now" button unlock!
  *   - Before enrolling, Profile, Zero-to-Hero modules, and Job Board remain hidden.
  *
  * STATE 2 (After Clicking "Enroll Now"):
@@ -529,7 +529,7 @@ export default function CareerOSOverviewPage({ onEnrolled }: { onEnrolled?: () =
   // ============================================================================
   if (!isEnrolledInCareerOS) {
     return (
-      <div className="cosh\"style={{ maxWidth: 880, margin: "0 auto", display: "grid", gap: 18 }}>
+      <div className="cosh" style={{ maxWidth: 880, margin: "0 auto", display: "grid", gap: 18 }}>
         {/* Top Banner: Unlock Career OS + Validity */}
         <section
           style={{
@@ -878,7 +878,7 @@ export default function CareerOSOverviewPage({ onEnrolled }: { onEnrolled?: () =
                     ? "Enrolling…"
                     : allThreeGatesPassed
                       ? "Enroll Now in Career OS (+3M Practice) →"
-                      : \"Complete 60%, Quizzes & Project to Enroll"}
+                      : "Complete 60%, Quizzes & Project to Enroll"}
                 </button>
               </div>
             </div>
@@ -892,7 +892,7 @@ export default function CareerOSOverviewPage({ onEnrolled }: { onEnrolled?: () =
   // STATE 2: AFTER ENROLLING IN CAREER OS (Visual Zero-to-Hero Hub + Job Board)
   // ============================================================================
   return (
-    <div className="cosh\"style={{ display: "grid", gap: 18 }}>
+    <div className="cosh" style={{ display: "grid", gap: 18 }}>
       {/* Compact Active Validity Banner */}
       <section
         style={{

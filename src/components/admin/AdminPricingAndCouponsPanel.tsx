@@ -69,7 +69,7 @@ const cardStyle = {
 
 const inputStyle = {
   width: "100%",
-  boxSizing: "border-box\"as const,
+  boxSizing: "border-box" as const,
   padding: "9px 12px",
   borderRadius: 10,
   border: "1px solid #cbd5e1",
@@ -272,7 +272,7 @@ export default function AdminPricingAndCouponsPanel() {
       if (Array.isArray(payload.data?.couponRequests)) setRequests(payload.data.couponRequests)
       if (Array.isArray(payload.data?.coupons)) setCoupons(payload.data.coupons)
       setStatusMsg(
-        `✓ Approved! Generated active coupon code "${payload.data?.coupon?.code}\"for ${payload.data?.coupon?.counselorName}. Student can now apply it on /checkout.`,
+        `✓ Approved! Generated active coupon code "${payload.data?.coupon?.code}" for ${payload.data?.coupon?.counselorName}. Student can now apply it on /checkout.`,
       )
     } catch (err) {
       setErrorMsg(err instanceof Error ? err.message : "Could not approve request")
@@ -361,7 +361,7 @@ export default function AdminPricingAndCouponsPanel() {
       if (!res.ok) throw new Error(payload.error || "Failed to create coupon")
       if (Array.isArray(payload.coupons)) setCoupons(payload.coupons)
       setAdminCouponCode("")
-      setStatusMsg(`✓ Admin-authorized coupon "${clean}\"is now live and valid on Checkout!`)
+      setStatusMsg(`✓ Admin-authorized coupon "${clean}" is now live and valid on Checkout!`)
     } catch (err) {
       setErrorMsg(err instanceof Error ? err.message : "Could not create coupon")
     }
@@ -1055,7 +1055,7 @@ export default function AdminPricingAndCouponsPanel() {
                     type="button"
                     onClick={() => {
                       void navigator.clipboard?.writeText(c.code)
-                      setStatusMsg(`Copied coupon code "${c.code}\"to clipboard!`)
+                      setStatusMsg(`Copied coupon code "${c.code}" to clipboard!`)
                     }}
                     style={{
                       padding: "6px 12px",
@@ -1108,10 +1108,10 @@ export default function AdminPricingAndCouponsPanel() {
         <form onSubmit={(e) =>void handleSaveGateway(e)} style={{ display: "grid", gap: 16 }}>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 16 }}>
             {[
-              { key: "upiEnabled\"as const, label: "UPI & QR (GPay / PhonePe / Paytm)" },
-              { key: "cardsEnabled\"as const, label: "Debit & Credit Cards (Visa / Mastercard / RuPay)" },
-              { key: "netbankingEnabled\"as const, label: "NetBanking (All Banks)" },
-              { key: "emiEnabled\"as const, label: "No-Cost & Standard EMI" },
+              { key: "upiEnabled" as const, label: "UPI & QR (GPay / PhonePe / Paytm)" },
+              { key: "cardsEnabled" as const, label: "Debit & Credit Cards (Visa / Mastercard / RuPay)" },
+              { key: "netbankingEnabled" as const, label: "NetBanking (All Banks)" },
+              { key: "emiEnabled" as const, label: "No-Cost & Standard EMI" },
             ].map((item) => (
               <label
                 key={item.key}

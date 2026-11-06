@@ -6,8 +6,8 @@ import { describeAiReadiness } from "../lib/skylent-ai/service.js"
 
 const router = Router()
 
-export const DEPLOYED_APP_VERSION = "1.8.0"
-export const DEPLOYED_BUILD_ID = "v86-202611061606"
+export const DEPLOYED_APP_VERSION = "8.7.0"
+export const DEPLOYED_BUILD_ID = "v87-202611061629"
 
 function releaseSha(): string {
   const sha = process.env.SKYLENT_RELEASE_SHA?.trim() ?? ""
@@ -88,7 +88,7 @@ router.get("/app-config", async (request, response) => {
       }
       if (parsed.appVersion) dynamicVersion = parsed.appVersion
       if (parsed.buildId) dynamicBuildId = parsed.buildId
-      else if (parsed.appVersion) dynamicBuildId = `v80-${parsed.appVersion}`
+      else if (parsed.appVersion) dynamicBuildId = `v87-${parsed.appVersion}`
       if (parsed.releaseNotes) dynamicNotes = parsed.releaseNotes
       if (parsed.announcement) dynamicAnnouncement = parsed.announcement
     }

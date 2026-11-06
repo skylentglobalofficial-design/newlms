@@ -56,7 +56,9 @@ function TabIcon({ name }: { name: "home" | "courses" | "workshops" | "labs" | "
   }
 }
 
-const INSTALLED_BUILD_KEY = "skylent:installed-build-id:v80"
+const INSTALLED_BUILD_KEY = "skylent:installed-build-id:v87"
+const LEGACY_BUILD_KEYS = ["skylent:installed-build-id:v80", "skylent:installed-build-id:v75", "skylent:installed-build-id:v1"]
+export const BUNDLED_CLIENT_BUILD_ID = "8.7.0:v87-20261106"
 
 function tryExitNativeApp(): boolean {
   if (typeof window === "undefined") return false
@@ -91,7 +93,18 @@ export function NativeAppShellController() {
   const [dismissedBanner, setDismissedBanner] = useState(false)
   const [installedBuildId, setInstalledBuildId] = useState<string | null>(() => {
     try {
-      return window.localStorage.getItem(INSTALLED_BUILD_KEY)
+      const current = window.localStorage.getItem(INSTALLED_BUILD_KEY)
+      if (current) return current
+      for (const k of LEGACY_BUILD_KEYS) {
+        const legacyVal = window.localStorage.getItem(k)
+        if (legacyVal) return legacyVal
+      }
+      // If running inside an older native APK binary (versionCode < 8700), return legacy marker so OTA auto-sync triggers immediately on first boot!
+      const ua = typeof navigator !== "undefined" ? navigator.userAgent || "" : ""
+      if (isNativeAppShell() && !ua.includes("SkylentVersionCode/8700")) {
+        return "legacy-apk-shell"
+      }
+      return BUNDLED_CLIENT_BUILD_ID
     } catch {
       return null
     }
@@ -135,10 +148,7 @@ export function NativeAppShellController() {
   useEffect(() => {
     if (!isNative || !ready) return
     if (location.pathname === "/" || location.pathname === "/preview/homepage") {
-      if (!user) {
-        // App-First Discovery (Coursera / Udemy / PW style): Let new users explore courses first, with 1-tap Sign In!
-        navigate("/programmes", { replace: true })
-      } else {
+      if (user) {
         const target =
           user.role === "admin" || user.role === "superadmin"
             ? "/dashboard/admin"
@@ -287,6 +297,7 @@ export function NativeAppShellController() {
     // Persist the new stamp FIRST so even if reload happens immediately, it never loops!
     try {
       window.localStorage.setItem(INSTALLED_BUILD_KEY, remoteStamp)
+      for (const k of LEGACY_BUILD_KEYS) window.localStorage.removeItem(k)
       window.sessionStorage.clear()
     } catch {
       // ignore
@@ -355,9 +366,9 @@ export function NativeAppShellController() {
   }> = [
     {
       id: "home",
-      label: isNative ? (user ? "Dashboard" : "Explore") : "Home",
-      to: isNative ? (user ? dashHref : "/programmes") : "/",
-      match: (p) => (isNative ? (user ? p === "/dashboard/student" && !location.hash : p.startsWith("/programmes")) : p === "/"),
+      label: isNative && user ? "Dashboard" : "Home",
+      to: isNative && user ? dashHref : "/",
+      match: (p) => (isNative && user ? p === "/dashboard/student" && !location.hash : p === "/"),
     },
     {
       id: "courses",

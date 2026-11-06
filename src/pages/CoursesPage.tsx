@@ -51,8 +51,8 @@ export default function CoursesPage() {
                 : "Every course includes 5 structured modules (15 applied lessons), an interactive browser sandbox you can try free before enrolling, named faculty review rubrics, and a publicly verifiable certificate (Basic ₹1,499 · Flagship ₹3,499 · Pro ₹6,499)."}
             </p>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 14, alignItems: "center", marginTop: 10 }}>
-              <Link className="cat-text-link\"to="/labs">Try Guest Browser Lab Free (No Login Required) →</Link>
-              <Link className="cat-text-link\"to="/programmes">Compare structured career programmes →</Link>
+              <Link className="cat-text-link" to="/labs">Try Guest Browser Lab Free (No Login Required) →</Link>
+              <Link className="cat-text-link" to="/programmes">Compare structured career programmes →</Link>
             </div>
             <input
               className="cat-search"
@@ -61,7 +61,7 @@ export default function CoursesPage() {
               placeholder="Search courses by skill or role (e.g. SQL, Python, Product, AI)..."
               aria-label="Search courses"
             />
-            <div className="cat-filters\"role="group\"aria-label="Course category">
+            <div className="cat-filters" role="group" aria-label="Course category">
               {categories.map((item) => (
                 <button
                   key={item}
@@ -77,7 +77,7 @@ export default function CoursesPage() {
           </div>
         </section>
 
-        {catalog.offline ? <CatalogueNotice what="This list\"onRetry={() =>void catalog.reload()} /> : null}
+        {catalog.offline ? <CatalogueNotice what="This list" onRetry={() =>void catalog.reload()} /> : null}
         <section className="cat-section">
           <div className="cat-rail">
             {catalog.loading ? (
@@ -85,7 +85,7 @@ export default function CoursesPage() {
             ) : catalog.error ? (
               <div className="cat-empty">
                 <p>The course catalogue could not be loaded.</p>
-                <button type="button\"className="cat-btn cat-btn-ghost\"onClick={() =>void catalog.reload()}>
+                <button type="button" className="cat-btn cat-btn-ghost" onClick={() =>void catalog.reload()}>
                   Try again
                 </button>
               </div>
@@ -161,7 +161,7 @@ const COURSE_FACULTY_META: Record<string, { lead: string; issuer: string }> = {
 
 function CourseUnitChrome({ view }: { view: CatalogCourseListView }) {
   return (
-    <div className="cat-unit\"aria-hidden="true">
+    <div className="cat-unit" aria-hidden="true">
       <div className="cat-unit-top">
         <p className="cat-unit-brand">SKYLENT OS · IN-BROWSER LAB</p>
         <span className="cat-unit-elixir">✓ Open · From ₹1,499</span>
@@ -182,7 +182,7 @@ function CourseCard({ view, featured = false, confirmed = true }: { view: Catalo
     <Link className={featured ? "cat-tile is-ready" : "cat-tile is-listing"} to={`/courses/${view.slug}`}>
       {view.maturity === "ready" ? <CourseUnitChrome view={view} /> : <CourseThumb authored={false} />}
       <div className="cat-tile-copy">
-        {confirmed ? <TruthChip state={view.maturity === "ready" ? "live" : "development"} /> : <TruthChip state="development\"label={STATUS_NOT_CONFIRMED} />}
+        {confirmed ? <TruthChip state={view.maturity === "ready" ? "live" : "development"} /> : <TruthChip state="development" label={STATUS_NOT_CONFIRMED} />}
         <h3>{view.title}</h3>
         <div className="cat-card-stats">
           <span>{view.duration}</span>
@@ -195,7 +195,7 @@ function CourseCard({ view, featured = false, confirmed = true }: { view: Catalo
           </p>
         ) : null}
         {view.maturity === "ready" && tags.length >0 ? (
-          <div className="cat-card-tags\"aria-label="Skills practised">
+          <div className="cat-card-tags" aria-label="Skills practised">
             {tags.map((tag) => (
               <span key={tag} className="cat-card-tag">{tag}</span>
             ))}
