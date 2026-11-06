@@ -7,10 +7,10 @@ import { describeAiReadiness } from "../lib/skylent-ai/service.js"
 const router = Router()
 
 // Dynamic boot version ensures EVERY `git push origin main` on Hostinger automatically
-// increments appVersion (> any installed APK version) and triggers the In-App Update banner!
+// increments appVersion (> any installed APK version) and FORCES a mandatory update!
 const BOOT_MINUTE = Math.max(1, Math.floor(Date.now() / 60000) - 29900000)
 export const DEPLOYED_APP_VERSION = `85.${BOOT_MINUTE}.0`
-export const DEPLOYED_BUILD_ID = "v76-202611061136"
+export const DEPLOYED_BUILD_ID = `v77-${Date.now()}`
 
 function releaseSha(): string {
   const sha = process.env.SKYLENT_RELEASE_SHA?.trim() ?? ""
@@ -67,20 +67,28 @@ router.get("/live", (_request, response) => {
 })
 
 /**
- * Remote App Config & OTA Version Gate for Skylent Android/iOS Native APK builds.
- * Automatically notifies installed APKs whenever a new deployment is pushed to Hostinger.
+ * Mandatory Force-Update OTA Gate for Skylent Native APK & Web Clients.
+ * If the client's `installedBuild` does not match the current `DEPLOYED_BUILD_ID`:
+ * `minSupportedAppVersion` is set to `DEPLOYED_APP_VERSION` (`85.x.0`), which forces
+ * a non-dismissible full-screen "Update Required" lock screen (no "Later" button)
+ * across both new and older installed APKs so no user can stay on an outdated build.
  */
-router.get("/app-config", (_request, response) => {
+router.get("/app-config", (request, response) => {
   response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate")
+  const currentStamp = `${DEPLOYED_APP_VERSION}:${DEPLOYED_BUILD_ID}`
+  const clientInstalledStamp = typeof request.query.installedBuild === "string" ? request.query.installedBuild.trim() : ""
+  const isUpToDate = clientInstalledStamp === currentStamp || clientInstalledStamp === DEPLOYED_BUILD_ID
+
   response.json({
     appVersion: DEPLOYED_APP_VERSION,
-    minSupportedAppVersion: "1.0.0",
+    minSupportedAppVersion: isUpToDate ? "1.0.0" : DEPLOYED_APP_VERSION,
+    forceUpdate: !isUpToDate,
     buildId: DEPLOYED_BUILD_ID,
-    updateTitle: "New Skylent Live Update (Instant Load & UI Polish)",
+    updateTitle: "Mandatory Skylent Security & Feature Update",
     apkDownloadUrl: "https://skylent.live/skylent-latest.apk",
     playStoreUrl:
       process.env.SKYLENT_PLAY_STORE_URL?.trim() ||
-      "https://play.google.com/store/apps/details?id=com.skylent.app",
+      "https://play.google.com/store/apps/details?id=live.skylent.app",
     announcement: process.env.SKYLENT_APP_BANNER?.trim() || null,
     maintenanceMode: process.env.SKYLENT_MAINTENANCE_MODE === "true",
     ...readinessFields(),

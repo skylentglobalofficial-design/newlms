@@ -7,6 +7,7 @@ import { APP_VERSION, getNativeCsrfToken, getNativeSessionToken } from "../../li
 type AppConfigPayload = {
   appVersion: string
   minSupportedAppVersion: string
+  forceUpdate?: boolean
   buildId?: string
   playStoreUrl: string
   announcement: string | null
@@ -66,7 +67,6 @@ function TabIcon({ name }: { name: "home" | "courses" | "workshops" | "labs" | "
 }
 
 const INSTALLED_BUILD_KEY = "skylent:installed-build-id:v1"
-const DISMISSED_BUILD_KEY = "skylent:dismissed-build-id:v1"
 
 function tryExitNativeApp(): boolean {
   if (typeof window === "undefined") return false
@@ -99,13 +99,6 @@ export function NativeAppShellController() {
   const [isOffline, setIsOffline] = useState(() => (typeof navigator !== "undefined" ? !navigator.onLine : false))
   const [appConfig, setAppConfig] = useState<AppConfigPayload | null>(null)
   const [dismissedBanner, setDismissedBanner] = useState(false)
-  const [dismissedBuildKey, setDismissedBuildKey] = useState<string | null>(() => {
-    try {
-      return window.localStorage.getItem(DISMISSED_BUILD_KEY)
-    } catch {
-      return null
-    }
-  })
   const [installedBuildId, setInstalledBuildId] = useState<string | null>(() => {
     try {
       return window.localStorage.getItem(INSTALLED_BUILD_KEY)
@@ -118,7 +111,7 @@ export function NativeAppShellController() {
   const [exitToastVisible, setExitToastVisible] = useState(false)
   const lastBackPressRef = useRef<number>(0)
 
-  // Performance Audit P1 Fix: Intent-based & idle route prefetching instead of blanket 120ms 8-route preload
+  // Performance Audit P1 Fix: Intent-based hover/focus route prefetching
   useEffect(() => {
     const prefetched = new Set<string>()
     const prefetchByPath = (href: string) => {
@@ -155,7 +148,6 @@ export function NativeAppShellController() {
       return
     }
 
-    // Push a lightweight guard entry so the first Back press triggers popstate here
     const state = window.history.state as { skylentBackGuard?: boolean } | null
     if (!state?.skylentBackGuard) {
       window.history.pushState({ ...state, skylentBackGuard: true }, "", window.location.href)
@@ -164,18 +156,16 @@ export function NativeAppShellController() {
     const onPopState = () => {
       const now = Date.now()
       if (now - lastBackPressRef.current < 2500) {
-        // 2nd Back press within 2.5s -> exit APK or leave dashboard cleanly!
         setExitToastVisible(false)
         if (!tryExitNativeApp()) {
           if (location.pathname.startsWith("/dashboard")) {
-            navigate("/", { replace: true })
+            navigate("/dashboard/student", { replace: true })
           } else if (window.history.length > 2) {
             window.history.go(-2)
           }
         }
         return
       }
-      // 1st Back press -> show YouTube-style "Press back again to exit" toast & re-arm guard
       lastBackPressRef.current = now
       setExitToastVisible(true)
       window.history.pushState({ skylentBackGuard: true }, "", window.location.href)
@@ -210,12 +200,18 @@ export function NativeAppShellController() {
     }
   }, [])
 
-  // Performance Audit P1 Fix: Gate /health/app-config recurring polling strictly behind isNativeAppShell()
+  // Audit P1 + Mandatory Force-Update Gate for Native APK Sessions
   useEffect(() => {
     if (!isNativeAppShell()) return
     let cancelled = false
     const checkConfig = () => {
-      fetch(`${apiV1()}/health/app-config?t=${Date.now()}`, {
+      let storedStamp = ""
+      try {
+        storedStamp = window.localStorage.getItem(INSTALLED_BUILD_KEY) || ""
+      } catch {
+        // ignore
+      }
+      fetch(`${apiV1()}/health/app-config?installedBuild=${encodeURIComponent(storedStamp)}&t=${Date.now()}`, {
         credentials: "include",
         cache: "no-store",
       })
@@ -242,17 +238,14 @@ export function NativeAppShellController() {
 
   const remoteStamp = appConfig ? `${appConfig.appVersion}:${appConfig.buildId || "live"}` : null
 
-  const forceUpdateRequired =
+  // Mandatory Force-Update Condition: ZERO "Later" / Dismiss option!
+  const mandatoryUpdateRequired = Boolean(
     isNative &&
-    appConfig?.minSupportedAppVersion &&
-    compareSemver(APP_VERSION, appConfig.minSupportedAppVersion) < 0
-
-  const hasNewerVersionOrBuild = Boolean(
-    appConfig &&
+      appConfig &&
       remoteStamp &&
-      dismissedBuildKey !== remoteStamp &&
-      ((isNative && compareSemver(APP_VERSION, appConfig.appVersion) < 0 && installedBuildId !== remoteStamp) ||
-        (installedBuildId && installedBuildId !== remoteStamp)),
+      (appConfig.forceUpdate === true ||
+        installedBuildId !== remoteStamp ||
+        compareSemver(APP_VERSION, appConfig.minSupportedAppVersion) < 0),
   )
 
   async function triggerInAppUpdate() {
@@ -272,13 +265,11 @@ export function NativeAppShellController() {
       setUpdateProgress(90)
       try {
         window.localStorage.setItem(INSTALLED_BUILD_KEY, remoteStamp)
-        window.localStorage.setItem(DISMISSED_BUILD_KEY, remoteStamp)
         window.localStorage.setItem("skylent:ota-live-mode", "1")
       } catch {
         // ignore
       }
       setInstalledBuildId(remoteStamp)
-      setDismissedBuildKey(remoteStamp)
       setTimeout(() => {
         setUpdateProgress(100)
         if (
@@ -388,74 +379,6 @@ export function NativeAppShellController() {
         </div>
       ) : null}
 
-      {hasNewerVersionOrBuild && appConfig && remoteStamp ? (
-        <div
-          role="region"
-          aria-label="In-app update available"
-          style={{
-            position: "sticky",
-            top: 0,
-            zIndex: 9995,
-            background: "linear-gradient(90deg, #0f172a 0%, #3b2d96 55%, #5142b5 100%)",
-            color: "#ffffff",
-            padding: "10px 14px",
-            fontSize: 12.5,
-            fontWeight: 600,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 10,
-            flexWrap: "wrap",
-            boxShadow: "0 6px 20px rgba(15, 23, 42, 0.25)",
-          }}
-        >
-          <span>
-            🚀 <strong>New Update Available</strong>
-            {appConfig.updateTitle ? ` — ${appConfig.updateTitle}` : " is ready to apply!"}
-          </span>
-          <button
-            type="button"
-            onClick={() => void triggerInAppUpdate()}
-            disabled={updatingInApp}
-            style={{
-              background: "#10b981",
-              color: "#ffffff",
-              border: "none",
-              borderRadius: 8,
-              padding: "6px 14px",
-              fontSize: 12,
-              fontWeight: 800,
-              cursor: "pointer",
-              boxShadow: "0 4px 12px rgba(16, 185, 129, 0.35)",
-            }}
-          >
-            {updatingInApp ? `Updating (${updateProgress}%)…` : "Update Now"}
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              setDismissedBuildKey(remoteStamp)
-              try {
-                window.localStorage.setItem(DISMISSED_BUILD_KEY, remoteStamp)
-              } catch {
-                // ignore
-              }
-            }}
-            style={{
-              background: "transparent",
-              border: "1px solid rgba(255,255,255,0.3)",
-              color: "#cbd5e1",
-              borderRadius: 6,
-              padding: "4px 10px",
-              fontSize: 11,
-              cursor: "pointer",
-            }}
-          >
-            Later
-          </button>
-        </div>
-      ) : null}
-
       {/* YouTube-Style Double-Back to Exit Toast */}
       {exitToastVisible ? (
         <div
@@ -518,7 +441,8 @@ export function NativeAppShellController() {
         </div>
       ) : null}
 
-      {forceUpdateRequired && appConfig ? (
+      {/* Full-Screen Mandatory Force-Update Lock Modal (NO "Later", NO Skip, NO Dismiss!) */}
+      {mandatoryUpdateRequired && appConfig ? (
         <div
           role="dialog"
           aria-modal="true"
@@ -526,8 +450,9 @@ export function NativeAppShellController() {
           style={{
             position: "fixed",
             inset: 0,
-            zIndex: 10000,
-            background: "rgba(15, 23, 42, 0.75)",
+            zIndex: 999999,
+            background: "rgba(15, 23, 42, 0.92)",
+            backdropFilter: "blur(8px)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -537,37 +462,73 @@ export function NativeAppShellController() {
           <div
             style={{
               background: "#ffffff",
-              borderRadius: 16,
-              border: "1px solid #e2e8f0",
-              maxWidth: 400,
+              borderRadius: 20,
+              border: "2px solid #5142b5",
+              maxWidth: 420,
               width: "100%",
-              padding: "24px",
+              padding: "28px 24px",
               textAlign: "center",
-              boxShadow: "0 20px 40px rgba(0,0,0,0.2)",
+              boxShadow: "0 28px 60px rgba(0,0,0,0.45)",
             }}
           >
-            <h3 id="skylent-force-update-title" style={{ margin: "0 0 8px", fontSize: 18, fontWeight: 700, color: "#0f172a" }}>
-              Update Required
+            <div
+              aria-hidden="true"
+              style={{
+                width: 56,
+                height: 56,
+                margin: "0 auto 14px",
+                borderRadius: 16,
+                background: "#f5f3ff",
+                border: "1px solid #ddd6fe",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: 26,
+              }}
+            >
+              🔒
+            </div>
+            <span
+              style={{
+                display: "inline-block",
+                fontSize: 11,
+                fontWeight: 800,
+                textTransform: "uppercase",
+                letterSpacing: "0.08em",
+                padding: "4px 10px",
+                borderRadius: 999,
+                background: "#fef2f2",
+                color: "#dc2626",
+                marginBottom: 10,
+              }}
+            >
+              Mandatory Update Required
+            </span>
+            <h3 id="skylent-force-update-title" style={{ margin: "0 0 8px", fontSize: 20, fontWeight: 800, color: "#0f172a" }}>
+              {appConfig.updateTitle || "Update Skylent to Continue"}
             </h3>
-            <p style={{ margin: "0 0 18px", fontSize: 13.5, lineHeight: 1.55, color: "#475569" }}>
-              Please update Skylent to version <strong>v{appConfig.minSupportedAppVersion}</strong> to continue.
+            <p style={{ margin: "0 0 20px", fontSize: 13.5, lineHeight: 1.6, color: "#475569" }}>
+              A new version of Skylent (<strong>{appConfig.buildId || `v${appConfig.appVersion}`}</strong>) is now live. Older versions are disabled to protect your courses, certificates, and account security. You must update now to continue.
             </p>
             <button
               type="button"
+              disabled={updatingInApp}
               onClick={() => void triggerInAppUpdate()}
               style={{
-                display: "inline-block",
-                background: "#5142b5",
+                display: "block",
+                width: "100%",
+                background: "linear-gradient(135deg, #3b2d96 0%, #5142b5 100%)",
                 color: "#ffffff",
                 border: "none",
-                padding: "10px 20px",
-                borderRadius: 8,
-                fontWeight: 700,
-                fontSize: 14,
-                cursor: "pointer",
+                padding: "14px 20px",
+                borderRadius: 12,
+                fontWeight: 800,
+                fontSize: 15,
+                cursor: updatingInApp ? "wait" : "pointer",
+                boxShadow: "0 10px 24px -8px rgba(81, 66, 181, 0.55)",
               }}
             >
-              Update Now
+              {updatingInApp ? `Installing Mandatory Update (${updateProgress}%)…` : "Update Now to Continue →"}
             </button>
           </div>
         </div>
