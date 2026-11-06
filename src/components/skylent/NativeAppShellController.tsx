@@ -2,7 +2,6 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import { Link, useLocation, useNavigate } from "react-router-dom"
 import { useAuth } from "../../context/AuthContext"
 import { apiV1, isNativeAppShell } from "../../lib/api-base"
-import { APP_VERSION, getNativeCsrfToken, getNativeSessionToken } from "../../lib/native-app-bridge"
 
 type AppConfigPayload = {
   appVersion: string
@@ -14,17 +13,8 @@ type AppConfigPayload = {
   maintenanceMode: boolean
   updateTitle?: string | null
   updateNotes?: string | null
+  releaseNotes?: string | null
   apkDownloadUrl?: string | null
-}
-
-function compareSemver(a: string, b: string): number {
-  const pa = a.split(".").map((n) => parseInt(n, 10) || 0)
-  const pb = b.split(".").map((n) => parseInt(n, 10) || 0)
-  for (let i = 0; i < 3; i += 1) {
-    if ((pa[i] ?? 0) < (pb[i] ?? 0)) return -1
-    if ((pa[i] ?? 0) > (pb[i] ?? 0)) return 1
-  }
-  return 0
 }
 
 function TabIcon({ name }: { name: "home" | "courses" | "workshops" | "labs" | "account" }) {
@@ -66,7 +56,7 @@ function TabIcon({ name }: { name: "home" | "courses" | "workshops" | "labs" | "
   }
 }
 
-const INSTALLED_BUILD_KEY = "skylent:installed-build-id:v1"
+const INSTALLED_BUILD_KEY = "skylent:installed-build-id:v80"
 
 function tryExitNativeApp(): boolean {
   if (typeof window === "undefined") return false
@@ -94,7 +84,7 @@ function tryExitNativeApp(): boolean {
 export function NativeAppShellController() {
   const location = useLocation()
   const navigate = useNavigate()
-  const { user } = useAuth()
+  const { user, ready } = useAuth()
   const [isNative, setIsNative] = useState(() => isNativeAppShell())
   const [isOffline, setIsOffline] = useState(() => (typeof navigator !== "undefined" ? !navigator.onLine : false))
   const [appConfig, setAppConfig] = useState<AppConfigPayload | null>(null)
@@ -139,7 +129,33 @@ export function NativeAppShellController() {
     }
   }, [])
 
-  // YouTube-style Double-Back to Exit on /dashboard/student (Overview) and /
+  // Direct EdTech App Entry (PW / Unacademy / Coursera style):
+  // Inside the APK, never drop the learner onto the marketing landing page (/).
+  // Signed-in users go straight to their role dashboard; signed-out users go straight to /login.
+  useEffect(() => {
+    if (!isNative || !ready) return
+    if (location.pathname === "/" || location.pathname === "/preview/homepage") {
+      if (!user) {
+        navigate("/login", { replace: true })
+      } else {
+        const target =
+          user.role === "admin" || user.role === "superadmin"
+            ? "/dashboard/admin"
+            : user.role === "faculty"
+              ? "/dashboard/faculty"
+              : user.role === "college"
+                ? "/dashboard/college"
+                : user.role === "recruiter"
+                  ? "/dashboard/recruiter"
+                  : user.role === "organisation"
+                    ? "/dashboard/organisation"
+                    : "/dashboard/student"
+        navigate(target, { replace: true })
+      }
+    }
+  }, [isNative, ready, user, location.pathname, navigate])
+
+  // YouTube-style Double-Back to Exit on /dashboard/student (Overview)
   useEffect(() => {
     const isDashboardOverview =
       location.pathname === "/dashboard/student" && !location.hash
@@ -182,10 +198,17 @@ export function NativeAppShellController() {
   useEffect(() => {
     const active = isNativeAppShell()
     setIsNative(active)
+    const ua = typeof navigator !== "undefined" ? navigator.userAgent || "" : ""
+    const hasAndroidNativeInsets = ua.includes("SkylentNativeInsetsApplied")
+
     if (active) {
       document.documentElement.setAttribute("data-native-app", "true")
+      if (hasAndroidNativeInsets) {
+        document.documentElement.setAttribute("data-native-insets", "android")
+      }
     } else {
       document.documentElement.removeAttribute("data-native-app")
+      document.documentElement.removeAttribute("data-native-insets")
     }
     document.documentElement.removeAttribute("data-native-home-hub")
   }, [location.search])
@@ -201,9 +224,8 @@ export function NativeAppShellController() {
     }
   }, [])
 
-  // Audit P1: Gate /health/app-config polling strictly behind isNativeAppShell()
+  // Poll /health/app-config for YouTube-style automatic update detection
   useEffect(() => {
-    if (!isNativeAppShell()) return
     let cancelled = false
     const checkConfig = () => {
       let storedStamp = ""
@@ -218,14 +240,24 @@ export function NativeAppShellController() {
       })
         .then((res) => (res.ok ? res.json() : null))
         .then((data: AppConfigPayload | null) => {
-          if (!cancelled && data && typeof data.minSupportedAppVersion === "string") {
+          if (!cancelled && data && typeof data.appVersion === "string") {
+            // First boot on this device: record current server stamp silently so fresh install doesn't immediately reload
+            const stamp = `${data.appVersion}:${data.buildId || "live"}`
+            if (!storedStamp) {
+              try {
+                window.localStorage.setItem(INSTALLED_BUILD_KEY, stamp)
+              } catch {
+                // ignore
+              }
+              setInstalledBuildId(stamp)
+            }
             setAppConfig(data)
           }
         })
         .catch(() => {})
     }
     checkConfig()
-    const timer = window.setInterval(checkConfig, 25_000)
+    const timer = window.setInterval(checkConfig, 35_000)
     const onVisibility = () => {
       if (document.visibilityState === "visible") checkConfig()
     }
@@ -239,60 +271,46 @@ export function NativeAppShellController() {
 
   const remoteStamp = appConfig ? `${appConfig.appVersion}:${appConfig.buildId || "live"}` : null
 
+  // Seamless Auto-Update triggers ONLY when installedBuildId exists and differs from remoteStamp (never loops!)
   const needsSeamlessAutoUpdate = Boolean(
-    isNative &&
-      appConfig &&
+    appConfig &&
       remoteStamp &&
-      (appConfig.autoSyncUpdate === true ||
-        installedBuildId !== remoteStamp ||
-        compareSemver(APP_VERSION, appConfig.minSupportedAppVersion) < 0),
+      installedBuildId &&
+      installedBuildId !== remoteStamp,
   )
 
   const triggerInAppUpdate = useCallback(async () => {
     if (!appConfig || !remoteStamp) return
     setUpdatingInApp(true)
-    setUpdateProgress(30)
+    setUpdateProgress(35)
+    // Persist the new stamp FIRST so even if reload happens immediately, it never loops!
+    try {
+      window.localStorage.setItem(INSTALLED_BUILD_KEY, remoteStamp)
+      window.sessionStorage.clear()
+    } catch {
+      // ignore
+    }
     try {
       if ("serviceWorker" in navigator) {
         const regs = await navigator.serviceWorker.getRegistrations()
         await Promise.all(regs.map((r) => r.unregister()))
       }
-      setUpdateProgress(70)
+      setUpdateProgress(72)
       if ("caches" in window) {
         const keys = await caches.keys()
         await Promise.all(keys.map((k) => caches.delete(k)))
       }
-      setUpdateProgress(92)
-      try {
-        window.localStorage.setItem(INSTALLED_BUILD_KEY, remoteStamp)
-        window.localStorage.setItem("skylent:ota-live-mode", "1")
-      } catch {
-        // ignore
-      }
+      setUpdateProgress(100)
       setInstalledBuildId(remoteStamp)
       setTimeout(() => {
-        setUpdateProgress(100)
-        if (
-          typeof window !== "undefined" &&
-          (window.location.hostname === "localhost" || window.location.hostname === "app.skylent.local")
-        ) {
-          const token = getNativeSessionToken()
-          const csrf = getNativeCsrfToken()
-          const targetPath = window.location.pathname + window.location.search + window.location.hash
-          const separator = targetPath.includes("?") ? "&" : "?"
-          window.location.replace(
-            `https://skylent.live${targetPath}${separator}nativeApp=1${token ? `&nativeToken=${encodeURIComponent(token)}` : ""}${csrf ? `&nativeCsrf=${encodeURIComponent(csrf)}` : ""}`,
-          )
-          return
-        }
         window.location.reload()
-      }, 450)
+      }, 380)
     } catch {
       window.location.reload()
     }
   }, [appConfig, remoteStamp])
 
-  // YouTube / Facebook Style Automatic Seamless Sync: Auto-triggers as soon as a new build is detected!
+  // YouTube / Facebook Style Automatic Seamless Sync: Auto-triggers within 350ms when a new deployment is pushed!
   useEffect(() => {
     if (!needsSeamlessAutoUpdate || !remoteStamp) return
     if (autoTriggeredRef.current === remoteStamp) return
@@ -336,15 +354,15 @@ export function NativeAppShellController() {
   }> = [
     {
       id: "home",
-      label: "Home",
-      to: "/",
-      match: (p) => p === "/",
+      label: isNative ? "Dashboard" : "Home",
+      to: isNative ? dashHref : "/",
+      match: (p) => (isNative ? p === "/dashboard/student" && !location.hash : p === "/"),
     },
     {
       id: "courses",
       label: "Courses",
-      to: "/programmes",
-      match: (p) => p.startsWith("/programme") || p.startsWith("/course") || p.startsWith("/education"),
+      to: user ? "/dashboard/student#explore-programmes" : "/programmes",
+      match: (p) => p.startsWith("/programme") || p.startsWith("/course") || p.startsWith("/education") || location.hash === "#explore-programmes",
     },
     {
       id: "workshops",
@@ -452,8 +470,8 @@ export function NativeAppShellController() {
         </div>
       ) : null}
 
-      {/* YouTube / Facebook Style Automatic Update Sync Screen (Auto-applies & reloads seamlessly!) */}
-      {needsSeamlessAutoUpdate && appConfig ? (
+      {/* YouTube / Facebook Style Automatic Update Sync Screen (Auto-applies & reloads once per deployment!) */}
+      {(needsSeamlessAutoUpdate || updatingInApp) && appConfig ? (
         <div
           role="dialog"
           aria-modal="true"
@@ -507,7 +525,7 @@ export function NativeAppShellController() {
               Updating Skylent…
             </h3>
             <p style={{ margin: "0 0 18px", fontSize: 13, lineHeight: 1.55, color: "#cbd5e1" }}>
-              Syncing the latest courses, labs, and workspace improvements automatically ({updateProgress || 35}%).
+              {appConfig.releaseNotes || `Syncing the latest courses, labs, and workspace improvements automatically (${updateProgress || 35}%).`}
             </p>
             <div
               style={{
@@ -544,7 +562,7 @@ export function NativeAppShellController() {
                 cursor: "pointer",
               }}
             >
-              {updatingInApp ? "Opening Latest Version…" : "Continue →"}
+              {updatingInApp ? "Opening Latest Version…" : "Update Now →"}
             </button>
           </div>
         </div>

@@ -146,9 +146,8 @@ async function loadCourseContext(userId: string, courseSlug: string) {
 
 lmsRouter.get("/dashboard", requireAuth, async (req: AuthenticatedRequest, res) => {
   try {
-    const _t0 = performance.now()
     const workspace = await loadLearnerDashboard(req.auth!.user.id)
-    res.setHeader("Server-Timing", `lms_dashboard;dur=${(performance.now() - _t0).toFixed(1)}`); res.json({ data: workspace })
+    res.json({ data: workspace })
   } catch (error) {
     sendLmsFailure(res, error, "Failed to load dashboard")
   }

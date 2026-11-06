@@ -639,3 +639,9 @@
     padding: 8px 8px calc(66px + var(--sk-safe-bottom)) !important;
   }
 }
+
+/* ── V80 Native Android WindowInsets Dedup Guard (Prevents 28dp + 28px Double Gap) ── */
+html[data-native-insets="android"] {
+  --sk-safe-top: 0px !important;
+  --sk-safe-bottom: 0px !important;
+}

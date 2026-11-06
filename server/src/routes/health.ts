@@ -6,9 +6,8 @@ import { describeAiReadiness } from "../lib/skylent-ai/service.js"
 
 const router = Router()
 
-const BOOT_MINUTE = Math.max(1, Math.floor(Date.now() / 60000) - 29900000)
-export const DEPLOYED_APP_VERSION = `85.${BOOT_MINUTE}.0`
-export const DEPLOYED_BUILD_ID = `v78-${Date.now()}`
+export const DEPLOYED_APP_VERSION = "1.8.0"
+export const DEPLOYED_BUILD_ID = "v80-202611061348"
 
 function releaseSha(): string {
   const sha = process.env.SKYLENT_RELEASE_SHA?.trim() ?? ""
@@ -66,26 +65,55 @@ router.get("/live", (_request, response) => {
 
 /**
  * YouTube/Facebook-Style Seamless Auto-Update Config for Skylent Native APK builds.
- * Whenever a new deployment is pushed, installed APKs detect the new buildId and
- * automatically sync & reload into the latest build so users always run the newest version.
+ * Uses a stable DEPLOYED_BUILD_ID (plus optional Admin DB override) so installed APKs
+ * sync once per deployment and never get trapped in an infinite reload loop.
  */
-router.get("/app-config", (request, response) => {
+router.get("/app-config", async (request, response) => {
   response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate")
-  const currentStamp = `${DEPLOYED_APP_VERSION}:${DEPLOYED_BUILD_ID}`
+  let dynamicVersion = DEPLOYED_APP_VERSION
+  let dynamicBuildId = DEPLOYED_BUILD_ID
+  let dynamicNotes = "Zero-delay dashboard, 5-inch adaptive layout, in-app PayU & UPI checkout."
+  let dynamicAnnouncement: string | null = process.env.SKYLENT_APP_BANNER?.trim() || null
+
+  try {
+    const rows = await prisma.$queryRawUnsafe<Array<{ value: string }>>(
+      `SELECT "value" FROM "_skylent_runtime_config" WHERE "key" = 'app_update_config' LIMIT 1`,
+    )
+    if (rows[0]?.value) {
+      const parsed = JSON.parse(rows[0].value) as {
+        appVersion?: string
+        buildId?: string
+        releaseNotes?: string
+        announcement?: string
+      }
+      if (parsed.appVersion) dynamicVersion = parsed.appVersion
+      if (parsed.buildId) dynamicBuildId = parsed.buildId
+      else if (parsed.appVersion) dynamicBuildId = `v80-${parsed.appVersion}`
+      if (parsed.releaseNotes) dynamicNotes = parsed.releaseNotes
+      if (parsed.announcement) dynamicAnnouncement = parsed.announcement
+    }
+  } catch {
+    // Fallback to static constants
+  }
+
+  const currentStamp = `${dynamicVersion}:${dynamicBuildId}`
   const clientInstalledStamp = typeof request.query.installedBuild === "string" ? request.query.installedBuild.trim() : ""
-  const isUpToDate = clientInstalledStamp === currentStamp || clientInstalledStamp === DEPLOYED_BUILD_ID
+  const isUpToDate =
+    Boolean(clientInstalledStamp) &&
+    (clientInstalledStamp === currentStamp || clientInstalledStamp === dynamicBuildId)
 
   response.json({
-    appVersion: DEPLOYED_APP_VERSION,
-    minSupportedAppVersion: isUpToDate ? "1.0.0" : DEPLOYED_APP_VERSION,
-    autoSyncUpdate: !isUpToDate,
-    buildId: DEPLOYED_BUILD_ID,
+    appVersion: dynamicVersion,
+    minSupportedAppVersion: "1.0.0",
+    autoSyncUpdate: Boolean(clientInstalledStamp) && !isUpToDate,
+    buildId: dynamicBuildId,
+    releaseNotes: dynamicNotes,
     updateTitle: "Updating Skylent to the latest version…",
     apkDownloadUrl: "https://skylent.live/skylent-latest.apk",
     playStoreUrl:
       process.env.SKYLENT_PLAY_STORE_URL?.trim() ||
       "https://play.google.com/store/apps/details?id=live.skylent.app",
-    announcement: process.env.SKYLENT_APP_BANNER?.trim() || null,
+    announcement: dynamicAnnouncement,
     maintenanceMode: process.env.SKYLENT_MAINTENANCE_MODE === "true",
     ...readinessFields(),
   })

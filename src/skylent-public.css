@@ -1372,3 +1372,14 @@ html[data-native-app="true"] body {
     font-size: clamp(20px, 5.5vw, 24px) !important;
   }
 }
+
+/* ── V80 EdTech Benchmark Mobile & 5-Inch Adaptive Inline Grid Collapse (320px to 768px) ── */
+@media (max-width: 768px) {
+  .auth-shell-content div[style*="grid-template-columns: minmax(0, 1.35fr)"],
+  .auth-shell-content div[style*="grid-template-columns: minmax(0px, 1.35fr)"],
+  .auth-shell-content div[style*="grid-template-columns: minmax(0, 1.55fr)"],
+  .auth-shell-content div[style*="grid-template-columns: minmax(160px, 220px)"],
+  .auth-shell-content div[style*="grid-template-columns: 1fr 1fr"] {
+    grid-template-columns: 1fr !important;
+  }
+}
