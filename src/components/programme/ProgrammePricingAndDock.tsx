@@ -1,6 +1,7 @@
+import { useEffect, useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { courses, programs } from "../../data"
-import { buildSkylentTiersForPrice, saveStoredCourseTier, type SkylentTierId } from "../../lib/enrolment-tiers"
+import { buildSkylentTiersForPrice, saveAdminPriceOverridesLocal, saveStoredCourseTier, type SkylentTierId } from "../../lib/enrolment-tiers"
 
 type Props = {
   programSlug?: string
@@ -45,7 +46,19 @@ export default function ProgrammePricingAndDock({
   const sourceCourse = courses.find((c) => c.slug === courseSlug)
   const listedCoursePrice = sourceCourse?.price ?? 4999
   const faqs = sourceProgram?.faqs?.length ? sourceProgram.faqs : DEFAULT_FAQS
-  const tiers = buildSkylentTiersForPrice(listedCoursePrice)
+  const [, setPriceTick] = useState(0)
+  useEffect(() => {
+    fetch("/api/v1/payments/catalog-config", { credentials: "include" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((p) => {
+        if (p?.data?.priceOverrides) {
+          saveAdminPriceOverridesLocal(p.data.priceOverrides)
+          setPriceTick((t) => t + 1)
+        }
+      })
+      .catch(() => {})
+  }, [])
+  const tiers = buildSkylentTiersForPrice(listedCoursePrice, courseSlug || programSlug)
 
   function handleBuyTier(tierId: SkylentTierId) {
     const targetSlug = programSlug || courseSlug || "data-analytics"

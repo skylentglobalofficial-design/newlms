@@ -30,6 +30,7 @@ import {
   type AdminUser,
 } from '../lib/admin-api'
 import AdminPlatform from '../components/admin/AdminPlatform'
+import AdminPricingAndCouponsPanel from '../components/admin/AdminPricingAndCouponsPanel'
 import { CourseAuthoringStudio } from './CourseBuilderPage'
 
 const NAV_ITEMS: AuthNavItem[] = [
@@ -41,7 +42,7 @@ const NAV_ITEMS: AuthNavItem[] = [
   { id: 'enquiries', label: 'Inbound Enquiries', short: 'Mail' },
   { id: 'practice', label: 'Practice Sandboxes', short: 'Labs' },
   { id: 'courses', label: 'Lesson Video (Mux)', short: 'Video' },
-  { id: 'payments', label: 'Payments & Elixir', short: 'Pay' },
+  { id: 'payments', label: 'Pricing, Coupons & Gateway', short: 'Pay' },
   { id: 'system', label: 'System & Audit Log', short: 'Audit' },
   { id: 'all', label: 'All Modules (Stacked)', short: 'All' },
 ]
@@ -739,6 +740,7 @@ export default function DashboardAdminPage() {
         {activeNav === 'overview' ? (
           <>
             <AdminOverview onSelectTab={setActiveNav} />
+            <AdminPricingAndCouponsPanel />
             <AdminPlatform sectionFilter="overview" />
             <section style={{ display: 'grid', gap: 14 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 }}>
@@ -799,7 +801,7 @@ export default function DashboardAdminPage() {
         ) : null}
 
         {/* TAB 2: EMBEDDED COURSE, MODULE & LECTURE STUDIO */}
-        {activeNav === 'curriculum' ? <CourseAuthoringStudio embedded /> : null}
+        {activeNav === 'curriculum' ? (<><CourseAuthoringStudio embedded /><AdminPricingAndCouponsPanel /></>) : null}
 
         {/* TAB 3: USERS & ROLES */}
         {activeNav === 'users' ? <AdminUsersSection currentUserId={currentUserId} /> : null}
@@ -820,7 +822,7 @@ export default function DashboardAdminPage() {
         {activeNav === 'courses' ? <AdminLessonMediaSection /> : null}
 
         {/* TAB 9: PAYMENTS, REFUNDS & ELIXIR */}
-        {activeNav === 'payments' ? <AdminPlatform sectionFilter="payments" /> : null}
+        {activeNav === 'payments' ? (<><AdminPricingAndCouponsPanel /><AdminPlatform sectionFilter="payments" /></>) : null}
 
         {/* TAB 10: SYSTEM & SECURITY AUDIT LOG */}
         {activeNav === 'system' ? (

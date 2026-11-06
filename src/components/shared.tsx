@@ -23,7 +23,7 @@ import SiteAssistant from './skylent/SiteAssistant'
 import { InstallAppPrompt } from './skylent/InstallAppPrompt'
 import { TermsConsent } from './legal/TermsConsent'
 import { rememberEnrolConsent } from '../lib/policy'
-import { buildSkylentTiersForPrice, saveStoredCourseTier, type SkylentTierId } from '../lib/enrolment-tiers'
+import { buildSkylentTiersForPrice, saveAdminPriceOverridesLocal, saveStoredCourseTier, type SkylentTierId } from '../lib/enrolment-tiers'
 
 // Re-export color tokens for backward compatibility
 export { C } from '../tokens'
@@ -110,7 +110,19 @@ export type CatalogEnrollItem = {
 
 export function EnrollmentModal({ item, onClose }: { item: CatalogEnrollItem; onClose: () => void; themeId?: AuroraThemeId }) {
   const navigate = useNavigate()
-  const tiers = useMemo(() => buildSkylentTiersForPrice(item.price > 0 ? item.price : 3499), [item.price])
+  const [priceVersion, setPriceVersion] = useState(0)
+  useEffect(() => {
+    fetch("/api/v1/payments/catalog-config", { credentials: "include" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((p) => {
+        if (p?.data?.priceOverrides) {
+          saveAdminPriceOverridesLocal(p.data.priceOverrides)
+          setPriceVersion((v) => v + 1)
+        }
+      })
+      .catch(() => {})
+  }, [])
+  const tiers = useMemo(() => buildSkylentTiersForPrice(item.price > 0 ? item.price : 3499, item.slug), [item.price, item.slug, priceVersion])
   const dialogRef = useRef<HTMLDivElement>(null)
   const closeRef = useRef<HTMLButtonElement>(null)
   const onCloseRef = useRef(onClose)

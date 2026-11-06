@@ -592,6 +592,28 @@ export function CourseAuthoringStudio({
     }
   }
 
+  async function onDeleteCourse() {
+    if (!selected) return
+    if (typeof window !== "undefined" && !window.confirm(`Delete course "${selected.title}" (${selected.slug}) permanently?`)) {
+      return
+    }
+    setMessage(null)
+    setErrorMsg(null)
+    try {
+      await curriculumRequest(`/courses/${selected.id}`, "DELETE")
+      const deletedTitle = selected.title
+      const remaining = courses.filter((c) => c.id !== selected.id)
+      setCourses(remaining)
+      setSelected(null)
+      if (remaining[0]) {
+        await selectCourse(remaining[0].id)
+      }
+      setMessage(`Deleted course "${deletedTitle}".`)
+    } catch (error) {
+      setErrorMsg(error instanceof Error ? error.message : "Could not delete course")
+    }
+  }
+
   async function onUnpublish() {
     if (!selected) return
     setMessage(null)
@@ -937,6 +959,22 @@ export function CourseAuthoringStudio({
                         Revert to Draft
                       </button>
                     ) : null}
+                    <button
+                      type="button"
+                      onClick={() => void onDeleteCourse()}
+                      style={{
+                        padding: "8px 14px",
+                        borderRadius: 999,
+                        border: "1px solid #fca5a5",
+                        background: "#fef2f2",
+                        color: "#991b1b",
+                        fontWeight: 700,
+                        fontSize: 12.5,
+                        cursor: "pointer",
+                      }}
+                    >
+                      Delete Course
+                    </button>
                   </div>
                 </div>
 

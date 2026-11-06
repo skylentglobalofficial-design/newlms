@@ -162,6 +162,12 @@ export async function createSession(userId: string) {
   const secretHash = hashSessionToken(sessionToken)
   const expiresAt = new Date(Date.now() + SESSION_MAX_AGE_SECONDS * 1000)
 
+  // Strict 1-Device-at-a-Time Policy: Revoke any existing sessions for this user
+  // so logging in on Web or Android App automatically signs out the previous device.
+  if (typeof prisma.session.deleteMany === "function") {
+    await prisma.session.deleteMany({ where: { userId } }).catch(() => undefined)
+  }
+
   const session = await prisma.session.create({
     data: {
       userId,

@@ -32,6 +32,37 @@ export type SkylentTierPlan = {
 }
 
 const STORAGE_KEY = "skylent:v62:course-tiers"
+const ADMIN_PRICE_STORAGE_KEY = "skylent:v68:admin-price-overrides"
+
+export type LocalPriceOverride = {
+  slug: string
+  basePrice: number
+  certPrice: number
+  proPrice: number
+  flagshipPrice: number
+  mrp: number
+}
+
+export function readAdminPriceOverrides(): Record<string, LocalPriceOverride> {
+  if (typeof window === "undefined") return {}
+  try {
+    const raw = window.localStorage.getItem(ADMIN_PRICE_STORAGE_KEY)
+    if (!raw) return {}
+    const parsed = JSON.parse(raw) as Record<string, LocalPriceOverride>
+    return parsed && typeof parsed === "object" ? parsed : {}
+  } catch {
+    return {}
+  }
+}
+
+export function saveAdminPriceOverridesLocal(map: Record<string, LocalPriceOverride>): void {
+  if (typeof window === "undefined") return
+  try {
+    window.localStorage.setItem(ADMIN_PRICE_STORAGE_KEY, JSON.stringify(map))
+  } catch {
+    // ignore
+  }
+}
 
 export type StoredCourseTierRecord = {
   slug: string
@@ -41,10 +72,11 @@ export type StoredCourseTierRecord = {
   careerOsEnrolledAt?: string
 }
 
-export function buildSkylentTiersForPrice(baseCoursePrice: number): SkylentTierPlan[] {
-  const proPrice = baseCoursePrice > 0 ? baseCoursePrice : 3499
-  const certPrice = Math.max(999, Math.round((proPrice * 0.43) / 100) * 100 - 1)
-  const flagshipPrice = proPrice + 3000
+export function buildSkylentTiersForPrice(baseCoursePrice: number, slug?: string): SkylentTierPlan[] {
+  const overrides = slug ? readAdminPriceOverrides()[slug] : undefined
+  const proPrice = overrides?.proPrice ?? (baseCoursePrice > 0 ? baseCoursePrice : 3499)
+  const certPrice = overrides?.certPrice ?? Math.max(999, Math.round((proPrice * 0.43) / 100) * 100 - 1)
+  const flagshipPrice = overrides?.flagshipPrice ?? (proPrice + 3000)
 
   return [
     {

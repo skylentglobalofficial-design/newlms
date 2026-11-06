@@ -22,7 +22,7 @@ import { courseProductProfile } from '../lib/course-product'
 import { dashboardSqlLabHref, practiceEnvironmentForCourse } from '../lib/practice-environments'
 import { isAuthoredCourse } from '../lib/authored-courses'
 import { EnrollmentModal } from '../components/shared'
-import { buildSkylentTiersForPrice, getCourseTierRecord, saveStoredCourseTier, tierLabelFor } from '../lib/enrolment-tiers'
+import { buildSkylentTiersForPrice, getCourseTierRecord, saveAdminPriceOverridesLocal, saveStoredCourseTier, tierLabelFor } from '../lib/enrolment-tiers'
 import { AiMark, AI_NAME, ArrowRight, TruthChip } from '../components/skylent/primitives'
 import analyticsVisual from '@/assets/site/home/program-analytics-800.webp'
 import productVisual from '@/assets/site/home/program-product-800.webp'
@@ -333,10 +333,30 @@ export default function DashboardStudentPage() {
     return 'overview'
   })
   const [courseFilter, setCourseFilter] = useState<'all' | 'in_progress' | 'completed'>('all')
+  const [exploreMode, setExploreMode] = useState<'courses' | 'degrees'>(() =>
+    new URLSearchParams(search).get('tab') === 'degrees' ? 'degrees' : 'courses'
+  )
   const [exploreCategory, setExploreCategory] = useState<'All' | 'Data & SQL' | 'AI & Data Science' | 'Product & Full-Stack'>('All')
   const [exploreQuery, setExploreQuery] = useState('')
   const [selectedExploreDetail, setSelectedExploreDetail] = useState<DashboardExploreCourse | null>(null)
   const [checkoutTarget, setCheckoutTarget] = useState<DashboardExploreCourse | null>(null)
+  const [degreeTrack, setDegreeTrack] = useState('BCA (Online / Campus) — AI & Data Science')
+  const [degreePhone, setDegreePhone] = useState('')
+  const [degreeQualification, setDegreeQualification] = useState('12th / Higher Secondary Completed')
+  const [degreeSubmitted, setDegreeSubmitted] = useState<string | null>(null)
+  const [, setPriceTick] = useState(0)
+
+  useEffect(() => {
+    fetch('/api/v1/payments/catalog-config', { credentials: 'include' })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((p) => {
+        if (p?.data?.priceOverrides) {
+          saveAdminPriceOverridesLocal(p.data.priceOverrides)
+          setPriceTick((t) => t + 1)
+        }
+      })
+      .catch(() => {})
+  }, [])
 
   const [enrollments, setEnrollments] = useState<Loaded<ApiEnrollmentSummary[]>>({ status: 'loading' })
   const [projects, setProjects] = useState<Loaded<ProjectSummary[]>>({ status: 'loading' })
@@ -733,7 +753,7 @@ export default function DashboardStudentPage() {
                   alignItems: 'stretch',
                 }}
               >
-                {buildSkylentTiersForPrice(selectedExploreDetail.price).map((tier) => {
+                {buildSkylentTiersForPrice(selectedExploreDetail.price, selectedExploreDetail.slug).map((tier) => {
                   const isProCard = tier.id === 'flagship'
                   const displayTitle =
                     tier.id === 'certificate'
@@ -829,6 +849,139 @@ export default function DashboardStudentPage() {
               gap: 16,
             }}
           >
+            {/* Switcher: Self-Paced / Live Courses vs University Degrees (Different Process) */}
+            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', paddingBottom: 12, borderBottom: '1px solid #f1f5f9' }}>
+              <button
+                type="button"
+                onClick={() => setExploreMode('courses')}
+                style={{
+                  padding: '10px 18px',
+                  borderRadius: 10,
+                  border: exploreMode === 'courses' ? '2px solid #5142b5' : '1px solid #cbd5e1',
+                  background: exploreMode === 'courses' ? '#5142b5' : '#ffffff',
+                  color: exploreMode === 'courses' ? '#ffffff' : '#334155',
+                  fontSize: 13.5,
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                }}
+              >
+                Career Courses &amp; Batches (Direct Enrolment)
+              </button>
+              <button
+                type="button"
+                onClick={() => setExploreMode('degrees')}
+                style={{
+                  padding: '10px 18px',
+                  borderRadius: 10,
+                  border: exploreMode === 'degrees' ? '2px solid #1e1b4b' : '1px solid #cbd5e1',
+                  background: exploreMode === 'degrees' ? '#1e1b4b' : '#ffffff',
+                  color: exploreMode === 'degrees' ? '#ffffff' : '#334155',
+                  fontSize: 13.5,
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                }}
+              >
+                University Degrees (Separate Admission Process)
+              </button>
+            </div>
+
+            {exploreMode === 'degrees' ? (
+              <div style={{ display: 'grid', gap: 18, paddingTop: 4 }}>
+                <div style={{ padding: '18px 20px', borderRadius: 14, background: 'linear-gradient(135deg, #1e1b4b 0%, #3b2d96 100%)', color: '#ffffff' }}>
+                  <span style={{ fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 800, color: '#e9d5ff', textTransform: 'uppercase' }}>
+                    UGC-ENTITLED UNIVERSITY DEGREES · COUNSELOR-GUIDED ADMISSION
+                  </span>
+                  <h3 style={{ margin: '6px 0 6px', fontSize: 20, color: '#ffffff' }}>
+                    Join a University Degree Programme (UG &amp; PG)
+                  </h3>
+                  <p style={{ margin: 0, fontSize: 13.5, color: 'rgba(255,255,255,0.88)', lineHeight: 1.55 }}>
+                    Unlike self-paced skill courses, University Degrees (BCA, BBA, B.Tech, MBA, MCA) follow a dedicated university eligibility review, document verification, and Academic Counselor onboarding process.
+                  </p>
+                </div>
+
+                {degreeSubmitted ? (
+                  <div style={{ padding: '16px 18px', borderRadius: 12, background: '#ecfdf5', border: '1px solid #6ee7b7', color: '#065f46', fontWeight: 700, fontSize: 13.5 }}>
+                    ✓ {degreeSubmitted}
+                  </div>
+                ) : null}
+
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault()
+                    setDegreeSubmitted(`Your University Degree application for "${degreeTrack}" has been registered! A Skylent Senior Academic Counselor will contact you at ${degreePhone || user.email} with the university admission & fee structure.`)
+                  }}
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+                    gap: 12,
+                    padding: 16,
+                    borderRadius: 14,
+                    background: '#f8fafc',
+                    border: '1px solid #e2e8f0',
+                    alignItems: 'end',
+                  }}
+                >
+                  <label style={{ display: 'grid', gap: 5, fontSize: 12, fontWeight: 700, color: '#334155' }}>
+                    <span>Select Degree Track</span>
+                    <select
+                      value={degreeTrack}
+                      onChange={(e) => setDegreeTrack(e.target.value)}
+                      style={{ padding: '10px 12px', borderRadius: 10, border: '1px solid #cbd5e1', background: '#ffffff', fontSize: 13.5 }}
+                    >
+                      <option>BCA (Online / Campus) — AI &amp; Data Science</option>
+                      <option>BBA (Online / Campus) — Digital Product &amp; Analytics</option>
+                      <option>B.Tech Computer Science (Partner University)</option>
+                      <option>MBA — Business Analytics &amp; Product Strategy</option>
+                      <option>MCA — Full-Stack &amp; Cloud Engineering</option>
+                    </select>
+                  </label>
+
+                  <label style={{ display: 'grid', gap: 5, fontSize: 12, fontWeight: 700, color: '#334155' }}>
+                    <span>Highest Qualification</span>
+                    <select
+                      value={degreeQualification}
+                      onChange={(e) => setDegreeQualification(e.target.value)}
+                      style={{ padding: '10px 12px', borderRadius: 10, border: '1px solid #cbd5e1', background: '#ffffff', fontSize: 13.5 }}
+                    >
+                      <option>12th / Higher Secondary Completed</option>
+                      <option>Currently in 12th Standard</option>
+                      <option>Undergraduate Degree Completed</option>
+                      <option>Final-Year Undergraduate Student</option>
+                      <option>Working Professional</option>
+                    </select>
+                  </label>
+
+                  <label style={{ display: 'grid', gap: 5, fontSize: 12, fontWeight: 700, color: '#334155' }}>
+                    <span>WhatsApp / Phone Number *</span>
+                    <input
+                      type="tel"
+                      required
+                      value={degreePhone}
+                      onChange={(e) => setDegreePhone(e.target.value)}
+                      placeholder="10-digit mobile number"
+                      style={{ padding: '10px 12px', borderRadius: 10, border: '1px solid #cbd5e1', background: '#ffffff', fontSize: 13.5 }}
+                    />
+                  </label>
+
+                  <button
+                    type="submit"
+                    style={{
+                      padding: '11px 18px',
+                      borderRadius: 10,
+                      border: 'none',
+                      background: '#5142b5',
+                      color: '#ffffff',
+                      fontSize: 13.5,
+                      fontWeight: 800,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    Request Degree Admission Process →
+                  </button>
+                </form>
+              </div>
+            ) : null}
+
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
               <div>
                 <span style={{ fontSize: 11, fontWeight: 700, color: '#5142b5', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
@@ -1007,7 +1160,7 @@ export default function DashboardStudentPage() {
                       ) : (
                         <>
                           <strong style={{ fontSize: 16.5, color: '#0f172a', display: 'block' }}>
-                            From ₹{Math.max(999, Math.round((item.price * 0.43) / 100) * 100 - 1).toLocaleString('en-IN')}
+                            From ₹{(buildSkylentTiersForPrice(item.price, item.slug)[0]?.price ?? item.price).toLocaleString('en-IN')}
                           </strong>
                           <span style={{ fontSize: 11, color: '#5142b5', fontWeight: 700 }}>
                             3 Plans · Career OS in Tier 2 &amp; 3

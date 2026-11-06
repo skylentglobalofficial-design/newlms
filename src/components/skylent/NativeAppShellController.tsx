@@ -64,7 +64,7 @@ function TabIcon({ name }: { name: "home" | "courses" | "workshops" | "labs" | "
 export function NativeAppShellController() {
   const location = useLocation()
   const navigate = useNavigate()
-  const { user } = useAuth()
+  const { user, ready } = useAuth()
   const [isNative, setIsNative] = useState(() => isNativeAppShell())
   const [isOffline, setIsOffline] = useState(() => (typeof navigator !== "undefined" ? !navigator.onLine : false))
   const [appConfig, setAppConfig] = useState<AppConfigPayload | null>(null)
@@ -80,6 +80,32 @@ export function NativeAppShellController() {
     }
     document.documentElement.removeAttribute("data-native-home-hub")
   }, [location.search])
+
+  // Direct Native App Entry: No marketing website reload on app launch.
+  // Unauthenticated users go straight to /login (Sign In / Sign Up);
+  // authenticated users go straight to their role dashboard (/dashboard/student).
+  useEffect(() => {
+    if (!isNative || !ready) return
+    if (location.pathname === "/" || location.pathname === "/preview/homepage") {
+      if (!user) {
+        navigate("/login", { replace: true })
+      } else {
+        const target =
+          user.role === "admin" || user.role === "superadmin"
+            ? "/dashboard/admin"
+            : user.role === "faculty"
+              ? "/dashboard/faculty"
+              : user.role === "college"
+                ? "/dashboard/college"
+                : user.role === "recruiter"
+                  ? "/dashboard/recruiter"
+                  : user.role === "organisation"
+                    ? "/dashboard/organisation"
+                    : "/dashboard/student"
+        navigate(target, { replace: true })
+      }
+    }
+  }, [isNative, ready, user, location.pathname, navigate])
 
   useEffect(() => {
     const onOnline = () => setIsOffline(false)
@@ -143,15 +169,15 @@ export function NativeAppShellController() {
   }> = [
     {
       id: "home",
-      label: "Home",
-      to: "/",
-      match: (p) => p === "/",
+      label: "My Batches",
+      to: user ? dashHref : "/login",
+      match: (p) => p.startsWith("/dashboard/student") && !location.search.includes("tab=explore") && !location.search.includes("tab=degrees"),
     },
     {
       id: "courses",
-      label: "Courses",
-      to: "/programmes",
-      match: (p) => p.startsWith("/programme") || p.startsWith("/course") || p.startsWith("/education"),
+      label: "Explore",
+      to: user ? "/dashboard/student?tab=explore" : "/login",
+      match: (p) => p.startsWith("/programme") || p.startsWith("/course") || location.search.includes("tab=explore"),
     },
     {
       id: "workshops",
