@@ -3,7 +3,7 @@ import { Link } from "react-router-dom"
 import { apiV1 } from "../../lib/api-base"
 import { ensureCsrfToken } from "../../lib/auth-api"
 
-type RiseRow = {
+export type RiseRow = {
   kind: "course" | "program"
   slug: string
   title: string
@@ -16,26 +16,33 @@ type RiseRow = {
   mockDefenseHref?: string
 }
 
-const RISE_CACHE_KEY = "skylent:v71:career-rise-rows"
+const RISE_CACHE_KEY = "skylent_cache_rise_v1"
+let memoryRiseCache: RiseRow[] | null = null
 
-function readCachedRiseRows(): RiseRow[] | null {
+export function readCachedRiseRows(): RiseRow[] | null {
+  if (memoryRiseCache) return memoryRiseCache
   if (typeof window === "undefined") return null
   try {
-    const raw = window.sessionStorage.getItem(RISE_CACHE_KEY)
+    const raw = sessionStorage.getItem(RISE_CACHE_KEY)
     if (!raw) return null
     const parsed = JSON.parse(raw) as RiseRow[]
-    return Array.isArray(parsed) ? parsed : null
+    if (Array.isArray(parsed)) {
+      memoryRiseCache = parsed
+      return parsed
+    }
   } catch {
-    return null
+    // ignore storage errors
   }
+  return null
 }
 
-function writeCachedRiseRows(rows: RiseRow[]) {
+export function writeCachedRiseRows(rows: RiseRow[]) {
+  memoryRiseCache = rows
   if (typeof window === "undefined") return
   try {
-    window.sessionStorage.setItem(RISE_CACHE_KEY, JSON.stringify(rows))
+    sessionStorage.setItem(RISE_CACHE_KEY, JSON.stringify(rows))
   } catch {
-    // ignore
+    // ignore storage errors
   }
 }
 
@@ -50,9 +57,9 @@ export default function CareerRiseCard() {
       .then(async (response) => {
         const body = (await response.json().catch(() => ({}))) as { data?: RiseRow[]; error?: string }
         if (!response.ok) throw new Error(body.error || "Unable to load milestones")
-        const next = body.data ?? []
-        setRows(next)
-        writeCachedRiseRows(next)
+        const nextRows = body.data ?? []
+        writeCachedRiseRows(nextRows)
+        setRows(nextRows)
       })
       .catch(() => {
         if (controller.signal.aborted) return
@@ -75,11 +82,10 @@ export default function CareerRiseCard() {
       const body = (await response.json().catch(() => ({}))) as { error?: string }
       if (!response.ok) throw new Error(body.error || "Unable to activate interview prep")
       setRows((current) => {
-        const next =
-          current?.map((item) => (item.slug === row.slug && item.kind === row.kind ? { ...item, enrolled: true } : item)) ??
-          null
-        if (next) writeCachedRiseRows(next)
-        return next
+        const updated =
+          current?.map((item) => (item.slug === row.slug && item.kind === row.kind ? { ...item, enrolled: true } : item)) ?? null
+        if (updated) writeCachedRiseRows(updated)
+        return updated
       })
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unable to activate interview prep")
@@ -101,7 +107,9 @@ export default function CareerRiseCard() {
       </p>
       {error ? <p className="sh-empty">{error}</p> : null}
       {rows == null ? (
-        <p className="sh-empty">Loading course milestones…</p>
+        <div className="sh-row" aria-busy="true">
+          <span className="os-skeleton" style={{ width: "55%", height: 18 }} />
+        </div>
       ) : rows.length === 0 ? (
         <p className="sh-empty">Enrol in a course to track your mock interview and portfolio readiness.</p>
       ) : (

@@ -23,7 +23,7 @@ export default function CoursesPage() {
   const courses = catalog.data ?? []
   const views = useMemo(() => courses.map(catalogCourseListView), [courses])
   const categories = useMemo(
-    () => ["All", ...Array.from(new Set(courses.map((course) => course.category)))],
+    () => ["All", ...Array.from(new Set(courses.filter((c) => c.slug !== "power-bi").map((course) => course.category)))],
     [courses],
   )
 
@@ -35,7 +35,7 @@ export default function CoursesPage() {
   })
 
   const ready = filtered.filter((view) => view.maturity === "ready")
-  const listings = filtered.filter((view) => view.maturity !== "ready")
+  const listings = search.trim().length > 0 ? filtered.filter((view) => view.maturity !== "ready") : []
 
   return (
     <PageShell aurora={false}>
@@ -43,7 +43,7 @@ export default function CoursesPage() {
         <LearnPillarSubnav current="courses" />
         <section className="cat-hero">
           <div className="cat-rail">
-            <p className="cat-label">Self-Paced Flagship Courses · In-Browser Labs · ₹0 Free Pilot</p>
+            <p className="cat-label">Self-Paced Flagship Courses · In-Browser Labs · Verified Proof of Work</p>
             <h1>{catalog.offline ? "Skylent courses." : "Courses you can start this week."}</h1>
             <p className="cat-lead">
               {catalog.offline
@@ -134,7 +134,7 @@ function CourseUnitChrome({ view }: { view: CatalogCourseListView }) {
     <div className="cat-unit" aria-hidden="true">
       <div className="cat-unit-top">
         <p className="cat-unit-brand">SKYLENT OS · IN-BROWSER LAB</p>
-        <span className="cat-unit-elixir">✓ Open · ₹0 Pilot</span>
+        <span className="cat-unit-elixir">✓ Open · From ₹1,499</span>
       </div>
       <p className="cat-unit-kicker">{view.course.category} · {view.course.level}</p>
       <p className="cat-unit-title">{view.countLabel}</p>

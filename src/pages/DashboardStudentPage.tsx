@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { useLocation, useNavigate, Link } from 'react-router-dom'
 import { AuthDashboardShell } from '../components/AuthDashboardShell'
 import { LEARNER_NAV, LearnerNavIcon, learnerNavId } from '../components/learner/learner-nav'
@@ -21,8 +22,6 @@ import { truthOf } from '../lib/truth'
 import { courseProductProfile } from '../lib/course-product'
 import { dashboardSqlLabHref, practiceEnvironmentForCourse } from '../lib/practice-environments'
 import { isAuthoredCourse } from '../lib/authored-courses'
-import { EnrollmentModal } from '../components/shared'
-import { buildSkylentTiersForPrice, getCourseTierRecord, saveAdminPriceOverridesLocal, saveStoredCourseTier, tierLabelFor } from '../lib/enrolment-tiers'
 import { AiMark, AI_NAME, ArrowRight, TruthChip } from '../components/skylent/primitives'
 import analyticsVisual from '@/assets/site/home/program-analytics-800.webp'
 import productVisual from '@/assets/site/home/program-product-800.webp'
@@ -32,6 +31,35 @@ import aiVisual from '@/assets/site/program-ai.jpg'
 import sqlVisual from '@/assets/site/program-library.jpg'
 import './LearnWorkspace.css'
 import './StudentHome.css'
+
+const CACHE_ENROLLMENTS_KEY = 'skylent_cache_enrollments_v1'
+const CACHE_PROJECTS_KEY = 'skylent_cache_projects_v1'
+const CACHE_CERTS_KEY = 'skylent_cache_certs_v1'
+
+let memEnrollments: ApiEnrollmentSummary[] | null = null
+let memProjects: ProjectSummary[] | null = null
+let memCerts: SkylentCertificate[] | null = null
+
+function readCache<T>(key: string, mem: T | null): T | null {
+  if (mem) return mem
+  if (typeof window === 'undefined') return null
+  try {
+    const raw = sessionStorage.getItem(key)
+    if (!raw) return null
+    return JSON.parse(raw) as T
+  } catch {
+    return null
+  }
+}
+
+function writeCache<T>(key: string, value: T) {
+  if (typeof window === 'undefined') return
+  try {
+    sessionStorage.setItem(key, JSON.stringify(value))
+  } catch {
+    // ignore storage errors
+  }
+}
 
 type DashboardExploreCourse = {
   slug: string
@@ -59,7 +87,7 @@ const EXPLORE_CATALOGUE: DashboardExploreCourse[] = [
     duration: '12 Weeks · Self-Paced',
     modulesCount: 5,
     lessonsCount: 15,
-    price: 3499,
+    price: 1499,
     image: analyticsVisual,
     labBadge: 'Northwind SQL Lab (166 Rows)',
     skills: ['SQL Joins & CTEs', 'Cohort Retention', 'Margin & Discount Audit', 'Executive Reporting'],
@@ -80,7 +108,7 @@ const EXPLORE_CATALOGUE: DashboardExploreCourse[] = [
     duration: '12 Weeks · Self-Paced',
     modulesCount: 5,
     lessonsCount: 15,
-    price: 3999,
+    price: 1499,
     image: productVisual,
     labBadge: 'Harbor Desk PRD Studio',
     skills: ['PRD Authoring', 'Funnel Diagnostics', 'RICE & Sprint Triage', 'Stakeholder Alignment'],
@@ -101,7 +129,7 @@ const EXPLORE_CATALOGUE: DashboardExploreCourse[] = [
     duration: '10 Weeks · Self-Paced',
     modulesCount: 5,
     lessonsCount: 15,
-    price: 2999,
+    price: 1499,
     image: sqlVisual,
     labBadge: 'In-Browser Python Pipeline Lab',
     skills: ['Python Data Structures', 'Generators & Streams', 'Webhook Deduplication', 'Automated Testing'],
@@ -122,7 +150,7 @@ const EXPLORE_CATALOGUE: DashboardExploreCourse[] = [
     duration: '16 Weeks · Self-Paced',
     modulesCount: 5,
     lessonsCount: 15,
-    price: 5999,
+    price: 1499,
     image: scienceVisual,
     labBadge: 'SQL + Python Dual Sandbox',
     skills: ['Feature Engineering', 'Churn Classification', 'Precision-Recall Tradeoffs', 'A/B Experimentation'],
@@ -143,7 +171,7 @@ const EXPLORE_CATALOGUE: DashboardExploreCourse[] = [
     duration: '12 Weeks · Self-Paced',
     modulesCount: 5,
     lessonsCount: 15,
-    price: 4999,
+    price: 1499,
     image: aiVisual,
     labBadge: 'Grounded RAG & Eval Studio',
     skills: ['Chunking & Embeddings', 'Hybrid Retrieval', 'Hallucination Guardrails', 'Golden-Set Evals'],
@@ -164,7 +192,7 @@ const EXPLORE_CATALOGUE: DashboardExploreCourse[] = [
     duration: '16 Weeks · Self-Paced',
     modulesCount: 5,
     lessonsCount: 15,
-    price: 5499,
+    price: 1499,
     image: webVisual,
     labBadge: 'Full-Stack Ledger Architecture Lab',
     skills: ['React & TypeScript', 'Node & Express APIs', 'PostgreSQL ACID Transactions', 'Auth & Security'],
@@ -318,6 +346,259 @@ function Skeleton() {
   )
 }
 
+/**
+ * Full-Viewport Portal Plan Selection Modal (z-index: 99999)
+ * Never clipped by .auth-shell-rail (z-index: 120) and closes automatically on sidebar navigation, Escape, or backdrop click.
+ */
+function SelectYourPlanPortalModal({
+  course,
+  onClose,
+  onSelectPlan,
+}: {
+  course: DashboardExploreCourse
+  onClose: () => void
+  onSelectPlan: (tier: 'basic' | 'flagship' | 'pro', price: number) => void
+}) {
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') onClose()
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [onClose])
+
+  if (typeof document === 'undefined') return null
+
+  return createPortal(
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label={`Select Your Plan for ${course.title}`}
+      onClick={onClose}
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 99999,
+        background: 'rgba(15, 23, 42, 0.72)',
+        backdropFilter: 'blur(6px)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 'clamp(12px, 2.5vw, 28px)',
+        overflowY: 'auto',
+      }}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          background: '#ffffff',
+          borderRadius: 20,
+          width: '100%',
+          maxWidth: 1020,
+          maxHeight: '92vh',
+          overflowY: 'auto',
+          padding: 'clamp(20px, 3vw, 32px)',
+          boxShadow: '0 32px 80px -16px rgba(15, 23, 42, 0.45)',
+          border: '1px solid #e2e8f0',
+          fontFamily: 'var(--font-body)',
+        }}
+      >
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16, marginBottom: 22 }}>
+          <div>
+            <span style={{ fontSize: 11.5, fontWeight: 800, color: '#5142b5', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+              {course.title}
+            </span>
+            <h2 style={{ margin: '4px 0 0', fontSize: 'clamp(22px, 2.6vw, 28px)', color: '#0f172a', fontFamily: 'var(--font-display)' }}>
+              Select Your Plan
+            </h2>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            style={{
+              padding: '8px 14px',
+              borderRadius: 10,
+              border: '1px solid #cbd5e1',
+              background: '#f8fafc',
+              color: '#0f172a',
+              fontSize: 13,
+              fontWeight: 700,
+              cursor: 'pointer',
+              flexShrink: 0,
+            }}
+          >
+            ✕ Close
+          </button>
+        </div>
+
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))',
+            gap: 18,
+            alignItems: 'stretch',
+          }}
+        >
+          {/* Plan 1: Self-Paced Certificate Plan (₹1,499) */}
+          <div
+            style={{
+              borderRadius: 16,
+              border: '1px solid #e2e8f0',
+              background: '#ffffff',
+              padding: '22px 20px',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+            }}
+          >
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+                <strong style={{ fontSize: 18, color: '#0f172a' }}>Certificate Plan</strong>
+                <span style={{ fontSize: 11, fontWeight: 700, padding: '4px 10px', borderRadius: 999, background: '#f1f5f9', color: '#475569' }}>
+                  Self-Paced
+                </span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 16 }}>
+                <strong style={{ fontSize: 28, color: '#0f172a' }}>₹1,499</strong>
+                <span style={{ fontSize: 14, color: '#94a3b8', textDecoration: 'line-through' }}>₹2,998</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => onSelectPlan('basic', 1499)}
+                style={{
+                  width: '100%',
+                  padding: '12px 16px',
+                  borderRadius: 10,
+                  border: '1px solid #ddd6fe',
+                  background: '#ede9fe',
+                  color: '#4c1d95',
+                  fontSize: 14,
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                  marginBottom: 18,
+                }}
+              >
+                Buy Now
+              </button>
+              <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gap: 10, fontSize: 13, color: '#334155', lineHeight: 1.5 }}>
+                <li>✓ Full self-paced reading modules &amp; concept quizzes</li>
+                <li>✓ In-browser practice workbench (SQL / Python / Case Sandbox)</li>
+                <li>✓ Verifiable SKL Course Completion Certificate (/verify)</li>
+                <li style={{ color: '#94a3b8' }}>✕ Career OS &amp; Recruiter Job Board NOT included</li>
+                <li style={{ color: '#94a3b8' }}>✕ Live weekend classes &amp; 1:1 mock interviews NOT included</li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Plan 2: Premium Plan (₹3,499) */}
+          <div
+            style={{
+              borderRadius: 16,
+              border: '1.5px solid #c4b5fd',
+              background: '#ffffff',
+              padding: '22px 20px',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+              boxShadow: '0 12px 30px -16px rgba(81, 66, 181, 0.18)',
+            }}
+          >
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+                <strong style={{ fontSize: 18, color: '#0f172a' }}>Premium Plan</strong>
+                <span style={{ fontSize: 11, fontWeight: 700, padding: '4px 10px', borderRadius: 999, background: '#f3e8ff', color: '#6b21a8' }}>
+                  Career OS Included
+                </span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 16 }}>
+                <strong style={{ fontSize: 28, color: '#0f172a' }}>₹3,499</strong>
+                <span style={{ fontSize: 14, color: '#94a3b8', textDecoration: 'line-through' }}>₹6,998</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => onSelectPlan('flagship', 3499)}
+                style={{
+                  width: '100%',
+                  padding: '12px 16px',
+                  borderRadius: 10,
+                  border: '1px solid #c4b5fd',
+                  background: '#ede9fe',
+                  color: '#4c1d95',
+                  fontSize: 14,
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                  marginBottom: 18,
+                }}
+              >
+                Buy Now
+              </button>
+              <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gap: 10, fontSize: 13, color: '#334155', lineHeight: 1.5 }}>
+                <li>✓ Everything in Certificate Training + Graded Capstone Studio</li>
+                <li>✓ Public Proof-of-Work Dossier (/verify) for hiring managers</li>
+                <li>✓ Skylent Career OS Included (6-Month Active Window + 3-Month Practice Extension after 60% rule)</li>
+                <li>✓ Track-Specific Interview Prep, Spoken English, ATS Resume &amp; LinkedIn Makeover</li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Plan 3: Pro Plan (₹6,499) */}
+          <div
+            style={{
+              borderRadius: 16,
+              border: '1.5px solid #4c1d95',
+              background: 'linear-gradient(160deg, #3b0764 0%, #4c1d95 50%, #5b21b6 100%)',
+              color: '#ffffff',
+              padding: '22px 20px',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+              boxShadow: '0 18px 40px -16px rgba(76, 29, 149, 0.45)',
+            }}
+          >
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+                <strong style={{ fontSize: 18, color: '#ffffff' }}>Pro Plan</strong>
+                <span style={{ fontSize: 11, fontWeight: 700, padding: '4px 10px', borderRadius: 999, background: 'rgba(255,255,255,0.18)', color: '#ffffff' }}>
+                  Recommended
+                </span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 16 }}>
+                <strong style={{ fontSize: 28, color: '#ffffff' }}>₹6,499</strong>
+                <span style={{ fontSize: 14, color: '#cbd5e1', textDecoration: 'line-through' }}>₹12,998</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => onSelectPlan('pro', 6499)}
+                style={{
+                  width: '100%',
+                  padding: '12px 16px',
+                  borderRadius: 10,
+                  border: 'none',
+                  background: '#ffffff',
+                  color: '#0f172a',
+                  fontSize: 14,
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                  marginBottom: 18,
+                }}
+              >
+                Buy Now
+              </button>
+              <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gap: 10, fontSize: 13, color: '#f1f5f9', lineHeight: 1.5 }}>
+                <li>✓ Live weekend mentor classes + full recorded lecture library</li>
+                <li>✓ Priority 20-Minute Faculty TA Doubt &amp; Rubric Review SLA</li>
+                <li>✓ Full Career OS Pro (6M Window + 3M Intensive Practice Extension at 60%)</li>
+                <li>✓ 1-on-1 Mock Interviews + Direct Recruiter Job Board &amp; Referrals</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>,
+    document.body,
+  )
+}
+
 export default function DashboardStudentPage() {
   const { user, ready } = useAuth()
   const { workspace, course, loading, error, reload } = useLmsDashboard()
@@ -326,97 +607,101 @@ export default function DashboardStudentPage() {
   const activeNav = learnerNavId(pathname, hash)
   const previousHash = useRef(hash)
   const [studentTab, setStudentTab] = useState<StudentTabId>(() => {
-    const qTab = new URLSearchParams(search).get('tab')
-    if (qTab === 'courses' || hash === '#sh-my-learning') return 'courses'
-    if (qTab === 'projects' || hash === '#student-projects') return 'projects'
-    if (qTab === 'explore' || hash === '#explore-programmes') return 'explore'
+    if (hash === '#sh-my-learning') return 'courses'
+    if (hash === '#student-projects') return 'projects'
+    if (hash === '#explore-programmes') return 'explore'
     return 'overview'
   })
   const [courseFilter, setCourseFilter] = useState<'all' | 'in_progress' | 'completed'>('all')
-  const [exploreMode, setExploreMode] = useState<'courses' | 'degrees'>(() =>
-    new URLSearchParams(search).get('tab') === 'degrees' ? 'degrees' : 'courses'
-  )
   const [exploreCategory, setExploreCategory] = useState<'All' | 'Data & SQL' | 'AI & Data Science' | 'Product & Full-Stack'>('All')
   const [exploreQuery, setExploreQuery] = useState('')
   const [selectedExploreDetail, setSelectedExploreDetail] = useState<DashboardExploreCourse | null>(null)
   const [checkoutTarget, setCheckoutTarget] = useState<DashboardExploreCourse | null>(null)
-  const [degreeTrack, setDegreeTrack] = useState('BCA (Online / Campus) — AI & Data Science')
-  const [degreePhone, setDegreePhone] = useState('')
-  const [degreeQualification, setDegreeQualification] = useState('12th / Higher Secondary Completed')
-  const [degreeSubmitted, setDegreeSubmitted] = useState<string | null>(null)
-  const [, setPriceTick] = useState(0)
-
-  useEffect(() => {
-    fetch('/api/v1/payments/catalog-config', { credentials: 'include' })
-      .then((r) => (r.ok ? r.json() : null))
-      .then((p) => {
-        if (p?.data?.priceOverrides) {
-          saveAdminPriceOverridesLocal(p.data.priceOverrides)
-          setPriceTick((t) => t + 1)
-        }
-      })
-      .catch(() => {})
-  }, [])
 
   const [enrollments, setEnrollments] = useState<Loaded<ApiEnrollmentSummary[]>>(() => {
-    try {
-      const raw = typeof window !== 'undefined' ? window.sessionStorage.getItem('skylent:v71:student-enrollments') : null
-      if (raw) return { status: 'ready', data: JSON.parse(raw) as ApiEnrollmentSummary[] }
-    } catch {}
-    return { status: 'loading' }
+    const cached = readCache(CACHE_ENROLLMENTS_KEY, memEnrollments)
+    return cached ? { status: 'ready', data: cached } : { status: 'loading' }
   })
   const [projects, setProjects] = useState<Loaded<ProjectSummary[]>>(() => {
-    try {
-      const raw = typeof window !== 'undefined' ? window.sessionStorage.getItem('skylent:v71:student-projects') : null
-      if (raw) return { status: 'ready', data: JSON.parse(raw) as ProjectSummary[] }
-    } catch {}
-    return { status: 'loading' }
+    const cached = readCache(CACHE_PROJECTS_KEY, memProjects)
+    return cached ? { status: 'ready', data: cached } : { status: 'loading' }
   })
   const [certificates, setCertificates] = useState<Loaded<SkylentCertificate[]>>(() => {
-    try {
-      const raw = typeof window !== 'undefined' ? window.sessionStorage.getItem('skylent:v71:student-certificates') : null
-      if (raw) return { status: 'ready', data: JSON.parse(raw) as SkylentCertificate[] }
-    } catch {}
-    return { status: 'loading' }
+    const cached = readCache(CACHE_CERTS_KEY, memCerts)
+    return cached ? { status: 'ready', data: cached } : { status: 'loading' }
   })
   const [claiming, setClaiming] = useState<string | null>(null)
   const [claimError, setClaimError] = useState<{ slug: string; message: string } | null>(null)
   const [_aiStatus, setAiStatus] = useState<AiAvailability>('available')
   const [listsKey, setListsKey] = useState(0)
 
+  const paymentCancelled = useMemo(() => {
+    const params = new URLSearchParams(search)
+    return params.get('payment') === 'cancelled' || params.get('payment') === 'failed'
+  }, [search])
+
   useEffect(() => {
     if (ready && !user) navigate('/login')
   }, [ready, user, navigate])
 
+  // Whenever hash or pathname changes (e.g. clicking Dashboard, My Courses, Projects, Explore Programmes in sidebar),
+  // immediately close any open Plan Modal or Explore Detail!
   useEffect(() => {
-    const qTab = new URLSearchParams(search).get('tab')
-    if (qTab === 'courses' || hash === '#sh-my-learning') setStudentTab('courses')
-    else if (qTab === 'projects' || hash === '#student-projects') setStudentTab('projects')
-    else if (qTab === 'explore' || hash === '#explore-programmes') setStudentTab('explore')
-    else if (!hash && !qTab) setStudentTab('overview')
+    setCheckoutTarget(null)
+    setSelectedExploreDetail(null)
+    if (hash === '#sh-my-learning') setStudentTab('courses')
+    else if (hash === '#student-projects') setStudentTab('projects')
+    else if (hash === '#explore-programmes') setStudentTab('explore')
+    else if (!hash) setStudentTab('overview')
     previousHash.current = hash
-  }, [hash, search])
+  }, [hash, pathname])
 
   const loadLists = useCallback((signal: AbortSignal) => {
-    const settle = <T,>(promise: Promise<T>, set: (value: Loaded<T>) => void, cacheKey: string) => {
-      void promise
-        .then((data) => {
-          if (!signal.aborted) {
-            set({ status: 'ready', data })
-            try { window.sessionStorage.setItem(cacheKey, JSON.stringify(data)) } catch {}
-          }
-        })
-        .catch(() => {
-          if (!signal.aborted) {
-            set((prev) => (prev.status === 'ready' ? prev : { status: 'error' }))
-          }
-        })
-    }
-    settle(fetchLmsEnrollments(), setEnrollments, 'skylent:v71:student-enrollments')
-    settle(listLearnerProjects(signal), setProjects, 'skylent:v71:student-projects')
-    settle(fetchMyCertificates(signal), setCertificates, 'skylent:v71:student-certificates')
+    void fetchLmsEnrollments()
+      .then((data) => {
+        if (!signal.aborted) {
+          memEnrollments = data
+          writeCache(CACHE_ENROLLMENTS_KEY, data)
+          setEnrollments({ status: 'ready', data })
+        }
+      })
+      .catch(() => {
+        if (!signal.aborted) {
+          setEnrollments((prev) => (prev.status === 'ready' ? prev : { status: 'error' }))
+        }
+      })
+
+    void listLearnerProjects(signal)
+      .then((data) => {
+        if (!signal.aborted) {
+          memProjects = data
+          writeCache(CACHE_PROJECTS_KEY, data)
+          setProjects({ status: 'ready', data })
+        }
+      })
+      .catch(() => {
+        if (!signal.aborted) {
+          setProjects((prev) => (prev.status === 'ready' ? prev : { status: 'error' }))
+        }
+      })
+
+    void fetchMyCertificates(signal)
+      .then((data) => {
+        if (!signal.aborted) {
+          memCerts = data
+          writeCache(CACHE_CERTS_KEY, data)
+          setCertificates({ status: 'ready', data })
+        }
+      })
+      .catch(() => {
+        if (!signal.aborted) {
+          setCertificates((prev) => (prev.status === 'ready' ? prev : { status: 'error' }))
+        }
+      })
   }, [])
 
+  // Do NOT include `workspace` in dependencies here — otherwise when `workspace` finishes loading,
+  // it aborts the in-flight `fetchLmsEnrollments()` and restarts it, causing a 3-4s skeleton delay!
   useEffect(() => {
     if (!user?.id) return
     const controller = new AbortController()
@@ -473,6 +758,11 @@ export default function DashboardStudentPage() {
     }
   }
 
+  function handleSelectPlanAndCheckout(target: DashboardExploreCourse, tier: 'basic' | 'flagship' | 'pro', price: number) {
+    setCheckoutTarget(null)
+    navigate(`/checkout?kind=course&slug=${encodeURIComponent(target.slug)}&tier=${tier}&price=${price}&from=dashboard`)
+  }
+
   const crumbSection =
     studentTab === 'courses'
       ? 'My Courses'
@@ -504,6 +794,8 @@ export default function DashboardStudentPage() {
     bottomNavItems: LEARNER_NAV,
     activeNav: effectiveActiveNav,
     onNavChange: (id: string) => {
+      setCheckoutTarget(null)
+      setSelectedExploreDetail(null)
       if (id === 'dashboard') setStudentTab('overview')
       else if (id === 'my-courses' || id === 'courses') setStudentTab('courses')
       else if (id === 'projects') setStudentTab('projects')
@@ -559,7 +851,7 @@ export default function DashboardStudentPage() {
     )
   }
 
-  if (loading) {
+  if (loading && !workspace && enrollments.status !== 'ready') {
     return (
       <AuthDashboardShell {...shell}>
         <div className="sh"><Skeleton /></div>
@@ -570,27 +862,28 @@ export default function DashboardStudentPage() {
   const enrolmentRows = enrollments.status === 'ready' ? enrollments.data : []
   const certificateRows = certificates.status === 'ready' ? certificates.data : []
   const projectRows = projects.status === 'ready' ? projects.data : []
-  const allMyCourses = useMemo(() => {
-    const fromApi = myCourseRows(enrolmentRows)
-    if (fromApi.length > 0) return fromApi
-    if (workspace?.course) {
+
+  // Immediate fallback to workspace.course while enrollments list is still fetching so My Courses never shows a grey skeleton!
+  const allMyCourses = (() => {
+    const rows = myCourseRows(enrolmentRows)
+    if (rows.length > 0) return rows
+    if (course && workspace) {
       return [
         {
-          key: `course:${workspace.course.slug}`,
-          enrolmentId: workspace.enrollment.id,
-          title: workspace.course.title,
-          slug: workspace.course.slug,
-          programmeName: workspace.program?.name ?? null,
-          status: workspace.enrollment.status,
+          key: `ws:${course.slug}`,
+          slug: course.slug,
+          title: course.title,
+          status: workspace.progress.allComplete ? ('completed' as const) : ('active' as const),
           progressPct: workspace.progress.progressPct,
           completedCount: workspace.progress.completedCount,
           totalLessons: workspace.progress.totalLessons,
-          createdAt: new Date().toISOString(),
+          programmeName: null,
         },
       ]
     }
     return []
-  }, [enrolmentRows, workspace])
+  })()
+
   const filteredMyCourses = allMyCourses.filter((row) => {
     if (courseFilter === 'completed') return row.status === 'completed' || (row.progressPct ?? 0) >= 100
     if (courseFilter === 'in_progress') return row.status !== 'completed' && (row.progressPct ?? 0) < 100
@@ -600,6 +893,29 @@ export default function DashboardStudentPage() {
   // In-Dashboard Explore Programmes View (Stays inside the logged-in Sidebar!)
   const exploreProgrammesSection = (
     <section id="explore-programmes" aria-label="Explore Programmes inside Dashboard">
+      {paymentCancelled ? (
+        <div
+          role="status"
+          style={{
+            marginBottom: 18,
+            padding: '14px 18px',
+            borderRadius: 14,
+            background: '#fffbeb',
+            border: '1px solid #fde68a',
+            color: '#92400e',
+            fontSize: 13.5,
+            fontWeight: 600,
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            gap: 12,
+            flexWrap: 'wrap',
+          }}
+        >
+          <span>Your PayU payment was cancelled or not completed — no amount was deducted. Select any course below when you are ready.</span>
+        </div>
+      ) : null}
+
       {selectedExploreDetail ? (
         <div
           style={{
@@ -610,7 +926,7 @@ export default function DashboardStudentPage() {
             boxShadow: '0 14px 36px -16px rgba(15, 23, 42, 0.1)',
           }}
         >
-          {/* Course Detail Banner inside Dashboard (matching Image 4 layout) */}
+          {/* Course Detail Banner inside Dashboard */}
           <div
             style={{
               background: 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 55%, #3b2d96 100%)',
@@ -654,57 +970,33 @@ export default function DashboardStudentPage() {
               <p style={{ margin: '0 0 18px', fontSize: 14.5, lineHeight: 1.6, color: '#cbd5e1' }}>
                 {selectedExploreDetail.subtitle}
               </p>
-              {allMyCourses.some((r) => r.slug === selectedExploreDetail.slug) ? (
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap', marginBottom: 8 }}>
-                  <span style={{ fontSize: 13, fontWeight: 700, padding: '6px 14px', borderRadius: 999, background: '#dcfce7', color: '#166534' }}>
-                    ✓ Enrolled · {tierLabelFor(getCourseTierRecord(selectedExploreDetail.slug).tier)}
-                  </span>
-                  <Link
-                    to={`/learn/${selectedExploreDetail.slug}`}
-                    style={{
-                      padding: '12px 22px',
-                      borderRadius: 10,
-                      background: '#059669',
-                      color: '#ffffff',
-                      fontWeight: 700,
-                      fontSize: 14.5,
-                      textDecoration: 'none',
-                    }}
-                  >
-                    Resume Course →
-                  </Link>
-                </div>
-              ) : (
-                <>
-                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, marginBottom: 18, flexWrap: 'wrap' }}>
-                    <span style={{ fontSize: 13, color: '#cbd5e1' }}>3 Plans Available · Starting at</span>
-                    <strong style={{ fontSize: 28, color: '#ffffff' }}>
-                      ₹{Math.max(999, Math.round((selectedExploreDetail.price * 0.43) / 100) * 100 - 1).toLocaleString('en-IN')}
-                    </strong>
-                    <span style={{ fontSize: 12, fontWeight: 700, padding: '3px 10px', borderRadius: 999, background: '#dcfce7', color: '#166534' }}>
-                      Certificate / Professional (Career OS) / Flagship Live
-                    </span>
-                  </div>
-                  <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-                    <button
-                      type="button"
-                      onClick={() => setCheckoutTarget(selectedExploreDetail)}
-                      style={{
-                        padding: '12px 22px',
-                        borderRadius: 10,
-                        border: 'none',
-                        background: '#5142b5',
-                        color: '#ffffff',
-                        fontWeight: 700,
-                        fontSize: 14.5,
-                        cursor: 'pointer',
-                      }}
-                    >
-                      Choose Plan &amp; Enroll →
-                    </button>
-                  </div>
-                </>
-              )}
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, marginBottom: 18 }}>
+                <strong style={{ fontSize: 28, color: '#ffffff' }}>From ₹{selectedExploreDetail.price.toLocaleString('en-IN')}</strong>
+                <span style={{ fontSize: 14, color: '#94a3b8', textDecoration: 'line-through' }}>
+                  ₹{(selectedExploreDetail.price * 2).toLocaleString('en-IN')}
+                </span>
+                <span style={{ fontSize: 12, fontWeight: 700, padding: '3px 10px', borderRadius: 999, background: '#dcfce7', color: '#166534' }}>
+                  Self-Paced · Premium · Pro Plans
+                </span>
+              </div>
+              <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+                <button
+                  type="button"
+                  onClick={() => setCheckoutTarget(selectedExploreDetail)}
+                  style={{
+                    padding: '12px 22px',
+                    borderRadius: 10,
+                    border: 'none',
+                    background: '#5142b5',
+                    color: '#ffffff',
+                    fontWeight: 700,
+                    fontSize: 14.5,
+                    cursor: 'pointer',
+                  }}
+                >
+                  Select Plan &amp; Enroll →
+                </button>
+              </div>
             </div>
             <div>
               <img
@@ -715,7 +1007,7 @@ export default function DashboardStudentPage() {
             </div>
           </div>
 
-          {/* 4-Pillar Info Bar (Duration | Modules | Lab | Certificate) */}
+          {/* 4-Pillar Info Bar */}
           <div
             style={{
               display: 'grid',
@@ -778,114 +1070,10 @@ export default function DashboardStudentPage() {
               ))}
             </div>
           </div>
-
-          {/* Inline 3-Card Choose Your Plan Section inside Dashboard Course View */}
-          {!allMyCourses.some((r) => r.slug === selectedExploreDetail.slug) ? (
-            <div
-              id="dashboard-choose-plan"
-              style={{
-                padding: '24px 28px 28px',
-                background: '#f8fafc',
-                borderTop: '1px solid #e2e8f0',
-              }}
-            >
-              <h3 style={{ margin: '0 0 16px', fontSize: 20, fontWeight: 800, color: '#0f172a' }}>
-                Choose Your Plan
-              </h3>
-              <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 265px), 1fr))',
-                  gap: 16,
-                  alignItems: 'stretch',
-                }}
-              >
-                {buildSkylentTiersForPrice(selectedExploreDetail.price, selectedExploreDetail.slug).map((tier) => {
-                  const isProCard = tier.id === 'flagship'
-                  const displayTitle =
-                    tier.id === 'certificate'
-                      ? 'Basic Plan'
-                      : tier.id === 'professional'
-                        ? 'Premium Plan'
-                        : 'Pro Plan'
-                  return (
-                    <article
-                      key={tier.id}
-                      style={{
-                        borderRadius: 16,
-                        padding: '22px 20px',
-                        background: isProCard
-                          ? 'linear-gradient(160deg, #2e1065 0%, #4c1d95 55%, #5142b5 100%)'
-                          : '#ffffff',
-                        color: isProCard ? '#ffffff' : '#0f172a',
-                        border: isProCard ? '2px solid #6d28d9' : '1px solid #e2e8f0',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        justifyContent: 'space-between',
-                        gap: 14,
-                      }}
-                    >
-                      <div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8, marginBottom: 10 }}>
-                          <strong style={{ fontSize: 18, fontWeight: 800 }}>{displayTitle}</strong>
-                          {isProCard ? (
-                            <span style={{ fontSize: 11, fontWeight: 800, padding: '3px 9px', borderRadius: 999, background: 'rgba(255,255,255,0.22)', color: '#ffffff' }}>
-                              Recommended
-                            </span>
-                          ) : (
-                            <span style={{ fontSize: 11, fontWeight: 700, padding: '3px 9px', borderRadius: 999, background: tier.includesCareerOS ? '#f5f3ff' : '#f1f5f9', color: tier.includesCareerOS ? '#5142b5' : '#475569' }}>
-                              {tier.includesCareerOS ? 'Career OS' : 'Self-Paced'}
-                            </span>
-                          )}
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 14 }}>
-                          <strong style={{ fontSize: 26, fontWeight: 800 }}>
-                            ₹{tier.price.toLocaleString('en-IN')}
-                          </strong>
-                          <span style={{ fontSize: 13, color: isProCard ? 'rgba(255,255,255,0.65)' : '#94a3b8', textDecoration: 'line-through' }}>
-                            ₹{tier.mrp.toLocaleString('en-IN')}
-                          </span>
-                        </div>
-                        <Link
-                          to={`/checkout?kind=course&slug=${encodeURIComponent(selectedExploreDetail.slug)}&tier=${tier.id}&price=${selectedExploreDetail.price}`}
-                          onClick={() => saveStoredCourseTier(selectedExploreDetail.slug, tier.id)}
-                          style={{
-                            display: 'block',
-                            textAlign: 'center',
-                            textDecoration: 'none',
-                            width: '100%',
-                            boxSizing: 'border-box',
-                            padding: '11px 16px',
-                            borderRadius: 10,
-                            border: isProCard ? 'none' : '1px solid #ddd6fe',
-                            background: isProCard ? '#ffffff' : '#ede9fe',
-                            color: isProCard ? '#3b0764' : '#5142b5',
-                            fontSize: 14,
-                            fontWeight: 800,
-                            marginBottom: 14,
-                          }}
-                        >
-                          Buy Now
-                        </Link>
-                        <div style={{ borderTop: isProCard ? '1px solid rgba(255,255,255,0.18)' : '1px solid #f1f5f9', paddingTop: 12, display: 'grid', gap: 8 }}>
-                          {tier.features.map((feat) => (
-                            <div key={feat} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, fontSize: 12.5, lineHeight: 1.4, color: isProCard ? '#f8fafc' : '#334155' }}>
-                              <span style={{ fontWeight: 800, color: isProCard ? '#ffffff' : '#15803d' }}>✓</span>
-                              <span>{feat}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </article>
-                  )
-                })}
-              </div>
-            </div>
-          ) : null}
         </div>
       ) : (
         <div style={{ display: 'grid', gap: 20 }}>
-          {/* Top Header & Search + Category Pills (matching Image 5 layout inside Dashboard) */}
+          {/* Top Header & Search + Category Pills */}
           <div
             style={{
               background: '#ffffff',
@@ -896,139 +1084,6 @@ export default function DashboardStudentPage() {
               gap: 16,
             }}
           >
-            {/* Switcher: Self-Paced / Live Courses vs University Degrees (Different Process) */}
-            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', paddingBottom: 12, borderBottom: '1px solid #f1f5f9' }}>
-              <button
-                type="button"
-                onClick={() => setExploreMode('courses')}
-                style={{
-                  padding: '10px 18px',
-                  borderRadius: 10,
-                  border: exploreMode === 'courses' ? '2px solid #5142b5' : '1px solid #cbd5e1',
-                  background: exploreMode === 'courses' ? '#5142b5' : '#ffffff',
-                  color: exploreMode === 'courses' ? '#ffffff' : '#334155',
-                  fontSize: 13.5,
-                  fontWeight: 800,
-                  cursor: 'pointer',
-                }}
-              >
-                Career Courses &amp; Batches (Direct Enrolment)
-              </button>
-              <button
-                type="button"
-                onClick={() => setExploreMode('degrees')}
-                style={{
-                  padding: '10px 18px',
-                  borderRadius: 10,
-                  border: exploreMode === 'degrees' ? '2px solid #1e1b4b' : '1px solid #cbd5e1',
-                  background: exploreMode === 'degrees' ? '#1e1b4b' : '#ffffff',
-                  color: exploreMode === 'degrees' ? '#ffffff' : '#334155',
-                  fontSize: 13.5,
-                  fontWeight: 800,
-                  cursor: 'pointer',
-                }}
-              >
-                University Degrees (Separate Admission Process)
-              </button>
-            </div>
-
-            {exploreMode === 'degrees' ? (
-              <div style={{ display: 'grid', gap: 18, paddingTop: 4 }}>
-                <div style={{ padding: '18px 20px', borderRadius: 14, background: 'linear-gradient(135deg, #1e1b4b 0%, #3b2d96 100%)', color: '#ffffff' }}>
-                  <span style={{ fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 800, color: '#e9d5ff', textTransform: 'uppercase' }}>
-                    UGC-ENTITLED UNIVERSITY DEGREES · COUNSELOR-GUIDED ADMISSION
-                  </span>
-                  <h3 style={{ margin: '6px 0 6px', fontSize: 20, color: '#ffffff' }}>
-                    Join a University Degree Programme (UG &amp; PG)
-                  </h3>
-                  <p style={{ margin: 0, fontSize: 13.5, color: 'rgba(255,255,255,0.88)', lineHeight: 1.55 }}>
-                    Unlike self-paced skill courses, University Degrees (BCA, BBA, B.Tech, MBA, MCA) follow a dedicated university eligibility review, document verification, and Academic Counselor onboarding process.
-                  </p>
-                </div>
-
-                {degreeSubmitted ? (
-                  <div style={{ padding: '16px 18px', borderRadius: 12, background: '#ecfdf5', border: '1px solid #6ee7b7', color: '#065f46', fontWeight: 700, fontSize: 13.5 }}>
-                    ✓ {degreeSubmitted}
-                  </div>
-                ) : null}
-
-                <form
-                  onSubmit={(e) => {
-                    e.preventDefault()
-                    setDegreeSubmitted(`Your University Degree application for "${degreeTrack}" has been registered! A Skylent Senior Academic Counselor will contact you at ${degreePhone || user.email} with the university admission & fee structure.`)
-                  }}
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-                    gap: 12,
-                    padding: 16,
-                    borderRadius: 14,
-                    background: '#f8fafc',
-                    border: '1px solid #e2e8f0',
-                    alignItems: 'end',
-                  }}
-                >
-                  <label style={{ display: 'grid', gap: 5, fontSize: 12, fontWeight: 700, color: '#334155' }}>
-                    <span>Select Degree Track</span>
-                    <select
-                      value={degreeTrack}
-                      onChange={(e) => setDegreeTrack(e.target.value)}
-                      style={{ padding: '10px 12px', borderRadius: 10, border: '1px solid #cbd5e1', background: '#ffffff', fontSize: 13.5 }}
-                    >
-                      <option>BCA (Online / Campus) — AI &amp; Data Science</option>
-                      <option>BBA (Online / Campus) — Digital Product &amp; Analytics</option>
-                      <option>B.Tech Computer Science (Partner University)</option>
-                      <option>MBA — Business Analytics &amp; Product Strategy</option>
-                      <option>MCA — Full-Stack &amp; Cloud Engineering</option>
-                    </select>
-                  </label>
-
-                  <label style={{ display: 'grid', gap: 5, fontSize: 12, fontWeight: 700, color: '#334155' }}>
-                    <span>Highest Qualification</span>
-                    <select
-                      value={degreeQualification}
-                      onChange={(e) => setDegreeQualification(e.target.value)}
-                      style={{ padding: '10px 12px', borderRadius: 10, border: '1px solid #cbd5e1', background: '#ffffff', fontSize: 13.5 }}
-                    >
-                      <option>12th / Higher Secondary Completed</option>
-                      <option>Currently in 12th Standard</option>
-                      <option>Undergraduate Degree Completed</option>
-                      <option>Final-Year Undergraduate Student</option>
-                      <option>Working Professional</option>
-                    </select>
-                  </label>
-
-                  <label style={{ display: 'grid', gap: 5, fontSize: 12, fontWeight: 700, color: '#334155' }}>
-                    <span>WhatsApp / Phone Number *</span>
-                    <input
-                      type="tel"
-                      required
-                      value={degreePhone}
-                      onChange={(e) => setDegreePhone(e.target.value)}
-                      placeholder="10-digit mobile number"
-                      style={{ padding: '10px 12px', borderRadius: 10, border: '1px solid #cbd5e1', background: '#ffffff', fontSize: 13.5 }}
-                    />
-                  </label>
-
-                  <button
-                    type="submit"
-                    style={{
-                      padding: '11px 18px',
-                      borderRadius: 10,
-                      border: 'none',
-                      background: '#5142b5',
-                      color: '#ffffff',
-                      fontSize: 13.5,
-                      fontWeight: 800,
-                      cursor: 'pointer',
-                    }}
-                  >
-                    Request Degree Admission Process →
-                  </button>
-                </form>
-              </div>
-            ) : null}
-
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
               <div>
                 <span style={{ fontSize: 11, fontWeight: 700, color: '#5142b5', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
@@ -1147,7 +1202,9 @@ export default function DashboardStudentPage() {
                       <h3 style={{ margin: '0 0 6px', fontSize: 17, color: '#0f172a', lineHeight: 1.3 }}>
                         {item.title}
                       </h3>
-
+                      <p style={{ margin: '0 0 12px', fontSize: 13, color: '#475569', lineHeight: 1.5 }}>
+                        {item.subtitle}
+                      </p>
                       <div style={{ display: 'flex', gap: 12, fontSize: 12, color: '#64748b', fontWeight: 600, marginBottom: 10 }}>
                         <span>⏱ {item.duration}</span>
                         <span>📚 {item.modulesCount} Modules ({item.lessonsCount} Lessons)</span>
@@ -1183,37 +1240,12 @@ export default function DashboardStudentPage() {
                     }}
                   >
                     <div>
-                      {isEnrolled ? (
-                        <>
-                          <span
-                            style={{
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              gap: 4,
-                              padding: '4px 10px',
-                              borderRadius: 999,
-                              background: '#dcfce7',
-                              color: '#166534',
-                              fontSize: 11.5,
-                              fontWeight: 800,
-                            }}
-                          >
-                            ✓ Enrolled · Active
-                          </span>
-                          <span style={{ fontSize: 11, color: '#475569', fontWeight: 600, display: 'block', marginTop: 3 }}>
-                            {tierLabelFor(getCourseTierRecord(item.slug).tier)}
-                          </span>
-                        </>
-                      ) : (
-                        <>
-                          <strong style={{ fontSize: 16.5, color: '#0f172a', display: 'block' }}>
-                            From ₹{(buildSkylentTiersForPrice(item.price, item.slug)[0]?.price ?? item.price).toLocaleString('en-IN')}
-                          </strong>
-                          <span style={{ fontSize: 11, color: '#5142b5', fontWeight: 700 }}>
-                            3 Plans · Career OS in Tier 2 &amp; 3
-                          </span>
-                        </>
-                      )}
+                      <strong style={{ fontSize: 17, color: '#0f172a', display: 'block' }}>
+                        From ₹{item.price.toLocaleString('en-IN')}
+                      </strong>
+                      <span style={{ fontSize: 11, color: '#5142b5', fontWeight: 700 }}>
+                        Self-Paced · Premium · Pro
+                      </span>
                     </div>
                     <div style={{ display: 'flex', gap: 8 }}>
                       <button
@@ -1284,9 +1316,7 @@ export default function DashboardStudentPage() {
       <header className="sh-card-head" style={{ flexWrap: 'wrap', gap: 10 }}>
         <div>
           <h2 id="sh-my-learning">My Courses</h2>
-          {enrollments.status === 'ready' ? (
-            <span className="sh-note">{allMyCourses.length} {allMyCourses.length === 1 ? 'enrolled course' : 'enrolled courses'}</span>
-          ) : null}
+          <span className="sh-note">{allMyCourses.length} {allMyCourses.length === 1 ? 'enrolled course' : 'enrolled courses'}</span>
         </div>
         <div style={{ display: 'flex', gap: 6 }}>
           {[
@@ -1316,7 +1346,7 @@ export default function DashboardStudentPage() {
       </header>
       {enrollments.status === 'loading' && allMyCourses.length === 0 ? (
         <div className="sh-row"><span className="os-skeleton" style={{ width: '60%' }} /></div>
-      ) : enrollments.status === 'error' ? (
+      ) : enrollments.status === 'error' && allMyCourses.length === 0 ? (
         <ListError what="Your enrolments" onRetry={retryLists} />
       ) : filteredMyCourses.length === 0 ? (
         <p className="sh-empty">
@@ -1605,22 +1635,16 @@ export default function DashboardStudentPage() {
                 </div>
               </div>
               {exploreProgrammesSection}
-              {enrolmentRows.length > 0 ? <div className="sh-stack" style={{ marginTop: 20 }}>{myLearning}<CareerRiseCard />{evidence}</div> : null}
+              {allMyCourses.length > 0 ? <div className="sh-stack" style={{ marginTop: 20 }}>{myLearning}<CareerRiseCard />{evidence}</div> : null}
               <section className="sh-card" aria-label="Elixir wallet" style={{ marginTop: 22 }}><ElixirWalletPanel /></section>
             </>
           )}
         </div>
         {checkoutTarget ? (
-          <EnrollmentModal
-            item={{
-              kind: 'course',
-              slug: checkoutTarget.slug,
-              title: checkoutTarget.title,
-              price: checkoutTarget.price,
-              enrollable: true,
-              enrollmentStatus: 'open',
-            }}
+          <SelectYourPlanPortalModal
+            course={checkoutTarget}
             onClose={() => setCheckoutTarget(null)}
+            onSelectPlan={(tier, price) => handleSelectPlanAndCheckout(checkoutTarget, tier, price)}
           />
         ) : null}
       </AuthDashboardShell>
@@ -1656,64 +1680,77 @@ export default function DashboardStudentPage() {
       aria-labelledby="sh-project"
     >
       <header className="sh-card-head">
-        <h2 id="sh-project">Project &amp; Interactive Studio</h2>
+        <h2 id="sh-project">Current project &amp; browser lab</h2>
         {currentProject ? (
           <span className={currentProject.status === 'ready_to_review' ? 'os-status is-done' : currentProject.status === 'not_started' ? 'os-status is-idle' : 'os-status'}>
             {projectStatusLabel(currentProject.status)}
           </span>
         ) : null}
       </header>
-      {projects.status === 'loading' ? (
+      {projects.status === 'loading' && !profile?.project ? (
         <div className="sh-row"><span className="os-skeleton" style={{ width: '55%' }} /></div>
-      ) : projects.status === 'error' ? (
+      ) : projects.status === 'error' && !profile?.project ? (
         <ListError what="Your projects" onRetry={retryLists} />
       ) : currentProject ? (
-        <div className="sh-row" id="student-practice">
+        <div className="sh-row">
           <div className="sh-row-main">
             <strong>{currentProject.title}</strong>
             <span className="sh-note">
-              {currentProject.progress.complete} / {currentProject.progress.total} milestones complete
+              {currentProject.progress.complete} of {currentProject.progress.total} tasks complete · updated {formatDate(currentProject.updatedAt)}
             </span>
             <div className="os-progress-bar sh-row-bar" role="progressbar" aria-label={`${currentProject.title} tasks`} aria-valuemin={0} aria-valuemax={currentProject.progress.total} aria-valuenow={currentProject.progress.complete}>
               <span style={{ width: `${currentProject.progress.total ? (currentProject.progress.complete / currentProject.progress.total) * 100 : 0}%` }} />
             </div>
           </div>
-          <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
-            {(() => {
-              const environment = practiceEnvironmentForCourse(course.slug)
-              const sqlLabHref = dashboardSqlLabHref(course.slug, resume.lessonId)
-              if (environment?.status === 'runs' && sqlLabHref) {
-                return (
-                  <Link className="os-btn os-btn-ghost" style={{ minHeight: 36, fontSize: 12.5 }} to={sqlLabHref}>
-                    SQL Lab
-                  </Link>
-                )
-              }
-              return null
-            })()}
-            <Link
-              className="os-btn os-btn-primary"
-              style={{ minHeight: 36, fontSize: 12.5, textDecoration: 'none' }}
-              to={learnerProjectPath(currentProject.courseSlug, currentProject.projectType)}
-              aria-label={`Open ${currentProject.title}`}
-            >
-              Open Project Studio <ArrowRight />
-            </Link>
-          </div>
+          <Link className="os-link sh-row-link" to={learnerProjectPath(currentProject.courseSlug, currentProject.projectType)} aria-label={`Open ${currentProject.title}`}>
+            Open project <ArrowRight />
+          </Link>
         </div>
       ) : profile?.project ? (
-        <div className="sh-row" id="student-practice">
+        <div className="sh-row">
           <div className="sh-row-main">
             <strong>{profile.project.title || 'Capstone Project Studio'}</strong>
-            <span className="sh-note">Interactive Case &amp; 6 Capstone Milestones</span>
+            <span className="sh-note">{profile.project.note}</span>
           </div>
-          <Link className="os-btn os-btn-primary" style={{ minHeight: 36, fontSize: 12.5, textDecoration: 'none' }} to={profile.project.href}>
-            Open Project Studio <ArrowRight />
+          <Link className="os-link sh-row-link" to={profile.project.href}>
+            {profile.project.label} <ArrowRight />
           </Link>
         </div>
       ) : (
-        <p className="sh-empty" id="student-practice">Assignments are inside your course lessons.</p>
+        <p className="sh-empty">This course has no separate project workspace. Assignments stay in the lesson path.</p>
       )}
+      {(() => {
+        const environment = practiceEnvironmentForCourse(course.slug)
+        const sqlLabHref = dashboardSqlLabHref(course.slug, resume.lessonId)
+        if (environment?.status === 'runs') {
+          if (!sqlLabHref) return <span id="student-practice" />
+          return (
+            <div className="sh-row" id="student-practice">
+              <div className="sh-row-main">
+                <strong>Northwind SQL Lab</strong>
+                <span className="sh-note">{environment.honesty}</span>
+              </div>
+              <Link className="os-link sh-row-link" to={sqlLabHref}>
+                Open SQL Lab <ArrowRight />
+              </Link>
+            </div>
+          )
+        }
+        if (environment?.status === 'written') {
+          return (
+            <div className="sh-row" id="student-practice">
+              <div className="sh-row-main">
+                <strong>Harbor Desk PRD Studio</strong>
+                <span className="sh-note">{environment.honesty}</span>
+              </div>
+              <Link className="os-link sh-row-link" to={environment.href}>
+                Open Studio <ArrowRight />
+              </Link>
+            </div>
+          )
+        }
+        return <span id="student-practice" />
+      })()}
     </section>
   )
 
@@ -1735,7 +1772,7 @@ export default function DashboardStudentPage() {
   return (
     <AuthDashboardShell {...shell}>
       <div className="sh">
-        {/* Top Streak & Profile Readiness Strip (Matching Image 6) */}
+        {/* Top Streak & Profile Readiness Strip */}
         {studentTab === 'overview' ? (
           <div
             style={{
@@ -1801,7 +1838,7 @@ export default function DashboardStudentPage() {
           </div>
         ) : null}
 
-        {/* Resume Learning Card (Matching Image 6 Horizontal Card with Thumbnail + Progress Ring) */}
+        {/* Resume Learning Card */}
         {studentTab === 'overview' ? (
           <section
             id="student-learning"
@@ -1877,7 +1914,7 @@ export default function DashboardStudentPage() {
           </section>
         ) : null}
 
-        {/* Today's Progress (Circular Rings) + Monthly Progress Calendar Grid (Matching Image 6) */}
+        {/* Today's Progress + Monthly Progress Calendar Grid */}
         {studentTab === 'overview' ? (
           <div
             style={{
@@ -1887,7 +1924,6 @@ export default function DashboardStudentPage() {
               marginBottom: 20,
             }}
           >
-            {/* Left Card: Today's Progress */}
             <section
               className="sh-card"
               aria-label="Today's Progress"
@@ -1944,7 +1980,6 @@ export default function DashboardStudentPage() {
               </div>
             </section>
 
-            {/* Right Card: Monthly Progress Calendar + 14-Day Proof-of-Work Activity Grid */}
             <section
               className="sh-card"
               aria-label="Monthly Progress and 14-Day Proof-of-Work Activity Grid"
@@ -2025,7 +2060,9 @@ export default function DashboardStudentPage() {
                 </header>
                 <div className="sh-royal-ai__body">
                   <h2 id="sh-ai" className="sh-royal-ai__title">{AI_NAME} · Hinglish &amp; English Coach</h2>
-
+                  <p className="sh-royal-ai__desc">
+                    Need a simple Hinglish explanation, SQL debugging help, or a 20-minute Faculty TA review? Open your active lesson to use {AI_NAME} side-by-side.
+                  </p>
                   <div className="sh-royal-ai__pills">
                     <span>🇮🇳 Simple Hinglish Mode</span>
                     <span>🛠️ SQL &amp; Code Debugger</span>
@@ -2043,7 +2080,7 @@ export default function DashboardStudentPage() {
           </div>
         ) : null}
 
-        {/* My Courses View (Matching Image 7: Courses on Left + Upcoming Events on Right) */}
+        {/* My Courses View */}
         {studentTab === 'courses' ? (
           <div className="sh-grid">
             <div className="sh-stack">
@@ -2057,7 +2094,7 @@ export default function DashboardStudentPage() {
           </div>
         ) : null}
 
-        {/* Explore Programmes View (Inside Logged-in Dashboard!) */}
+        {/* Explore Programmes View */}
         {studentTab === 'explore' ? exploreProgrammesSection : null}
 
         {studentTab === 'projects' ? (
@@ -2081,16 +2118,10 @@ export default function DashboardStudentPage() {
       </div>
 
       {checkoutTarget ? (
-        <EnrollmentModal
-          item={{
-            kind: 'course',
-            slug: checkoutTarget.slug,
-            title: checkoutTarget.title,
-            price: checkoutTarget.price,
-            enrollable: true,
-            enrollmentStatus: 'open',
-          }}
+        <SelectYourPlanPortalModal
+          course={checkoutTarget}
           onClose={() => setCheckoutTarget(null)}
+          onSelectPlan={(tier, price) => handleSelectPlanAndCheckout(checkoutTarget, tier, price)}
         />
       ) : null}
     </AuthDashboardShell>

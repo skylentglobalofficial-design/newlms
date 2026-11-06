@@ -7,7 +7,6 @@ import { takeEnrolConsent } from '../lib/policy'
 import { sanitizeReturnTo } from '../lib/safe-return'
 import { buildGoogleOAuthStartUrl, checkGoogleOAuthAvailable, sendEmailOtpRequest } from '../lib/auth-api'
 import { setNativeCsrfToken, setNativeSessionToken } from '../lib/native-app-bridge'
-import { isNativeAppShell } from '../lib/api-base'
 import './LoginPage.css'
 import { TermsConsent } from '../components/legal/TermsConsent'
 
@@ -56,7 +55,7 @@ async function finishAuthNavigation(
     return
   }
   const returnTo = sanitizeReturnTo(redirectState?.returnTo)
-  if (returnTo && returnTo !== "/" && returnTo !== "/login" && returnTo !== "/signup" && returnTo !== "/preview/homepage") {
+  if (returnTo) {
     navigate(returnTo)
     return
   }
@@ -148,18 +147,6 @@ export default function LoginPage() {
     if (location.pathname === '/signup') setTab('signup')
     else if (location.pathname === '/login') setTab('signin')
   }, [location.pathname])
-
-  // If user is already authenticated, take them directly to their role dashboard
-  useEffect(() => {
-    if (ready && user && !location.search.includes("error=") && !location.search.includes("oauth=")) {
-      const returnTo = sanitizeReturnTo(redirectState?.returnTo)
-      if (returnTo && returnTo !== "/" && returnTo !== "/login" && returnTo !== "/signup" && returnTo !== "/preview/homepage") {
-        navigate(returnTo, { replace: true })
-      } else {
-        navigate(roleRoute(user.role), { replace: true })
-      }
-    }
-  }, [ready, user, redirectState, location.search, navigate])
 
   useEffect(() => {
     const params = new URLSearchParams(location.search)
@@ -408,99 +395,22 @@ export default function LoginPage() {
   }
 
   const signingIn = tab === 'signin'
-  const isNative = isNativeAppShell()
 
   return (
     <div className="entry">
-      {!isNative ? (
-        <div className="entry-top">
-          <Link className="entry-back" to="/">← Back to Skylent</Link>
-        </div>
-      ) : null}
+      <div className="entry-top">
+        <Link className="entry-back" to="/">← Back to Skylent</Link>
+      </div>
 
       <main className="entry-main">
         <div className="entry-col">
           <div style={{ textAlign: 'center', marginBottom: 18 }}>
-            <span className="entry-mark" style={{ margin: 0, cursor: 'default' }}>Skylent</span>
+            <Link className="entry-mark" to="/" style={{ margin: 0 }}>Skylent</Link>
           </div>
 
           <div className="entry-frame">
             <div className="entry-pane">
-              {/* Direct Sign In / Sign Up Top Switcher (Zero Page Reload) */}
-              <div
-                role="tablist"
-                aria-label="Choose Sign In or Sign Up"
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: '1fr 1fr',
-                  gap: 6,
-                  padding: 5,
-                  borderRadius: 12,
-                  background: '#f1f5f9',
-                  border: '1px solid #cbd5e1',
-                  marginBottom: 18,
-                }}
-              >
-                <button
-                  type="button"
-                  role="tab"
-                  aria-selected={signingIn}
-                  onClick={() => {
-                    setTab('signin')
-                    setError(null)
-                  }}
-                  style={{
-                    padding: '10px 12px',
-                    borderRadius: 8,
-                    border: 'none',
-                    background: signingIn ? '#1e1b4b' : 'transparent',
-                    color: signingIn ? '#ffffff' : '#334155',
-                    fontWeight: 800,
-                    fontSize: 13.5,
-                    cursor: 'pointer',
-                  }}
-                >
-                  Sign In
-                </button>
-                <button
-                  type="button"
-                  role="tab"
-                  aria-selected={!signingIn}
-                  onClick={() => {
-                    setTab('signup')
-                    setError(null)
-                  }}
-                  style={{
-                    padding: '10px 12px',
-                    borderRadius: 8,
-                    border: 'none',
-                    background: !signingIn ? '#1e1b4b' : 'transparent',
-                    color: !signingIn ? '#ffffff' : '#334155',
-                    fontWeight: 800,
-                    fontSize: 13.5,
-                    cursor: 'pointer',
-                  }}
-                >
-                  Sign Up
-                </button>
-              </div>
-
               <h1 className="entry-title">{signingIn ? 'Welcome back' : 'Create your account'}</h1>
-              <div
-                style={{
-                  marginTop: 6,
-                  marginBottom: 10,
-                  padding: '6px 10px',
-                  borderRadius: 8,
-                  background: '#f5f3ff',
-                  border: '1px solid #ddd6fe',
-                  color: '#4c1d95',
-                  fontSize: 11.5,
-                  fontWeight: 700,
-                }}
-              >
-                🔒 Single-Device Policy: One active login at a time across Website or Mobile App.
-              </div>
               <p className="entry-lead">
                 {signingIn
                   ? 'Sign in to access your courses, interactive labs, and certificates.'

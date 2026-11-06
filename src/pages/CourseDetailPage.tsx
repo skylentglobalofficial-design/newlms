@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { Link, useParams } from "react-router-dom"
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom"
 import { EnrollmentModal, PageShell } from "../components/shared"
 import {
   CourseProductVisual,
@@ -21,21 +21,29 @@ import type { CatalogCurriculumModule } from "../lib/catalog-api"
 import { effectiveAuthoredCourseCopy } from "../lib/public-catalogue-copy"
 import { useCatalogCourse } from "../hooks/useCatalog"
 import { TruthChip } from "../components/skylent/primitives"
-import { CertificateTrophyShowcase, FacultyTaShowcaseStrip, SyllabusDownloadButton } from "../components/skylent/EdTechVisuals"
+import { SyllabusDownloadButton } from "../components/skylent/EdTechVisuals"
 import { HarborDeskPlate, NorthwindLabPlate } from "../components/programme/ProgrammeArtefacts"
 import TrackInteractiveSandbox from "../components/labs/TrackInteractiveSandbox"
 import CatalogueNotice, {
   STATUS_NOT_CONFIRMED,
 } from "../components/programme/CatalogueNotice"
+import { useAuth } from "../context/AuthContext"
 import "./Catalog.css"
 
 const LISTING_HONESTY =
   "This course is not open for enrolment yet. Its outline is shown below."
 
+/* Note: Payment is not collected on unauthored preview-only catalogue listings. */
+
 export default function CourseDetailPage() {
   const { slug } = useParams()
+  const [searchParams] = useSearchParams()
+  const navigate = useNavigate()
+  const { user } = useAuth()
   const catalog = useCatalogCourse(slug)
   const [enrollOpen, setEnrollOpen] = useState(false)
+  const paymentStatus = searchParams.get("payment")
+
   useEffect(() => {
     const title = catalog.data?.title
     if (title) document.title = `${title} · Skylent`
@@ -152,6 +160,10 @@ export default function CourseDetailPage() {
 
   function openEnrol() {
     if (!confirmed || !enrollable) return
+    if (user) {
+      navigate(`/dashboard/student#explore-programmes`)
+      return
+    }
     setEnrollOpen(true)
   }
 
@@ -160,6 +172,48 @@ export default function CourseDetailPage() {
       <div className="cat-page">
         <section className="cat-hero">
           <div className="cat-rail">
+            {paymentStatus === "failed" || paymentStatus === "cancelled" ? (
+              <div
+                role="status"
+                style={{
+                  marginBottom: 18,
+                  padding: "14px 18px",
+                  borderRadius: 12,
+                  background: "#fffbeb",
+                  border: "1px solid #fde68a",
+                  color: "#92400e",
+                  display: "flex",
+                  flexWrap: "wrap",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  gap: 12,
+                  fontSize: 13.5,
+                  fontWeight: 600,
+                }}
+              >
+                <span>
+                  Your payment transaction was cancelled or not completed. No amount was deducted from your account.
+                </span>
+                <div style={{ display: "flex", gap: 10 }}>
+                  {user ? (
+                    <Link
+                      to="/dashboard/student#explore-programmes"
+                      style={{
+                        padding: "7px 14px",
+                        borderRadius: 8,
+                        background: "#5142b5",
+                        color: "#ffffff",
+                        textDecoration: "none",
+                        fontSize: 12.5,
+                        fontWeight: 700,
+                      }}
+                    >
+                      ← Back to Learner Dashboard
+                    </Link>
+                  ) : null}
+                </div>
+              </div>
+            ) : null}
             <div className="cat-intro">
               <div className="cat-intro-crumb">
                 {confirmed ? null : (
@@ -169,8 +223,8 @@ export default function CourseDetailPage() {
                     onRetry={() => void catalog.reload()}
                   />
                 )}
-                <Link className="cat-back" to="/programmes">
-                  ← Programmes
+                <Link className="cat-back" to={user ? "/dashboard/student#explore-programmes" : "/programmes"}>
+                  {user ? "← Back to Dashboard" : "← Programmes"}
                 </Link>
               </div>
               <div className="cat-intro-copy">
@@ -229,9 +283,7 @@ export default function CourseDetailPage() {
                     <span>{authoredStats.assignmentCount} assignments</span>
                   ) : null}
                   {authored ? <span>1 capstone</span> : null}
-                  
                 </p>
-                
               </aside>
               <div className="cat-intro-actions">
                 <div className="cat-actions">
@@ -281,7 +333,7 @@ export default function CourseDetailPage() {
                   )}
                 </div>
                 <p className="cat-honesty">
-                  Payment is not collected in this pilot. A certificate for this course is issued when every lesson in it is complete.
+                  A certificate for this course is issued when every lesson in it is complete. Includes interactive written modules, in-browser lab workbench, and graded capstone.
                 </p>
               </div>
               {showLiveCurriculum ? (
@@ -293,11 +345,11 @@ export default function CourseDetailPage() {
                   </div>
                   <div className="cat-rubric-item">
                     <span className="cat-rubric-weight">20% Judgement · 15% Defence</span>
-                    <strong>Case Briefs &amp; Decision Checks</strong>
-                    <span>Real-world case trade-offs &amp; scenario checks.</span>
+                    <strong>Written Briefs &amp; Boardroom Cold Calls</strong>
+                    <span>Trade-off reasoning + timed oral defence.</span>
                   </div>
                   <div className="cat-rubric-item">
-                    <span className="cat-rubric-weight">20% · Capstone Project</span>
+                    <span className="cat-rubric-weight">20% · V1 → V2 Revision</span>
                     <strong>Graded Capstone &amp; Verified Certificate</strong>
                     <span>Mentor feedback · Verifiable at /verify.</span>
                   </div>
@@ -361,7 +413,6 @@ export default function CourseDetailPage() {
                 : "These are the planned modules. Lessons are added as they are ready."}
             </p>
             <ModuleLane modules={modules} />
-
           </div>
         </section>
 
@@ -446,8 +497,6 @@ export default function CourseDetailPage() {
                   </ul>
                 </article>
               </div>
-
-
             </div>
           </section>
         ) : null}
@@ -541,7 +590,7 @@ export default function CourseDetailPage() {
                 </h2>
                 <p>
                   {showLiveCurriculum
-                    ? "Enrolment does not collect payment. It opens the written course in Skylent OS."
+                    ? "Enrolment opens your interactive written course, in-browser workbench, and capstone studio in Skylent OS."
                     : "This listing is thinner than Data Analytics. Start a ready course, or read the outline below."}
                 </p>
               </div>

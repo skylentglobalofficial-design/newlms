@@ -3060,3 +3060,34 @@
 .cat-page .cat-intro-meta .cat-stat-value {
   color: #0F172A !important;
 }
+
+/* V73 Video Audit Fix: Ensure all stat boxes and pills inside .cat-intro-meta are high-contrast dark ink on crisp white */
+.cat-page .cat-intro-meta strong,
+.cat-page .cat-intro-meta .pl-stat strong,
+.cat-page .cat-intro-meta .cat-metrics dd,
+.cat-page .cat-intro-meta .cat-stat-value {
+  color: #0F172A !important;
+}
+
+.cat-page .cat-intro-meta .pl-stat {
+  background: #FFFFFF !important;
+  border: 1px solid #DDD7FF !important;
+}
+
+.cat-page .cat-intro-meta .pl-stat span,
+.cat-page .cat-intro-meta .cat-metrics dt,
+.cat-page .cat-intro-meta .cat-stat-label {
+  color: #5142B5 !important;
+  font-weight: 700 !important;
+}
+
+.cat-page .cat-intro-meta .cat-statline {
+  color: #334155 !important;
+}
+
+.cat-page .cat-intro-meta .cat-statline span {
+  background: #F8FAFC !important;
+  border: 1px solid #CBD5E1 !important;
+  color: #1E293B !important;
+  font-weight: 600 !important;
+}
