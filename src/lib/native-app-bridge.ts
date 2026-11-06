@@ -81,31 +81,6 @@ export function installNativeAppBridge() {
   const nativeMode = isNativeAppShell()
   if (nativeMode) {
     document.documentElement.setAttribute("data-native-app", "true")
-    // Reset OTA live redirect whenever a fresh APK binary (versionCode 8800) is installed so local dist/ runs first!
-    try {
-      const ua = typeof navigator !== "undefined" ? navigator.userAgent || "" : ""
-      if (ua.includes("SkylentVersionCode/8800") && window.localStorage.getItem("skylent:apk-vcode") !== "8800") {
-        window.localStorage.setItem("skylent:apk-vcode", "8800")
-        window.localStorage.removeItem("skylent:ota-live-mode")
-      }
-
-      if (
-        (window.location.hostname === "localhost" || window.location.hostname === "app.skylent.local") &&
-        navigator.onLine &&
-        window.localStorage.getItem("skylent:ota-live-mode") === "1"
-      ) {
-        const token = getNativeSessionToken()
-        const csrf = getNativeCsrfToken()
-        const target = window.location.pathname + window.location.search + window.location.hash
-        const sep = target.includes("?") ? "&" : "?"
-        window.location.replace(
-          `${PRODUCTION_API_ORIGIN}${target}${sep}nativeApp=1${token ? `&nativeToken=${encodeURIComponent(token)}` : ""}${csrf ? `&nativeCsrf=${encodeURIComponent(csrf)}` : ""}`,
-        )
-        return
-      }
-    } catch {
-      // ignore
-    }
   }
 
   const originalFetch = window.fetch.bind(window)

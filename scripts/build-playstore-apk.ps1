@@ -1,14 +1,14 @@
 # =============================================================================
-# SKYLENT PLAY STORE NATIVE APK & SIGNED AAB BUILDER (V88 - versionCode 8800)
+# SKYLENT PLAY STORE NATIVE APK & SIGNED AAB BUILDER (V89 - versionCode 8900)
 # Generates:
 #   1. skylent-playstore-debug.apk   (Signed with Unified Production Keystore)
 #   2. skylent-playstore-release.apk (Signed Release APK for phone install)
 #   3. skylent-playstore-release.aab (Signed Release Bundle for Google Play Console)
 # Includes:
-#   - Local-First Bundled UI (https://app.skylent.local) + Live API Sync (https://skylent.live/api/v1)
-#   - Zero Stale Cache & Zero False "You are offline" Screen
+#   - 100% Same-Origin Production Sync (https://skylent.live - Zero CORS errors on Catalogue or Login)
+#   - Pre-Load appendUserAgent (SkylentNativeApp/8.9.0 SkylentVersionCode/8900 SkylentNativeInsetsApplied)
 #   - Unified Keystore Signing for both Debug & Release (prevents signature conflict on phone)
-#   - Version-Downgrade Lock (versionCode 8800 / versionName 8.8.0 blocks old APKs from overwriting)
+#   - Version-Downgrade Lock (versionCode 8900 / versionName 8.9.0 blocks old APKs from overwriting)
 #   - Exact Hardware Notification-Bar & Soft-Keyboard Inset Engine (5-inch to 6.8-inch phones)
 #   - In-App PayU India Checkout + Native UPI Intent Launcher (GPay, PhonePe, Paytm, BHIM)
 # =============================================================================
@@ -17,7 +17,7 @@ $Utf8NoBom = New-Object System.Text.UTF8Encoding($false)
 
 Write-Host ""
 Write-Host "============================================================" -ForegroundColor Cyan
-Write-Host "  SKYLENT PLAY STORE APK & SIGNED AAB BUILDER (V88 - v8.8.0)" -ForegroundColor Cyan
+Write-Host "  SKYLENT PLAY STORE APK & SIGNED AAB BUILDER (V89 - v8.9.0)" -ForegroundColor Cyan
 Write-Host "============================================================" -ForegroundColor Cyan
 
 # Step 1: Security Audit - Ensure no server secrets are prefixed with VITE_
@@ -48,7 +48,7 @@ if ($LASTEXITCODE -ne 0 -or -not (Test-Path "dist/index.html")) {
 }
 $DistApk = Join-Path (Get-Location).Path "dist\skylent-latest.apk"
 if (Test-Path $DistApk) { Remove-Item $DistApk -Force -ErrorAction SilentlyContinue }
-Write-Host "  [OK] Fresh V88 UI bundle compiled into dist/ (zero stale assets)." -ForegroundColor Green
+Write-Host "  [OK] Fresh V89 UI bundle compiled into dist/ (zero stale assets)." -ForegroundColor Green
 
 # Step 3: Ensure Capacitor Android packages are installed
 Write-Host "`n[3/7] Checking Capacitor Native Android Dependencies..." -ForegroundColor Yellow
@@ -60,7 +60,7 @@ if (-not (Test-Path "node_modules/@capacitor/android")) {
 Write-Host "  [OK] Capacitor Android packages ready." -ForegroundColor Green
 
 # Step 4: Initialize or Sync Android Native Project & Write Manifest + MainActivity + Styles
-Write-Host "`n[4/7] Syncing Local-First Native App Shell (app.skylent.local + Live API Bridge)..." -ForegroundColor Yellow
+Write-Host "`n[4/7] Syncing Same-Origin Native App Shell (https://skylent.live + PayU & UPI In-App)..." -ForegroundColor Yellow
 $capConfigPath = Join-Path (Get-Location).Path "capacitor.config.json"
 $capConfigJson = @"
 {
@@ -68,13 +68,12 @@ $capConfigJson = @"
   "appName": "Skylent",
   "webDir": "dist",
   "bundledWebRuntime": false,
-  "appendUserAgent": "SkylentNativeApp/8.8.0 SkylentVersionCode/8800 SkylentNativeInsetsApplied",
+  "appendUserAgent": "SkylentNativeApp/8.9.0 SkylentVersionCode/8900 SkylentNativeInsetsApplied",
   "server": {
-    "hostname": "app.skylent.local",
+    "url": "https://skylent.live",
     "cleartext": false,
     "androidScheme": "https",
     "allowNavigation": [
-      "app.skylent.local",
       "skylent.live",
       "*.skylent.live",
       "secure.payu.in",
@@ -173,7 +172,7 @@ $cleanManifestXml = @"
 "@
 [System.IO.File]::WriteAllText($manifestPath, $cleanManifestXml.Replace("`r`n", "`n"), $Utf8NoBom)
 
-# Write custom MainActivity.java (Single Exact WindowInsets Engine + Local-First Bundle + PayU In-App + OAuth)
+# Write custom MainActivity.java (Single Exact WindowInsets Engine + PayU/UPI In-App + OAuth Deep Link)
 $mainActivityDir = Join-Path (Get-Location).Path "android\app\src\main\java\live\skylent\app"
 if (-not (Test-Path $mainActivityDir)) {
   New-Item -ItemType Directory -Path $mainActivityDir -Force | Out-Null
@@ -183,17 +182,14 @@ $mainActivityJava = @"
 package live.skylent.app;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.webkit.CookieManager;
-import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.Toast;
 import com.getcapacitor.BridgeWebViewClient;
 import androidx.activity.OnBackPressedCallback;
@@ -244,7 +240,7 @@ public class MainActivity extends BridgeActivity {
         if (getBridge() != null && getBridge().getWebView() != null) {
             final WebView webView = getBridge().getWebView();
 
-            // 2. Configure WebView: lock static 100% text zoom, enable third-party cookies & clear stale cache on upgrade
+            // 2. Configure WebView: lock static 100% text zoom, enable cookies & strip "; wv" for Google OAuth
             CookieManager cookieManager = CookieManager.getInstance();
             cookieManager.setAcceptCookie(true);
             cookieManager.setAcceptThirdPartyCookies(webView, true);
@@ -257,17 +253,13 @@ public class MainActivity extends BridgeActivity {
             settings.setBuiltInZoomControls(false);
             settings.setDisplayZoomControls(false);
 
-            SharedPreferences prefs = getSharedPreferences("skylent_native_prefs", MODE_PRIVATE);
-            int lastCleanedVersion = prefs.getInt("installed_version_code", 0);
-            if (lastCleanedVersion != 8800) {
-                webView.clearCache(true);
-                prefs.edit().putInt("installed_version_code", 8800).apply();
-            }
-
             String ua = settings.getUserAgentString();
-            if (ua != null && !ua.contains("SkylentVersionCode/8800")) {
-                String cleanUa = ua.replace("; wv", "").replace("wv)", ")");
-                settings.setUserAgentString(cleanUa + " SkylentNativeApp/8.8.0 SkylentVersionCode/8800 SkylentNativeInsetsApplied");
+            if (ua != null) {
+                String cleanUa = ua.replace("; wv", "").replace("wv)", "");
+                if (!cleanUa.contains("SkylentVersionCode/8900")) {
+                    cleanUa = cleanUa + " SkylentNativeApp/8.9.0 SkylentVersionCode/8900 SkylentNativeInsetsApplied";
+                }
+                settings.setUserAgentString(cleanUa);
             }
 
             webView.setDownloadListener((url, userAgent, contentDisposition, mimetype, contentLength) -> {
@@ -279,15 +271,13 @@ public class MainActivity extends BridgeActivity {
                 }
             });
 
-            // 2B. Native UPI Intent Launcher + PayU Return Router + Safe Offline Guard
+            // 2B. Native UPI Intent Launcher (GPay, PhonePe, Paytm, BHIM, intent://)
             webView.setWebViewClient(new BridgeWebViewClient(getBridge()) {
                 @Override
                 public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
                     Uri uri = request.getUrl();
                     if (uri != null) {
                         String scheme = uri.getScheme() != null ? uri.getScheme().toLowerCase() : "";
-                        String host = uri.getHost() != null ? uri.getHost().toLowerCase() : "";
-                        String path = uri.getPath() != null ? uri.getPath() : "";
                         String urlStr = uri.toString();
 
                         if (scheme.equals("upi") || scheme.equals("tez") || scheme.equals("phonepe") ||
@@ -313,32 +303,8 @@ public class MainActivity extends BridgeActivity {
                                 return true;
                             }
                         }
-                        // When PayU redirects back to https://skylent.live/dashboard/... or /checkout, route cleanly into local APK shell
-                        if ((host.equals("skylent.live") || host.equals("www.skylent.live")) &&
-                            !path.startsWith("/api/") && !path.endsWith(".apk") && !urlStr.contains("nativeApp=1")) {
-                            String query = uri.getEncodedQuery();
-                            String localTarget = "https://app.skylent.local" + (path.isEmpty() ? "/" : path) + (query != null && !query.isEmpty() ? "?" + query : "");
-                            view.loadUrl(localTarget);
-                            return true;
-                        }
                     }
                     return super.shouldOverrideUrlLoading(view, request);
-                }
-
-                @Override
-                public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
-                    if (request != null && request.isForMainFrame() && error != null) {
-                        int code = error.getErrorCode();
-                        Uri reqUri = request.getUrl();
-                        String host = reqUri != null && reqUri.getHost() != null ? reqUri.getHost().toLowerCase() : "";
-                        // Never show offline error for local app.skylent.local bundle or aborted redirects
-                        if (!host.equals("app.skylent.local") && !host.equals("localhost") &&
-                            (code == WebViewClient.ERROR_HOST_LOOKUP || code == WebViewClient.ERROR_CONNECT || code == WebViewClient.ERROR_TIMEOUT)) {
-                            view.loadUrl("https://app.skylent.local/programmes");
-                            return;
-                        }
-                    }
-                    super.onReceivedError(view, request, error);
                 }
             });
         }
@@ -358,7 +324,7 @@ public class MainActivity extends BridgeActivity {
                         if (webView.canGoBack()) {
                             webView.goBack();
                         } else {
-                            webView.loadUrl("https://app.skylent.local/dashboard/student?payment=cancelled#explore-programmes");
+                            webView.loadUrl("https://skylent.live/dashboard/student?payment=cancelled#explore-programmes");
                         }
                         return;
                     }
@@ -416,7 +382,7 @@ public class MainActivity extends BridgeActivity {
 
         if (getBridge() != null && getBridge().getWebView() != null) {
             final WebView webView = getBridge().getWebView();
-            final String targetUrl = "https://app.skylent.local/login" + (query != null && !query.isEmpty() ? "?" + query : "?oauth=success");
+            final String targetUrl = "https://skylent.live/login" + (query != null && !query.isEmpty() ? "?" + query : "?oauth=success");
             webView.post(() -> {
                 if (sessionToken != null && !sessionToken.isEmpty()) {
                     String js = "(function(){" +
@@ -437,7 +403,7 @@ public class MainActivity extends BridgeActivity {
 "@
 [System.IO.File]::WriteAllText($mainActivityPath, $mainActivityJava.Replace("`r`n", "`n"), $Utf8NoBom)
 
-# Write styles.xml (WindowCompat.setDecorFitsSystemWindows(false) handles exact insets in MainActivity.java)
+# Write styles.xml
 $stylesXmlPath = Join-Path (Get-Location).Path "android\app\src\main\res\values\styles.xml"
 $cleanStylesXml = @"
 <?xml version="1.0" encoding="utf-8"?>
@@ -467,7 +433,7 @@ $v35Dir = Join-Path (Get-Location).Path "android\app\src\main\res\values-v35"
 if (-not (Test-Path $v35Dir)) { New-Item -ItemType Directory -Path $v35Dir -Force | Out-Null }
 $v35StylesPath = Join-Path $v35Dir "styles.xml"
 [System.IO.File]::WriteAllText($v35StylesPath, $cleanStylesXml.Replace("`r`n", "`n"), $Utf8NoBom)
-Write-Host "  [OK] Wrote AndroidManifest.xml, MainActivity.java (Local-First + Exact WindowInsets), and styles.xml." -ForegroundColor Green
+Write-Host "  [OK] Wrote AndroidManifest.xml, MainActivity.java (Same-Origin + Exact WindowInsets), and styles.xml." -ForegroundColor Green
 
 # Step 5: Configure Java JDK 21 & Android SDK Toolchain
 Write-Host "`n[5/7] Configuring Java JDK 21 & Android SDK Toolchain..." -ForegroundColor Yellow
@@ -553,8 +519,8 @@ $LocalPropsPath = Join-Path (Get-Location).Path "android\local.properties"
 [System.IO.File]::WriteAllText($LocalPropsPath, "sdk.dir=$EscapedSdk`n", $Utf8NoBom)
 Write-Host "  [OK] ANDROID_HOME set to: $SdkRoot" -ForegroundColor Green
 
-# Step 6: Auto-Generate Production Play Store Keystore & Configure Unified Signing (Debug + Release) + versionCode 8800
-Write-Host "`n[6/7] Configuring Unified Release Signing & versionCode 8800..." -ForegroundColor Yellow
+# Step 6: Auto-Generate Production Play Store Keystore & Configure Unified Signing (Debug + Release) + versionCode 8900
+Write-Host "`n[6/7] Configuring Unified Release Signing & versionCode 8900..." -ForegroundColor Yellow
 $KeystoreDir = Join-Path $ToolchainRoot "keystore"
 if (-not (Test-Path $KeystoreDir)) {
   New-Item -ItemType Directory -Path $KeystoreDir -Force | Out-Null
@@ -571,13 +537,12 @@ Write-Host "  [OK] Production Keystore ready: $KeystorePath" -ForegroundColor Gr
 $AppBuildGradle = Join-Path (Get-Location).Path "android\app\build.gradle"
 if (Test-Path $AppBuildGradle) {
   $gradleText = Get-Content $AppBuildGradle -Raw
-  # Strip any previous appended signing block so we write a clean unified block
   $markerIdx = $gradleText.IndexOf("// SKYLENT_PLAYSTORE_RELEASE_SIGNING")
   if ($markerIdx -ge 0) {
     $gradleText = $gradleText.Substring(0, $markerIdx).TrimEnd()
   }
-  $gradleText = [regex]::Replace($gradleText, 'versionCode\s+\d+', 'versionCode 8800')
-  $gradleText = [regex]::Replace($gradleText, 'versionName\s+"[^"]+"', 'versionName "8.8.0"')
+  $gradleText = [regex]::Replace($gradleText, 'versionCode\s+\d+', 'versionCode 8900')
+  $gradleText = [regex]::Replace($gradleText, 'versionName\s+"[^"]+"', 'versionName "8.9.0"')
 
   $KeystoreSlash = $KeystorePath.Replace("\", "/")
   $signingBlock = @"
@@ -609,7 +574,7 @@ android {
 "@
   $gradleText = $gradleText + $signingBlock
   [System.IO.File]::WriteAllText($AppBuildGradle, $gradleText.Replace("`r`n", "`n"), $Utf8NoBom)
-  Write-Host "  [OK] Configured versionCode 8800 (v8.8.0) & Unified Keystore Signing (Debug + Release) in android/app/build.gradle." -ForegroundColor Green
+  Write-Host "  [OK] Configured versionCode 8900 (v8.9.0) & Unified Keystore Signing (Debug + Release) in android/app/build.gradle." -ForegroundColor Green
 }
 
 # Step 7: Compile Debug APK + Signed Release APK + Signed Release AAB
@@ -660,7 +625,7 @@ if (Test-Path "android/gradlew.bat") {
     $ApkSizeMb = [math]::Round(((Get-Item $TargetApkForSize).Length / 1MB), 2)
     Write-Host ""
     Write-Host "============================================================" -ForegroundColor Green
-    Write-Host "  [SUCCESS] ALL GOOGLE PLAY STORE FILES GENERATED (V88 - v8.8.0 / versionCode 8800)!" -ForegroundColor Green
+    Write-Host "  [SUCCESS] ALL GOOGLE PLAY STORE FILES GENERATED (V89 - v8.9.0 / versionCode 8900)!" -ForegroundColor Green
     Write-Host "  1. Phone Test APK (Signed) : $OutReleaseApk ($ApkSizeMb MB)" -ForegroundColor White
     Write-Host "  2. Phone Test APK (Debug)  : $OutDebugApk" -ForegroundColor White
     Write-Host "  3. Play Store Upload (.aab): $OutReleaseAab" -ForegroundColor Cyan

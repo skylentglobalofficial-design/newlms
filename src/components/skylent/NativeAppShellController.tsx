@@ -56,9 +56,8 @@ function TabIcon({ name }: { name: "home" | "courses" | "workshops" | "labs" | "
   }
 }
 
-const INSTALLED_BUILD_KEY = "skylent:installed-build-id:v88"
-const LEGACY_BUILD_KEYS = ["skylent:installed-build-id:v87", "skylent:installed-build-id:v80", "skylent:installed-build-id:v75", "skylent:installed-build-id:v1"]
-export const BUNDLED_CLIENT_BUILD_ID = "8.8.0:v88-202611061735"
+const INSTALLED_BUILD_KEY = "skylent:installed-build-id:v89"
+export const BUNDLED_CLIENT_BUILD_ID = "8.9.0:v89-202611061750"
 
 function tryExitNativeApp(): boolean {
   if (typeof window === "undefined") return false
@@ -93,18 +92,7 @@ export function NativeAppShellController() {
   const [dismissedBanner, setDismissedBanner] = useState(false)
   const [installedBuildId, setInstalledBuildId] = useState<string | null>(() => {
     try {
-      const current = window.localStorage.getItem(INSTALLED_BUILD_KEY)
-      if (current) return current
-      const ua = typeof navigator !== "undefined" ? navigator.userAgent || "" : ""
-      const isCurrentV88Apk = ua.includes("SkylentVersionCode/8800")
-      if (!isCurrentV88Apk) {
-        for (const k of LEGACY_BUILD_KEYS) {
-          const legacyVal = window.localStorage.getItem(k)
-          if (legacyVal) return legacyVal
-        }
-        if (isNativeAppShell()) return "legacy-apk-shell"
-      }
-      return null
+      return window.localStorage.getItem(INSTALLED_BUILD_KEY)
     } catch {
       return null
     }
@@ -292,11 +280,20 @@ export function NativeAppShellController() {
   const remoteStamp = appConfig ? `${appConfig.appVersion}:${appConfig.buildId || "live"}` : null
 
   // Seamless Auto-Update triggers ONLY when installedBuildId exists and differs from remoteStamp (never loops!)
+  const alreadySyncedThisSession = (() => {
+    try {
+      return Boolean(remoteStamp && window.sessionStorage.getItem("skylent:ota-synced-stamp") === remoteStamp)
+    } catch {
+      return false
+    }
+  })()
+
   const needsSeamlessAutoUpdate = Boolean(
     appConfig &&
       remoteStamp &&
       installedBuildId &&
-      installedBuildId !== remoteStamp,
+      installedBuildId !== remoteStamp &&
+      !alreadySyncedThisSession,
   )
 
   const triggerInAppUpdate = useCallback(async () => {
@@ -306,10 +303,7 @@ export function NativeAppShellController() {
     // Persist the new stamp FIRST so even if reload happens immediately, it never loops!
     try {
       window.localStorage.setItem(INSTALLED_BUILD_KEY, remoteStamp)
-      for (const k of LEGACY_BUILD_KEYS) window.localStorage.removeItem(k)
-      if (isNativeAppShell()) {
-        window.localStorage.setItem("skylent:ota-live-mode", "1")
-      }
+      window.sessionStorage.setItem("skylent:ota-synced-stamp", remoteStamp)
     } catch {
       // ignore
     }

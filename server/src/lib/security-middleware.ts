@@ -28,7 +28,7 @@ export function getAllowedOrigins(): string[] {
 
   if (explicit.length > 0) return expandSkylentSiteOrigins(explicit)
 
-  const origins = new Set<string>()
+  const origins = new Set<string>(["https://skylent.live"])
   const frontend = process.env.FRONTEND_URL?.trim()
   if (frontend) origins.add(frontend)
 

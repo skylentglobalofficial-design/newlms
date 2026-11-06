@@ -3,22 +3,20 @@
   "appName": "Skylent",
   "webDir": "dist",
   "bundledWebRuntime": false,
-  "appendUserAgent": "SkylentNativeApp/8.8.0 SkylentVersionCode/8800 SkylentNativeInsetsApplied",
   "server": {
-    "hostname": "app.skylent.local",
-    "cleartext": false,
     "androidScheme": "https",
     "allowNavigation": [
-      "app.skylent.local",
       "skylent.live",
       "*.skylent.live",
-      "secure.payu.in",
-      "test.payu.in",
-      "*.payu.in",
-      "*.payumoney.com",
-      "*.payubiz.in",
       "accounts.google.com",
       "*.google.com"
     ]
+  },
+  "plugins": {
+    "StatusBar": {
+      "overlaysWebView": false,
+      "backgroundColor": "#0F172A",
+      "style": "DARK"
+    }
   }
 }
