@@ -3,11 +3,13 @@
   "appName": "Skylent",
   "webDir": "dist",
   "bundledWebRuntime": false,
+  "appendUserAgent": "SkylentNativeApp/8.8.0 SkylentVersionCode/8800 SkylentNativeInsetsApplied",
   "server": {
-    "url": "https://skylent.live",
+    "hostname": "app.skylent.local",
     "cleartext": false,
     "androidScheme": "https",
     "allowNavigation": [
+      "app.skylent.local",
       "skylent.live",
       "*.skylent.live",
       "secure.payu.in",

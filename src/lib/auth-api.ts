@@ -1,4 +1,5 @@
 import { apiV1, isNativeAppShell } from "./api-base"
+import { getNativeCsrfToken, setNativeCsrfToken } from "./native-app-bridge"
 import { parseApiJson, readJsonBody } from "./http"
 import { POLICY_VERSION, consentPayload } from "./policy"
 
@@ -85,6 +86,11 @@ export async function ensureCsrfToken(): Promise<string> {
     }
   }
   if (csrfToken) return csrfToken
+  const nativeCsrf = getNativeCsrfToken()
+  if (nativeCsrf && nativeCsrf.length >= 32) {
+    csrfToken = nativeCsrf
+    return nativeCsrf
+  }
   if (!csrfRequest) {
     csrfRequest = requestCsrfToken().finally(() => {
       csrfRequest = null
@@ -102,6 +108,7 @@ async function requestCsrfToken(): Promise<string> {
   const parsed = await parseApiJson<{ csrfToken: string }>(response)
   const fromCookie = csrfCookieMatchesApi() ? readCsrfCookie() : null
   csrfToken = fromCookie ?? parsed.csrfToken
+  if (csrfToken) setNativeCsrfToken(csrfToken)
   return csrfToken
 }
 

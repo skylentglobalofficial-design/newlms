@@ -1418,3 +1418,28 @@ h1, h2, h3, h4, h5, h6, button, input, select, textarea {
 .sia-launcher {
   display: none !important;
 }
+
+
+/* ── V88 Native Android Exact Inset Guard & Single Sleek Mobile App Bar ── */
+html[data-native-insets="android"] .skylent-site-nav.skn,
+html[data-native-app="true"] .skylent-site-nav.skn {
+  padding-top: 0px !important;
+}
+
+html[data-native-insets="android"] .skylent-mobile-tabbar {
+  height: 54px !important;
+  padding: 4px 6px 4px !important;
+}
+
+@media (max-width: 768px) {
+  .skylent-site-nav .skn__cta {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-height: 34px !important;
+    padding: 0 12px !important;
+    font-size: 12.5px !important;
+    font-weight: 700 !important;
+    border-radius: 999px !important;
+  }
+}

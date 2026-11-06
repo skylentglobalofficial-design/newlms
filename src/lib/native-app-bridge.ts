@@ -5,7 +5,7 @@ import { isNativeAppShell, PRODUCTION_API_ORIGIN } from "./api-base"
 
 const NATIVE_SESSION_KEY = "skylent:native:session-token:v1"
 const NATIVE_CSRF_KEY = "skylent:native:csrf-token:v1"
-export const APP_VERSION = "1.4.0"
+export const APP_VERSION = "8.8.0"
 
 let bridgeInstalled = false
 
@@ -81,8 +81,14 @@ export function installNativeAppBridge() {
   const nativeMode = isNativeAppShell()
   if (nativeMode) {
     document.documentElement.setAttribute("data-native-app", "true")
-    // If running inside Capacitor localhost and OTA live mode was activated, boot straight into https://skylent.live!
+    // Reset OTA live redirect whenever a fresh APK binary (versionCode 8800) is installed so local dist/ runs first!
     try {
+      const ua = typeof navigator !== "undefined" ? navigator.userAgent || "" : ""
+      if (ua.includes("SkylentVersionCode/8800") && window.localStorage.getItem("skylent:apk-vcode") !== "8800") {
+        window.localStorage.setItem("skylent:apk-vcode", "8800")
+        window.localStorage.removeItem("skylent:ota-live-mode")
+      }
+
       if (
         (window.location.hostname === "localhost" || window.location.hostname === "app.skylent.local") &&
         navigator.onLine &&

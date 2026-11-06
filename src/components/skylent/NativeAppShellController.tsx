@@ -56,9 +56,9 @@ function TabIcon({ name }: { name: "home" | "courses" | "workshops" | "labs" | "
   }
 }
 
-const INSTALLED_BUILD_KEY = "skylent:installed-build-id:v87"
-const LEGACY_BUILD_KEYS = ["skylent:installed-build-id:v80", "skylent:installed-build-id:v75", "skylent:installed-build-id:v1"]
-export const BUNDLED_CLIENT_BUILD_ID = "8.7.0:v87-20261106"
+const INSTALLED_BUILD_KEY = "skylent:installed-build-id:v88"
+const LEGACY_BUILD_KEYS = ["skylent:installed-build-id:v87", "skylent:installed-build-id:v80", "skylent:installed-build-id:v75", "skylent:installed-build-id:v1"]
+export const BUNDLED_CLIENT_BUILD_ID = "8.8.0:v88-202611061735"
 
 function tryExitNativeApp(): boolean {
   if (typeof window === "undefined") return false
@@ -95,16 +95,16 @@ export function NativeAppShellController() {
     try {
       const current = window.localStorage.getItem(INSTALLED_BUILD_KEY)
       if (current) return current
-      for (const k of LEGACY_BUILD_KEYS) {
-        const legacyVal = window.localStorage.getItem(k)
-        if (legacyVal) return legacyVal
-      }
-      // If running inside an older native APK binary (versionCode < 8700), return legacy marker so OTA auto-sync triggers immediately on first boot!
       const ua = typeof navigator !== "undefined" ? navigator.userAgent || "" : ""
-      if (isNativeAppShell() && !ua.includes("SkylentVersionCode/8700")) {
-        return "legacy-apk-shell"
+      const isCurrentV88Apk = ua.includes("SkylentVersionCode/8800")
+      if (!isCurrentV88Apk) {
+        for (const k of LEGACY_BUILD_KEYS) {
+          const legacyVal = window.localStorage.getItem(k)
+          if (legacyVal) return legacyVal
+        }
+        if (isNativeAppShell()) return "legacy-apk-shell"
       }
-      return BUNDLED_CLIENT_BUILD_ID
+      return null
     } catch {
       return null
     }
@@ -148,7 +148,16 @@ export function NativeAppShellController() {
   useEffect(() => {
     if (!isNative || !ready) return
     if (location.pathname === "/" || location.pathname === "/preview/homepage") {
-      if (user) {
+      if (!user) {
+        try {
+          if (!window.sessionStorage.getItem("skylent:apk-booted")) {
+            window.sessionStorage.setItem("skylent:apk-booted", "1")
+            navigate("/programmes", { replace: true })
+          }
+        } catch {
+          navigate("/programmes", { replace: true })
+        }
+      } else {
         const target =
           user.role === "admin" || user.role === "superadmin"
             ? "/dashboard/admin"
@@ -298,7 +307,9 @@ export function NativeAppShellController() {
     try {
       window.localStorage.setItem(INSTALLED_BUILD_KEY, remoteStamp)
       for (const k of LEGACY_BUILD_KEYS) window.localStorage.removeItem(k)
-      window.sessionStorage.clear()
+      if (isNativeAppShell()) {
+        window.localStorage.setItem("skylent:ota-live-mode", "1")
+      }
     } catch {
       // ignore
     }
@@ -398,40 +409,7 @@ export function NativeAppShellController() {
 
   return (
     <>
-      {isNative && !user && !location.pathname.startsWith("/login") && !location.pathname.startsWith("/signup") ? (
-        <div
-          role="region"
-          aria-label="Sign in to Skylent"
-          style={{
-            background: "linear-gradient(90deg, #0f172a 0%, #3b2d96 100%)",
-            color: "#ffffff",
-            padding: "9px 14px",
-            fontSize: 12.5,
-            fontWeight: 600,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            gap: 10,
-          }}
-        >
-          <span>Explore Skylent courses below or sign in to continue learning</span>
-          <Link
-            to="/login"
-            style={{
-              background: "#ffffff",
-              color: "#0f172a",
-              padding: "5px 12px",
-              borderRadius: 8,
-              fontSize: 12,
-              fontWeight: 700,
-              textDecoration: "none",
-              whiteSpace: "nowrap",
-            }}
-          >
-            Sign In →
-          </Link>
-        </div>
-      ) : null}
+
 
       {isOffline ? (
         <div
