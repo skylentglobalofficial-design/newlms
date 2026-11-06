@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Link, useLocation, useNavigate } from "react-router-dom"
 import { useAuth } from "../../context/AuthContext"
 import { apiV1, isNativeAppShell } from "../../lib/api-base"
-import { APP_VERSION, getNativeSessionToken } from "../../lib/native-app-bridge"
+import { APP_VERSION, getNativeCsrfToken, getNativeSessionToken } from "../../lib/native-app-bridge"
 
 type AppConfigPayload = {
   appVersion: string
@@ -68,6 +68,29 @@ function TabIcon({ name }: { name: "home" | "courses" | "workshops" | "labs" | "
 const INSTALLED_BUILD_KEY = "skylent:installed-build-id:v1"
 const DISMISSED_BUILD_KEY = "skylent:dismissed-build-id:v1"
 
+function tryExitNativeApp(): boolean {
+  if (typeof window === "undefined") return false
+  try {
+    const cap = (window as unknown as {
+      Capacitor?: {
+        Plugins?: { App?: { exitApp?: () => void } }
+      }
+    }).Capacitor
+    if (typeof cap?.Plugins?.App?.exitApp === "function") {
+      cap.Plugins.App.exitApp()
+      return true
+    }
+    const navApp = (navigator as unknown as { app?: { exitApp?: () => void } }).app
+    if (typeof navApp?.exitApp === "function") {
+      navApp.exitApp()
+      return true
+    }
+  } catch {
+    // ignore
+  }
+  return false
+}
+
 export function NativeAppShellController() {
   const location = useLocation()
   const navigate = useNavigate()
@@ -92,6 +115,66 @@ export function NativeAppShellController() {
   })
   const [updatingInApp, setUpdatingInApp] = useState(false)
   const [updateProgress, setUpdateProgress] = useState(0)
+  const [exitToastVisible, setExitToastVisible] = useState(false)
+  const lastBackPressRef = useRef<number>(0)
+
+  // Preload core route chunks right after boot so clicking any page opens in < 2 milliseconds!
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      void import("../../pages/DashboardStudentPage").catch(() => {})
+      void import("../../pages/career/CareerOSLayout").catch(() => {})
+      void import("../../pages/career/CareerOSOverviewPage").catch(() => {})
+      void import("../../pages/LearnPage").catch(() => {})
+      void import("../../pages/ProgramsPage").catch(() => {})
+      void import("../../pages/CoursesPage").catch(() => {})
+      void import("../../pages/CourseDetailPage").catch(() => {})
+      void import("../../pages/LoginPage").catch(() => {})
+    }, 120)
+    return () => window.clearTimeout(timer)
+  }, [])
+
+  // YouTube-style Double-Back to Exit on /dashboard/student (Overview) and /
+  useEffect(() => {
+    const isDashboardOverview =
+      location.pathname === "/dashboard/student" && !location.hash
+    const isRootHome = location.pathname === "/" && isNative
+    if (!isDashboardOverview && !isRootHome) {
+      setExitToastVisible(false)
+      return
+    }
+
+    // Push a lightweight guard entry so the first Back press triggers popstate here
+    const state = window.history.state as { skylentBackGuard?: boolean } | null
+    if (!state?.skylentBackGuard) {
+      window.history.pushState({ ...state, skylentBackGuard: true }, "", window.location.href)
+    }
+
+    const onPopState = () => {
+      const now = Date.now()
+      if (now - lastBackPressRef.current < 2500) {
+        // 2nd Back press within 2.5s -> exit APK or leave dashboard cleanly!
+        setExitToastVisible(false)
+        if (!tryExitNativeApp()) {
+          if (location.pathname.startsWith("/dashboard")) {
+            navigate("/", { replace: true })
+          } else if (window.history.length > 2) {
+            window.history.go(-2)
+          }
+        }
+        return
+      }
+      // 1st Back press -> show YouTube-style "Press back again to exit" toast & re-arm guard
+      lastBackPressRef.current = now
+      setExitToastVisible(true)
+      window.history.pushState({ skylentBackGuard: true }, "", window.location.href)
+      window.setTimeout(() => {
+        setExitToastVisible(false)
+      }, 2400)
+    }
+
+    window.addEventListener("popstate", onPopState)
+    return () => window.removeEventListener("popstate", onPopState)
+  }, [location.pathname, location.hash, isNative, navigate])
 
   useEffect(() => {
     const active = isNativeAppShell()
@@ -129,8 +212,6 @@ export function NativeAppShellController() {
             const currentStamp = `${data.appVersion}:${data.buildId || "live"}`
             try {
               const existing = window.localStorage.getItem(INSTALLED_BUILD_KEY)
-              // On web (skylent.live), record the initial stamp; on native APK, if no stamp was recorded yet,
-              // compare against bundled APP_VERSION so any server push immediately triggers the update banner!
               if (!existing && !isNativeAppShell()) {
                 window.localStorage.setItem(INSTALLED_BUILD_KEY, currentStamp)
                 setInstalledBuildId(currentStamp)
@@ -143,7 +224,7 @@ export function NativeAppShellController() {
         .catch(() => {})
     }
     checkConfig()
-    const timer = window.setInterval(checkConfig, 30_000)
+    const timer = window.setInterval(checkConfig, 25_000)
     const onVisibility = () => {
       if (document.visibilityState === "visible") checkConfig()
     }
@@ -173,13 +254,13 @@ export function NativeAppShellController() {
   async function triggerInAppUpdate() {
     if (!appConfig || !remoteStamp) return
     setUpdatingInApp(true)
-    setUpdateProgress(20)
+    setUpdateProgress(25)
     try {
       if ("serviceWorker" in navigator) {
         const regs = await navigator.serviceWorker.getRegistrations()
         await Promise.all(regs.map((r) => r.unregister()))
       }
-      setUpdateProgress(60)
+      setUpdateProgress(65)
       if ("caches" in window) {
         const keys = await caches.keys()
         await Promise.all(keys.map((k) => caches.delete(k)))
@@ -188,6 +269,7 @@ export function NativeAppShellController() {
       try {
         window.localStorage.setItem(INSTALLED_BUILD_KEY, remoteStamp)
         window.localStorage.setItem(DISMISSED_BUILD_KEY, remoteStamp)
+        window.localStorage.setItem("skylent:ota-live-mode", "1")
       } catch {
         // ignore
       }
@@ -195,28 +277,26 @@ export function NativeAppShellController() {
       setDismissedBuildKey(remoteStamp)
       setTimeout(() => {
         setUpdateProgress(100)
-        // If running inside Capacitor local host (https://localhost), load the live updated origin from https://skylent.live
-        // so the APK immediately renders the latest pushed UI without needing a Play Store reinstall!
         if (
           typeof window !== "undefined" &&
-          (window.location.hostname === "localhost" || window.location.hostname === "app.skylent.local") &&
-          isNative
+          (window.location.hostname === "localhost" || window.location.hostname === "app.skylent.local")
         ) {
           const token = getNativeSessionToken()
+          const csrf = getNativeCsrfToken()
           const targetPath = window.location.pathname + window.location.search + window.location.hash
           const separator = targetPath.includes("?") ? "&" : "?"
-          window.location.href = `https://skylent.live${targetPath}${separator}nativeApp=1${token ? `&nativeToken=${encodeURIComponent(token)}` : ""}`
+          window.location.replace(
+            `https://skylent.live${targetPath}${separator}nativeApp=1${token ? `&nativeToken=${encodeURIComponent(token)}` : ""}${csrf ? `&nativeCsrf=${encodeURIComponent(csrf)}` : ""}`,
+          )
           return
         }
         window.location.reload()
-      }, 350)
+      }, 300)
     } catch {
       window.location.reload()
     }
   }
 
-  // Hide the public bottom bar inside ALL Dashboards, Career OS, Lesson Player, Checkout, and Auth routes
-  // so Career OS and Student Dashboard ALWAYS keep their unified AuthDashboardShell navigation!
   const isWorkspaceOrAuthRoute =
     location.pathname.startsWith("/dashboard") ||
     location.pathname.startsWith("/career-os") ||
@@ -326,7 +406,7 @@ export function NativeAppShellController() {
           }}
         >
           <span>
-            🚀 <strong>New Update v{appConfig.appVersion}</strong>
+            🚀 <strong>New Update Available</strong>
             {appConfig.updateTitle ? ` — ${appConfig.updateTitle}` : " is ready to apply!"}
           </span>
           <button
@@ -369,6 +449,32 @@ export function NativeAppShellController() {
           >
             Later
           </button>
+        </div>
+      ) : null}
+
+      {/* YouTube-Style Double-Back to Exit Toast */}
+      {exitToastVisible ? (
+        <div
+          role="status"
+          aria-live="polite"
+          style={{
+            position: "fixed",
+            bottom: "calc(78px + env(safe-area-inset-bottom, 0px))",
+            left: "50%",
+            transform: "translateX(-50%)",
+            zIndex: 99999,
+            background: "rgba(15, 23, 42, 0.92)",
+            color: "#ffffff",
+            padding: "10px 20px",
+            borderRadius: 999,
+            fontSize: 13,
+            fontWeight: 700,
+            boxShadow: "0 10px 25px rgba(0, 0, 0, 0.35)",
+            whiteSpace: "nowrap",
+            pointerEvents: "none",
+          }}
+        >
+          Press back again to exit
         </div>
       ) : null}
 

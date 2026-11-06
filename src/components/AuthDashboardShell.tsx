@@ -106,7 +106,11 @@ export function AuthDashboardShell({
     onNavChange(item.id)
     setMobileOpen(false)
     if (item.href) {
-      navigate(item.href)
+      // Avoid piling up multiple hash history entries when switching between dashboard tabs
+      const targetPathname = item.href.split("#")[0] || location.pathname
+      const samePageTabSwitch =
+        targetPathname === location.pathname && Boolean(location.hash) && item.href.includes("#")
+      navigate(item.href, { replace: samePageTabSwitch })
       return
     }
     requestAnimationFrame(() => {

@@ -49,6 +49,7 @@ const AuthContext = createContext<AuthContextValue | null>(null)
 
 const isDemoMode = import.meta.env.VITE_DEMO_MODE === "true"
 const DEMO_STORAGE_KEY = "skylent:active-demo-user:v1"
+const AUTH_CACHE_KEY = "skylent:cached-auth-user:v1"
 
 function readStoredDemoUser(): AuthUser | null {
   if (typeof window === "undefined") return null
@@ -71,6 +72,37 @@ function writeStoredDemoUser(user: AuthUser | null) {
   }
 }
 
+function readCachedAuthSession(): { user: AuthUser; roles: UserRole[] } | null {
+  if (typeof window === "undefined") return null
+  try {
+    const raw = window.localStorage.getItem(AUTH_CACHE_KEY)
+    if (!raw) return null
+    const parsed = JSON.parse(raw) as { user?: AuthUser; roles?: UserRole[] }
+    if (parsed?.user?.id && parsed?.user?.email) {
+      return {
+        user: parsed.user,
+        roles: Array.isArray(parsed.roles) && parsed.roles.length > 0 ? parsed.roles : [parsed.user.role],
+      }
+    }
+  } catch {
+    // ignore
+  }
+  return null
+}
+
+function writeCachedAuthSession(user: AuthUser | null, roles: UserRole[]) {
+  if (typeof window === "undefined") return
+  try {
+    if (user) {
+      window.localStorage.setItem(AUTH_CACHE_KEY, JSON.stringify({ user, roles }))
+    } else {
+      window.localStorage.removeItem(AUTH_CACHE_KEY)
+    }
+  } catch {
+    // ignore
+  }
+}
+
 function toAuthUser(response: {
   user: { id: string; name: string; displayName?: string; email: string; avatar: string; nameChangeLockedUntil?: string | null }
   role: UserRole
@@ -90,17 +122,22 @@ function toAuthUser(response: {
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<AuthUser | null>(() => readStoredDemoUser())
+  const initialDemo = readStoredDemoUser()
+  const initialCached = readCachedAuthSession()
+  const [user, setUser] = useState<AuthUser | null>(() => initialDemo ?? initialCached?.user ?? null)
   const [roles, setRoles] = useState<UserRole[]>(() => {
-    const stored = readStoredDemoUser()
-    return stored ? [stored.role] : []
+    if (initialDemo) return [initialDemo.role]
+    if (initialCached) return initialCached.roles
+    return []
   })
-  const [ready, setReady] = useState(false)
+  // Ready immediately if we have a cached session or demo user so routes render in 0ms!
+  const [ready, setReady] = useState<boolean>(() => Boolean(initialDemo || initialCached))
 
   useEffect(() => {
     setUnauthorizedHandler(() => {
       setUser((current) => {
         if (current?.id.startsWith("demo-")) return current
+        writeCachedAuthSession(null, [])
         return null
       })
       setRoles((currentRoles) => {
@@ -121,29 +158,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const session = await fetchCurrentUser()
         if (cancelled) return
         if (session) {
+          const nextUser = toAuthUser(session)
           writeStoredDemoUser(null)
-          setUser(toAuthUser(session))
+          writeCachedAuthSession(nextUser, session.roles)
+          setUser(nextUser)
           setRoles(session.roles)
         } else if (storedDemo) {
           setUser(storedDemo)
           setRoles([storedDemo.role])
+        } else {
+          writeCachedAuthSession(null, [])
+          setUser(null)
+          setRoles([])
         }
       } catch {
         if (!cancelled) {
           if (storedDemo) {
             setUser(storedDemo)
             setRoles([storedDemo.role])
-          } else {
-            setUser(null)
-            setRoles([])
           }
+          // If network temporarily failed, keep cached user if available
         }
       } finally {
         if (!cancelled) setReady(true)
       }
     }
 
-    restoreSession()
+    void restoreSession()
     return () => {
       cancelled = true
     }
@@ -153,6 +194,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const session = await loginRequest({ email, password })
     const nextUser = toAuthUser(session)
     writeStoredDemoUser(null)
+    writeCachedAuthSession(nextUser, session.roles)
     setUser(nextUser)
     setRoles(session.roles)
     return nextUser.role
@@ -162,6 +204,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const session = await signupRequest({ name, email, password, acceptedTerms, emailOtp })
     const nextUser = toAuthUser(session)
     writeStoredDemoUser(null)
+    writeCachedAuthSession(nextUser, session.roles)
     setUser(nextUser)
     setRoles(session.roles)
     return nextUser.role
@@ -171,6 +214,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const session = await verifyEmailOtpRequest(input)
     const nextUser = toAuthUser(session)
     writeStoredDemoUser(null)
+    writeCachedAuthSession(nextUser, session.roles)
     setUser(nextUser)
     setRoles(session.roles)
     return nextUser.role
@@ -180,6 +224,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const session = await verifyMobileOtpRequest(input)
     const nextUser = toAuthUser(session)
     writeStoredDemoUser(null)
+    writeCachedAuthSession(nextUser, session.roles)
     setUser(nextUser)
     setRoles(session.roles)
     return nextUser.role
@@ -191,6 +236,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (session) {
         const nextUser = toAuthUser(session)
         writeStoredDemoUser(null)
+        writeCachedAuthSession(nextUser, session.roles)
         setUser(nextUser)
         setRoles(session.roles)
         return nextUser
@@ -207,7 +253,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const updateDisplayName = useCallback(async (displayName: string) => {
     const session = await updateProfileRequest({ displayName })
-    setUser(toAuthUser(session))
+    const nextUser = toAuthUser(session)
+    writeCachedAuthSession(nextUser, session.roles)
+    setUser(nextUser)
     setRoles(session.roles)
   }, [])
 
@@ -219,6 +267,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = useCallback(async () => {
     writeStoredDemoUser(null)
+    writeCachedAuthSession(null, [])
     try {
       await logoutRequest()
     } catch {

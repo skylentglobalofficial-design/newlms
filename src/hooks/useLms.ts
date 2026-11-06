@@ -19,63 +19,88 @@ export type LmsAccessState =
   | { status: "not_enrolled"; courseSlug: string; courseTitle: string }
   | { status: "ready"; workspace: ApiCourseWorkspace; course: LmsCourseView }
 
-const DASHBOARD_CACHE_KEY = "skylent:v62:lms-dashboard"
-const COURSE_CACHE_PREFIX = "skylent:v62:lms-course:"
+const DASH_CACHE_KEY = "skylent:lms:dashboard:v1"
+let memDashboardWorkspace: ApiCourseWorkspace | null = null
+const memCourseWorkspaces = new Map<string, ApiCourseWorkspace>()
 
-function readCachedWorkspace(key: string): ApiCourseWorkspace | null {
+function readCachedDashboard(): ApiCourseWorkspace | null {
+  if (memDashboardWorkspace) return memDashboardWorkspace
   if (typeof window === "undefined") return null
   try {
-    const raw = window.sessionStorage.getItem(key)
+    const raw = window.sessionStorage.getItem(DASH_CACHE_KEY)
     if (!raw) return null
-    const parsed = JSON.parse(raw) as { ts?: number; data?: ApiCourseWorkspace }
-    if (!parsed?.data?.course?.slug || !parsed.ts) return null
-    if (Date.now() - parsed.ts > 5 * 60 * 1000) return null
-    return parsed.data
+    const parsed = JSON.parse(raw) as ApiCourseWorkspace
+    memDashboardWorkspace = parsed
+    return parsed
   } catch {
     return null
   }
 }
 
-function writeCachedWorkspace(key: string, data: ApiCourseWorkspace | null) {
+function writeCachedDashboard(ws: ApiCourseWorkspace | null) {
+  memDashboardWorkspace = ws
   if (typeof window === "undefined") return
   try {
-    if (!data) {
-      window.sessionStorage.removeItem(key)
-      return
-    }
-    window.sessionStorage.setItem(key, JSON.stringify({ ts: Date.now(), data }))
+    if (ws) window.sessionStorage.setItem(DASH_CACHE_KEY, JSON.stringify(ws))
+    else window.sessionStorage.removeItem(DASH_CACHE_KEY)
   } catch {
-    // ignore storage quota
+    // ignore
+  }
+}
+
+function readCachedCourseWorkspace(slug: string): ApiCourseWorkspace | null {
+  const mem = memCourseWorkspaces.get(slug)
+  if (mem) return mem
+  if (memDashboardWorkspace?.course?.slug === slug) return memDashboardWorkspace
+  if (typeof window === "undefined") return null
+  try {
+    const raw = window.sessionStorage.getItem(`skylent:lms:course:${slug}:v1`)
+    if (!raw) return null
+    const parsed = JSON.parse(raw) as ApiCourseWorkspace
+    memCourseWorkspaces.set(slug, parsed)
+    return parsed
+  } catch {
+    return null
+  }
+}
+
+function writeCachedCourseWorkspace(slug: string, ws: ApiCourseWorkspace) {
+  memCourseWorkspaces.set(slug, ws)
+  if (typeof window === "undefined") return
+  try {
+    window.sessionStorage.setItem(`skylent:lms:course:${slug}:v1`, JSON.stringify(ws))
+  } catch {
+    // ignore
   }
 }
 
 export function useLmsDashboard() {
-  const initialCached = readCachedWorkspace(DASHBOARD_CACHE_KEY)
-  const [workspace, setWorkspace] = useState<ApiCourseWorkspace | null>(initialCached)
-  const [loading, setLoading] = useState(initialCached === null)
+  const initial = readCachedDashboard()
+  const [workspace, setWorkspace] = useState<ApiCourseWorkspace | null>(initial)
+  const [loading, setLoading] = useState(!initial)
   const [error, setError] = useState<string | null>(null)
 
   const reload = useCallback(async (options?: { silent?: boolean }) => {
-    const hasCached = readCachedWorkspace(DASHBOARD_CACHE_KEY) !== null
-    if (!options?.silent && !hasCached) setLoading(true)
+    const cached = readCachedDashboard()
+    if (!options?.silent && !cached) setLoading(true)
     setError(null)
     try {
       const data = await fetchLmsDashboard()
-      setWorkspace(data)
-      writeCachedWorkspace(DASHBOARD_CACHE_KEY, data)
+      writeCachedDashboard(data)
       if (data?.course?.slug) {
-        writeCachedWorkspace(`${COURSE_CACHE_PREFIX}${data.course.slug}`, data)
+        writeCachedCourseWorkspace(data.course.slug, data)
       }
+      setWorkspace(data)
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load dashboard")
-      if (!options?.silent && !hasCached) setWorkspace(null)
+      if (!options?.silent && !cached) setWorkspace(null)
     } finally {
       setLoading(false)
     }
   }, [])
 
   useEffect(() => {
-    void reload({ silent: initialCached !== null })
+    void reload({ silent: Boolean(readCachedDashboard()) })
   }, [reload])
 
   const course = workspace ? workspaceToCourse(workspace) : null
@@ -91,7 +116,7 @@ export function useLmsDashboard() {
 export function useLmsCourse(slug: string | undefined) {
   const [access, setAccess] = useState<LmsAccessState>(() => {
     if (!slug) return { status: "loading" }
-    const cached = readCachedWorkspace(`${COURSE_CACHE_PREFIX}${slug}`)
+    const cached = readCachedCourseWorkspace(slug)
     if (cached) {
       return {
         status: "ready",
@@ -104,48 +129,41 @@ export function useLmsCourse(slug: string | undefined) {
 
   const reload = useCallback(async (options?: { silent?: boolean }) => {
     if (!slug) return
-    const cached = readCachedWorkspace(`${COURSE_CACHE_PREFIX}${slug}`)
-    if (!options?.silent && !cached) setAccess({ status: "loading" })
+    const cached = readCachedCourseWorkspace(slug)
+    if (!options?.silent && !cached) {
+      setAccess({ status: "loading" })
+    } else if (cached) {
+      setAccess({
+        status: "ready",
+        workspace: cached,
+        course: workspaceToCourse(cached),
+      })
+    }
     try {
-      // Fetch workspace and access in parallel to eliminate sequential round-trip wait
-      const [accessRes, workspaceRes] = await Promise.allSettled([
+      // Run access check and workspace fetch in parallel instead of sequentially!
+      const [accessInfo, workspaceRes] = await Promise.all([
         fetchCourseAccess(slug),
-        fetchCourseWorkspace(slug),
+        fetchCourseWorkspace(slug).catch(() => null),
       ])
-
-      if (workspaceRes.status === "fulfilled" && workspaceRes.value) {
-        const workspace = workspaceRes.value
-        writeCachedWorkspace(`${COURSE_CACHE_PREFIX}${slug}`, workspace)
+      if (!accessInfo.authenticated) {
+        setAccess({ status: "login_required" })
+        return
+      }
+      if (!accessInfo.enrolled || !accessInfo.canAccess) {
         setAccess({
-          status: "ready",
-          workspace,
-          course: workspaceToCourse(workspace),
+          status: "not_enrolled",
+          courseSlug: accessInfo.courseSlug ?? slug,
+          courseTitle: accessInfo.courseTitle ?? slug,
         })
         return
       }
-
-      if (accessRes.status === "fulfilled") {
-        const accessInfo = accessRes.value
-        if (!accessInfo.authenticated) {
-          setAccess({ status: "login_required" })
-          return
-        }
-        if (!accessInfo.enrolled || !accessInfo.canAccess) {
-          setAccess({
-            status: "not_enrolled",
-            courseSlug: accessInfo.courseSlug ?? slug,
-            courseTitle: accessInfo.courseTitle ?? slug,
-          })
-          return
-        }
-      }
-
-      if (accessRes.status === "rejected") {
-        throw accessRes.reason
-      }
-      if (workspaceRes.status === "rejected") {
-        throw workspaceRes.reason
-      }
+      const workspace = workspaceRes ?? (await fetchCourseWorkspace(slug))
+      writeCachedCourseWorkspace(slug, workspace)
+      setAccess({
+        status: "ready",
+        workspace,
+        course: workspaceToCourse(workspace),
+      })
     } catch (err) {
       const message = err instanceof Error ? err.message : ""
       if (message === "Sign in to continue.") {
@@ -160,25 +178,14 @@ export function useLmsCourse(slug: string | undefined) {
   }, [slug])
 
   useEffect(() => {
-    if (!slug) return
-    const cached = readCachedWorkspace(`${COURSE_CACHE_PREFIX}${slug}`)
-    if (cached) {
-      setAccess({
-        status: "ready",
-        workspace: cached,
-        course: workspaceToCourse(cached),
-      })
-      void reload({ silent: true })
-    } else {
-      void reload()
-    }
-  }, [slug, reload])
+    void reload({ silent: Boolean(slug && readCachedCourseWorkspace(slug)) })
+  }, [reload, slug])
 
   const enroll = useCallback(async (acceptedTerms: boolean) => {
     if (!slug) return
     const workspace = await enrollInCourse(slug, acceptedTerms)
-    writeCachedWorkspace(`${COURSE_CACHE_PREFIX}${slug}`, workspace)
-    writeCachedWorkspace(DASHBOARD_CACHE_KEY, workspace)
+    writeCachedCourseWorkspace(slug, workspace)
+    writeCachedDashboard(workspace)
     setAccess({
       status: "ready",
       workspace,
@@ -201,8 +208,8 @@ export function useLmsCourse(slug: string | undefined) {
     lessonStates[lessonId] ?? { ...EMPTY_LESSON_STATE }
 
   const patchWorkspace = useCallback((workspace: ApiCourseWorkspace) => {
-    if (slug) writeCachedWorkspace(`${COURSE_CACHE_PREFIX}${slug}`, workspace)
-    writeCachedWorkspace(DASHBOARD_CACHE_KEY, workspace)
+    if (slug) writeCachedCourseWorkspace(slug, workspace)
+    writeCachedDashboard(workspace)
     setAccess({
       status: "ready",
       workspace,
@@ -224,8 +231,8 @@ export function useLmsCourse(slug: string | undefined) {
         progressPct,
         allComplete: completedCount === totalLessons,
       }
-      if (slug) writeCachedWorkspace(`${COURSE_CACHE_PREFIX}${slug}`, newWorkspace)
-      writeCachedWorkspace(DASHBOARD_CACHE_KEY, newWorkspace)
+      if (slug) writeCachedCourseWorkspace(slug, newWorkspace)
+      writeCachedDashboard(newWorkspace)
       return {
         status: "ready",
         workspace: newWorkspace,

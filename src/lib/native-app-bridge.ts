@@ -1,11 +1,5 @@
 /**
- * Skylent Universal Web & Native APK Runtime Bridge (Security, API Rewriting & Token Vault)
- *
- * Ensures that across both the Website and the compiled Android `.apk` / `.aab`:
- * 1. In APK mode, the UI runs 100% from bundled local assets or live production shell inside the APK.
- * 2. Every relative `/api/v1/...` request is transparently routed to `https://skylent.live/api/v1/...` in APK mode.
- * 3. Session & CSRF tokens are stored securely (`Authorization: Bearer` + `X-CSRF-Token`) across both
- *    Web and APK so browser/WebView cookie restrictions never break Login, Enrollment, or Course Builder.
+ * Skylent Universal Web & Native APK Runtime Bridge (Security, Live OTA Sync, API Rewriting & Token Vault)
  */
 import { isNativeAppShell, PRODUCTION_API_ORIGIN } from "./api-base"
 
@@ -62,9 +56,50 @@ export function installNativeAppBridge() {
   if (bridgeInstalled || typeof window === "undefined") return
   bridgeInstalled = true
 
+  // Restore native session & shell mode if redirected from Capacitor localhost to live https://skylent.live
+  try {
+    const params = new URLSearchParams(window.location.search)
+    if (params.get("nativeApp") === "1") {
+      window.sessionStorage.setItem("skylent:native-shell", "1")
+      const urlToken = params.get("nativeToken")
+      const urlCsrf = params.get("nativeCsrf")
+      if (urlToken) setNativeSessionToken(urlToken)
+      if (urlCsrf) setNativeCsrfToken(urlCsrf)
+      params.delete("nativeToken")
+      params.delete("nativeCsrf")
+      const cleanQuery = params.toString()
+      const cleanUrl =
+        window.location.pathname +
+        (cleanQuery ? `?${cleanQuery}` : "") +
+        window.location.hash
+      window.history.replaceState(null, "", cleanUrl)
+    }
+  } catch {
+    // ignore URL parse errors
+  }
+
   const nativeMode = isNativeAppShell()
   if (nativeMode) {
     document.documentElement.setAttribute("data-native-app", "true")
+    // If running inside Capacitor localhost and OTA live mode was activated, boot straight into https://skylent.live!
+    try {
+      if (
+        (window.location.hostname === "localhost" || window.location.hostname === "app.skylent.local") &&
+        navigator.onLine &&
+        window.localStorage.getItem("skylent:ota-live-mode") === "1"
+      ) {
+        const token = getNativeSessionToken()
+        const csrf = getNativeCsrfToken()
+        const target = window.location.pathname + window.location.search + window.location.hash
+        const sep = target.includes("?") ? "&" : "?"
+        window.location.replace(
+          `${PRODUCTION_API_ORIGIN}${target}${sep}nativeApp=1${token ? `&nativeToken=${encodeURIComponent(token)}` : ""}${csrf ? `&nativeCsrf=${encodeURIComponent(csrf)}` : ""}`,
+        )
+        return
+      }
+    } catch {
+      // ignore
+    }
   }
 
   const originalFetch = window.fetch.bind(window)
@@ -78,7 +113,7 @@ export function installNativeAppBridge() {
       urlString.startsWith(`${PRODUCTION_API_ORIGIN}/api/`) ||
       urlString.includes("/api/v1/")
 
-    if (activeNative && urlString.startsWith("/api/")) {
+    if (activeNative && urlString.startsWith("/api/") && window.location.hostname !== "skylent.live") {
       urlString = `${PRODUCTION_API_ORIGIN}${urlString}`
     }
 
@@ -108,7 +143,6 @@ export function installNativeAppBridge() {
 
     const response = await originalFetch(urlString, nextInit)
 
-    // Inspect auth responses to persist or clear session/CSRF tokens automatically
     if (urlString.includes("/api/v1/auth/")) {
       if (urlString.endsWith("/logout") && response.ok) {
         clearNativeAuthVault()

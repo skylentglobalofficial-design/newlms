@@ -6,8 +6,11 @@ import { describeAiReadiness } from "../lib/skylent-ai/service.js"
 
 const router = Router()
 
-export const DEPLOYED_APP_VERSION = "1.4.0"
-export const DEPLOYED_BUILD_ID = "v74-202611061057"
+// Dynamic boot version ensures EVERY `git push origin main` on Hostinger automatically
+// increments appVersion (> any installed APK version) and triggers the In-App Update banner!
+const BOOT_MINUTE = Math.max(1, Math.floor(Date.now() / 60000) - 29900000)
+export const DEPLOYED_APP_VERSION = `85.${BOOT_MINUTE}.0`
+export const DEPLOYED_BUILD_ID = `v75-${Date.now()}`
 
 function releaseSha(): string {
   const sha = process.env.SKYLENT_RELEASE_SHA?.trim() ?? ""
@@ -70,10 +73,10 @@ router.get("/live", (_request, response) => {
 router.get("/app-config", (_request, response) => {
   response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate")
   response.json({
-    appVersion: process.env.SKYLENT_APP_VERSION?.trim() || DEPLOYED_APP_VERSION,
-    minSupportedAppVersion: process.env.SKYLENT_MIN_APP_VERSION?.trim() || "1.0.0",
+    appVersion: DEPLOYED_APP_VERSION,
+    minSupportedAppVersion: "1.0.0",
     buildId: DEPLOYED_BUILD_ID,
-    updateTitle: "New Skylent Update Live (UI Polish, Plans & Security)",
+    updateTitle: "New Skylent Live Update (Instant Load & UI Polish)",
     apkDownloadUrl: "https://skylent.live/skylent-latest.apk",
     playStoreUrl:
       process.env.SKYLENT_PLAY_STORE_URL?.trim() ||

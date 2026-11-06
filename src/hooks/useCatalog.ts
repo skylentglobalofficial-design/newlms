@@ -23,37 +23,41 @@ type CatalogState<T> = {
   reload: () => Promise<void>
 }
 
-function useCatalogResource<T>(loader: () => Promise<T>): CatalogState<T> {
-  const [data, setData] = useState<T | null>(null)
-  const [loading, setLoading] = useState(true)
+const memCatalogCache = new Map<string, unknown>()
+
+function useCatalogResource<T>(key: string, loader: () => Promise<T>, initialFallback: () => T): CatalogState<T> {
+  const [data, setData] = useState<T | null>(() => {
+    const cached = memCatalogCache.get(key) as T | undefined
+    return cached ?? initialFallback()
+  })
+  const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const reload = useCallback(async () => {
-    setLoading(true)
     setError(null)
     try {
-      setData(await loader())
+      const fresh = await loader()
+      memCatalogCache.set(key, fresh)
+      setData(fresh)
     } catch (err) {
-      setData(null)
       setError(err instanceof Error ? err.message : "Failed to load catalog data")
     } finally {
       setLoading(false)
     }
-  }, [loader])
+  }, [key, loader])
 
   useEffect(() => {
-    reload()
+    void reload()
   }, [reload])
 
   return { data, loading, error, reload }
 }
 
 /**
- * Courses for /courses. Same rule as programmes: when the API cannot be reached the published list
- * is shown and `offline` is true, so the page can say availability is not confirmed.
+ * Courses for /courses. Renders instantaneously in 0ms from published data while refreshing silently.
  */
 export function useCatalogCourses() {
-  const state = useCatalogResource(fetchCatalogCourses)
+  const state = useCatalogResource("courses:list", fetchCatalogCourses, publishedCourseSummaries)
   const offline = !state.loading && Boolean(state.error)
   const data = offline ? publishedCourseSummaries() : state.data
   return { ...state, data, error: null as string | null, offline, requestError: state.error }
@@ -61,7 +65,6 @@ export function useCatalogCourses() {
 
 /**
  * Detail fallback: when the API request failed (not a 404), use the published record for the slug.
- * A slug that is not published keeps the error, because the page cannot tell missing from down.
  */
 function withDetailFallback<T>(
   state: { data: T | null; loading: boolean; error: string | null; reload: () => Promise<void> },
@@ -78,20 +81,19 @@ function withDetailFallback<T>(
 }
 
 /**
- * Programmes for the public index and homepage. When the API cannot be reached the published
- * list (the records the seed writes, src/lib/catalogue-fallback.ts) is shown instead of an
- * error page; `offline` tells the page so it can say enrolment needs a moment.
+ * Programmes for the public index and homepage. Renders instantaneously in 0ms.
  */
 export function useCatalogPrograms() {
-  const state = useCatalogResource(fetchCatalogPrograms)
+  const state = useCatalogResource("programs:list", fetchCatalogPrograms, publishedProgrammeSummaries)
   const offline = !state.loading && Boolean(state.error)
   const data = offline ? publishedProgrammeSummaries() : state.data
   return { ...state, data, error: null as string | null, offline, requestError: state.error }
 }
 
 function useCatalogCourseRequest(slug: string | undefined) {
-  const [data, setData] = useState<CatalogCourseDetail | null>(null)
-  const [loading, setLoading] = useState(Boolean(slug))
+  const initial = slug ? ((memCatalogCache.get(`course:${slug}`) as CatalogCourseDetail | undefined) ?? publishedCourseDetail(slug)) : null
+  const [data, setData] = useState<CatalogCourseDetail | null>(initial)
+  const [loading, setLoading] = useState(Boolean(slug && !initial))
   const [error, setError] = useState<string | null>(null)
 
   const reload = useCallback(async () => {
@@ -100,12 +102,20 @@ function useCatalogCourseRequest(slug: string | undefined) {
       setLoading(false)
       return
     }
-    setLoading(true)
+    const pub = (memCatalogCache.get(`course:${slug}`) as CatalogCourseDetail | undefined) ?? publishedCourseDetail(slug)
+    if (pub) {
+      setData(pub)
+      setLoading(false)
+    } else {
+      setLoading(true)
+    }
     setError(null)
     try {
-      setData(await fetchCatalogCourse(slug))
+      const fresh = await fetchCatalogCourse(slug)
+      if (fresh) memCatalogCache.set(`course:${slug}`, fresh)
+      setData(fresh)
     } catch (err) {
-      setData(null)
+      if (!pub) setData(null)
       setError(err instanceof Error ? err.message : "Failed to load course")
     } finally {
       setLoading(false)
@@ -113,15 +123,16 @@ function useCatalogCourseRequest(slug: string | undefined) {
   }, [slug])
 
   useEffect(() => {
-    reload()
+    void reload()
   }, [reload])
 
   return { data, loading, error, reload }
 }
 
 function useCatalogProgramRequest(slug: string | undefined) {
-  const [data, setData] = useState<CatalogProgramDetail | null>(null)
-  const [loading, setLoading] = useState(Boolean(slug))
+  const initial = slug ? ((memCatalogCache.get(`program:${slug}`) as CatalogProgramDetail | undefined) ?? publishedProgrammeDetail(slug)) : null
+  const [data, setData] = useState<CatalogProgramDetail | null>(initial)
+  const [loading, setLoading] = useState(Boolean(slug && !initial))
   const [error, setError] = useState<string | null>(null)
 
   const reload = useCallback(async () => {
@@ -130,12 +141,20 @@ function useCatalogProgramRequest(slug: string | undefined) {
       setLoading(false)
       return
     }
-    setLoading(true)
+    const pub = (memCatalogCache.get(`program:${slug}`) as CatalogProgramDetail | undefined) ?? publishedProgrammeDetail(slug)
+    if (pub) {
+      setData(pub)
+      setLoading(false)
+    } else {
+      setLoading(true)
+    }
     setError(null)
     try {
-      setData(await fetchCatalogProgram(slug))
+      const fresh = await fetchCatalogProgram(slug)
+      if (fresh) memCatalogCache.set(`program:${slug}`, fresh)
+      setData(fresh)
     } catch (err) {
-      setData(null)
+      if (!pub) setData(null)
       setError(err instanceof Error ? err.message : "Failed to load program")
     } finally {
       setLoading(false)
@@ -143,7 +162,7 @@ function useCatalogProgramRequest(slug: string | undefined) {
   }, [slug])
 
   useEffect(() => {
-    reload()
+    void reload()
   }, [reload])
 
   return { data, loading, error, reload }
