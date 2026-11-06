@@ -34,6 +34,19 @@ type CounselorCouponRequest = {
   reviewedAt?: string
 }
 
+type AbandonedLead = {
+  id: string
+  txnid: string
+  email: string
+  firstname: string
+  phone: string
+  targetSlug: string
+  tier: string
+  amount: number
+  status: "INITIATED" | "CANCELLED"
+  updatedAt: string
+}
+
 type GatewayConfig = {
   payuEnabled: boolean
   upiEnabled: boolean
@@ -69,6 +82,7 @@ const inputStyle = {
 export default function AdminPricingAndCouponsPanel() {
   const [coupons, setCoupons] = useState<AdminCoupon[]>([])
   const [requests, setRequests] = useState<CounselorCouponRequest[]>([])
+  const [abandonedLeads, setAbandonedLeads] = useState<AbandonedLead[]>([])
   const [overrides, setOverrides] = useState<Record<string, LocalPriceOverride>>(() =>
     readAdminPriceOverrides(),
   )
@@ -146,6 +160,7 @@ export default function AdminPricingAndCouponsPanel() {
       if (payload?.data) {
         if (Array.isArray(payload.data.coupons)) setCoupons(payload.data.coupons)
         if (Array.isArray(payload.data.couponRequests)) setRequests(payload.data.couponRequests)
+        if (Array.isArray(payload.data.abandonedLeads)) setAbandonedLeads(payload.data.abandonedLeads)
         if (payload.data.priceOverrides) {
           setOverrides(payload.data.priceOverrides)
           saveAdminPriceOverridesLocal(payload.data.priceOverrides)
@@ -571,6 +586,83 @@ export default function AdminPricingAndCouponsPanel() {
             </span>
           </div>
         </div>
+
+                {/* Pillar 5: Hot Abandoned Checkout & Payment-Drop Leads for Counselors */}
+        {abandonedLeads.length > 0 ? (
+          <div
+            style={{
+              marginBottom: 18,
+              padding: "14px 16px",
+              borderRadius: 12,
+              background: "#fef2f2",
+              border: "1px solid #fecaca",
+            }}
+          >
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8, marginBottom: 10 }}>
+              <div>
+                <span style={{ fontSize: 10.5, fontFamily: "var(--font-mono)", fontWeight: 800, color: "#dc2626", textTransform: "uppercase" }}>
+                  🔥 HOT ABANDONED CHECKOUT &amp; PAYMENT-DROP LEADS ({abandonedLeads.length})
+                </span>
+                <p style={{ margin: "2px 0 0", fontSize: 12.5, color: "#7f1d1d" }}>
+                  Learners who started or cancelled PayU checkout. Counselors can call/email them and request an Admin-approved concession in 1 click.
+                </p>
+              </div>
+            </div>
+            <div style={{ display: "grid", gap: 8 }}>
+              {abandonedLeads.slice(0, 6).map((lead) => (
+                <div
+                  key={lead.id}
+                  style={{
+                    padding: "10px 12px",
+                    borderRadius: 10,
+                    background: "#ffffff",
+                    border: "1px solid #fca5a5",
+                    display: "flex",
+                    flexWrap: "wrap",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    gap: 10,
+                  }}
+                >
+                  <div>
+                    <strong style={{ fontSize: 13, color: "#0f172a" }}>
+                      {lead.firstname} ({lead.email}) · {lead.phone}
+                    </strong>
+                    <div style={{ fontSize: 12, color: "#475569" }}>
+                      Track: <strong>{lead.targetSlug}</strong> ({lead.tier}) · ₹{Number(lead.amount).toLocaleString("en-IN")} · Status:{" "}
+                      <span style={{ color: lead.status === "CANCELLED" ? "#dc2626" : "#d97706", fontWeight: 800 }}>
+                        {lead.status === "CANCELLED" ? "PAYMENT CANCELLED ON PAYU" : "CHECKOUT INITIATED"}
+                      </span>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setReqStudentEmail(lead.email)
+                      setReqTargetCourse(lead.targetSlug)
+                      setReqDiscountType("FLAT")
+                      setReqDiscountValue("500")
+                      setReqReason(`Follow-up on ${lead.status.toLowerCase()} PayU checkout (${lead.txnid}) for ${lead.targetSlug}.`)
+                      setShowCounselorRequestForm(true)
+                    }}
+                    style={{
+                      padding: "6px 12px",
+                      borderRadius: 8,
+                      border: "none",
+                      background: "#dc2626",
+                      color: "#ffffff",
+                      fontSize: 12,
+                      fontWeight: 700,
+                      cursor: "pointer",
+                    }}
+                  >
+                    + Request Discount for Lead
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : null}
 
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12, marginBottom: 14 }}>
           <div>

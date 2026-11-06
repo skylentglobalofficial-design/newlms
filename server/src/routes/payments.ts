@@ -97,6 +97,33 @@ let cachedGatewaySettings: AdminGatewaySettings = {
   merchantKey: "jUkwLy",
   mid: "13843036",
 }
+export type AbandonedCheckoutLead = {
+  id: string
+  txnid: string
+  email: string
+  firstname: string
+  phone: string
+  targetSlug: string
+  tier: string
+  amount: number
+  status: "INITIATED" | "CANCELLED"
+  updatedAt: string
+}
+
+let cachedAbandonedLeads: AbandonedCheckoutLead[] = [
+  {
+    id: "lead-sample-1",
+    txnid: "SKY-DROP-101",
+    email: "rohit.kumar.lead@gmail.com",
+    firstname: "Rohit",
+    phone: "9876501234",
+    targetSlug: "data-analytics",
+    tier: "professional",
+    amount: 3499,
+    status: "CANCELLED",
+    updatedAt: new Date(Date.now() - 18 * 60 * 1000).toISOString(),
+  },
+]
 let configLoadedFromDb = false
 
 async function ensureRuntimeTable() {
@@ -114,7 +141,7 @@ async function hydratePaymentsAdminConfig() {
   try {
     await ensureRuntimeTable()
     const rows = (await prisma.$queryRawUnsafe(
-      `SELECT "key", "value" FROM "_skylent_runtime_config" WHERE "key" IN ('price_overrides', 'admin_coupons', 'gateway_settings', 'counselor_coupon_requests')`,
+      `SELECT "key", "value" FROM "_skylent_runtime_config" WHERE "key" IN ('price_overrides', 'admin_coupons', 'gateway_settings', 'counselor_coupon_requests', 'abandoned_checkout_leads')`,
     )) as Array<{ key?: string; value?: string }>
     for (const row of rows) {
       if (!row.key || !row.value) continue
@@ -127,6 +154,9 @@ async function hydratePaymentsAdminConfig() {
       } else if (row.key === "counselor_coupon_requests") {
         const parsed = JSON.parse(row.value)
         if (Array.isArray(parsed)) cachedCouponRequests = parsed
+      } else if (row.key === "abandoned_checkout_leads") {
+        const parsed = JSON.parse(row.value)
+        if (Array.isArray(parsed)) cachedAbandonedLeads = parsed
       } else if (row.key === "gateway_settings") {
         const parsed = JSON.parse(row.value)
         if (parsed && typeof parsed === "object") {
@@ -291,6 +321,7 @@ paymentsRouter.get("/admin/coupons", ...adminGuards, async (_req: AuthenticatedR
       data: {
         coupons: cachedCoupons,
         couponRequests: cachedCouponRequests,
+        abandonedLeads: cachedAbandonedLeads,
         priceOverrides: cachedPriceOverrides,
         gatewaySettings: cachedGatewaySettings,
       },
@@ -656,6 +687,20 @@ paymentsRouter.post("/payu/initiate", async (req: AuthenticatedRequest, res) => 
           createdAt: new Date().toISOString(),
         }),
       )
+      const newLead: AbandonedCheckoutLead = {
+        id: `lead-${txnid}`,
+        txnid,
+        email,
+        firstname,
+        phone,
+        targetSlug,
+        tier,
+        amount: finalAmount,
+        status: "INITIATED",
+        updatedAt: new Date().toISOString(),
+      }
+      cachedAbandonedLeads = [newLead, ...cachedAbandonedLeads.filter((l) => l.email !== email || l.targetSlug !== targetSlug)].slice(0, 50)
+      await saveRuntimeKey("abandoned_checkout_leads", cachedAbandonedLeads).catch(() => undefined)
     } catch {
       // non-fatal
     }
@@ -723,6 +768,12 @@ paymentsRouter.post("/payu/response", async (req, res) => {
 
   if (!isValid || status !== "success") {
     console.warn(`[PayU Response] Payment not completed: status=${status}, txnid=${txnid}`)
+    if (email || txnid) {
+      cachedAbandonedLeads = cachedAbandonedLeads.map((l) =>
+        l.txnid === txnid || (email && l.email === email) ? { ...l, status: "CANCELLED", updatedAt: new Date().toISOString() } : l,
+      )
+      await saveRuntimeKey("abandoned_checkout_leads", cachedAbandonedLeads).catch(() => undefined)
+    }
     const safeReturn = storedMeta.returnPath && storedMeta.returnPath.startsWith("/") ? storedMeta.returnPath : null
     const fallbackUrl = safeReturn
       ? `${safeReturn}${safeReturn.includes("?") ? "&" : "?"}payment=cancelled`

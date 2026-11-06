@@ -567,7 +567,7 @@ export default function LoginPage() {
 
               {signingIn && authMethod === 'email_otp' ? (
                 !otpSent ? (
-                  <form className="entry-form" onSubmit={handleSendEmailLoginOtp} noValidate>
+                  <form method="post" className="entry-form" onSubmit={handleSendEmailLoginOtp} noValidate>
                     <div className="entry-field">
                       <label htmlFor="otp-email">YOUR EMAIL ADDRESS</label>
                       <input
@@ -593,7 +593,7 @@ export default function LoginPage() {
                     </p>
                   </form>
                 ) : (
-                  <form className="entry-form" onSubmit={handleVerifyEmailLoginOtp} noValidate>
+                  <form method="post" className="entry-form" onSubmit={handleVerifyEmailLoginOtp} noValidate>
                     {otpSentMessage ? (
                       <div
                         role="status"
@@ -693,7 +693,7 @@ export default function LoginPage() {
                   </form>
                 )
               ) : signingIn ? (
-                <form className="entry-form" onSubmit={handleSignIn} noValidate>
+                <form method="post" className="entry-form" onSubmit={handleSignIn} noValidate>
                   <div className="entry-field">
                     <label htmlFor="si-email">EMAIL ADDRESS</label>
                     <input
@@ -758,7 +758,7 @@ export default function LoginPage() {
                   </p>
                 </form>
               ) : !suOtpSent ? (
-                <form className="entry-form" onSubmit={handleSignUpStep1SendOtp} noValidate>
+                <form method="post" className="entry-form" onSubmit={handleSignUpStep1SendOtp} noValidate>
                   <div className="entry-field">
                     <label htmlFor="su-name">FULL NAME (PRINTED ON CERTIFICATES)</label>
                     <input
@@ -831,7 +831,7 @@ export default function LoginPage() {
                   </p>
                 </form>
               ) : (
-                <form className="entry-form" onSubmit={handleSignUpStep2VerifyAndCreate} noValidate>
+                <form method="post" className="entry-form" onSubmit={handleSignUpStep2VerifyAndCreate} noValidate>
                   {suOtpMessage ? (
                     <div
                       role="status"

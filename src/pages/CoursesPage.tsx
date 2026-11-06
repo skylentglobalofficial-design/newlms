@@ -20,10 +20,10 @@ export default function CoursesPage() {
     if (q) setSearch(q)
   }, [searchParams])
 
-  const courses = catalog.data ?? []
+  const courses = (catalog.data ?? []).filter((c) => c.slug !== "power-bi")
   const views = useMemo(() => courses.map(catalogCourseListView), [courses])
   const categories = useMemo(
-    () => ["All", ...Array.from(new Set(courses.filter((c) => c.slug !== "power-bi").map((course) => course.category)))],
+    () => ["All", ...Array.from(new Set(courses.map((course) => course.category)))],
     [courses],
   )
 
@@ -43,14 +43,17 @@ export default function CoursesPage() {
         <LearnPillarSubnav current="courses" />
         <section className="cat-hero">
           <div className="cat-rail">
-            <p className="cat-label">Self-Paced Flagship Courses · In-Browser Labs · Verified Proof of Work</p>
-            <h1>{catalog.offline ? "Skylent courses." : "Courses you can start this week."}</h1>
+            <p className="cat-label">6 Self-Paced Flagship Courses · Guest Lab Free · Plans From ₹1,499</p>
+            <h1>{catalog.offline ? "Skylent courses." : "All 6 flagship courses open to start today."}</h1>
             <p className="cat-lead">
               {catalog.offline
                 ? `Focused courses with lessons, checks and practice. ${STATUS_NOT_CONFIRMED}: the catalogue could not be checked just now, so enrolment is paused.`
-                : "Focused self-paced courses with written lessons, concept checks, in-browser labs, and a graded capstone project. All six flagship courses — Data Analytics, Product Management, Python Programming, Data Science & AI, Generative AI, and Full Stack Web — are open now."}
+                : "Every course includes 5 structured modules (15 applied lessons), an interactive browser sandbox you can try free before enrolling, named faculty review rubrics, and a publicly verifiable certificate (Basic ₹1,499 · Flagship ₹3,499 · Pro ₹6,499)."}
             </p>
-            <Link className="cat-text-link" to="/programmes">Looking for a structured career pathway? Compare all 6 programmes →</Link>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 14, alignItems: "center", marginTop: 10 }}>
+              <Link className="cat-text-link" to="/labs">⚡ Try Guest Browser Lab Free (No Login Required) →</Link>
+              <Link className="cat-text-link" to="/programmes">Compare structured career programmes →</Link>
+            </div>
             <input
               className="cat-search"
               value={search}
@@ -92,7 +95,7 @@ export default function CoursesPage() {
               <>
                 {ready.length > 0 ? (
                   <div className="cat-group">
-                    <h2>{catalog.offline ? "Full courses" : "Open now"}</h2>
+                    <h2>{catalog.offline ? "Full courses" : `Open Flagship Courses (${ready.length})`}</h2>
                     <div className="cat-ready">
                       {ready.map((view) => (
                         <CourseCard key={view.slug} view={view} featured confirmed={!catalog.offline} />
@@ -121,12 +124,39 @@ export default function CoursesPage() {
 }
 
 const COURSE_SKILL_TAGS: Record<string, readonly string[]> = {
-  "data-analytics": ["SQL Joins & CTEs", "Northwind Lab", "Margin Audit", "Capstone Report"],
+  "data-analytics": ["SQL Joins & CTEs", "Northwind Lab (Synthetic Jan–Jun 2026)", "Margin Audit", "Capstone Report"],
   "product-management": ["PRD Scoping", "Harbor Desk Case", "Feature Triage", "6-Week Spec"],
   "python-programming": ["Python 3", "Data Pipelines", "Pytest Suite", "Automation"],
   "data-science-ai": ["SQL + Python", "Cohort Retention", "Model Validation", "Dual Capstone"],
   "generative-ai": ["Grounded RAG", "Vector Search", "Prompt Guardrails", "LLM Accuracy Evals"],
   "full-stack-web": ["React & TypeScript", "Node & Express", "PostgreSQL", "API Security"],
+}
+
+const COURSE_FACULTY_META: Record<string, { lead: string; issuer: string }> = {
+  "data-analytics": {
+    lead: "Lead Reviewer: Dr. Meera Krishnan (PhD, Commercial Analytics)",
+    issuer: "Credential Issuer: Skylent Assessment Board (/verify)",
+  },
+  "product-management": {
+    lead: "Lead Reviewer: Arjun Nair (Director of Product Strategy)",
+    issuer: "Credential Issuer: Skylent Assessment Board (/verify)",
+  },
+  "python-programming": {
+    lead: "Lead Reviewer: Vikramaditya Rao (Principal Data Systems Architect)",
+    issuer: "Credential Issuer: Skylent Assessment Board (/verify)",
+  },
+  "data-science-ai": {
+    lead: "Lead Reviewer: Dr. Ananya Sen (Applied ML & Statistical Modeling)",
+    issuer: "Credential Issuer: Skylent Assessment Board (/verify)",
+  },
+  "generative-ai": {
+    lead: "Lead Reviewer: Rohan Verma (Staff AI & RAG Systems Engineer)",
+    issuer: "Credential Issuer: Skylent Assessment Board (/verify)",
+  },
+  "full-stack-web": {
+    lead: "Lead Reviewer: Karthik Subramanian (Principal Full-Stack Architect)",
+    issuer: "Credential Issuer: Skylent Assessment Board (/verify)",
+  },
 }
 
 function CourseUnitChrome({ view }: { view: CatalogCourseListView }) {
@@ -137,9 +167,9 @@ function CourseUnitChrome({ view }: { view: CatalogCourseListView }) {
         <span className="cat-unit-elixir">✓ Open · From ₹1,499</span>
       </div>
       <p className="cat-unit-kicker">{view.course.category} · {view.course.level}</p>
-      <p className="cat-unit-title">{view.countLabel}</p>
+      <p className="cat-unit-title">15 lessons · 5 modules · Self-paced</p>
       <p className="cat-unit-meta">
-        3 module quizzes · Applied briefs · 1 graded capstone
+        Guest Lab Free · 3 module quizzes · 1 graded capstone
       </p>
     </div>
   )
@@ -147,6 +177,7 @@ function CourseUnitChrome({ view }: { view: CatalogCourseListView }) {
 
 function CourseCard({ view, featured = false, confirmed = true }: { view: CatalogCourseListView; featured?: boolean; confirmed?: boolean }) {
   const tags = COURSE_SKILL_TAGS[view.slug] ?? []
+  const faculty = COURSE_FACULTY_META[view.slug]
   return (
     <Link className={featured ? "cat-tile is-ready" : "cat-tile is-listing"} to={`/courses/${view.slug}`}>
       {view.maturity === "ready" ? <CourseUnitChrome view={view} /> : <CourseThumb authored={false} />}
@@ -155,9 +186,14 @@ function CourseCard({ view, featured = false, confirmed = true }: { view: Catalo
         <h3>{view.title}</h3>
         <div className="cat-card-stats">
           <span>{view.duration}</span>
-          <span>{view.lessonLabel}</span>
+          <span>15 lessons · 5 modules</span>
           <span>{view.course.level}</span>
         </div>
+        {faculty ? (
+          <p style={{ margin: "6px 0 4px", fontSize: 12, color: "#475569", fontWeight: 600 }}>
+            {faculty.lead} · {faculty.issuer}
+          </p>
+        ) : null}
         {view.maturity === "ready" && tags.length > 0 ? (
           <div className="cat-card-tags" aria-label="Skills practised">
             {tags.map((tag) => (
@@ -167,11 +203,11 @@ function CourseCard({ view, featured = false, confirmed = true }: { view: Catalo
         ) : null}
         {view.maturity === "ready" ? (
           <p className="cat-card-moat">
-            Written lessons · In-browser lab · Graded capstone
+            Free Guest Lab Preview · Basic ₹1,499 · Flagship ₹3,499 · Pro ₹6,499
           </p>
         ) : null}
         <span className={view.maturity === "ready" ? "cat-btn cat-btn-primary cat-card-cta" : "cat-btn cat-btn-ghost cat-card-cta"}>
-          {confirmed ? (view.maturity === "ready" ? "Enroll Now" : view.ctaLabel) : "View course"}
+          {confirmed ? (view.maturity === "ready" ? "Explore & Enroll →" : view.ctaLabel) : "View course"}
         </span>
       </div>
     </Link>

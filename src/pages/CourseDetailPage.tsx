@@ -33,6 +33,43 @@ import "./Catalog.css"
 const LISTING_HONESTY =
   "This course is not open for enrolment yet. Its outline is shown below."
 
+function downloadRevisionCheatSheet(slug: string, title: string) {
+  const content = [
+    `# ${title} — Official Skylent Revision Cheat-Sheet & Capstone Rubric`,
+    `Issued by: Skylent Global Assessment Board (Verifiable at https://skylent.live/verify)`,
+    `Course Structure: 5 Modules · 15 Applied Lessons · 3 Module Quizzes · 1 Graded Capstone`,
+    `Dataset & Sandbox Scope: Synthetic Commercial Extract (Jan–Jun 2026 Window)`,
+    ``,
+    `## 1. Core Execution Formulas & Patterns`,
+    slug === "data-analytics"
+      ? `- Net Revenue = SUM(unit_price * quantity * (1 - discount))\n- Discount LeakageBps = SUM(unit_price * quantity * discount) / SUM(unit_price * quantity)\n- Always verify grain (order_id vs order_line_id) before joining orders and order_details.`
+      : slug === "product-management"
+        ? `- RICE Priority Score = (Reach * Impact * Confidence) / Effort\n- Every PRD must state: Problem Statement, Baseline Metric, Target Metric, Non-Goals, and Rollback Guardrail.`
+        : `- Enforce idempotency keys on all state-mutating operations.\n- Validate schema boundaries before persisting records.\n- Cite empirical metrics from your browser sandbox output in your executive memo.`,
+    ``,
+    `## 2. Capstone Grading Rubric (100 Points Total)`,
+    `- 15% Concept Checks (3 Module Quizzes)`,
+    `- 30% Browser Sandbox Execution & Query/Code Accuracy`,
+    `- 20% Commercial Judgement & Root-Cause Evidence`,
+    `- 15% Socratic Boardroom Cold-Call Defence`,
+    `- 20% V1 -> V2 Mentor Revision Quality`,
+    ``,
+    `## 3. Support & SLA`,
+    `- 24/7 Socratic AI Mentor (English + Hinglish Mode)`,
+    `- 20-Minute Human Faculty TA Doubt Resolution SLA`,
+  ].join("\n")
+
+  const blob = new Blob([content], { type: "text/markdown;charset=utf-8" })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement("a")
+  a.href = url
+  a.download = `Skylent-${slug}-Revision-CheatSheet-and-Rubric.md`
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
+  URL.revokeObjectURL(url)
+}
+
 /* Note: Payment is not collected on unauthored preview-only catalogue listings. */
 
 export default function CourseDetailPage() {
@@ -322,19 +359,46 @@ export default function CourseDetailPage() {
                       >
                         {cta}
                       </button>
-                      <SyllabusDownloadButton courseSlug={course.slug} title={course.title} />
                       <Link
                         className="cat-btn cat-btn-ghost cat-btn-lg"
-                        to="/programmes"
+                        to="/labs"
+                        style={{ borderColor: "#5142b5", color: "#5142b5", fontWeight: 700 }}
                       >
-                        Browse programmes
+                        ⚡ Try Guest Lab Free (No Login)
                       </Link>
+                      <button
+                        type="button"
+                        className="cat-btn cat-btn-ghost cat-btn-lg"
+                        onClick={() => downloadRevisionCheatSheet(course.slug, course.title)}
+                      >
+                        📄 Download Cheat-Sheet &amp; Rubric
+                      </button>
+                      <SyllabusDownloadButton courseSlug={course.slug} title={course.title} />
                     </>
                   )}
                 </div>
                 <p className="cat-honesty">
-                  A certificate for this course is issued when every lesson in it is complete. Includes interactive written modules, in-browser lab workbench, and graded capstone.
+                  A certificate for this course is issued by the <strong>Skylent Global Assessment Board</strong> (verifiable at <Link to="/verify">/verify</Link>) when all 15 lessons, 3 module quizzes, and the graded capstone are completed. Plans: <strong>Basic ₹1,499 · Flagship ₹3,499 · Pro ₹6,499</strong> (Guest Browser Lab is free to try).
                 </p>
+                <div
+                  style={{
+                    marginTop: 12,
+                    padding: "12px 16px",
+                    borderRadius: 12,
+                    background: "#f8fafc",
+                    border: "1px solid #e2e8f0",
+                    display: "flex",
+                    flexWrap: "wrap",
+                    gap: "8px 18px",
+                    fontSize: 12.5,
+                    color: "#334155",
+                  }}
+                >
+                  <span><strong>Lead Faculty &amp; Reviewer:</strong> {course.slug === "data-analytics" ? "Dr. Meera Krishnan (PhD, Analytics)" : course.slug === "product-management" ? "Arjun Nair (Director of Product)" : "Vikramaditya Rao &amp; Skylent Faculty Board"}</span>
+                  <span><strong>Credential Issuer:</strong> Skylent Global Assessment Board</span>
+                  <span><strong>Dataset Scope:</strong> Jan–Jun 2026 Synthetic Commercial Extract</span>
+                  <span><strong>Support SLA:</strong> 20-Min Faculty TA + 24/7 Hinglish AI</span>
+                </div>
               </div>
               {showLiveCurriculum ? (
                 <div className="cat-rubric-strip cat-hero-rubric" style={{ gridColumn: "1 / -1", marginTop: 18 }} aria-label="How Your Proof-of-Work Certificate Is Graded · 100% Elixir Fee Credit Eligible">

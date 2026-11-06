@@ -147,7 +147,7 @@ export function courseAfterEnrolSteps(authored: boolean, courseTitle?: string): 
   const afterEnrol = profile ? courseProductProfile(profile.slug)?.afterEnrol : undefined
   return [
     "If you are not signed in, you will be asked to sign in or create an account.",
-    "Enrolment grants access to the learning workspace. Payment is not collected.",
+    "Guest browser labs (/labs) are free to try without payment. Full course enrolment (Basic ₹1,499 · Flagship ₹3,499 · Pro ₹6,499) unlocks all 15 lessons, graded capstone review, and certificate verification.",
     authored
       ? afterEnrol ?? (courseTitle ? `Skylent OS opens ${courseTitle} at the first lesson.` : "Skylent OS opens the course at the first lesson.")
       : "Skylent OS opens the course outline. Full teaching content is still being built.",
@@ -256,7 +256,7 @@ export function programmeAfterEnrolCopy(view: {
   const authored = view.linked.find((item) => item.authored)
   if (view.maturity === "coming_later") return "Enrolment is not open on this listing."
   if (authored) {
-    return `Enrolment opens ${authored.title} in Skylent OS. It does not create a separate taught programme. Payment is not collected.`
+    return `Enrolment opens ${authored.title} in Skylent OS with full access to written modules, browser labs, and graded capstone review (Plans from ₹1,499).`
   }
   if (view.linked[0]) {
     return `Enrolment opens the ${view.linked[0].title} outline in Skylent OS. Payment is not collected.`

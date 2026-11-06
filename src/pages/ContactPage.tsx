@@ -151,7 +151,7 @@ export default function ContactPage() {
                 </button>
               </section>
             ) : (
-              <form className="ctc-form" onSubmit={onSubmit} noValidate aria-busy={sending}>
+              <form method="post" className="ctc-form" onSubmit={onSubmit} noValidate aria-busy={sending}>
                 <fieldset className="ctc-kinds">
                   <legend className="sky-label">What do you need?</legend>
                   <div className="ctc-kinds__row">

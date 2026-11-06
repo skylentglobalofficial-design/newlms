@@ -39,7 +39,7 @@ export function apexRedirectLocation(hostname: string | undefined, originalUrl: 
 export function injectCanonicalLink(html: string, pathname: string): string {
   const tag = `<link rel="canonical" href="${canonicalUrlForPath(pathname)}">`
   if (html.includes('rel="canonical"')) {
-    return html.replace(/<link rel="canonical" href="[^"]*">/, tag)
+    return html.replace(/<link rel="canonical" href="[^"]*"\s*\/?>/, tag)
   }
   if (!html.includes("</head>")) return html
   return html.replace("</head>", `    ${tag}\n  </head>`)
@@ -60,13 +60,16 @@ const EXEMPLAR_META: Record<string, { title: string; desc: string }> = {
   },
 }
 
-/** Injects route-aware OpenGraph & Twitter card meta tags for social & recruiter sharing. */
+/**
+ * Replaces or injects route-aware OpenGraph & Twitter card meta tags in-place
+ * so there is NEVER a duplicate og:title or og:description on any route.
+ */
 export function injectOpenGraphMeta(html: string, pathname: string): string {
   if (!html.includes("</head>")) return html
   const cleanUrl = canonicalUrlForPath(pathname)
   let ogTitle = "Skylent — Learn. Practise. Build. Prove it."
   let ogDesc =
-    "Go from beginner to job-ready by writing real SQL queries, Python pipelines, Product PRDs, and AI systems right in your browser."
+    "Self-paced courses in Data Analytics, Python, Product Management, Data Science, Generative AI, and Full-Stack Web — with browser labs, graded projects, verifiable certificates, and Career OS."
 
   if (pathname.startsWith("/verify/")) {
     const code = decodeURIComponent(pathname.slice("/verify/".length)).trim().toUpperCase()
@@ -86,22 +89,34 @@ export function injectOpenGraphMeta(html: string, pathname: string): string {
     ogTitle = "Job-Ready Career Programmes & Browser Labs — Skylent"
     ogDesc =
       "Explore 6 execution-first career tracks with built-in SQL, Python, PRD, and RAG browser sandboxes and verified capstones."
+  } else if (pathname.startsWith("/courses")) {
+    ogTitle = "Self-Paced Flagship Courses & Free Browser Labs — Skylent"
+    ogDesc =
+      "Start all 6 self-paced courses with 15 applied lessons, in-browser SQL/Python/PRD/RAG labs, named faculty rubrics, and verifiable certificates."
   } else if (pathname.startsWith("/career-os")) {
     ogTitle = "Skylent Career OS — Verified Portfolio & Role Skill-Gap Matcher"
     ogDesc =
       "Unite your graded projects, verifiable certificates, and role skill-gap match in one recruiter-ready profile."
   }
 
+  const escTitle = ogTitle.replace(/"/g, "&quot;")
+  const escDesc = ogDesc.replace(/"/g, "&quot;")
+
+  // Strip any existing og:title, og:description, og:url, twitter:title, twitter:description, og:site_name, og:type, twitter:card first
+  const cleaned = html
+    .replace(/\s*<meta\s+property="og:(?:title|description|url|site_name|type)"[\s\S]*?\/?>/gi, "")
+    .replace(/\s*<meta\s+name="twitter:(?:title|description|card)"[\s\S]*?\/?>/gi, "")
+
   const metaBlock = [
     `<meta property="og:site_name" content="Skylent">`,
     `<meta property="og:type" content="website">`,
-    `<meta property="og:title" content="${ogTitle.replace(/"/g, "&quot;")}">`,
-    `<meta property="og:description" content="${ogDesc.replace(/"/g, "&quot;")}">`,
+    `<meta property="og:title" content="${escTitle}">`,
+    `<meta property="og:description" content="${escDesc}">`,
     `<meta property="og:url" content="${cleanUrl}">`,
     `<meta name="twitter:card" content="summary_large_image">`,
-    `<meta name="twitter:title" content="${ogTitle.replace(/"/g, "&quot;")}">`,
-    `<meta name="twitter:description" content="${ogDesc.replace(/"/g, "&quot;")}">`,
+    `<meta name="twitter:title" content="${escTitle}">`,
+    `<meta name="twitter:description" content="${escDesc}">`,
   ].join("\n    ")
 
-  return html.replace("</head>", `    ${metaBlock}\n  </head>`)
+  return cleaned.replace("</head>", `    ${metaBlock}\n  </head>`)
 }

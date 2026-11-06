@@ -936,6 +936,14 @@ export default function DashboardStudentPage() {
   const [exploreQuery, setExploreQuery] = useState('')
   const [selectedExploreDetail, setSelectedExploreDetail] = useState<DashboardExploreCourse | null>(null)
   const [checkoutTarget, setCheckoutTarget] = useState<DashboardExploreCourse | null>(null)
+  const [targetCareerRole, setTargetCareerRole] = useState<string>(() => {
+    try {
+      return typeof window !== "undefined" ? window.localStorage.getItem("skylent:learner-target-role") || "Data Analyst & SQL Specialist" : "Data Analyst & SQL Specialist"
+    } catch {
+      return "Data Analyst & SQL Specialist"
+    }
+  })
+  const [goalSavedToast, setGoalSavedToast] = useState<string | null>(null)
 
   const [enrollments, setEnrollments] = useState<Loaded<ApiEnrollmentSummary[]>>(() => {
     const cached = readCache(CACHE_ENROLLMENTS_KEY, memEnrollments)
@@ -2365,6 +2373,87 @@ export default function DashboardStudentPage() {
               </div>
             </section>
           </div>
+        ) : null}
+
+        {/* Pillar 1: 30-Second Target Career Role & Learning Path Personalizer (Unacademy / Scaler Benchmark) */}
+        {studentTab === 'overview' ? (
+          <section
+            className="sh-card"
+            aria-label="Personalize Your Target Career Role"
+            style={{
+              marginBottom: 16,
+              padding: "16px 20px",
+              borderTop: "3px solid #5142b5",
+              background: "linear-gradient(90deg, #f5f3ff 0%, #ffffff 65%)",
+              display: "flex",
+              flexWrap: "wrap",
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: 14,
+            }}
+          >
+            <div style={{ minWidth: 220, flex: "1 1 280px" }}>
+              <span style={{ fontSize: 10.5, fontFamily: "var(--font-mono)", fontWeight: 800, color: "#5142b5", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                🎯 PERSONALIZED CAREER GOAL · SKYLENT CAREER OS
+              </span>
+              <h2 style={{ margin: "3px 0 4px", fontSize: 16.5, color: "#0f172a" }}>
+                Target Role: <span style={{ color: "#5142b5" }}>{targetCareerRole}</span>
+              </h2>
+              <p style={{ margin: 0, fontSize: 12.5, color: "#475569" }}>
+                {goalSavedToast || "Select your target career track to tailor your recommended browser labs, Socratic prompts, and mock interview milestones."}
+              </p>
+            </div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 6, alignItems: "center" }}>
+              {[
+                { label: "Data Analyst", role: "Data Analyst & SQL Specialist", slug: "data-analytics" },
+                { label: "Product Manager", role: "Product Manager (PRD & Growth)", slug: "product-management" },
+                { label: "Python Engineer", role: "Python & Data Pipeline Engineer", slug: "python-programming" },
+                { label: "Data Scientist", role: "Data Scientist & ML Engineer", slug: "data-science-ai" },
+                { label: "GenAI Engineer", role: "Generative AI & RAG Architect", slug: "generative-ai" },
+                { label: "Full-Stack Dev", role: "Full-Stack TypeScript Engineer", slug: "full-stack-web" },
+              ].map((item) => {
+                const isSelected = targetCareerRole === item.role
+                return (
+                  <button
+                    key={item.role}
+                    type="button"
+                    onClick={() => {
+                      setTargetCareerRole(item.role)
+                      try { window.localStorage.setItem("skylent:learner-target-role", item.role) } catch {}
+                      setGoalSavedToast(`✓ Goal updated to ${item.role}! Recommended track: ${item.label}.`)
+                    }}
+                    style={{
+                      padding: "6px 11px",
+                      borderRadius: 999,
+                      border: isSelected ? "1.5px solid #5142b5" : "1px solid #cbd5e1",
+                      background: isSelected ? "#5142b5" : "#ffffff",
+                      color: isSelected ? "#ffffff" : "#334155",
+                      fontSize: 11.5,
+                      fontWeight: 700,
+                      cursor: "pointer",
+                    }}
+                  >
+                    {item.label}
+                  </button>
+                )
+              })}
+              <Link
+                to="/labs"
+                style={{
+                  padding: "6px 12px",
+                  borderRadius: 999,
+                  background: "#ecfdf5",
+                  border: "1px solid #6ee7b7",
+                  color: "#047857",
+                  fontSize: 11.5,
+                  fontWeight: 800,
+                  textDecoration: "none",
+                }}
+              >
+                ⚡ Try Free Lab →
+              </Link>
+            </div>
+          </section>
         ) : null}
 
         {/* Main 2-Column Overview Grid */}

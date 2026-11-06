@@ -166,7 +166,7 @@ export default function ResetPasswordPage() {
               ) : null}
 
               {!hasToken && !requestNote ? (
-                <form className="entry-form" onSubmit={(event) => { void submitRequest(event) }} noValidate style={{ margin: 0 }}>
+                <form method="post" className="entry-form" onSubmit={(event) => { void submitRequest(event) }} noValidate style={{ margin: 0 }}>
                   <div className="entry-field">
                     <label htmlFor="reset-email">YOUR REGISTERED EMAIL</label>
                     <input
@@ -215,7 +215,7 @@ export default function ResetPasswordPage() {
               ) : null}
 
               {hasToken && tokenState === "ready" && !done ? (
-                <form className="entry-form" onSubmit={(event) => { void submitNewPassword(event) }} noValidate style={{ margin: 0 }}>
+                <form method="post" className="entry-form" onSubmit={(event) => { void submitNewPassword(event) }} noValidate style={{ margin: 0 }}>
                   <div className="entry-field">
                     <label htmlFor="reset-password">NEW PASSWORD</label>
                     <input

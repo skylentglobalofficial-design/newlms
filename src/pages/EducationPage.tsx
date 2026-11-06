@@ -1,16 +1,6 @@
 /**
  * Education landing (repolish): degrees only, organised the way learners choose.
- *
- *   Level   → Undergraduate (UG) and Postgraduate (PG)
- *   Mode    → Online and On campus, inside each level
- *
- *   /education                      → both levels, both modes
- *   /education?level=ug|pg          → one level
- *   /education?mode=online|campus   → one mode (old links keep working)
- *
- * Cards start from the sample listings in src/data/education.ts. A published degree from
- * GET /api/v1/degrees is added, or replaces the sample with the same slug. An empty or
- * unavailable catalogue leaves the samples. Sample cards say they are not open for applications.
+ * Includes unmistakable Academic Governance & Partner HEI Status Disclosure right on the hero and degree cards.
  */
 import { useEffect } from "react"
 import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom"
@@ -28,8 +18,8 @@ import "./EducationRepolish.css"
 type Level = "UNDERGRADUATE" | "POSTGRADUATE"
 
 const LEVELS: { id: Level; param: "ug" | "pg"; title: string; short: string; lead: string }[] = [
-  { id: "UNDERGRADUATE", param: "ug", title: "Undergraduate pathway areas", short: "UG", lead: "Undergraduate curriculum tracks designed for university articulation, combining foundational academic modules with Skylent OS labs." },
-  { id: "POSTGRADUATE", param: "pg", title: "Postgraduate pathway areas", short: "PG", lead: "Postgraduate specialisation tracks for working professionals and partner campuses, built around applied capstones and executive case studios." },
+  { id: "UNDERGRADUATE", param: "ug", title: "Undergraduate pathway proposals", short: "UG", lead: "Proposed undergraduate curriculum pathways designed for partner university articulation, combining foundational academic modules with Skylent OS labs." },
+  { id: "POSTGRADUATE", param: "pg", title: "Postgraduate pathway proposals", short: "PG", lead: "Proposed postgraduate specialisation pathways for working professionals and partner campuses, built around applied capstones and executive case studios." },
 ]
 
 const MODE_COPY: Record<DeliveryMode, { label: string; line: string; photos: Record<Level, { src: string; alt: string }> }> = {
@@ -52,10 +42,10 @@ const MODE_COPY: Record<DeliveryMode, { label: string; line: string; photos: Rec
 }
 
 const COMPARE = [
-  { label: "Where you study", online: "Anywhere, on screen", campus: "At the institution" },
+  { label: "Where you study", online: "Anywhere, on screen", campus: "At the partner institution" },
   { label: "Timetable", online: "Weekly, mostly flexible", campus: "Fixed lectures and labs" },
   { label: "Teaching", online: "Recorded and live sessions", campus: "Face to face" },
-  { label: "Best for", online: "Learners who work or live far away", campus: "Full-time study in person" },
+  { label: "Awarding Body", online: "Authorised Partner HEI (when confirmed)", campus: "Authorised Partner HEI (when confirmed)" },
 ]
 
 function levelFromParam(value: string | null): Level | null {
@@ -65,6 +55,7 @@ function levelFromParam(value: string | null): Level | null {
 }
 
 function DegreeRow({ degree }: { degree: Degree }) {
+  const isProposedSample = Boolean(degree.sample || !degree.institution?.name)
   return (
     <li>
       <Link to={degreePath(degree)} className="edx-degree" style={{ alignItems: "flex-start", gap: 10 }}>
@@ -76,14 +67,29 @@ function DegreeRow({ degree }: { degree: Degree }) {
                 {degree.duration}
               </span>
             ) : null}
+            <span
+              style={{
+                fontSize: 11,
+                fontWeight: 700,
+                padding: "2px 8px",
+                borderRadius: 999,
+                background: isProposedSample ? "#fef3c7" : "#dcfce7",
+                color: isProposedSample ? "#92400e" : "#166534",
+                border: isProposedSample ? "1px solid #fde68a" : "1px solid #86efac",
+              }}
+            >
+              {isProposedSample
+                ? "Proposed HEI Pathway · Applications Not Open"
+                : `Confirmed Partner: ${degree.institution?.name}`}
+            </span>
           </div>
           <span className="edx-degree__meta">
-            {degree.sample ? (
-              <span className="edx-soon">University pathway · NEP 2020 credit-aligned</span>
-            ) : degree.institution?.name ? (
-              <span>{degree.institution.name}</span>
+            {isProposedSample ? (
+              <span className="edx-soon">
+                Partner University Proposal · Skylent provides lab &amp; project modules; degrees &amp; credits are awarded solely by a confirmed Partner HEI
+              </span>
             ) : (
-              <span>Published degree</span>
+              <span>Awarding Institution: {degree.institution?.name}</span>
             )}
             <span>{degree.discipline}</span>
             {degree.intake ? <span>{degree.intake}</span> : null}
@@ -99,7 +105,7 @@ function DegreeRow({ degree }: { degree: Degree }) {
           ) : null}
         </div>
         <span className="edx-degree__go" style={{ alignSelf: "center" }}>
-          View curriculum &amp; labs
+          View pathway syllabus
           <ArrowRight />
         </span>
       </Link>
@@ -131,7 +137,7 @@ function ModeCard({ level, mode, degrees }: { level: (typeof LEVELS)[number]; mo
         ) : (
           <div className="edx-none">
             <p>
-              {level.short} {copy.label.toLowerCase()} degrees will be listed here once an institution is confirmed.
+              {level.short} {copy.label.toLowerCase()} degrees will be listed here once a partner institution is confirmed.
             </p>
             <Link className="edx-link" to="/contact">
               Register your interest
@@ -160,14 +166,14 @@ export default function EducationPage() {
   useEffect(() => {
     const label =
       level === "UNDERGRADUATE"
-        ? "Undergraduate degrees"
+        ? "Undergraduate degree pathways"
         : level === "POSTGRADUATE"
-          ? "Postgraduate degrees"
+          ? "Postgraduate degree pathways"
           : mode === "ONLINE"
-            ? "Online degrees"
+            ? "Online degree pathways"
             : mode === "CAMPUS"
-              ? "On-campus degrees"
-              : "Education"
+              ? "On-campus degree pathways"
+              : "University Degree Pathways"
     document.title = `${label} · Skylent`
   }, [level, mode])
 
@@ -190,11 +196,29 @@ export default function EducationPage() {
         <section className="edx-hero" aria-labelledby="edx-title">
           <div className="sky-container edx-hero__inner">
             <div>
-              <p className="edx-eyebrow">University &amp; Institutional Pathways</p>
+              <p className="edx-eyebrow">Proposed University &amp; Institutional Pathways</p>
               <h1 id="edx-title" className="edx-h1">
-                Academic pathways &amp; <em>institutional integration.</em>
+                University degree pathways &amp; <em>institutional lab integration.</em>
               </h1>
-              <p className="edx-lede">UG and PG degree tracks built with partner universities. Partner institutions award the degree; Skylent powers the in-browser SQL, Python, AI, and case studios.</p>
+              <p className="edx-lede">
+                These UG and PG tracks are proposed university articulation frameworks. <strong>Skylent does not independently award degrees or NEP/ABC academic credits</strong>—degrees, admissions, and credit recognition rest solely with a UGC/AICTE-authorised Partner Higher Education Institution (HEI) once confirmed. Looking for immediate skill certification? <Link to="/courses" style={{ color: "#5142b5", fontWeight: 700 }}>Start one of our 6 live self-paced courses today →</Link>
+              </p>
+              <div
+                role="note"
+                aria-label="Academic Governance Disclosure"
+                style={{
+                  marginTop: 14,
+                  padding: "12px 16px",
+                  borderRadius: 12,
+                  background: "#fffbeb",
+                  border: "1px solid #fde68a",
+                  color: "#78350f",
+                  fontSize: 13,
+                  lineHeight: 1.55,
+                }}
+              >
+                <strong>Academic &amp; Partner Status Disclosure:</strong> Unless a specific awarding university is named as confirmed on a listing below, the pathway is a curriculum proposal and direct student applications are not open. Read full governance details on <Link to="/universities" style={{ color: "#92400e", fontWeight: 700, textDecoration: "underline" }}>/universities</Link> and <Link to="/terms" style={{ color: "#92400e", fontWeight: 700, textDecoration: "underline" }}>/terms</Link>.
+              </div>
               {settled && unavailable ? (
                 <p className="edx-lede" role="status">The pathway catalogue could not be checked just now. The areas below remain planned pathways, and direct applications are not open. <button type="button" className="edx-link" onClick={reload}>Try again</button></p>
               ) : null}
@@ -228,7 +252,6 @@ export default function EducationPage() {
           </div>
         </section>
 
-        {/* Target of the "Degrees" breadcrumb on degree pages (/education#degrees). */}
         <span id="degrees" aria-hidden="true" />
         {levels.map((item) => (
           <section key={item.id} id={item.param} className="edx-level" aria-labelledby={`edx-level-${item.param}`}>
@@ -275,7 +298,7 @@ export default function EducationPage() {
           <div className="sky-container edx-help__inner">
             <div>
               <h2 id="edx-help-title">Register learner or institutional interest</h2>
-              <p>Register your interest in upcoming university pathways, partner with Skylent as a college or institution, or start one of our live proof-of-work programmes today.</p>
+              <p>Register your interest in upcoming university pathways, partner with Skylent as a college or institution, or start one of our 6 live self-paced courses today.</p>
             </div>
             <div className="edx-help__actions">
               <Link className="sk-btn sk-btn-primary" to="/contact">
@@ -285,8 +308,8 @@ export default function EducationPage() {
               <Link className="sk-btn sk-btn-secondary" to="/institutions">
                 Institutional partnerships
               </Link>
-              <Link className="sk-btn sk-btn-secondary" to="/programmes">
-                Explore live programmes
+              <Link className="sk-btn sk-btn-secondary" to="/courses">
+                Explore 6 live courses
               </Link>
             </div>
           </div>

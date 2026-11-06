@@ -664,6 +664,34 @@ export default function CheckoutPage() {
           >
             {submitting ? "Opening PayU Payment Gateway…" : "Proceed to Checkout"}
           </button>
+
+          {/* EdTech Trust, Certificate Preview & Cohort Guarantee Strip */}
+          <div
+            style={{
+              marginTop: 4,
+              padding: "14px 16px",
+              borderRadius: 12,
+              background: "#f8fafc",
+              border: "1px solid #e2e8f0",
+              display: "grid",
+              gap: 8,
+              fontSize: 12.5,
+              color: "#334155",
+            }}
+          >
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 6 }}>
+              <strong style={{ color: "#0f172a", fontSize: 13 }}>What You Unlock Immediately After Checkout</strong>
+              <span style={{ fontSize: 11, fontWeight: 800, color: "#047857", background: "#ecfdf5", padding: "2px 8px", borderRadius: 999 }}>
+                ✓ Instant Activation · 7-Day Refund Protection
+              </span>
+            </div>
+            <div style={{ display: "grid", gap: 5 }}>
+              <span>🎓 <strong>Verifiable Credential:</strong> Issued by Skylent Assessment Board (Public ID at <code>skylent.live/verify</code>)</span>
+              <span>⚡ <strong>Full 15-Lesson Workspace:</strong> In-browser SQL/Python/PRD/AI sandboxes + downloadable Revision Cheat-Sheets</span>
+              <span>👨‍🏫 <strong>20-Min Doubt SLA:</strong> 24/7 English + Hinglish AI Mentor &amp; human Faculty TA capstone review</span>
+              <span>🚀 <strong>Career OS Bonus:</strong> Complete 60% + quizzes + project to unlock Career OS &amp; +3 Months Extra Practice</span>
+            </div>
+          </div>
         </section>
       </main>
     </div>

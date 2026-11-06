@@ -272,8 +272,8 @@ const DA_SLUG = "data-analytics-pro"
 const LMS_STAGES = [
   { key: "programme", label: "1. Course Syllabus", href: "/programmes/data-analytics-pro", action: "Explore Programmes" },
   { key: "lesson", label: "2. Lesson & AI Coach", href: "/courses/data-analytics", action: "Preview Lessons" },
-  { key: "practice", label: "3. Live SQL Lab", href: "/os/practice/data-analytics", action: "See Browser Labs" },
-  { key: "project", label: "4. Capstone Grader", href: "/os/projects/data-analytics/northwind", action: "View Capstones" },
+  { key: "practice", label: "3. Live SQL Lab", href: "/labs", action: "See Browser Labs" },
+  { key: "project", label: "4. Capstone Grader", href: "/verify/SKL-2026-DA-EXEMPLAR", action: "View Capstones" },
   { key: "evidence", label: "5. Verified Dossier", href: "/verify/SKL-2026-DA-EXEMPLAR", action: "Verify Credentials" },
 ] as const
 

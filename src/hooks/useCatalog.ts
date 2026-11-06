@@ -25,6 +25,21 @@ type CatalogState<T> = {
 
 const memCatalogCache = new Map<string, unknown>()
 
+function mergeCourseSummaries(
+  apiRows: CatalogCourseSummary[],
+  fallbackRows: CatalogCourseSummary[],
+): CatalogCourseSummary[] {
+  const bySlug = new Map<string, CatalogCourseSummary>()
+  for (const row of fallbackRows) {
+    bySlug.set(row.slug, row)
+  }
+  for (const row of apiRows) {
+    const existing = bySlug.get(row.slug)
+    bySlug.set(row.slug, existing ? { ...existing, ...row } : row)
+  }
+  return Array.from(bySlug.values())
+}
+
 function useCatalogResource<T>(key: string, loader: () => Promise<T>, initialFallback: () => T): CatalogState<T> {
   const [data, setData] = useState<T | null>(() => {
     const cached = memCatalogCache.get(key) as T | undefined
@@ -54,10 +69,15 @@ function useCatalogResource<T>(key: string, loader: () => Promise<T>, initialFal
 }
 
 /**
- * Courses for /courses. Renders instantaneously in 0ms from published data while refreshing silently.
+ * Courses for /courses. Renders instantaneously in 0ms from published data while refreshing silently,
+ * and always guarantees all 6 flagship courses are present alongside any custom DB-authored courses.
  */
 export function useCatalogCourses() {
-  const state = useCatalogResource("courses:list", fetchCatalogCourses, publishedCourseSummaries)
+  const loadMergedCourses = useCallback(async () => {
+    const apiCourses = await fetchCatalogCourses()
+    return mergeCourseSummaries(apiCourses, publishedCourseSummaries())
+  }, [])
+  const state = useCatalogResource("courses:list", loadMergedCourses, publishedCourseSummaries)
   const offline = !state.loading && Boolean(state.error)
   const data = offline ? publishedCourseSummaries() : state.data
   return { ...state, data, error: null as string | null, offline, requestError: state.error }
