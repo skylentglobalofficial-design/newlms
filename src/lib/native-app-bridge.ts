@@ -2,7 +2,7 @@
  * Skylent Universal Web & Native APK Runtime Bridge (Security, API Rewriting & Token Vault)
  *
  * Ensures that across both the Website and the compiled Android `.apk` / `.aab`:
- * 1. In APK mode, the UI runs 100% from bundled local assets inside the APK.
+ * 1. In APK mode, the UI runs 100% from bundled local assets or live production shell inside the APK.
  * 2. Every relative `/api/v1/...` request is transparently routed to `https://skylent.live/api/v1/...` in APK mode.
  * 3. Session & CSRF tokens are stored securely (`Authorization: Bearer` + `X-CSRF-Token`) across both
  *    Web and APK so browser/WebView cookie restrictions never break Login, Enrollment, or Course Builder.
@@ -11,7 +11,7 @@ import { isNativeAppShell, PRODUCTION_API_ORIGIN } from "./api-base"
 
 const NATIVE_SESSION_KEY = "skylent:native:session-token:v1"
 const NATIVE_CSRF_KEY = "skylent:native:csrf-token:v1"
-export const APP_VERSION = "1.2.0"
+export const APP_VERSION = "1.4.0"
 
 let bridgeInstalled = false
 

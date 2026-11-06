@@ -553,6 +553,7 @@ const initiateSchema = z.object({
   firstname: z.string().optional(),
   email: z.string().email().optional(),
   phone: z.string().optional(),
+  returnPath: z.string().optional(),
 })
 
 function cleanProductInfo(targetKind: string, targetSlug: string): string {
@@ -577,7 +578,7 @@ paymentsRouter.post("/payu/initiate", async (req: AuthenticatedRequest, res) => 
       return res.status(400).json({ error: "Invalid payment request payload", details: parsed.error.issues })
     }
 
-    const { targetKind, targetSlug, tier, couponCode } = parsed.data
+    const { targetKind, targetSlug, tier, couponCode, returnPath } = parsed.data
     const user = auth?.user
     const email = (user?.email || parsed.data.email || "").trim()
     const firstname = cleanFirstName(user?.displayName || parsed.data.firstname || email.split("@")[0] || "Learner")
@@ -650,6 +651,7 @@ paymentsRouter.post("/payu/initiate", async (req: AuthenticatedRequest, res) => 
           targetKind,
           targetSlug,
           tier,
+          returnPath: returnPath || null,
           status: "initiated",
           createdAt: new Date().toISOString(),
         }),
@@ -698,6 +700,7 @@ paymentsRouter.post("/payu/response", async (req, res) => {
     targetKind?: string
     targetSlug?: string
     tier?: string
+    returnPath?: string | null
   } = {}
 
   try {
@@ -720,15 +723,13 @@ paymentsRouter.post("/payu/response", async (req, res) => {
 
   if (!isValid || status !== "success") {
     console.warn(`[PayU Response] Payment not completed: status=${status}, txnid=${txnid}`)
-    const fallbackUrl =
-      targetKind === "workshop"
-        ? `/events/${targetSlug}?payment=failed`
-        : targetKind === "program"
-          ? `/programmes/${targetSlug}?payment=failed`
-          : targetKind === "course"
-            ? `/courses/${targetSlug}?payment=failed`
-            : `/programmes?payment=failed`
-    return res.redirect(fallbackUrl)
+    const safeReturn = storedMeta.returnPath && storedMeta.returnPath.startsWith("/") ? storedMeta.returnPath : null
+    const fallbackUrl = safeReturn
+      ? `${safeReturn}${safeReturn.includes("?") ? "&" : "?"}payment=cancelled`
+      : targetKind === "workshop"
+        ? `/events/${targetSlug}?payment=cancelled`
+        : `/checkout?kind=${encodeURIComponent(targetKind || "course")}&slug=${encodeURIComponent(targetSlug || "data-analytics")}&tier=${encodeURIComponent(tier)}&payment=cancelled`
+    return res.redirect(303, fallbackUrl)
   }
 
   try {
@@ -781,7 +782,7 @@ paymentsRouter.post("/payu/response", async (req, res) => {
             eventTitle: event.title,
           }).catch(() => undefined)
         }
-        return res.redirect(`/events/${targetSlug}?registered=true&txnid=${txnid}`)
+        return res.redirect(303, `/events/${targetSlug}?registered=true&txnid=${txnid}`)
       }
 
       if (targetKind === "course") {
@@ -800,7 +801,7 @@ paymentsRouter.post("/payu/response", async (req, res) => {
             listedPriceRupees: course.price,
           }).catch(() => undefined)
         }
-        return res.redirect(`/learn/${targetSlug}?enrolled=true&tier=${tier}&txnid=${txnid}`)
+        return res.redirect(303, `/learn/${targetSlug}?enrolled=true&tier=${tier}&txnid=${txnid}`)
       }
 
       if (targetKind === "program") {
@@ -813,19 +814,63 @@ paymentsRouter.post("/payu/response", async (req, res) => {
               create: { userId, courseId: firstCourse.id, programId: program.id, status: "active" },
               update: { status: "active", programId: program.id },
             }).catch(() => undefined)
-            return res.redirect(`/learn/${firstCourse.slug}?enrolled=true&tier=${tier}&txnid=${txnid}`)
+            return res.redirect(303, `/learn/${firstCourse.slug}?enrolled=true&tier=${tier}&txnid=${txnid}`)
           }
         }
-        return res.redirect(`/dashboard/student?enrolled=true&program=${targetSlug}&tier=${tier}&txnid=${txnid}`)
+        return res.redirect(303, `/dashboard/student?enrolled=true&program=${targetSlug}&tier=${tier}&txnid=${txnid}`)
       }
     }
 
-    return res.redirect(`/login?payment=success&txnid=${txnid}&email=${encodeURIComponent(email)}`)
+    return res.redirect(303, `/login?payment=success&txnid=${txnid}&email=${encodeURIComponent(email)}`)
   } catch (error) {
     if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
-      return res.redirect(`/dashboard/student?payment=success&txnid=${txnid}`)
+      return res.redirect(303, `/dashboard/student?payment=success&txnid=${txnid}`)
     }
     console.error("[PayU Response] Error fulfilling payment:", error instanceof Error ? error.name : "unknown")
-    return res.redirect(`/dashboard/student?payment=success&txnid=${txnid}`)
+    return res.redirect(303, `/dashboard/student?payment=success&txnid=${txnid}`)
+  }
+})
+
+// 9. Admin pushes 1-Click In-App Update notification to all mobile/web users
+const appUpdateSchema = z.object({
+  appVersion: z.string().min(1).max(32),
+  minSupportedAppVersion: z.string().min(1).max(32).optional(),
+  forceUpdate: z.boolean().optional(),
+  releaseNotes: z.string().min(1).max(300).optional(),
+  announcement: z.string().max(300).optional(),
+})
+
+paymentsRouter.post("/admin/app-update", async (req: AuthenticatedRequest, res) => {
+  try {
+    const auth = await attachAuth(req)
+    const isAdmin =
+      auth?.user?.role === UserRole.ADMIN ||
+      auth?.user?.role === UserRole.SUPERADMIN ||
+      auth?.user?.email?.toLowerCase() === "tariniprasadtripathy17@gmail.com"
+    if (!isAdmin) {
+      return res.status(403).json({ error: "Admin access required to broadcast app updates" })
+    }
+    const parsed = appUpdateSchema.safeParse(req.body)
+    if (!parsed.success) {
+      return res.status(400).json({ error: "Invalid app update payload", details: parsed.error.issues })
+    }
+    const updatePayload = {
+      appVersion: parsed.data.appVersion.trim(),
+      minSupportedAppVersion: (parsed.data.minSupportedAppVersion || "1.0.0").trim(),
+      forceUpdate: Boolean(parsed.data.forceUpdate),
+      releaseNotes:
+        parsed.data.releaseNotes?.trim() ||
+        `Skylent v${parsed.data.appVersion.trim()} — Faster loading, in-app PayU checkout & latest updates.`,
+      announcement: parsed.data.announcement?.trim() || undefined,
+      updatedAt: new Date().toISOString(),
+    }
+    await saveRuntimeKey("app_update_config", updatePayload)
+    res.json({ data: updatePayload })
+  } catch (error) {
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+      return res.status(503).json({ error: "Database temporarily unavailable" })
+    }
+    console.error("[Admin App Update] Failed:", error instanceof Error ? error.name : "unknown")
+    res.status(500).json({ error: "Failed to broadcast in-app update" })
   }
 })

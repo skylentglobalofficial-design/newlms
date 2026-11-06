@@ -16,8 +16,31 @@ type RiseRow = {
   mockDefenseHref?: string
 }
 
+const RISE_CACHE_KEY = "skylent:v71:career-rise-rows"
+
+function readCachedRiseRows(): RiseRow[] | null {
+  if (typeof window === "undefined") return null
+  try {
+    const raw = window.sessionStorage.getItem(RISE_CACHE_KEY)
+    if (!raw) return null
+    const parsed = JSON.parse(raw) as RiseRow[]
+    return Array.isArray(parsed) ? parsed : null
+  } catch {
+    return null
+  }
+}
+
+function writeCachedRiseRows(rows: RiseRow[]) {
+  if (typeof window === "undefined") return
+  try {
+    window.sessionStorage.setItem(RISE_CACHE_KEY, JSON.stringify(rows))
+  } catch {
+    // ignore
+  }
+}
+
 export default function CareerRiseCard() {
-  const [rows, setRows] = useState<RiseRow[] | null>(null)
+  const [rows, setRows] = useState<RiseRow[] | null>(() => readCachedRiseRows())
   const [error, setError] = useState<string | null>(null)
   const [pending, setPending] = useState<string | null>(null)
 
@@ -27,11 +50,13 @@ export default function CareerRiseCard() {
       .then(async (response) => {
         const body = (await response.json().catch(() => ({}))) as { data?: RiseRow[]; error?: string }
         if (!response.ok) throw new Error(body.error || "Unable to load milestones")
-        setRows(body.data ?? [])
+        const next = body.data ?? []
+        setRows(next)
+        writeCachedRiseRows(next)
       })
       .catch(() => {
         if (controller.signal.aborted) return
-        setRows([])
+        setRows((current) => current ?? [])
       })
     return () => controller.abort()
   }, [])
@@ -49,9 +74,13 @@ export default function CareerRiseCard() {
       })
       const body = (await response.json().catch(() => ({}))) as { error?: string }
       if (!response.ok) throw new Error(body.error || "Unable to activate interview prep")
-      setRows((current) =>
-        current?.map((item) => (item.slug === row.slug && item.kind === row.kind ? { ...item, enrolled: true } : item)) ?? null,
-      )
+      setRows((current) => {
+        const next =
+          current?.map((item) => (item.slug === row.slug && item.kind === row.kind ? { ...item, enrolled: true } : item)) ??
+          null
+        if (next) writeCachedRiseRows(next)
+        return next
+      })
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unable to activate interview prep")
     } finally {

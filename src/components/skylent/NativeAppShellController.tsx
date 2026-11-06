@@ -10,6 +10,9 @@ type AppConfigPayload = {
   playStoreUrl: string
   announcement: string | null
   maintenanceMode: boolean
+  updateTitle?: string | null
+  updateNotes?: string | null
+  apkDownloadUrl?: string | null
 }
 
 function compareSemver(a: string, b: string): number {
@@ -64,11 +67,20 @@ function TabIcon({ name }: { name: "home" | "courses" | "workshops" | "labs" | "
 export function NativeAppShellController() {
   const location = useLocation()
   const navigate = useNavigate()
-  const { user, ready } = useAuth()
+  const { user } = useAuth()
   const [isNative, setIsNative] = useState(() => isNativeAppShell())
   const [isOffline, setIsOffline] = useState(() => (typeof navigator !== "undefined" ? !navigator.onLine : false))
   const [appConfig, setAppConfig] = useState<AppConfigPayload | null>(null)
   const [dismissedBanner, setDismissedBanner] = useState(false)
+  const [dismissedUpdateVersion, setDismissedUpdateVersion] = useState<string | null>(() => {
+    try {
+      return window.localStorage.getItem("skylent:dismissed-update-version")
+    } catch {
+      return null
+    }
+  })
+  const [updatingInApp, setUpdatingInApp] = useState(false)
+  const [updateProgress, setUpdateProgress] = useState(0)
 
   useEffect(() => {
     const active = isNativeAppShell()
@@ -80,32 +92,6 @@ export function NativeAppShellController() {
     }
     document.documentElement.removeAttribute("data-native-home-hub")
   }, [location.search])
-
-  // Direct Native App Entry: No marketing website reload on app launch.
-  // Unauthenticated users go straight to /login (Sign In / Sign Up);
-  // authenticated users go straight to their role dashboard (/dashboard/student).
-  useEffect(() => {
-    if (!isNative || !ready) return
-    if (location.pathname === "/" || location.pathname === "/preview/homepage") {
-      if (!user) {
-        navigate("/login", { replace: true })
-      } else {
-        const target =
-          user.role === "admin" || user.role === "superadmin"
-            ? "/dashboard/admin"
-            : user.role === "faculty"
-              ? "/dashboard/faculty"
-              : user.role === "college"
-                ? "/dashboard/college"
-                : user.role === "recruiter"
-                  ? "/dashboard/recruiter"
-                  : user.role === "organisation"
-                    ? "/dashboard/organisation"
-                    : "/dashboard/student"
-        navigate(target, { replace: true })
-      }
-    }
-  }, [isNative, ready, user, location.pathname, navigate])
 
   useEffect(() => {
     const onOnline = () => setIsOffline(false)
@@ -120,16 +106,21 @@ export function NativeAppShellController() {
 
   useEffect(() => {
     let cancelled = false
-    fetch(`${apiV1()}/health/app-config`, { credentials: "include" })
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data: AppConfigPayload | null) => {
-        if (!cancelled && data && typeof data.minSupportedAppVersion === "string") {
-          setAppConfig(data)
-        }
-      })
-      .catch(() => {})
+    const checkConfig = () => {
+      fetch(`${apiV1()}/health/app-config`, { credentials: "include" })
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data: AppConfigPayload | null) => {
+          if (!cancelled && data && typeof data.minSupportedAppVersion === "string") {
+            setAppConfig(data)
+          }
+        })
+        .catch(() => {})
+    }
+    checkConfig()
+    const timer = window.setInterval(checkConfig, 60_000)
     return () => {
       cancelled = true
+      window.clearInterval(timer)
     }
   }, [])
 
@@ -138,11 +129,49 @@ export function NativeAppShellController() {
     appConfig?.minSupportedAppVersion &&
     compareSemver(APP_VERSION, appConfig.minSupportedAppVersion) < 0
 
-  // Hide the public bottom bar inside Dashboards, Lesson Player, and Auth forms
-  // (Dashboards already have their own dedicated AuthDashboardShell bottom nav).
+  const softUpdateAvailable =
+    appConfig?.appVersion &&
+    compareSemver(APP_VERSION, appConfig.appVersion) < 0 &&
+    dismissedUpdateVersion !== appConfig.appVersion
+
+  async function triggerInAppUpdate() {
+    if (!appConfig) return
+    setUpdatingInApp(true)
+    setUpdateProgress(15)
+    try {
+      if ("serviceWorker" in navigator) {
+        const regs = await navigator.serviceWorker.getRegistrations()
+        await Promise.all(regs.map((r) => r.unregister()))
+      }
+      setUpdateProgress(55)
+      if ("caches" in window) {
+        const keys = await caches.keys()
+        await Promise.all(keys.map((k) => caches.delete(k)))
+      }
+      setUpdateProgress(90)
+      try {
+        window.localStorage.setItem("skylent:dismissed-update-version", appConfig.appVersion)
+      } catch {
+        // ignore
+      }
+      setTimeout(() => {
+        setUpdateProgress(100)
+        window.location.reload()
+      }, 350)
+    } catch {
+      window.location.reload()
+    }
+  }
+
+  // Hide the public bottom bar inside ALL Dashboards, Career OS, Lesson Player, Checkout, and Auth routes
+  // so Career OS and Student Dashboard ALWAYS keep their unified AuthDashboardShell navigation!
   const isWorkspaceOrAuthRoute =
     location.pathname.startsWith("/dashboard") ||
+    location.pathname.startsWith("/career-os") ||
     location.pathname.startsWith("/learn") ||
+    location.pathname.startsWith("/checkout") ||
+    location.pathname.startsWith("/os/") ||
+    location.pathname.startsWith("/labs/") ||
     location.pathname.startsWith("/login") ||
     location.pathname.startsWith("/signup") ||
     location.pathname.startsWith("/reset-password")
@@ -169,15 +198,15 @@ export function NativeAppShellController() {
   }> = [
     {
       id: "home",
-      label: "My Batches",
-      to: user ? dashHref : "/login",
-      match: (p) => p.startsWith("/dashboard/student") && !location.search.includes("tab=explore") && !location.search.includes("tab=degrees"),
+      label: "Home",
+      to: "/",
+      match: (p) => p === "/",
     },
     {
       id: "courses",
-      label: "Explore",
-      to: user ? "/dashboard/student?tab=explore" : "/login",
-      match: (p) => p.startsWith("/programme") || p.startsWith("/course") || location.search.includes("tab=explore"),
+      label: "Courses",
+      to: "/programmes",
+      match: (p) => p.startsWith("/programme") || p.startsWith("/course") || p.startsWith("/education"),
     },
     {
       id: "workshops",
@@ -201,7 +230,6 @@ export function NativeAppShellController() {
 
   return (
     <>
-      {/* 1. Offline Connection Guard Banner */}
       {isOffline ? (
         <div
           role="status"
@@ -224,7 +252,69 @@ export function NativeAppShellController() {
         </div>
       ) : null}
 
-      {/* 2. Remote OTA Live Announcement Banner */}
+      {softUpdateAvailable && appConfig ? (
+        <div
+          role="region"
+          aria-label="In-app update available"
+          style={{
+            background: "linear-gradient(90deg, #0f172a 0%, #3b2d96 100%)",
+            color: "#ffffff",
+            padding: "8px 16px",
+            fontSize: 12.5,
+            fontWeight: 600,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 12,
+            flexWrap: "wrap",
+          }}
+        >
+          <span>
+            🚀 <strong>NEW UPDATE v{appConfig.appVersion}</strong>
+            {appConfig.updateTitle ? ` — ${appConfig.updateTitle}` : " is ready to install!"}
+          </span>
+          <button
+            type="button"
+            onClick={() => void triggerInAppUpdate()}
+            disabled={updatingInApp}
+            style={{
+              background: "#10b981",
+              color: "#ffffff",
+              border: "none",
+              borderRadius: 6,
+              padding: "4px 12px",
+              fontSize: 12,
+              fontWeight: 700,
+              cursor: "pointer",
+            }}
+          >
+            {updatingInApp ? `Updating (${updateProgress}%)…` : "Update Now"}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setDismissedUpdateVersion(appConfig.appVersion)
+              try {
+                window.localStorage.setItem("skylent:dismissed-update-version", appConfig.appVersion)
+              } catch {
+                // ignore
+              }
+            }}
+            style={{
+              background: "transparent",
+              border: "1px solid rgba(255,255,255,0.3)",
+              color: "#cbd5e1",
+              borderRadius: 6,
+              padding: "3px 8px",
+              fontSize: 11,
+              cursor: "pointer",
+            }}
+          >
+            Later
+          </button>
+        </div>
+      ) : null}
+
       {appConfig?.announcement && !dismissedBanner ? (
         <div
           role="region"
@@ -261,7 +351,6 @@ export function NativeAppShellController() {
         </div>
       ) : null}
 
-      {/* 3. Force Update Modal for Outdated Play Store APKs */}
       {forceUpdateRequired && appConfig ? (
         <div
           role="dialog"
@@ -294,30 +383,29 @@ export function NativeAppShellController() {
               Update Required
             </h3>
             <p style={{ margin: "0 0 18px", fontSize: 13.5, lineHeight: 1.55, color: "#475569" }}>
-              Please update Skylent to version <strong>v{appConfig.minSupportedAppVersion}</strong> on Google Play Store to continue.
+              Please update Skylent to version <strong>v{appConfig.minSupportedAppVersion}</strong> to continue.
             </p>
-            <a
-              href={appConfig.playStoreUrl}
-              target="_blank"
-              rel="noreferrer"
+            <button
+              type="button"
+              onClick={() => void triggerInAppUpdate()}
               style={{
                 display: "inline-block",
                 background: "#5142b5",
                 color: "#ffffff",
-                textDecoration: "none",
+                border: "none",
                 padding: "10px 20px",
                 borderRadius: 8,
-                fontWeight: 600,
+                fontWeight: 700,
                 fontSize: 14,
+                cursor: "pointer",
               }}
             >
-              Update on Google Play Store
-            </a>
+              Update Now
+            </button>
           </div>
         </div>
       ) : null}
 
-      {/* 4. Unified Mobile & App Bottom Navigation Bar (Clean SVG Icons, Zero Emojis, Zero Navbar Collision) */}
       {!isWorkspaceOrAuthRoute ? (
         <nav
           aria-label="Mobile quick navigation"

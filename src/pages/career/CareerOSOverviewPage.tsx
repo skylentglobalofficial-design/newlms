@@ -457,9 +457,16 @@ export default function CareerOSOverviewPage({ onEnrolled }: { onEnrolled?: () =
   const isEnrolledInCareerOS = useMemo(() => {
     void tierRefresh
     if (superadminPreviewUnlocked) return true
+    if (!allThreeGatesPassed) return false
     const stored = readStoredCourseTiers()
     return Object.values(stored).some((r) => Boolean(r.careerOsEnrolled))
-  }, [tierRefresh, superadminPreviewUnlocked])
+  }, [tierRefresh, superadminPreviewUnlocked, allThreeGatesPassed])
+
+  useEffect(() => {
+    if (isEnrolledInCareerOS) {
+      onEnrolled?.()
+    }
+  }, [isEnrolledInCareerOS, onEnrolled])
 
   function handleUpgradeTier(slug: string, nextTier: SkylentTierId) {
     saveStoredCourseTier(slug, nextTier)

@@ -48,6 +48,7 @@ const AuthContext = createContext<AuthContextValue | null>(null)
 
 const isDemoMode = import.meta.env.VITE_DEMO_MODE === "true"
 const DEMO_STORAGE_KEY = "skylent:active-demo-user:v1"
+const CACHED_AUTH_USER_KEY = "skylent:v71:cached-auth-user"
 
 function readStoredDemoUser(): AuthUser | null {
   if (typeof window === "undefined") return null
@@ -70,6 +71,38 @@ function writeStoredDemoUser(user: AuthUser | null) {
   }
 }
 
+function readCachedAuthUser(): { user: AuthUser; roles: UserRole[] } | null {
+  if (typeof window === "undefined") return null
+  try {
+    const raw = window.localStorage.getItem(CACHED_AUTH_USER_KEY)
+    if (!raw) return null
+    const parsed = JSON.parse(raw) as { user?: AuthUser; roles?: UserRole[] }
+    if (!parsed?.user?.id || !parsed.user.role) return null
+    return {
+      user: parsed.user,
+      roles: Array.isArray(parsed.roles) && parsed.roles.length > 0 ? parsed.roles : [parsed.user.role],
+    }
+  } catch {
+    return null
+  }
+}
+
+function writeCachedAuthUser(user: AuthUser | null, roles: UserRole[] = []) {
+  if (typeof window === "undefined") return
+  try {
+    if (user) {
+      window.localStorage.setItem(
+        CACHED_AUTH_USER_KEY,
+        JSON.stringify({ user, roles: roles.length ? roles : [user.role] }),
+      )
+    } else {
+      window.localStorage.removeItem(CACHED_AUTH_USER_KEY)
+    }
+  } catch {
+    // Ignore storage errors
+  }
+}
+
 function toAuthUser(response: {
   user: { id: string; name: string; displayName?: string; email: string; avatar: string }
   role: UserRole
@@ -87,15 +120,20 @@ function toAuthUser(response: {
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<AuthUser | null>(() => readStoredDemoUser())
+  const initialCached = readCachedAuthUser()
+  const initialDemo = readStoredDemoUser()
+  const [user, setUser] = useState<AuthUser | null>(() => initialDemo ?? initialCached?.user ?? null)
   const [roles, setRoles] = useState<UserRole[]>(() => {
-    const stored = readStoredDemoUser()
-    return stored ? [stored.role] : []
+    if (initialDemo) return [initialDemo.role]
+    if (initialCached) return initialCached.roles
+    return []
   })
-  const [ready, setReady] = useState(false)
+  // If we have a cached user, mark ready=true in 0ms so Dashboard/Navbar render without waiting for network
+  const [ready, setReady] = useState<boolean>(() => Boolean(initialDemo || initialCached))
 
   useEffect(() => {
     setUnauthorizedHandler(() => {
+      writeCachedAuthUser(null)
       setUser((current) => {
         if (current?.id.startsWith("demo-")) return current
         return null
@@ -118,19 +156,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const session = await fetchCurrentUser()
         if (cancelled) return
         if (session) {
+          const nextUser = toAuthUser(session)
           writeStoredDemoUser(null)
-          setUser(toAuthUser(session))
+          writeCachedAuthUser(nextUser, session.roles)
+          setUser(nextUser)
           setRoles(session.roles)
         } else if (storedDemo) {
           setUser(storedDemo)
           setRoles([storedDemo.role])
+        } else {
+          writeCachedAuthUser(null)
+          setUser(null)
+          setRoles([])
         }
       } catch {
         if (!cancelled) {
           if (storedDemo) {
             setUser(storedDemo)
             setRoles([storedDemo.role])
-          } else {
+          } else if (!initialCached) {
             setUser(null)
             setRoles([])
           }
@@ -140,7 +184,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     }
 
-    restoreSession()
+    void restoreSession()
     return () => {
       cancelled = true
     }
@@ -150,6 +194,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const session = await loginRequest({ email, password })
     const nextUser = toAuthUser(session)
     writeStoredDemoUser(null)
+    writeCachedAuthUser(nextUser, session.roles)
     setUser(nextUser)
     setRoles(session.roles)
     return nextUser.role
@@ -159,6 +204,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const session = await signupRequest({ name, email, password, acceptedTerms, emailOtp })
     const nextUser = toAuthUser(session)
     writeStoredDemoUser(null)
+    writeCachedAuthUser(nextUser, session.roles)
     setUser(nextUser)
     setRoles(session.roles)
     return nextUser.role
@@ -168,6 +214,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const session = await verifyEmailOtpRequest(input)
     const nextUser = toAuthUser(session)
     writeStoredDemoUser(null)
+    writeCachedAuthUser(nextUser, session.roles)
     setUser(nextUser)
     setRoles(session.roles)
     return nextUser.role
@@ -177,6 +224,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const session = await verifyMobileOtpRequest(input)
     const nextUser = toAuthUser(session)
     writeStoredDemoUser(null)
+    writeCachedAuthUser(nextUser, session.roles)
     setUser(nextUser)
     setRoles(session.roles)
     return nextUser.role
@@ -188,6 +236,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (session) {
         const nextUser = toAuthUser(session)
         writeStoredDemoUser(null)
+        writeCachedAuthUser(nextUser, session.roles)
         setUser(nextUser)
         setRoles(session.roles)
         return nextUser
@@ -198,62 +247,72 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return null
   }, [])
 
-  const markPasswordChanged = useCallback(() => {
-    setUser((current) => current ? { ...current, mustChangePassword: false } : current)
-  }, [])
-
   const updateDisplayName = useCallback(async (displayName: string) => {
-    const session = await updateProfileRequest({ displayName })
-    setUser(toAuthUser(session))
-    setRoles(session.roles)
-  }, [])
+    const updated = await updateProfileRequest(displayName)
+    setUser((current) => {
+      if (!current) return current
+      const next = {
+        ...current,
+        name: updated.displayName ?? updated.name,
+        avatar: updated.avatar,
+      }
+      writeCachedAuthUser(next, roles)
+      return next
+    })
+  }, [roles])
+
+  const markPasswordChanged = useCallback(() => {
+    setUser((current) => {
+      if (!current) return current
+      const next = { ...current, mustChangePassword: false }
+      writeCachedAuthUser(next, roles)
+      return next
+    })
+  }, [roles])
 
   const loginDemo = useCallback((demoUser: AuthUser) => {
+    if (!isDemoMode) return
     writeStoredDemoUser(demoUser)
     setUser(demoUser)
     setRoles([demoUser.role])
   }, [])
 
   const logout = useCallback(async () => {
+    const wasDemo = user?.id.startsWith("demo-")
     writeStoredDemoUser(null)
-    try {
+    writeCachedAuthUser(null)
+    clearAuthClientState()
+    setUser(null)
+    setRoles([])
+    if (!wasDemo) {
       await logoutRequest()
-    } catch {
-      // Clear local state even if the server session is already gone.
-    } finally {
-      clearAuthClientState()
-      setUser(null)
-      setRoles([])
     }
-  }, [])
+  }, [user])
 
   return (
-    <AuthContext.Provider value={{ user, roles, ready, login, signup, loginWithEmailOtp, loginWithMobileOtp, refreshSession, updateDisplayName, markPasswordChanged, loginDemo, logout }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        roles,
+        ready,
+        login,
+        signup,
+        loginWithEmailOtp,
+        loginWithMobileOtp,
+        refreshSession,
+        updateDisplayName,
+        markPasswordChanged,
+        loginDemo,
+        logout,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   )
 }
 
-const SAFE_DEFAULT: AuthContextValue = {
-  user: null,
-  roles: [],
-  ready: true,
-  login: async () => "student",
-  signup: async () => "student",
-  loginWithEmailOtp: async () => "student",
-  loginWithMobileOtp: async () => "student",
-  refreshSession: async () => null,
-  updateDisplayName: async () => {},
-  markPasswordChanged: () => {},
-  loginDemo: () => {},
-  logout: async () => {},
-}
-
-export function useAuth(): AuthContextValue {
+export function useAuth() {
   const ctx = useContext(AuthContext)
-  return ctx ?? SAFE_DEFAULT
-}
-
-export function isAuthDemoMode(): boolean {
-  return isDemoMode
+  if (!ctx) throw new Error("useAuth must be used within AuthProvider")
+  return ctx
 }

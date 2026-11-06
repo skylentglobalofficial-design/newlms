@@ -1,21 +1,24 @@
 # =============================================================================
-# SKYLENT PLAY STORE NATIVE APK & SIGNED AAB BUILDER (V64)
+# SKYLENT PLAY STORE NATIVE APK & SIGNED AAB BUILDER (V71)
 # Generates:
 #   1. skylent-playstore-debug.apk   (For testing on phone first)
 #   2. skylent-playstore-release.apk (Signed Release APK for phone install)
 #   3. skylent-playstore-release.aab (Signed Release Bundle for Google Play Console)
+#   4. public/skylent-latest.apk     (For 1-Click In-App APK Update fallback)
 # Includes:
 #   - Live Production URL Mode (https://skylent.live) + Offline Fallback
+#   - In-App PayU India Checkout (secure.payu.in stays 100% inside APK, never kicks to Chrome)
+#   - Static 100% Text & Layout Zoom Lock (settings.setTextZoom(100)) so Android font settings never distort UI
 #   - In-App Google Sign-In + Deep-Link Return (skylent://auth -> stays in APK)
 #   - Guaranteed Physical WebView Status-Bar Clearance (28dp+ top margin on WebView)
-#   - Hardware Back Button Navigation Fix (Navigates in-app history + double-back exit)
+#   - Hardware Back Button Navigation Fix (Cleanly cancels PayU back to product or navigates in-app)
 # =============================================================================
 $ErrorActionPreference = "Stop"
 $Utf8NoBom = New-Object System.Text.UTF8Encoding($false)
 
 Write-Host ""
 Write-Host "============================================================" -ForegroundColor Cyan
-Write-Host "  SKYLENT PLAY STORE APK & SIGNED AAB BUILDER (V64)" -ForegroundColor Cyan
+Write-Host "  SKYLENT PLAY STORE APK & SIGNED AAB BUILDER (V71)" -ForegroundColor Cyan
 Write-Host "============================================================" -ForegroundColor Cyan
 
 # Step 1: Security Audit - Ensure no server secrets are prefixed with VITE_
@@ -50,7 +53,7 @@ if (-not (Test-Path "node_modules/@capacitor/android")) {
 Write-Host "  [OK] Capacitor Android packages ready." -ForegroundColor Green
 
 # Step 4: Initialize or Sync Android Native Project & Write Manifest + MainActivity + Styles
-Write-Host "`n[4/7] Syncing Live Production Server URL & Native Status-Bar Insets into Android Project..." -ForegroundColor Yellow
+Write-Host "`n[4/7] Syncing Live Production Server URL, PayU In-App Domain Whitelist & Static Text Lock..." -ForegroundColor Yellow
 $capConfigPath = Join-Path (Get-Location).Path "capacitor.config.json"
 $capConfigJson = @"
 {
@@ -65,6 +68,11 @@ $capConfigJson = @"
     "allowNavigation": [
       "skylent.live",
       "*.skylent.live",
+      "secure.payu.in",
+      "test.payu.in",
+      "*.payu.in",
+      "*.payumoney.com",
+      "*.payubiz.in",
       "accounts.google.com",
       "*.google.com"
     ]
@@ -95,7 +103,7 @@ $cleanManifestXml = @"
         android:theme="@style/AppTheme">
 
         <activity
-            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode|navigation"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode|navigation|fontScale"
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
             android:theme="@style/AppTheme.NoActionBarLaunch"
@@ -133,7 +141,7 @@ $cleanManifestXml = @"
 "@
 [System.IO.File]::WriteAllText($manifestPath, $cleanManifestXml.Replace("`r`n", "`n"), $Utf8NoBom)
 
-# Write custom MainActivity.java (Physical WebView Status-Bar Margin + Live URL + In-App OAuth + Hardware Back)
+# Write custom MainActivity.java (Physical WebView Status-Bar Margin + Static 100% Text Zoom + PayU In-App Back Return + OAuth)
 $mainActivityDir = Join-Path (Get-Location).Path "android\app\src\main\java\live\skylent\app"
 if (-not (Test-Path $mainActivityDir)) {
   New-Item -ItemType Directory -Path $mainActivityDir -Force | Out-Null
@@ -190,7 +198,6 @@ public class MainActivity extends BridgeActivity {
 
         if (getBridge() != null && getBridge().getWebView() != null) {
             final WebView webView = getBridge().getWebView();
-            // Apply initial guaranteed status-bar top margin immediately so WebView never touches clock/network icons
             ViewGroup.LayoutParams initialLp = webView.getLayoutParams();
             if (initialLp instanceof ViewGroup.MarginLayoutParams) {
                 ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) initialLp;
@@ -219,7 +226,7 @@ public class MainActivity extends BridgeActivity {
                 return WindowInsetsCompat.CONSUMED;
             });
 
-            // 2. Configure WebView: enable third-party cookies & strip "; wv" so Google Sign-In works directly inside the APK
+            // 2. Configure WebView: lock static 100% text zoom, enable third-party cookies & strip "; wv"
             CookieManager cookieManager = CookieManager.getInstance();
             cookieManager.setAcceptCookie(true);
             cookieManager.setAcceptThirdPartyCookies(webView, true);
@@ -227,6 +234,10 @@ public class MainActivity extends BridgeActivity {
             WebSettings settings = webView.getSettings();
             settings.setJavaScriptEnabled(true);
             settings.setDomStorageEnabled(true);
+            settings.setTextZoom(100);
+            settings.setSupportZoom(false);
+            settings.setBuiltInZoomControls(false);
+            settings.setDisplayZoomControls(false);
             String ua = settings.getUserAgentString();
             if (ua != null) {
                 String cleanUa = ua.replace("; wv", "").replace("wv)", ")");
@@ -237,19 +248,31 @@ public class MainActivity extends BridgeActivity {
         // 3. Handle skylent://auth deep link if launched from Google OAuth callback
         handleAuthDeepLink(getIntent());
 
-        // 4. Intercept Android Back button: close modals -> navigate back in router -> double-back to exit on Home
+        // 4. Intercept Android Back button: handle PayU gateway cancel cleanly in-app -> close modals -> router back -> double-back exit
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
                 if (getBridge() != null && getBridge().getWebView() != null) {
                     final WebView webView = getBridge().getWebView();
+                    final String currentUrl = webView.getUrl() != null ? webView.getUrl() : "";
+
+                    // If user presses Android Back while on PayU Gateway, return cleanly to their product checkout inside the APK without re-submitting POST
+                    if (currentUrl.contains("payu.in") || currentUrl.contains("payumoney.com") || currentUrl.contains("payubiz.in")) {
+                        if (webView.canGoBack()) {
+                            webView.goBack();
+                        } else {
+                            webView.loadUrl("https://skylent.live/dashboard/student?payment=cancelled");
+                        }
+                        return;
+                    }
+
                     webView.evaluateJavascript(
                         "(function() { " +
                         "  var closeBtn = document.querySelector('.skn-sheet__close, [role=\"dialog\"] button[aria-label*=\"Close\"]'); " +
                         "  if (closeBtn) { closeBtn.click(); return 'MODAL_CLOSED'; } " +
                         "  var p = window.location.pathname; " +
-                        "  if (p !== '/' && p !== '/index.html') { " +
-                        "    if (window.history.length > 1) { window.history.back(); } else { window.location.href = '/'; } " +
+                        "  if (p !== '/' && p !== '/index.html' && p !== '/dashboard/student' && p !== '/dashboard/admin' && p !== '/login') { " +
+                        "    if (window.history.length > 1) { window.history.back(); } else { window.location.href = '/dashboard/student'; } " +
                         "    return 'NAVIGATED_BACK'; " +
                         "  } " +
                         "  return 'AT_HOME'; " +
@@ -377,7 +400,7 @@ $v35StylesXml = @"
 </resources>
 "@
 [System.IO.File]::WriteAllText($v35StylesPath, $v35StylesXml.Replace("`r`n", "`n"), $Utf8NoBom)
-Write-Host "  [OK] Wrote AndroidManifest.xml, MainActivity.java (Physical StatusBar Margin + Live URL + OAuth), and styles.xml." -ForegroundColor Green
+Write-Host "  [OK] Wrote AndroidManifest.xml, MainActivity.java (PayU In-App + Static Text Lock + StatusBar Margin), and styles.xml." -ForegroundColor Green
 
 # Step 5: Configure Java JDK 21 & Android SDK Toolchain
 Write-Host "`n[5/7] Configuring Java JDK 21 & Android SDK Toolchain..." -ForegroundColor Yellow
@@ -523,8 +546,10 @@ if (Test-Path "android/gradlew.bat") {
 
   if (-not (Test-Path $DebugApkSrc)) {
     Write-Host "  [DEBUG BUILD RETRY] Running verbose gradle assembleDebug for diagnostics..." -ForegroundColor Cyan
+    Push-Location "android"
     cmd /c "gradlew.bat assembleDebug --no-daemon --stacktrace"
     $gradleExit = $LASTEXITCODE
+    Pop-Location
   }
   if (Test-Path $DebugApkSrc) {
     $OutDebugApk = Join-Path $DownloadsDir "skylent-playstore-debug.apk"
@@ -536,6 +561,8 @@ if (Test-Path "android/gradlew.bat") {
 
     if (Test-Path $ReleaseApkSrc) {
       Copy-Item -Path $ReleaseApkSrc -Destination (Join-Path (Get-Location).Path "skylent-playstore-release.apk") -Force
+      Copy-Item -Path $ReleaseApkSrc -Destination (Join-Path (Get-Location).Path "public\skylent-latest.apk") -Force -ErrorAction SilentlyContinue
+      Copy-Item -Path $ReleaseApkSrc -Destination (Join-Path (Get-Location).Path "dist\skylent-latest.apk") -Force -ErrorAction SilentlyContinue
       Copy-Item -Path $ReleaseApkSrc -Destination $OutReleaseApk -Force -ErrorAction SilentlyContinue
     }
     if (Test-Path $ReleaseAabSrc) {
@@ -550,12 +577,11 @@ if (Test-Path "android/gradlew.bat") {
     $ApkSizeMb = [math]::Round(((Get-Item $OutDebugApk).Length / 1MB), 2)
     Write-Host ""
     Write-Host "============================================================" -ForegroundColor Green
-    Write-Host "  [SUCCESS] ALL GOOGLE PLAY STORE FILES GENERATED (V64)!" -ForegroundColor Green
+    Write-Host "  [SUCCESS] ALL GOOGLE PLAY STORE FILES GENERATED (V71)!" -ForegroundColor Green
     Write-Host "  1. Phone Test APK (Signed) : $OutReleaseApk ($ApkSizeMb MB)" -ForegroundColor White
     Write-Host "  2. Phone Test APK (Debug)  : $OutDebugApk" -ForegroundColor White
     Write-Host "  3. Play Store Upload (.aab): $OutReleaseAab" -ForegroundColor Cyan
-    Write-Host "  4. Play Store Icon (512px) : $DownloadsDir\skylent-playstore-icon-512x512.png" -ForegroundColor Yellow
-    Write-Host "  5. Feature Graphic (1024px): $DownloadsDir\skylent-feature-graphic-1024x500.png" -ForegroundColor Yellow
+    Write-Host "  4. In-App APK Endpoint     : public\skylent-latest.apk" -ForegroundColor Green
     Write-Host "============================================================" -ForegroundColor Green
 
     # Open Windows Explorer highlighting the newly built APK/AAB in Downloads

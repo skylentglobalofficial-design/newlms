@@ -358,9 +358,27 @@ export default function DashboardStudentPage() {
       .catch(() => {})
   }, [])
 
-  const [enrollments, setEnrollments] = useState<Loaded<ApiEnrollmentSummary[]>>({ status: 'loading' })
-  const [projects, setProjects] = useState<Loaded<ProjectSummary[]>>({ status: 'loading' })
-  const [certificates, setCertificates] = useState<Loaded<SkylentCertificate[]>>({ status: 'loading' })
+  const [enrollments, setEnrollments] = useState<Loaded<ApiEnrollmentSummary[]>>(() => {
+    try {
+      const raw = typeof window !== 'undefined' ? window.sessionStorage.getItem('skylent:v71:student-enrollments') : null
+      if (raw) return { status: 'ready', data: JSON.parse(raw) as ApiEnrollmentSummary[] }
+    } catch {}
+    return { status: 'loading' }
+  })
+  const [projects, setProjects] = useState<Loaded<ProjectSummary[]>>(() => {
+    try {
+      const raw = typeof window !== 'undefined' ? window.sessionStorage.getItem('skylent:v71:student-projects') : null
+      if (raw) return { status: 'ready', data: JSON.parse(raw) as ProjectSummary[] }
+    } catch {}
+    return { status: 'loading' }
+  })
+  const [certificates, setCertificates] = useState<Loaded<SkylentCertificate[]>>(() => {
+    try {
+      const raw = typeof window !== 'undefined' ? window.sessionStorage.getItem('skylent:v71:student-certificates') : null
+      if (raw) return { status: 'ready', data: JSON.parse(raw) as SkylentCertificate[] }
+    } catch {}
+    return { status: 'loading' }
+  })
   const [claiming, setClaiming] = useState<string | null>(null)
   const [claimError, setClaimError] = useState<{ slug: string; message: string } | null>(null)
   const [_aiStatus, setAiStatus] = useState<AiAvailability>('available')
@@ -380,22 +398,31 @@ export default function DashboardStudentPage() {
   }, [hash, search])
 
   const loadLists = useCallback((signal: AbortSignal) => {
-    const settle = <T,>(promise: Promise<T>, set: (value: Loaded<T>) => void) => {
+    const settle = <T,>(promise: Promise<T>, set: (value: Loaded<T>) => void, cacheKey: string) => {
       void promise
-        .then((data) => { if (!signal.aborted) set({ status: 'ready', data }) })
-        .catch(() => { if (!signal.aborted) set({ status: 'error' }) })
+        .then((data) => {
+          if (!signal.aborted) {
+            set({ status: 'ready', data })
+            try { window.sessionStorage.setItem(cacheKey, JSON.stringify(data)) } catch {}
+          }
+        })
+        .catch(() => {
+          if (!signal.aborted) {
+            set((prev) => (prev.status === 'ready' ? prev : { status: 'error' }))
+          }
+        })
     }
-    settle(fetchLmsEnrollments(), setEnrollments)
-    settle(listLearnerProjects(signal), setProjects)
-    settle(fetchMyCertificates(signal), setCertificates)
+    settle(fetchLmsEnrollments(), setEnrollments, 'skylent:v71:student-enrollments')
+    settle(listLearnerProjects(signal), setProjects, 'skylent:v71:student-projects')
+    settle(fetchMyCertificates(signal), setCertificates, 'skylent:v71:student-certificates')
   }, [])
 
   useEffect(() => {
-    if (!user) return
+    if (!user?.id) return
     const controller = new AbortController()
     loadLists(controller.signal)
     return () => controller.abort()
-  }, [user, workspace, loadLists, listsKey])
+  }, [user?.id, loadLists, listsKey])
 
   const retryLists = useCallback(() => {
     setEnrollments({ status: 'loading' })
@@ -543,7 +570,27 @@ export default function DashboardStudentPage() {
   const enrolmentRows = enrollments.status === 'ready' ? enrollments.data : []
   const certificateRows = certificates.status === 'ready' ? certificates.data : []
   const projectRows = projects.status === 'ready' ? projects.data : []
-  const allMyCourses = myCourseRows(enrolmentRows)
+  const allMyCourses = useMemo(() => {
+    const fromApi = myCourseRows(enrolmentRows)
+    if (fromApi.length > 0) return fromApi
+    if (workspace?.course) {
+      return [
+        {
+          key: `course:${workspace.course.slug}`,
+          enrolmentId: workspace.enrollment.id,
+          title: workspace.course.title,
+          slug: workspace.course.slug,
+          programmeName: workspace.program?.name ?? null,
+          status: workspace.enrollment.status,
+          progressPct: workspace.progress.progressPct,
+          completedCount: workspace.progress.completedCount,
+          totalLessons: workspace.progress.totalLessons,
+          createdAt: new Date().toISOString(),
+        },
+      ]
+    }
+    return []
+  }, [enrolmentRows, workspace])
   const filteredMyCourses = allMyCourses.filter((row) => {
     if (courseFilter === 'completed') return row.status === 'completed' || (row.progressPct ?? 0) >= 100
     if (courseFilter === 'in_progress') return row.status !== 'completed' && (row.progressPct ?? 0) < 100
@@ -1267,7 +1314,7 @@ export default function DashboardStudentPage() {
           ))}
         </div>
       </header>
-      {enrollments.status === 'loading' ? (
+      {enrollments.status === 'loading' && allMyCourses.length === 0 ? (
         <div className="sh-row"><span className="os-skeleton" style={{ width: '60%' }} /></div>
       ) : enrollments.status === 'error' ? (
         <ListError what="Your enrolments" onRetry={retryLists} />

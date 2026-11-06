@@ -107,6 +107,36 @@ export default function AdminPricingAndCouponsPanel() {
   const [reqDiscountValue, setReqDiscountValue] = useState("1500")
   const [reqReason, setReqReason] = useState("Learner ready to enroll today if ₹1,500 concession is authorized.")
   const [showCounselorRequestForm, setShowCounselorRequestForm] = useState(false)
+  const [appUpdateVersion, setAppUpdateVersion] = useState("1.5.0")
+  const [appUpdateNotes, setAppUpdateNotes] = useState("Zero-delay dashboard, PayU in-app checkout, Career OS strict lock & static mobile text sizing.")
+  const [appForceUpdate, setAppForceUpdate] = useState(false)
+
+  async function handlePushAppUpdate(e: FormEvent) {
+    e.preventDefault()
+    setStatusMsg(null)
+    setErrorMsg(null)
+    try {
+      const csrf = await ensureCsrfToken()
+      const res = await fetch("/api/v1/payments/admin/app-update", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-Token": csrf,
+        },
+        body: JSON.stringify({
+          appVersion: appUpdateVersion.trim() || "1.5.0",
+          releaseNotes: appUpdateNotes.trim(),
+          forceUpdate: appForceUpdate,
+        }),
+      })
+      const payload = await res.json().catch(() => ({}))
+      if (!res.ok) throw new Error(payload.error || "Failed to push app update")
+      setStatusMsg(`✓ Pushed In-App Update v${payload.data?.appVersion || appUpdateVersion} to all Mobile APK & Web users!`)
+    } catch (err) {
+      setErrorMsg(err instanceof Error ? err.message : "Could not broadcast app update")
+    }
+  }
 
   async function loadConfig() {
     try {
@@ -1083,6 +1113,69 @@ export default function AdminPricingAndCouponsPanel() {
               }}
             >
               Save Payment Methods &amp; Gateway Settings
+            </button>
+          </div>
+        </form>
+      </section>
+
+      {/* SECTION 4: 1-CLICK IN-APP UPDATE BROADCASTER (MOBILE APK & WEB) */}
+      <section style={cardStyle}>
+        <span style={{ fontSize: 11, fontFamily: "var(--font-mono)", fontWeight: 800, color: "#10b981", textTransform: "uppercase" }}>
+          MOBILE APK &amp; WEB IN-APP UPDATE ENGINE
+        </span>
+        <h2 style={{ margin: "4px 0 4px", fontSize: 19, color: "#0f172a" }}>
+          Push 1-Click In-App Update Notification to All Users
+        </h2>
+        <p style={{ margin: "0 0 16px", fontSize: 13, color: "#475569" }}>
+          Whenever you deploy an update, broadcast a new version number here. Every Mobile APK and Web user will immediately see an <strong>&ldquo;Update Now&rdquo;</strong> prompt inside the app without hunting for manual downloads.
+        </p>
+
+        <form onSubmit={(e) => void handlePushAppUpdate(e)} style={{ display: "grid", gap: 14 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "minmax(160px, 220px) 1fr", gap: 12 }}>
+            <label style={{ display: "grid", gap: 4, fontSize: 12, fontWeight: 700, color: "#334155" }}>
+              <span>New App Version (e.g. 1.5.0, 1.5.1)</span>
+              <input
+                type="text"
+                value={appUpdateVersion}
+                onChange={(e) => setAppUpdateVersion(e.target.value)}
+                style={inputStyle}
+              />
+            </label>
+            <label style={{ display: "grid", gap: 4, fontSize: 12, fontWeight: 700, color: "#334155" }}>
+              <span>What&apos;s New (Shown on In-App Update Banner)</span>
+              <input
+                type="text"
+                value={appUpdateNotes}
+                onChange={(e) => setAppUpdateNotes(e.target.value)}
+                style={inputStyle}
+              />
+            </label>
+          </div>
+
+          <div style={{ display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
+            <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, fontWeight: 700, color: "#0f172a", cursor: "pointer" }}>
+              <input
+                type="checkbox"
+                checked={appForceUpdate}
+                onChange={(e) => setAppForceUpdate(e.target.checked)}
+              />
+              <span>Mandatory Force Update Modal (Requires immediate update before continuing)</span>
+            </label>
+
+            <button
+              type="submit"
+              style={{
+                padding: "10px 18px",
+                borderRadius: 10,
+                border: "none",
+                background: "#059669",
+                color: "#ffffff",
+                fontSize: 13,
+                fontWeight: 800,
+                cursor: "pointer",
+              }}
+            >
+              Broadcast In-App Update Now
             </button>
           </div>
         </form>

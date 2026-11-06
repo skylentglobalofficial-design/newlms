@@ -44,6 +44,24 @@ const SUPERADMIN_DASHBOARDS = [
   { label: 'Admin OS', href: '/dashboard/admin' },
 ] as const
 
+function homeDashboardForRole(role?: string): string {
+  switch (role) {
+    case 'superadmin':
+    case 'admin':
+      return '/dashboard/admin'
+    case 'faculty':
+      return '/dashboard/faculty'
+    case 'college':
+      return '/dashboard/college'
+    case 'recruiter':
+      return '/dashboard/recruiter'
+    case 'organisation':
+      return '/dashboard/organisation'
+    default:
+      return '/dashboard/student'
+  }
+}
+
 export function AuthDashboardShell({
   themeId,
   workspaceLabel,
@@ -109,10 +127,11 @@ export function AuthDashboardShell({
   }
 
   const activeItem = navItems.find(n => n.id === activeNav)
+  const brandHref = user ? homeDashboardForRole(user.role) : '/'
 
   const railContent = (
     <>
-      <Link to="/" className="auth-shell-brand">
+      <Link to={brandHref} className="auth-shell-brand" onClick={() => setMobileOpen(false)}>
         <span className="auth-shell-wordmark">Skylent</span>
       </Link>
 
@@ -196,7 +215,6 @@ export function AuthDashboardShell({
       </aside>
 
       <div className="auth-shell-main">
-        {/* Mobile Static Top Bar — sits cleanly below phone status bar with no clutter */}
         <header className="auth-shell-topbar">
           <button
             ref={menuRef}
@@ -214,14 +232,11 @@ export function AuthDashboardShell({
             </svg>
           </button>
           <span className="auth-shell-wordmark">Skylent</span>
-          {activeItem ? (
-            <span style={{ fontSize: 12, color: '#cbd5e1', fontWeight: 600, marginLeft: 8 }}>
-              · {activeItem.short ?? activeItem.label}
-            </span>
-          ) : null}
+          <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
+            <HeaderWalletAndNotifications variant="dashboard" />
+          </div>
         </header>
 
-        {/* Desktop Top Bar */}
         <div
           className="auth-shell-bar"
           style={{

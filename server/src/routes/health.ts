@@ -61,18 +61,42 @@ router.get("/live", (_request, response) => {
 })
 
 /**
- * Remote App Config & OTA Version Gate for Skylent Android/iOS Native APK builds.
- * Allows instant announcements or force-updating outdated APKs via server env vars
- * without waiting for a Play Store rebuild.
+ * Remote App Config & OTA In-App Update Gate for Skylent Android/iOS Native APK & Web App.
+ * Reads live version pushed by Admin in _skylent_runtime_config ('app_update_config')
+ * so users receive an instant 1-Click In-App Update prompt without manual APK hunting.
  */
-router.get("/app-config", (_request, response) => {
+router.get("/app-config", async (_request, response) => {
+  let dynamicVersion = process.env.SKYLENT_APP_VERSION?.trim() || "1.4.0"
+  let dynamicNotes = "Faster dashboard loading, clean Order Details checkout & in-app PayU payment support."
+  let dynamicBanner: string | null = process.env.SKYLENT_APP_BANNER?.trim() || null
+
+  try {
+    const rows = (await prisma.$queryRawUnsafe(
+      `SELECT "value" FROM "_skylent_runtime_config" WHERE "key" = 'app_update_config' LIMIT 1`,
+    )) as Array<{ value?: string }>
+    if (rows?.[0]?.value) {
+      const parsed = JSON.parse(rows[0].value) as {
+        appVersion?: string
+        releaseNotes?: string
+        announcement?: string | null
+      }
+      if (parsed.appVersion) dynamicVersion = parsed.appVersion
+      if (parsed.releaseNotes) dynamicNotes = parsed.releaseNotes
+      if (parsed.announcement !== undefined) dynamicBanner = parsed.announcement
+    }
+  } catch {
+    // fallback to defaults
+  }
+
   response.json({
-    appVersion: process.env.SKYLENT_APP_VERSION?.trim() || "1.0.0",
+    appVersion: dynamicVersion,
     minSupportedAppVersion: process.env.SKYLENT_MIN_APP_VERSION?.trim() || "1.0.0",
     playStoreUrl:
       process.env.SKYLENT_PLAY_STORE_URL?.trim() ||
       "https://play.google.com/store/apps/details?id=live.skylent.app",
-    announcement: process.env.SKYLENT_APP_BANNER?.trim() || null,
+    apkDownloadUrl: "/skylent-latest.apk",
+    releaseNotes: dynamicNotes,
+    announcement: dynamicBanner,
     maintenanceMode: process.env.SKYLENT_MAINTENANCE_MODE === "true",
     ...readinessFields(),
   })

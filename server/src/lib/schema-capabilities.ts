@@ -127,7 +127,7 @@ export async function capabilityAvailable(key: keyof SchemaCapabilities): Promis
   }
 }
 
-const CACHE_MS = 120_000
+const CACHE_MS = 30 * 60 * 1000
 let cached: { at: number; value: SchemaCapabilities } | null = null
 let inflight: Promise<SchemaCapabilities> | null = null
 
