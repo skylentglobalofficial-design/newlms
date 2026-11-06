@@ -100,6 +100,22 @@ $cleanManifestXml = @"
             <action android:name="android.intent.action.VIEW" />
             <data android:scheme="upi" />
         </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="tez" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="phonepe" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="paytmmp" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="bhim" />
+        </intent>
     </queries>
 
     <application
@@ -168,9 +184,12 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.CookieManager;
+import android.webkit.WebResourceError;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.Toast;
+import com.getcapacitor.BridgeWebViewClient;
 import androidx.activity.OnBackPressedCallback;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -254,6 +273,58 @@ public class MainActivity extends BridgeActivity {
                 String cleanUa = ua.replace("; wv", "").replace("wv)", ")");
                 settings.setUserAgentString(cleanUa + " SkylentNativeApp/1.8 SkylentNativeInsetsApplied");
             }
+
+            // 2B. PW/Unacademy-Grade Native UPI Intent Launcher (GPay, PhonePe, Paytm, BHIM, intent://) + Offline Fallback
+            webView.setWebViewClient(new BridgeWebViewClient(getBridge()) {
+                @Override
+                public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                    Uri uri = request.getUrl();
+                    if (uri != null) {
+                        String scheme = uri.getScheme() != null ? uri.getScheme().toLowerCase() : "";
+                        String urlStr = uri.toString();
+                        if (scheme.equals("upi") || scheme.equals("tez") || scheme.equals("phonepe") ||
+                            scheme.equals("paytmmp") || scheme.equals("bhim") || scheme.equals("credpay") ||
+                            scheme.equals("mailto") || scheme.equals("tel") || scheme.equals("whatsapp")) {
+                            try {
+                                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                                startActivity(intent);
+                            } catch (Exception e) {
+                                Toast.makeText(MainActivity.this, "UPI / target app is not installed on this phone", Toast.LENGTH_SHORT).show();
+                            }
+                            return true;
+                        }
+                        if (scheme.equals("intent")) {
+                            try {
+                                Intent intent = Intent.parseUri(urlStr, Intent.URI_INTENT_SCHEME);
+                                if (intent != null) {
+                                    startActivity(intent);
+                                    return true;
+                                }
+                            } catch (Exception e) {
+                                Toast.makeText(MainActivity.this, "Unable to open payment app", Toast.LENGTH_SHORT).show();
+                                return true;
+                            }
+                        }
+                    }
+                    return super.shouldOverrideUrlLoading(view, request);
+                }
+
+                @Override
+                public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
+                    if (request != null && request.isForMainFrame()) {
+                        String offlineHtml = "<!DOCTYPE html><html><head><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">" +
+                            "<style>body{margin:0;font-family:system-ui,-apple-system,sans-serif;background:#0F172A;color:#F8FAFC;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px;box-sizing:border-box;text-align:center}" +
+                            ".card{max-width:360px;background:#1E293B;border:1px solid #334155;border-radius:18px;padding:28px 22px;box-shadow:0 20px 40px rgba(0,0,0,0.4)}" +
+                            "h2{margin:0 0 8px;font-size:20px;color:#FFF}p{margin:0 0 20px;font-size:14px;color:#94A3B8;line-height:1.5}" +
+                            "button{background:#5142B5;color:#FFF;border:none;border-radius:10px;padding:12px 22px;font-size:14px;font-weight:700;width:100%;cursor:pointer}</style></head>" +
+                            "<body><div class=\"card\"><h2>You are offline</h2><p>Please check your mobile data or Wi-Fi connection to connect to Skylent.</p>" +
+                            "<button onclick=\"window.location.href='https://skylent.live/dashboard/student'\">Retry Connection</button></div></body></html>";
+                        view.loadDataWithBaseURL("https://skylent.live", offlineHtml, "text/html", "UTF-8", null);
+                        return;
+                    }
+                    super.onReceivedError(view, request, error);
+                }
+            });
         }
 
         // 3. Handle skylent://auth deep link if launched from Google OAuth callback
