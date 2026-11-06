@@ -153,7 +153,7 @@ export function Action({ to, kind = "primary", children }: { to: string; kind?: 
 /* ── Skylent AI mark ───────────────────────────────────────────────────────── */
 
 /** The assistant's user-facing name is always "Skylent AI". Legacy API route names are internal. */
-export const AI_NAME = "Skylent AI"
+export const AI_NAME = "Study Support"
 
 export function AiMark({ className = "" }: { className?: string }) {
   return (

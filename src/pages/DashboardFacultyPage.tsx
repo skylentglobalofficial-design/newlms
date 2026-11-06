@@ -54,13 +54,13 @@ const inputStyle = {
 function NavIcon({ id }: { id: string }) {
   const stroke = 'currentColor'
   const s = { width: 18, height: 18, viewBox: '0 0 24 24', fill: 'none', stroke, strokeWidth: 1.8 }
-  if (id === 'overview') return <svg {...s}><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-  if (id === 'classes') return <svg {...s}><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+  if (id === 'overview') return <svg {...s}><rect x="3\"y="3\"width="7\"height="7\"rx="1"/><rect x="14\"y="3\"width="7\"height="7\"rx="1"/><rect x="3\"y="14\"width="7\"height="7\"rx="1"/><rect x="14\"y="14\"width="7\"height="7\"rx="1"/></svg>
+  if (id === 'classes') return <svg {...s}><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9\"cy="7\"r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
   if (id === 'curriculum') return <svg {...s}><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
-  if (id === 'assignments') return <svg {...s}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+  if (id === 'assignments') return <svg {...s}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16\"y1="13\"x2="8\"y2="13"/><line x1="16\"y1="17\"x2="8\"y2="17"/></svg>
   if (id === 'assessments') return <svg {...s}><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-  if (id === 'learners') return <svg {...s}><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
-  return <svg {...s}><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+  if (id === 'learners') return <svg {...s}><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9\"cy="7\"r="4"/><line x1="19\"y1="8\"x2="19\"y2="14"/><line x1="22\"y1="11\"x2="16\"y2="11"/></svg>
+  return <svg {...s}><circle cx="12\"cy="12\"r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
 }
 
 function fileToBase64(file: File): Promise<string> {
@@ -71,7 +71,7 @@ function fileToBase64(file: File): Promise<string> {
       const base64 = result.includes(',') ? result.split(',')[1] ?? '' : result
       resolve(base64)
     }
-    reader.onerror = () => reject(new Error('Could not read file'))
+    reader.onerror = () =>reject(new Error('Could not read file'))
     reader.readAsDataURL(file)
   })
 }
@@ -89,7 +89,7 @@ function TeachingEmptyState({ message }: { message?: string | null }) {
       <p style={{ margin: '0 0 8px', color: '#e9d5ff', font: '700 11px/1.4 var(--font-mono)', letterSpacing: '0.14em', textTransform: 'uppercase' }}>
         FACULTY TA &amp; RED-LINE REVIEW TERMINAL · 20-MINUTE SLA
       </p>
-      <h1 className="skylent-display-sm" style={{ color: '#ffffff', margin: '0 0 8px', lineHeight: 1.1 }}>
+      <h1 className="skylent-display-sm\"style={{ color: '#ffffff', margin: '0 0 8px', lineHeight: 1.1 }}>
         Teaching scope &amp; V1 → V2 Red-Line Review Queue
       </h1>
       <p style={{ color: 'rgba(255,255,255,0.88)', fontSize: 15, margin: '0 0 10px', lineHeight: 1.55 }}>
@@ -112,8 +112,8 @@ function CatalogOverview({
   programCount: number
   courseCount: number
   pendingCount: number
-  onReview: () => void
-  onAuthorLecture: () => void
+  onReview: () =>void
+  onAuthorLecture: () =>void
 }) {
   return (
     <div style={{
@@ -127,7 +127,7 @@ function CatalogOverview({
       <p style={{ margin: '0 0 8px', color: '#e9d5ff', font: '700 11px/1.4 var(--font-mono)', letterSpacing: '0.14em', textTransform: 'uppercase' }}>
         FACULTY TA &amp; RED-LINE REVIEW TERMINAL · SUPERADMIN &amp; INSTRUCTOR VIEW
       </p>
-      <h1 className="skylent-display-sm" style={{ color: '#ffffff', margin: '0 0 8px', lineHeight: 1.1 }}>
+      <h1 className="skylent-display-sm\"style={{ color: '#ffffff', margin: '0 0 8px', lineHeight: 1.1 }}>
         Catalog &amp; Red-Line Grading Command Center
       </h1>
       <p style={{ color: 'rgba(255,255,255,0.88)', fontSize: 15, margin: '0 0 22px', lineHeight: 1.5 }}>
@@ -205,10 +205,10 @@ function FacultyLectureAuthoringStudio({
   onReload,
 }: {
   courses: FacultyDashboard['courses']
-  onReload: () => void
+  onReload: () =>void
 }) {
   const [selectedCourseSlug, setSelectedCourseSlug] = useState<string>(courses[0]?.slug ?? '')
-  const currentCourse = courses.find((c) => c.slug === selectedCourseSlug) ?? courses[0]
+  const currentCourse = courses.find((c) =>c.slug === selectedCourseSlug) ?? courses[0]
   const modules = currentCourse?.modules ?? []
   const [selectedModuleId, setSelectedModuleId] = useState<string>(modules[0]?.id ?? '')
   const [title, setTitle] = useState('')
@@ -219,7 +219,7 @@ function FacultyLectureAuthoringStudio({
   const [submitting, setSubmitting] = useState(false)
 
   useEffect(() => {
-    if (currentCourse && currentCourse.modules?.[0] && !currentCourse.modules.some((m) => m.id === selectedModuleId)) {
+    if (currentCourse && currentCourse.modules?.[0] && !currentCourse.modules.some((m) =>m.id === selectedModuleId)) {
       setSelectedModuleId(currentCourse.modules[0].id)
     }
   }, [currentCourse?.slug])
@@ -242,7 +242,7 @@ function FacultyLectureAuthoringStudio({
       })
       setTitle('')
       setSummary('')
-      setStatusMsg(`Added ${created.nodeType} lecture "${created.title}" to ${currentCourse.title}.`)
+      setStatusMsg(`Added ${created.nodeType} lecture "${created.title}\"to ${currentCourse.title}.`)
       onReload()
     } catch (err) {
       setErrMsg(err instanceof Error ? err.message : 'Could not add lecture')
@@ -286,13 +286,13 @@ function FacultyLectureAuthoringStudio({
   return (
     <div style={{ display: 'grid', gap: 18 }}>
       {statusMsg ? (
-        <div role="status" style={{ padding: '12px 16px', borderRadius: 12, background: '#ecfdf5', border: '1px solid #6ee7b7', color: '#065f46', fontSize: 13.5, fontWeight: 700 }}>
+        <div role="status\"style={{ padding: '12px 16px', borderRadius: 12, background: '#ecfdf5', border: '1px solid #6ee7b7', color: '#065f46', fontSize: 13.5, fontWeight: 700 }}>
           ✓ {statusMsg}
         </div>
       ) : null}
       {errMsg ? (
-        <div role="alert" style={{ padding: '12px 16px', borderRadius: 12, background: '#fef2f2', border: '1px solid #fca5a5', color: '#991b1b', fontSize: 13.5, fontWeight: 700 }}>
-          ⚠️ {errMsg}
+        <div role="alert\"style={{ padding: '12px 16px', borderRadius: 12, background: '#fef2f2', border: '1px solid #fca5a5', color: '#991b1b', fontSize: 13.5, fontWeight: 700 }}>
+           {errMsg}
         </div>
       ) : null}
 
@@ -309,7 +309,7 @@ function FacultyLectureAuthoringStudio({
             Assigned Course
             <select
               value={currentCourse?.slug ?? ''}
-              onChange={(e) => setSelectedCourseSlug(e.target.value)}
+              onChange={(e) =>setSelectedCourseSlug(e.target.value)}
               style={inputStyle}
             >
               {courses.map((c) => (
@@ -325,7 +325,7 @@ function FacultyLectureAuthoringStudio({
               Target Module
               <select
                 value={selectedModuleId}
-                onChange={(e) => setSelectedModuleId(e.target.value)}
+                onChange={(e) =>setSelectedModuleId(e.target.value)}
                 required
                 style={inputStyle}
               >
@@ -342,7 +342,7 @@ function FacultyLectureAuthoringStudio({
               Lecture Type
               <select
                 value={nodeType}
-                onChange={(e) => setNodeType(e.target.value as typeof nodeType)}
+                onChange={(e) =>setNodeType(e.target.value as typeof nodeType)}
                 style={inputStyle}
               >
                 <option value="NOTES">NOTES — Reading &amp; AI Notes</option>
@@ -358,7 +358,7 @@ function FacultyLectureAuthoringStudio({
             Lecture Title
             <input
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={(e) =>setTitle(e.target.value)}
               placeholder="e.g. Executive Cohort Retention Memo Walkthrough"
               required
               style={inputStyle}
@@ -370,7 +370,7 @@ function FacultyLectureAuthoringStudio({
             <textarea
               rows={4}
               value={summary}
-              onChange={(e) => setSummary(e.target.value)}
+              onChange={(e) =>setSummary(e.target.value)}
               placeholder="Write the lesson reading notes or case assignment rubric instructions…"
               style={inputStyle}
             />
@@ -454,12 +454,12 @@ function FacultyLectureAuthoringStudio({
                               cursor: 'pointer',
                             }}
                           >
-                            📎 Attach PDF/Slide
+                             Attach PDF/Slide
                             <input
                               type="file"
                               accept=".pdf,.ppt,.pptx,.txt,.md"
                               style={{ display: 'none' }}
-                              onChange={(e) => void handleAttachFile(currentCourse.id!, lec.id, e.target.files?.[0] ?? null)}
+                              onChange={(e) =>void handleAttachFile(currentCourse.id!, lec.id, e.target.files?.[0] ?? null)}
                             />
                           </label>
                         ) : null}
@@ -479,7 +479,7 @@ function FacultyLectureAuthoringStudio({
 function CurriculumTeachingPath({ summary }: { summary: FacultyDashboard['curriculumSummary'] }) {
   if (summary.length === 0) {
     return (
-      <div id="faculty-curriculum" style={canvasSectionStyle}>
+      <div id="faculty-curriculum\"style={canvasSectionStyle}>
         <p style={{ color: C.slate, fontSize: 14, margin: 0, lineHeight: 1.6 }}>
           No teaching path is assigned yet. Curriculum steps appear here when a programme or course is linked to your account.
         </p>
@@ -497,7 +497,7 @@ function CurriculumTeachingPath({ summary }: { summary: FacultyDashboard['curric
   }))
 
   return (
-    <div id="faculty-curriculum" style={canvasSectionStyle}>
+    <div id="faculty-curriculum\"style={canvasSectionStyle}>
       <span style={{ fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 700, color: '#5142b5', display: 'block', marginBottom: 10 }}>
         MODULE TEACHING PATHWAY
       </span>
@@ -507,7 +507,7 @@ function CurriculumTeachingPath({ summary }: { summary: FacultyDashboard['curric
           const isComplete = node.status === 'complete'
           const isLast = i === curriculum.length - 1
           return (
-            <div key={node.id} className="faculty-path-step" style={{ display: 'flex', gap: 16, minHeight: isLast ? 'auto' : 46 }}>
+            <div key={node.id} className="faculty-path-step\"style={{ display: 'flex', gap: 16, minHeight: isLast ? 'auto' : 46 }}>
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: 20, flexShrink: 0 }}>
                 <div style={{
                   width: isCurrent ? 12 : 8,
@@ -560,8 +560,8 @@ function AssignmentReview({
   onReload,
 }: {
   submissions: FacultySubmission[]
-  onFocus: () => void
-  onReload: () => void
+  onFocus: () =>void
+  onReload: () =>void
 }) {
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [detail, setDetail] = useState<FacultySubmissionDetail | null>(null)
@@ -626,12 +626,12 @@ function AssignmentReview({
       </div>
 
       {gradingMsg ? (
-        <div role="status" style={{ marginBottom: 12, padding: '10px 14px', borderRadius: 10, background: '#ecfdf5', border: '1px solid #6ee7b7', color: '#065f46', fontSize: 13, fontWeight: 700 }}>
+        <div role="status\"style={{ marginBottom: 12, padding: '10px 14px', borderRadius: 10, background: '#ecfdf5', border: '1px solid #6ee7b7', color: '#065f46', fontSize: 13, fontWeight: 700 }}>
           {gradingMsg}
         </div>
       ) : null}
 
-      {submissions.length > 0 ? (
+      {submissions.length >0 ? (
         <div style={{ display: 'grid', gap: 10 }}>
           {submissions.map((row) => (
             <div key={row.id} style={{
@@ -648,7 +648,7 @@ function AssignmentReview({
                   <div style={{ color: '#475569', fontSize: 12.5, marginTop: 2 }}>
                     {row.lessonTitle}
                     {row.courseTitle ? ` · ${row.courseTitle}` : ''}
-                    {row.attachmentCount > 0 ? ` · ${row.attachmentCount} attachment(s)` : ''}
+                    {row.attachmentCount >0 ? ` · ${row.attachmentCount} attachment(s)` : ''}
                   </div>
                   <div style={{ color: '#64748b', fontSize: 11.5, marginTop: 2 }}>{formatSubmittedAt(row.submittedAt)}</div>
                 </div>
@@ -697,7 +697,7 @@ function AssignmentReview({
                             min={0}
                             max={100}
                             value={gradeVal}
-                            onChange={(e) => setGradeVal(e.target.value)}
+                            onChange={(e) =>setGradeVal(e.target.value)}
                             required
                             style={inputStyle}
                           />
@@ -706,7 +706,7 @@ function AssignmentReview({
                           V1 → V2 Faculty Red-Line Feedback
                           <input
                             value={feedbackVal}
-                            onChange={(e) => setFeedbackVal(e.target.value)}
+                            onChange={(e) =>setFeedbackVal(e.target.value)}
                             placeholder="Write actionable feedback for the learner…"
                             style={inputStyle}
                           />
@@ -722,7 +722,7 @@ function AssignmentReview({
                         </button>
                         <button
                           type="button"
-                          onClick={() => setSelectedId(null)}
+                          onClick={() =>setSelectedId(null)}
                           style={{ background: '#f1f5f9', color: '#334155', border: '1px solid #cbd5e1', padding: '8px 12px', borderRadius: 8, fontWeight: 600, fontSize: 12.5, cursor: 'pointer' }}
                         >
                           Close
@@ -769,7 +769,7 @@ function UpcomingTeaching({ pendingCount }: { pendingCount: number }) {
         ACTION QUEUE
       </span>
       <h3 style={{ margin: '0 0 12px', fontSize: 17, color: '#0f172a' }}>Upcoming teaching</h3>
-      {pendingCount > 0 ? (
+      {pendingCount >0 ? (
         <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', gap: 14, alignItems: 'center', padding: '10px 0' }}>
           <div style={{
             width: 36, height: 36, borderRadius: 8,
@@ -777,7 +777,7 @@ function UpcomingTeaching({ pendingCount }: { pendingCount: number }) {
             border: '1px solid #ddd6fe',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5142b5" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            <svg width="16\"height="16\"viewBox="0 0 24 24\"fill="none\"stroke="#5142b5\"strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
           </div>
           <div style={{ minWidth: 0 }}>
             <div style={{ color: '#0f172a', fontSize: 14, fontWeight: 700 }}>Assignment review</div>
@@ -845,13 +845,13 @@ function FacultyDoubtQueue({
   resolvingId,
 }: {
   doubts: FacultyDoubtItem[]
-  onResolve: (id: string, note?: string) => void
+  onResolve: (id: string, note?: string) =>void
   resolvingId: string | null
 }) {
   const [notes, setNotes] = useState<Record<string, string>>({})
-  const openDoubts = doubts.filter((d) => d.status === 'open')
+  const openDoubts = doubts.filter((d) =>d.status === 'open')
   return (
-    <div id="faculty-doubts" style={canvasSectionStyle}>
+    <div id="faculty-doubts\"style={canvasSectionStyle}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, marginBottom: 12 }}>
         <div>
           <div style={{ color: '#5142b5', fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
@@ -890,13 +890,13 @@ function FacultyDoubtQueue({
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                 <input
                   value={notes[item.id] ?? ''}
-                  onChange={(e) => setNotes((prev) => ({ ...prev, [item.id]: e.target.value }))}
+                  onChange={(e) =>setNotes((prev) => ({ ...prev, [item.id]: e.target.value }))}
                   placeholder="Write faculty resolution note (sent directly to learner notifications)…"
                   style={{ ...inputStyle, flex: 1, minWidth: 220 }}
                 />
                 <button
                   type="button"
-                  onClick={() => onResolve(item.id, notes[item.id])}
+                  onClick={() =>onResolve(item.id, notes[item.id])}
                   disabled={resolvingId === item.id}
                   style={{
                     background: '#5142b5',
@@ -935,7 +935,7 @@ export default function DashboardFacultyPage() {
 
   function reloadAll() {
     if (!ready || !user) return
-    void fetchFacultyDoubts().then(setDoubts).catch(() => setDoubts([]))
+    void fetchFacultyDoubts().then(setDoubts).catch(() =>setDoubts([]))
     fetchFacultyDashboard()
       .then((data) => {
         setDashboard(data)
@@ -958,7 +958,7 @@ export default function DashboardFacultyPage() {
   const submissions = dashboard?.submissions ?? []
   const curriculumSummary = dashboard?.curriculumSummary ?? []
   const teachingScopeAvailable = dashboard?.teachingScopeAvailable === true
-  const catalogPeek = teachingScopeAvailable && (programs.length > 0 || courses.length > 0)
+  const catalogPeek = teachingScopeAvailable && (programs.length >0 || courses.length >0)
 
   function focusAssignments() {
     setActiveNav('assignments')
@@ -968,7 +968,7 @@ export default function DashboardFacultyPage() {
     setResolvingDoubtId(id)
     try {
       const updated = await resolveFacultyDoubt(id, customNote?.trim() || 'Resolved by Faculty TA within 20-min SLA')
-      setDoubts((prev) => prev.map((d) => (d.id === id ? updated : d)))
+      setDoubts((prev) =>prev.map((d) => (d.id === id ? updated : d)))
     } catch {
       // Keep current state if resolve fails transiently
     } finally {
@@ -987,7 +987,7 @@ export default function DashboardFacultyPage() {
       onNavChange={setActiveNav}
       renderNavIcon={id => <NavIcon id={id} />}
     >
-      <div id="faculty-overview" className="faculty-teaching-workspace" style={{ display: 'grid', gap: 20 }}>
+      <div id="faculty-overview\"className="faculty-teaching-workspace\"style={{ display: 'grid', gap: 20 }}>
         {/* Horizontal Multi-Tab Switcher Bar */}
         <div
           role="tablist"
@@ -1010,7 +1010,7 @@ export default function DashboardFacultyPage() {
                 type="button"
                 role="tab"
                 aria-selected={active}
-                onClick={() => setActiveNav(item.id)}
+                onClick={() =>setActiveNav(item.id)}
                 style={{
                   padding: '8px 14px',
                   borderRadius: 999,
@@ -1034,7 +1034,7 @@ export default function DashboardFacultyPage() {
               <div style={{ display: 'grid', gap: 20 }}>
                 {loadError ? (
                   <GlassSurface level={2} padding="clamp(24px, 4vw, 36px)">
-                    <h1 className="skylent-display-sm" style={{ color: C.ink, margin: '0 0 8px' }}>Teaching scope</h1>
+                    <h1 className="skylent-display-sm\"style={{ color: C.ink, margin: '0 0 8px' }}>Teaching scope</h1>
                     <p style={{ color: C.slate, fontSize: 15, margin: '0 0 16px' }}>{loadError}</p>
                     <button
                       type="button"
@@ -1054,12 +1054,12 @@ export default function DashboardFacultyPage() {
                     courseCount={courses.length}
                     pendingCount={submissions.length}
                     onReview={focusAssignments}
-                    onAuthorLecture={() => setActiveNav('curriculum')}
+                    onAuthorLecture={() =>setActiveNav('curriculum')}
                   />
                 ) : (
                   <TeachingEmptyState message={dashboard?.teachingScopeMessage} />
                 )}
-                <FacultyDoubtQueue doubts={doubts} onResolve={(id, note) => void handleResolveDoubt(id, note)} resolvingId={resolvingDoubtId} />
+                <FacultyDoubtQueue doubts={doubts} onResolve={(id, note) =>void handleResolveDoubt(id, note)} resolvingId={resolvingDoubtId} />
                 <div id="faculty-assignments">
                   <AssignmentReview submissions={submissions} onFocus={focusAssignments} onReload={reloadAll} />
                 </div>
@@ -1094,7 +1094,7 @@ export default function DashboardFacultyPage() {
         ) : null}
 
         {activeNav === 'assessments' ? (
-          <FacultyDoubtQueue doubts={doubts} onResolve={(id, note) => void handleResolveDoubt(id, note)} resolvingId={resolvingDoubtId} />
+          <FacultyDoubtQueue doubts={doubts} onResolve={(id, note) =>void handleResolveDoubt(id, note)} resolvingId={resolvingDoubtId} />
         ) : null}
 
         {activeNav === 'learners' ? (
@@ -1102,7 +1102,7 @@ export default function DashboardFacultyPage() {
         ) : null}
 
         {activeNav === 'settings' ? (
-          <div id="faculty-settings" style={canvasSectionStyle}>
+          <div id="faculty-settings\"style={canvasSectionStyle}>
             <span style={{ color: '#5142b5', fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 700, letterSpacing: '0.08em', display: 'block', marginBottom: 8 }}>
               5-DIMENSION RUBRIC &amp; SLA SETTINGS
             </span>

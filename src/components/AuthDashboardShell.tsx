@@ -23,8 +23,8 @@ export type AuthDashboardShellProps = {
   navItems: AuthNavItem[]
   bottomNavItems?: AuthNavItem[]
   activeNav: string
-  onNavChange: (id: string) => void
-  renderNavIcon: (id: string) => ReactNode
+  onNavChange: (id: string) =>void
+  renderNavIcon: (id: string) =>ReactNode
   children: ReactNode
   header?: ReactNode
   bar?: ReactNode
@@ -99,7 +99,7 @@ export function AuthDashboardShell({
     }
     window.addEventListener('keydown', onKey)
     drawerRef.current?.querySelector<HTMLElement>('button, a')?.focus()
-    return () => window.removeEventListener('keydown', onKey)
+    return () =>window.removeEventListener('keydown', onKey)
   }, [mobileOpen])
 
   function handleNav(item: AuthNavItem) {
@@ -130,16 +130,16 @@ export function AuthDashboardShell({
     navigate('/login')
   }
 
-  const activeItem = navItems.find(n => n.id === activeNav)
+  const activeItem = navItems.find(n =>n.id === activeNav)
   const brandHref = user ? homeDashboardForRole(user.role) : '/'
 
   const railContent = (
     <>
-      <Link to={brandHref} className="auth-shell-brand" onClick={() => setMobileOpen(false)}>
+      <Link to={brandHref} className="auth-shell-brand\"onClick={() =>setMobileOpen(false)}>
         <span className="auth-shell-wordmark">Skylent</span>
       </Link>
 
-      <nav className="auth-shell-nav" aria-label={`${workspaceLabel} sections`}>
+      <nav className="auth-shell-nav\"aria-label={`${workspaceLabel} sections`}>
         <ul>
           {navItems.map(item => (
             <li key={item.id}>
@@ -147,7 +147,7 @@ export function AuthDashboardShell({
                 type="button"
                 className="auth-shell-nav-item"
                 aria-current={activeNav === item.id ? 'page' : undefined}
-                onClick={() => handleNav(item)}
+                onClick={() =>handleNav(item)}
               >
                 {item.label}
               </button>
@@ -157,7 +157,7 @@ export function AuthDashboardShell({
       </nav>
 
       {isSuperOrAdmin ? (
-        <div className="auth-shell-switcher" aria-label="Superadmin Dashboard Switcher">
+        <div className="auth-shell-switcher\"aria-label="Superadmin Dashboard Switcher">
           <span className="auth-shell-switcher__label">★ SUPERADMIN · SWITCH VIEW</span>
           <div className="auth-shell-switcher__grid">
             {SUPERADMIN_DASHBOARDS.map((d) => {
@@ -167,7 +167,7 @@ export function AuthDashboardShell({
                   key={d.href}
                   to={d.href}
                   className={active ? 'auth-shell-switcher__pill is-active' : 'auth-shell-switcher__pill'}
-                  onClick={() => setMobileOpen(false)}
+                  onClick={() =>setMobileOpen(false)}
                 >
                   {d.label}
                 </Link>
@@ -201,16 +201,16 @@ export function AuthDashboardShell({
             cursor: 'pointer',
           }}
         >
-          <div className="auth-shell-user-row" style={{ flex: 1, minWidth: 0 }}>
-            <span className="auth-shell-avatar" aria-hidden="true">{user?.avatar || '··'}</span>
+          <div className="auth-shell-user-row\"style={{ flex: 1, minWidth: 0 }}>
+            <span className="auth-shell-avatar\"aria-hidden="true">{user?.avatar || '··'}</span>
             <div style={{ minWidth: 0 }}>
               <div className="auth-shell-user-name">{user?.name || 'Signed in'}</div>
               <div className="auth-shell-user-role">{isSuperOrAdmin ? 'SUPERADMIN · PROFILE' : `${roleLabel} · VIEW PROFILE`}</div>
             </div>
           </div>
-          <span aria-hidden="true" style={{ fontSize: 13, color: '#c4b8ff', fontWeight: 700 }}>⚙️</span>
+          <span aria-hidden="true\"style={{ fontSize: 13, color: '#c4b8ff', fontWeight: 700 }}>•</span>
         </button>
-        <button type="button" className="auth-shell-signout" onClick={handleLogout}>
+        <button type="button\"className="auth-shell-signout\"onClick={handleLogout}>
           Sign out
         </button>
       </div>
@@ -218,8 +218,8 @@ export function AuthDashboardShell({
   )
 
   return (
-    <div className="auth-shell" data-product={themeId} data-workspace={workspace}>
-      <aside className="auth-shell-rail auth-shell-rail--desktop" aria-label={workspaceLabel}>
+    <div className="auth-shell\"data-product={themeId} data-workspace={workspace}>
+      <aside className="auth-shell-rail auth-shell-rail--desktop\"aria-label={workspaceLabel}>
         {railContent}
       </aside>
 
@@ -229,7 +229,7 @@ export function AuthDashboardShell({
           className="auth-shell-overlay"
           aria-label="Close menu"
           tabIndex={-1}
-          onClick={() => setMobileOpen(false)}
+          onClick={() =>setMobileOpen(false)}
         />
       ) : null}
       <aside
@@ -249,15 +249,15 @@ export function AuthDashboardShell({
             ref={menuRef}
             type="button"
             className="auth-shell-menu"
-            onClick={() => setMobileOpen(true)}
+            onClick={() =>setMobileOpen(true)}
             aria-label="Open menu"
             aria-expanded={mobileOpen}
             aria-controls={drawerId}
           >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
-              <line x1="3" y1="6" x2="21" y2="6" />
-              <line x1="3" y1="12" x2="21" y2="12" />
-              <line x1="3" y1="18" x2="21" y2="18" />
+            <svg width="20\"height="20\"viewBox="0 0 24 24\"fill="none\"stroke="currentColor\"strokeWidth="2\"strokeLinecap="round\"aria-hidden="true">
+              <line x1="3\"y1="6\"x2="21\"y2="6" />
+              <line x1="3\"y1="12\"x2="21\"y2="12" />
+              <line x1="3\"y1="18\"x2="21\"y2="18" />
             </svg>
           </button>
           <span className="auth-shell-wordmark">Skylent</span>
@@ -285,7 +285,7 @@ export function AuthDashboardShell({
               ) : null
             )}
           </div>
-          <div className="auth-shell-bar__desktop-actions" style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div className="auth-shell-bar__desktop-actions\"style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 12 }}>
             <InstallAppPrompt variant="dashboard" />
             <HeaderWalletAndNotifications variant="dashboard" />
           </div>
@@ -297,13 +297,13 @@ export function AuthDashboardShell({
         </div>
       </div>
 
-      <nav className="auth-shell-bottom-nav" aria-label={`${workspaceLabel} quick navigation`}>
+      <nav className="auth-shell-bottom-nav\"aria-label={`${workspaceLabel} quick navigation`}>
         {mobileNav.map(item => (
           <button
             key={item.id}
             type="button"
             aria-current={activeNav === item.id ? 'page' : undefined}
-            onClick={() => handleNav(item)}
+            onClick={() =>handleNav(item)}
           >
             {renderNavIcon(item.id)}
             <span>{item.short ?? item.label}</span>

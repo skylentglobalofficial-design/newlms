@@ -36,22 +36,22 @@ const DOCUMENTING = [
 const WORK_STEPS = [
   {
     title: "Learn",
-    kind: "learn" as const,
+    kind: "learn\"as const,
     copy: "Structured written lessons and interactive case briefings inside your enrolled course.",
   },
   {
     title: "Practise",
-    kind: "practice" as const,
+    kind: "practice\"as const,
     copy: "Short checks after a block of teaching, then assignments on the same material.",
   },
   {
     title: "Build",
-    kind: "build" as const,
+    kind: "build\"as const,
     copy: "A project against material that already exists: Harbor Desk or the Northwind extract.",
   },
   {
     title: "Keep",
-    kind: "keep" as const,
+    kind: "keep\"as const,
     copy: "The work sample stays with you. It is not a grade, a certificate, or a job claim.",
   },
 ]
@@ -59,13 +59,13 @@ const WORK_STEPS = [
 export default function StoriesPage() {
   const published = stories.length
   const live = liveProgrammeCatalogue()
-  const harbor = live.find((row) => row.visual === "harbor-desk")
-  const northwind = live.find((row) => row.visual === "northwind")
+  const harbor = live.find((row) =>row.visual === "harbor-desk")
+  const northwind = live.find((row) =>row.visual === "northwind")
   const empty = published === 0
 
   return (
     <PublicEditorialShell>
-      <section className="pe-hero" aria-labelledby="stories-hero-title">
+      <section className="pe-hero\"aria-labelledby="stories-hero-title">
         <div className="cat-rail pe-hero-stage">
           <div className="pe-hero-copy">
             <p className="pe-eyebrow">
@@ -99,27 +99,27 @@ export default function StoriesPage() {
         </div>
       </section>
 
-            <section className="pe-royal-band" aria-labelledby="stories-dossiers-title">
+            <section className="pe-royal-band\"aria-labelledby="stories-dossiers-title">
         <div className="cat-rail">
           <p className="pe-royal-eyebrow">SKYLENT INSTITUTE OF APPLIED LEARNING · PUBLIC EVIDENCE REGISTRY PREVIEW</p>
-          <h2 id="stories-dossiers-title" style={{ color: "#0F172A", fontSize: "clamp(26px, 3vw, 36px)", margin: "8px 0 10px", fontFamily: "var(--font-display)" }}>
+          <h2 id="stories-dossiers-title\"style={{ color: "#0F172A", fontSize: "clamp(26px, 3vw, 36px)", margin: "8px 0 10px", fontFamily: "var(--font-display)" }}>
             How Skylent records demonstrated competence across Simulated Labs and Partner Fieldwork.
           </h2>
           <p style={{ color: "#334155", maxWidth: 780, margin: "0 0 14px", fontSize: 15, lineHeight: 1.6 }}>
-            Skylent does not publish unverified salary claims or fabricated graduate testimonials. Below are three <strong>Illustrative Sample Benchmark Dossiers</strong> demonstrating how our event-based Execution Flight Recorder captures attempts, V1 → V2 faculty red-line revisions, oral defence, and supervised fieldwork.
+            Skylent does not publish unverified salary claims or fabricated graduate testimonials. Below are three <strong>Illustrative Sample Benchmark Dossiers</strong>demonstrating how our event-based Execution Flight Recorder captures attempts, V1 → V2 faculty red-line revisions, oral defence, and supervised fieldwork.
           </p>
           <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "6px 14px", borderRadius: 999, background: "#F5F3FF", border: "1px solid rgba(196, 184, 255, 0.45)", color: "#5142B5", fontSize: 11.5, fontFamily: "var(--font-mono)", fontWeight: 700, marginBottom: 8 }}>
-            ⚠️ DISCLOSURE: ILLUSTRATIVE BENCHMARK PREVIEWS · NOT PUBLISHED GRADUATE OUTCOME CLAIMS
+             DISCLOSURE: ILLUSTRATIVE BENCHMARK PREVIEWS · NOT PUBLISHED GRADUATE OUTCOME CLAIMS
           </div>
           <div className="pe-royal-grid">
             <article className="pe-royal-card">
               <span className="pe-royal-badge">SAMPLE BENCHMARK · SKL-2026-DA-00142</span>
               <h3 style={{ margin: 0, fontSize: 18.5, color: "#0F172A" }}>Env A · Northwind Commerce Revenue Leakage Audit</h3>
               <p style={{ margin: 0, fontSize: 13.5, color: "#334155", lineHeight: 1.55 }}>
-                <strong>5-Dimension Rubric:</strong> Execution (30%) + Judgement (20%) + V1→V2 Revision (20%).<br />
-                <strong>Sample V1 → V2 Revision:</strong> Excluded returned orders and tiered discount rows before computing Q3 gross margin.
+                <strong>5-Dimension Rubric:</strong>Execution (30%) + Judgement (20%) + V1→V2 Revision (20%).<br />
+                <strong>Sample V1 → V2 Revision:</strong>Excluded returned orders and tiered discount rows before computing Q3 gross margin.
               </p>
-              <Link to="/verify?code=SKL-2026-DA-00142" style={{ marginTop: "auto", color: "#5142B5", fontWeight: 700, fontSize: 13.5, textDecoration: "none" }}>
+              <Link to="/verify?code=SKL-2026-DA-00142\"style={{ marginTop: "auto", color: "#5142B5", fontWeight: 700, fontSize: 13.5, textDecoration: "none" }}>
                 Inspect Sample Flight Recorder on /verify →
               </Link>
             </article>
@@ -127,10 +127,10 @@ export default function StoriesPage() {
               <span className="pe-royal-badge">SAMPLE BENCHMARK · SKL-2026-PM-00089</span>
               <h3 style={{ margin: 0, fontSize: 18.5, color: "#0F172A" }}>Env A · Harbor Desk SaaS Incident Triage &amp; PRD</h3>
               <p style={{ margin: 0, fontSize: 13.5, color: "#334155", lineHeight: 1.55 }}>
-                <strong>5-Dimension Rubric:</strong> Oral Defence (15%) + Stakeholder Trade-Off Judgement (20%).<br />
-                <strong>Sample V1 → V2 Revision:</strong> Scoped out custom SSO to protect the 2-engineer reliability sprint constraint.
+                <strong>5-Dimension Rubric:</strong>Oral Defence (15%) + Stakeholder Trade-Off Judgement (20%).<br />
+                <strong>Sample V1 → V2 Revision:</strong>Scoped out custom SSO to protect the 2-engineer reliability sprint constraint.
               </p>
-              <Link to="/verify?code=SKL-2026-PM-00089" style={{ marginTop: "auto", color: "#5142B5", fontWeight: 700, fontSize: 13.5, textDecoration: "none" }}>
+              <Link to="/verify?code=SKL-2026-PM-00089\"style={{ marginTop: "auto", color: "#5142B5", fontWeight: 700, fontSize: 13.5, textDecoration: "none" }}>
                 Inspect Sample Flight Recorder on /verify →
               </Link>
             </article>
@@ -138,9 +138,9 @@ export default function StoriesPage() {
               <span className="pe-royal-badge">FIELDWORK EXCHANGE · ENV B MODEL</span>
               <h3 style={{ margin: 0, fontSize: 18.5, color: "#0F172A" }}>Env B · Skylent Work Assignment Exchange (MSME &amp; Startup Fieldwork)</h3>
               <p style={{ margin: 0, fontSize: 13.5, color: "#334155", lineHeight: 1.55 }}>
-                <strong>Supervised Real Work:</strong> Partner organisations submit scoped operational problems; eligible learners deliver faculty-supervised V1 → V2 solutions recorded with partner sign-off.
+                <strong>Supervised Real Work:</strong>Partner organisations submit scoped operational problems; eligible learners deliver faculty-supervised V1 → V2 solutions recorded with partner sign-off.
               </p>
-              <Link to="/universities" style={{ marginTop: "auto", color: "#34d399", fontWeight: 700, fontSize: 13.5, textDecoration: "none" }}>
+              <Link to="/universities\"style={{ marginTop: "auto", color: "#34d399", fontWeight: 700, fontSize: 13.5, textDecoration: "none" }}>
                 Explore Institutional &amp; Fieldwork Model →
               </Link>
             </article>
@@ -148,7 +148,7 @@ export default function StoriesPage() {
         </div>
       </section>
 
-      <nav className="pe-inkbar" aria-label="Stories sections">
+      <nav className="pe-inkbar\"aria-label="Stories sections">
         <div className="cat-rail pe-inkbar-inner">
           <a href="#work">Work</a>
           <a href="#status">Currently</a>
@@ -163,7 +163,7 @@ export default function StoriesPage() {
       >
         <div className="cat-rail">
           <p className="pe-kicker">Editorial</p>
-          <h2 id="stories-work-title" className="is-quiet">
+          <h2 id="stories-work-title\"className="is-quiet">
             The work comes first.
           </h2>
           <p className="pe-lead">
@@ -187,7 +187,7 @@ export default function StoriesPage() {
       >
         <div className="cat-rail">
           <p className="pe-kicker">Verified Proof-of-Work Records</p>
-          <h2 id="stories-status-title" className="pe-display">
+          <h2 id="stories-status-title\"className="pe-display">
             Audited graduate work, not generic quotes.
           </h2>
           <p className="pe-lead">
@@ -231,7 +231,7 @@ export default function StoriesPage() {
           </div>
           <ol className="pe-map is-follow">
             {DOCUMENTING.map((item, index) => (
-              <li className="pe-map-item" key={item.label}>
+              <li className="pe-map-item\"key={item.label}>
                 <div className="pe-map-row is-static">
                   <em>{String(index + 1).padStart(2, "0")}</em>
                   <div>
@@ -252,14 +252,14 @@ export default function StoriesPage() {
       >
         <div className="cat-rail">
           <p className="pe-kicker">Product evidence</p>
-          <h2 id="stories-evidence-title" className="is-quiet">
+          <h2 id="stories-evidence-title\"className="is-quiet">
             The work first. The story later.
           </h2>
           <p className="pe-lead">
             Every graduate record is backed by live programme work inside Skylent OS: the Northwind SQL Lab, Harbor Desk PRD Studio, and Career OS.
           </p>
 
-          {live.length > 0 ? (
+          {live.length >0 ? (
             <div className="pe-specimens">
               {harbor ? (
                 <div>
@@ -307,17 +307,17 @@ export default function StoriesPage() {
             ))}
           </ul>
           <p className="pe-actions">
-            <Link className="pe-cta-ghost" to="/career-os">
+            <Link className="pe-cta-ghost\"to="/career-os">
               Explore Career OS
             </Link>
-            <Link className="pe-cta-ghost" to="/institutions">
+            <Link className="pe-cta-ghost\"to="/institutions">
               For institutions
             </Link>
           </p>
         </div>
       </section>
 
-      <section className="pe-close" aria-labelledby="stories-close-title">
+      <section className="pe-close\"aria-labelledby="stories-close-title">
         <div className="cat-rail">
           <p className="pe-kicker">Explore Skylent</p>
           <h2 id="stories-close-title">
@@ -328,13 +328,13 @@ export default function StoriesPage() {
             while verified stories are prepared.
           </p>
           <p className="pe-actions">
-            <Link className="pe-cta" to="/programs">
+            <Link className="pe-cta\"to="/programs">
               Explore programmes
-              <span className="pe-cta-arrow" aria-hidden="true">
+              <span className="pe-cta-arrow\"aria-hidden="true">
                 →
               </span>
             </Link>
-            <Link className="pe-cta-ghost" to="/verify">
+            <Link className="pe-cta-ghost\"to="/verify">
               Verify graduate credentials
             </Link>
           </p>

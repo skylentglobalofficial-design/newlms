@@ -694,7 +694,7 @@ export default function SkylentAI({
           }}
         >
           <AiMark />
-          <span>{open ? "Close" : "Ask Skylent AI"}</span>
+          <span>{open ? "Close" : "Study Help & Doubt Desk"}</span>
         </button>
         {open ? (
           <div className="os-ai-sheet" id={sheetId}>

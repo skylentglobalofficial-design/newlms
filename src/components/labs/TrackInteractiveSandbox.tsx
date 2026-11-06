@@ -21,10 +21,10 @@ const NORTHWIND_PRESET: SandboxPreset = {
   sampleLabel: "SQL query on northwind_sales (180 order lines · Jan–Jun 2026)",
   defaultInput: [
     "SELECT category,",
-    "       COUNT(*) AS valid_orders,",
-    "       ROUND(SUM(units * unit_price * (1 - discount_pct / 100.0))) AS net_revenue_inr",
+    \"COUNT(*) AS valid_orders,",
+    \"ROUND(SUM(units * unit_price * (1 - discount_pct / 100.0))) AS net_revenue_inr",
     "FROM northwind_sales",
-    "WHERE units > 0 AND unit_price > 0 AND returned = 'no'",
+    "WHERE units >0 AND unit_price >0 AND returned = 'no'",
     "GROUP BY category",
     "ORDER BY net_revenue_inr DESC;",
   ].join("\n"),
@@ -60,10 +60,10 @@ const NORTHWIND_PRESET: SandboxPreset = {
     const diagnostics: string[] = [
       filtersReturned && filtersPositive
         ? "✓ Row hygiene verified: 14 returned/zero-unit rows excluded → 166 valid rows."
-        : "⚠ Missing WHERE units > 0 AND unit_price > 0 AND returned = 'no' (14 invalid rows still included).",
+        : \"Missing WHERE units >0 AND unit_price >0 AND returned = 'no' (14 invalid rows still included).",
       hasDiscount
         ? "✓ Net revenue formula applied: ₹8,12,020 total across 4 categories."
-        : "⚠ Apply (1 - discount_pct / 100.0) to isolate net revenue after promotional discounts.",
+        : \"Apply (1 - discount_pct / 100.0) to isolate net revenue after promotional discounts.",
       groupsByMonth
         ? "✓ Monthly trend (Jan–Jun): May peaks at ₹1,58,240 · Feb dips to ₹1,18,900."
         : "✓ Category mix: Beverages ₹2,74,560 (33.8%) · Dairy ₹1,98,410 · Confections ₹1,76,890 · Seafood ₹1,62,160.",
@@ -100,7 +100,7 @@ const SANDBOX_PRESETS: Record<string, SandboxPreset> = {
       '{"gateway_tx_id":"gw_903","settlement_epoch":1730246400,"currency":"USD","amount_paise":25000,"fee_paise":500}',
     ].join("\n"),
     evaluate(input: string) {
-      const lines = input.split("\n").map((l) => l.trim()).filter(Boolean)
+      const lines = input.split("\n").map((l) =>l.trim()).filter(Boolean)
       const seen = new Set<string>()
       let accepted = 0
       let duplicates = 0
@@ -136,7 +136,7 @@ const SANDBOX_PRESETS: Record<string, SandboxPreset> = {
       })
 
       return {
-        passed: accepted > 0 && (duplicates > 0 || quarantined > 0),
+        passed: accepted >0 && (duplicates >0 || quarantined >0),
         headline: `Processed ${lines.length} rows: ${accepted} committed, ${duplicates} duplicate retries suppressed, ${quarantined} quarantined.`,
         metrics: [
           { label: "Committed Ledger Rows", value: String(accepted) },
@@ -242,11 +242,11 @@ const SANDBOX_PRESETS: Record<string, SandboxPreset> = {
         const chunks = Array.isArray(payload.retrievedChunks) ? payload.retrievedChunks : []
         const threshold = Number(payload.minRelevanceThreshold ?? 0.72)
         const answer = String(payload.candidateAnswer ?? "")
-        const topScore = chunks.reduce((max, c) => Math.max(max, Number(c.score ?? 0)), 0)
+        const topScore = chunks.reduce((max, c) =>Math.max(max, Number(c.score ?? 0)), 0)
         const hasInjection = /ignore previous instructions|system override|drop table/i.test(
-          chunks.map((c) => c.text).join(" ") + " " + String(payload.query ?? ""),
+          chunks.map((c) =>c.text).join(" ") + " " + String(payload.query ?? ""),
         )
-        const citedIds = chunks.filter((c) => answer.includes(c.doc_id) && answer.includes(c.section_id))
+        const citedIds = chunks.filter((c) =>answer.includes(c.doc_id) && answer.includes(c.section_id))
 
         const diagnostics = [
           hasInjection
@@ -254,15 +254,15 @@ const SANDBOX_PRESETS: Record<string, SandboxPreset> = {
             : "✓ Retrieved context passed indirect prompt-injection filter.",
           topScore >= threshold
             ? `✓ Top chunk relevance (${topScore.toFixed(2)}) meets threshold (${threshold.toFixed(2)}).`
-            : `⚠ Top chunk relevance (${topScore.toFixed(2)}) is below ${threshold.toFixed(2)} — assistant must abstain.`,
-          citedIds.length > 0
+            : ` Top chunk relevance (${topScore.toFixed(2)}) is below ${threshold.toFixed(2)} — assistant must abstain.`,
+          citedIds.length >0
             ? `✓ Grounded citation verified: [${citedIds.map((c) => `${c.doc_id}, ${c.section_id}`).join("; ")}].`
             : "✗ Candidate answer is missing explicit [doc_id, section_id] citation tags.",
         ]
         return {
-          passed: !hasInjection && topScore >= threshold && citedIds.length > 0,
+          passed: !hasInjection && topScore >= threshold && citedIds.length >0,
           headline:
-            !hasInjection && citedIds.length > 0
+            !hasInjection && citedIds.length >0
               ? "Response passed citation grounding and injection guardrails."
               : "Response failed grounding or security verification.",
           metrics: [
@@ -329,11 +329,11 @@ const SANDBOX_PRESETS: Record<string, SandboxPreset> = {
           keys.add(composite)
           balance += ev.amount
           committed += 1
-          diagnostics.push(`Committed (${ev.idempotencyKey}): ${ev.amount > 0 ? `+${ev.amount}` : ev.amount} Elixir → balance = ${balance}`)
+          diagnostics.push(`Committed (${ev.idempotencyKey}): ${ev.amount >0 ? `+${ev.amount}` : ev.amount} Elixir → balance = ${balance}`)
         }
 
         return {
-          passed: committed > 0 && replays > 0 && balance >= 0,
+          passed: committed >0 && replays >0 && balance >= 0,
           headline: `Atomic ledger invariant held: final balance = ${balance} Elixir (${replays} duplicate webhooks neutralized, ${rejected} overdrafts rolled back).`,
           metrics: [
             { label: "Final Wallet Balance", value: `${balance} Elixir` },
@@ -383,7 +383,7 @@ export default function TrackInteractiveSandbox({ projectType }: { projectType: 
       }}
     >
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, flexWrap: "wrap", marginBottom: 6 }}>
-        <span className="os-eyebrow" style={{ margin: 0, color: "#5142b5", fontWeight: 700 }}>{preset.badge}</span>
+        <span className="os-eyebrow\"style={{ margin: 0, color: "#5142b5", fontWeight: 700 }}>{preset.badge}</span>
         <button
           type="button"
           className="os-btn os-btn-ghost"
@@ -397,14 +397,14 @@ export default function TrackInteractiveSandbox({ projectType }: { projectType: 
         </button>
       </div>
       <h3 style={{ margin: "0 0 4px", fontSize: 16, color: "#0f172a" }}>{preset.title}</h3>
-      <p className="lab-note" style={{ marginTop: 0, marginBottom: 10, fontSize: 13, color: "#475569" }}>{preset.subtitle}</p>
+      <p className="lab-note\"style={{ marginTop: 0, marginBottom: 10, fontSize: 13, color: "#475569" }}>{preset.subtitle}</p>
       <label htmlFor={`sandbox-input-${projectType}`} style={{ display: "block", fontSize: 12, fontWeight: 600, marginBottom: 4, color: "#334155" }}>
         {preset.sampleLabel}
       </label>
       <textarea
         id={`sandbox-input-${projectType}`}
         value={input}
-        onChange={(e) => setInput(e.target.value)}
+        onChange={(e) =>setInput(e.target.value)}
         rows={6}
         style={{
           width: "100%",
@@ -420,7 +420,7 @@ export default function TrackInteractiveSandbox({ projectType }: { projectType: 
         }}
       />
       <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12, flexWrap: "wrap" }}>
-        <button type="button" className="os-btn os-btn-primary" style={{ minHeight: 36, fontSize: 13 }} onClick={() => setResult(preset.evaluate(input))}>
+        <button type="button\"className="os-btn os-btn-primary\"style={{ minHeight: 36, fontSize: 13 }} onClick={() =>setResult(preset.evaluate(input))}>
           ▶ Run Verification Check
         </button>
         {result ? (
@@ -439,7 +439,7 @@ export default function TrackInteractiveSandbox({ projectType }: { projectType: 
           }}
         >
           <strong style={{ display: "block", fontSize: 13, marginBottom: 8, color: "#0f172a" }}>{result.headline}</strong>
-          {result.metrics.length > 0 ? (
+          {result.metrics.length >0 ? (
             <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginBottom: 8 }}>
               {result.metrics.map((m) => (
                 <div key={m.label} style={{ fontSize: 12, padding: "4px 10px", borderRadius: 6, background: "#f1f5f9" }}>

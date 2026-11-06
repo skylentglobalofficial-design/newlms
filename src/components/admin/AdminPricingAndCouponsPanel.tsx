@@ -69,7 +69,7 @@ const cardStyle = {
 
 const inputStyle = {
   width: "100%",
-  boxSizing: "border-box" as const,
+  boxSizing: "border-box\"as const,
   padding: "9px 12px",
   borderRadius: 10,
   border: "1px solid #cbd5e1",
@@ -204,7 +204,7 @@ export default function AdminPricingAndCouponsPanel() {
     const next = { ...current, [field]: value }
     if (field === "proPrice") {
       const num = Number(value) || 0
-      if (num > 0) {
+      if (num >0) {
         next.certPrice = String(Math.max(499, Math.round((num * 0.45) / 100) * 100 - 1))
         next.flagshipPrice = String(num + 2500)
         next.mrp = String(num * 2)
@@ -272,7 +272,7 @@ export default function AdminPricingAndCouponsPanel() {
       if (Array.isArray(payload.data?.couponRequests)) setRequests(payload.data.couponRequests)
       if (Array.isArray(payload.data?.coupons)) setCoupons(payload.data.coupons)
       setStatusMsg(
-        `✓ Approved! Generated active coupon code "${payload.data?.coupon?.code}" for ${payload.data?.coupon?.counselorName}. Student can now apply it on /checkout.`,
+        `✓ Approved! Generated active coupon code "${payload.data?.coupon?.code}\"for ${payload.data?.coupon?.counselorName}. Student can now apply it on /checkout.`,
       )
     } catch (err) {
       setErrorMsg(err instanceof Error ? err.message : "Could not approve request")
@@ -361,7 +361,7 @@ export default function AdminPricingAndCouponsPanel() {
       if (!res.ok) throw new Error(payload.error || "Failed to create coupon")
       if (Array.isArray(payload.coupons)) setCoupons(payload.coupons)
       setAdminCouponCode("")
-      setStatusMsg(`✓ Admin-authorized coupon "${clean}" is now live and valid on Checkout!`)
+      setStatusMsg(`✓ Admin-authorized coupon "${clean}\"is now live and valid on Checkout!`)
     } catch (err) {
       setErrorMsg(err instanceof Error ? err.message : "Could not create coupon")
     }
@@ -380,7 +380,7 @@ export default function AdminPricingAndCouponsPanel() {
       const payload = await res.json().catch(() => ({}))
       if (!res.ok) throw new Error(payload.error || "Failed to delete coupon")
       if (Array.isArray(payload.data?.coupons)) setCoupons(payload.data.coupons)
-      else setCoupons((prev) => prev.filter((c) => c.code !== code))
+      else setCoupons((prev) =>prev.filter((c) =>c.code !== code))
       setStatusMsg(`Deleted coupon ${code}.`)
     } catch (err) {
       setErrorMsg(err instanceof Error ? err.message : "Could not delete coupon")
@@ -415,7 +415,7 @@ export default function AdminPricingAndCouponsPanel() {
     }
   }
 
-  const pendingRequests = requests.filter((r) => r.status === "PENDING")
+  const pendingRequests = requests.filter((r) =>r.status === "PENDING")
 
   return (
     <div style={{ display: "grid", gap: 22 }}>
@@ -499,7 +499,7 @@ export default function AdminPricingAndCouponsPanel() {
                     type="number"
                     min="1"
                     value={row.proPrice}
-                    onChange={(e) => updateDraft(c.slug, c.price, "proPrice", e.target.value)}
+                    onChange={(e) =>updateDraft(c.slug, c.price, "proPrice", e.target.value)}
                     style={inputStyle}
                   />
                 </label>
@@ -510,7 +510,7 @@ export default function AdminPricingAndCouponsPanel() {
                     type="number"
                     min="1"
                     value={row.certPrice}
-                    onChange={(e) => updateDraft(c.slug, c.price, "certPrice", e.target.value)}
+                    onChange={(e) =>updateDraft(c.slug, c.price, "certPrice", e.target.value)}
                     style={inputStyle}
                   />
                 </label>
@@ -521,7 +521,7 @@ export default function AdminPricingAndCouponsPanel() {
                     type="number"
                     min="1"
                     value={row.flagshipPrice}
-                    onChange={(e) => updateDraft(c.slug, c.price, "flagshipPrice", e.target.value)}
+                    onChange={(e) =>updateDraft(c.slug, c.price, "flagshipPrice", e.target.value)}
                     style={inputStyle}
                   />
                 </label>
@@ -532,14 +532,14 @@ export default function AdminPricingAndCouponsPanel() {
                     type="number"
                     min="1"
                     value={row.mrp}
-                    onChange={(e) => updateDraft(c.slug, c.price, "mrp", e.target.value)}
+                    onChange={(e) =>updateDraft(c.slug, c.price, "mrp", e.target.value)}
                     style={inputStyle}
                   />
                 </label>
 
                 <button
                   type="button"
-                  onClick={() => void saveCoursePrice(c.slug, c.title, c.price)}
+                  onClick={() =>void saveCoursePrice(c.slug, c.title, c.price)}
                   style={{
                     padding: "10px 16px",
                     borderRadius: 10,
@@ -576,7 +576,7 @@ export default function AdminPricingAndCouponsPanel() {
             gap: 12,
           }}
         >
-          <span style={{ fontSize: 18, lineHeight: 1 }}>🔒</span>
+          <span style={{ fontSize: 18, lineHeight: 1 }}>LOCKED</span>
           <div>
             <strong style={{ fontSize: 14, display: "block", marginBottom: 2 }}>
               Strict Rule: Counselors Cannot Generate Coupons Without Admin Approval
@@ -588,7 +588,7 @@ export default function AdminPricingAndCouponsPanel() {
         </div>
 
                 {/* Pillar 5: Hot Abandoned Checkout & Payment-Drop Leads for Counselors */}
-        {abandonedLeads.length > 0 ? (
+        {abandonedLeads.length >0 ? (
           <div
             style={{
               marginBottom: 18,
@@ -601,7 +601,7 @@ export default function AdminPricingAndCouponsPanel() {
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8, marginBottom: 10 }}>
               <div>
                 <span style={{ fontSize: 10.5, fontFamily: "var(--font-mono)", fontWeight: 800, color: "#dc2626", textTransform: "uppercase" }}>
-                  🔥 HOT ABANDONED CHECKOUT &amp; PAYMENT-DROP LEADS ({abandonedLeads.length})
+                   HOT ABANDONED CHECKOUT &amp; PAYMENT-DROP LEADS ({abandonedLeads.length})
                 </span>
                 <p style={{ margin: "2px 0 0", fontSize: 12.5, color: "#7f1d1d" }}>
                   Learners who started or cancelled PayU checkout. Counselors can call/email them and request an Admin-approved concession in 1 click.
@@ -675,7 +675,7 @@ export default function AdminPricingAndCouponsPanel() {
           </div>
           <button
             type="button"
-            onClick={() => setShowCounselorRequestForm((v) => !v)}
+            onClick={() =>setShowCounselorRequestForm((v) => !v)}
             style={{
               padding: "7px 14px",
               borderRadius: 8,
@@ -694,7 +694,7 @@ export default function AdminPricingAndCouponsPanel() {
         {/* Counselor Request Form */}
         {showCounselorRequestForm ? (
           <form
-            onSubmit={(e) => void handleSubmitCounselorRequest(e)}
+            onSubmit={(e) =>void handleSubmitCounselorRequest(e)}
             style={{
               display: "grid",
               gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
@@ -711,7 +711,7 @@ export default function AdminPricingAndCouponsPanel() {
               <input
                 type="text"
                 value={reqCounselorName}
-                onChange={(e) => setReqCounselorName(e.target.value)}
+                onChange={(e) =>setReqCounselorName(e.target.value)}
                 required
                 style={inputStyle}
               />
@@ -722,7 +722,7 @@ export default function AdminPricingAndCouponsPanel() {
               <input
                 type="email"
                 value={reqStudentEmail}
-                onChange={(e) => setReqStudentEmail(e.target.value)}
+                onChange={(e) =>setReqStudentEmail(e.target.value)}
                 placeholder="learner@gmail.com"
                 required
                 style={inputStyle}
@@ -733,7 +733,7 @@ export default function AdminPricingAndCouponsPanel() {
               <span>Course / Programme</span>
               <select
                 value={reqTargetCourse}
-                onChange={(e) => setReqTargetCourse(e.target.value)}
+                onChange={(e) =>setReqTargetCourse(e.target.value)}
                 style={inputStyle}
               >
                 <option value="ALL">All Courses</option>
@@ -750,7 +750,7 @@ export default function AdminPricingAndCouponsPanel() {
               <div style={{ display: "flex", gap: 6 }}>
                 <select
                   value={reqDiscountType}
-                  onChange={(e) => setReqDiscountType(e.target.value as "FLAT" | "PERCENT")}
+                  onChange={(e) =>setReqDiscountType(e.target.value as "FLAT" | "PERCENT")}
                   style={{ ...inputStyle, width: "auto" }}
                 >
                   <option value="FLAT">₹ Flat</option>
@@ -760,7 +760,7 @@ export default function AdminPricingAndCouponsPanel() {
                   type="number"
                   min="1"
                   value={reqDiscountValue}
-                  onChange={(e) => setReqDiscountValue(e.target.value)}
+                  onChange={(e) =>setReqDiscountValue(e.target.value)}
                   style={inputStyle}
                 />
               </div>
@@ -772,7 +772,7 @@ export default function AdminPricingAndCouponsPanel() {
                 <input
                   type="text"
                   value={reqReason}
-                  onChange={(e) => setReqReason(e.target.value)}
+                  onChange={(e) =>setReqReason(e.target.value)}
                   placeholder="e.g. Merit background; closing enrollment today if fee concession approved."
                   required
                   style={inputStyle}
@@ -837,7 +837,7 @@ export default function AdminPricingAndCouponsPanel() {
               <div style={{ display: "flex", gap: 8 }}>
                 <button
                   type="button"
-                  onClick={() => void handleApproveCounselorRequest(req.id)}
+                  onClick={() =>void handleApproveCounselorRequest(req.id)}
                   style={{
                     padding: "8px 16px",
                     borderRadius: 8,
@@ -853,7 +853,7 @@ export default function AdminPricingAndCouponsPanel() {
                 </button>
                 <button
                   type="button"
-                  onClick={() => void handleRejectCounselorRequest(req.id)}
+                  onClick={() =>void handleRejectCounselorRequest(req.id)}
                   style={{
                     padding: "8px 14px",
                     borderRadius: 8,
@@ -890,7 +890,7 @@ export default function AdminPricingAndCouponsPanel() {
           </p>
 
           <form
-            onSubmit={(e) => void handleCreateAdminCoupon(e)}
+            onSubmit={(e) =>void handleCreateAdminCoupon(e)}
             style={{
               display: "grid",
               gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))",
@@ -907,7 +907,7 @@ export default function AdminPricingAndCouponsPanel() {
               <input
                 type="text"
                 value={adminCouponCode}
-                onChange={(e) => setAdminCouponCode(e.target.value.toUpperCase())}
+                onChange={(e) =>setAdminCouponCode(e.target.value.toUpperCase())}
                 placeholder="e.g. ADM-CHANDAN-2000"
                 required
                 style={inputStyle}
@@ -918,7 +918,7 @@ export default function AdminPricingAndCouponsPanel() {
               <span>Discount Type</span>
               <select
                 value={discountType}
-                onChange={(e) => setDiscountType(e.target.value as "FLAT" | "PERCENT")}
+                onChange={(e) =>setDiscountType(e.target.value as "FLAT" | "PERCENT")}
                 style={inputStyle}
               >
                 <option value="FLAT">Flat Rupees Off (₹)</option>
@@ -932,7 +932,7 @@ export default function AdminPricingAndCouponsPanel() {
                 type="number"
                 min="1"
                 value={discountValue}
-                onChange={(e) => setDiscountValue(e.target.value)}
+                onChange={(e) =>setDiscountValue(e.target.value)}
                 required
                 style={inputStyle}
               />
@@ -943,7 +943,7 @@ export default function AdminPricingAndCouponsPanel() {
               <input
                 type="text"
                 value={counselorAttribution}
-                onChange={(e) => setCounselorAttribution(e.target.value)}
+                onChange={(e) =>setCounselorAttribution(e.target.value)}
                 placeholder="e.g. Counselor Priya / Superadmin"
                 style={inputStyle}
               />
@@ -953,7 +953,7 @@ export default function AdminPricingAndCouponsPanel() {
               <span>Applicable Course</span>
               <select
                 value={applicableSlug}
-                onChange={(e) => setApplicableSlug(e.target.value)}
+                onChange={(e) =>setApplicableSlug(e.target.value)}
                 style={inputStyle}
               >
                 <option value="ALL">All Courses &amp; Programmes</option>
@@ -970,7 +970,7 @@ export default function AdminPricingAndCouponsPanel() {
                 <input
                   type="checkbox"
                   checked={showOnCheckout}
-                  onChange={(e) => setShowOnCheckout(e.target.checked)}
+                  onChange={(e) =>setShowOnCheckout(e.target.checked)}
                 />
                 <span>Show as public chip on Checkout</span>
               </label>
@@ -1055,7 +1055,7 @@ export default function AdminPricingAndCouponsPanel() {
                     type="button"
                     onClick={() => {
                       void navigator.clipboard?.writeText(c.code)
-                      setStatusMsg(`Copied coupon code "${c.code}" to clipboard!`)
+                      setStatusMsg(`Copied coupon code "${c.code}\"to clipboard!`)
                     }}
                     style={{
                       padding: "6px 12px",
@@ -1072,7 +1072,7 @@ export default function AdminPricingAndCouponsPanel() {
                   </button>
                   <button
                     type="button"
-                    onClick={() => void handleDeleteCoupon(c.code)}
+                    onClick={() =>void handleDeleteCoupon(c.code)}
                     style={{
                       padding: "6px 12px",
                       borderRadius: 8,
@@ -1105,13 +1105,13 @@ export default function AdminPricingAndCouponsPanel() {
           Enable or disable payment modes shown to learners and manage your live PayU India merchant configuration.
         </p>
 
-        <form onSubmit={(e) => void handleSaveGateway(e)} style={{ display: "grid", gap: 16 }}>
+        <form onSubmit={(e) =>void handleSaveGateway(e)} style={{ display: "grid", gap: 16 }}>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 16 }}>
             {[
-              { key: "upiEnabled" as const, label: "UPI & QR (GPay / PhonePe / Paytm)" },
-              { key: "cardsEnabled" as const, label: "Debit & Credit Cards (Visa / Mastercard / RuPay)" },
-              { key: "netbankingEnabled" as const, label: "NetBanking (All Banks)" },
-              { key: "emiEnabled" as const, label: "No-Cost & Standard EMI" },
+              { key: "upiEnabled\"as const, label: "UPI & QR (GPay / PhonePe / Paytm)" },
+              { key: "cardsEnabled\"as const, label: "Debit & Credit Cards (Visa / Mastercard / RuPay)" },
+              { key: "netbankingEnabled\"as const, label: "NetBanking (All Banks)" },
+              { key: "emiEnabled\"as const, label: "No-Cost & Standard EMI" },
             ].map((item) => (
               <label
                 key={item.key}
@@ -1132,7 +1132,7 @@ export default function AdminPricingAndCouponsPanel() {
                 <input
                   type="checkbox"
                   checked={gateway[item.key]}
-                  onChange={(e) => setGateway((prev) => ({ ...prev, [item.key]: e.target.checked }))}
+                  onChange={(e) =>setGateway((prev) => ({ ...prev, [item.key]: e.target.checked }))}
                 />
                 <span>{item.label}</span>
               </label>
@@ -1150,7 +1150,7 @@ export default function AdminPricingAndCouponsPanel() {
               <span>Gateway Environment</span>
               <select
                 value={gateway.mode}
-                onChange={(e) => setGateway((prev) => ({ ...prev, mode: e.target.value as "production" | "test" }))}
+                onChange={(e) =>setGateway((prev) => ({ ...prev, mode: e.target.value as "production" | "test" }))}
                 style={inputStyle}
               >
                 <option value="production">Production Live (secure.payu.in)</option>
@@ -1163,7 +1163,7 @@ export default function AdminPricingAndCouponsPanel() {
               <input
                 type="text"
                 value={gateway.merchantKey}
-                onChange={(e) => setGateway((prev) => ({ ...prev, merchantKey: e.target.value }))}
+                onChange={(e) =>setGateway((prev) => ({ ...prev, merchantKey: e.target.value }))}
                 style={inputStyle}
               />
             </label>
@@ -1173,7 +1173,7 @@ export default function AdminPricingAndCouponsPanel() {
               <input
                 type="text"
                 value={gateway.mid}
-                onChange={(e) => setGateway((prev) => ({ ...prev, mid: e.target.value }))}
+                onChange={(e) =>setGateway((prev) => ({ ...prev, mid: e.target.value }))}
                 style={inputStyle}
               />
             </label>
@@ -1183,7 +1183,7 @@ export default function AdminPricingAndCouponsPanel() {
               <input
                 type="password"
                 value={merchantSaltInput}
-                onChange={(e) => setMerchantSaltInput(e.target.value)}
+                onChange={(e) =>setMerchantSaltInput(e.target.value)}
                 placeholder="Leave blank to keep verified salt"
                 style={inputStyle}
               />
@@ -1219,17 +1219,17 @@ export default function AdminPricingAndCouponsPanel() {
           Push 1-Click In-App Update Notification to All Users
         </h2>
         <p style={{ margin: "0 0 16px", fontSize: 13, color: "#475569" }}>
-          Whenever you deploy an update, broadcast a new version number here. Every Mobile APK and Web user will immediately see an <strong>&ldquo;Update Now&rdquo;</strong> prompt inside the app without hunting for manual downloads.
+          Whenever you deploy an update, broadcast a new version number here. Every Mobile APK and Web user will immediately see an <strong>&ldquo;Update Now&rdquo;</strong>prompt inside the app without hunting for manual downloads.
         </p>
 
-        <form onSubmit={(e) => void handlePushAppUpdate(e)} style={{ display: "grid", gap: 14 }}>
+        <form onSubmit={(e) =>void handlePushAppUpdate(e)} style={{ display: "grid", gap: 14 }}>
           <div style={{ display: "grid", gridTemplateColumns: "minmax(160px, 220px) 1fr", gap: 12 }}>
             <label style={{ display: "grid", gap: 4, fontSize: 12, fontWeight: 700, color: "#334155" }}>
               <span>New App Version (e.g. 1.5.0, 1.5.1)</span>
               <input
                 type="text"
                 value={appUpdateVersion}
-                onChange={(e) => setAppUpdateVersion(e.target.value)}
+                onChange={(e) =>setAppUpdateVersion(e.target.value)}
                 style={inputStyle}
               />
             </label>
@@ -1238,7 +1238,7 @@ export default function AdminPricingAndCouponsPanel() {
               <input
                 type="text"
                 value={appUpdateNotes}
-                onChange={(e) => setAppUpdateNotes(e.target.value)}
+                onChange={(e) =>setAppUpdateNotes(e.target.value)}
                 style={inputStyle}
               />
             </label>
@@ -1249,7 +1249,7 @@ export default function AdminPricingAndCouponsPanel() {
               <input
                 type="checkbox"
                 checked={appForceUpdate}
-                onChange={(e) => setAppForceUpdate(e.target.checked)}
+                onChange={(e) =>setAppForceUpdate(e.target.checked)}
               />
               <span>Mandatory Force Update Modal (Requires immediate update before continuing)</span>
             </label>

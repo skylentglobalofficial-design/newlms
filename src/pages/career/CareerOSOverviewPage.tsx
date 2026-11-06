@@ -7,7 +7,7 @@
  *       1. Course Curriculum >= 60% completed within the 6-Month Course Window
  *       2. Module Quizzes Passed
  *       3. Capstone Project Completed
- *   - Only when all 3 are met does the "Enroll Now" button unlock!
+ *   - Only when all 3 are met does the "Enroll Now\"button unlock!
  *   - Before enrolling, Profile, Zero-to-Hero modules, and Job Board remain hidden.
  *
  * STATE 2 (After Clicking "Enroll Now"):
@@ -54,9 +54,9 @@ import "./CareerOSHome.css"
 type Load<T> = { status: "loading" } | { status: "ready"; data: T } | { status: "error"; message: string }
 
 function useLoad<T>(
-  load: () => Promise<T>,
+  load: () =>Promise<T>,
   key: string | null = "",
-): [Load<T>, () => void] {
+): [Load<T>, () =>void] {
   const [state, setState] = useState<Load<T>>({ status: "loading" })
   const [attempt, setAttempt] = useState(0)
   const loadRef = useRef(load)
@@ -80,7 +80,7 @@ function useLoad<T>(
     }
   }, [key, attempt])
 
-  const retry = useCallback(() => setAttempt((n) => n + 1), [])
+  const retry = useCallback(() =>setAttempt((n) =>n + 1), [])
   return [state, retry]
 }
 
@@ -333,20 +333,20 @@ export const CURATED_RECRUITER_JOBS: CuratedRecruiterJob[] = [
   },
 ]
 
-export default function CareerOSOverviewPage({ onEnrolled }: { onEnrolled?: () => void } = {}) {
+export default function CareerOSOverviewPage({ onEnrolled }: { onEnrolled?: () =>void } = {}) {
   const { user } = useAuth()
   const { profile } = useCareerProfile()
   const [completeness] = useLoad<CareerCompleteness>(fetchProfileCompleteness)
   const [dashboard] = useLoad<ApiCourseWorkspace | null>(fetchLmsDashboard)
   const [enrollments] = useLoad<ApiEnrollmentSummary[]>(fetchLmsEnrollments)
-  const [learnerProjects] = useLoad<ProjectSummary[]>(() => listLearnerProjects())
-  const [certificates] = useLoad<SkylentCertificate[]>(() => fetchMyCertificates())
+  const [learnerProjects] = useLoad<ProjectSummary[]>(() =>listLearnerProjects())
+  const [certificates] = useLoad<SkylentCertificate[]>(() =>fetchMyCertificates())
 
   const [tierRefresh, setTierRefresh] = useState(0)
   const [selectedTrackSlug, setSelectedTrackSlug] = useState<string>("")
   const [revealedAnswerIdx, setRevealedAnswerIdx] = useState<number | null>(null)
   const [englishDrillIdx, setEnglishDrillIdx] = useState(0)
-  const [appliedCuratedIds, setAppliedCuratedIds] = useState<Set<string>>(() => new Set())
+  const [appliedCuratedIds, setAppliedCuratedIds] = useState<Set<string>>(() =>new Set())
   const [jobTrackFilter, setJobTrackFilter] = useState<string>("all")
   const [activating, setActivating] = useState(false)
   const [superadminPreviewUnlocked, setSuperadminPreviewUnlocked] = useState(false)
@@ -369,7 +369,7 @@ export default function CareerOSOverviewPage({ onEnrolled }: { onEnrolled?: () =
 
     for (const entry of enrolmentList) {
       const courseItems =
-        entry.courses && entry.courses.length > 0
+        entry.courses && entry.courses.length >0
           ? entry.courses
           : entry.courseSlug
             ? [
@@ -421,26 +421,26 @@ export default function CareerOSOverviewPage({ onEnrolled }: { onEnrolled?: () =
   }, [enrolmentList, workspace, tierRefresh])
 
   useEffect(() => {
-    if (!selectedTrackSlug && courseValidities.length > 0) {
+    if (!selectedTrackSlug && courseValidities.length >0) {
       setSelectedTrackSlug(courseValidities[0].slug)
     }
   }, [courseValidities, selectedTrackSlug])
 
   const activeTrackSlug = selectedTrackSlug || courseValidities[0]?.slug || "data-analytics"
   const activeCourseValidity =
-    courseValidities.find((c) => c.slug === activeTrackSlug) ?? courseValidities[0] ?? null
+    courseValidities.find((c) =>c.slug === activeTrackSlug) ?? courseValidities[0] ?? null
   const activeTrackModule =
     TRACK_INTERVIEW_MODULES[activeTrackSlug] ?? TRACK_INTERVIEW_MODULES["data-analytics"]
 
   // Check Quizzes & Capstone Project completion for active course
-  const activeProject = projectList.find((p) => p.courseSlug === activeTrackSlug)
+  const activeProject = projectList.find((p) =>p.courseSlug === activeTrackSlug)
   const projectTasksComplete = activeProject?.progress.complete ?? 0
   const projectTasksTotal = activeProject?.progress.total ?? 6
-  const projectGatePassed = projectTasksTotal > 0 && projectTasksComplete >= projectTasksTotal
+  const projectGatePassed = projectTasksTotal >0 && projectTasksComplete >= projectTasksTotal
 
   const quizzesPassedCount = useMemo(() => {
     if (workspace && workspace.course.slug === activeTrackSlug) {
-      return Object.values(workspace.lessonStates).filter((s) => s.quizPassed).length
+      return Object.values(workspace.lessonStates).filter((s) =>s.quizPassed).length
     }
     return activeCourseValidity && activeCourseValidity.progressPct >= 60 ? 2 : 0
   }, [workspace, activeTrackSlug, activeCourseValidity])
@@ -459,7 +459,7 @@ export default function CareerOSOverviewPage({ onEnrolled }: { onEnrolled?: () =
     if (superadminPreviewUnlocked) return true
     if (!allThreeGatesPassed) return false
     const stored = readStoredCourseTiers()
-    return Object.values(stored).some((r) => Boolean(r.careerOsEnrolled))
+    return Object.values(stored).some((r) =>Boolean(r.careerOsEnrolled))
   }, [tierRefresh, superadminPreviewUnlocked, allThreeGatesPassed])
 
   useEffect(() => {
@@ -470,7 +470,7 @@ export default function CareerOSOverviewPage({ onEnrolled }: { onEnrolled?: () =
 
   function handleUpgradeTier(slug: string, nextTier: SkylentTierId) {
     saveStoredCourseTier(slug, nextTier)
-    setTierRefresh((v) => v + 1)
+    setTierRefresh((v) =>v + 1)
   }
 
   async function handleEnrollInCareerOS(course: CourseCareerOSValidity) {
@@ -482,7 +482,7 @@ export default function CareerOSOverviewPage({ onEnrolled }: { onEnrolled?: () =
         credentials: "include",
         headers: { "Content-Type": "application/json", "X-CSRF-Token": token },
         body: JSON.stringify({}),
-      }).catch(() => undefined)
+      }).catch(() =>undefined)
       saveStoredCourseTier(
         course.slug,
         course.tier === "certificate" ? "professional" : course.tier,
@@ -490,7 +490,7 @@ export default function CareerOSOverviewPage({ onEnrolled }: { onEnrolled?: () =
         true,
       )
       window.dispatchEvent(new CustomEvent("skylent:career-os-enrolled"))
-      setTierRefresh((v) => v + 1)
+      setTierRefresh((v) =>v + 1)
       onEnrolled?.()
     } finally {
       setActivating(false)
@@ -521,7 +521,7 @@ export default function CareerOSOverviewPage({ onEnrolled }: { onEnrolled?: () =
   ]
 
   const filteredCuratedJobs = CURATED_RECRUITER_JOBS.filter(
-    (j) => jobTrackFilter === "all" || j.trackSlug === jobTrackFilter,
+    (j) =>jobTrackFilter === "all" || j.trackSlug === jobTrackFilter,
   )
 
   // ============================================================================
@@ -529,7 +529,7 @@ export default function CareerOSOverviewPage({ onEnrolled }: { onEnrolled?: () =
   // ============================================================================
   if (!isEnrolledInCareerOS) {
     return (
-      <div className="cosh" style={{ maxWidth: 880, margin: "0 auto", display: "grid", gap: 18 }}>
+      <div className="cosh\"style={{ maxWidth: 880, margin: "0 auto", display: "grid", gap: 18 }}>
         {/* Top Banner: Unlock Career OS + Validity */}
         <section
           style={{
@@ -565,7 +565,7 @@ export default function CareerOSOverviewPage({ onEnrolled }: { onEnrolled?: () =
               Unlock Career OS Exclusive
             </h1>
             <p style={{ margin: 0, fontSize: 13, color: "#cbd5e1" }}>
-              Complete <strong>60% of your course + quizzes + project</strong> within 6 months to unlock Career OS &amp; get <strong>+3 Months Extra Practice</strong>.
+              Complete <strong>60% of your course + quizzes + project</strong>within 6 months to unlock Career OS &amp; get <strong>+3 Months Extra Practice</strong>.
             </p>
           </div>
 
@@ -589,7 +589,7 @@ export default function CareerOSOverviewPage({ onEnrolled }: { onEnrolled?: () =
         </section>
 
         {/* Multi-Course Switcher (If student has 2+ courses) */}
-        {courseValidities.length > 1 ? (
+        {courseValidities.length >1 ? (
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
             {courseValidities.map((cv) => {
               const active = cv.slug === activeTrackSlug
@@ -597,7 +597,7 @@ export default function CareerOSOverviewPage({ onEnrolled }: { onEnrolled?: () =
                 <button
                   key={cv.slug}
                   type="button"
-                  onClick={() => setSelectedTrackSlug(cv.slug)}
+                  onClick={() =>setSelectedTrackSlug(cv.slug)}
                   style={{
                     padding: "8px 14px",
                     borderRadius: 10,
@@ -664,7 +664,7 @@ export default function CareerOSOverviewPage({ onEnrolled }: { onEnrolled?: () =
               {!activeCourseValidity.includesCareerOS ? (
                 <button
                   type="button"
-                  onClick={() => handleUpgradeTier(activeCourseValidity.slug, "professional")}
+                  onClick={() =>handleUpgradeTier(activeCourseValidity.slug, "professional")}
                   style={{
                     padding: "8px 14px",
                     borderRadius: 8,
@@ -862,7 +862,7 @@ export default function CareerOSOverviewPage({ onEnrolled }: { onEnrolled?: () =
                 <button
                   type="button"
                   disabled={!allThreeGatesPassed || activating}
-                  onClick={() => void handleEnrollInCareerOS(activeCourseValidity)}
+                  onClick={() =>void handleEnrollInCareerOS(activeCourseValidity)}
                   style={{
                     padding: "12px 22px",
                     borderRadius: 10,
@@ -878,7 +878,7 @@ export default function CareerOSOverviewPage({ onEnrolled }: { onEnrolled?: () =
                     ? "Enrolling…"
                     : allThreeGatesPassed
                       ? "Enroll Now in Career OS (+3M Practice) →"
-                      : "🔒 Complete 60%, Quizzes & Project to Enroll"}
+                      : \"Complete 60%, Quizzes & Project to Enroll"}
                 </button>
               </div>
             </div>
@@ -892,7 +892,7 @@ export default function CareerOSOverviewPage({ onEnrolled }: { onEnrolled?: () =
   // STATE 2: AFTER ENROLLING IN CAREER OS (Visual Zero-to-Hero Hub + Job Board)
   // ============================================================================
   return (
-    <div className="cosh" style={{ display: "grid", gap: 18 }}>
+    <div className="cosh\"style={{ display: "grid", gap: 18 }}>
       {/* Compact Active Validity Banner */}
       <section
         style={{
@@ -976,8 +976,8 @@ export default function CareerOSOverviewPage({ onEnrolled }: { onEnrolled?: () =
           </div>
 
           <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-            {(courseValidities.length > 0
-              ? courseValidities.map((c) => TRACK_INTERVIEW_MODULES[c.slug]).filter(Boolean)
+            {(courseValidities.length >0
+              ? courseValidities.map((c) =>TRACK_INTERVIEW_MODULES[c.slug]).filter(Boolean)
               : Object.values(TRACK_INTERVIEW_MODULES)
             ).map((tm) => {
               const active = tm.slug === activeTrackSlug
@@ -1063,7 +1063,7 @@ export default function CareerOSOverviewPage({ onEnrolled }: { onEnrolled?: () =
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                   <button
                     type="button"
-                    onClick={() => setRevealedAnswerIdx(revealed ? null : idx)}
+                    onClick={() =>setRevealedAnswerIdx(revealed ? null : idx)}
                     style={{
                       padding: "5px 10px",
                       borderRadius: 6,
@@ -1099,13 +1099,13 @@ export default function CareerOSOverviewPage({ onEnrolled }: { onEnrolled?: () =
           {/* Spoken English Box */}
           <div style={{ border: "1px solid #e2e8f0", borderRadius: 12, padding: "14px 16px", background: "#ffffff" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-              <strong style={{ fontSize: 14, color: "#0f172a" }}>🗣️ Spoken English &amp; HR Pitch</strong>
+              <strong style={{ fontSize: 14, color: "#0f172a" }}>Spoken English &amp; HR Pitch</strong>
               <div style={{ display: "flex", gap: 4 }}>
                 {SPOKEN_ENGLISH_DRILLS.map((d, i) => (
                   <button
                     key={d.title}
                     type="button"
-                    onClick={() => setEnglishDrillIdx(i)}
+                    onClick={() =>setEnglishDrillIdx(i)}
                     style={{
                       padding: "3px 8px",
                       borderRadius: 6,
@@ -1132,7 +1132,7 @@ export default function CareerOSOverviewPage({ onEnrolled }: { onEnrolled?: () =
 
           {/* Resume, LinkedIn & Certificate Box */}
           <div style={{ border: "1px solid #e2e8f0", borderRadius: 12, padding: "14px 16px", background: "#ffffff", display: "grid", gap: 8 }}>
-            <strong style={{ fontSize: 14, color: "#0f172a" }}>📄 Certificate, Resume &amp; LinkedIn</strong>
+            <strong style={{ fontSize: 14, color: "#0f172a" }}>Certificate, Resume &amp; LinkedIn</strong>
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
               <Link
                 to="/career-os/profile"
@@ -1226,7 +1226,7 @@ export default function CareerOSOverviewPage({ onEnrolled }: { onEnrolled?: () =
                 <button
                   key={flt.id}
                   type="button"
-                  onClick={() => setJobTrackFilter(flt.id)}
+                  onClick={() =>setJobTrackFilter(flt.id)}
                   style={{
                     padding: "5px 10px",
                     borderRadius: 999,
@@ -1295,7 +1295,7 @@ export default function CareerOSOverviewPage({ onEnrolled }: { onEnrolled?: () =
                   ) : (
                     <button
                       type="button"
-                      onClick={() => setAppliedCuratedIds((prev) => new Set(prev).add(job.id))}
+                      onClick={() =>setAppliedCuratedIds((prev) =>new Set(prev).add(job.id))}
                       style={{
                         padding: "6px 12px",
                         borderRadius: 7,

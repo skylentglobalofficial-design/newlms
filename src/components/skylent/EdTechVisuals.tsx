@@ -521,7 +521,7 @@ export function SyllabusDownloadButton({
 Track: ${displayTitle}
 Format: ${course.mode} · ${course.duration} · 5 Modules · 15 Lessons
 Grading Standard: 25% Module Concept Checks · 35% Applied Written Briefs · 40% Capstone & Cold Call Defense
-Support SLA: Socratic AI Coach + 20-Minute Human Faculty TA Escalation
+Support SLA: Guided Study Support + 20-Minute Human Faculty TA Escalation
 
 ## Overview
 ${course.desc}

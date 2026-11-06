@@ -688,7 +688,7 @@ export default function CheckoutPage() {
             <div style={{ display: "grid", gap: 5 }}>
               <span><strong>Verifiable Credential:</strong> Issued by Skylent Assessment Board (Public ID at <code>skylent.live/verify</code>)</span>
               <span><strong>Full 15-Lesson Workspace:</strong> In-browser SQL/Python/PRD/AI sandboxes + downloadable Revision Cheat-Sheets</span>
-              <span><strong>20-Min Doubt SLA:</strong> 24/7 English + Hinglish AI Mentor &amp; human Faculty TA capstone review</span>
+              <span><strong>20-Min Doubt SLA:</strong> 24/7 English + Hinglish Study Support &amp; human Faculty TA capstone review</span>
               <span><strong>Career OS Bonus:</strong> Complete 60% + quizzes + project to unlock Career OS &amp; +3 Months Extra Practice</span>
             </div>
           </div>

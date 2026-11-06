@@ -138,11 +138,11 @@
   --color-line-strong: var(--skylent-color-border-strong);
 
   /* ── Typography: three voices — Space Grotesk (headings), DM Sans (body), DM Mono (labels, numbers, code). No serif. ── */
-  --skylent-font-heading: "Inter", system-ui, sans-serif;
+  --skylent-font-heading: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-brand: var(--skylent-font-heading);
-  --font-display: "Inter", system-ui, sans-serif;
-  --font-body: "Inter", system-ui, sans-serif;
-  --font-mono: "DM Mono", ui-monospace, monospace;
+  --font-display: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-body: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   /* Legacy name: the former serif display voice is Space Grotesk. */
   --skylent-font-serif: var(--skylent-font-heading);
   --skylent-font-sans: var(--font-body);
@@ -237,13 +237,13 @@
   --skylent-t-label-sm-tracking: 0;
 
   /* Meta */
-  --skylent-t-eyebrow-family: var(--skylent-font-mono);
+  --skylent-t-eyebrow-family: var(--skylent-font-sans);
   --skylent-t-eyebrow-size: 11px;
   --skylent-t-eyebrow-line: 1.3;
   --skylent-t-eyebrow-weight: 600;
   --skylent-t-eyebrow-tracking: 0.12em;
 
-  --skylent-t-caption-family: var(--skylent-font-mono);
+  --skylent-t-caption-family: var(--skylent-font-sans);
   --skylent-t-caption-size: 10px;
   --skylent-t-caption-line: 1.35;
   --skylent-t-caption-weight: 500;
@@ -390,7 +390,7 @@
 html:root {
   --font-brand: var(--skylent-font-heading);
   --display-font: var(--skylent-font-heading);
-  --font-mono: "DM Mono", ui-monospace, monospace;
+  --font-mono: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --btn-radius: 8px;
   --border-subtle: 1px solid var(--skylent-color-border);
   --border-subtle-strong: 1px solid var(--skylent-color-border-strong);

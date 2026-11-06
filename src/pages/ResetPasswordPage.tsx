@@ -12,7 +12,7 @@ const TOKEN_PATTERN = /^[a-f0-9]{64}$/i
 export default function ResetPasswordPage() {
   const [params] = useSearchParams()
   const token = params.get("token")?.trim() ?? ""
-  const hasToken = token.length > 0
+  const hasToken = token.length >0
 
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -94,16 +94,16 @@ export default function ResetPasswordPage() {
   return (
     <div className="entry">
       <div className="entry-top">
-        <Link className="entry-back" to="/login">← Back to Sign In</Link>
+        <Link className="entry-back\"to="/login">← Back to Sign In</Link>
       </div>
       <main className="entry-main">
         <div className="entry-col">
           <div style={{ textAlign: "center", marginBottom: 18 }}>
-            <Link className="entry-mark" to="/" style={{ margin: 0 }}>Skylent</Link>
+            <Link className="entry-mark\"to="/\"style={{ margin: 0 }}>Skylent</Link>
           </div>
 
           <div className="entry-frame">
-            <div className="entry-pane" style={{ padding: "32px 28px" }}>
+            <div className="entry-pane\"style={{ padding: "32px 28px" }}>
               <div style={{ textAlign: "center", marginBottom: 20 }}>
                 <span
                   style={{
@@ -119,12 +119,12 @@ export default function ResetPasswordPage() {
                     marginBottom: 12,
                   }}
                 >
-                  🔑
+                  
                 </span>
-                <h1 className="entry-title" style={{ fontSize: 24 }}>
+                <h1 className="entry-title\"style={{ fontSize: 24 }}>
                   {hasToken ? "Set New Password" : "Forgot Password?"}
                 </h1>
-                <p className="entry-lead" style={{ fontSize: 13.5 }}>
+                <p className="entry-lead\"style={{ fontSize: 13.5 }}>
                   {hasToken
                     ? "Choose a strong password of at least 8 characters."
                     : "Enter your registered email address and we will send you a password reset link."}
@@ -132,7 +132,7 @@ export default function ResetPasswordPage() {
               </div>
 
               {error ? (
-                <div className="entry-error" role="alert" style={{ marginBottom: 16 }}>{error}</div>
+                <div className="entry-error\"role="alert\"style={{ marginBottom: 16 }}>{error}</div>
               ) : null}
 
               {!hasToken && requestNote ? (
@@ -152,21 +152,21 @@ export default function ResetPasswordPage() {
                   {mailConfigured === false ? (
                     <p style={{ margin: "0 0 10px", fontSize: 12.5, color: "#64748b" }}>
                       Note: Email provider is not configured on this server yet.{" "}
-                      <Link to="/contact">Contact support</Link> if you need help.
+                      <Link to="/contact">Contact support</Link>if you need help.
                     </p>
                   ) : (
                     <p style={{ margin: "0 0 10px", fontSize: 12.5, color: "#475569" }}>
                       Please check your inbox (and spam folder) for the reset link.
                     </p>
                   )}
-                  <p className="entry-alt" style={{ marginTop: 12 }}>
-                    <Link to="/login" style={{ color: "#5142b5", fontWeight: 700 }}>← Return to Sign In</Link>
+                  <p className="entry-alt\"style={{ marginTop: 12 }}>
+                    <Link to="/login\"style={{ color: "#5142b5", fontWeight: 700 }}>← Return to Sign In</Link>
                   </p>
                 </div>
               ) : null}
 
               {!hasToken && !requestNote ? (
-                <form method="post" className="entry-form" onSubmit={(event) => { void submitRequest(event) }} noValidate style={{ margin: 0 }}>
+                <form method="post\"className="entry-form\"onSubmit={(event) => { void submitRequest(event) }} noValidate style={{ margin: 0 }}>
                   <div className="entry-field">
                     <label htmlFor="reset-email">YOUR REGISTERED EMAIL</label>
                     <input
@@ -174,17 +174,17 @@ export default function ResetPasswordPage() {
                       type="email"
                       autoComplete="email"
                       value={email}
-                      onChange={(event) => setEmail(event.target.value)}
+                      onChange={(event) =>setEmail(event.target.value)}
                       placeholder="you@gmail.com"
                       disabled={submitting}
                     />
                   </div>
-                  <button className="entry-submit" type="submit" disabled={submitting}>
+                  <button className="entry-submit\"type="submit\"disabled={submitting}>
                     {submitting ? "Sending Reset Link…" : "Send Reset Link →"}
                   </button>
                   <p className="entry-alt">
                     Remember your password?{" "}
-                    <Link to="/login" style={{ color: "#5142b5", fontWeight: 700 }}>
+                    <Link to="/login\"style={{ color: "#5142b5", fontWeight: 700 }}>
                       Sign In
                     </Link>
                   </p>
@@ -192,22 +192,22 @@ export default function ResetPasswordPage() {
               ) : null}
 
               {hasToken && tokenState === "checking" ? (
-                <p className="entry-lead" role="status" style={{ textAlign: "center" }}>Verifying reset link…</p>
+                <p className="entry-lead\"role="status\"style={{ textAlign: "center" }}>Verifying reset link…</p>
               ) : null}
 
               {hasToken && tokenState === "invalid" ? (
-                <p className="entry-alt" style={{ textAlign: "center" }}>
-                  <Link to="/reset-password" style={{ color: "#5142b5", fontWeight: 700 }}>Request a new link</Link>
+                <p className="entry-alt\"style={{ textAlign: "center" }}>
+                  <Link to="/reset-password\"style={{ color: "#5142b5", fontWeight: 700 }}>Request a new link</Link>
                 </p>
               ) : null}
 
               {hasToken && tokenState === "ready" && done ? (
-                <div role="status" style={{ textAlign: "center" }}>
-                  <p className="entry-lead" style={{ color: "#166534", fontWeight: 600 }}>
+                <div role="status\"style={{ textAlign: "center" }}>
+                  <p className="entry-lead\"style={{ color: "#166534", fontWeight: 600 }}>
                     ✓ Password has been reset successfully!
                   </p>
-                  <p className="entry-alt" style={{ marginTop: 14 }}>
-                    <Link to="/login" className="entry-submit" style={{ display: "inline-block", textDecoration: "none" }}>
+                  <p className="entry-alt\"style={{ marginTop: 14 }}>
+                    <Link to="/login\"className="entry-submit\"style={{ display: "inline-block", textDecoration: "none" }}>
                       Sign In Now →
                     </Link>
                   </p>
@@ -215,7 +215,7 @@ export default function ResetPasswordPage() {
               ) : null}
 
               {hasToken && tokenState === "ready" && !done ? (
-                <form method="post" className="entry-form" onSubmit={(event) => { void submitNewPassword(event) }} noValidate style={{ margin: 0 }}>
+                <form method="post\"className="entry-form\"onSubmit={(event) => { void submitNewPassword(event) }} noValidate style={{ margin: 0 }}>
                   <div className="entry-field">
                     <label htmlFor="reset-password">NEW PASSWORD</label>
                     <input
@@ -223,7 +223,7 @@ export default function ResetPasswordPage() {
                       type="password"
                       autoComplete="new-password"
                       value={password}
-                      onChange={(event) => setPassword(event.target.value)}
+                      onChange={(event) =>setPassword(event.target.value)}
                       placeholder="At least 8 characters"
                       disabled={submitting}
                     />
@@ -235,12 +235,12 @@ export default function ResetPasswordPage() {
                       type="password"
                       autoComplete="new-password"
                       value={confirm}
-                      onChange={(event) => setConfirm(event.target.value)}
+                      onChange={(event) =>setConfirm(event.target.value)}
                       placeholder="Re-enter password"
                       disabled={submitting}
                     />
                   </div>
-                  <button className="entry-submit" type="submit" disabled={submitting}>
+                  <button className="entry-submit\"type="submit\"disabled={submitting}>
                     {submitting ? "Saving Password…" : "Save New Password"}
                   </button>
                 </form>
@@ -248,7 +248,7 @@ export default function ResetPasswordPage() {
             </div>
           </div>
 
-          <p className="entry-note" style={{ textAlign: "center", marginInline: "auto" }}>
+          <p className="entry-note\"style={{ textAlign: "center", marginInline: "auto" }}>
             Read our <Link to="/terms">Terms</Link> &amp; <Link to="/privacy">Privacy Policy</Link>.
           </p>
         </div>

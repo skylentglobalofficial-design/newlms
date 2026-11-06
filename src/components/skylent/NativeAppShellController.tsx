@@ -137,7 +137,7 @@ export function NativeAppShellController() {
     if (location.pathname === "/" || location.pathname === "/preview/homepage") {
       if (!user) {
         // App-First Discovery (Coursera / Udemy / PW style): Let new users explore courses first, with 1-tap Sign In!
-        navigate("/courses", { replace: true })
+        navigate("/programmes", { replace: true })
       } else {
         const target =
           user.role === "admin" || user.role === "superadmin"
@@ -356,8 +356,8 @@ export function NativeAppShellController() {
     {
       id: "home",
       label: isNative ? (user ? "Dashboard" : "Explore") : "Home",
-      to: isNative ? (user ? dashHref : "/courses") : "/",
-      match: (p) => (isNative ? (user ? p === "/dashboard/student" && !location.hash : p.startsWith("/courses")) : p === "/"),
+      to: isNative ? (user ? dashHref : "/programmes") : "/",
+      match: (p) => (isNative ? (user ? p === "/dashboard/student" && !location.hash : p.startsWith("/programmes")) : p === "/"),
     },
     {
       id: "courses",

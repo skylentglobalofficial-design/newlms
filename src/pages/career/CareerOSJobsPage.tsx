@@ -17,16 +17,16 @@ export default function CareerOSJobsPage() {
   const [appliedJobIds, setAppliedJobIds] = useState<Set<string>>(new Set())
   const [sharedJobIds, setSharedJobIds] = useState<Set<string>>(new Set())
   const [detailJob, setDetailJob] = useState(board.selectedJob)
-  const [curatedApplied, setCuratedApplied] = useState<Set<string>>(() => new Set())
+  const [curatedApplied, setCuratedApplied] = useState<Set<string>>(() =>new Set())
   const [trackFilter, setTrackFilter] = useState<string>("all")
 
   useEffect(() => {
     void listApplications()
       .then(apps => {
-        setAppliedJobIds(new Set(apps.filter(a => a.jobId).map(a => a.jobId!)))
-        setSharedJobIds(new Set(apps.filter(a => a.jobId && a.sharedWithEmployer).map(a => a.jobId!)))
+        setAppliedJobIds(new Set(apps.filter(a =>a.jobId).map(a =>a.jobId!)))
+        setSharedJobIds(new Set(apps.filter(a =>a.jobId && a.sharedWithEmployer).map(a =>a.jobId!)))
       })
-      .catch(() => undefined)
+      .catch(() =>undefined)
   }, [])
 
   useEffect(() => {
@@ -40,7 +40,7 @@ export default function CareerOSJobsPage() {
     }
     void fetchJob(board.selectedJobId)
       .then(setDetailJob)
-      .catch(() => setDetailJob(board.selectedJob))
+      .catch(() =>setDetailJob(board.selectedJob))
   }, [board.selectedJobId, board.selectedJob])
 
   const toggleSave = useCallback(async (jobId: string, currentlySaved: boolean) => {
@@ -54,12 +54,12 @@ export default function CareerOSJobsPage() {
         await saveJob(jobId)
       }
       if (detailJob?.id === jobId) {
-        setDetailJob((prev: JobListing | null) => prev ? { ...prev, saved: !currentlySaved } : prev)
+        setDetailJob((prev: JobListing | null) =>prev ? { ...prev, saved: !currentlySaved } : prev)
       }
     } catch (err) {
       board.updateSavedState(jobId, previousSaved)
       if (detailJob?.id === jobId) {
-        setDetailJob((prev: JobListing | null) => prev ? { ...prev, saved: previousSaved } : prev)
+        setDetailJob((prev: JobListing | null) =>prev ? { ...prev, saved: previousSaved } : prev)
       }
       throw err
     } finally {
@@ -68,18 +68,18 @@ export default function CareerOSJobsPage() {
   }, [board, detailJob?.id])
 
   function handleToggleSaveForJob(jobId: string, saved: boolean) {
-    void toggleSave(jobId, saved).catch(() => undefined)
+    void toggleSave(jobId, saved).catch(() =>undefined)
   }
 
   const canLoadMore = board.view === "browse"
     && board.meta.offset + board.meta.limit < board.meta.total
 
   const filteredPartnerJobs = CURATED_RECRUITER_JOBS.filter(
-    (j) => trackFilter === "all" || j.trackSlug === trackFilter,
+    (j) =>trackFilter === "all" || j.trackSlug === trackFilter,
   )
 
   return (
-    <div className="career-jobs-page cos-work" style={{ maxWidth: 1200, margin: "0 auto", minWidth: 0, overflowX: "hidden" }}>
+    <div className="career-jobs-page cos-work\"style={{ maxWidth: 1200, margin: "0 auto", minWidth: 0, overflowX: "hidden" }}>
       <PageHead
         eyebrow="Career OS · Recruiter Job Board"
         title="Recruiter Job Board & Verified Shortlists"
@@ -107,7 +107,7 @@ export default function CareerOSJobsPage() {
                 <button
                   key={flt.id}
                   type="button"
-                  onClick={() => setTrackFilter(flt.id)}
+                  onClick={() =>setTrackFilter(flt.id)}
                   style={{
                     padding: "6px 12px",
                     borderRadius: 999,
@@ -173,9 +173,9 @@ export default function CareerOSJobsPage() {
                   </div>
 
                   <div style={{ display: "flex", gap: 10, fontSize: 12.5, fontWeight: 700, color: "#0f172a", marginBottom: 10 }}>
-                    <span style={{ color: "#5142b5" }}>💰 {job.ctcRange}</span>
+                    <span style={{ color: "#5142b5" }}> {job.ctcRange}</span>
                     <span>·</span>
-                    <span>🏢 {job.workMode}</span>
+                    <span> {job.workMode}</span>
                   </div>
 
                   <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
@@ -215,7 +215,7 @@ export default function CareerOSJobsPage() {
                   ) : (
                     <button
                       type="button"
-                      onClick={() => setCuratedApplied((prev) => new Set(prev).add(job.id))}
+                      onClick={() =>setCuratedApplied((prev) =>new Set(prev).add(job.id))}
                       style={{
                         padding: "8px 14px",
                         borderRadius: 8,
@@ -237,7 +237,7 @@ export default function CareerOSJobsPage() {
         </div>
       </section>
 
-      {board.displayedJobs.length > 0 ? (
+      {board.displayedJobs.length >0 ? (
         <>
           <div style={{ display: "flex", gap: 8, marginBottom: 16, flexWrap: "wrap" }}>
             {(["browse", "saved"] as const).map(tab => {
@@ -246,7 +246,7 @@ export default function CareerOSJobsPage() {
                 <button
                   key={tab}
                   type="button"
-                  onClick={() => board.setView(tab)}
+                  onClick={() =>board.setView(tab)}
                   aria-pressed={active}
                   style={{
                     minHeight: 40,
@@ -271,17 +271,17 @@ export default function CareerOSJobsPage() {
             <JobSearchSurface
               filters={board.filters}
               onChange={board.setFilters}
-              onSearch={() => void board.reload()}
+              onSearch={() =>void board.reload()}
               disabled={board.loading}
             />
           )}
 
           {board.error && (
             <div style={{ marginBottom: 16 }}>
-              <FeedbackBanner tone="error" message={board.error} />
+              <FeedbackBanner tone="error\"message={board.error} />
               <button
                 type="button"
-                onClick={() => void board.reload()}
+                onClick={() =>void board.reload()}
                 style={{ ...secondaryButtonStyle, marginTop: 10 }}
               >
                 Retry
@@ -289,13 +289,13 @@ export default function CareerOSJobsPage() {
             </div>
           )}
 
-          <div className="career-jobs-layout" style={{
+          <div className="career-jobs-layout\"style={{
             display: "grid",
             gridTemplateColumns: "minmax(0, 1fr) minmax(280px, 380px)",
             gap: "clamp(16px, 2vw, 24px)",
             alignItems: "start",
           }}>
-            <div className="career-jobs-results" style={{ minWidth: 0 }}>
+            <div className="career-jobs-results\"style={{ minWidth: 0 }}>
               {board.loading ? (
                 <LoadingBlock label="Loading roles…" />
               ) : (
@@ -305,15 +305,15 @@ export default function CareerOSJobsPage() {
                       key={job.id}
                       job={job}
                       selected={job.id === board.selectedJobId}
-                      onSelect={() => board.setSelectedJobId(job.id)}
-                      onToggleSave={() => handleToggleSaveForJob(job.id, Boolean(job.saved))}
+                      onSelect={() =>board.setSelectedJobId(job.id)}
+                      onToggleSave={() =>handleToggleSaveForJob(job.id, Boolean(job.saved))}
                       savePending={savePendingId === job.id}
                     />
                   ))}
                   {canLoadMore && (
                     <button
                       type="button"
-                      onClick={() => void board.loadMore()}
+                      onClick={() =>void board.loadMore()}
                       disabled={board.loadingMore}
                       style={{
                         width: "100%",
@@ -335,16 +335,16 @@ export default function CareerOSJobsPage() {
               )}
             </div>
 
-            <aside className="career-jobs-detail" style={{ minWidth: 0, position: "sticky", top: 20 }}>
+            <aside className="career-jobs-detail\"style={{ minWidth: 0, position: "sticky", top: 20 }}>
               {detailJob ? (
                 <JobDetailPanel
                   job={detailJob}
-                  onToggleSave={() => handleToggleSaveForJob(detailJob.id, Boolean(detailJob.saved))}
+                  onToggleSave={() =>handleToggleSaveForJob(detailJob.id, Boolean(detailJob.saved))}
                   savePending={savePendingId === detailJob.id}
                   alreadyApplied={appliedJobIds.has(detailJob.id)}
                   alreadyShared={sharedJobIds.has(detailJob.id)}
-                  onApplied={() => setAppliedJobIds(prev => new Set(prev).add(detailJob.id))}
-                  onShared={() => setSharedJobIds(prev => new Set(prev).add(detailJob.id))}
+                  onApplied={() =>setAppliedJobIds(prev =>new Set(prev).add(detailJob.id))}
+                  onShared={() =>setSharedJobIds(prev =>new Set(prev).add(detailJob.id))}
                 />
               ) : null}
             </aside>

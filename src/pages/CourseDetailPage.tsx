@@ -1,3 +1,4 @@
+/* A certificate for this course is issued when every lesson in it is complete. */
 import { useEffect, useState } from "react"
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom"
 import { EnrollmentModal, PageShell } from "../components/shared"
@@ -51,11 +52,11 @@ function downloadRevisionCheatSheet(slug: string, title: string) {
     `- 15% Concept Checks (3 Module Quizzes)`,
     `- 30% Browser Sandbox Execution & Query/Code Accuracy`,
     `- 20% Commercial Judgement & Root-Cause Evidence`,
-    `- 15% Socratic Boardroom Cold-Call Defence`,
-    `- 20% V1 -> V2 Mentor Revision Quality`,
+    `- 15% Boardroom Case Defence`,
+    `- 20% V1 ->V2 Mentor Revision Quality`,
     ``,
     `## 3. Support & SLA`,
-    `- 24/7 Socratic AI Mentor (English + Hinglish Mode)`,
+    `- 24/7 Guided Study Support (English + Hinglish Mode)`,
     `- 20-Minute Human Faculty TA Doubt Resolution SLA`,
   ].join("\n")
 
@@ -92,7 +93,7 @@ export default function CourseDetailPage() {
         <div className="cat-page">
           <section className="cat-hero">
             <div className="cat-rail">
-              <Link className="cat-back" to="/programmes">
+              <Link className="cat-back\"to="/programmes">
                 ← Programmes
               </Link>
               <h1>Loading this course</h1>
@@ -110,7 +111,7 @@ export default function CourseDetailPage() {
         <div className="cat-page">
           <section className="cat-hero">
             <div className="cat-rail">
-              <Link className="cat-back" to="/programmes">
+              <Link className="cat-back\"to="/programmes">
                 ← Programmes
               </Link>
               <h1>This course could not be loaded</h1>
@@ -127,7 +128,7 @@ export default function CourseDetailPage() {
                 >
                   Try again
                 </button>
-                <Link className="cat-btn cat-btn-ghost" to="/programmes">
+                <Link className="cat-btn cat-btn-ghost\"to="/programmes">
                   Back to programmes
                 </Link>
               </div>
@@ -146,7 +147,7 @@ export default function CourseDetailPage() {
           <section className="cat-hero">
             <div className="cat-rail">
               <h1>Course not found</h1>
-              <Link className="cat-btn cat-btn-ghost" to="/programmes">
+              <Link className="cat-btn cat-btn-ghost\"to="/programmes">
                 Back to programmes
               </Link>
             </div>
@@ -257,10 +258,10 @@ export default function CourseDetailPage() {
                   <CatalogueNotice
                     bare
                     what="This course"
-                    onRetry={() => void catalog.reload()}
+                    onRetry={() =>void catalog.reload()}
                   />
                 )}
-                <Link className="cat-back" to={user ? "/dashboard/student#explore-programmes" : "/programmes"}>
+                <Link className="cat-back\"to={user ? "/dashboard/student#explore-programmes" : "/programmes"}>
                   {user ? "← Back to Dashboard" : "← Programmes"}
                 </Link>
               </div>
@@ -278,7 +279,7 @@ export default function CourseDetailPage() {
                 </div>
                 <p className="cat-lead">{summary}</p>
               </div>
-              <aside className="cat-intro-meta" aria-label="Course details">
+              <aside className="cat-intro-meta\"aria-label="Course details">
                 <div className="cat-metrics">
                   <VisualStat
                     label="Status"
@@ -290,7 +291,7 @@ export default function CourseDetailPage() {
                           : "Opening soon"
                     }
                   />
-                  <VisualStat label="Level" value={course.level} />
+                  <VisualStat label="Level\"value={course.level} />
                   <VisualStat
                     label={showLiveCurriculum ? "Lessons" : "Outline"}
                     value={String(lessonCount)}
@@ -364,14 +365,14 @@ export default function CourseDetailPage() {
                         to="/labs"
                         style={{ borderColor: "#5142b5", color: "#5142b5", fontWeight: 700 }}
                       >
-                        ⚡ Try Guest Lab Free (No Login)
+                         Try Guest Lab Free (No Login)
                       </Link>
                       <button
                         type="button"
                         className="cat-btn cat-btn-ghost cat-btn-lg"
-                        onClick={() => downloadRevisionCheatSheet(course.slug, course.title)}
+                        onClick={() =>downloadRevisionCheatSheet(course.slug, course.title)}
                       >
-                        📄 Download Cheat-Sheet &amp; Rubric
+                         Download Cheat-Sheet &amp; Rubric
                       </button>
                       <SyllabusDownloadButton courseSlug={course.slug} title={course.title} />
                     </>
@@ -395,13 +396,13 @@ export default function CourseDetailPage() {
                   }}
                 >
                   <span><strong>Lead Faculty &amp; Reviewer:</strong> {course.slug === "data-analytics" ? "Dr. Meera Krishnan (PhD, Analytics)" : course.slug === "product-management" ? "Arjun Nair (Director of Product)" : "Vikramaditya Rao &amp; Skylent Faculty Board"}</span>
-                  <span><strong>Credential Issuer:</strong> Skylent Global Assessment Board</span>
-                  <span><strong>Dataset Scope:</strong> Jan–Jun 2026 Synthetic Commercial Extract</span>
-                  <span><strong>Support SLA:</strong> 20-Min Faculty TA + 24/7 Hinglish AI</span>
+                  <span><strong>Credential Issuer:</strong>Skylent Global Assessment Board</span>
+                  <span><strong>Dataset Scope:</strong>Jan–Jun 2026 Synthetic Commercial Extract</span>
+                  <span><strong>Support SLA:</strong>20-Min Faculty TA + 24/7 Hinglish AI</span>
                 </div>
               </div>
               {showLiveCurriculum ? (
-                <div className="cat-rubric-strip cat-hero-rubric" style={{ gridColumn: "1 / -1", marginTop: 18 }} aria-label="How Your Proof-of-Work Certificate Is Graded · 100% Elixir Fee Credit Eligible">
+                <div className="cat-rubric-strip cat-hero-rubric\"style={{ gridColumn: "1 / -1", marginTop: 18 }} aria-label="How Your Proof-of-Work Certificate Is Graded · 100% Elixir Fee Credit Eligible">
                   <div className="cat-rubric-item">
                     <span className="cat-rubric-weight">15% Knowledge · 30% Execution</span>
                     <strong>Concept Checks &amp; Browser Lab Tasks</strong>
@@ -424,7 +425,7 @@ export default function CourseDetailPage() {
         </section>
 
         {showLiveCurriculum ? (
-          <section className="sky-stage sky-band-navy" style={{ paddingBlock: "36px 40px" }} aria-label="Interactive course workbench preview">
+          <section className="sky-stage sky-band-navy\"style={{ paddingBlock: "36px 40px" }} aria-label="Interactive course workbench preview">
             <div className="cat-rail">
               <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "baseline", gap: 12, marginBottom: 16 }}>
                 <div>
@@ -439,7 +440,7 @@ export default function CourseDetailPage() {
                   Zero local setup · Runs directly inside Skylent OS
                 </span>
               </div>
-              <div className="sky-stage__plate" style={{ borderRadius: 14, overflow: "hidden" }}>
+              <div className="sky-stage__plate\"style={{ borderRadius: 14, overflow: "hidden" }}>
                 {course.slug === "data-analytics" ? (
                   <NorthwindLabPlate />
                 ) : course.slug === "product-management" ? (
@@ -464,7 +465,7 @@ export default function CourseDetailPage() {
           </section>
         ) : null}
 
-        <section className="cat-section" id="course-outline">
+        <section className="cat-section\"id="course-outline">
           <div className="cat-rail">
             <h2>
               {showLiveCurriculum
@@ -480,7 +481,7 @@ export default function CourseDetailPage() {
           </div>
         </section>
 
-        {forWhom.length > 0 ? (
+        {forWhom.length >0 ? (
           <section className="cat-section">
             <div className="cat-rail">
               <h2>Who it is for</h2>
@@ -493,7 +494,7 @@ export default function CourseDetailPage() {
           </section>
         ) : null}
 
-        {outcomes.length > 0 ? (
+        {outcomes.length >0 ? (
           <section className="cat-band">
             <div className="cat-rail">
               <h2>
@@ -509,7 +510,7 @@ export default function CourseDetailPage() {
               ) : null}
               <div className="cat-caps">
                 {outcomes.map((item) => (
-                  <article className="cat-cap" key={item}>
+                  <article className="cat-cap\"key={item}>
                     <strong>{item}</strong>
                   </article>
                 ))}
@@ -576,7 +577,7 @@ export default function CourseDetailPage() {
                   <ul className="cat-tools">
                     {profile?.tools.map((item) => <li key={item}>{item}</li>)}
                   </ul>
-                  <p className="cat-label" style={{ marginTop: 18 }}>
+                  <p className="cat-label\"style={{ marginTop: 18 }}>
                     Source material
                   </p>
                   <div className="cat-datasets">
@@ -600,11 +601,11 @@ export default function CourseDetailPage() {
               {profile?.project ? (
                 <div style={{ marginTop: 22, padding: "20px 22px", borderRadius: 16, border: "1px solid #DDD7FF", background: "#FAF9FF", display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: 16 }}>
                   <div style={{ maxWidth: "46em" }}>
-                    <p className="cat-label" style={{ color: "#5142B5", margin: 0 }}>Graded Capstone Project Studio · Proof-of-Work Dossier</p>
+                    <p className="cat-label\"style={{ color: "#5142B5", margin: 0 }}>Graded Capstone Project Studio · Proof-of-Work Dossier</p>
                     <h3 style={{ margin: "6px 0 6px", fontSize: 19, fontWeight: 750, color: "#171717" }}>{profile.project.title}</h3>
                     <p style={{ margin: 0, fontSize: 14, color: "#3c425c" }}>{profile.project.summary}</p>
                   </div>
-                  <Link className="cat-btn cat-btn-primary" to={profile.project.href}>
+                  <Link className="cat-btn cat-btn-primary\"to={profile.project.href}>
                     {profile.project.ctaLabel} →
                   </Link>
                 </div>
@@ -699,7 +700,7 @@ export default function CourseDetailPage() {
             price: course.price,
             enrollable,
           }}
-          onClose={() => setEnrollOpen(false)}
+          onClose={() =>setEnrollOpen(false)}
           themeId="professional"
         />
       ) : null}

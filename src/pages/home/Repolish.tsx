@@ -149,7 +149,7 @@ export function HomeHero({
                 <span className="hxw-ws__mark" aria-hidden="true">OS</span>
                 <div>
                   <span className="hxw-ws__title">6 Career Tracks · Browser SQL &amp; Code Labs · Free Pilot</span>
-                  <span className="hxw-ws__note">20-Min Faculty TA Doubt SLA · Hinglish AI Coach · Verified Certificate ID</span>
+                  <span className="hxw-ws__note">20-Min Faculty TA Doubt SLA · Hinglish & English Study Notes · Verified Certificate ID</span>
                 </div>
               </div>
             </div>
@@ -192,7 +192,7 @@ const GOAL_CARDS = [
   { icon: "graduation", title: "Degrees", text: "UG and PG pathways to explore, online or on campus.", to: "/education" },
   { icon: "book", title: "Skill programmes", text: "Certification and professional programmes with practice.", to: "/programmes" },
   { icon: "briefcase", title: "Career OS", text: "Your profile, projects and applications, in one place.", to: "/career-os" },
-  { icon: "sparkle", title: "Skylent AI", text: "A guide for where to start, from the Skylent catalogue.", to: "/path" },
+  { icon: "sparkle", title: "Path Finder", text: "A 90-second guide for where to start across the 6 Skylent tracks.", to: "/path" },
 ] as const
 
 export function HomeGoals() {
@@ -271,7 +271,7 @@ export function WalkControls({
 const DA_SLUG = "data-analytics-pro"
 const LMS_STAGES = [
   { key: "programme", label: "1. Course Syllabus", href: "/programmes/data-analytics-pro", action: "Explore Programmes" },
-  { key: "lesson", label: "2. Lesson & AI Coach", href: "/courses/data-analytics", action: "Preview Lessons" },
+  { key: "lesson", label: "2. Guided Lesson & Doubt Desk", href: "/courses/data-analytics", action: "Preview Lessons" },
   { key: "practice", label: "3. Live SQL Lab", href: "/labs", action: "See Browser Labs" },
   { key: "project", label: "4. Capstone Grader", href: "/verify/SKL-2026-DA-EXEMPLAR", action: "View Capstones" },
   { key: "evidence", label: "5. Verified Dossier", href: "/verify/SKL-2026-DA-EXEMPLAR", action: "Verify Credentials" },
@@ -332,7 +332,7 @@ function LmsCanvas({ stage }: { stage: number }) {
       <div className="hx-canvas hx-lms-mock">
         <div className="hx-lms-mock__topstrip">
           <div>
-            <span className="hx-k">INSIDE LESSON WORKSPACE · NOTES + CONCEPT CHECK + SOCRATIC AI</span>
+            <span className="hx-k">INSIDE LESSON WORKSPACE · NOTES + CONCEPT CHECK + TA DOUBT DESK</span>
             <h3>{facts?.current.title ?? "SQL SELECT, WHERE, and aggregates"}</h3>
           </div>
           <div className="hx-lms-mock__badges">
@@ -387,7 +387,7 @@ function LmsCanvas({ stage }: { stage: number }) {
           {/* Right: Skylent Hinglish Socratic AI + 20-Min TA Drawer */}
           <div className="hx-lms-mock__col hx-lms-mock__col--ai">
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 6 }}>
-              <span className="hx-lms-mock__subkicker">SKYLENT AI COACH</span>
+              <span className="hx-lms-mock__subkicker">STUDY SUPPORT & TA DESK</span>
               <span className="hx-lms-pill hx-lms-pill--green">Hinglish Mode</span>
             </div>
             <div className="hx-lms-mock__aibubble">
@@ -1303,7 +1303,7 @@ function HomeCareerPlate({ step }: { step: JourneyKey }) {
           </div>
           <div>
             <span>Doubt Support</span>
-            <strong>AI Coach + 20-Min Human TA</strong>
+            <strong>Guided Hints + 20-Min Human TA</strong>
           </div>
         </div>
         <div className="hx-royal-plate__pills">
@@ -1598,7 +1598,7 @@ const AI_DEMO_SCENARIOS = [
     tabLabel: "Explain in Simple Hinglish",
     badge: "Hinglish + English Intuition",
     studentQ: "Bhai, SQL mein WHERE aur HAVING dono filter karte hain toh dono mein asli fark kya hai? Simple Hinglish mein samjhao.",
-    coachTitle: "Skylent AI Mentor · Instant Hinglish Breakdown",
+    coachTitle: "Guided Study Notes · Instant Hinglish Breakdown",
     coachReply: "Simple rule: WHERE filters raw rows before GROUP BY. HAVING filters aggregated totals (like SUM or COUNT) after GROUP BY.",
     takeaway: " Rule of thumb: Raw row filter = WHERE · Grouped total filter = HAVING.",
     pills: ["Switch to English", "Run this in SQL Lab", "Give me 1 practice question"],
@@ -1608,7 +1608,7 @@ const AI_DEMO_SCENARIOS = [
     tabLabel: "Debug SQL & Code",
     badge: "Live Code & Query Debugger",
     studentQ: "Why is my Northwind category revenue total showing ₹9,40,000 instead of ₹8,12,020 when I run SUM(units * unit_price)?",
-    coachTitle: "Skylent AI Mentor · Line-by-Line Bug Catch",
+    coachTitle: "Interactive Lab Check · Line-by-Line Bug Catch",
     coachReply: "Check two filters: (1) apply (1 - discount_pct / 100.0), and (2) add WHERE returned = 'no' AND units > 0 to exclude the 14 returned rows.",
     takeaway: "Always check row hygiene (returned = 'no') before aggregating revenue.",
     pills: ["Apply fix in Lab", "Check rubric criteria", "Test edge cases"],
@@ -1639,7 +1639,7 @@ export function HomeAi() {
                 <SkylentBot size={48} />
               </span>
               <span>
-                <span className="hx-ai__name">24/7 AI Mentor + 20-Min Human Expert Help</span>
+                <span className="hx-ai__name">24/7 Study Support + 20-Min Faculty TA Help</span>
                 <span className="hx-ai__role">Never get stuck alone · English &amp; Hinglish Explanations · Live Code Review</span>
               </span>
             </div>
@@ -1648,7 +1648,7 @@ export function HomeAi() {
             </h2>
           </div>
           <p className="hx-head__aside">
-            Built-in English &amp; Hinglish AI coach inside every lesson, backed by 20-minute Faculty TA support.
+            Built-in English &amp; Hinglish guided concept notes inside every lesson, backed by 20-minute Faculty TA support.
           </p>
         </div>
 
@@ -1859,7 +1859,7 @@ export function HomeElixirFlywheel() {
     },
     {
       dimension: "When You Get Stuck on a Doubt",
-      skylent: "Instant AI Coach (EN/Hinglish) + 20-min TA reply",
+      skylent: "Guided Study Support (EN/Hinglish) + 20-min TA reply",
       videoLms: "Unanswered discussion forums",
       bootcamps: "24–48 hr ticket queues",
     },

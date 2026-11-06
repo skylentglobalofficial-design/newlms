@@ -18,7 +18,7 @@ const PROVIDES = [
   { title: "Graded Browser Labs & Capstones", text: "In-browser SQL & Python sandboxes, timed mock interview checks, and 6-task Capstone Project Studios that generate verifiable work samples." },
   { title: "Isolated College Tenant OS (/dashboard/college)", text: "Dedicated institutional portal for Deans, HODs, and Placement Officers with strict campus cohort management." },
   { title: "1-Click NAAC / NIRF / Placement CSV Export", text: "Export audited cohort progress, lesson completion rates, capstone readiness, and verified certificate codes in one click." },
-  { title: "24/7 AI Mentor (Hinglish + English) + 20-Min Faculty TA SLA", text: "In-lesson AI explanations that guide students without spoiling answers, backed by live human Faculty TA support within 20 minutes." },
+  { title: "24/7 Guided Study Support (Hinglish + English) + 20-Min Faculty TA SLA", text: "In-lesson guided explanations that help students without spoiling answers, backed by live human Faculty TA support within 20 minutes." },
 ]
 
 const PARTNERS = [

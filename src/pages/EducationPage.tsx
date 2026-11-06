@@ -201,7 +201,7 @@ export default function EducationPage() {
                 University degree pathways &amp; <em>institutional lab integration.</em>
               </h1>
               <p className="edx-lede">
-                These UG and PG tracks are proposed university articulation frameworks. <strong>Skylent does not independently award degrees or NEP/ABC academic credits</strong>—degrees, admissions, and credit recognition rest solely with a UGC/AICTE-authorised Partner Higher Education Institution (HEI) once confirmed. Looking for immediate skill certification? <Link to="/courses" style={{ color: "#5142b5", fontWeight: 700 }}>Start one of our 6 live self-paced courses today →</Link>
+                These UG and PG tracks are proposed university articulation frameworks. <strong>Skylent does not independently award degrees or NEP/ABC academic credits</strong>—degrees, admissions, and credit recognition rest solely with a UGC/AICTE-authorised Partner Higher Education Institution (HEI) once confirmed. Looking for immediate skill certification? <Link to="/programmes" style={{ color: "#5142b5", fontWeight: 700 }}>Start one of our 6 live self-paced courses today →</Link>
               </p>
               <div
                 role="note"
@@ -308,7 +308,7 @@ export default function EducationPage() {
               <Link className="sk-btn sk-btn-secondary" to="/institutions">
                 Institutional partnerships
               </Link>
-              <Link className="sk-btn sk-btn-secondary" to="/courses">
+              <Link className="sk-btn sk-btn-secondary" to="/programmes">
                 Explore 6 live courses
               </Link>
             </div>

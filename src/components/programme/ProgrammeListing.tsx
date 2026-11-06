@@ -302,7 +302,7 @@ export default function ProgrammeListing({ program, truth, cta, honesty, afterEn
                     </li>
                     <li>
                       <span aria-hidden="true">✓</span>
-                      <span><strong>24/7 Hinglish + English AI Coach</strong> &amp; 20-Min Human TA Help</span>
+                      <span><strong>24/7 Hinglish + English Study Support</strong> &amp; 20-Min Human TA Help</span>
                     </li>
                     <li>
                       <span aria-hidden="true">✓</span>

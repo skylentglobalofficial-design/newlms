@@ -545,7 +545,7 @@ const DATA_SCIENCE_AI: AuthoredProgrammeContent = {
     rows: [
       { label: "Datasets included", value: "northwind_sales.csv · customer_cohorts.json", mono: true },
       { label: "Core skills built", value: "SQL joins & aggregations, Python 3 ETL scripts, pytest checks, and cohort retention analysis." },
-      { label: "Support when stuck", value: "1-click Hinglish Socratic AI hints inside every lesson + 20-minute human Faculty TA help." },
+      { label: "Support when stuck", value: "1-click Hinglish guided study hints inside every lesson + 20-minute human Faculty TA help." },
       { label: "What you walk away with", value: "Saved SQL queries, a working Python validator, and a verified Dual-Track Capstone dossier." },
     ],
     disclaimer:
@@ -652,7 +652,7 @@ const FULL_STACK: AuthoredProgrammeContent = {
     rows: [
       { label: "Stack covered", value: "React 18 · TypeScript · Node.js & Express · PostgreSQL", mono: true },
       { label: "What you build", value: "Interactive UI forms, validated REST endpoints, and safe database transactions." },
-      { label: "Support when stuck", value: "1-click Hinglish Socratic AI hints + 20-minute human Faculty TA help." },
+      { label: "Support when stuck", value: "1-click Hinglish guided study hints + 20-minute human Faculty TA help." },
       { label: "What you keep", value: "A complete Full-Stack Architecture Dossier and verifiable SKL credential." },
     ],
     disclaimer:
@@ -776,7 +776,7 @@ const GENERATIVE_AI: AuthoredProgrammeContent = {
     rows: [
       { label: "Skills you build", value: "Structured Prompting · Document Search (RAG) · AI Agents · Hallucination Testing", mono: true },
       { label: "Safety standard", value: "Every claim must cite a verified [chunk_id] or cleanly abstain." },
-      { label: "Support when stuck", value: "1-click Hinglish Socratic AI hints + 20-minute human Faculty TA help." },
+      { label: "Support when stuck", value: "1-click Hinglish guided study hints + 20-minute human Faculty TA help." },
       { label: "What you keep", value: "A verified AI Evaluation Dossier and cryptographic SKL credential." },
     ],
     disclaimer:

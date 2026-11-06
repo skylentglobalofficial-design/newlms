@@ -42,7 +42,7 @@ const EXPLORE_TABS = [
   {
     id: "ai" as const,
     label: "Doubt Support",
-    sub: "AI coach & 20-min TA",
+    sub: "Guided support & 20-min TA",
   },
   {
     id: "career" as const,

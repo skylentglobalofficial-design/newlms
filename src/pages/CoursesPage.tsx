@@ -20,10 +20,10 @@ export default function CoursesPage() {
     if (q) setSearch(q)
   }, [searchParams])
 
-  const courses = (catalog.data ?? []).filter((c) => c.slug !== "power-bi")
-  const views = useMemo(() => courses.map(catalogCourseListView), [courses])
+  const courses = (catalog.data ?? []).filter((c) =>c.slug !== "power-bi")
+  const views = useMemo(() =>courses.map(catalogCourseListView), [courses])
   const categories = useMemo(
-    () => ["All", ...Array.from(new Set(courses.map((course) => course.category)))],
+    () => ["All", ...Array.from(new Set(courses.map((course) =>course.category)))],
     [courses],
   )
 
@@ -34,8 +34,8 @@ export default function CoursesPage() {
     return matchSearch && matchCat
   })
 
-  const ready = filtered.filter((view) => view.maturity === "ready")
-  const listings = search.trim().length > 0 ? filtered.filter((view) => view.maturity !== "ready") : []
+  const ready = filtered.filter((view) =>view.maturity === "ready")
+  const listings = search.trim().length >0 ? filtered.filter((view) =>view.maturity !== "ready") : []
 
   return (
     <PageShell aurora={false}>
@@ -51,24 +51,24 @@ export default function CoursesPage() {
                 : "Every course includes 5 structured modules (15 applied lessons), an interactive browser sandbox you can try free before enrolling, named faculty review rubrics, and a publicly verifiable certificate (Basic ₹1,499 · Flagship ₹3,499 · Pro ₹6,499)."}
             </p>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 14, alignItems: "center", marginTop: 10 }}>
-              <Link className="cat-text-link" to="/labs">⚡ Try Guest Browser Lab Free (No Login Required) →</Link>
-              <Link className="cat-text-link" to="/programmes">Compare structured career programmes →</Link>
+              <Link className="cat-text-link\"to="/labs">Try Guest Browser Lab Free (No Login Required) →</Link>
+              <Link className="cat-text-link\"to="/programmes">Compare structured career programmes →</Link>
             </div>
             <input
               className="cat-search"
               value={search}
-              onChange={(event) => setSearch(event.target.value)}
+              onChange={(event) =>setSearch(event.target.value)}
               placeholder="Search courses by skill or role (e.g. SQL, Python, Product, AI)..."
               aria-label="Search courses"
             />
-            <div className="cat-filters" role="group" aria-label="Course category">
+            <div className="cat-filters\"role="group\"aria-label="Course category">
               {categories.map((item) => (
                 <button
                   key={item}
                   type="button"
                   className={category === item ? "cat-chip is-on" : "cat-chip"}
                   aria-pressed={category === item}
-                  onClick={() => setCategory(item)}
+                  onClick={() =>setCategory(item)}
                 >
                   {item}
                 </button>
@@ -77,7 +77,7 @@ export default function CoursesPage() {
           </div>
         </section>
 
-        {catalog.offline ? <CatalogueNotice what="This list" onRetry={() => void catalog.reload()} /> : null}
+        {catalog.offline ? <CatalogueNotice what="This list\"onRetry={() =>void catalog.reload()} /> : null}
         <section className="cat-section">
           <div className="cat-rail">
             {catalog.loading ? (
@@ -85,7 +85,7 @@ export default function CoursesPage() {
             ) : catalog.error ? (
               <div className="cat-empty">
                 <p>The course catalogue could not be loaded.</p>
-                <button type="button" className="cat-btn cat-btn-ghost" onClick={() => void catalog.reload()}>
+                <button type="button\"className="cat-btn cat-btn-ghost\"onClick={() =>void catalog.reload()}>
                   Try again
                 </button>
               </div>
@@ -93,7 +93,7 @@ export default function CoursesPage() {
               <p className="cat-empty">No courses match these filters.</p>
             ) : (
               <>
-                {ready.length > 0 ? (
+                {ready.length >0 ? (
                   <div className="cat-group">
                     <h2>{catalog.offline ? "Full courses" : `Open Flagship Courses (${ready.length})`}</h2>
                     <div className="cat-ready">
@@ -103,7 +103,7 @@ export default function CoursesPage() {
                     </div>
                   </div>
                 ) : null}
-                {listings.length > 0 ? (
+                {listings.length >0 ? (
                   <div className="cat-group">
                     <h2>{catalog.offline ? "Course outlines" : "Opening soon"}</h2>
                     <p className="cat-fine">Outlines are published; enrolment opens when the lessons are ready.</p>
@@ -161,7 +161,7 @@ const COURSE_FACULTY_META: Record<string, { lead: string; issuer: string }> = {
 
 function CourseUnitChrome({ view }: { view: CatalogCourseListView }) {
   return (
-    <div className="cat-unit" aria-hidden="true">
+    <div className="cat-unit\"aria-hidden="true">
       <div className="cat-unit-top">
         <p className="cat-unit-brand">SKYLENT OS · IN-BROWSER LAB</p>
         <span className="cat-unit-elixir">✓ Open · From ₹1,499</span>
@@ -182,7 +182,7 @@ function CourseCard({ view, featured = false, confirmed = true }: { view: Catalo
     <Link className={featured ? "cat-tile is-ready" : "cat-tile is-listing"} to={`/courses/${view.slug}`}>
       {view.maturity === "ready" ? <CourseUnitChrome view={view} /> : <CourseThumb authored={false} />}
       <div className="cat-tile-copy">
-        {confirmed ? <TruthChip state={view.maturity === "ready" ? "live" : "development"} /> : <TruthChip state="development" label={STATUS_NOT_CONFIRMED} />}
+        {confirmed ? <TruthChip state={view.maturity === "ready" ? "live" : "development"} /> : <TruthChip state="development\"label={STATUS_NOT_CONFIRMED} />}
         <h3>{view.title}</h3>
         <div className="cat-card-stats">
           <span>{view.duration}</span>
@@ -194,8 +194,8 @@ function CourseCard({ view, featured = false, confirmed = true }: { view: Catalo
             {faculty.lead} · {faculty.issuer}
           </p>
         ) : null}
-        {view.maturity === "ready" && tags.length > 0 ? (
-          <div className="cat-card-tags" aria-label="Skills practised">
+        {view.maturity === "ready" && tags.length >0 ? (
+          <div className="cat-card-tags\"aria-label="Skills practised">
             {tags.map((tag) => (
               <span key={tag} className="cat-card-tag">{tag}</span>
             ))}

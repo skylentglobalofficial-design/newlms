@@ -150,10 +150,10 @@ const KIND_COPY: Record<Kind, { title: string; lead: string; label: string }> = 
 const LEARNING_STEPS = [
   {
     code: "STAGE 01 · CONCEPT & INTUITION",
-    badge: "✓ English + Hinglish AI",
+    badge: "✓ English + Hinglish Notes",
     title: "1. Understand the concept",
-    text: "Concise lessons with English & Hinglish AI support and quick concept checks.",
-    pills: ["Plain-English Notes", "Hinglish AI Mode", "Concept Checks"],
+    text: "Concise lessons with English & Hinglish explanations and quick concept checks.",
+    pills: ["Plain-English Notes", "Hinglish Study Mode", "Concept Checks"],
   },
   {
     code: "STAGE 02 · IN-BROWSER WORKBENCH",
@@ -356,7 +356,7 @@ export default function ProgramsPage() {
                 <span className="pgx-royal-hero-card__badge">✓ 6 Live Tracks</span>
               </div>
               <strong className="pgx-royal-hero-card__title">Every Track Includes a Browser Lab &amp; Verified Capstone</strong>
-              <span className="pgx-royal-hero-card__sub">Zero local setup · Hinglish + English AI Coach · 20-Min Human TA Help</span>
+              <span className="pgx-royal-hero-card__sub">Zero local setup · Hinglish + English Study Notes · 20-Min Faculty TA Help</span>
               <div className="pgx-royal-hero-card__metrics">
                 <div>
                   <span>ENTRY COST</span>

@@ -304,7 +304,7 @@ function AppRoutes() {
         <Route path="/universities" element={<UniversitiesPage />} />
         <Route path="/labs" element={<LabsPage />} />
         <Route path="/os" element={<OSPage />} />
-        <Route path="/courses" element={<CoursesPage />} />
+        <Route path="/courses" element={<Navigate to="/programmes" replace />} />
         <Route path="/courses/:slug" element={<CourseDetailPage />} />
         <Route path="/workshops" element={<WorkshopsPage />} />
         <Route path="/workshops/:slug" element={<WorkshopDetailPage />} />
@@ -315,7 +315,7 @@ function AppRoutes() {
         <Route path="/programme" element={<Navigate to="/programmes" replace />} />
         <Route path="/programme/:slug" element={<ProgramPage />} />
         <Route path="/program" element={<Navigate to="/programmes" replace />} />
-        <Route path="/course" element={<Navigate to="/courses" replace />} />
+        <Route path="/course" element={<Navigate to="/programmes" replace />} />
         <Route path="/course/:slug" element={<CourseDetailPage />} />
         <Route path="/degree" element={<Navigate to="/education" replace />} />
         <Route path="/degrees" element={<Navigate to="/education" replace />} />

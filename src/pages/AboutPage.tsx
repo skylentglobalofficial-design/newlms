@@ -33,8 +33,8 @@ const PRODUCTS = [
   },
   {
     code: "PILLAR 04 · HYBRID PEDAGOGY",
-    title: "Hinglish AI Coach + 20-Min TA SLA",
-    text: "24/7 Socratic first-principles intuition in simple Hinglish or English inside every lesson, backed by human Teaching Assistants on a 20-minute SLA.",
+    title: "Hinglish Study Support + 20-Min TA SLA",
+    text: "24/7 first-principles intuition in simple Hinglish or English inside every lesson, backed by human Teaching Assistants on a 20-minute SLA.",
     badge: "✓ 20-Min Human SLA",
     to: "/programmes/data-analytics-pro",
   },
@@ -70,7 +70,7 @@ const COMPARISON_ROWS = [
   {
     dimension: "Doubt Resolution",
     legacy: " slow forum threads or generic chatbot answers that leak code without building intuition.",
-    skylent: "1-click Socratic Hinglish + English AI intuition coach + live human Faculty TA escalation within 20 minutes.",
+    skylent: "1-click Hinglish + English guided study notes + live human Faculty TA escalation within 20 minutes.",
   },
   {
     dimension: "How You Are Assessed",
@@ -157,7 +157,7 @@ export default function AboutPage() {
               </p>
               <ol className="abx-charter-card__steps">
                 {[
-                  ["01 · LEARN", "First-principles written notes + Hinglish/English Socratic AI"],
+                  ["01 · LEARN", "First-principles written notes + Hinglish/English study hints"],
                   ["02 · PRACTISE", "In-browser SQL, Python, PRD & RAG sandboxes with zero setup"],
                   ["03 · WORK", "Graded module briefs & supervised partner fieldwork"],
                   ["04 · REFLECT", "Boardroom Cold Call oral defense & V1 → V2 faculty revision"],

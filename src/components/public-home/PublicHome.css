@@ -15,14 +15,14 @@
   background: var(--ph-paper);
   color: var(--ph-ink);
   overflow-x: clip;
-  font-family: "DM Sans", system-ui, sans-serif;
+  font-family: "Plus Jakarta Sans", system-ui, sans-serif;
   min-width: 0;
 }
 
 .public-home h1,
 .public-home h2,
 .public-home h3 {
-  font-family: "Space Grotesk", "DM Sans", system-ui, sans-serif;
+  font-family: "Plus Jakarta Sans", "Plus Jakarta Sans", system-ui, sans-serif;
   font-weight: 600;
   letter-spacing: -0.015em;
   color: #142F52;
@@ -34,7 +34,7 @@
 .skylent-public-canvas main .public-home h1,
 .skylent-public-canvas main .public-home h2,
 .skylent-public-canvas main .public-home h3 {
-  font-family: "Space Grotesk", "DM Sans", system-ui, sans-serif;
+  font-family: "Plus Jakarta Sans", "Plus Jakarta Sans", system-ui, sans-serif;
   font-weight: 600;
   letter-spacing: -0.015em;
   color: #142F52 !important;
@@ -426,7 +426,7 @@
 .ph-card dd {
   margin: 0;
   padding-top: 0.55rem;
-  font-family: "Space Grotesk", "DM Sans", sans-serif;
+  font-family: "Plus Jakarta Sans", "Plus Jakarta Sans", sans-serif;
   font-size: 1.05rem;
   font-weight: 600;
 }

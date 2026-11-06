@@ -157,7 +157,7 @@ function AcademicPipeline({
       <h3 style={{ margin: '0 0 12px', fontSize: 18, color: '#0f172a' }}>Institutional Curriculum &amp; Competency Standard</h3>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 10, marginBottom: 14 }}>
         {[
-          ['15 Hrs · Notes & AI', 'First-Principles Reading & Socratic Checks'],
+          ['15 Hrs · Guided Notes', 'First-Principles Reading & Concept Checks'],
           ['20 Hrs · Browser Labs', 'Northwind SQL, Python ETL & RAG Sandboxes'],
           ['15 Hrs · Capstone', '6-Task Applied Project Studio'],
           ['10 Hrs · Red-Line & Defence', 'V1 → V2 Faculty Review & Cold Call'],

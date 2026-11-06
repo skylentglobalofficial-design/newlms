@@ -388,11 +388,10 @@ export const type = {
 } as const
 
 export const fonts = {
-  heading: "'Inter', system-ui, sans-serif",
-  /** @deprecated Legacy name. There is no serif in the system; this is the heading face. */
-  serif: "'Inter', system-ui, sans-serif",
-  sans: "'Inter', system-ui, sans-serif",
-  mono: "'DM Mono', ui-monospace, monospace",
+  heading: "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif",
+  serif: "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif",
+  sans: "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif",
+  mono: "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif",
 } as const
 
 export type GlassLevel = 1 | 2 | 3
