@@ -118,19 +118,31 @@ export function NativeAppShellController() {
   const [exitToastVisible, setExitToastVisible] = useState(false)
   const lastBackPressRef = useRef<number>(0)
 
-  // Preload core route chunks right after boot so clicking any page opens in < 2 milliseconds!
+  // Performance Audit P1 Fix: Intent-based & idle route prefetching instead of blanket 120ms 8-route preload
   useEffect(() => {
-    const timer = window.setTimeout(() => {
-      void import("../../pages/DashboardStudentPage").catch(() => {})
-      void import("../../pages/career/CareerOSLayout").catch(() => {})
-      void import("../../pages/career/CareerOSOverviewPage").catch(() => {})
-      void import("../../pages/LearnPage").catch(() => {})
-      void import("../../pages/ProgramsPage").catch(() => {})
-      void import("../../pages/CoursesPage").catch(() => {})
-      void import("../../pages/CourseDetailPage").catch(() => {})
-      void import("../../pages/LoginPage").catch(() => {})
-    }, 120)
-    return () => window.clearTimeout(timer)
+    const prefetched = new Set<string>()
+    const prefetchByPath = (href: string) => {
+      if (prefetched.has(href)) return
+      prefetched.add(href)
+      if (href.startsWith("/dashboard/student")) void import("../../pages/DashboardStudentPage").catch(() => {})
+      else if (href.startsWith("/career-os")) void import("../../pages/career/CareerOSLayout").catch(() => {})
+      else if (href.startsWith("/learn")) void import("../../pages/LearnPage").catch(() => {})
+      else if (href.startsWith("/program")) void import("../../pages/ProgramsPage").catch(() => {})
+      else if (href.startsWith("/course")) void import("../../pages/CoursesPage").catch(() => {})
+      else if (href.startsWith("/login") || href.startsWith("/signup")) void import("../../pages/LoginPage").catch(() => {})
+    }
+    const onIntent = (e: Event) => {
+      const target = e.target as HTMLElement | null
+      const anchor = target?.closest?.("a[href]") as HTMLAnchorElement | null
+      const href = anchor?.getAttribute("href")
+      if (href && href.startsWith("/")) prefetchByPath(href)
+    }
+    document.addEventListener("pointerover", onIntent, { passive: true })
+    document.addEventListener("focusin", onIntent, { passive: true })
+    return () => {
+      document.removeEventListener("pointerover", onIntent)
+      document.removeEventListener("focusin", onIntent)
+    }
   }, [])
 
   // YouTube-style Double-Back to Exit on /dashboard/student (Overview) and /
@@ -198,7 +210,9 @@ export function NativeAppShellController() {
     }
   }, [])
 
+  // Performance Audit P1 Fix: Gate /health/app-config recurring polling strictly behind isNativeAppShell()
   useEffect(() => {
+    if (!isNativeAppShell()) return
     let cancelled = false
     const checkConfig = () => {
       fetch(`${apiV1()}/health/app-config?t=${Date.now()}`, {
@@ -209,16 +223,6 @@ export function NativeAppShellController() {
         .then((data: AppConfigPayload | null) => {
           if (!cancelled && data && typeof data.minSupportedAppVersion === "string") {
             setAppConfig(data)
-            const currentStamp = `${data.appVersion}:${data.buildId || "live"}`
-            try {
-              const existing = window.localStorage.getItem(INSTALLED_BUILD_KEY)
-              if (!existing && !isNativeAppShell()) {
-                window.localStorage.setItem(INSTALLED_BUILD_KEY, currentStamp)
-                setInstalledBuildId(currentStamp)
-              }
-            } catch {
-              // ignore
-            }
           }
         })
         .catch(() => {})

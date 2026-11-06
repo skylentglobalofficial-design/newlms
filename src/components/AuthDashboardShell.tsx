@@ -178,13 +178,38 @@ export function AuthDashboardShell({
       ) : null}
 
       <div className="auth-shell-user">
-        <div className="auth-shell-user-row">
-          <span className="auth-shell-avatar" aria-hidden="true">{user?.avatar || '··'}</span>
-          <div style={{ minWidth: 0 }}>
-            <div className="auth-shell-user-name">{user?.name || 'Signed in'}</div>
-            <div className="auth-shell-user-role">{isSuperOrAdmin ? 'SUPERADMIN · ALL ACCESS' : roleLabel}</div>
+        <button
+          type="button"
+          onClick={() => {
+            setMobileOpen(false)
+            navigate('/dashboard/student#profile-settings')
+          }}
+          title="Open My Profile, Professional Details & Password Settings"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: 10,
+            width: '100%',
+            padding: '8px 10px',
+            margin: '-4px -6px 8px',
+            borderRadius: 10,
+            border: location.hash === '#profile-settings' ? '1px solid #8b5cf6' : '1px solid rgba(196, 184, 255, 0.18)',
+            background: location.hash === '#profile-settings' ? 'rgba(139, 92, 246, 0.22)' : 'rgba(255, 255, 255, 0.05)',
+            color: '#ffffff',
+            textAlign: 'left',
+            cursor: 'pointer',
+          }}
+        >
+          <div className="auth-shell-user-row" style={{ flex: 1, minWidth: 0 }}>
+            <span className="auth-shell-avatar" aria-hidden="true">{user?.avatar || '··'}</span>
+            <div style={{ minWidth: 0 }}>
+              <div className="auth-shell-user-name">{user?.name || 'Signed in'}</div>
+              <div className="auth-shell-user-role">{isSuperOrAdmin ? 'SUPERADMIN · PROFILE' : `${roleLabel} · VIEW PROFILE`}</div>
+            </div>
           </div>
-        </div>
+          <span aria-hidden="true" style={{ fontSize: 13, color: '#c4b8ff', fontWeight: 700 }}>⚙️</span>
+        </button>
         <button type="button" className="auth-shell-signout" onClick={handleLogout}>
           Sign out
         </button>

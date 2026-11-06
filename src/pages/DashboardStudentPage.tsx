@@ -374,7 +374,7 @@ function CertificateName() {
 
 type Loaded<T> = { status: 'loading' } | { status: 'ready'; data: T } | { status: 'error' }
 type AiAvailability = 'checking' | 'available' | 'unavailable' | 'unknown'
-type StudentTabId = 'overview' | 'courses' | 'explore' | 'projects' | 'certificates' | 'wallet'
+type StudentTabId = 'overview' | 'courses' | 'explore' | 'projects' | 'certificates' | 'wallet' | 'profile'
 
 function ListError({ what, onRetry }: { what: string; onRetry: () => void }) {
   return (
@@ -407,6 +407,267 @@ function Skeleton() {
  * Full-Viewport Portal Plan Selection Modal (z-index: 99999)
  * Never clipped by .auth-shell-rail (z-index: 120) and closes automatically on sidebar navigation, Escape, or backdrop click.
  */
+function LearnerProfileSettingsSection() {
+  const { user } = useAuth()
+  const storageKey = user?.id ? `skylent:learner-prof-details:${user.id}` : "skylent:learner-prof-details:default"
+  const [savedToast, setSavedToast] = useState(false)
+  const [prof, setProf] = useState<{
+    phone: string
+    phoneLocked: boolean
+    status: string
+    organization: string
+    roleOrDegree: string
+    graduationYear: string
+    targetTrack: string
+    linkedinUrl: string
+    githubUrl: string
+  }>(() => {
+    const fallback = {
+      phone: "",
+      phoneLocked: false,
+      status: "College Student / Final Year",
+      organization: "",
+      roleOrDegree: "",
+      graduationYear: "2026",
+      targetTrack: "Data Analytics & Business SQL",
+      linkedinUrl: "",
+      githubUrl: "",
+    }
+    if (typeof window === "undefined") return fallback
+    try {
+      const raw = window.localStorage.getItem(storageKey)
+      if (!raw) return fallback
+      return { ...fallback, ...(JSON.parse(raw) as Record<string, unknown>) }
+    } catch {
+      return fallback
+    }
+  })
+
+  if (!user) return null
+
+  function handleSaveProf(e: React.FormEvent) {
+    e.preventDefault()
+    const cleanPhone = prof.phone.replace(/\D/g, "").slice(-10)
+    const next = {
+      ...prof,
+      phone: cleanPhone.length === 10 ? cleanPhone : prof.phone,
+      phoneLocked: prof.phoneLocked || cleanPhone.length === 10,
+    }
+    setProf(next)
+    try {
+      window.localStorage.setItem(storageKey, JSON.stringify(next))
+    } catch {
+      // ignore
+    }
+    setSavedToast(true)
+    window.setTimeout(() => setSavedToast(false), 3000)
+  }
+
+  return (
+    <section id="profile-settings" aria-label="My Profile and Account Settings" style={{ display: "grid", gap: 20 }}>
+      <div
+        style={{
+          padding: "24px 26px",
+          borderRadius: 18,
+          background: "linear-gradient(135deg, #0f172a 0%, #1e1b4b 55%, #3b2d96 100%)",
+          color: "#ffffff",
+          display: "flex",
+          flexWrap: "wrap",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: 16,
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+          <div
+            style={{
+              width: 56,
+              height: 56,
+              borderRadius: 14,
+              background: "rgba(255,255,255,0.16)",
+              border: "1.5px solid rgba(255,255,255,0.3)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: 20,
+              fontWeight: 800,
+            }}
+          >
+            {user.avatar || "LR"}
+          </div>
+          <div>
+            <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "#c4b8ff" }}>
+              LEARNER PROFILE &amp; SECURITY SETTINGS
+            </span>
+            <h2 style={{ margin: "4px 0 2px", fontSize: 22, color: "#ffffff" }}>{user.name}</h2>
+            <span style={{ fontSize: 13, color: "#cbd5e1" }}>{user.email}</span>
+          </div>
+        </div>
+        <Link
+          to="/account/password"
+          style={{
+            padding: "10px 16px",
+            borderRadius: 10,
+            background: "#ffffff",
+            color: "#0f172a",
+            fontSize: 13,
+            fontWeight: 800,
+            textDecoration: "none",
+          }}
+        >
+          🔐 Change Password (3-Month Policy)
+        </Link>
+      </div>
+
+      {/* 1. Certificate Name (6-Month Lock) & Registered Email/Mobile Lock */}
+      <div className="sh-card">
+        <header className="sh-card-head">
+          <h2>1. Verified Account Identity (6-Month Name Lock &amp; Permanent Email/Mobile Binding)</h2>
+        </header>
+        <CertificateName />
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+            gap: 14,
+            marginTop: 14,
+          }}
+        >
+          <div style={{ padding: "12px 14px", borderRadius: 12, background: "#f8fafc", border: "1px solid #e2e8f0" }}>
+            <span style={{ fontSize: 11, fontWeight: 700, color: "#64748b", textTransform: "uppercase", display: "block" }}>
+              Registered Email Address (Locked)
+            </span>
+            <strong style={{ fontSize: 14, color: "#0f172a", display: "block", marginTop: 4 }}>{user.email}</strong>
+            <span style={{ fontSize: 11.5, color: "#059669", fontWeight: 600 }}>🔒 Permanently bound to this account</span>
+          </div>
+          <div style={{ padding: "12px 14px", borderRadius: 12, background: "#f8fafc", border: "1px solid #e2e8f0" }}>
+            <span style={{ fontSize: 11, fontWeight: 700, color: "#64748b", textTransform: "uppercase", display: "block" }}>
+              Registered Mobile Number (+91)
+            </span>
+            {prof.phoneLocked && prof.phone ? (
+              <>
+                <strong style={{ fontSize: 14, color: "#0f172a", display: "block", marginTop: 4 }}>+91-{prof.phone}</strong>
+                <span style={{ fontSize: 11.5, color: "#059669", fontWeight: 600 }}>🔒 Permanently bound (Admin-only change)</span>
+              </>
+            ) : (
+              <div style={{ display: "flex", gap: 8, marginTop: 6 }}>
+                <input
+                  type="tel"
+                  maxLength={10}
+                  value={prof.phone}
+                  onChange={(e) => setProf({ ...prof, phone: e.target.value.replace(/\D/g, "").slice(0, 10) })}
+                  placeholder="Enter 10-digit mobile"
+                  style={{ flex: 1, padding: "7px 10px", borderRadius: 8, border: "1px solid #cbd5e1", fontSize: 13 }}
+                />
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* 2. Professional & Academic Details */}
+      <form className="sh-card" onSubmit={handleSaveProf}>
+        <header className="sh-card-head">
+          <h2>2. Professional &amp; Academic Details</h2>
+          {savedToast ? (
+            <span style={{ fontSize: 12.5, fontWeight: 700, color: "#059669" }}>✓ Profile Saved</span>
+          ) : null}
+        </header>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(230px, 1fr))",
+            gap: 14,
+            marginBottom: 16,
+          }}
+        >
+          <label style={{ display: "grid", gap: 5, fontSize: 12.5, fontWeight: 700, color: "#334155" }}>
+            Current Status
+            <select
+              value={prof.status}
+              onChange={(e) => setProf({ ...prof, status: e.target.value })}
+              style={{ padding: "9px 12px", borderRadius: 10, border: "1px solid #cbd5e1", fontSize: 13.5, background: "#ffffff" }}
+            >
+              <option value="College Student / Final Year">College Student / Final Year</option>
+              <option value="Recent Graduate / Job Seeker">Recent Graduate / Job Seeker</option>
+              <option value="Working Professional (1-3 Yrs)">Working Professional (1-3 Yrs)</option>
+              <option value="Working Professional (3+ Yrs)">Working Professional (3+ Yrs)</option>
+            </select>
+          </label>
+          <label style={{ display: "grid", gap: 5, fontSize: 12.5, fontWeight: 700, color: "#334155" }}>
+            College / University or Company Name
+            <input
+              type="text"
+              value={prof.organization}
+              onChange={(e) => setProf({ ...prof, organization: e.target.value })}
+              placeholder="e.g. NIT Rourkela / TCS"
+              style={{ padding: "9px 12px", borderRadius: 10, border: "1px solid #cbd5e1", fontSize: 13.5 }}
+            />
+          </label>
+          <label style={{ display: "grid", gap: 5, fontSize: 12.5, fontWeight: 700, color: "#334155" }}>
+            Degree / Branch or Job Role
+            <input
+              type="text"
+              value={prof.roleOrDegree}
+              onChange={(e) => setProf({ ...prof, roleOrDegree: e.target.value })}
+              placeholder="e.g. B.Tech CSE / Data Analyst"
+              style={{ padding: "9px 12px", borderRadius: 10, border: "1px solid #cbd5e1", fontSize: 13.5 }}
+            />
+          </label>
+          <label style={{ display: "grid", gap: 5, fontSize: 12.5, fontWeight: 700, color: "#334155" }}>
+            Graduation Year
+            <input
+              type="text"
+              value={prof.graduationYear}
+              onChange={(e) => setProf({ ...prof, graduationYear: e.target.value })}
+              placeholder="e.g. 2026"
+              style={{ padding: "9px 12px", borderRadius: 10, border: "1px solid #cbd5e1", fontSize: 13.5 }}
+            />
+          </label>
+          <label style={{ display: "grid", gap: 5, fontSize: 12.5, fontWeight: 700, color: "#334155" }}>
+            LinkedIn Profile URL
+            <input
+              type="url"
+              value={prof.linkedinUrl}
+              onChange={(e) => setProf({ ...prof, linkedinUrl: e.target.value })}
+              placeholder="https://linkedin.com/in/yourname"
+              style={{ padding: "9px 12px", borderRadius: 10, border: "1px solid #cbd5e1", fontSize: 13.5 }}
+            />
+          </label>
+          <label style={{ display: "grid", gap: 5, fontSize: 12.5, fontWeight: 700, color: "#334155" }}>
+            GitHub / Portfolio URL
+            <input
+              type="url"
+              value={prof.githubUrl}
+              onChange={(e) => setProf({ ...prof, githubUrl: e.target.value })}
+              placeholder="https://github.com/yourname"
+              style={{ padding: "9px 12px", borderRadius: 10, border: "1px solid #cbd5e1", fontSize: 13.5 }}
+            />
+          </label>
+        </div>
+        <button type="submit" className="os-btn os-btn-primary">
+          Save Professional Details
+        </button>
+      </form>
+
+      {/* 3. 3-Month (90-Day) Mandatory Password Auto-Rotation Policy Card */}
+      <div className="sh-card" style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: 14 }}>
+        <div>
+          <strong style={{ fontSize: 15.5, color: "#0f172a", display: "block" }}>
+            3. Password Security &amp; 3-Month (90-Day) Auto-Rotation Policy
+          </strong>
+          <span className="sh-note">
+            To protect your certificates and Career OS portfolio, Skylent prompts you every 3 months (90 days) to rotate your account password.
+          </span>
+        </div>
+        <Link className="os-btn os-btn-primary" to="/account/password" style={{ textDecoration: "none" }}>
+          Update Password →
+        </Link>
+      </div>
+    </section>
+  )
+}
+
 function SelectYourPlanPortalModal({
   course,
   onClose,
@@ -664,6 +925,7 @@ export default function DashboardStudentPage() {
   const activeNav = learnerNavId(pathname, hash)
   const previousHash = useRef(hash)
   const [studentTab, setStudentTab] = useState<StudentTabId>(() => {
+    if (hash === '#profile-settings') return 'profile'
     if (hash === '#sh-my-learning') return 'courses'
     if (hash === '#student-projects') return 'projects'
     if (hash === '#explore-programmes') return 'explore'
@@ -706,7 +968,8 @@ export default function DashboardStudentPage() {
   useEffect(() => {
     setCheckoutTarget(null)
     setSelectedExploreDetail(null)
-    if (hash === '#sh-my-learning') setStudentTab('courses')
+    if (hash === '#profile-settings') setStudentTab('profile')
+    else if (hash === '#sh-my-learning') setStudentTab('courses')
     else if (hash === '#student-projects') setStudentTab('projects')
     else if (hash === '#explore-programmes') setStudentTab('explore')
     else if (!hash) setStudentTab('overview')
@@ -821,17 +1084,19 @@ export default function DashboardStudentPage() {
   }
 
   const crumbSection =
-    studentTab === 'courses'
-      ? 'My Courses'
-      : studentTab === 'explore'
-        ? 'Explore Programmes'
-        : studentTab === 'projects'
-          ? 'Projects & Labs'
-          : studentTab === 'certificates'
-            ? 'Certificates & Proof'
-            : studentTab === 'wallet'
-              ? 'Elixir Wallet'
-              : 'Dashboard'
+    studentTab === 'profile'
+      ? 'My Profile & Settings'
+      : studentTab === 'courses'
+        ? 'My Courses'
+        : studentTab === 'explore'
+          ? 'Explore Programmes'
+          : studentTab === 'projects'
+            ? 'Projects & Labs'
+            : studentTab === 'certificates'
+              ? 'Certificates & Proof'
+              : studentTab === 'wallet'
+                ? 'Elixir Wallet'
+                : 'Dashboard'
 
   const effectiveActiveNav =
     studentTab === 'explore'
@@ -1668,7 +1933,9 @@ export default function DashboardStudentPage() {
     return (
       <AuthDashboardShell {...shell}>
         <div className="sh" id="student-learning">
-          {studentTab === 'explore' ? (
+          {studentTab === 'profile' ? (
+            <LearnerProfileSettingsSection />
+          ) : studentTab === 'explore' ? (
             exploreProgrammesSection
           ) : (
             <>
@@ -1877,7 +2144,7 @@ export default function DashboardStudentPage() {
                 </div>
               </div>
               <Link
-                to="/career-os/profile"
+                to="/dashboard/student#profile-settings"
                 style={{
                   padding: '6px 12px',
                   borderRadius: 8,
@@ -2172,6 +2439,8 @@ export default function DashboardStudentPage() {
             <ElixirWalletPanel />
           </section>
         ) : null}
+
+        {studentTab === 'profile' ? <LearnerProfileSettingsSection /> : null}
       </div>
 
       {checkoutTarget ? (

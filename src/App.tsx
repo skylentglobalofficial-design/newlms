@@ -13,7 +13,6 @@ import { AuthProvider } from "./context/AuthContext"
 import { RoleRouteGuard } from "./components/routing/RoleRouteGuard"
 import { DemoStateProvider } from "./demo/DemoStateContext"
 import RouteFallback from "./components/RouteFallback"
-import HomePage from "./pages/HomePage"
 import { NativeAppShellController } from "./components/skylent/NativeAppShellController"
 
 function lazyWithRetry<T extends React.ComponentType<any>>(
@@ -120,6 +119,7 @@ function DocumentTitle() {
   return null
 }
 
+const HomePage = lazyWithRetry(() => import("./pages/HomePage"))
 const HomeDirectionPreview = lazyWithRetry(() => import("./pages/home/HomeDirectionPreview"))
 const LegalPage = lazyWithRetry(() => import("./pages/LegalPage"))
 const PathPage = lazyWithRetry(() => import("./pages/path/PathPage"))

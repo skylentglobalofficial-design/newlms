@@ -10,7 +10,7 @@ const router = Router()
 // increments appVersion (> any installed APK version) and triggers the In-App Update banner!
 const BOOT_MINUTE = Math.max(1, Math.floor(Date.now() / 60000) - 29900000)
 export const DEPLOYED_APP_VERSION = `85.${BOOT_MINUTE}.0`
-export const DEPLOYED_BUILD_ID = `v75-${Date.now()}`
+export const DEPLOYED_BUILD_ID = "v76-202611061136"
 
 function releaseSha(): string {
   const sha = process.env.SKYLENT_RELEASE_SHA?.trim() ?? ""

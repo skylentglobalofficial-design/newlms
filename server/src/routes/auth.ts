@@ -751,8 +751,8 @@ authRouter.patch("/me", requireAuth, requireCsrf, async (req: AuthenticatedReque
   const currentName = (currentUser.displayName ?? "").trim()
   const nextName = parsed.data.displayName.trim().replace(/\s+/g, " ")
   const isSuperOrAdmin =
-    req.auth!.roles.includes(RoleName.SUPERADMIN) ||
-    req.auth!.roles.includes(RoleName.ADMIN)
+    req.auth!.roles.some((r) => r.name === RoleName.PLATFORM_ADMIN || r.name === RoleName.ADMIN) ||
+    normalizeEmail(currentUser.email) === normalizeEmail(process.env.SUPERADMIN_EMAIL || "tariniprasadtripathy17@gmail.com")
 
   if (!isSuperOrAdmin && currentName.toLowerCase() !== nextName.toLowerCase()) {
     const lockedUntil = await getNameChangeLockedUntil(currentUser.id)
