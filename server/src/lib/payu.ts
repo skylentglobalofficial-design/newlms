@@ -5,7 +5,9 @@ export interface PayuConfig {
   key: string
   salt: string
   env: "production" | "test"
+  mode: "production" | "test"
   actionUrl: string
+  mid: string
 }
 
 /**
@@ -28,7 +30,8 @@ export function getPayuConfig(): PayuConfig {
   const salt = (verifiedRuntimeSalt || process.env.PAYU_MERCHANT_SALT || PAYU_SALT_CANDIDATES[0]).trim()
   const env = process.env.PAYU_ENV === "test" ? "test" : "production"
   const actionUrl = env === "test" ? "https://test.payu.in/_payment" : "https://secure.payu.in/_payment"
-  return { key, salt, env, actionUrl }
+  const mid = (process.env.PAYU_MERCHANT_ID || "13843036").trim()
+  return { key, salt, env, mode: env, actionUrl, mid }
 }
 
 export function generatePayuHash(params: {
@@ -208,4 +211,33 @@ export function verifyPayuResponseHash(params: Record<string, string>, salt: str
     }
   }
   return false
+}
+
+export async function savePayuConfigToDatabase(config: {
+  key: string
+  salt: string
+  mid?: string
+  mode?: string
+}): Promise<void> {
+  verifiedRuntimeSalt = config.salt
+  process.env.PAYU_MERCHANT_KEY = config.key
+  process.env.PAYU_MERCHANT_SALT = config.salt
+  if (config.mode) process.env.PAYU_ENV = config.mode
+  if (config.mid) process.env.PAYU_MERCHANT_ID = config.mid
+  try {
+    await prisma.$executeRawUnsafe(
+      `INSERT INTO "_skylent_runtime_config" ("key", "value", "updatedAt")
+       VALUES (payu_config, $1, NOW())
+       ON CONFLICT ("key") DO UPDATE SET "value" = EXCLUDED."value", "updatedAt" = NOW()`,
+      JSON.stringify({
+        key: config.key,
+        salt: config.salt,
+        env: config.mode || "production",
+        mid: config.mid || "13843036",
+        verified: true,
+      }),
+    )
+  } catch {
+    // ignore
+  }
 }
