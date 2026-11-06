@@ -31,7 +31,7 @@ paymentsRouter.post("/payu/initiate", async (req: AuthenticatedRequest, res) => 
   const { targetKind, targetSlug, tier } = parsed.data
   const user = auth?.user
   const email = (user?.email || parsed.data.email || "").trim()
-  const firstname = (user?.name || parsed.data.firstname || "Learner").trim().split(/\s+/)[0] || "Learner"
+  const firstname = (user?.displayName || parsed.data.firstname || "Learner").trim().split(/\s+/)[0] || "Learner"
   const phone = (parsed.data.phone || "9999999999").trim()
 
   if (!email) {
