@@ -198,9 +198,21 @@ body:has(.skylent-public-canvas) {
   color: #ffffff !important;
 }
 
-/* Preserve explicit white text on dark/royal cards and banners */
-.skylent-public-canvas :is(.sky-band-navy, .sky-on-navy, .cat-final-card, .hx-royal-card, .hx-royal-plate, .hx-royal-ai-card, .hx-close) :is(h1, h2, h3, h4, strong) {
-  color: #ffffff !important;
+.skylent-public-canvas main p[style*="color: rgba(255"],
+.skylent-public-canvas main div[style*="color: rgba(255, 255, 255"],
+.skylent-public-canvas main div[style*="color: rgba(255,255,255"],
+.skylent-public-canvas main span[style*="color: rgba(255, 255, 255"],
+.skylent-public-canvas main span[style*="color: rgba(255,255,255"] {
+  color: var(--skylent-color-slate) !important;
+}
+
+.skylent-public-canvas main div[style*="color: #FFFFFF"],
+.skylent-public-canvas main span[style*="color: #FFFFFF"],
+.skylent-public-canvas main p[style*="color: #FFFFFF"],
+.skylent-public-canvas main li[style*="color: #FFFFFF"],
+.skylent-public-canvas main strong[style*="color: #FFFFFF"],
+.skylent-public-canvas main td[style*="color: #FFFFFF"] {
+  color: var(--skylent-color-ink) !important;
 }
 
 .skylent-public-canvas main input,
@@ -1134,26 +1146,6 @@ body:has(.skylent-public-canvas) {
   inset: calc(var(--nav-h) + env(safe-area-inset-top, 0px)) 0 0 0;
 }
 
-@media (max-width: 900px) {
-  /* Hide notification bell & wallet cluster in mobile top headers so it never crowds the status bar */
-  .skn-UtilityCluster {
-    display: none !important;
-  }
-  .skylent-public-canvas .skn {
-    padding-top: max(env(safe-area-inset-top, 0px), 6px);
-  }
-  .skylent-public-canvas .sk-shell-locator {
-    padding-top: calc(var(--nav-h) + max(env(safe-area-inset-top, 0px), 6px));
-  }
-  .skylent-public-canvas .skn-sheet {
-    inset: calc(var(--nav-h) + max(env(safe-area-inset-top, 0px), 6px)) 0 0 0;
-  }
-}
-
-html[data-native-app="true"] .skn-UtilityCluster {
-  display: none !important;
-}
-
 .skylent-public-canvas .skn__back-btn {
   display: inline-flex;
   align-items: center;
@@ -1291,5 +1283,52 @@ html[data-native-app="true"] .skylent-mobile-tabbar {
   .skylent-public-canvas .hx-head__aside {
     font-size: 13.5px !important;
     line-height: 1.45 !important;
+  }
+}
+
+/* ── V74 Native APK & Mobile Public Header + Card Layout Polish ── */
+html[data-native-app="true"] .skylent-site-nav.skn {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+@media (max-width: 768px) {
+  .skylent-site-nav .skn__bar {
+    padding-inline: 12px !important;
+    min-height: 56px !important;
+    gap: 6px !important;
+  }
+
+  /* Prevent horizontal crowding in the public mobile/APK navbar */
+  .skylent-site-nav .skn__account-name,
+  .skylent-site-nav .skn__cta {
+    display: none !important;
+  }
+
+  .skylent-site-nav .skn__account-btn {
+    padding: 2px !important;
+    border-radius: 999px !important;
+  }
+
+  .skylent-site-nav .skn__elixir-chip {
+    padding: 5px 9px !important;
+    font-size: 11.5px !important;
+  }
+
+  .skylent-site-nav .skn__actions {
+    gap: 6px !important;
+  }
+
+  .skylent-mobile-tabbar {
+    height: calc(62px + env(safe-area-inset-bottom, 0px));
+    padding: 6px 6px calc(6px + env(safe-area-inset-bottom, 0px));
+    background: #ffffff;
+    border-top: 1px solid #e2e8f0;
+    box-shadow: 0 -4px 20px rgba(15, 23, 42, 0.08);
+  }
+
+  .skylent-mobile-tabbar__item.is-active {
+    background: #f3f0ff;
+    color: #5142b5;
+    font-weight: 800;
   }
 }

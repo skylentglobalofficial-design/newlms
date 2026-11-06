@@ -612,17 +612,80 @@ authRouter.post("/logout", requireCsrf, async (req, res) => {
   res.json({ ok: true })
 })
 
+// ─── 6-Month (180-Day) Name Change Cooldown (Prevents Certificate Misuse) ──
+const SIX_MONTHS_MS = 180 * 24 * 60 * 60 * 1000
+const memoryNameCooldown = new Map<string, string>()
+
+async function getNameChangeLockedUntil(userId: string): Promise<string | null> {
+  const mem = memoryNameCooldown.get(userId)
+  if (mem && new Date(mem).getTime() > Date.now()) {
+    return mem
+  }
+  try {
+    const rows = await prisma.$queryRawUnsafe<Array<{ value: string }>>(
+      `SELECT "value" FROM "_skylent_runtime_config" WHERE "key" = $1 LIMIT 1`,
+      `name_change:${userId}`,
+    )
+    if (rows?.[0]?.value) {
+      const parsed = JSON.parse(rows[0].value) as { nextAllowedAt?: string }
+      if (parsed.nextAllowedAt && new Date(parsed.nextAllowedAt).getTime() > Date.now()) {
+        memoryNameCooldown.set(userId, parsed.nextAllowedAt)
+        return parsed.nextAllowedAt
+      }
+    }
+  } catch {
+    // Table may not exist yet; ignore
+  }
+  return null
+}
+
+async function recordNameChangeLock(userId: string, previousName: string, newName: string): Promise<string> {
+  const now = new Date()
+  const nextAllowed = new Date(now.getTime() + SIX_MONTHS_MS).toISOString()
+  memoryNameCooldown.set(userId, nextAllowed)
+  try {
+    await prisma.$executeRawUnsafe(`
+      CREATE TABLE IF NOT EXISTS "_skylent_runtime_config" (
+        "key" TEXT PRIMARY KEY,
+        "value" TEXT NOT NULL,
+        "updatedAt" TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      )
+    `)
+    await prisma.$executeRawUnsafe(
+      `INSERT INTO "_skylent_runtime_config" ("key", "value", "updatedAt")
+       VALUES ($1, $2, NOW())
+       ON CONFLICT ("key") DO UPDATE SET "value" = EXCLUDED."value", "updatedAt" = NOW()`,
+      `name_change:${userId}`,
+      JSON.stringify({
+        lastChangedAt: now.toISOString(),
+        nextAllowedAt: nextAllowed,
+        previousName,
+        newName,
+      }),
+    )
+  } catch {
+    // Fallback to in-memory lock if raw table write fails
+  }
+  return nextAllowed
+}
+
 authRouter.get("/me", requireAuth, async (req: AuthenticatedRequest, res) => {
   const auth = req.auth
   if (!auth) {
     return res.status(401).json({ error: "Unauthorized" })
   }
 
+  const nameChangeLockedUntil = await getNameChangeLockedUntil(auth.user.id)
+
   res.json({
-    user: toSafeUser(auth.user),
+    user: {
+      ...toSafeUser(auth.user),
+      nameChangeLockedUntil,
+    },
     roles: auth.roles.map(toApiRole),
     role: primaryRole(auth.roles),
     mustChangePassword: auth.user.mustChangePassword,
+    nameChangeLockedUntil,
   })
 })
 
@@ -684,6 +747,28 @@ authRouter.patch("/me", requireAuth, requireCsrf, async (req: AuthenticatedReque
     })
   }
 
+  const currentUser = req.auth!.user
+  const currentName = (currentUser.displayName ?? "").trim()
+  const nextName = parsed.data.displayName.trim().replace(/\s+/g, " ")
+  const isSuperOrAdmin =
+    req.auth!.roles.includes(RoleName.SUPERADMIN) ||
+    req.auth!.roles.includes(RoleName.ADMIN)
+
+  if (!isSuperOrAdmin && currentName.toLowerCase() !== nextName.toLowerCase()) {
+    const lockedUntil = await getNameChangeLockedUntil(currentUser.id)
+    if (lockedUntil) {
+      const unlockDateStr = new Date(lockedUntil).toLocaleDateString("en-IN", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      })
+      return res.status(429).json({
+        error: `Name can only be changed once every 6 months (180 days) to prevent certificate misuse. Next change allowed after ${unlockDateStr}.`,
+        nameChangeLockedUntil: lockedUntil,
+      })
+    }
+  }
+
   let mustChangePassword = false
   try {
     mustChangePassword = (await readSchemaCapabilities()).userMustChangePassword
@@ -692,19 +777,36 @@ authRouter.patch("/me", requireAuth, requireCsrf, async (req: AuthenticatedReque
   }
   try {
     const user = await prisma.user.update({
-      where: { id: req.auth!.user.id },
-      data: { displayName: parsed.data.displayName },
+      where: { id: currentUser.id },
+      data: { displayName: nextName },
       select: {
         ...userCredentialSelect(mustChangePassword),
         roles: { include: { role: true } },
       },
     })
+    let nameChangeLockedUntil: string | null = null
+    if (!isSuperOrAdmin && currentName.toLowerCase() !== nextName.toLowerCase()) {
+      nameChangeLockedUntil = await recordNameChangeLock(currentUser.id, currentName, nextName)
+      await recordAdminAudit({
+        actorId: currentUser.id,
+        action: "auth.name.changed",
+        targetType: "User",
+        targetId: currentUser.id,
+        summary: `Display name changed from "${currentName}" to "${nextName}" (locked for 6 months until ${nameChangeLockedUntil})`,
+      }).catch(() => undefined)
+    } else {
+      nameChangeLockedUntil = await getNameChangeLockedUntil(currentUser.id)
+    }
     const roles = user.roles.map((entry) => entry.role)
     res.json({
-      user: toSafeUser(user as Parameters<typeof toSafeUser>[0]),
+      user: {
+        ...toSafeUser(user as Parameters<typeof toSafeUser>[0]),
+        nameChangeLockedUntil,
+      },
       roles: roles.map(toApiRole),
       role: primaryRole(roles),
       mustChangePassword: "mustChangePassword" in user ? user.mustChangePassword : false,
+      nameChangeLockedUntil,
     })
   } catch (error) {
     if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {

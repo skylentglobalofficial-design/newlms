@@ -844,8 +844,8 @@ paymentsRouter.post("/admin/app-update", async (req: AuthenticatedRequest, res) 
   try {
     const auth = await attachAuth(req)
     const isAdmin =
-      auth?.user?.role === UserRole.ADMIN ||
-      auth?.user?.role === UserRole.SUPERADMIN ||
+      (auth?.roles?.includes("ADMIN" as any) || (auth?.user as any)?.role === "ADMIN") ||
+      (auth?.roles?.includes("SUPERADMIN" as any) || (auth?.user as any)?.role === "SUPERADMIN") ||
       auth?.user?.email?.toLowerCase() === "tariniprasadtripathy17@gmail.com"
     if (!isAdmin) {
       return res.status(403).json({ error: "Admin access required to broadcast app updates" })

@@ -269,18 +269,49 @@ function CertificateName() {
   const [draft, setDraft] = useState(current)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [localLockedUntil, setLocalLockedUntil] = useState<string | null>(() => {
+    if (typeof window === 'undefined' || !user?.id) return null
+    try {
+      return window.localStorage.getItem(`skylent:name-locked-until:${user.id}`)
+    } catch {
+      return null
+    }
+  })
   if (!user) return null
   const complete = looksLikeFullName(current)
+  const effectiveLockedUntil = user.nameChangeLockedUntil || localLockedUntil
+  const isLocked = Boolean(
+    effectiveLockedUntil && new Date(effectiveLockedUntil).getTime() > Date.now(),
+  )
+  const lockedDateLabel = effectiveLockedUntil
+    ? new Date(effectiveLockedUntil).toLocaleDateString('en-IN', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+      })
+    : ''
+
   async function save() {
     const next = draft.trim().replace(/\s+/g, ' ')
     if (!looksLikeFullName(next)) {
       setError('Enter your first and last name as they should appear on a certificate.')
       return
     }
+    if (next.toLowerCase() === current.trim().toLowerCase()) {
+      setEditing(false)
+      return
+    }
     setSaving(true)
     setError(null)
     try {
       await updateDisplayName(next)
+      const sixMonthsLater = new Date(Date.now() + 180 * 24 * 60 * 60 * 1000).toISOString()
+      setLocalLockedUntil(sixMonthsLater)
+      try {
+        window.localStorage.setItem(`skylent:name-locked-until:${user.id}`, sixMonthsLater)
+      } catch {
+        // ignore
+      }
       setEditing(false)
     } catch (err) {
       setError(learnerErrorMessage(err, 'Your name could not be saved. Try again in a moment.'))
@@ -293,9 +324,12 @@ function CertificateName() {
       {editing ? (
         <form className="sh-name-form" onSubmit={(event) => { event.preventDefault(); void save() }}>
           <label htmlFor="sh-cert-name" className="sh-note">Full name on certificates</label>
+          <p style={{ margin: '4px 0 8px', fontSize: 12, color: '#b45309', background: '#fffbeb', border: '1px solid #fde68a', padding: '8px 10px', borderRadius: 8, fontWeight: 600 }}>
+            ⚠️ Note: To prevent certificate misuse, your account &amp; certificate name can only be changed once every 6 months (180 days). Please verify your spelling carefully before saving.
+          </p>
           <input id="sh-cert-name" className="sh-name-input" value={draft} maxLength={120} autoComplete="name" onChange={(event) => setDraft(event.target.value)} />
           <div className="sh-name-actions">
-            <button type="submit" className="os-btn os-btn-primary" disabled={saving}>{saving ? 'Saving…' : 'Save name'}</button>
+            <button type="submit" className="os-btn os-btn-primary" disabled={saving}>{saving ? 'Saving & Locking…' : 'Save name (Locks for 6 months)'}</button>
             <button type="button" className="os-btn os-btn-ghost" disabled={saving} onClick={() => { setEditing(false); setDraft(current); setError(null) }}>Cancel</button>
           </div>
           {error ? <span className="os-error" role="alert">{error}</span> : null}
@@ -304,11 +338,34 @@ function CertificateName() {
         <>
           <div className="sh-row-main">
             <strong>Name on certificates: {current || 'not set'}</strong>
-            <span className="sh-note">{complete ? 'Certificates print this name.' : 'A certificate needs your first and last name.'}</span>
+            <span className="sh-note">
+              {isLocked
+                ? `Certificates print this name. Name change is locked for 6 months (until ${lockedDateLabel}) to prevent certificate misuse.`
+                : complete
+                  ? 'Certificates print this name. (Can only be changed once every 6 months)'
+                  : 'A certificate needs your first and last name.'}
+            </span>
           </div>
-          <button type="button" className="os-link sh-row-link" onClick={() => { setDraft(current); setEditing(true) }}>
-            {complete ? 'Change' : 'Add full name'}
-          </button>
+          {isLocked ? (
+            <span
+              style={{
+                fontSize: 11.5,
+                fontWeight: 700,
+                padding: '5px 10px',
+                borderRadius: 999,
+                background: '#f1f5f9',
+                color: '#475569',
+                whiteSpace: 'nowrap',
+              }}
+              title={`Next name change allowed after ${lockedDateLabel}`}
+            >
+              🔒 Locked until {lockedDateLabel}
+            </span>
+          ) : (
+            <button type="button" className="os-link sh-row-link" onClick={() => { setDraft(current); setEditing(true) }}>
+              {complete ? 'Change (1x / 6M)' : 'Add full name'}
+            </button>
+          )}
         </>
       )}
     </div>

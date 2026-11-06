@@ -2,11 +2,12 @@ import { useEffect, useState } from "react"
 import { Link, useLocation, useNavigate } from "react-router-dom"
 import { useAuth } from "../../context/AuthContext"
 import { apiV1, isNativeAppShell } from "../../lib/api-base"
-import { APP_VERSION } from "../../lib/native-app-bridge"
+import { APP_VERSION, getNativeSessionToken } from "../../lib/native-app-bridge"
 
 type AppConfigPayload = {
   appVersion: string
   minSupportedAppVersion: string
+  buildId?: string
   playStoreUrl: string
   announcement: string | null
   maintenanceMode: boolean
@@ -64,6 +65,9 @@ function TabIcon({ name }: { name: "home" | "courses" | "workshops" | "labs" | "
   }
 }
 
+const INSTALLED_BUILD_KEY = "skylent:installed-build-id:v1"
+const DISMISSED_BUILD_KEY = "skylent:dismissed-build-id:v1"
+
 export function NativeAppShellController() {
   const location = useLocation()
   const navigate = useNavigate()
@@ -72,9 +76,16 @@ export function NativeAppShellController() {
   const [isOffline, setIsOffline] = useState(() => (typeof navigator !== "undefined" ? !navigator.onLine : false))
   const [appConfig, setAppConfig] = useState<AppConfigPayload | null>(null)
   const [dismissedBanner, setDismissedBanner] = useState(false)
-  const [dismissedUpdateVersion, setDismissedUpdateVersion] = useState<string | null>(() => {
+  const [dismissedBuildKey, setDismissedBuildKey] = useState<string | null>(() => {
     try {
-      return window.localStorage.getItem("skylent:dismissed-update-version")
+      return window.localStorage.getItem(DISMISSED_BUILD_KEY)
+    } catch {
+      return null
+    }
+  })
+  const [installedBuildId, setInstalledBuildId] = useState<string | null>(() => {
+    try {
+      return window.localStorage.getItem(INSTALLED_BUILD_KEY)
     } catch {
       return null
     }
@@ -107,55 +118,96 @@ export function NativeAppShellController() {
   useEffect(() => {
     let cancelled = false
     const checkConfig = () => {
-      fetch(`${apiV1()}/health/app-config`, { credentials: "include" })
+      fetch(`${apiV1()}/health/app-config?t=${Date.now()}`, {
+        credentials: "include",
+        cache: "no-store",
+      })
         .then((res) => (res.ok ? res.json() : null))
         .then((data: AppConfigPayload | null) => {
           if (!cancelled && data && typeof data.minSupportedAppVersion === "string") {
             setAppConfig(data)
+            const currentStamp = `${data.appVersion}:${data.buildId || "live"}`
+            try {
+              const existing = window.localStorage.getItem(INSTALLED_BUILD_KEY)
+              // On web (skylent.live), record the initial stamp; on native APK, if no stamp was recorded yet,
+              // compare against bundled APP_VERSION so any server push immediately triggers the update banner!
+              if (!existing && !isNativeAppShell()) {
+                window.localStorage.setItem(INSTALLED_BUILD_KEY, currentStamp)
+                setInstalledBuildId(currentStamp)
+              }
+            } catch {
+              // ignore
+            }
           }
         })
         .catch(() => {})
     }
     checkConfig()
-    const timer = window.setInterval(checkConfig, 60_000)
+    const timer = window.setInterval(checkConfig, 30_000)
+    const onVisibility = () => {
+      if (document.visibilityState === "visible") checkConfig()
+    }
+    document.addEventListener("visibilitychange", onVisibility)
     return () => {
       cancelled = true
       window.clearInterval(timer)
+      document.removeEventListener("visibilitychange", onVisibility)
     }
   }, [])
+
+  const remoteStamp = appConfig ? `${appConfig.appVersion}:${appConfig.buildId || "live"}` : null
 
   const forceUpdateRequired =
     isNative &&
     appConfig?.minSupportedAppVersion &&
     compareSemver(APP_VERSION, appConfig.minSupportedAppVersion) < 0
 
-  const softUpdateAvailable =
-    appConfig?.appVersion &&
-    compareSemver(APP_VERSION, appConfig.appVersion) < 0 &&
-    dismissedUpdateVersion !== appConfig.appVersion
+  const hasNewerVersionOrBuild = Boolean(
+    appConfig &&
+      remoteStamp &&
+      dismissedBuildKey !== remoteStamp &&
+      ((isNative && compareSemver(APP_VERSION, appConfig.appVersion) < 0 && installedBuildId !== remoteStamp) ||
+        (installedBuildId && installedBuildId !== remoteStamp)),
+  )
 
   async function triggerInAppUpdate() {
-    if (!appConfig) return
+    if (!appConfig || !remoteStamp) return
     setUpdatingInApp(true)
-    setUpdateProgress(15)
+    setUpdateProgress(20)
     try {
       if ("serviceWorker" in navigator) {
         const regs = await navigator.serviceWorker.getRegistrations()
         await Promise.all(regs.map((r) => r.unregister()))
       }
-      setUpdateProgress(55)
+      setUpdateProgress(60)
       if ("caches" in window) {
         const keys = await caches.keys()
         await Promise.all(keys.map((k) => caches.delete(k)))
       }
       setUpdateProgress(90)
       try {
-        window.localStorage.setItem("skylent:dismissed-update-version", appConfig.appVersion)
+        window.localStorage.setItem(INSTALLED_BUILD_KEY, remoteStamp)
+        window.localStorage.setItem(DISMISSED_BUILD_KEY, remoteStamp)
       } catch {
         // ignore
       }
+      setInstalledBuildId(remoteStamp)
+      setDismissedBuildKey(remoteStamp)
       setTimeout(() => {
         setUpdateProgress(100)
+        // If running inside Capacitor local host (https://localhost), load the live updated origin from https://skylent.live
+        // so the APK immediately renders the latest pushed UI without needing a Play Store reinstall!
+        if (
+          typeof window !== "undefined" &&
+          (window.location.hostname === "localhost" || window.location.hostname === "app.skylent.local") &&
+          isNative
+        ) {
+          const token = getNativeSessionToken()
+          const targetPath = window.location.pathname + window.location.search + window.location.hash
+          const separator = targetPath.includes("?") ? "&" : "?"
+          window.location.href = `https://skylent.live${targetPath}${separator}nativeApp=1${token ? `&nativeToken=${encodeURIComponent(token)}` : ""}`
+          return
+        }
         window.location.reload()
       }, 350)
     } catch {
@@ -252,26 +304,30 @@ export function NativeAppShellController() {
         </div>
       ) : null}
 
-      {softUpdateAvailable && appConfig ? (
+      {hasNewerVersionOrBuild && appConfig && remoteStamp ? (
         <div
           role="region"
           aria-label="In-app update available"
           style={{
-            background: "linear-gradient(90deg, #0f172a 0%, #3b2d96 100%)",
+            position: "sticky",
+            top: 0,
+            zIndex: 9995,
+            background: "linear-gradient(90deg, #0f172a 0%, #3b2d96 55%, #5142b5 100%)",
             color: "#ffffff",
-            padding: "8px 16px",
+            padding: "10px 14px",
             fontSize: 12.5,
             fontWeight: 600,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            gap: 12,
+            gap: 10,
             flexWrap: "wrap",
+            boxShadow: "0 6px 20px rgba(15, 23, 42, 0.25)",
           }}
         >
           <span>
-            🚀 <strong>NEW UPDATE v{appConfig.appVersion}</strong>
-            {appConfig.updateTitle ? ` — ${appConfig.updateTitle}` : " is ready to install!"}
+            🚀 <strong>New Update v{appConfig.appVersion}</strong>
+            {appConfig.updateTitle ? ` — ${appConfig.updateTitle}` : " is ready to apply!"}
           </span>
           <button
             type="button"
@@ -281,11 +337,12 @@ export function NativeAppShellController() {
               background: "#10b981",
               color: "#ffffff",
               border: "none",
-              borderRadius: 6,
-              padding: "4px 12px",
+              borderRadius: 8,
+              padding: "6px 14px",
               fontSize: 12,
-              fontWeight: 700,
+              fontWeight: 800,
               cursor: "pointer",
+              boxShadow: "0 4px 12px rgba(16, 185, 129, 0.35)",
             }}
           >
             {updatingInApp ? `Updating (${updateProgress}%)…` : "Update Now"}
@@ -293,9 +350,9 @@ export function NativeAppShellController() {
           <button
             type="button"
             onClick={() => {
-              setDismissedUpdateVersion(appConfig.appVersion)
+              setDismissedBuildKey(remoteStamp)
               try {
-                window.localStorage.setItem("skylent:dismissed-update-version", appConfig.appVersion)
+                window.localStorage.setItem(DISMISSED_BUILD_KEY, remoteStamp)
               } catch {
                 // ignore
               }
@@ -305,7 +362,7 @@ export function NativeAppShellController() {
               border: "1px solid rgba(255,255,255,0.3)",
               color: "#cbd5e1",
               borderRadius: 6,
-              padding: "3px 8px",
+              padding: "4px 10px",
               fontSize: 11,
               cursor: "pointer",
             }}
@@ -370,7 +427,7 @@ export function NativeAppShellController() {
           <div
             style={{
               background: "#ffffff",
-              borderRadius: 12,
+              borderRadius: 16,
               border: "1px solid #e2e8f0",
               maxWidth: 400,
               width: "100%",

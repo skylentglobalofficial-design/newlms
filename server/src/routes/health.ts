@@ -6,9 +6,12 @@ import { describeAiReadiness } from "../lib/skylent-ai/service.js"
 
 const router = Router()
 
+export const DEPLOYED_APP_VERSION = "1.4.0"
+export const DEPLOYED_BUILD_ID = "v74-202611061057"
+
 function releaseSha(): string {
   const sha = process.env.SKYLENT_RELEASE_SHA?.trim() ?? ""
-  return /^[0-9a-f]{7,40}$/i.test(sha) ? sha : "unknown"
+  return /^[0-9a-f]{7,40}$/i.test(sha) ? sha : DEPLOYED_BUILD_ID
 }
 
 function readinessFields() {
@@ -61,42 +64,21 @@ router.get("/live", (_request, response) => {
 })
 
 /**
- * Remote App Config & OTA In-App Update Gate for Skylent Android/iOS Native APK & Web App.
- * Reads live version pushed by Admin in _skylent_runtime_config ('app_update_config')
- * so users receive an instant 1-Click In-App Update prompt without manual APK hunting.
+ * Remote App Config & OTA Version Gate for Skylent Android/iOS Native APK builds.
+ * Automatically notifies installed APKs whenever a new deployment is pushed to Hostinger.
  */
-router.get("/app-config", async (_request, response) => {
-  let dynamicVersion = process.env.SKYLENT_APP_VERSION?.trim() || "1.4.0"
-  let dynamicNotes = "Faster dashboard loading, clean Order Details checkout & in-app PayU payment support."
-  let dynamicBanner: string | null = process.env.SKYLENT_APP_BANNER?.trim() || null
-
-  try {
-    const rows = (await prisma.$queryRawUnsafe(
-      `SELECT "value" FROM "_skylent_runtime_config" WHERE "key" = 'app_update_config' LIMIT 1`,
-    )) as Array<{ value?: string }>
-    if (rows?.[0]?.value) {
-      const parsed = JSON.parse(rows[0].value) as {
-        appVersion?: string
-        releaseNotes?: string
-        announcement?: string | null
-      }
-      if (parsed.appVersion) dynamicVersion = parsed.appVersion
-      if (parsed.releaseNotes) dynamicNotes = parsed.releaseNotes
-      if (parsed.announcement !== undefined) dynamicBanner = parsed.announcement
-    }
-  } catch {
-    // fallback to defaults
-  }
-
+router.get("/app-config", (_request, response) => {
+  response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate")
   response.json({
-    appVersion: dynamicVersion,
+    appVersion: process.env.SKYLENT_APP_VERSION?.trim() || DEPLOYED_APP_VERSION,
     minSupportedAppVersion: process.env.SKYLENT_MIN_APP_VERSION?.trim() || "1.0.0",
+    buildId: DEPLOYED_BUILD_ID,
+    updateTitle: "New Skylent Update Live (UI Polish, Plans & Security)",
+    apkDownloadUrl: "https://skylent.live/skylent-latest.apk",
     playStoreUrl:
       process.env.SKYLENT_PLAY_STORE_URL?.trim() ||
-      "https://play.google.com/store/apps/details?id=live.skylent.app",
-    apkDownloadUrl: "/skylent-latest.apk",
-    releaseNotes: dynamicNotes,
-    announcement: dynamicBanner,
+      "https://play.google.com/store/apps/details?id=com.skylent.app",
+    announcement: process.env.SKYLENT_APP_BANNER?.trim() || null,
     maintenanceMode: process.env.SKYLENT_MAINTENANCE_MODE === "true",
     ...readinessFields(),
   })

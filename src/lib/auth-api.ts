@@ -47,6 +47,7 @@ export type ApiAuthUser = {
   displayName: string
   name: string
   avatar: string
+  nameChangeLockedUntil?: string | null
 }
 
 export type AuthResponse = {
@@ -54,6 +55,7 @@ export type AuthResponse = {
   roles: ApiRole[]
   role: ApiRole
   mustChangePassword?: boolean
+  nameChangeLockedUntil?: string | null
 }
 
 let csrfToken: string | null = null
@@ -137,6 +139,7 @@ async function credentialFailureMessage(path: string, response: Response): Promi
   if (
     response.status !== 400 &&
     response.status !== 409 &&
+    response.status !== 429 &&
     response.status !== 502 &&
     response.status !== 503 &&
     !(response.status === 401 && (path === "/auth/login" || path === "/auth/otp/verify" || path === "/auth/email-otp/verify"))
