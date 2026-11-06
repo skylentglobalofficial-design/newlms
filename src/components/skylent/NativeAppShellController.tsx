@@ -136,7 +136,8 @@ export function NativeAppShellController() {
     if (!isNative || !ready) return
     if (location.pathname === "/" || location.pathname === "/preview/homepage") {
       if (!user) {
-        navigate("/login", { replace: true })
+        // App-First Discovery (Coursera / Udemy / PW style): Let new users explore courses first, with 1-tap Sign In!
+        navigate("/courses", { replace: true })
       } else {
         const target =
           user.role === "admin" || user.role === "superadmin"
@@ -354,15 +355,15 @@ export function NativeAppShellController() {
   }> = [
     {
       id: "home",
-      label: isNative ? "Dashboard" : "Home",
-      to: isNative ? dashHref : "/",
-      match: (p) => (isNative ? p === "/dashboard/student" && !location.hash : p === "/"),
+      label: isNative ? (user ? "Dashboard" : "Explore") : "Home",
+      to: isNative ? (user ? dashHref : "/courses") : "/",
+      match: (p) => (isNative ? (user ? p === "/dashboard/student" && !location.hash : p.startsWith("/courses")) : p === "/"),
     },
     {
       id: "courses",
-      label: "Courses",
+      label: isNative && !user ? "Programmes" : "Courses",
       to: user ? "/dashboard/student#explore-programmes" : "/programmes",
-      match: (p) => p.startsWith("/programme") || p.startsWith("/course") || p.startsWith("/education") || location.hash === "#explore-programmes",
+      match: (p) => p.startsWith("/programme") || p.startsWith("/education") || location.hash === "#explore-programmes",
     },
     {
       id: "workshops",
@@ -386,6 +387,41 @@ export function NativeAppShellController() {
 
   return (
     <>
+      {isNative && !user && !location.pathname.startsWith("/login") && !location.pathname.startsWith("/signup") ? (
+        <div
+          role="region"
+          aria-label="Sign in to Skylent"
+          style={{
+            background: "linear-gradient(90deg, #0f172a 0%, #3b2d96 100%)",
+            color: "#ffffff",
+            padding: "9px 14px",
+            fontSize: 12.5,
+            fontWeight: 600,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 10,
+          }}
+        >
+          <span>Explore Skylent courses below or sign in to continue learning</span>
+          <Link
+            to="/login"
+            style={{
+              background: "#ffffff",
+              color: "#0f172a",
+              padding: "5px 12px",
+              borderRadius: 8,
+              fontSize: 12,
+              fontWeight: 700,
+              textDecoration: "none",
+              whiteSpace: "nowrap",
+            }}
+          >
+            Sign In →
+          </Link>
+        </div>
+      ) : null}
+
       {isOffline ? (
         <div
           role="status"

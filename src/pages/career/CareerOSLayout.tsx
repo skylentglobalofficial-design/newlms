@@ -267,7 +267,7 @@ function CareerOsLockedInsideLearnerShell({
                     fontWeight: 700,
                   }}
                 >
-                  🔒 Complete 60%, Quizzes &amp; Project to Enroll
+                  Complete 60%, Quizzes &amp; Project to Enroll
                 </span>
               </div>
             </div>

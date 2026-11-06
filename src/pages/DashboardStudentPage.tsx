@@ -325,7 +325,7 @@ function CertificateName() {
         <form className="sh-name-form" onSubmit={(event) => { event.preventDefault(); void save() }}>
           <label htmlFor="sh-cert-name" className="sh-note">Full name on certificates</label>
           <p style={{ margin: '4px 0 8px', fontSize: 12, color: '#b45309', background: '#fffbeb', border: '1px solid #fde68a', padding: '8px 10px', borderRadius: 8, fontWeight: 600 }}>
-            ⚠️ Note: To prevent certificate misuse, your account &amp; certificate name can only be changed once every 6 months (180 days). Please verify your spelling carefully before saving.
+            Note: To prevent certificate misuse, your account &amp; certificate name can only be changed once every 6 months (180 days). Please verify your spelling carefully before saving.
           </p>
           <input id="sh-cert-name" className="sh-name-input" value={draft} maxLength={120} autoComplete="name" onChange={(event) => setDraft(event.target.value)} />
           <div className="sh-name-actions">
@@ -359,7 +359,7 @@ function CertificateName() {
               }}
               title={`Next name change allowed after ${lockedDateLabel}`}
             >
-              🔒 Locked until {lockedDateLabel}
+              Locked until {lockedDateLabel}
             </span>
           ) : (
             <button type="button" className="os-link sh-row-link" onClick={() => { setDraft(current); setEditing(true) }}>
@@ -515,7 +515,7 @@ function LearnerProfileSettingsSection() {
             textDecoration: "none",
           }}
         >
-          🔐 Change Password (3-Month Policy)
+          Change Password (3-Month Policy)
         </Link>
       </div>
 
@@ -538,7 +538,7 @@ function LearnerProfileSettingsSection() {
               Registered Email Address (Locked)
             </span>
             <strong style={{ fontSize: 14, color: "#0f172a", display: "block", marginTop: 4 }}>{user.email}</strong>
-            <span style={{ fontSize: 11.5, color: "#059669", fontWeight: 600 }}>🔒 Permanently bound to this account</span>
+            <span style={{ fontSize: 11.5, color: "#059669", fontWeight: 600 }}>Permanently bound to this account</span>
           </div>
           <div style={{ padding: "12px 14px", borderRadius: 12, background: "#f8fafc", border: "1px solid #e2e8f0" }}>
             <span style={{ fontSize: 11, fontWeight: 700, color: "#64748b", textTransform: "uppercase", display: "block" }}>
@@ -547,7 +547,7 @@ function LearnerProfileSettingsSection() {
             {prof.phoneLocked && prof.phone ? (
               <>
                 <strong style={{ fontSize: 14, color: "#0f172a", display: "block", marginTop: 4 }}>+91-{prof.phone}</strong>
-                <span style={{ fontSize: 11.5, color: "#059669", fontWeight: 600 }}>🔒 Permanently bound (Admin-only change)</span>
+                <span style={{ fontSize: 11.5, color: "#059669", fontWeight: 600 }}>Permanently bound (Admin-only change)</span>
               </>
             ) : (
               <div style={{ display: "flex", gap: 8, marginTop: 6 }}>
@@ -1536,8 +1536,8 @@ export default function DashboardStudentPage() {
                         {item.subtitle}
                       </p>
                       <div style={{ display: 'flex', gap: 12, fontSize: 12, color: '#64748b', fontWeight: 600, marginBottom: 10 }}>
-                        <span>⏱ {item.duration}</span>
-                        <span>📚 {item.modulesCount} Modules ({item.lessonsCount} Lessons)</span>
+                        <span>{item.duration}</span>
+                        <span>{item.modulesCount} Modules ({item.lessonsCount} Lessons)</span>
                       </div>
                       <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                         {item.skills.slice(0, 3).map((s) => (
@@ -2135,7 +2135,7 @@ export default function DashboardStudentPage() {
                   fontWeight: 700,
                 }}
               >
-                🔥 {streak.currentStreakDays} Days Streak
+                {streak.currentStreakDays} Days Streak
               </span>
               <span style={{ fontSize: 13.5, color: '#334155', fontWeight: 600 }}>
                 Welcome back, <strong style={{ color: '#0f172a' }}>{user.name}</strong>
@@ -2394,7 +2394,7 @@ export default function DashboardStudentPage() {
           >
             <div style={{ minWidth: 220, flex: "1 1 280px" }}>
               <span style={{ fontSize: 10.5, fontFamily: "var(--font-mono)", fontWeight: 800, color: "#5142b5", textTransform: "uppercase", letterSpacing: "0.06em" }}>
-                🎯 PERSONALIZED CAREER GOAL · SKYLENT CAREER OS
+                PERSONALIZED CAREER GOAL · SKYLENT CAREER OS
               </span>
               <h2 style={{ margin: "3px 0 4px", fontSize: 16.5, color: "#0f172a" }}>
                 Target Role: <span style={{ color: "#5142b5" }}>{targetCareerRole}</span>
@@ -2450,7 +2450,7 @@ export default function DashboardStudentPage() {
                   textDecoration: "none",
                 }}
               >
-                ⚡ Try Free Lab →
+                Try Free Lab →
               </Link>
             </div>
           </section>
@@ -2472,17 +2472,17 @@ export default function DashboardStudentPage() {
                   <span className="sh-ai-live-pill">✓ Live in Lesson</span>
                 </header>
                 <div className="sh-royal-ai__body">
-                  <h2 id="sh-ai" className="sh-royal-ai__title">{AI_NAME} · Hinglish &amp; English Coach</h2>
+                  <h2 id="sh-ai" className="sh-royal-ai__title">Faculty Doubt &amp; Study Support</h2>
                   <p className="sh-royal-ai__desc">
-                    Need a simple Hinglish explanation, SQL debugging help, or a 20-minute Faculty TA review? Open your active lesson to use {AI_NAME} side-by-side.
+                    Stuck on a SQL query, Python script, or case assignment? Open your active lesson to review guided hints or request a 20-minute Faculty TA review.
                   </p>
                   <div className="sh-royal-ai__pills">
-                    <span>🇮🇳 Simple Hinglish Mode</span>
-                    <span>🛠️ SQL &amp; Code Debugger</span>
-                    <span>👨‍🏫 20-Min Human TA SLA</span>
+                    <span>Simple Hinglish Mode</span>
+                    <span>SQL &amp; Code Debugger</span>
+                    <span>20-Min Human TA SLA</span>
                   </div>
                   <Link className="sh-royal-ai__cta" to={resumeHref}>
-                    Open {AI_NAME} in Lesson {resumeNumber || 1} <ArrowRight />
+                    Open Lesson {resumeNumber || 1} Workspace <ArrowRight />
                   </Link>
                 </div>
               </section>

@@ -7,7 +7,7 @@ import { describeAiReadiness } from "../lib/skylent-ai/service.js"
 const router = Router()
 
 export const DEPLOYED_APP_VERSION = "1.8.0"
-export const DEPLOYED_BUILD_ID = "v80-202611061534"
+export const DEPLOYED_BUILD_ID = "v80-202611061544"
 
 function releaseSha(): string {
   const sha = process.env.SKYLENT_RELEASE_SHA?.trim() ?? ""
