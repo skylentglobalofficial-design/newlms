@@ -43,6 +43,7 @@ import { skylentEnquiriesRouter } from "./routes/skylent/enquiries.js"
 import { revaRouter } from "./routes/skylent/reva.js"
 import { eventsRouter } from "./routes/events.js"
 import { degreesRouter } from "./routes/degrees.js"
+import { paymentsRouter } from "./routes/payments.js"
 
 assertProductionEnv()
 
@@ -68,6 +69,7 @@ app.use((request, response, next) => {
 })
 app.use(createCorsMiddleware())
 app.use(jsonBodyParser())
+app.use(express.urlencoded({ extended: true }))
 app.use("/api/v1/auth/login", authCredentialsRateLimit)
 app.use("/api/v1/auth/signup", authCredentialsRateLimit)
 app.use("/api/v1/health", healthRouter)
@@ -96,6 +98,7 @@ app.use("/api/v1/enquiries", skylentEnquiriesRouter)
 app.use("/api/v1/reva", revaRouter)
 app.use("/api/v1/events", eventsRouter)
 app.use("/api/v1/degrees", degreesRouter)
+app.use("/api/v1/payments", paymentsRouter)
 app.use("/api", (_request, response) => {
   response.status(404).json({ error: "Not found" })
 })

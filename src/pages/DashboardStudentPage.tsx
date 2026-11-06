@@ -322,13 +322,14 @@ export default function DashboardStudentPage() {
   const { user, ready } = useAuth()
   const { workspace, course, loading, error, reload } = useLmsDashboard()
   const navigate = useNavigate()
-  const { pathname, hash } = useLocation()
+  const { pathname, hash, search } = useLocation()
   const activeNav = learnerNavId(pathname, hash)
   const previousHash = useRef(hash)
   const [studentTab, setStudentTab] = useState<StudentTabId>(() => {
-    if (hash === '#sh-my-learning') return 'courses'
-    if (hash === '#student-projects') return 'projects'
-    if (hash === '#explore-programmes') return 'explore'
+    const qTab = new URLSearchParams(search).get('tab')
+    if (qTab === 'courses' || hash === '#sh-my-learning') return 'courses'
+    if (qTab === 'projects' || hash === '#student-projects') return 'projects'
+    if (qTab === 'explore' || hash === '#explore-programmes') return 'explore'
     return 'overview'
   })
   const [courseFilter, setCourseFilter] = useState<'all' | 'in_progress' | 'completed'>('all')
@@ -350,12 +351,13 @@ export default function DashboardStudentPage() {
   }, [ready, user, navigate])
 
   useEffect(() => {
-    if (hash === '#sh-my-learning') setStudentTab('courses')
-    else if (hash === '#student-projects') setStudentTab('projects')
-    else if (hash === '#explore-programmes') setStudentTab('explore')
-    else if (!hash) setStudentTab('overview')
+    const qTab = new URLSearchParams(search).get('tab')
+    if (qTab === 'courses' || hash === '#sh-my-learning') setStudentTab('courses')
+    else if (qTab === 'projects' || hash === '#student-projects') setStudentTab('projects')
+    else if (qTab === 'explore' || hash === '#explore-programmes') setStudentTab('explore')
+    else if (!hash && !qTab) setStudentTab('overview')
     previousHash.current = hash
-  }, [hash])
+  }, [hash, search])
 
   const loadLists = useCallback((signal: AbortSignal) => {
     const settle = <T,>(promise: Promise<T>, set: (value: Loaded<T>) => void) => {

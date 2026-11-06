@@ -257,7 +257,7 @@ export default function EventsPage() {
                   ? "Checking which live weekend sprints are open for registration."
                   : loadError
                     ? "Showing our curated weekend execution sprints while the live schedule refreshes."
-                    : "Skip passive webinars. Join a 90-minute hands-on weekend sprint in the Skylent browser lab for ₹99 and get 99 Elixir Coins (100% 1:1 cashback) credited immediately to your wallet."}
+                    : "Join a 90-minute hands-on weekend workshop in the browser lab for ₹99 and get 99 Elixir Coins (100% cashback) instantly."}
               </p>
               <div className="cat-actions" style={{ display: "flex", flexWrap: "wrap", gap: 12, marginTop: 20 }}>
                 <a className="cat-btn cat-btn-primary" href="#events-launch-tracks-title">
@@ -282,7 +282,7 @@ export default function EventsPage() {
             >
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, marginBottom: 12 }}>
                 <span style={{ fontSize: 11, fontFamily: "var(--font-mono)", fontWeight: 700, color: "#E9D5FF", letterSpacing: "0.08em" }}>
-                  HOW THE ₹99 FLYWHEEL WORKS
+                  HOW ₹99 WORKSHOPS WORK
                 </span>
                 <span style={{ padding: "3px 10px", borderRadius: 999, background: "#DCFCE7", color: "#15803D", fontSize: 11, fontWeight: 800 }}>
                   100% Coin Back
@@ -369,7 +369,7 @@ export default function EventsPage() {
           style={{ background: "linear-gradient(180deg, #F6F4FF 0%, #FFFFFF 100%)", borderBlock: "1px solid #E2DCFF" }}
         >
           <div className="cat-rail">
-            <p className="cat-label">100% Coin Back Flywheel</p>
+            <p className="cat-label">100% Coin Back Rewards</p>
             <h2 id="events-elixir-store-title">Redeemable with your 99 Workshop Elixir Coins</h2>
             <p className="cat-lead">
               When you register for a ₹99 session, 99 Elixir Coins are credited to your wallet in My Learning. Use them to unlock these practical case studies and playbooks:

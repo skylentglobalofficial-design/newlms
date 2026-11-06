@@ -632,7 +632,7 @@ export default function LearnPage() {
           alignItems: 'center',
           justifyContent: 'space-between',
           gap: 16,
-          padding: '10px clamp(16px, 2.5vw, 28px)',
+          padding: 'max(env(safe-area-inset-top, 0px), 10px) clamp(16px, 2.5vw, 28px) 10px',
           background: '#ffffff',
           borderBottom: '1px solid #e2e8f0',
           flexShrink: 0,

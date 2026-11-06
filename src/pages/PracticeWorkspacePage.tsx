@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react"
-import { Link, useParams, useSearchParams } from "react-router-dom"
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom"
+import { AuthDashboardShell } from "../components/AuthDashboardShell"
+import { LEARNER_NAV, LearnerNavIcon, type LearnerNavId } from "../components/learner/learner-nav"
 import { fetchLearnerPracticeWorkspace, saveLearnerPracticeResponse, type LearnerPracticeWorkspace } from "../lib/practice-api"
 import {
   buildPracticeWorkspaceDraftKey,
@@ -13,6 +15,7 @@ import "./LabsWorkspace.css"
 
 export default function PracticeWorkspacePage() {
   const { courseSlug = "" } = useParams()
+  const navigate = useNavigate()
   const [params] = useSearchParams()
   const lessonId = params.get("lesson") ?? ""
   const [workspace, setWorkspace] = useState<LearnerPracticeWorkspace | null>(null)
@@ -24,6 +27,21 @@ export default function PracticeWorkspacePage() {
   const editVersionRef = useRef(0)
 
   const draftKey = courseSlug && lessonId ? buildPracticeWorkspaceDraftKey(courseSlug, lessonId) : ""
+
+  function handleNavSelect(id: string) {
+    const navId = id as LearnerNavId
+    if (navId === "career") {
+      navigate("/career-os")
+      return
+    }
+    const map: Record<Exclude<LearnerNavId, "career">, string> = {
+      overview: "/dashboard/student",
+      courses: "/dashboard/student?tab=courses",
+      projects: "/dashboard/student?tab=projects",
+      explore: "/dashboard/student?tab=explore",
+    }
+    navigate(map[navId] ?? "/dashboard/student")
+  }
 
   useEffect(() => {
     const controller = new AbortController()
@@ -101,64 +119,108 @@ export default function PracticeWorkspacePage() {
     }
   }
 
-  if (status === "loading") {
-    return (
-      <div className="lab-shell">
+  return (
+    <AuthDashboardShell
+      workspace="learner"
+      title={workspace?.title ?? "Case Practice Studio"}
+      subtitle={workspace?.courseTitle ?? "Interactive Case Notes"}
+      navItems={LEARNER_NAV}
+      activeNav="projects"
+      onSelectNav={handleNavSelect}
+      renderNavIcon={(id) => <LearnerNavIcon id={id as LearnerNavId} />}
+    >
+      {status === "loading" ? (
         <div className="lab-empty"><p>Opening the workspace…</p></div>
-      </div>
-    )
-  }
-
-  if (status === "error" || !workspace) {
-    return (
-      <div className="lab-shell">
+      ) : status === "error" || !workspace ? (
         <div className="lab-empty">
           <h1>This workspace is not available</h1>
           <p>{message}</p>
           <Link className="os-btn os-btn-primary" to={`/learn/${courseSlug}`}>Return to the course</Link>
         </div>
-      </div>
-    )
-  }
-
-  const lessonAllowed = lessonId && workspace.lessonIds.includes(lessonId)
-
-  return (
-    <div className="lab-shell">
-      <header className="lab-top">
-        <div className="lab-brand">
-          <strong>{workspace.title}</strong>
-          <span>{workspace.courseTitle}</span>
-        </div>
-        <div className="lab-top-actions">
-          <Link className="os-btn os-btn-ghost" to={`/learn/${courseSlug}${lessonId ? `/${lessonId}` : ""}`}>Return to lesson</Link>
-        </div>
-      </header>
-      <div className="lab-body">
-        <section className="lab-workspace" style={{ maxWidth: 820, minWidth: 0 }}>
-          <p className="os-eyebrow">Practice</p>
-          <h1>{workspace.caseTitle || workspace.title}</h1>
-          <p>{workspace.learnerNote}</p>
-          <div className="harbor-note" style={{ whiteSpace: "pre-wrap" }}>{workspace.caseNotes}</div>
-          {lessonAllowed ? (
-            <>
-              <label htmlFor="practice-response">Your notes for this lesson</label>
-              <textarea id="practice-response" value={draft} onChange={(event) => onDraftChange(event.target.value)} rows={6} maxLength={8000} style={{ width: "100%", maxWidth: "100%", boxSizing: "border-box" }} />
-              <button type="button" className="os-btn os-btn-primary" disabled={saving || draft.trim().length === 0} onClick={() => void onSave()}>
-                {saving ? "Saving…" : "Save"}
-              </button>
-            </>
-          ) : (
-            <p>Open this workspace from one of its lessons to save notes.</p>
-          )}
-          {saveError ? (
-            <div className="lab-error" role="alert">
-              <p>{saveError}</p>
+      ) : (
+        <div style={{ display: "grid", gap: 18, maxWidth: 880 }}>
+          <section
+            style={{
+              background: "#ffffff",
+              border: "1px solid #e2e8f0",
+              borderRadius: 16,
+              padding: "20px 24px",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              gap: 14,
+              flexWrap: "wrap",
+            }}
+          >
+            <div>
+              <span style={{ fontSize: 11, fontWeight: 700, color: "#5142b5", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                Case Practice Studio · {workspace.courseTitle}
+              </span>
+              <h1 style={{ margin: "4px 0 4px", fontSize: 22, color: "#0f172a" }}>{workspace.caseTitle || workspace.title}</h1>
+              <p style={{ margin: 0, fontSize: 13.5, color: "#475569" }}>{workspace.learnerNote}</p>
             </div>
-          ) : null}
-          {message ? <p className="lab-note" role="status">{message}</p> : null}
-        </section>
-      </div>
-    </div>
+            <Link className="os-btn os-btn-ghost" to={`/learn/${courseSlug}${lessonId ? `/${lessonId}` : ""}`}>
+              ← Return to lesson
+            </Link>
+          </section>
+
+          <section
+            style={{
+              background: "#ffffff",
+              border: "1px solid #e2e8f0",
+              borderRadius: 16,
+              padding: "20px 24px",
+              display: "grid",
+              gap: 14,
+            }}
+          >
+            <div className="harbor-note" style={{ whiteSpace: "pre-wrap", margin: 0 }}>{workspace.caseNotes}</div>
+            {lessonId && workspace.lessonIds.includes(lessonId) ? (
+              <>
+                <label htmlFor="practice-response" style={{ fontSize: 13, fontWeight: 700, color: "#0f172a" }}>
+                  Your notes for this lesson
+                </label>
+                <textarea
+                  id="practice-response"
+                  value={draft}
+                  onChange={(event) => onDraftChange(event.target.value)}
+                  rows={6}
+                  maxLength={8000}
+                  style={{
+                    width: "100%",
+                    maxWidth: "100%",
+                    boxSizing: "border-box",
+                    padding: "10px 12px",
+                    borderRadius: 10,
+                    border: "1px solid #cbd5e1",
+                    fontSize: 13.5,
+                  }}
+                />
+                <div>
+                  <button
+                    type="button"
+                    className="os-btn os-btn-primary"
+                    disabled={saving || draft.trim().length === 0}
+                    onClick={() => void onSave()}
+                  >
+                    {saving ? "Saving…" : "Save Notes"}
+                  </button>
+                </div>
+              </>
+            ) : (
+              <p style={{ margin: 0, fontSize: 13, color: "#64748b" }}>
+                Open this workspace from one of its lessons to save notes.
+              </p>
+            )}
+            {saveError ? (
+              <div className="lab-error" role="alert">
+                <p>{saveError}</p>
+              </div>
+            ) : null}
+            {message ? <p className="lab-note" role="status">{message}</p> : null}
+          </section>
+        </div>
+      )}
+    </AuthDashboardShell>
   )
 }

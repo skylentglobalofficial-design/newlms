@@ -122,6 +122,7 @@ export function EnrollmentModal({ item, onClose }: { item: CatalogEnrollItem; on
   const [selectedBank, setSelectedBank] = useState('SBI')
   const [couponCode] = useState('SKYLENTPILOT')
   const [couponApplied, setCouponApplied] = useState(true)
+  const [testPayuOneRupee, setTestPayuOneRupee] = useState(false)
 
   const dialogRef = useRef<HTMLDivElement>(null)
   const closeRef = useRef<HTMLButtonElement>(null)
@@ -132,8 +133,8 @@ export function EnrollmentModal({ item, onClose }: { item: CatalogEnrollItem; on
   const activeTier = tiers.find((t) => t.id === selectedTierId) ?? tiers[1]
   const basePrice = activeTier.price
   const mrpPrice = activeTier.mrp
-  const discountAmount = couponApplied ? basePrice : 0
-  const payableAmount = Math.max(0, basePrice - discountAmount)
+  const discountAmount = couponApplied && !testPayuOneRupee ? basePrice : 0
+  const payableAmount = testPayuOneRupee ? 1 : Math.max(0, basePrice - discountAmount)
 
   const helperMessage = item.kind === 'program'
     ? programEnrollmentMessage({
@@ -187,6 +188,48 @@ export function EnrollmentModal({ item, onClose }: { item: CatalogEnrollItem; on
 
     setSubmitting(true)
     setError(null)
+
+    // If payment is required (or PayU test mode), route through PayU Hosted Checkout
+    if (payableAmount > 0) {
+      try {
+        const res = await fetch("/api/v1/payments/payu/initiate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({
+            targetKind: item.kind,
+            targetSlug: item.slug,
+            tier: selectedTierId,
+            amount: payableAmount,
+            firstname: user?.name,
+            email: user?.email,
+          }),
+        })
+        const payload = await res.json().catch(() => ({}))
+        if (!res.ok) {
+          throw new Error(payload.error || "Unable to initiate PayU payment")
+        }
+        // Dynamically create and submit PayU form
+        const form = document.createElement("form")
+        form.method = "POST"
+        form.action = payload.actionUrl
+        for (const [k, v] of Object.entries(payload.params)) {
+          const input = document.createElement("input")
+          input.type = "hidden"
+          input.name = k
+          input.value = String(v ?? "")
+          form.appendChild(input)
+        }
+        document.body.appendChild(form)
+        form.submit()
+        return
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Unable to initiate payment with PayU")
+        setSubmitting(false)
+        return
+      }
+    }
+
     try {
       const workspace = await fulfillCatalogEnrollment({ kind: item.kind, slug: item.slug }, accepted)
       onClose()
@@ -398,33 +441,67 @@ export function EnrollmentModal({ item, onClose }: { item: CatalogEnrollItem; on
           >
             {/* Left Column: Coupon + Payment Mode */}
             <div style={{ display: 'grid', gap: 12, alignContent: 'start' }}>
-              <div style={{ background: couponApplied ? '#f5f3ff' : '#ffffff', border: couponApplied ? '1.5px solid #5142b5' : '1px solid #cbd5e1', borderRadius: 12, padding: '12px 14px' }}>
+              <div style={{ background: couponApplied && !testPayuOneRupee ? '#f5f3ff' : '#ffffff', border: couponApplied && !testPayuOneRupee ? '1.5px solid #5142b5' : '1px solid #cbd5e1', borderRadius: 12, padding: '12px 14px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
                   <div>
                     <span style={{ fontSize: 11, fontWeight: 700, color: '#5142b5', display: 'block' }}>
                       SCHOLARSHIP &amp; PILOT COUPON
                     </span>
                     <strong style={{ fontSize: 13, color: '#0f172a' }}>
-                      {couponApplied ? `${couponCode} Applied (100% Open Pilot Waiver)` : 'Apply 100% Pilot Scholarship Waiver?'}
+                      {couponApplied && !testPayuOneRupee ? `${couponCode} Applied (100% Open Pilot Waiver)` : 'Apply 100% Pilot Scholarship Waiver?'}
                     </strong>
                   </div>
                   <button
                     type="button"
-                    onClick={() => setCouponApplied((v) => !v)}
+                    onClick={() => {
+                      setTestPayuOneRupee(false)
+                      setCouponApplied((v) => !v)
+                    }}
                     style={{
                       padding: '6px 12px',
                       borderRadius: 8,
-                      border: couponApplied ? '1px solid #cbd5e1' : 'none',
-                      background: couponApplied ? '#ffffff' : '#5142b5',
-                      color: couponApplied ? '#334155' : '#ffffff',
+                      border: couponApplied && !testPayuOneRupee ? '1px solid #cbd5e1' : 'none',
+                      background: couponApplied && !testPayuOneRupee ? '#ffffff' : '#5142b5',
+                      color: couponApplied && !testPayuOneRupee ? '#334155' : '#ffffff',
                       fontSize: 12,
                       fontWeight: 700,
                       cursor: 'pointer',
                     }}
                   >
-                    {couponApplied ? 'Pay Regular Price (₹' + basePrice.toLocaleString('en-IN') + ')' : 'Apply SKYLENTPILOT (₹0)'}
+                    {couponApplied && !testPayuOneRupee ? 'Pay Regular Price (₹' + basePrice.toLocaleString('en-IN') + ')' : 'Apply SKYLENTPILOT (₹0)'}
                   </button>
                 </div>
+              </div>
+
+              {/* PayU ₹1 Verification Test Option */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 14px', borderRadius: 10, background: testPayuOneRupee ? '#ecfdf5' : '#f8fafc', border: testPayuOneRupee ? '1.5px solid #059669' : '1px solid #e2e8f0' }}>
+                <div>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: testPayuOneRupee ? '#047857' : '#5142b5', textTransform: 'uppercase' }}>
+                    PayU ₹1 Live Account Activation
+                  </span>
+                  <strong style={{ fontSize: 12.5, color: '#0f172a', display: 'block' }}>
+                    {testPayuOneRupee ? '✓ PayU ₹1 Test Active (Verifies PayU Dashboard)' : 'Complete ₹1 live payment to clear PayU dashboard warning?'}
+                  </strong>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setTestPayuOneRupee((v) => !v)
+                    if (!testPayuOneRupee) setCouponApplied(false)
+                  }}
+                  style={{
+                    padding: '5px 12px',
+                    borderRadius: 8,
+                    border: testPayuOneRupee ? '1px solid #059669' : 'none',
+                    background: testPayuOneRupee ? '#ffffff' : '#059669',
+                    color: testPayuOneRupee ? '#047857' : '#ffffff',
+                    fontSize: 12,
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                  }}
+                >
+                  {testPayuOneRupee ? 'Cancel ₹1 Test' : 'Test ₹1 with PayU'}
+                </button>
               </div>
 
               <div>

@@ -390,12 +390,10 @@ export async function completeProjectTask(options: {
   await requireProjectCourseAccess(options.userId, definition.courseSlug)
   const taskDef = findProjectTask(row.projectType, options.taskKey)
   if (!taskDef) throw new ProjectServiceError("invalid_request", "Unknown task.")
-  if (taskDef.completion !== "explicit") {
+  if (taskDef.completion === "reflection") {
     throw new ProjectServiceError(
       "invalid_request",
-      taskDef.completion === "lab_work"
-        ? "Complete this task by attaching saved lab work."
-        : "Complete this task by writing your analysis.",
+      "Complete this task by writing your analysis.",
     )
   }
 

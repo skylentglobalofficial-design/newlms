@@ -293,11 +293,11 @@ export default function CourseDetailPage() {
                   </div>
                   <div className="cat-rubric-item">
                     <span className="cat-rubric-weight">20% Judgement · 15% Defence</span>
-                    <strong>Written Briefs &amp; Boardroom Cold Calls</strong>
-                    <span>Trade-off reasoning + timed oral defence.</span>
+                    <strong>Case Briefs &amp; Decision Checks</strong>
+                    <span>Real-world case trade-offs &amp; scenario checks.</span>
                   </div>
                   <div className="cat-rubric-item">
-                    <span className="cat-rubric-weight">20% · V1 → V2 Revision</span>
+                    <span className="cat-rubric-weight">20% · Capstone Project</span>
                     <strong>Graded Capstone &amp; Verified Certificate</strong>
                     <span>Mentor feedback · Verifiable at /verify.</span>
                   </div>

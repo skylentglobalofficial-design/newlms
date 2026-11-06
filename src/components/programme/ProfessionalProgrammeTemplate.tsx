@@ -459,7 +459,7 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
                     </li>
                     <li>
                       <span aria-hidden="true">✓</span>
-                      <span><strong>{content.evidence.rows.length} portfolio artefacts</strong> graded on our 5-dimension competency rubric (Knowledge, Execution, Judgement, Oral Defence & V1→V2 Revision)</span>
+                      <span><strong>{content.evidence.rows.length} portfolio artefacts</strong> graded with faculty feedback & verified portfolio score</span>
                     </li>
                     <li>
                       <span aria-hidden="true">✓</span>
@@ -849,7 +849,7 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
               ))}
             </div>
 
-            <div className="pp-evtable" tabIndex={0} role="group" aria-label="Assignments and the evidence each one leaves">
+            <div className="pp-evtable hx-sr" style={{ display: "none" }} tabIndex={0} role="group" aria-label="Assignments and the evidence each one leaves">
               <table>
                 <thead>
                   <tr>

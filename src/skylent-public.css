@@ -198,21 +198,9 @@ body:has(.skylent-public-canvas) {
   color: #ffffff !important;
 }
 
-.skylent-public-canvas main p[style*="color: rgba(255"],
-.skylent-public-canvas main div[style*="color: rgba(255, 255, 255"],
-.skylent-public-canvas main div[style*="color: rgba(255,255,255"],
-.skylent-public-canvas main span[style*="color: rgba(255, 255, 255"],
-.skylent-public-canvas main span[style*="color: rgba(255,255,255"] {
-  color: var(--skylent-color-slate) !important;
-}
-
-.skylent-public-canvas main div[style*="color: #FFFFFF"],
-.skylent-public-canvas main span[style*="color: #FFFFFF"],
-.skylent-public-canvas main p[style*="color: #FFFFFF"],
-.skylent-public-canvas main li[style*="color: #FFFFFF"],
-.skylent-public-canvas main strong[style*="color: #FFFFFF"],
-.skylent-public-canvas main td[style*="color: #FFFFFF"] {
-  color: var(--skylent-color-ink) !important;
+/* Preserve explicit white text on dark/royal cards and banners */
+.skylent-public-canvas :is(.sky-band-navy, .sky-on-navy, .cat-final-card, .hx-royal-card, .hx-royal-plate, .hx-royal-ai-card, .hx-close) :is(h1, h2, h3, h4, strong) {
+  color: #ffffff !important;
 }
 
 .skylent-public-canvas main input,
@@ -1144,6 +1132,26 @@ body:has(.skylent-public-canvas) {
 
 .skylent-public-canvas .skn-sheet {
   inset: calc(var(--nav-h) + env(safe-area-inset-top, 0px)) 0 0 0;
+}
+
+@media (max-width: 900px) {
+  /* Hide notification bell & wallet cluster in mobile top headers so it never crowds the status bar */
+  .skn-UtilityCluster {
+    display: none !important;
+  }
+  .skylent-public-canvas .skn {
+    padding-top: max(env(safe-area-inset-top, 0px), 6px);
+  }
+  .skylent-public-canvas .sk-shell-locator {
+    padding-top: calc(var(--nav-h) + max(env(safe-area-inset-top, 0px), 6px));
+  }
+  .skylent-public-canvas .skn-sheet {
+    inset: calc(var(--nav-h) + max(env(safe-area-inset-top, 0px), 6px)) 0 0 0;
+  }
+}
+
+html[data-native-app="true"] .skn-UtilityCluster {
+  display: none !important;
 }
 
 .skylent-public-canvas .skn__back-btn {

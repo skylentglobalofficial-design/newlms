@@ -1,13 +1,13 @@
 # =============================================================================
-# SKYLENT PLAY STORE NATIVE APK & SIGNED AAB BUILDER (V53)
+# SKYLENT PLAY STORE NATIVE APK & SIGNED AAB BUILDER (V64)
 # Generates:
 #   1. skylent-playstore-debug.apk   (For testing on phone first)
 #   2. skylent-playstore-release.apk (Signed Release APK for phone install)
 #   3. skylent-playstore-release.aab (Signed Release Bundle for Google Play Console)
 # Includes:
-#   - In-App Google Sign-In + Deep-Link Return (skylent://auth -> stays in APK, never stuck in Chrome!)
-#   - Free Mobile OTP Sign-In + Bearer Token Vault Support
-#   - Android 14/15 Status Bar Safe-Area Fix (setDecorFitsSystemWindows = true)
+#   - Live Production URL Mode (https://skylent.live) + Offline Fallback
+#   - In-App Google Sign-In + Deep-Link Return (skylent://auth -> stays in APK)
+#   - Guaranteed Physical WebView Status-Bar Clearance (28dp+ top margin on WebView)
 #   - Hardware Back Button Navigation Fix (Navigates in-app history + double-back exit)
 # =============================================================================
 $ErrorActionPreference = "Stop"
@@ -15,7 +15,7 @@ $Utf8NoBom = New-Object System.Text.UTF8Encoding($false)
 
 Write-Host ""
 Write-Host "============================================================" -ForegroundColor Cyan
-Write-Host "  SKYLENT PLAY STORE APK & SIGNED AAB BUILDER (v53)" -ForegroundColor Cyan
+Write-Host "  SKYLENT PLAY STORE APK & SIGNED AAB BUILDER (V64)" -ForegroundColor Cyan
 Write-Host "============================================================" -ForegroundColor Cyan
 
 # Step 1: Security Audit - Ensure no server secrets are prefixed with VITE_
@@ -50,7 +50,7 @@ if (-not (Test-Path "node_modules/@capacitor/android")) {
 Write-Host "  [OK] Capacitor Android packages ready." -ForegroundColor Green
 
 # Step 4: Initialize or Sync Android Native Project & Write Manifest + MainActivity + Styles
-Write-Host "`n[4/7] Syncing Bundled Assets & Native OAuth/Back/Status-Bar Fixes into Android Project..." -ForegroundColor Yellow
+Write-Host "`n[4/7] Syncing Live Production Server URL & Native Status-Bar Insets into Android Project..." -ForegroundColor Yellow
 $capConfigPath = Join-Path (Get-Location).Path "capacitor.config.json"
 $capConfigJson = @"
 {
@@ -59,6 +59,8 @@ $capConfigJson = @"
   "webDir": "dist",
   "bundledWebRuntime": false,
   "server": {
+    "url": "https://skylent.live",
+    "cleartext": false,
     "androidScheme": "https",
     "allowNavigation": [
       "skylent.live",
@@ -131,7 +133,7 @@ $cleanManifestXml = @"
 "@
 [System.IO.File]::WriteAllText($manifestPath, $cleanManifestXml.Replace("`r`n", "`n"), $Utf8NoBom)
 
-# Write custom MainActivity.java (Fixes In-App Google OAuth + Deep-Link Return + Status Bar + Hardware Back Button)
+# Write custom MainActivity.java (Physical WebView Status-Bar Margin + Live URL + In-App OAuth + Hardware Back)
 $mainActivityDir = Join-Path (Get-Location).Path "android\app\src\main\java\live\skylent\app"
 if (-not (Test-Path $mainActivityDir)) {
   New-Item -ItemType Directory -Path $mainActivityDir -Force | Out-Null
@@ -144,12 +146,13 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.View;
+import android.view.ViewGroup;
 import android.webkit.CookieManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.Toast;
 import androidx.activity.OnBackPressedCallback;
-import android.view.View;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
@@ -160,11 +163,16 @@ import com.getcapacitor.BridgeActivity;
 public class MainActivity extends BridgeActivity {
     private long lastBackPressTime = 0;
 
+    private int dpToPx(int dp) {
+        float density = getResources().getDisplayMetrics().density;
+        return Math.round(dp * density);
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // 1. Prevent Android 14/15/16 Edge-to-Edge overlap with top status bar / camera cutout (Before & After Login)
+        // 1. Force solid dark status bar & guaranteed physical top clearance on WebView (Android 10-16)
         WindowCompat.setDecorFitsSystemWindows(getWindow(), true);
         getWindow().setStatusBarColor(Color.parseColor("#0F172A"));
         getWindow().setNavigationBarColor(Color.parseColor("#FFFFFF"));
@@ -173,21 +181,45 @@ public class MainActivity extends BridgeActivity {
         if (insetsController != null) {
             insetsController.setAppearanceLightStatusBars(false);
         }
+
+        final int minTopInsetPx = dpToPx(28);
         View contentView = findViewById(android.R.id.content);
         if (contentView != null) {
             contentView.setBackgroundColor(Color.parseColor("#0F172A"));
-            ViewCompat.setOnApplyWindowInsetsListener(contentView, (v, windowInsets) -> {
+        }
+
+        if (getBridge() != null && getBridge().getWebView() != null) {
+            final WebView webView = getBridge().getWebView();
+            // Apply initial guaranteed status-bar top margin immediately so WebView never touches clock/network icons
+            ViewGroup.LayoutParams initialLp = webView.getLayoutParams();
+            if (initialLp instanceof ViewGroup.MarginLayoutParams) {
+                ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) initialLp;
+                if (mlp.topMargin < minTopInsetPx) {
+                    mlp.topMargin = minTopInsetPx;
+                    webView.setLayoutParams(mlp);
+                }
+            }
+
+            ViewCompat.setOnApplyWindowInsetsListener(webView, (v, windowInsets) -> {
                 Insets bars = windowInsets.getInsets(
                     WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout()
                 );
-                v.setPadding(bars.left, bars.top, bars.right, bars.bottom);
+                int safeTop = Math.max(bars.top, minTopInsetPx);
+                ViewGroup.LayoutParams lp = v.getLayoutParams();
+                if (lp instanceof ViewGroup.MarginLayoutParams) {
+                    ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) lp;
+                    mlp.topMargin = safeTop;
+                    mlp.leftMargin = bars.left;
+                    mlp.rightMargin = bars.right;
+                    mlp.bottomMargin = bars.bottom;
+                    v.setLayoutParams(mlp);
+                } else {
+                    v.setPadding(bars.left, safeTop, bars.right, bars.bottom);
+                }
                 return WindowInsetsCompat.CONSUMED;
             });
-        }
 
-        // 2. Configure WebView: enable third-party cookies & strip "; wv" so Google Sign-In works directly inside the APK
-        if (getBridge() != null && getBridge().getWebView() != null) {
-            WebView webView = getBridge().getWebView();
+            // 2. Configure WebView: enable third-party cookies & strip "; wv" so Google Sign-In works directly inside the APK
             CookieManager cookieManager = CookieManager.getInstance();
             cookieManager.setAcceptCookie(true);
             cookieManager.setAcceptThirdPartyCookies(webView, true);
@@ -198,7 +230,7 @@ public class MainActivity extends BridgeActivity {
             String ua = settings.getUserAgentString();
             if (ua != null) {
                 String cleanUa = ua.replace("; wv", "").replace("wv)", ")");
-                settings.setUserAgentString(cleanUa + " SkylentNativeApp/1.4 SkylentNativeInsetsApplied");
+                settings.setUserAgentString(cleanUa + " SkylentNativeApp/1.5 SkylentNativeInsetsApplied");
             }
         }
 
@@ -264,7 +296,7 @@ public class MainActivity extends BridgeActivity {
 
         if (getBridge() != null && getBridge().getWebView() != null) {
             final WebView webView = getBridge().getWebView();
-            final String targetUrl = "https://localhost/login" + (query != null && !query.isEmpty() ? "?" + query : "?oauth=success");
+            final String targetUrl = "https://skylent.live/login" + (query != null && !query.isEmpty() ? "?" + query : "?oauth=success");
             webView.post(() -> {
                 if (sessionToken != null && !sessionToken.isEmpty()) {
                     String js = "(function(){" +
@@ -292,9 +324,9 @@ $cleanStylesXml = @"
 <resources>
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="colorPrimary">#5142B5</item>
-        <item name="colorPrimaryDark">#3B2D96</item>
+        <item name="colorPrimaryDark">#0F172A</item>
         <item name="colorAccent">#5142B5</item>
-        <item name="android:statusBarColor">#3B2D96</item>
+        <item name="android:statusBarColor">#0F172A</item>
         <item name="android:fitsSystemWindows">true</item>
     </style>
 
@@ -302,13 +334,13 @@ $cleanStylesXml = @"
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:background">@null</item>
-        <item name="android:statusBarColor">#3B2D96</item>
+        <item name="android:statusBarColor">#0F172A</item>
         <item name="android:fitsSystemWindows">true</item>
     </style>
 
     <style name="AppTheme.NoActionBarLaunch" parent="AppTheme.NoActionBar">
         <item name="android:background">@null</item>
-        <item name="android:statusBarColor">#3B2D96</item>
+        <item name="android:statusBarColor">#0F172A</item>
         <item name="android:fitsSystemWindows">true</item>
     </style>
 </resources>
@@ -345,7 +377,7 @@ $v35StylesXml = @"
 </resources>
 "@
 [System.IO.File]::WriteAllText($v35StylesPath, $v35StylesXml.Replace("`r`n", "`n"), $Utf8NoBom)
-Write-Host "  [OK] Wrote AndroidManifest.xml, MainActivity.java (In-App Google OAuth + DeepLink + Back + StatusBar), and styles.xml." -ForegroundColor Green
+Write-Host "  [OK] Wrote AndroidManifest.xml, MainActivity.java (Physical StatusBar Margin + Live URL + OAuth), and styles.xml." -ForegroundColor Green
 
 # Step 5: Configure Java JDK 21 & Android SDK Toolchain
 Write-Host "`n[5/7] Configuring Java JDK 21 & Android SDK Toolchain..." -ForegroundColor Yellow
@@ -501,7 +533,7 @@ if (Test-Path "android/gradlew.bat") {
     $ApkSizeMb = [math]::Round(((Get-Item $OutDebugApk).Length / 1MB), 2)
     Write-Host ""
     Write-Host "============================================================" -ForegroundColor Green
-    Write-Host "  [SUCCESS] ALL GOOGLE PLAY STORE FILES GENERATED (V53)!" -ForegroundColor Green
+    Write-Host "  [SUCCESS] ALL GOOGLE PLAY STORE FILES GENERATED (V64)!" -ForegroundColor Green
     Write-Host "  1. Phone Test APK (Signed) : $OutReleaseApk ($ApkSizeMb MB)" -ForegroundColor White
     Write-Host "  2. Phone Test APK (Debug)  : $OutDebugApk" -ForegroundColor White
     Write-Host "  3. Play Store Upload (.aab): $OutReleaseAab" -ForegroundColor Cyan

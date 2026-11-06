@@ -152,21 +152,21 @@ const LEARNING_STEPS = [
     code: "STAGE 01 · CONCEPT & INTUITION",
     badge: "✓ English + Hinglish AI",
     title: "1. Understand the concept",
-    text: "Short, clear written lessons that explain the 'why' in plain language before you write a single line of code or spec.",
+    text: "Concise lessons with English & Hinglish AI support and quick concept checks.",
     pills: ["Plain-English Notes", "Hinglish AI Mode", "Concept Checks"],
   },
   {
     code: "STAGE 02 · IN-BROWSER WORKBENCH",
     badge: "✓ Zero Local Setup",
     title: "2. Practise in your browser",
-    text: "Run real SQL queries, Python scripts, or product case decisions right inside Skylent OS — with Socratic AI and human TA support.",
+    text: "Run SQL queries, Python pipelines, and product specs directly in your browser.",
     pills: ["Live SQL & Python", "Harbor Desk PRD", "20-Min TA Help"],
   },
   {
     code: "STAGE 03 · VERIFIED PROOF OF WORK",
     badge: "✓ Public /verify Link",
     title: "3. Build proof you keep",
-    text: "Graduate with a graded capstone project and a verifiable credential link (/verify) that shows employers exactly what you built.",
+    text: "Earn a verified SKL certificate (/verify) and unlock Career OS at 60% completion.",
     pills: ["Graded Capstone", "Rubric Breakdown", "Career OS Unlock"],
   },
 ] as const
@@ -336,7 +336,7 @@ export default function ProgramsPage() {
               <p className="pgx-eyebrow">Skylent programmes · 6 Career Tracks</p>
               <h1 id="pgx-title">Choose the skill you want to build and prove.</h1>
               <p className="pgx-lede">
-                Every programme takes you from first principles to a real capstone project inside your browser — no prior job experience or local setup required.
+                Learn step-by-step in live browser labs and graduate with a verified capstone project.
               </p>
               <div className="pgx-intro__actions">
                 <Link className="sk-btn sk-btn-primary" to="/path">

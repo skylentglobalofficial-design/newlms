@@ -4,6 +4,8 @@
   "webDir": "dist",
   "bundledWebRuntime": false,
   "server": {
+    "url": "https://skylent.live",
+    "cleartext": false,
     "androidScheme": "https",
     "allowNavigation": [
       "skylent.live",

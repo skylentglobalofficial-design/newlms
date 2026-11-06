@@ -73,7 +73,7 @@ export function HomeHero({
           </h1>
           <span className="hx-sr" style={{ display: "none" }}>Learn. Practise. Build. <em>Prove it.</em></span>
           <p className="hxw-hero__lead hx-rise">
-            Practise SQL, Python, Product, Full-Stack &amp; GenAI in live browser labs — with 20-minute TA doubt support and recruiter-verified certificates.
+            Learn SQL, Python, Product, Full-Stack &amp; GenAI in live browser labs with verified projects.
           </p>
           <p className="hx-sr" aria-live="polite">{availability}</p>
 
@@ -311,14 +311,14 @@ function LmsCanvas({ stage }: { stage: number }) {
           <div className="hx-lms-mock__rightcard">
             <span className="hx-lms-mock__subkicker">ACTIVE MODULE 03 · SQL FOR ANALYSTS</span>
             <strong>What happens inside each module</strong>
-            <p>Every module pairs first-principles written notes with an in-browser SQL lab, a 60-second Boardroom Cold Call, and a graded brief.</p>
+            <p>Each module pairs concise notes with a live browser lab and a practical project brief.</p>
             <div className="hx-lms-mock__checklist">
               <div><span>✓ L7 · Notes + Lab</span><b>SQL SELECT, WHERE &amp; Valid-Row Hygiene</b></div>
               <div><span>● L8 · Active Now</span><b>Multi-Table Joins &amp; Grain-Fanout Checks</b></div>
               <div><span>○ L9 · Concept Check</span><b>3-Question SQL Verification Quiz</b></div>
             </div>
             <div className="hx-lms-mock__coldcall">
-              <span>BOARDROOM COLD CALL CHECKPOINT · PEER BENCHMARK: 78%</span>
+              <span>QUICK CASE POLL · PEER BENCHMARK: 78%</span>
               <p>“Why did raw Q2 Apparel revenue drop 14.5% when unit volume stayed flat?” — Defend in 60 seconds.</p>
             </div>
           </div>
@@ -366,7 +366,7 @@ function LmsCanvas({ stage }: { stage: number }) {
 
           {/* Center: Lesson Reading + Inline Quiz Check */}
           <div className="hx-lms-mock__col hx-lms-mock__col--main">
-            <span className="hx-lms-mock__subkicker">FIRST-PRINCIPLES LESSON NOTE &amp; INLINE CHECK</span>
+            <span className="hx-lms-mock__subkicker">CONCISE LESSON NOTE &amp; QUICK CHECK</span>
             <h4>Enforcing the Valid-Row Rule before aggregating revenue</h4>
             <p>
               Raw operational tables contain cancelled shipments, zero-price promo rows, and negative adjustments. In Northwind, aggregating without filtering inflates revenue by 14 rows.
@@ -455,11 +455,11 @@ function LmsCanvas({ stage }: { stage: number }) {
       <div className="hx-canvas hx-lms-mock">
         <div className="hx-lms-mock__topstrip">
           <div>
-            <span className="hx-k">STEP 04 · GRADED CAPSTONE STUDIO &amp; 5-DIMENSION RUBRIC</span>
+            <span className="hx-k">STEP 04 · PROJECT STUDIO &amp; SCORECARD</span>
             <h3>{title}</h3>
           </div>
           <div className="hx-lms-mock__badges">
-            <span className="hx-lms-pill hx-lms-pill--green">✓ V1 → V2 Faculty Review Included</span>
+            <span className="hx-lms-pill hx-lms-pill--green">✓ Faculty Feedback Included</span>
             <span className="hx-lms-pill hx-lms-pill--purple">6 Structured Tasks</span>
           </div>
         </div>
@@ -482,7 +482,7 @@ function LmsCanvas({ stage }: { stage: number }) {
             <p className="hx-canvas__note" style={{ marginTop: 10 }}>{content?.evidence.record.footnote}</p>
           </div>
           <div className="hx-lms-mock__rightcard">
-            <span className="hx-lms-mock__subkicker">5-DIMENSION COMPETENCY RUBRIC SCORECARD</span>
+            <span className="hx-lms-mock__subkicker">PROJECT EVALUATION SCORECARD</span>
             <strong>Evaluated by Practitioner Faculty &amp; Pre-Flight Checks</strong>
             <div className="hx-lms-mock__checklist" style={{ marginTop: 8 }}>
               <div><span>15% · Knowledge</span><b>SQL Grain &amp; Schema Accuracy ✓</b></div>
@@ -502,7 +502,7 @@ function LmsCanvas({ stage }: { stage: number }) {
     <div className="hx-canvas hx-lms-mock">
       <div className="hx-lms-mock__topstrip">
         <div>
-          <span className="hx-k">STEP 05 · CRYPTOGRAPHICALLY VERIFIED DOSSIER ON /VERIFY</span>
+          <span className="hx-k">STEP 05 · VERIFIED CERTIFICATE &amp; PORTFOLIO (/VERIFY)</span>
           <h3>{record?.title ?? "Northwind Commercial Review"} — SKL-2026-DA-EXEMPLAR</h3>
         </div>
         <div className="hx-lms-mock__badges">
@@ -526,7 +526,7 @@ function LmsCanvas({ stage }: { stage: number }) {
         <div className="hx-lms-mock__rightcard">
           <span className="hx-lms-mock__subkicker">CAREER OS &amp; RECRUITER VERIFICATION</span>
           <strong>What employers see when they click your /verify link</strong>
-          <p>Hiring managers inspect your actual saved SQL queries, data-cleaning rules, 5-dimension rubric breakdown, and written executive recommendations.</p>
+          <p>Recruiters inspect your saved SQL queries, project score, and executive summary in one click.</p>
           <div className="hx-lms-mock__checklist">
             <div><span>✓ Verified SQL Artefact</span><b>northwind_sales.csv · 166 valid rows</b></div>
             <div><span>✓ Skill-Gap Role Match</span><b>Unlocked in Career OS for Data Analyst roles</b></div>
@@ -1599,7 +1599,7 @@ const AI_DEMO_SCENARIOS = [
     badge: "Hinglish + English Intuition",
     studentQ: "Bhai, SQL mein WHERE aur HAVING dono filter karte hain toh dono mein asli fark kya hai? Simple Hinglish mein samjhao.",
     coachTitle: "Skylent AI Mentor · Instant Hinglish Breakdown",
-    coachReply: "Ekdum simple tarike se samajh: WHERE tab kaam karta hai jab table ki raw rows filter karni ho (GROUP BY se pehle). Lekin jab tu SUM() ya COUNT() laga kar group bana leta hai, aur us total par filter lagana ho (jaise 'jin categories ka total revenue ₹1,00,000 se zyada hai'), tab HAVING lagta hai!",
+    coachReply: "Simple rule: WHERE filters raw rows before GROUP BY. HAVING filters aggregated totals (like SUM or COUNT) after GROUP BY.",
     takeaway: " Rule of thumb: Raw row filter = WHERE · Grouped total filter = HAVING.",
     pills: ["Switch to English", "Run this in SQL Lab", "Give me 1 practice question"],
   },
@@ -1609,7 +1609,7 @@ const AI_DEMO_SCENARIOS = [
     badge: "Live Code & Query Debugger",
     studentQ: "Why is my Northwind category revenue total showing ₹9,40,000 instead of ₹8,12,020 when I run SUM(units * unit_price)?",
     coachTitle: "Skylent AI Mentor · Line-by-Line Bug Catch",
-    coachReply: "Check two things in your query: (1) Did you subtract the promo discount using (1 - discount_pct / 100.0)? And (2) did you filter out returned orders with WHERE returned = 'no' AND units > 0? Those 14 returned/invalid rows explain the exact ₹1,27,980 gap!",
+    coachReply: "Check two filters: (1) apply (1 - discount_pct / 100.0), and (2) add WHERE returned = 'no' AND units > 0 to exclude the 14 returned rows.",
     takeaway: "Always check row hygiene (returned = 'no') before aggregating revenue.",
     pills: ["Apply fix in Lab", "Check rubric criteria", "Test edge cases"],
   },
@@ -1619,7 +1619,7 @@ const AI_DEMO_SCENARIOS = [
     badge: "Guaranteed 20-Min Faculty TA SLA",
     studentQ: "I finished my Capstone SQL query and executive memo, but I'm not sure if my Q2 margin recommendation is strong enough for recruiters.",
     coachTitle: "Human Faculty TA Desk · Verified Mentor Response (11 mins)",
-    coachReply: "Reviewed your Northwind draft! Your SQL CTE is 100% accurate. In paragraph 2 of your recommendation, quantify the exact ₹48,200 margin recovery if Electronics discounts are capped at 10% — recruiters love seeing a concrete rupee impact tied to your query.",
+    coachReply: "Your SQL CTE is accurate. Quantify the ₹48,200 margin recovery in your recommendation so recruiters see the exact business impact.",
     takeaway: "Every enrolled learner gets 1-click access to human Faculty TAs with a 20-minute response SLA.",
     pills: ["Resolved in 11 mins ✓", "Rubric pre-check passed", "Ready for Capstone submission"],
   },
@@ -1648,7 +1648,7 @@ export function HomeAi() {
             </h2>
           </div>
           <p className="hx-head__aside">
-            Most online courses leave you alone with recorded videos. Inside Skylent, every lesson has a built-in AI Mentor (with 1-click Hinglish mode) plus real human Faculty TAs who reply within 20 minutes.
+            Built-in English &amp; Hinglish AI coach inside every lesson, backed by 20-minute Faculty TA support.
           </p>
         </div>
 
@@ -1853,25 +1853,25 @@ export function HomeElixirFlywheel() {
   const comparisonRows = [
     {
       dimension: "How You Learn Every Day",
-      skylent: "Write real SQL, Python, PRDs & AI pipelines directly in your browser from Day 1",
-      videoLms: "Watch hours of passive recorded videos that you forget in a week",
-      bootcamps: "Sit in long Zoom lectures locked behind ₹1.5L–₹3L upfront fees",
+      skylent: "Live SQL, Python, PRD & AI browser labs from Day 1",
+      videoLms: "Long passive recorded videos",
+      bootcamps: "₹1.5L–₹3L upfront Zoom lectures",
     },
     {
       dimension: "When You Get Stuck on a Doubt",
-      skylent: "24/7 AI Mentor (English + Hinglish) + Real Human Expert reply within 20 mins",
-      videoLms: "Post in dead discussion forums and hope someone replies",
-      bootcamps: "Wait 24–48 hours in a support ticket queue",
+      skylent: "Instant AI Coach (EN/Hinglish) + 20-min TA reply",
+      videoLms: "Unanswered discussion forums",
+      bootcamps: "24–48 hr ticket queues",
     },
     {
       dimension: "What You Show Recruiters",
-      skylent: "A graded Capstone Project + Publicly Verifiable Certificate ID (/verify)",
+      skylent: "Graded Capstone + Verifiable SKL ID (/verify)",
       videoLms: "A generic '100% Video Watched' PDF certificate",
       bootcamps: "An unverified completion letter with template projects",
     },
     {
       dimension: "Cost & Risk to Start",
-      skylent: "Start any course Free (₹0 Pilot) or try a ₹99 Live Workshop (100% Coin Back)",
+      skylent: "3 flexible tiers + ₹99 Live Workshops (100% Coin Back)",
       videoLms: "Pay ₹3,000–₹15,000 upfront before testing the workspace",
       bootcamps: "Sign high-interest EMI loans before writing a single line of code",
     },

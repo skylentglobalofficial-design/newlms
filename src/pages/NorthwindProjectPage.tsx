@@ -61,6 +61,7 @@ export default function LearnerProjectPage() {
   const [careerBusy, setCareerBusy] = useState(false)
   const [careerNotice, setCareerNotice] = useState<string | null>(null)
   const [showCaseData, setShowCaseData] = useState(true)
+  const workbenchRef = useRef<HTMLElement>(null)
   const editVersionRef = useRef(0)
 
   const draftKey = projectType ? buildProjectReflectionDraftKey(projectType, project?.id) : ""
@@ -93,7 +94,7 @@ export default function LearnerProjectPage() {
           setWhyItMatters(reconciled.whyItMatters)
           setRecommendation(reconciled.recommendation)
           if (reconciled.restoredFromLocal) {
-            setNotice("Unsaved local draft restored. Click Save project to save to your account.")
+            setNotice("Unsaved local draft restored. Click Save Capstone Deliverable to save to your account.")
           } else {
             clearLocalDraft(scopedKey)
             clearLocalDraft(legacyKey)
@@ -178,7 +179,7 @@ export default function LearnerProjectPage() {
     setNotice(null)
     try {
       applyProject(await completeProjectTask(project.id, task.key))
-      setNotice("Step marked complete.")
+      setNotice(`Milestone ${task.number} marked complete.`)
     } catch (err) {
       setError(learnerErrorMessage(err, "That step could not be marked complete. Try again in a moment."))
     } finally {
@@ -335,7 +336,7 @@ export default function LearnerProjectPage() {
             background: "#ffffff",
             border: "1px solid #e2e8f0",
             borderRadius: 16,
-            padding: "22px 24px",
+            padding: "20px 24px",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "flex-start",
@@ -358,7 +359,7 @@ export default function LearnerProjectPage() {
                   letterSpacing: "0.06em",
                 }}
               >
-                Graded Capstone Project · {project.courseTitle}
+                Unified Project Studio · {project.courseTitle}
               </span>
               <span
                 className={
@@ -372,10 +373,10 @@ export default function LearnerProjectPage() {
                 {projectStatusLabel(project.status)} ({project.progress.complete}/{project.progress.total} Milestones)
               </span>
             </div>
-            <h1 style={{ margin: "0 0 8px", fontSize: "clamp(20px, 2.4vw, 26px)", color: "#0f172a", fontFamily: "var(--font-display)" }}>
+            <h1 style={{ margin: "0 0 6px", fontSize: "clamp(20px, 2.4vw, 25px)", color: "#0f172a", fontFamily: "var(--font-display)" }}>
               {project.title}
             </h1>
-            <p style={{ margin: "0 0 10px", fontSize: 13, color: "#475569" }}>
+            <p style={{ margin: "0 0 12px", fontSize: 13.5, color: "#475569" }}>
               {project.goal}
             </p>
             <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
@@ -388,11 +389,11 @@ export default function LearnerProjectPage() {
                 style={{ minHeight: 38, fontSize: 13 }}
                 onClick={() => setShowCaseData((v) => !v)}
               >
-                {showCaseData ? "Hide Interactive Case Data & Sandbox" : "Open Interactive Case Data & Sandbox"}
+                {showCaseData ? "Hide Interactive Workbench" : "Show Interactive Workbench"}
               </button>
               {careerLink ? (
                 <Link className="os-btn os-btn-primary" to={careerLink.href} style={{ minHeight: 38, fontSize: 13 }}>
-                  ✓ Published in Career OS Portfolio →
+                  ✓ Published in Career OS →
                 </Link>
               ) : project.progress.complete === project.progress.total && careerLinkStatus !== "locked" ? (
                 <button
@@ -413,7 +414,7 @@ export default function LearnerProjectPage() {
 
           <div
             style={{
-              minWidth: 220,
+              minWidth: 210,
               padding: "14px 16px",
               borderRadius: 12,
               background: "#f8fafc",
@@ -421,21 +422,23 @@ export default function LearnerProjectPage() {
             }}
           >
             <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12.5, fontWeight: 700, color: "#0f172a", marginBottom: 6 }}>
-              <span>Capstone Completion</span>
+              <span>Studio Progress</span>
               <span style={{ color: "#5142b5" }}>{pct}%</span>
             </div>
             <div className="os-progress-bar" style={{ height: 7, marginBottom: 8 }}>
               <span style={{ width: `${pct}%` }} />
             </div>
             <span style={{ fontSize: 11.5, color: "#64748b", display: "block" }}>
-              {project.progress.complete} of {project.progress.total} milestones complete
+              {project.progress.complete} of {project.progress.total} milestones done
             </span>
           </div>
         </section>
 
-        {/* Collapsible Interactive Case Data / Sandbox */}
+        {/* Embedded Interactive Case Data / SQL / Code Workbench right inside the Project Studio */}
         {showCaseData ? (
           <section
+            ref={workbenchRef}
+            id="project-studio-workbench"
             style={{
               background: "#ffffff",
               border: "1px solid #e2e8f0",
@@ -553,16 +556,11 @@ export default function LearnerProjectPage() {
                 <h3 style={{ margin: "0 0 8px", fontSize: 18, color: "#0f172a" }}>{selected.title}</h3>
                 <p style={{ margin: "0 0 10px", fontSize: 14, color: "#334155", lineHeight: 1.55 }}>{selected.summary}</p>
                 <p style={{ margin: "0 0 14px", fontSize: 12.5, color: "#64748b", background: "#f8fafc", padding: "10px 12px", borderRadius: 8, border: "1px solid #e2e8f0" }}>
-                  <strong>How to complete this step:</strong> {selected.evidenceHint}
+                  <strong>Goal:</strong> {selected.evidenceHint}
                 </p>
 
                 <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 14 }}>
-                  {selected.openLabHref ? (
-                    <Link className="os-btn os-btn-primary" to={selected.openLabHref} style={{ minHeight: 38, fontSize: 13 }}>
-                      Open in SQL Lab →
-                    </Link>
-                  ) : null}
-                  {selected.completion === "explicit" ? (
+                  {selected.completion !== "reflection" ? (
                     <button
                       type="button"
                       className={selected.status === "complete" ? "os-btn os-btn-ghost" : "os-btn os-btn-primary"}
@@ -573,51 +571,63 @@ export default function LearnerProjectPage() {
                       {selected.status === "complete" ? "✓ Milestone Completed" : busy === "task" ? "Saving…" : "Mark Milestone Complete ✓"}
                     </button>
                   ) : null}
+                  <button
+                    type="button"
+                    className="os-btn os-btn-ghost"
+                    style={{ minHeight: 38, fontSize: 13 }}
+                    onClick={() => {
+                      setShowCaseData(true)
+                      window.setTimeout(() => {
+                        workbenchRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })
+                      }, 50)
+                    }}
+                  >
+                    ↑ Run in Studio Workbench
+                  </button>
+                  {selected.openLabHref ? (
+                    <Link className="os-btn os-btn-ghost" to={selected.openLabHref} style={{ minHeight: 38, fontSize: 13 }}>
+                      Full-Screen SQL Runner →
+                    </Link>
+                  ) : null}
                 </div>
 
-                {selected.completion === "lab_work" || (project.labEnabled && selected.key === "validate_data") ? (
+                {(selected.completion === "lab_work" || (project.labEnabled && selected.key === "validate_data")) && project.availableWork.length > 0 ? (
                   <div style={{ paddingTop: 12, borderTop: "1px solid #e2e8f0" }}>
                     <label htmlFor="proj-work" style={{ display: "block", fontSize: 12, fontWeight: 700, color: "#334155", marginBottom: 6 }}>
-                      Attach saved SQL Lab output
+                      Or attach saved query from Full-Screen SQL Runner
                     </label>
-                    {project.availableWork.length === 0 ? (
-                      <p style={{ margin: 0, fontSize: 12.5, color: "#64748b" }}>
-                        Run and save your query in the Northwind SQL Lab first, then attach it here.
-                      </p>
-                    ) : (
-                      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                        <select
-                          id="proj-work"
-                          value={attachId}
-                          onChange={(event) => setAttachId(event.target.value)}
-                          disabled={busy !== null}
-                          style={{ flex: 1, minWidth: 200, padding: "8px 10px", borderRadius: 8, border: "1px solid #cbd5e1", fontSize: 13 }}
-                        >
-                          <option value="">Choose saved lab query…</option>
-                          {project.availableWork.map((item) => (
-                            <option key={item.id} value={item.id}>
-                              {item.operationLabel}
-                              {item.rowCount != null ? ` · ${item.rowCount} rows` : ""} ·{" "}
-                              {new Date(item.createdAt).toLocaleString("en-GB", {
-                                day: "numeric",
-                                month: "short",
-                                hour: "2-digit",
-                                minute: "2-digit",
-                              })}
-                            </option>
-                          ))}
-                        </select>
-                        <button
-                          type="button"
-                          className="os-btn os-btn-ghost"
-                          style={{ minHeight: 38, fontSize: 13 }}
-                          disabled={!attachId || busy !== null}
-                          onClick={() => void onAttach(selected)}
-                        >
-                          {busy === "attach" ? "Attaching…" : "Attach"}
-                        </button>
-                      </div>
-                    )}
+                    <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                      <select
+                        id="proj-work"
+                        value={attachId}
+                        onChange={(event) => setAttachId(event.target.value)}
+                        disabled={busy !== null}
+                        style={{ flex: 1, minWidth: 200, padding: "8px 10px", borderRadius: 8, border: "1px solid #cbd5e1", fontSize: 13 }}
+                      >
+                        <option value="">Choose saved lab query…</option>
+                        {project.availableWork.map((item) => (
+                          <option key={item.id} value={item.id}>
+                            {item.operationLabel}
+                            {item.rowCount != null ? ` · ${item.rowCount} rows` : ""} ·{" "}
+                            {new Date(item.createdAt).toLocaleString("en-GB", {
+                              day: "numeric",
+                              month: "short",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
+                          </option>
+                        ))}
+                      </select>
+                      <button
+                        type="button"
+                        className="os-btn os-btn-ghost"
+                        style={{ minHeight: 38, fontSize: 13 }}
+                        disabled={!attachId || busy !== null}
+                        onClick={() => void onAttach(selected)}
+                      >
+                        {busy === "attach" ? "Attaching…" : "Attach"}
+                      </button>
+                    </div>
                   </div>
                 ) : null}
 
@@ -652,9 +662,8 @@ export default function LearnerProjectPage() {
                 Step 2 · Final Capstone Submission
               </div>
               <h2 style={{ margin: "0 0 4px", fontSize: 18, color: "#0f172a" }}>
-                {project.labEnabled ? "Write Your Data-Backed Executive Memo" : "Write Your Product Strategy & PRD Case"}
+                {project.labEnabled ? "Executive Summary & Recommendation" : "Product Strategy & PRD Summary"}
               </h2>
-
             </div>
 
             <div>

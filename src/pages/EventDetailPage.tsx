@@ -62,6 +62,43 @@ export default function EventDetailPage() {
       })
   }, [slug])
 
+    const handlePayuCheckout = async (amount: number) => {
+    if (!user || !event) return
+    setRegistering(true)
+    setError(null)
+    try {
+      const res = await fetch("/api/v1/payments/payu/initiate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          targetKind: "workshop",
+          targetSlug: event.slug,
+          amount,
+          firstname: user.name,
+          email: user.email,
+        }),
+      })
+      const payload = await res.json().catch(() => ({}))
+      if (!res.ok) throw new Error(payload.error || "Unable to initiate payment with PayU")
+      const form = document.createElement("form")
+      form.method = "POST"
+      form.action = payload.actionUrl
+      for (const [k, v] of Object.entries(payload.params)) {
+        const input = document.createElement("input")
+        input.type = "hidden"
+        input.name = k
+        input.value = String(v ?? "")
+        form.appendChild(input)
+      }
+      document.body.appendChild(form)
+      form.submit()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Payment initiation failed")
+      setRegistering(false)
+    }
+  }
+
   const handleRegister = async () => {
     if (!user || !event) return
     setRegistering(true)
@@ -290,13 +327,24 @@ export default function EventDetailPage() {
                       Event is full
                     </button>
                   ) : (
-                    <button
-                      className="cat-btn cat-btn-primary cat-btn-lg"
-                      onClick={handleRegister}
-                      disabled={registering}
-                    >
-                      {registering ? "Registering..." : "Register for event"}
-                    </button>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                      <button
+                        className="cat-btn cat-btn-primary cat-btn-lg"
+                        onClick={() => void handlePayuCheckout(99)}
+                        disabled={registering}
+                      >
+                        {registering ? "Opening PayU Gateway…" : "Pay ₹99 & Register (100% Coin Back) →"}
+                      </button>
+                      <button
+                        type="button"
+                        className="cat-btn cat-btn-ghost"
+                        style={{ border: "1.5px solid #059669", color: "#059669", fontWeight: 700 }}
+                        onClick={() => void handlePayuCheckout(1)}
+                        disabled={registering}
+                      >
+                        ⚡ Test PayU Gateway (₹1 Live Verification)
+                      </button>
+                    </div>
                   )}
                 </div>
               </div>
