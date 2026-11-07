@@ -220,7 +220,7 @@ export function EnrollmentModal({ item, onClose }: { item: CatalogEnrollItem; on
             <span
               style={{
                 fontSize: 11.5,
-                fontWeight: 800,
+                fontWeight: 600,
                 color: "#5142b5",
                 letterSpacing: "0.08em",
                 textTransform: "uppercase",
@@ -235,7 +235,7 @@ export function EnrollmentModal({ item, onClose }: { item: CatalogEnrollItem; on
               style={{
                 margin: 0,
                 fontSize: "clamp(20px, 2.4vw, 26px)",
-                fontWeight: 800,
+                fontWeight: 600,
                 color: "#0f172a",
                 fontFamily: "var(--font-display)",
               }}
@@ -316,7 +316,7 @@ export function EnrollmentModal({ item, onClose }: { item: CatalogEnrollItem; on
                         style={{
                           margin: 0,
                           fontSize: 19,
-                          fontWeight: 800,
+                          fontWeight: 600,
                           color: isProCard ? "#ffffff" : "#0f172a",
                         }}
                       >
@@ -326,7 +326,7 @@ export function EnrollmentModal({ item, onClose }: { item: CatalogEnrollItem; on
                         <span
                           style={{
                             fontSize: 11,
-                            fontWeight: 800,
+                            fontWeight: 600,
                             padding: "4px 10px",
                             borderRadius: 999,
                             background: "rgba(255,255,255,0.2)",
@@ -363,7 +363,7 @@ export function EnrollmentModal({ item, onClose }: { item: CatalogEnrollItem; on
                       <strong
                         style={{
                           fontSize: 28,
-                          fontWeight: 800,
+                          fontWeight: 600,
                           color: isProCard ? "#ffffff" : "#0f172a",
                         }}
                       >
@@ -393,7 +393,7 @@ export function EnrollmentModal({ item, onClose }: { item: CatalogEnrollItem; on
                         background: isProCard ? "#ffffff" : "#ede9fe",
                         color: isProCard ? "#3b0764" : "#5142b5",
                         fontSize: 14.5,
-                        fontWeight: 800,
+                        fontWeight: 600,
                         cursor: "pointer",
                         marginBottom: 18,
                         transition: "transform 120ms ease",
@@ -436,7 +436,7 @@ export function EnrollmentModal({ item, onClose }: { item: CatalogEnrollItem; on
                               alignItems: "center",
                               justifyContent: "center",
                               fontSize: 11,
-                              fontWeight: 800,
+                              fontWeight: 600,
                               flexShrink: 0,
                               marginTop: 1,
                             }}
@@ -469,7 +469,7 @@ export function EnrollmentModal({ item, onClose }: { item: CatalogEnrollItem; on
                               alignItems: "center",
                               justifyContent: "center",
                               fontSize: 10,
-                              fontWeight: 800,
+                              fontWeight: 600,
                               flexShrink: 0,
                               marginTop: 1,
                             }}

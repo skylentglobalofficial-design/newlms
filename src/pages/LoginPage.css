@@ -49,7 +49,7 @@ html[data-native-app="true"] .entry-top {
   display: inline-block;
   margin: 0 0 16px;
   color: #0f172a;
-  font: 800 22px/1.1 var(--skylent-font-heading, var(--font-display));
+  font: 600 22px/1.1 var(--skylent-font-heading, var(--font-display));
   letter-spacing: 0.14em;
   text-transform: uppercase;
   text-decoration: none;

@@ -697,7 +697,7 @@ export function CourseAuthoringStudio({
                   borderRadius: 999,
                   background: "#ffffff",
                   color: "#5142b5",
-                  fontWeight: 800,
+                  fontWeight: 600,
                   fontSize: 13,
                   textDecoration: "none",
                 }}
@@ -892,7 +892,7 @@ export function CourseAuthoringStudio({
                         padding: "3px 10px",
                         borderRadius: 999,
                         fontSize: 11,
-                        fontWeight: 800,
+                        fontWeight: 600,
                         fontFamily: "var(--font-mono)",
                         background: selected.publicationStatus === "PUBLISHED" ? "#dcfce7" : "#fef3c7",
                         color: selected.publicationStatus === "PUBLISHED" ? "#166534" : "#92400e",
@@ -1448,7 +1448,7 @@ export function CourseAuthoringStudio({
                                         <span
                                           style={{
                                             fontSize: 10.5,
-                                            fontWeight: 800,
+                                            fontWeight: 600,
                                             fontFamily: "var(--font-mono)",
                                             padding: "2px 8px",
                                             borderRadius: 999,

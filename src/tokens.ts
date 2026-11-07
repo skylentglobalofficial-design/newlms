@@ -388,10 +388,10 @@ export const type = {
 } as const
 
 export const fonts = {
-  heading: "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif",
-  serif: "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif",
-  sans: "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif",
-  mono: "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif",
+  heading: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', Arial, sans-serif",
+  serif: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', Arial, sans-serif",
+  sans: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', Arial, sans-serif",
+  mono: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', Arial, sans-serif",
 } as const
 
 export type GlassLevel = 1 | 2 | 3

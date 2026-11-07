@@ -149,7 +149,7 @@ function CareerOsLockedInsideLearnerShell({
             >
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
                 <div>
-                  <span style={{ fontSize: 11, fontWeight: 800, color: "#5142b5", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                  <span style={{ fontSize: 11, fontWeight: 600, color: "#5142b5", textTransform: "uppercase", letterSpacing: "0.06em" }}>
                     ACTIVE TRACK · FLAGSHIP LIVE + CAREER OS PRO
                   </span>
                   <h2 style={{ margin: "4px 0 0", fontSize: 21, color: "#0f172a" }}>

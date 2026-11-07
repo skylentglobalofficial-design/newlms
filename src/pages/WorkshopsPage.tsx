@@ -76,7 +76,7 @@ export default function WorkshopsPage() {
                     borderRadius: 999,
                     background: "#ffffff",
                     color: "#5142b5",
-                    fontWeight: 800,
+                    fontWeight: 600,
                     fontSize: 13.5,
                     textDecoration: "none",
                     boxShadow: "0 8px 20px rgba(0,0,0,0.16)",
@@ -177,18 +177,18 @@ export default function WorkshopsPage() {
                             </span>
                             {workshop.duration}
                           </span>
-                          <span style={{ padding: "3px 10px", borderRadius: 999, background: "#dcfce7", border: "1px solid #86efac", color: "#166534", fontSize: 11, fontWeight: 800 }}>
+                          <span style={{ padding: "3px 10px", borderRadius: 999, background: "#dcfce7", border: "1px solid #86efac", color: "#166534", fontSize: 11, fontWeight: 600 }}>
                             ★ +99 Elixir Eligible
                           </span>
                         </div>
-                        <strong style={{ display: "block", fontSize: 18, fontWeight: 800, color: "#0f172a", lineHeight: 1.3 }}>
+                        <strong style={{ display: "block", fontSize: 18, fontWeight: 600, color: "#0f172a", lineHeight: 1.3 }}>
                           {workshop.title}
                         </strong>
                         <p style={{ margin: "8px 0 0", fontSize: 13.5, color: "#475569", lineHeight: 1.55 }}>
                           {workshop.desc}
                         </p>
                       </div>
-                      <span style={{ fontSize: 13, fontWeight: 800, color: "#5142b5" }}>
+                      <span style={{ fontSize: 13, fontWeight: 600, color: "#5142b5" }}>
                         View workshop syllabus →
                       </span>
                     </Link>

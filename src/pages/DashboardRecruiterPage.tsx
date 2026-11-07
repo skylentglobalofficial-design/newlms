@@ -284,7 +284,7 @@ export default function DashboardRecruiterPage() {
                   border: '1px solid #ffffff',
                   padding: '10px 18px',
                   borderRadius: 999,
-                  fontWeight: 800,
+                  fontWeight: 600,
                   fontSize: 13,
                   cursor: 'pointer',
                   boxShadow: '0 6px 16px rgba(0,0,0,0.16)',

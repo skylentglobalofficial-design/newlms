@@ -577,14 +577,14 @@ export function NativeAppShellController() {
                 alignItems: "center",
                 justifyContent: "center",
                 fontSize: 22,
-                fontWeight: 900,
+                fontWeight: 700,
                 letterSpacing: "0.06em",
                 boxShadow: "0 10px 24px rgba(124, 58, 237, 0.45)",
               }}
             >
               S
             </div>
-            <h3 id="skylent-auto-update-title" style={{ margin: "0 0 6px", fontSize: 18, fontWeight: 800, color: "#ffffff" }}>
+            <h3 id="skylent-auto-update-title" style={{ margin: "0 0 6px", fontSize: 18, fontWeight: 600, color: "#ffffff" }}>
               Updating Skylent…
             </h3>
             <p style={{ margin: "0 0 18px", fontSize: 13, lineHeight: 1.55, color: "#cbd5e1" }}>

@@ -636,7 +636,7 @@ export default function LoginPage() {
                         onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
                         placeholder="6-digit code"
                         disabled={submitting}
-                        style={{ letterSpacing: '0.24em', fontWeight: 800, fontSize: 17, textAlign: 'center' }}
+                        style={{ letterSpacing: '0.24em', fontWeight: 600, fontSize: 17, textAlign: 'center' }}
                       />
                     </div>
 
@@ -874,7 +874,7 @@ export default function LoginPage() {
                       onChange={(e) => setSuOtpCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
                       placeholder="Enter 6-digit OTP"
                       disabled={submitting}
-                      style={{ letterSpacing: '0.24em', fontWeight: 800, fontSize: 17, textAlign: 'center' }}
+                      style={{ letterSpacing: '0.24em', fontWeight: 600, fontSize: 17, textAlign: 'center' }}
                     />
                   </div>
 

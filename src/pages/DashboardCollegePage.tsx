@@ -141,7 +141,7 @@ export default function DashboardCollegePage() {
                 style={{
                   background: "#ffffff",
                   color: "#5142b5",
-                  fontWeight: 800,
+                  fontWeight: 600,
                   borderColor: "#ffffff",
                   textDecoration: "none",
                   boxShadow: "0 6px 16px rgba(0,0,0,0.16)",

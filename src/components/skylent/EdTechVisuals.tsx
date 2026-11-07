@@ -324,7 +324,7 @@ export function CertificateTrophyShowcase() {
         <span style={{ display: "inline-block", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "#c4b8ff", background: "rgba(196, 184, 255, 0.14)", padding: "4px 10px", borderRadius: 999, marginBottom: 10 }}>
           Verifiable Employer Credential · SHA-256 Signed
         </span>
-        <h3 style={{ margin: "0 0 8px", fontSize: "clamp(20px, 2.4vw, 26px)", fontWeight: 800, color: "#ffffff", lineHeight: 1.2 }}>
+        <h3 style={{ margin: "0 0 8px", fontSize: "clamp(20px, 2.4vw, 26px)", fontWeight: 600, color: "#ffffff", lineHeight: 1.2 }}>
           Graduate with a live Proof-of-Work Dossier — not a generic PDF.
         </h3>
         <p style={{ margin: "0 0 16px", fontSize: 14, color: "#cbd5e1", lineHeight: 1.55 }}>
@@ -353,14 +353,14 @@ export function CertificateTrophyShowcase() {
       >
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid #e2e8f0", paddingBottom: 10, marginBottom: 12 }}>
           <div>
-            <span style={{ fontSize: 10, fontWeight: 800, letterSpacing: "0.1em", color: "#5142B5", textTransform: "uppercase" }}>
+            <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: "0.1em", color: "#5142B5", textTransform: "uppercase" }}>
               SKYLENT GLOBAL PVT. LTD. · VERIFIED CREDENTIAL
             </span>
-            <strong style={{ display: "block", fontSize: 16, fontWeight: 800, color: "#0f172a" }}>
+            <strong style={{ display: "block", fontSize: 16, fontWeight: 600, color: "#0f172a" }}>
               Data Analytics &amp; Commercial SQL
             </strong>
           </div>
-          <span style={{ fontSize: 11, fontWeight: 800, padding: "4px 10px", borderRadius: 999, background: "#dcfce7", color: "#15803d" }}>
+          <span style={{ fontSize: 11, fontWeight: 600, padding: "4px 10px", borderRadius: 999, background: "#dcfce7", color: "#15803d" }}>
             96 / 100 · Distinction
           </span>
         </div>
@@ -453,7 +453,7 @@ export function FacultyTaShowcaseStrip() {
                 display: "inline-flex",
                 alignItems: "center",
                 justifyContent: "center",
-                fontWeight: 800,
+                fontWeight: 600,
                 fontSize: 13,
                 flexShrink: 0,
               }}

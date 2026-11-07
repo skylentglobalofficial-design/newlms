@@ -106,7 +106,7 @@ export default function NotFoundPage() {
                 borderRadius: 999,
                 background: "#ffffff",
                 color: "#5142b5",
-                fontWeight: 800,
+                fontWeight: 600,
                 fontSize: 13.5,
                 textDecoration: "none",
               }}
@@ -161,19 +161,19 @@ export default function NotFoundPage() {
                   style={{
                     fontSize: 10.5,
                     fontFamily: "var(--font-mono)",
-                    fontWeight: 800,
+                    fontWeight: 600,
                     color: "#5142b5",
                     letterSpacing: "0.06em",
                   }}
                 >
                   {item.badge}
                 </span>
-                <h2 style={{ margin: "6px 0 6px", fontSize: 18, fontWeight: 800, color: "#0f172a" }}>
+                <h2 style={{ margin: "6px 0 6px", fontSize: 18, fontWeight: 600, color: "#0f172a" }}>
                   {item.title}
                 </h2>
                 <p style={{ margin: 0, fontSize: 13.5, color: "#475569", lineHeight: 1.55 }}>{item.desc}</p>
               </div>
-              <span style={{ fontSize: 13, fontWeight: 800, color: "#5142b5" }}>{item.cta}</span>
+              <span style={{ fontSize: 13, fontWeight: 600, color: "#5142b5" }}>{item.cta}</span>
             </Link>
           ))}
         </div>

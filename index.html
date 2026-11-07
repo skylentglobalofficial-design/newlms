@@ -44,17 +44,13 @@
       content="Self-paced courses in Data Analytics, Python, Product Management, Data Science, Generative AI, and Full-Stack Web — with browser labs, graded projects, verifiable certificates, and Career OS."
     />
     <meta name="twitter:image" content="https://skylent.live/og-card.svg" />
-
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-    <!-- Unified Skylent Brand Typography (Plus Jakarta Sans): Automatically adopts the user OS/device system font -->
+<!-- Unified Skylent Brand Typography (Plus Jakarta Sans): Automatically adopts the user OS/device system font -->
     <style>
       /* Mobile & Android APK Static Text/Layout Lock + Zero Notification-Bar Overlap */
       :root {
         --sky-safe-top: env(safe-area-inset-top, 0px);
         --sky-safe-bottom: env(safe-area-inset-bottom, 0px);
-        --sky-adaptive-font: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        --sky-adaptive-font: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", Arial, sans-serif;
         font-size: clamp(14.5px, 0.35vw + 13.5px, 16px);
         -webkit-text-size-adjust: 100%;
         -moz-text-size-adjust: 100%;
@@ -62,7 +58,10 @@
       }
       html,
       body {
-        font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', Arial, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
         
         
         

@@ -25,7 +25,7 @@
   max-width: 15.5em;
   font-family: var(--sk-font-heading);
   font-size: clamp(32px, 4.4vw, 52px);
-  font-weight: 800;
+  font-weight: 600;
   line-height: 1.08;
   letter-spacing: -0.032em;
   color: #0F172A !important;
@@ -46,7 +46,7 @@
 
 .cpx .cpx-hero .hx-eyebrow {
   color: #5142B5;
-  font-weight: 800;
+  font-weight: 600;
 }
 
 .cpx .hx-hero__actions .sk-btn-secondary {
@@ -97,7 +97,7 @@
 .cpx-dossier-preview__top strong {
   font-family: var(--sk-font-heading);
   font-size: 18px;
-  font-weight: 800;
+  font-weight: 600;
   color: #0F172A;
 }
 
@@ -138,7 +138,7 @@
   display: block;
   font-family: var(--sk-font-mono);
   font-size: 13px;
-  font-weight: 800;
+  font-weight: 600;
   color: #5142B5;
   margin-top: 2px;
 }
@@ -238,7 +238,7 @@
   display: block;
   font-family: var(--sk-font-heading);
   font-size: 17px;
-  font-weight: 800;
+  font-weight: 600;
   color: #0F172A;
   margin-bottom: 6px;
 }
@@ -341,7 +341,7 @@
   margin: 2px 0 0;
   font-family: var(--sk-font-heading);
   font-size: 19px;
-  font-weight: 800;
+  font-weight: 600;
   letter-spacing: -0.01em;
   color: #0F172A;
 }
@@ -452,7 +452,7 @@
 
 .cpx .cpx-sources b {
   font-size: 16px;
-  font-weight: 800;
+  font-weight: 600;
   color: #0F172A;
 }
 
@@ -491,7 +491,7 @@
 
 .cpx .cpx-hub b {
   font-size: 24px;
-  font-weight: 800;
+  font-weight: 600;
   color: #FFFFFF;
 }
 

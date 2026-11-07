@@ -456,7 +456,7 @@ export default function AdminPricingAndCouponsPanel() {
       <section style={cardStyle}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 12, marginBottom: 16 }}>
           <div>
-            <span style={{ fontSize: 11, fontFamily: "var(--font-mono)", fontWeight: 800, color: "#5142b5", textTransform: "uppercase" }}>
+            <span style={{ fontSize: 11, fontFamily: "var(--font-mono)", fontWeight: 600, color: "#5142b5", textTransform: "uppercase" }}>
               LIVE COURSE FEE &amp; TIER PRICING ENGINE
             </span>
             <h2 style={{ margin: "4px 0 4px", fontSize: 19, color: "#0f172a" }}>
@@ -546,7 +546,7 @@ export default function AdminPricingAndCouponsPanel() {
                     background: "#5142b5",
                     color: "#ffffff",
                     fontSize: 13,
-                    fontWeight: 800,
+                    fontWeight: 600,
                     cursor: "pointer",
                     whiteSpace: "nowrap",
                   }}
@@ -599,7 +599,7 @@ export default function AdminPricingAndCouponsPanel() {
           >
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8, marginBottom: 10 }}>
               <div>
-                <span style={{ fontSize: 10.5, fontFamily: "var(--font-mono)", fontWeight: 800, color: "#dc2626", textTransform: "uppercase" }}>
+                <span style={{ fontSize: 10.5, fontFamily: "var(--font-mono)", fontWeight: 600, color: "#dc2626", textTransform: "uppercase" }}>
                    HOT ABANDONED CHECKOUT &amp; PAYMENT-DROP LEADS ({abandonedLeads.length})
                 </span>
                 <p style={{ margin: "2px 0 0", fontSize: 12.5, color: "#7f1d1d" }}>
@@ -629,7 +629,7 @@ export default function AdminPricingAndCouponsPanel() {
                     </strong>
                     <div style={{ fontSize: 12, color: "#475569" }}>
                       Track: <strong>{lead.targetSlug}</strong> ({lead.tier}) · ₹{Number(lead.amount).toLocaleString("en-IN")} · Status:{" "}
-                      <span style={{ color: lead.status === "CANCELLED" ? "#dc2626" : "#d97706", fontWeight: 800 }}>
+                      <span style={{ color: lead.status === "CANCELLED" ? "#dc2626" : "#d97706", fontWeight: 600 }}>
                         {lead.status === "CANCELLED" ? "PAYMENT CANCELLED ON PAYU" : "CHECKOUT INITIATED"}
                       </span>
                     </div>
@@ -665,7 +665,7 @@ export default function AdminPricingAndCouponsPanel() {
 
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12, marginBottom: 14 }}>
           <div>
-            <span style={{ fontSize: 11, fontFamily: "var(--font-mono)", fontWeight: 800, color: "#059669", textTransform: "uppercase" }}>
+            <span style={{ fontSize: 11, fontFamily: "var(--font-mono)", fontWeight: 600, color: "#059669", textTransform: "uppercase" }}>
               STEP 1: REVIEW &amp; APPROVE COUNSELOR REQUESTS
             </span>
             <h2 style={{ margin: "2px 0 0", fontSize: 19, color: "#0f172a" }}>
@@ -789,7 +789,7 @@ export default function AdminPricingAndCouponsPanel() {
                   background: "#5142b5",
                   color: "#ffffff",
                   fontSize: 13.5,
-                  fontWeight: 800,
+                  fontWeight: 600,
                   cursor: "pointer",
                 }}
               >
@@ -818,7 +818,7 @@ export default function AdminPricingAndCouponsPanel() {
             >
               <div>
                 <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-                  <span style={{ fontSize: 11, fontWeight: 800, padding: "2px 8px", borderRadius: 999, background: "#fef3c7", color: "#92400e", textTransform: "uppercase" }}>
+                  <span style={{ fontSize: 11, fontWeight: 600, padding: "2px 8px", borderRadius: 999, background: "#fef3c7", color: "#92400e", textTransform: "uppercase" }}>
                     Pending Admin Approval
                   </span>
                   <strong style={{ fontSize: 14, color: "#0f172a" }}>
@@ -844,7 +844,7 @@ export default function AdminPricingAndCouponsPanel() {
                     background: "#059669",
                     color: "#ffffff",
                     fontSize: 13,
-                    fontWeight: 800,
+                    fontWeight: 600,
                     cursor: "pointer",
                   }}
                 >
@@ -878,7 +878,7 @@ export default function AdminPricingAndCouponsPanel() {
 
         {/* STEP 2: DIRECT ADMIN MASTER COUPON CREATION */}
         <div style={{ borderTop: "1px solid #e2e8f0", paddingTop: 18 }}>
-          <span style={{ fontSize: 11, fontFamily: "var(--font-mono)", fontWeight: 800, color: "#5142b5", textTransform: "uppercase" }}>
+          <span style={{ fontSize: 11, fontFamily: "var(--font-mono)", fontWeight: 600, color: "#5142b5", textTransform: "uppercase" }}>
             STEP 2: DIRECT ADMIN MASTER COUPON GENERATOR
           </span>
           <h3 style={{ margin: "4px 0 4px", fontSize: 17, color: "#0f172a" }}>
@@ -982,7 +982,7 @@ export default function AdminPricingAndCouponsPanel() {
                   background: "#5142b5",
                   color: "#ffffff",
                   fontSize: 13.5,
-                  fontWeight: 800,
+                  fontWeight: 600,
                   cursor: "pointer",
                 }}
               >
@@ -994,7 +994,7 @@ export default function AdminPricingAndCouponsPanel() {
 
         {/* ACTIVE ADMIN-APPROVED COUPONS TABLE */}
         <div>
-          <span style={{ fontSize: 11, fontFamily: "var(--font-mono)", fontWeight: 800, color: "#5142b5", textTransform: "uppercase" }}>
+          <span style={{ fontSize: 11, fontFamily: "var(--font-mono)", fontWeight: 600, color: "#5142b5", textTransform: "uppercase" }}>
             ACTIVE ADMIN-APPROVED COUPONS ({coupons.length})
           </span>
           <div style={{ display: "grid", gap: 8, marginTop: 8 }}>
@@ -1094,7 +1094,7 @@ export default function AdminPricingAndCouponsPanel() {
 
       {/* SECTION 3: PAYMENT GATEWAY & PAYMENT METHODS CONTROL */}
       <section style={cardStyle}>
-        <span style={{ fontSize: 11, fontFamily: "var(--font-mono)", fontWeight: 800, color: "#5142b5", textTransform: "uppercase" }}>
+        <span style={{ fontSize: 11, fontFamily: "var(--font-mono)", fontWeight: 600, color: "#5142b5", textTransform: "uppercase" }}>
           PAYMENT METHODS &amp; GATEWAY CONFIGURATION
         </span>
         <h2 style={{ margin: "4px 0 4px", fontSize: 19, color: "#0f172a" }}>
@@ -1199,7 +1199,7 @@ export default function AdminPricingAndCouponsPanel() {
                 background: "#5142b5",
                 color: "#ffffff",
                 fontSize: 13.5,
-                fontWeight: 800,
+                fontWeight: 600,
                 cursor: "pointer",
               }}
             >
@@ -1211,7 +1211,7 @@ export default function AdminPricingAndCouponsPanel() {
 
       {/* SECTION 4: 1-CLICK IN-APP UPDATE BROADCASTER (MOBILE APK & WEB) */}
       <section style={cardStyle}>
-        <span style={{ fontSize: 11, fontFamily: "var(--font-mono)", fontWeight: 800, color: "#10b981", textTransform: "uppercase" }}>
+        <span style={{ fontSize: 11, fontFamily: "var(--font-mono)", fontWeight: 600, color: "#10b981", textTransform: "uppercase" }}>
           MOBILE APK &amp; WEB IN-APP UPDATE ENGINE
         </span>
         <h2 style={{ margin: "4px 0 4px", fontSize: 19, color: "#0f172a" }}>
@@ -1262,7 +1262,7 @@ export default function AdminPricingAndCouponsPanel() {
                 background: "#059669",
                 color: "#ffffff",
                 fontSize: 13,
-                fontWeight: 800,
+                fontWeight: 600,
                 cursor: "pointer",
               }}
             >

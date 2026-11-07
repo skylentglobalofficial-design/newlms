@@ -1992,7 +1992,7 @@ export function HomeElixirFlywheel() {
                     <th scope="row">{row.dimension}</th>
                     <td className="is-skylent">
                       <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
-                        <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 20, height: 20, borderRadius: "50%", background: "#dcfce7", color: "#15803d", fontWeight: 800, fontSize: 12, flexShrink: 0 }}>✓</span>
+                        <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 20, height: 20, borderRadius: "50%", background: "#dcfce7", color: "#15803d", fontWeight: 600, fontSize: 12, flexShrink: 0 }}>✓</span>
                         <strong>{row.skylent}</strong>
                       </span>
                     </td>
@@ -2181,7 +2181,7 @@ export function HomeInstitutionalArchitecture() {
                 ["20% · V1 → V2 Revision", "Measurable improvement after faculty critique"],
               ].map(([k, v]) => (
                 <div key={k} style={{ background: "#FFFFFF", border: "1.5px solid #DDD7FF", borderTop: "1px solid #E2E8F0", borderRadius: 12, padding: 16, boxShadow: "0 6px 18px -10px rgba(81, 66, 181, 0.1)" }}>
-                  <strong style={{ color: "#5142B5", fontSize: 17, fontWeight: 800, display: "block", marginBottom: 4 }}>{k}</strong>
+                  <strong style={{ color: "#5142B5", fontSize: 17, fontWeight: 600, display: "block", marginBottom: 4 }}>{k}</strong>
                   <span style={{ fontSize: 13, color: "#334155", lineHeight: 1.45, display: "block" }}>{v}</span>
                 </div>
               ))}

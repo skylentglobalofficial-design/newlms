@@ -284,11 +284,11 @@ export default function EventsPage() {
                 <span style={{ fontSize: 11, fontFamily: "var(--font-mono)", fontWeight: 700, color: "#E9D5FF", letterSpacing: "0.08em" }}>
                   HOW ₹99 WORKSHOPS WORK
                 </span>
-                <span style={{ padding: "3px 10px", borderRadius: 999, background: "#DCFCE7", color: "#15803D", fontSize: 11, fontWeight: 800 }}>
+                <span style={{ padding: "3px 10px", borderRadius: 999, background: "#DCFCE7", color: "#15803D", fontSize: 11, fontWeight: 600 }}>
                   100% Coin Back
                 </span>
               </div>
-              <h2 style={{ margin: "0 0 8px", fontSize: 21, fontWeight: 800, color: "#FFFFFF" }}>
+              <h2 style={{ margin: "0 0 8px", fontSize: 21, fontWeight: 600, color: "#FFFFFF" }}>
                 Pay ₹99 → Attend Live Lab → Unlock ₹99 Case Studies Free
               </h2>
               <p style={{ margin: "0 0 16px", fontSize: 13.5, lineHeight: 1.55, color: "#E2E8F0" }}>
@@ -345,7 +345,7 @@ export default function EventsPage() {
                       {track.fee}
                     </span>
                   </div>
-                  <strong style={{ fontSize: 18, fontWeight: 800, color: "#0F172A", lineHeight: 1.3 }}>
+                  <strong style={{ fontSize: 18, fontWeight: 600, color: "#0F172A", lineHeight: 1.3 }}>
                     {track.title}
                   </strong>
                   <p style={{ margin: 0, fontSize: 13.5, lineHeight: 1.55, color: "#475569", flex: 1 }}>
@@ -392,12 +392,12 @@ export default function EventsPage() {
                   }}
                 >
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
-                    <span style={{ padding: "3px 10px", borderRadius: 999, background: "#F5F3FF", border: "1px solid #DDD7FF", color: "#5142B5", fontFamily: "var(--font-mono)", fontSize: 11, fontWeight: 800 }}>
+                    <span style={{ padding: "3px 10px", borderRadius: 999, background: "#F5F3FF", border: "1px solid #DDD7FF", color: "#5142B5", fontFamily: "var(--font-mono)", fontSize: 11, fontWeight: 600 }}>
                       {item.coins}
                     </span>
                     <span style={{ fontSize: 11, color: "#64748B", fontWeight: 600 }}>{item.kind}</span>
                   </div>
-                  <strong style={{ fontSize: 16, fontWeight: 800, color: "#0F172A", lineHeight: 1.35 }}>
+                  <strong style={{ fontSize: 16, fontWeight: 600, color: "#0F172A", lineHeight: 1.35 }}>
                     {item.title}
                   </strong>
                   <p style={{ margin: 0, fontSize: 13, lineHeight: 1.5, color: "#475569", flex: 1 }}>
@@ -470,7 +470,7 @@ export default function EventsPage() {
                     }}
                   >
                     <div>
-                      <span style={{ display: "block", fontSize: 13, fontWeight: 800, color: "#5142B5" }}>
+                      <span style={{ display: "block", fontSize: 13, fontWeight: 600, color: "#5142B5" }}>
                         {formatDate(event.startTime)}
                       </span>
                       <span style={{ display: "block", fontSize: 12, color: "#64748B", marginTop: 2 }}>
@@ -486,7 +486,7 @@ export default function EventsPage() {
                           {event.location || "Online · Skylent OS"}
                         </span>
                       </div>
-                      <strong style={{ display: "block", fontSize: 17.5, fontWeight: 800, color: "#0F172A" }}>
+                      <strong style={{ display: "block", fontSize: 17.5, fontWeight: 600, color: "#0F172A" }}>
                         {event.title}
                       </strong>
                       <p style={{ margin: "4px 0 0", fontSize: 13.5, color: "#475569", lineHeight: 1.5 }}>
@@ -494,7 +494,7 @@ export default function EventsPage() {
                       </p>
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 6 }}>
-                      <span style={{ padding: "4px 10px", borderRadius: 999, background: "#DCFCE7", border: "1px solid #86EFAC", color: "#15803D", fontSize: 11.5, fontWeight: 800 }}>
+                      <span style={{ padding: "4px 10px", borderRadius: 999, background: "#DCFCE7", border: "1px solid #86EFAC", color: "#15803D", fontSize: 11.5, fontWeight: 600 }}>
                         ₹99 → +99 Elixir
                       </span>
                       <span style={{ fontSize: 12, fontWeight: 700, color: "#5142B5" }}>

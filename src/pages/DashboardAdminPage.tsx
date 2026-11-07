@@ -104,7 +104,7 @@ function AdminOverview({ onSelectTab }: { onSelectTab: (tabId: string) => void }
           style={{
             background: '#ffffff',
             color: '#5142b5',
-            fontWeight: 800,
+            fontWeight: 600,
             border: '1px solid #ffffff',
             padding: '10px 18px',
             borderRadius: 999,
@@ -784,13 +784,13 @@ export default function DashboardAdminPage() {
                     }}
                   >
                     <div>
-                      <span style={{ fontSize: 10.5, fontFamily: 'var(--font-mono)', fontWeight: 800, color: '#5142b5' }}>
+                      <span style={{ fontSize: 10.5, fontFamily: 'var(--font-mono)', fontWeight: 600, color: '#5142b5' }}>
                         {card.badge}
                       </span>
                       <h3 style={{ margin: '4px 0 6px', fontSize: 17, color: '#0f172a' }}>{card.title}</h3>
                       <p style={{ margin: 0, fontSize: 13, color: '#475569', lineHeight: 1.5 }}>{card.desc}</p>
                     </div>
-                    <span style={{ fontSize: 12.5, fontWeight: 800, color: '#5142b5' }}>
+                    <span style={{ fontSize: 12.5, fontWeight: 600, color: '#5142b5' }}>
                       Open {card.title} Tab →
                     </span>
                   </button>

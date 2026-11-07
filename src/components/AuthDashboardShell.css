@@ -447,7 +447,7 @@
   background: #5142b5;
   border-color: #c4b8ff;
   color: #ffffff;
-  font-weight: 800;
+  font-weight: 600;
 }
 
 /* ── V74 Native APK & Mobile Dashboard UI Polish ── */
@@ -505,7 +505,7 @@
   .auth-shell-bottom-nav button[aria-current="page"] {
     background: #f3f0ff;
     color: #5142b5 !important;
-    font-weight: 800;
+    font-weight: 600;
   }
 
   .auth-shell-content {

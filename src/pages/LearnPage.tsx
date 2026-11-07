@@ -109,7 +109,7 @@ function TopProgressRing({ percent }: { percent: number }) {
           strokeLinecap="round"
         />
       </svg>
-      <span style={{ position: 'absolute', fontSize: 9.5, fontWeight: 800, color: '#0f172a', fontFamily: 'var(--font-mono)' }}>
+      <span style={{ position: 'absolute', fontSize: 9.5, fontWeight: 600, color: '#0f172a', fontFamily: 'var(--font-mono)' }}>
         {clamped}%
       </span>
     </div>

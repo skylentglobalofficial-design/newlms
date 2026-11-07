@@ -609,7 +609,7 @@
 .pl-path-index {
   color: var(--skylent-color-accent);
   font-size: 11px;
-  font-weight: 800;
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
   padding-top: 2px;
 }
@@ -812,7 +812,7 @@
   background: hsl(var(--site-soft-blue));
   color: hsl(var(--site-ocean));
   font-size: 13px;
-  font-weight: 800;
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
 

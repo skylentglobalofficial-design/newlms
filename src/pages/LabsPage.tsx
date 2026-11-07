@@ -72,7 +72,7 @@ export default function LabsPage() {
                     borderRadius: 999,
                     background: "#ffffff",
                     color: "#5142b5",
-                    fontWeight: 800,
+                    fontWeight: 600,
                     fontSize: 13.5,
                     textDecoration: "none",
                     boxShadow: "0 8px 20px rgba(0,0,0,0.16)",
@@ -153,7 +153,7 @@ export default function LabsPage() {
                       {environment.tools.join(" · ")}
                     </p>
                   </div>
-                  <Link to={`/courses/${environment.courseSlug}`} style={{ fontWeight: 800, fontSize: 13, color: "#5142b5", textDecoration: "none" }}>
+                  <Link to={`/courses/${environment.courseSlug}`} style={{ fontWeight: 600, fontSize: 13, color: "#5142b5", textDecoration: "none" }}>
                     Inspect course curriculum →
                   </Link>
                 </li>
@@ -179,7 +179,7 @@ export default function LabsPage() {
                     <h3 style={{ margin: "4px 0 6px", fontSize: 18, color: "#0f172a" }}>{item.label}</h3>
                     <p style={{ margin: 0, fontSize: 13.5, color: "#475569", lineHeight: 1.55 }}>{item.summary}</p>
                   </div>
-                  <Link to={`/courses/${item.courseSlug}`} style={{ fontWeight: 800, fontSize: 13, color: "#5142b5", textDecoration: "none" }}>
+                  <Link to={`/courses/${item.courseSlug}`} style={{ fontWeight: 600, fontSize: 13, color: "#5142b5", textDecoration: "none" }}>
                     Inspect {item.courseTitle} →
                   </Link>
                 </li>

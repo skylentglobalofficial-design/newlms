@@ -94,7 +94,7 @@ export default function WorkshopDetailPage() {
                     borderRadius: 999,
                     background: "#ffffff",
                     color: "#5142b5",
-                    fontWeight: 800,
+                    fontWeight: 600,
                     fontSize: 13.5,
                     textDecoration: "none",
                     boxShadow: "0 8px 20px rgba(0,0,0,0.16)",

@@ -283,7 +283,7 @@ export default function CheckoutPage() {
           style={{
             fontFamily: "var(--skylent-font-heading, var(--font-display))",
             fontSize: 19,
-            fontWeight: 800,
+            fontWeight: 600,
             letterSpacing: "0.14em",
             textTransform: "uppercase",
             color: "#ffffff",
@@ -374,7 +374,7 @@ export default function CheckoutPage() {
               margin: 0,
               textAlign: "center",
               fontSize: 21,
-              fontWeight: 800,
+              fontWeight: 600,
               color: "#0f172a",
               fontFamily: "var(--font-display)",
             }}
@@ -409,7 +409,7 @@ export default function CheckoutPage() {
                 style={{
                   display: "block",
                   fontSize: 15.5,
-                  fontWeight: 800,
+                  fontWeight: 600,
                   color: "#0f172a",
                   lineHeight: 1.3,
                   marginBottom: 4,
@@ -487,7 +487,7 @@ export default function CheckoutPage() {
                   background: "#5142b5",
                   color: "#ffffff",
                   fontSize: 13.5,
-                  fontWeight: 800,
+                  fontWeight: 600,
                   cursor: validatingCoupon ? "wait" : "pointer",
                 }}
               >
@@ -511,7 +511,7 @@ export default function CheckoutPage() {
                         background: appliedCoupon?.code === c.code ? "#ecfdf5" : "#f5f3ff",
                         color: appliedCoupon?.code === c.code ? "#047857" : "#5142b5",
                         fontSize: 11.5,
-                        fontWeight: 800,
+                        fontWeight: 600,
                         cursor: "pointer",
                       }}
                     >
@@ -622,7 +622,7 @@ export default function CheckoutPage() {
                 <strong style={{ fontSize: 16, color: "#0f172a", display: "block" }}>Total</strong>
                 <span style={{ fontSize: 11.5, color: "#64748b" }}>Inclusive of taxes</span>
               </div>
-              <strong style={{ fontSize: 24, fontWeight: 800, color: "#5142b5" }}>
+              <strong style={{ fontSize: 24, fontWeight: 600, color: "#5142b5" }}>
                 ₹{totalPayable.toLocaleString("en-IN")}
               </strong>
             </div>
@@ -657,7 +657,7 @@ export default function CheckoutPage() {
               background: "#5142b5",
               color: "#ffffff",
               fontSize: 15,
-              fontWeight: 800,
+              fontWeight: 600,
               cursor: submitting ? "wait" : "pointer",
               opacity: submitting ? 0.75 : 1,
             }}
@@ -681,7 +681,7 @@ export default function CheckoutPage() {
           >
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 6 }}>
               <strong style={{ color: "#0f172a", fontSize: 13 }}>What You Unlock Immediately After Checkout</strong>
-              <span style={{ fontSize: 11, fontWeight: 800, color: "#047857", background: "#ecfdf5", padding: "2px 8px", borderRadius: 999 }}>
+              <span style={{ fontSize: 11, fontWeight: 600, color: "#047857", background: "#ecfdf5", padding: "2px 8px", borderRadius: 999 }}>
                 ✓ Instant Activation · 7-Day Refund Protection
               </span>
             </div>

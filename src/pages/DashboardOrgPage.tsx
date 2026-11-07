@@ -98,7 +98,7 @@ function InstitutionWorkspace({
                 color: '#5142b5',
                 padding: '10px 16px',
                 borderRadius: 999,
-                fontWeight: 800,
+                fontWeight: 600,
                 fontSize: 13,
                 textDecoration: 'none',
                 boxShadow: '0 6px 16px rgba(0,0,0,0.16)',

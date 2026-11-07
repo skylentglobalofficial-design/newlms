@@ -51,8 +51,8 @@
   --sk-fast: 150ms;
   --sk-base: 250ms;
   --ed-ease: var(--sk-ease);
-  --sk-font-heading: "Inter", system-ui, sans-serif;
-  --sk-font-body: "Inter", system-ui, sans-serif;
+  --sk-font-heading: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", Arial, sans-serif;
+  --sk-font-body: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", Arial, sans-serif;
 
   /* Skylent v2: proof surfaces stay near-white; navy is only for compact product chrome */
   --site-proof: 252 40% 97.5%;          /* #F7F6FC evidence surface */
@@ -65,7 +65,7 @@
   --site-on-navy-muted: 250 30% 80%;   /* labels on deep navy */
   --site-cyan: 205 65% 54%;             /* #3E96D6 sky blue, secondary to violet */
   --site-data-rest: 252 20% 80%;        /* receded chart marks */
-  --sk-font-mono: "DM Mono", ui-monospace, monospace;
+  --sk-font-mono: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", Arial, sans-serif;
   --sk-radius-plate: 16px;
   --sk-radius-mat: 22px;
   --sk-shadow-plate: 0 1px 2px hsl(var(--site-ink) / .06), 0 28px 56px -28px hsl(var(--site-ink) / .26);
@@ -109,7 +109,7 @@
   --color-site-data-rest: hsl(var(--site-data-rest));
 
   --font-heading: var(--sk-font-heading);
-  --font-mono: var(--sk-font-mono);
+  --font-mono: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", Arial, sans-serif;
   --radius-card: var(--sk-radius-card);
   --radius-sk-lg: var(--sk-radius-lg);
   --shadow-sk: var(--sk-shadow);

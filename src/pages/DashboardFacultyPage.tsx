@@ -175,7 +175,7 @@ function CatalogOverview({
             display: 'inline-flex', alignItems: 'center', gap: 8,
             background: '#ffffff', color: '#5142b5', border: '1px solid #ffffff',
             padding: '11px 20px', borderRadius: 999,
-            fontSize: 13.5, fontWeight: 800, fontFamily: 'var(--font-body)',
+            fontSize: 13.5, fontWeight: 600, fontFamily: 'var(--font-body)',
             cursor: 'pointer',
             boxShadow: '0 6px 16px rgba(0,0,0,0.16)',
           }}

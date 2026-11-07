@@ -394,10 +394,10 @@ export default function ProgrammeListing({ program, truth, cta, honesty, afterEn
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))", gap: 14, marginTop: 20 }}>
               {pathwaySpec.steps.map((step) => (
                 <div key={step.num} style={{ padding: "18px", borderRadius: 14, background: "#FFFFFF", border: "1px solid #E2E8F0", boxShadow: "0 10px 24px -14px rgba(81, 66, 181, 0.25)" }}>
-                  <span style={{ fontSize: 11.5, fontWeight: 800, color: "#5142B5", fontFamily: "var(--font-mono)" }}>
+                  <span style={{ fontSize: 11.5, fontWeight: 600, color: "#5142B5", fontFamily: "var(--font-mono)" }}>
                     STEP {step.num}
                   </span>
-                  <strong style={{ display: "block", margin: "6px 0", fontSize: 15.5, fontWeight: 800, color: "#0F172A" }}>
+                  <strong style={{ display: "block", margin: "6px 0", fontSize: 15.5, fontWeight: 600, color: "#0F172A" }}>
                     {step.title}
                   </strong>
                   <p style={{ margin: 0, fontSize: 13.5, color: "#334155", lineHeight: 1.5 }}>{step.detail}</p>
@@ -443,13 +443,13 @@ export default function ProgrammeListing({ program, truth, cta, honesty, afterEn
                   <span style={{ fontSize: 11.5, fontWeight: 700, color: "#15803D", background: "#DCFCE7", border: "1px solid #86EFAC", padding: "3px 10px", borderRadius: 999 }}>
                     ✓ Open now · 5 Modules · 15 Lessons
                   </span>
-                  <span style={{ fontSize: 11.5, fontWeight: 800, color: "#5142B5", fontFamily: "var(--font-mono)" }}>From ₹1,499</span>
+                  <span style={{ fontSize: 11.5, fontWeight: 600, color: "#5142B5", fontFamily: "var(--font-mono)" }}>From ₹1,499</span>
                 </div>
-                <strong style={{ fontSize: 19, fontWeight: 800, color: "#0F172A" }}>{item.title}</strong>
+                <strong style={{ fontSize: 19, fontWeight: 600, color: "#0F172A" }}>{item.title}</strong>
                 <span style={{ fontSize: 13.5, color: "#475569" }}>
                   3 module quizzes · 3 applied briefs · 1 graded capstone · Verifiable Certificate
                 </span>
-                <span style={{ marginTop: "auto", paddingTop: 8, fontSize: 14, fontWeight: 800, color: "#5142B5", display: "inline-flex", alignItems: "center", gap: 6 }}>
+                <span style={{ marginTop: "auto", paddingTop: 8, fontSize: 14, fontWeight: 600, color: "#5142B5", display: "inline-flex", alignItems: "center", gap: 6 }}>
                   Start {item.title} <ArrowRight />
                 </span>
               </Link>
@@ -475,7 +475,7 @@ export default function ProgrammeListing({ program, truth, cta, honesty, afterEn
                   <span style={{ fontSize: 11.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "#5142b5" }}>
                     {course.category} · {course.duration}
                   </span>
-                  <h3 style={{ margin: "2px 0 0", fontSize: 20, fontWeight: 800, color: "#0f172a" }}>{course.title}</h3>
+                  <h3 style={{ margin: "2px 0 0", fontSize: 20, fontWeight: 600, color: "#0f172a" }}>{course.title}</h3>
                 </div>
                 <Link to={`/courses/${course.slug}`} className="sk-btn sk-btn-secondary" style={{ fontSize: 13 }}>
                   Open full course workspace <ArrowRight />

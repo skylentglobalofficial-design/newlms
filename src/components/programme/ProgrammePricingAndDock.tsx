@@ -142,7 +142,7 @@ export default function ProgrammePricingAndDock({
                         style={{
                           margin: 0,
                           fontSize: 20,
-                          fontWeight: 800,
+                          fontWeight: 600,
                           color: isProCard ? "#ffffff" : "#0f172a",
                         }}
                       >
@@ -152,7 +152,7 @@ export default function ProgrammePricingAndDock({
                         <span
                           style={{
                             fontSize: 11,
-                            fontWeight: 800,
+                            fontWeight: 600,
                             padding: "4px 10px",
                             borderRadius: 999,
                             background: "rgba(255,255,255,0.22)",
@@ -188,7 +188,7 @@ export default function ProgrammePricingAndDock({
                       <strong
                         style={{
                           fontSize: 30,
-                          fontWeight: 800,
+                          fontWeight: 600,
                           color: isProCard ? "#ffffff" : "#0f172a",
                         }}
                       >
@@ -217,7 +217,7 @@ export default function ProgrammePricingAndDock({
                         background: isProCard ? "#ffffff" : "#ede9fe",
                         color: isProCard ? "#3b0764" : "#5142b5",
                         fontSize: 14.5,
-                        fontWeight: 800,
+                        fontWeight: 600,
                         cursor: "pointer",
                         marginBottom: 18,
                       }}
@@ -258,7 +258,7 @@ export default function ProgrammePricingAndDock({
                               alignItems: "center",
                               justifyContent: "center",
                               fontSize: 11,
-                              fontWeight: 800,
+                              fontWeight: 600,
                               flexShrink: 0,
                               marginTop: 1,
                             }}
@@ -291,7 +291,7 @@ export default function ProgrammePricingAndDock({
                               alignItems: "center",
                               justifyContent: "center",
                               fontSize: 10,
-                              fontWeight: 800,
+                              fontWeight: 600,
                               flexShrink: 0,
                               marginTop: 1,
                             }}

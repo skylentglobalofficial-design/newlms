@@ -548,7 +548,7 @@ export default function CareerOSOverviewPage({ onEnrolled }: { onEnrolled?: () =
             <span
               style={{
                 fontSize: 11,
-                fontWeight: 800,
+                fontWeight: 600,
                 padding: "4px 10px",
                 borderRadius: 999,
                 background: "rgba(255,255,255,0.14)",
@@ -653,7 +653,7 @@ export default function CareerOSOverviewPage({ onEnrolled }: { onEnrolled?: () =
           >
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 10 }}>
               <div>
-                <span style={{ fontSize: 11, fontWeight: 800, color: "#5142b5", textTransform: "uppercase" }}>
+                <span style={{ fontSize: 11, fontWeight: 600, color: "#5142b5", textTransform: "uppercase" }}>
                   ACTIVE TRACK · {activeCourseValidity.tierLabel}
                 </span>
                 <h2 style={{ margin: "2px 0 0", fontSize: 20, color: "#0f172a" }}>
@@ -672,7 +672,7 @@ export default function CareerOSOverviewPage({ onEnrolled }: { onEnrolled?: () =
                     background: "#f59e0b",
                     color: "#0f172a",
                     fontSize: 12.5,
-                    fontWeight: 800,
+                    fontWeight: 600,
                     cursor: "pointer",
                   }}
                 >
@@ -712,7 +712,7 @@ export default function CareerOSOverviewPage({ onEnrolled }: { onEnrolled?: () =
                   <span
                     style={{
                       fontSize: 12,
-                      fontWeight: 800,
+                      fontWeight: 600,
                       color: curriculumGatePassed ? "#047857" : "#5142b5",
                     }}
                   >
@@ -755,7 +755,7 @@ export default function CareerOSOverviewPage({ onEnrolled }: { onEnrolled?: () =
                 <span
                   style={{
                     fontSize: 12,
-                    fontWeight: 800,
+                    fontWeight: 600,
                     padding: "4px 10px",
                     borderRadius: 999,
                     background: quizGatePassed ? "#d1fae5" : "#e2e8f0",
@@ -791,7 +791,7 @@ export default function CareerOSOverviewPage({ onEnrolled }: { onEnrolled?: () =
                 <span
                   style={{
                     fontSize: 12,
-                    fontWeight: 800,
+                    fontWeight: 600,
                     padding: "4px 10px",
                     borderRadius: 999,
                     background: projectGatePassed ? "#d1fae5" : "#e2e8f0",
@@ -870,7 +870,7 @@ export default function CareerOSOverviewPage({ onEnrolled }: { onEnrolled?: () =
                     background: allThreeGatesPassed ? "#059669" : "#cbd5e1",
                     color: allThreeGatesPassed ? "#ffffff" : "#475569",
                     fontSize: 14,
-                    fontWeight: 800,
+                    fontWeight: 600,
                     cursor: allThreeGatesPassed ? "pointer" : "not-allowed",
                   }}
                 >
@@ -909,7 +909,7 @@ export default function CareerOSOverviewPage({ onEnrolled }: { onEnrolled?: () =
       >
         <div>
           <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap", marginBottom: 4 }}>
-            <span style={{ fontSize: 11, fontWeight: 800, padding: "3px 9px", borderRadius: 999, background: "#10b981", color: "#064e3b" }}>
+            <span style={{ fontSize: 11, fontWeight: 600, padding: "3px 9px", borderRadius: 999, background: "#10b981", color: "#064e3b" }}>
               ✓ CAREER OS ACTIVE · +3 MONTHS PRACTICE EXTENSION
             </span>
             {activeCourseValidity ? (
@@ -947,7 +947,7 @@ export default function CareerOSOverviewPage({ onEnrolled }: { onEnrolled?: () =
               background: "#ffffff",
               color: "#1e1b4b",
               fontSize: 12.5,
-              fontWeight: 800,
+              fontWeight: 600,
               textDecoration: "none",
             }}
           >
@@ -967,7 +967,7 @@ export default function CareerOSOverviewPage({ onEnrolled }: { onEnrolled?: () =
       >
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10, flexWrap: "wrap", marginBottom: 14 }}>
           <div>
-            <span style={{ fontSize: 11, fontWeight: 800, color: "#5142b5", textTransform: "uppercase" }}>
+            <span style={{ fontSize: 11, fontWeight: 600, color: "#5142b5", textTransform: "uppercase" }}>
               1. ZERO-TO-HERO CAREER TRACK
             </span>
             <h2 style={{ margin: "2px 0 0", fontSize: 18, color: "#0f172a" }}>
@@ -1037,7 +1037,7 @@ export default function CareerOSOverviewPage({ onEnrolled }: { onEnrolled?: () =
                   <span
                     style={{
                       fontSize: 10.5,
-                      fontWeight: 800,
+                      fontWeight: 600,
                       padding: "2px 8px",
                       borderRadius: 6,
                       background: topic.tag.includes("Statistics") ? "#dcfce7" : "#ede9fe",
@@ -1203,7 +1203,7 @@ export default function CareerOSOverviewPage({ onEnrolled }: { onEnrolled?: () =
       >
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10, flexWrap: "wrap", marginBottom: 14 }}>
           <div>
-            <span style={{ fontSize: 11, fontWeight: 800, color: "#5142b5", textTransform: "uppercase" }}>
+            <span style={{ fontSize: 11, fontWeight: 600, color: "#5142b5", textTransform: "uppercase" }}>
               2. RECRUITER JOB BOARD
             </span>
             <h2 style={{ margin: "2px 0 0", fontSize: 18, color: "#0f172a" }}>
@@ -1270,7 +1270,7 @@ export default function CareerOSOverviewPage({ onEnrolled }: { onEnrolled?: () =
               >
                 <div>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
-                    <span style={{ fontSize: 10.5, fontWeight: 800, padding: "2px 8px", borderRadius: 999, background: "#dcfce7", color: "#166534" }}>
+                    <span style={{ fontSize: 10.5, fontWeight: 600, padding: "2px 8px", borderRadius: 999, background: "#dcfce7", color: "#166534" }}>
                       {job.matchPct}% Match
                     </span>
                     <span style={{ fontSize: 11, fontWeight: 700, color: "#5142b5" }}>{job.ctcRange}</span>
@@ -1291,7 +1291,7 @@ export default function CareerOSOverviewPage({ onEnrolled }: { onEnrolled?: () =
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingTop: 8, borderTop: "1px solid #f1f5f9" }}>
                   <span style={{ fontSize: 11, color: "#64748b", fontWeight: 600 }}>{job.badge}</span>
                   {applied ? (
-                    <span style={{ fontSize: 11.5, fontWeight: 800, color: "#047857" }}>✓ Applied</span>
+                    <span style={{ fontSize: 11.5, fontWeight: 600, color: "#047857" }}>✓ Applied</span>
                   ) : (
                     <button
                       type="button"

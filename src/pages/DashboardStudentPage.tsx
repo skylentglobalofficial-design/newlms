@@ -250,7 +250,7 @@ function ProgressRing({
           strokeLinecap="round"
         />
       </svg>
-      <span style={{ position: 'absolute', fontSize: size >= 90 ? 18 : 11.5, fontWeight: 800, color: '#0f172a', fontFamily: 'var(--font-mono)' }}>
+      <span style={{ position: 'absolute', fontSize: size >= 90 ? 18 : 11.5, fontWeight: 600, color: '#0f172a', fontFamily: 'var(--font-mono)' }}>
         {label ?? `${clamped}%`}
       </span>
     </div>
@@ -490,7 +490,7 @@ function LearnerProfileSettingsSection() {
               alignItems: "center",
               justifyContent: "center",
               fontSize: 20,
-              fontWeight: 800,
+              fontWeight: 600,
             }}
           >
             {user.avatar || "LR"}
@@ -511,7 +511,7 @@ function LearnerProfileSettingsSection() {
             background: "#ffffff",
             color: "#0f172a",
             fontSize: 13,
-            fontWeight: 800,
+            fontWeight: 600,
             textDecoration: "none",
           }}
         >
@@ -723,7 +723,7 @@ function SelectYourPlanPortalModal({
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16, marginBottom: 22 }}>
           <div>
-            <span style={{ fontSize: 11.5, fontWeight: 800, color: '#5142b5', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+            <span style={{ fontSize: 11.5, fontWeight: 600, color: '#5142b5', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
               {course.title}
             </span>
             <h2 style={{ margin: '4px 0 0', fontSize: 'clamp(22px, 2.6vw, 28px)', color: '#0f172a', fontFamily: 'var(--font-display)' }}>
@@ -791,7 +791,7 @@ function SelectYourPlanPortalModal({
                   background: '#ede9fe',
                   color: '#4c1d95',
                   fontSize: 14,
-                  fontWeight: 800,
+                  fontWeight: 600,
                   cursor: 'pointer',
                   marginBottom: 18,
                 }}
@@ -843,7 +843,7 @@ function SelectYourPlanPortalModal({
                   background: '#ede9fe',
                   color: '#4c1d95',
                   fontSize: 14,
-                  fontWeight: 800,
+                  fontWeight: 600,
                   cursor: 'pointer',
                   marginBottom: 18,
                 }}
@@ -895,7 +895,7 @@ function SelectYourPlanPortalModal({
                   background: '#ffffff',
                   color: '#0f172a',
                   fontSize: 14,
-                  fontWeight: 800,
+                  fontWeight: 600,
                   cursor: 'pointer',
                   marginBottom: 18,
                 }}
@@ -2393,7 +2393,7 @@ export default function DashboardStudentPage() {
             }}
           >
             <div style={{ minWidth: 220, flex: "1 1 280px" }}>
-              <span style={{ fontSize: 10.5, fontFamily: "var(--font-mono)", fontWeight: 800, color: "#5142b5", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+              <span style={{ fontSize: 10.5, fontFamily: "var(--font-mono)", fontWeight: 600, color: "#5142b5", textTransform: "uppercase", letterSpacing: "0.06em" }}>
                 PERSONALIZED CAREER GOAL · SKYLENT CAREER OS
               </span>
               <h2 style={{ margin: "3px 0 4px", fontSize: 16.5, color: "#0f172a" }}>
@@ -2446,7 +2446,7 @@ export default function DashboardStudentPage() {
                   border: "1px solid #6ee7b7",
                   color: "#047857",
                   fontSize: 11.5,
-                  fontWeight: 800,
+                  fontWeight: 600,
                   textDecoration: "none",
                 }}
               >

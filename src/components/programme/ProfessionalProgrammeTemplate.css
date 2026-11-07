@@ -434,7 +434,7 @@
   background: #ecfdf5;
   color: #059669;
   font-size: 0.7rem;
-  font-weight: 800;
+  font-weight: 600;
 }
 
 .pp-enrol-card__cta {
@@ -1318,7 +1318,7 @@ section.pp-practice {
   margin-top: 12px !important;
   font-family: var(--sk-font-heading);
   font-size: clamp(1.75rem, 2.8vw, 2.45rem);
-  font-weight: 800;
+  font-weight: 600;
   line-height: 1.15;
   color: #0F172A;
 }
@@ -1453,7 +1453,7 @@ section.pp-practice {
 .pp-plan-card__price {
   font-family: var(--sk-font-heading);
   font-size: 1.95rem;
-  font-weight: 800;
+  font-weight: 600;
   color: #0F172A;
   letter-spacing: -0.02em;
 }

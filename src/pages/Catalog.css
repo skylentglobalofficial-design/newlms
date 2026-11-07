@@ -1502,7 +1502,7 @@
   background: var(--skylent-color-accent-soft);
   color: var(--skylent-color-accent);
   font-size: 13px;
-  font-weight: 800;
+  font-weight: 600;
 }
 
 .cat-module h3 {
@@ -2818,7 +2818,7 @@
 
 .cat-page .ws-row--track .ws-body strong {
   font-size: 18px;
-  font-weight: 800;
+  font-weight: 600;
   color: #ffffff !important;
   letter-spacing: -0.015em;
 }
@@ -2850,7 +2850,7 @@
   background: #ffffff;
   color: #0f172a !important;
   font-size: 12.5px;
-  font-weight: 800;
+  font-weight: 600;
   white-space: nowrap;
 }
 
@@ -2885,7 +2885,7 @@
 
 .cat-page .cat-ready-card h3 {
   color: #ffffff !important;
-  font-weight: 800;
+  font-weight: 600;
 }
 
 .cat-page .cat-ready-card > p {
@@ -2906,7 +2906,7 @@
 
 .cat-page .cat-ready-card .cat-card-cta {
   color: #c4b8ff !important;
-  font-weight: 800;
+  font-weight: 600;
 }
 
 /* ── V20.1 Royal Midnight Navy + Gold Header for /courses Cards (.cat-unit & .cat-tile.is-ready) ── */
@@ -2949,7 +2949,7 @@
 
 .cat-page .cat-unit-title {
   color: #ffffff !important;
-  font-weight: 800 !important;
+  font-weight: 600 !important;
 }
 
 .cat-page .cat-unit-meta {

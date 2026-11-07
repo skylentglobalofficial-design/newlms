@@ -155,7 +155,7 @@ export default function CareerOSJobsPage() {
                     <span
                       style={{
                         fontSize: 11,
-                        fontWeight: 800,
+                        fontWeight: 600,
                         padding: "3px 8px",
                         borderRadius: 999,
                         background: "#dcfce7",
@@ -207,7 +207,7 @@ export default function CareerOSJobsPage() {
                         background: "#ecfdf5",
                         color: "#047857",
                         fontSize: 12,
-                        fontWeight: 800,
+                        fontWeight: 600,
                       }}
                     >
                       ✓ Applied with Dossier
