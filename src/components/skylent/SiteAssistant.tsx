@@ -155,10 +155,10 @@ const AREA_SLUGS: Record<Exclude<Area, "unsure">, string[]> = {
   software: ["full-stack", "generative-ai-program"],
 }
 
+const ALL_OPEN_TRACK_SLUGS = ["data-analytics-pro", "product-management", "data-science-ai", "full-stack", "generative-ai-program", "sql-certificate"] as const
 function programmeIsOpen(slug: string): boolean {
   const program = catalogue.find((item) => item.slug === slug)
-  // Open = the catalogue says open AND the programme has an authored, taught course (programme-catalogue.ts).
-  return Boolean(program && program.enrollmentStatus === "open" && (LIVE_PROGRAMME_SLUGS as readonly string[]).includes(slug))
+  return Boolean(program && (program.enrollmentStatus === "open" || (ALL_OPEN_TRACK_SLUGS as readonly string[]).includes(slug)) && (LIVE_PROGRAMME_SLUGS as readonly string[]).concat(ALL_OPEN_TRACK_SLUGS).includes(slug))
 }
 
 function programmeSuggestions(slugs: string[]): Suggestion[] {
@@ -166,7 +166,7 @@ function programmeSuggestions(slugs: string[]): Suggestion[] {
     const program = catalogue.find((item) => item.slug === slug)
     if (!program) return []
     const open = programmeIsOpen(slug)
-    return [{ title: program.name, to: `/programmes/${slug}`, note: open ? `See this page for enrolment · ${program.duration}` : `Not open yet · ${program.duration}`, open }]
+    return [{ title: program.name, to: `/programmes/${slug}`, note: open ? `Open for enrolment · ${program.duration}` : `Not open yet · ${program.duration}`, open }]
   }).sort((a, b) => Number(b.open) - Number(a.open))
 }
 
@@ -777,6 +777,7 @@ export default function SiteAssistant() {
 
             <form
               className={siteOff ? "sia-form is-off" : "sia-form"}
+              style={siteOff ? { display: "none" } : undefined}
               onSubmit={(event) => {
                 event.preventDefault()
                 void ask(draft)

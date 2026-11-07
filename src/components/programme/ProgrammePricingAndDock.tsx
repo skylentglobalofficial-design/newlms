@@ -24,7 +24,7 @@ const DEFAULT_FAQS = [
   },
   {
     q: "How do I get help if I am stuck on a lesson or lab?",
-    a: "Every lesson includes integrated English and simple Hinglish study explanations plus 1-click escalation to human Faculty TAs.",
+    a: "Every lesson includes integrated English and simple Hinglish study explanations plus direct escalation to human Faculty TAs.",
   },
   {
     q: "How does the certificate and verification work?",

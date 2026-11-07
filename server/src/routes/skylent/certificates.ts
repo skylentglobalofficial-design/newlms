@@ -383,8 +383,14 @@ export const EXEMPLAR_CERTIFICATES: ReadonlyArray<{
   },
 ]
 
+const EXEMPLAR_CODE_ALIASES: Record<string, string> = {
+  "SKL-2026-DA-00142": "SKL-2026-DA-EXEMPLAR",
+  "SKL-2026-PM-00089": "SKL-2026-PM-EXEMPLAR",
+}
+
 export function resolveExemplarCertificate(code: string) {
-  const normalized = code.trim().toUpperCase()
+  const rawNormalized = code.trim().toUpperCase()
+  const normalized = EXEMPLAR_CODE_ALIASES[rawNormalized] ?? rawNormalized
   const match = EXEMPLAR_CERTIFICATES.find((item) => item.code === normalized)
   if (!match) return null
   return {

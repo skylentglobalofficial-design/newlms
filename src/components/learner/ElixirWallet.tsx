@@ -111,7 +111,6 @@ export default function ElixirWalletPanel() {
           gap: 16,
           background: "linear-gradient(180deg, #F6F4FF 0%, #FFFFFF 100%)",
           border: "1.5px solid #DDD7FF",
-          borderTop: "4px solid #5142B5",
           borderRadius: 16,
           padding: "20px 24px",
           color: "#0F172A",

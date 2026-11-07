@@ -119,7 +119,7 @@ export default function StoriesPage() {
                 <strong>5-Dimension Rubric:</strong>Execution (30%) + Judgement (20%) + V1→V2 Revision (20%).<br />
                 <strong>Sample V1 → V2 Revision:</strong>Excluded returned orders and tiered discount rows before computing Q3 gross margin.
               </p>
-              <Link to="/verify?code=SKL-2026-DA-00142" style={{ marginTop: "auto", color: "#5142B5", fontWeight: 700, fontSize: 13.5, textDecoration: "none" }}>
+              <Link to="/verify/SKL-2026-DA-EXEMPLAR" style={{ marginTop: "auto", color: "#5142B5", fontWeight: 700, fontSize: 13.5, textDecoration: "none" }}>
                 Inspect Sample Flight Recorder on /verify →
               </Link>
             </article>
@@ -130,7 +130,7 @@ export default function StoriesPage() {
                 <strong>5-Dimension Rubric:</strong>Oral Defence (15%) + Stakeholder Trade-Off Judgement (20%).<br />
                 <strong>Sample V1 → V2 Revision:</strong>Scoped out custom SSO to protect the 2-engineer reliability sprint constraint.
               </p>
-              <Link to="/verify?code=SKL-2026-PM-00089" style={{ marginTop: "auto", color: "#5142B5", fontWeight: 700, fontSize: 13.5, textDecoration: "none" }}>
+              <Link to="/verify/SKL-2026-PM-EXEMPLAR" style={{ marginTop: "auto", color: "#5142B5", fontWeight: 700, fontSize: 13.5, textDecoration: "none" }}>
                 Inspect Sample Flight Recorder on /verify →
               </Link>
             </article>
@@ -223,7 +223,7 @@ export default function StoriesPage() {
                 </span>
                 <strong style={{ fontSize: 17, color: "#0f172a" }}>{item.name} — {item.artifact}</strong>
                 <p style={{ margin: 0, fontSize: 13.5, lineHeight: 1.55, color: "#334155" }}>{item.summary}</p>
-                <Link to={`/verify?code=${item.code}`} style={{ marginTop: "auto", paddingTop: 8, fontSize: 13.5, fontWeight: 600, color: "#0f172a", textDecoration: "underline" }}>
+                <Link to={`/verify/${item.code}`} style={{ marginTop: "auto", paddingTop: 8, fontSize: 13.5, fontWeight: 600, color: "#0f172a", textDecoration: "underline" }}>
                   Inspect verified dossier →
                 </Link>
               </article>

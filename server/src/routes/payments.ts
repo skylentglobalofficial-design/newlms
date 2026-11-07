@@ -811,7 +811,21 @@ paymentsRouter.post("/payu/response", async (req, res) => {
 
     if (userId) {
       if (targetKind === "workshop") {
-        const event = await prisma.event.findUnique({ where: { slug: targetSlug } })
+        let event = await prisma.event.findUnique({ where: { slug: targetSlug } })
+        if (!event && targetSlug) {
+          event = await prisma.event.create({
+            data: {
+              slug: targetSlug,
+              title: targetSlug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()),
+              description: "Live 90-minute Skylent execution sprint with 100% Elixir Coin cashback.",
+              status: "PUBLISHED",
+              startTime: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+              endTime: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000 + 90 * 60 * 1000),
+              timezone: "Asia/Kolkata",
+              isOnline: true,
+            },
+          }).catch(() => null)
+        }
         if (event) {
           await prisma.eventRegistration.upsert({
             where: { eventId_userId: { eventId: event.id, userId } },

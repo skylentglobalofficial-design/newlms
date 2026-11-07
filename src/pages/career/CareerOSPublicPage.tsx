@@ -73,14 +73,14 @@ const CARD_META: Record<
     code: "08 · VERIFIABLE SKL CREDENTIALS",
     tag: "Public /verify ID",
     previewLabel: "CRYPTOGRAPHIC VERIFICATION",
-    previewValue: "Course & Programme Master Certificates · 1-Click LinkedIn Share",
+    previewValue: "Course & Programme Master Certificates · Direct LinkedIn Share",
     svgPath: "M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z",
   },
   opportunities: {
     code: "09 · SKILL-MATCHED OPENINGS",
     tag: "Direct Shortlist",
     previewLabel: "MERIT-GATED APPLICATION PIPELINE",
-    previewValue: "Role Match Breakdown · 1-Click Mock Interview Defense · Saved Jobs",
+    previewValue: "Role Match Breakdown · Direct Mock Interview Defense · Saved Jobs",
     svgPath: "M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z",
   },
 }
@@ -233,7 +233,7 @@ export default function CareerOSPublicPage() {
               <div className="cpx-pillar">
                 <span>02 · Pass the 60% Merit Gate</span>
                 <strong>Unlock Career Rise &amp; V1 → V2 Faculty Review</strong>
-                <p>Reach 60% course completion to unlock Career Rise, 1-click Mock Interview Defense, and human faculty red-line critique on your capstone.</p>
+                <p>Reach 60% course completion to unlock Career Rise, Guided Mock Interview Defense, and human faculty red-line critique on your capstone.</p>
               </div>
               <div className="cpx-pillar">
                 <span>03 · Share Verifiable Proof</span>

@@ -151,7 +151,6 @@ export default function NotFoundPage() {
                 borderRadius: 16,
                 background: "linear-gradient(180deg, #f6f4ff 0%, #ffffff 100%)",
                 border: "1px solid #ddd6fe",
-                borderTop: "4px solid #5142b5",
                 color: "#0f172a",
                 textDecoration: "none",
                 boxShadow: "0 10px 26px -14px rgba(81, 66, 181, 0.14)",

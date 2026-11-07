@@ -14,6 +14,69 @@ import { isDatabaseUnavailableError, isMissingSchemaError, readSchemaCapabilitie
 
 export const eventsRouter = Router()
 
+let curatedWorkshopsSeeded = false
+export async function ensureCuratedWorkshopsSeeded() {
+  if (curatedWorkshopsSeeded) return
+  try {
+    const now = Date.now()
+    const defaults = [
+      {
+        slug: "northwind-sql-margin-audit-bootcamp",
+        title: "Northwind SQL & Margin Leakage Live Workshop",
+        description: "Hands-on 90-minute SQL & commercial analytics workshop. Query the 166-row Northwind retail dataset live in your browser, isolate the 14.5% Apparel discount leakage, and receive 99 Elixir Coins (100% 1:1 credit) to unlock full case studies in your dashboard.",
+        eventType: EventType.WORKSHOP,
+        hostName: "Skylent Data Analytics Practice Lead",
+        startTime: new Date(now + 3 * 24 * 60 * 60 * 1000),
+        endTime: new Date(now + 3 * 24 * 60 * 60 * 1000 + 90 * 60 * 1000),
+        timezone: "Asia/Kolkata",
+        capacity: 60,
+        isOnline: true,
+        location: "Online · Browser SQL Sandbox",
+        courseSlug: "data-analytics",
+      },
+      {
+        slug: "harbor-desk-product-scoping-sprint",
+        title: "Harbor Desk Product PRD & Operations Triage Sprint",
+        description: "Live 90-minute Product Management execution sprint. Synthesise 18 store-manager interviews, scope a 6-week engineering bet for a 2-engineer team, and earn 99 Elixir Coins (100% 1:1 credit) toward the Case Study Store.",
+        eventType: EventType.WORKSHOP,
+        hostName: "Skylent Product Studio Lead",
+        startTime: new Date(now + 4 * 24 * 60 * 60 * 1000),
+        endTime: new Date(now + 4 * 24 * 60 * 60 * 1000 + 90 * 60 * 1000),
+        timezone: "Asia/Kolkata",
+        capacity: 50,
+        isOnline: true,
+        location: "Online · Harbor Desk Case Studio",
+        courseSlug: "product-management",
+      },
+      {
+        slug: "genai-rag-evaluation-masterclass",
+        title: "Grounded RAG & Hallucination Audit Masterclass",
+        description: "Practical 90-minute GenAI engineering session on building citation-enforced RAG pipelines, catching ungrounded claims, and defending system latency trade-offs. Includes 99 Elixir Coins (100% 1:1 credit) on registration.",
+        eventType: EventType.WEBINAR,
+        hostName: "Skylent AI Systems Architect",
+        startTime: new Date(now + 10 * 24 * 60 * 60 * 1000),
+        endTime: new Date(now + 10 * 24 * 60 * 60 * 1000 + 90 * 60 * 1000),
+        timezone: "Asia/Kolkata",
+        capacity: 80,
+        isOnline: true,
+        location: "Online · AI Architecture Studio",
+        courseSlug: "generative-ai",
+      },
+    ]
+    for (const item of defaults) {
+      await prisma.event.upsert({
+        where: { slug: item.slug },
+        create: { ...item, status: EventStatus.PUBLISHED },
+        update: { status: EventStatus.PUBLISHED },
+      }).catch(() => undefined)
+    }
+    curatedWorkshopsSeeded = true
+  } catch {
+    // non-fatal
+  }
+}
+
+
 export function workshopRewardMetadata(feeRupees = DEFAULT_WORKSHOP_FEE_RUPEES) {
   return {
     feeRupees,
@@ -103,6 +166,7 @@ eventsRouter.get("/", async (req, res) => {
   }
 
   try {
+    await ensureCuratedWorkshopsSeeded()
     const [events, total] = await Promise.all([
       prisma.event.findMany({
         where,
@@ -151,6 +215,7 @@ eventsRouter.get("/:slug", async (req, res) => {
   }
 
   try {
+    await ensureCuratedWorkshopsSeeded()
     const auth = await attachAuth(req as AuthenticatedRequest)
 
     const event = await prisma.event.findUnique({
@@ -221,6 +286,7 @@ eventsRouter.post(
     }
 
     try {
+      await ensureCuratedWorkshopsSeeded()
       const event = await prisma.event.findUnique({
         where: { slug: parsed.data.slug },
         include: {

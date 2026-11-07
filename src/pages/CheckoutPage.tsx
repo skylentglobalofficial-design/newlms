@@ -361,7 +361,6 @@ export default function CheckoutPage() {
             background: "#ffffff",
             borderRadius: 16,
             border: "1px solid #e2e8f0",
-            borderTop: "4px solid #5142b5",
             boxShadow: "0 18px 42px -16px rgba(15, 23, 42, 0.12)",
             padding: "24px 22px",
             boxSizing: "border-box",

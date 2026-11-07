@@ -507,7 +507,7 @@ function LmsCanvas({ stage }: { stage: number }) {
         </div>
         <div className="hx-lms-mock__badges">
           <span className="hx-lms-pill hx-lms-pill--green">✓ Publicly Verifiable URL</span>
-          <span className="hx-lms-pill hx-lms-pill--purple">1-Click LinkedIn Share</span>
+          <span className="hx-lms-pill hx-lms-pill--purple">Direct LinkedIn Share</span>
         </div>
       </div>
       <div className="hx-lms-mock__grid2">
@@ -1620,7 +1620,7 @@ const AI_DEMO_SCENARIOS = [
     studentQ: "I finished my Capstone SQL query and executive memo, but I'm not sure if my Q2 margin recommendation is strong enough for recruiters.",
     coachTitle: "Human Faculty TA Desk · Structured Rubric Feedback",
     coachReply: "Your SQL CTE is accurate. Quantify the ₹48,200 margin recovery in your recommendation so recruiters see the exact business impact.",
-    takeaway: "Every enrolled learner gets 1-click access to human Faculty TAs with a 20-minute response SLA.",
+    takeaway: "Every enrolled learner gets direct access to human Faculty TAs with a 20-minute response SLA.",
     pills: ["20-Min TA SLA", "Rubric pre-check", "Capstone review"],
   },
 ] as const

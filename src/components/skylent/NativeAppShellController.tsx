@@ -57,7 +57,7 @@ function TabIcon({ name }: { name: "home" | "courses" | "workshops" | "labs" | "
 }
 
 const INSTALLED_BUILD_KEY = "skylent:installed-build-id:v93"
-export const BUNDLED_CLIENT_BUILD_ID = "9.3.0:v93-202611071708"
+export const BUNDLED_CLIENT_BUILD_ID = "9.3.0:v93-202611071530"
 
 function tryExitNativeApp(): boolean {
   if (typeof window === "undefined") return false

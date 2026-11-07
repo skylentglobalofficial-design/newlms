@@ -70,7 +70,7 @@ const COMPARISON_ROWS = [
   {
     dimension: "Doubt Resolution",
     legacy: " slow forum threads or generic chatbot answers that leak code without building intuition.",
-    skylent: "1-click Hinglish + English guided study notes + live human Faculty TA escalation within 20 minutes.",
+    skylent: "Instant Hinglish + English guided study notes + live human Faculty TA escalation within 20 minutes.",
   },
   {
     dimension: "How You Are Assessed",

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { useParams, Link } from "react-router-dom"
+import { useParams, useSearchParams, Link } from "react-router-dom"
 import { PageShell } from "../components/shared"
 import { useAuth } from "../context/AuthContext"
 import { ensureCsrfToken } from "../lib/auth-api"
@@ -38,6 +38,8 @@ function findCuratedWorkshopBySlug(slug: string | undefined): EventDetail | null
 
 export default function EventDetailPage() {
   const { slug } = useParams<{ slug: string }>()
+  const [searchParams] = useSearchParams()
+  const justRegistered = searchParams.get("registered") === "true"
   const { user } = useAuth()
   const curated = findCuratedWorkshopBySlug(slug)
   const [event, setEvent] = useState<EventDetail | null>(curated)
@@ -196,7 +198,7 @@ export default function EventDetailPage() {
   }
 
   const isPast = event ? new Date(event.startTime) < new Date() : false
-  const isRegistered = event?.userRegistration?.status === "REGISTERED"
+  const isRegistered = event?.userRegistration?.status === "REGISTERED" || justRegistered
   const isFull = event?.spotsRemaining === 0
 
   if (loading) {
@@ -213,7 +215,7 @@ export default function EventDetailPage() {
     )
   }
 
-  if (error || !event) {
+  if (!event) {
     return (
       <PageShell aurora={false}>
         <div className="cat-page">

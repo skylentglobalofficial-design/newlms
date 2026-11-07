@@ -137,7 +137,6 @@ export default function LabsPage() {
                     borderRadius: 16,
                     background: "linear-gradient(180deg, #f6f4ff 0%, #ffffff 100%)",
                     border: "1px solid #ddd6fe",
-                    borderTop: "4px solid #5142b5",
                     display: "flex",
                     flexDirection: "column",
                     justifyContent: "space-between",
@@ -167,7 +166,6 @@ export default function LabsPage() {
                     borderRadius: 16,
                     background: "linear-gradient(180deg, #f6f4ff 0%, #ffffff 100%)",
                     border: "1px solid #ddd6fe",
-                    borderTop: "4px solid #5142b5",
                     display: "flex",
                     flexDirection: "column",
                     justifyContent: "space-between",
@@ -194,7 +192,6 @@ export default function LabsPage() {
                 padding: "24px",
                 borderRadius: 16,
                 border: "1px solid #ddd6fe",
-                borderTop: "4px solid #5142b5",
                 background: "#ffffff",
                 boxShadow: "0 12px 30px -14px rgba(81, 66, 181, 0.14)",
               }}
