@@ -249,9 +249,13 @@ public class MainActivity extends BridgeActivity {
             WebSettings settings = webView.getSettings();
             settings.setJavaScriptEnabled(true);
             settings.setDomStorageEnabled(true);
-            float sysFontScale = getResources().getConfiguration().fontScale;
-            int adaptiveTextZoom = Math.round(Math.min(Math.max(sysFontScale, 0.85f), 1.15f) * 100f);
-            settings.setTextZoom(adaptiveTextZoom);
+            settings.setTextZoom(100);
+            webView.addJavascriptInterface(new Object() {
+                @android.webkit.JavascriptInterface
+                public void exitApp() {
+                    runOnUiThread(() -> finish());
+                }
+            }, "SkylentNativeBridge");
             settings.setStandardFontFamily("sans-serif");
             settings.setSupportZoom(false);
             settings.setBuiltInZoomControls(false);
@@ -310,6 +314,26 @@ public class MainActivity extends BridgeActivity {
                     }
                     return super.shouldOverrideUrlLoading(view, request);
                 }
+
+                @Override
+                public void onReceivedError(WebView view, WebResourceRequest request, android.webkit.WebResourceError error) {
+                    if (request != null && request.isForMainFrame()) {
+                        String offlineHtml = "<!DOCTYPE html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">" +
+                            "<title>Skylent — Offline</title><style>" +
+                            "body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#0F172A;color:#F8FAFC;font-family:-apple-system,BlinkMacSystemFont,sans-serif;padding:24px;box-sizing:border-box;text-align:center}" +
+                            ".card{max-width:360px;width:100%;background:#1E293B;border:1px solid rgba(255,255,255,0.12);border-radius:18px;padding:28px 22px;box-shadow:0 20px 50px rgba(0,0,0,0.4)}" +
+                            ".logo{width:48px;height:48px;margin:0 auto 14px;border-radius:12px;background:#5142B5;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:20px}" +
+                            "h1{margin:0 0 8px;font-size:19px;font-weight:800;color:#fff}" +
+                            "p{margin:0 0 20px;font-size:13.5px;line-height:1.55;color:#CBD5E1}" +
+                            "button{width:100%;padding:12px 18px;border-radius:10px;border:none;background:#5142B5;color:#fff;font-weight:700;font-size:14px;cursor:pointer}" +
+                            "</style></head><body><div class=\"card\"><div class=\"logo\">S</div><h1>You&apos;re Offline</h1>" +
+                            "<p>Please check your mobile data or Wi-Fi connection to load your Skylent courses and workspace.</p>" +
+                            "<button onclick=\"window.location.href='https://skylent.live/programmes'\">Retry Connection</button></div></body></html>";
+                        view.loadDataWithBaseURL("https://skylent.live", offlineHtml, "text/html", "UTF-8", null);
+                        return;
+                    }
+                    super.onReceivedError(view, request, error);
+                }
             });
         }
 
@@ -338,6 +362,11 @@ public class MainActivity extends BridgeActivity {
                         "  var closeBtn = document.querySelector('.skn-sheet__close, [role=\"dialog\"] button[aria-label*=\"Close\"]'); " +
                         "  if (closeBtn) { closeBtn.click(); return 'MODAL_CLOSED'; } " +
                         "  var p = window.location.pathname; " +
+                        "  var h = window.location.hash; " +
+                        "  if (p === '/dashboard/student' && h && h !== '#') { " +
+                        "    window.location.hash = ''; " +
+                        "    return 'NAVIGATED_BACK'; " +
+                        "  } " +
                         "  if (p !== '/' && p !== '/index.html' && p !== '/programmes' && p !== '/dashboard/student' && p !== '/dashboard/admin' && p !== '/login') { " +
                         "    if (window.history.length > 1) { window.history.back(); } else { window.location.href = '/programmes'; } " +
                         "    return 'NAVIGATED_BACK'; " +
@@ -346,10 +375,6 @@ public class MainActivity extends BridgeActivity {
                         "})()",
                         value -> {
                             if (value != null && (value.contains("MODAL_CLOSED") || value.contains("NAVIGATED_BACK"))) {
-                                return;
-                            }
-                            if (webView.canGoBack()) {
-                                webView.goBack();
                                 return;
                             }
                             long now = System.currentTimeMillis();

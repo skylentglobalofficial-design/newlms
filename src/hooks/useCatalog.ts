@@ -24,6 +24,28 @@ type CatalogState<T> = {
 }
 
 const memCatalogCache = new Map<string, unknown>()
+function getCachedCatalog<T>(key: string): T | undefined {
+  if (memCatalogCache.has(key)) return memCatalogCache.get(key) as T
+  if (typeof window !== "undefined") {
+    try {
+      const raw = window.sessionStorage.getItem(`skylent:cat:${key}`)
+      if (raw) {
+        const parsed = JSON.parse(raw) as T
+        memCatalogCache.set(key, parsed)
+        return parsed
+      }
+    } catch {}
+  }
+  return undefined
+}
+function setCachedCatalog<T>(key: string, value: T): void {
+  memCatalogCache.set(key, value)
+  if (typeof window !== "undefined") {
+    try {
+      window.sessionStorage.setItem(`skylent:cat:${key}`, JSON.stringify(value))
+    } catch {}
+  }
+}
 
 function mergeCourseSummaries(
   apiRows: CatalogCourseSummary[],
@@ -42,7 +64,7 @@ function mergeCourseSummaries(
 
 function useCatalogResource<T>(key: string, loader: () => Promise<T>, initialFallback: () => T): CatalogState<T> {
   const [data, setData] = useState<T | null>(() => {
-    const cached = memCatalogCache.get(key) as T | undefined
+    const cached = getCachedCatalog<T>(key)
     return cached ?? initialFallback()
   })
   const [loading, setLoading] = useState(false)
@@ -52,7 +74,7 @@ function useCatalogResource<T>(key: string, loader: () => Promise<T>, initialFal
     setError(null)
     try {
       const fresh = await loader()
-      memCatalogCache.set(key, fresh)
+      setCachedCatalog(key, fresh)
       setData(fresh)
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load catalog data")
@@ -111,7 +133,7 @@ export function useCatalogPrograms() {
 }
 
 function useCatalogCourseRequest(slug: string | undefined) {
-  const initial = slug ? ((memCatalogCache.get(`course:${slug}`) as CatalogCourseDetail | undefined) ?? publishedCourseDetail(slug)) : null
+  const initial = slug ? ((getCachedCatalog<CatalogCourseDetail>(`course:${slug}`)) ?? publishedCourseDetail(slug)) : null
   const [data, setData] = useState<CatalogCourseDetail | null>(initial)
   const [loading, setLoading] = useState(Boolean(slug && !initial))
   const [error, setError] = useState<string | null>(null)
@@ -122,7 +144,7 @@ function useCatalogCourseRequest(slug: string | undefined) {
       setLoading(false)
       return
     }
-    const pub = (memCatalogCache.get(`course:${slug}`) as CatalogCourseDetail | undefined) ?? publishedCourseDetail(slug)
+    const pub = (getCachedCatalog<CatalogCourseDetail>(`course:${slug}`)) ?? publishedCourseDetail(slug)
     if (pub) {
       setData(pub)
       setLoading(false)
@@ -132,7 +154,7 @@ function useCatalogCourseRequest(slug: string | undefined) {
     setError(null)
     try {
       const fresh = await fetchCatalogCourse(slug)
-      if (fresh) memCatalogCache.set(`course:${slug}`, fresh)
+      if (fresh) setCachedCatalog(`course:${slug}`, fresh)
       setData(fresh)
     } catch (err) {
       if (!pub) setData(null)
@@ -150,7 +172,7 @@ function useCatalogCourseRequest(slug: string | undefined) {
 }
 
 function useCatalogProgramRequest(slug: string | undefined) {
-  const initial = slug ? ((memCatalogCache.get(`program:${slug}`) as CatalogProgramDetail | undefined) ?? publishedProgrammeDetail(slug)) : null
+  const initial = slug ? ((getCachedCatalog<CatalogProgramDetail>(`program:${slug}`)) ?? publishedProgrammeDetail(slug)) : null
   const [data, setData] = useState<CatalogProgramDetail | null>(initial)
   const [loading, setLoading] = useState(Boolean(slug && !initial))
   const [error, setError] = useState<string | null>(null)
@@ -161,7 +183,7 @@ function useCatalogProgramRequest(slug: string | undefined) {
       setLoading(false)
       return
     }
-    const pub = (memCatalogCache.get(`program:${slug}`) as CatalogProgramDetail | undefined) ?? publishedProgrammeDetail(slug)
+    const pub = (getCachedCatalog<CatalogProgramDetail>(`program:${slug}`)) ?? publishedProgrammeDetail(slug)
     if (pub) {
       setData(pub)
       setLoading(false)
@@ -171,7 +193,7 @@ function useCatalogProgramRequest(slug: string | undefined) {
     setError(null)
     try {
       const fresh = await fetchCatalogProgram(slug)
-      if (fresh) memCatalogCache.set(`program:${slug}`, fresh)
+      if (fresh) setCachedCatalog(`program:${slug}`, fresh)
       setData(fresh)
     } catch (err) {
       if (!pub) setData(null)

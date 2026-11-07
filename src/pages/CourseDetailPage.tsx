@@ -394,7 +394,7 @@ export default function CourseDetailPage() {
                   <span><strong>Lead Faculty &amp; Reviewer:</strong> {course.slug === "data-analytics" ? "Dr. Meera Krishnan (PhD, Analytics)" : course.slug === "product-management" ? "Arjun Nair (Director of Product)" : "Vikramaditya Rao &amp; Skylent Faculty Board"}</span>
                   <span><strong>Credential Issuer:</strong>Skylent Global Assessment Board</span>
                   <span><strong>Dataset Scope:</strong>Jan–Jun 2026 Synthetic Commercial Extract</span>
-                  <span><strong>Support SLA:</strong>20-Min Faculty TA + 24/7 Hinglish AI</span>
+                  <span><strong>Support SLA:</strong>20-Min Faculty TA + 24/7 Hinglish Study Notes</span>
                 </div>
               </div>
               {showLiveCurriculum ? (

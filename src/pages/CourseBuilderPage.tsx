@@ -139,7 +139,7 @@ const NODE_TYPE_META: Record<string, { badge: string; color: string; bg: string;
     badge: "NOTES / READING",
     color: "#5142b5",
     bg: "#f5f3ff",
-    desc: "Written lesson notes with integrated English & Hinglish AI study mentor.",
+    desc: "Written lesson notes with integrated English & Hinglish guided study support.",
   },
   VIDEO: {
     badge: "VIDEO LECTURE",
@@ -1893,7 +1893,7 @@ export function CourseAuthoringStudio({
                     onChange={(e) => setLectureNodeType(e.target.value)}
                     style={inputStyle}
                   >
-                    <option value="NOTES">NOTES — Written Lesson + AI Mentor</option>
+                    <option value="NOTES">NOTES — Written Lesson + Guided Study Notes</option>
                     <option value="VIDEO">VIDEO — Video Lecture + Summary</option>
                     <option value="LAB">LAB — Browser SQL / Code Sandbox</option>
                     <option value="ASSIGNMENT">ASSIGNMENT — Graded Written Brief</option>

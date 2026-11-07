@@ -62,6 +62,11 @@ export const BUNDLED_CLIENT_BUILD_ID = "9.3.0:v93-202611071530"
 function tryExitNativeApp(): boolean {
   if (typeof window === "undefined") return false
   try {
+    const bridge = (window as unknown as { SkylentNativeBridge?: { exitApp?: () => void } }).SkylentNativeBridge
+    if (typeof bridge?.exitApp === "function") {
+      bridge.exitApp()
+      return true
+    }
     const cap = (window as unknown as {
       Capacitor?: {
         Plugins?: { App?: { exitApp?: () => void } }
@@ -404,6 +409,45 @@ export function NativeAppShellController() {
   return (
     <>
 
+
+      {isNative && !user && !isWorkspaceOrAuthRoute ? (
+        <div
+          role="region"
+          aria-label="Skylent App Account Bar"
+          style={{
+            background: "linear-gradient(90deg, #0f172a 0%, #1e1b4b 60%, #3b2d96 100%)",
+            color: "#ffffff",
+            padding: "8px 14px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 10,
+            borderBottom: "1px solid rgba(255,255,255,0.14)",
+            fontSize: 12,
+            fontWeight: 600,
+          }}
+        >
+          <span style={{ color: "#e2e8f0", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+            Explore all 6 career tracks &amp; free browser labs
+          </span>
+          <Link
+            to="/login"
+            style={{
+              padding: "5px 12px",
+              borderRadius: 999,
+              background: "#ffffff",
+              color: "#0f172a",
+              fontWeight: 700,
+              fontSize: 11.5,
+              textDecoration: "none",
+              whiteSpace: "nowrap",
+              flexShrink: 0,
+            }}
+          >
+            Sign In →
+          </Link>
+        </div>
+      ) : null}
 
       {isOffline ? (
         <div
