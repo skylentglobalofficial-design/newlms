@@ -148,7 +148,7 @@ export function HomeHero({
               <div className="hxw-ws__top">
                 <span className="hxw-ws__mark" aria-hidden="true">OS</span>
                 <div>
-                  <span className="hxw-ws__title">6 Career Tracks · Browser SQL &amp; Code Labs · Free Pilot</span>
+                  <span className="hxw-ws__title">6 Career Tracks · In-Browser SQL &amp; Code Labs · Verified Projects</span>
                   <span className="hxw-ws__note">20-Min Faculty TA Doubt SLA · Hinglish & English Study Notes · Verified Certificate ID</span>
                 </div>
               </div>
@@ -1291,7 +1291,7 @@ function HomeCareerPlate({ step }: { step: JourneyKey }) {
           <span className="hx-royal-plate__emerald">✓ +5 to +15 Coins / Milestone</span>
         </div>
         <h3 className="hx-royal-plate__title">{facts ? facts.current.title : "SQL Joins & Revenue Hygiene"}</h3>
-        <p className="hx-royal-plate__sub">Short, clear readings written in plain language — with instant English &amp; Hinglish AI help</p>
+        <p className="hx-royal-plate__sub">Short, clear readings written in plain language — with built-in English &amp; Hinglish study notes</p>
         <div className="hx-royal-plate__metrics">
           <div>
             <span>Reading Time</span>
@@ -1503,10 +1503,10 @@ export function HomeCareer() {
           <div className="hx-royal-showcase__head">
             <div>
               <p className="hx-eyebrow hx-eyebrow--dark" style={{ marginBottom: 6 }}>
-                Verified Capstone Projects · Sample Certificates (Illustrative)
+                Capstone Project Deliverables · Publicly Verifiable Architecture
               </p>
               <h3 className="hx-royal-showcase__title">
-                Real Capstone Projects &amp; Verifiable Certificates
+                What You Will Build &amp; Verify in Your Capstone
               </h3>
               <p className="hx-royal-showcase__sub">
                 Every completed capstone issues a public `/verify` ID showing your real code, SQL queries, and rubric score.
@@ -1521,9 +1521,9 @@ export function HomeCareer() {
             {[
               {
                 code: "SKL-2026-DA-EXEMPLAR",
-                name: "Retail Revenue & Discount Audit (Sample Certificate)",
-                role: "Aspiring Data Analyst · Final-Year B.Tech",
-                score: "96/100 Project Score",
+                name: "Retail Revenue & Discount Leakage Audit",
+                role: "Data Analytics Capstone Deliverable",
+                score: "5-Part Rubric Graded",
                 track: "Data Analytics · Built in Northwind SQL Lab",
                 projectBuilt: "Project Built: Retail Revenue & Discount Leakage Audit",
                 finding: "Audited 180 orders in SQL and isolated a 14.5% discount leak on ₹8.12L revenue.",
@@ -1531,9 +1531,9 @@ export function HomeCareer() {
               },
               {
                 code: "SKL-2026-PM-EXEMPLAR",
-                name: "12-Store Operations PRD (Sample Certificate)",
-                role: "Transitioning to Product Management",
-                score: "95/100 Project Score",
+                name: "12-Store Exception Triage PRD",
+                role: "Product Management Capstone Deliverable",
+                score: "5-Part Rubric Graded",
                 track: "Product Management · Built in Harbor Desk Studio",
                 projectBuilt: "Project Built: 12-Store Exception Triage PRD",
                 finding: "Scoped a 6-week mobile exception triage PRD from 18 store interviews.",
@@ -1541,9 +1541,9 @@ export function HomeCareer() {
               },
               {
                 code: "SKL-2026-AI-EXEMPLAR",
-                name: "Citation-Grounded Policy Assistant (Sample Certificate)",
-                role: "Software Engineer Upskilling in AI",
-                score: "97/100 Project Score",
+                name: "Citation-Grounded Policy Assistant",
+                role: "Generative AI Capstone Deliverable",
+                score: "5-Part Rubric Graded",
                 track: "Generative AI · Built in Grounded RAG Lab",
                 projectBuilt: "Project Built: Citation-Grounded Policy Assistant",
                 finding: "Built a citation-gated RAG pipeline cutting ungrounded LLM answers to 0%.",
@@ -1618,10 +1618,10 @@ const AI_DEMO_SCENARIOS = [
     tabLabel: "20-Minute Faculty Review",
     badge: "Guaranteed 20-Min Faculty TA SLA",
     studentQ: "I finished my Capstone SQL query and executive memo, but I'm not sure if my Q2 margin recommendation is strong enough for recruiters.",
-    coachTitle: "Human Faculty TA Desk · Verified Mentor Response (11 mins)",
+    coachTitle: "Human Faculty TA Desk · Structured Rubric Feedback",
     coachReply: "Your SQL CTE is accurate. Quantify the ₹48,200 margin recovery in your recommendation so recruiters see the exact business impact.",
     takeaway: "Every enrolled learner gets 1-click access to human Faculty TAs with a 20-minute response SLA.",
-    pills: ["Resolved in 11 mins ✓", "Rubric pre-check passed", "Ready for Capstone submission"],
+    pills: ["20-Min TA SLA", "Rubric pre-check", "Capstone review"],
   },
 ] as const
 
@@ -1644,7 +1644,7 @@ export function HomeAi() {
               </span>
             </div>
             <h2 id="hx-ai-title" className="hx-h2 hx-h2--sm" style={{ marginTop: 14 }}>
-              AI guidance and 20-minute faculty support
+              Bilingual study notes and 20-minute faculty TA support
             </h2>
           </div>
           <p className="hx-head__aside">
@@ -1654,7 +1654,7 @@ export function HomeAi() {
 
         <div className="hx-ai-studio">
           {/* Left: 3 Interactive Scenario Selector Cards */}
-          <div className="hx-ai-studio__tabs" role="tablist" aria-label="Try AI and Mentor scenarios">
+          <div className="hx-ai-studio__tabs" role="tablist" aria-label="Study support and faculty review scenarios">
             {AI_DEMO_SCENARIOS.map((item, idx) => (
               <button
                 key={item.id}

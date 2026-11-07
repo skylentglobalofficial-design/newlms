@@ -1393,24 +1393,24 @@ body,
 .auth-shell,
 .cat-page,
 .cos-shell {
-  --skylent-font-heading: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
-  --font-brand: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
-  --font-display: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
-  --font-heading: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
-  --font-body: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
-  --font-sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
-  --skylent-font-serif: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
-  --skylent-font-sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
-  --sk-font-heading: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
-  --sk-font-body: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
-  --display-font: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
-  --skylent-t-eyebrow-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
-  --skylent-t-caption-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
-  font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+  --skylent-font-heading: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", Arial, sans-serif !important;
+  --font-brand: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", Arial, sans-serif !important;
+  --font-display: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", Arial, sans-serif !important;
+  --font-heading: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", Arial, sans-serif !important;
+  --font-body: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", Arial, sans-serif !important;
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", Arial, sans-serif !important;
+  --skylent-font-serif: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", Arial, sans-serif !important;
+  --skylent-font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", Arial, sans-serif !important;
+  --sk-font-heading: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", Arial, sans-serif !important;
+  --sk-font-body: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", Arial, sans-serif !important;
+  --display-font: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", Arial, sans-serif !important;
+  --skylent-t-eyebrow-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", Arial, sans-serif !important;
+  --skylent-t-caption-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", Arial, sans-serif !important;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", Arial, sans-serif !important;
 }
 
 h1, h2, h3, h4, h5, h6, button, input, select, textarea {
-  font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", Arial, sans-serif !important;
 }
 
 /* Hide floating AI robot launcher so UI stays 100% clean and human */
@@ -1442,4 +1442,89 @@ html[data-native-insets="android"] .skylent-mobile-tabbar {
     font-weight: 700 !important;
     border-radius: 999px !important;
   }
+}
+
+
+/* ── V90 Unified EdTech Visual Consistency (One Brand Surface: Crisp White + Slate Ink + Indigo Accent) ── */
+.hx-royal-card,
+.hx-royal-plate,
+.hx-royal-ai-card,
+.pgx .pgx-royal-hero-card,
+.pgx .pgx-royal-step,
+.pgx .pgx-close__inner {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border: 1px solid #e2e8f0 !important;
+  border-top: 3px solid #5142b5 !important;
+  box-shadow: 0 8px 24px -14px rgba(15, 23, 42, 0.08) !important;
+}
+
+.hx-royal-card__name,
+.hx-royal-plate__title,
+.pgx .pgx-royal-hero-card__title,
+.pgx .pgx-steps__title,
+.pgx .pgx-close h2 {
+  color: #0f172a !important;
+}
+
+.hx-royal-card__quote,
+.hx-royal-plate__sub,
+.pgx .pgx-royal-hero-card__sub,
+.pgx .pgx-steps__text,
+.pgx .pgx-close p,
+.hx-royal-ai-card__user p,
+.hx-royal-ai-card__reply p {
+  color: #475569 !important;
+}
+
+.hx-royal-card__code,
+.hx-royal-plate__gold,
+.hx-royal-card__track,
+.pgx .pgx-royal-hero-card__code,
+.pgx .pgx-royal-step__code,
+.pgx .pgx-close__eyebrow,
+.hx-royal-ai-card__who {
+  color: #5142b5 !important;
+}
+
+.hx-royal-card__badge,
+.hx-royal-plate__emerald,
+.pgx .pgx-royal-hero-card__badge,
+.pgx .pgx-royal-step__badge {
+  background: #ecfdf5 !important;
+  border: 1px solid #a7f3d0 !important;
+  color: #047857 !important;
+}
+
+.hx-royal-card__pill,
+.hx-royal-plate__pills span,
+.pgx .pgx-royal-hero-card__pills span,
+.pgx .pgx-royal-step__pills span {
+  background: #f8fafc !important;
+  border: 1px solid #cbd5e1 !important;
+  color: #334155 !important;
+}
+
+.hx-royal-plate__metrics > div,
+.pgx .pgx-royal-hero-card__metrics > div,
+.hx-royal-ai-card__user,
+.hx-royal-ai-card__reply,
+.hx-royal-ai-card__takeaway {
+  background: #f8fafc !important;
+  border: 1px solid #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+.hx-royal-plate__metrics span,
+.pgx .pgx-royal-hero-card__metrics span {
+  color: #64748b !important;
+}
+
+.hx-royal-plate__metrics strong,
+.pgx .pgx-royal-hero-card__metrics strong {
+  color: #0f172a !important;
+}
+
+.hx-royal-card__cta {
+  color: #5142b5 !important;
 }
