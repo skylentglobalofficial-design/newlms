@@ -249,7 +249,11 @@ public class MainActivity extends BridgeActivity {
             WebSettings settings = webView.getSettings();
             settings.setJavaScriptEnabled(true);
             settings.setDomStorageEnabled(true);
-            settings.setTextZoom(100);
+            // Adaptive Font Scaling: respects user device font preference within safe [88%, 112%] bounds
+            float sysFontScale = getResources().getConfiguration().fontScale;
+            int adaptiveTextZoom = Math.round(Math.min(Math.max(sysFontScale, 0.88f), 1.12f) * 100f);
+            settings.setTextZoom(adaptiveTextZoom);
+            webView.setBackgroundColor(Color.parseColor("#0F172A"));
             webView.addJavascriptInterface(new Object() {
                 @android.webkit.JavascriptInterface
                 public void exitApp() {
@@ -447,12 +451,12 @@ $cleanStylesXml = @"
     <style name="AppTheme.NoActionBar" parent="Theme.AppCompat.DayNight.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
-        <item name="android:background">@null</item>
+        <item name="android:windowBackground">#0F172A</item>
         <item name="android:statusBarColor">#0F172A</item>
     </style>
 
     <style name="AppTheme.NoActionBarLaunch" parent="AppTheme.NoActionBar">
-        <item name="android:background">@null</item>
+        <item name="android:windowBackground">#0F172A</item>
         <item name="android:statusBarColor">#0F172A</item>
     </style>
 </resources>
