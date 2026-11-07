@@ -66,7 +66,7 @@ const NORTHWIND_PRESET: SandboxPreset = {
         : "Apply (1 - discount_pct / 100.0) to isolate net revenue after promotional discounts.",
       groupsByMonth
         ? "✓ Monthly trend (Jan–Jun): May peaks at ₹1,58,240 · Feb dips to ₹1,18,900."
-        : "✓ Category mix: Beverages ₹2,74,560 (33.8%) · Dairy ₹1,98,410 · Confections ₹1,76,890 · Seafood ₹1,62,160.",
+        : "✓ Category mix: Electronics ₹3,47,072 (42.7%) · Apparel ₹1,79,739 · Home ₹1,55,457 · Grocery ₹1,29,752.",
     ]
 
     return {
@@ -78,7 +78,7 @@ const NORTHWIND_PRESET: SandboxPreset = {
       metrics: [
         { label: "Valid Rows", value: `${validRows} / 180` },
         { label: "Net Revenue", value: netRev },
-        { label: "Top Category", value: "Beverages (₹2,74,560)" },
+        { label: "Top Category", value: "Electronics (₹3,47,072)" },
       ],
       diagnostics,
     }
@@ -355,56 +355,126 @@ const SANDBOX_PRESETS: Record<string, SandboxPreset> = {
 }
 
 
-function renderLiveOutputTable(projectType: string, passed: boolean) {
-  if (!passed) return null
+function renderLiveOutputTable(projectType: string, input: string, passed: boolean) {
+  if (!passed && !input.trim()) return null
   if (projectType === "northwind" || projectType === "northwind-commercial-review") {
-    const rows = [
-      ["Beverages", "46", "₹2,74,560", "33.8%"],
-      ["Dairy Products", "42", "₹1,98,410", "24.4%"],
-      ["Confections", "40", "₹1,76,890", "21.8%"],
-      ["Seafood", "38", "₹1,62,160", "20.0%"],
+    const q = input.toLowerCase()
+    const limitMatch = q.match(/limit\s+(\d+)/i)
+    const limit = limitMatch ? Math.max(1, parseInt(limitMatch[1], 10)) : 4
+    const asc = /order\s+by\s+[^;]*\basc\b/i.test(q)
+    const baseRows = [
+      ["Electronics", "52", "₹3,47,072", "42.7%"],
+      ["Apparel", "41", "₹1,79,739", "22.1%"],
+      ["Home", "38", "₹1,55,457", "19.1%"],
+      ["Grocery", "35", "₹1,29,752", "16.0%"],
     ]
+    const sorted = asc ? [...baseRows].reverse() : baseRows
     return {
       headers: ["category", "valid_orders", "net_revenue_inr", "revenue_share"],
-      rows,
+      rows: sorted.slice(0, limit),
     }
   }
   if (projectType === "python-pipeline-audit") {
+    const lines = input.split("\n").map((l) => l.trim()).filter(Boolean)
+    const seen = new Set<string>()
+    const rows: string[][] = []
+    lines.forEach((line, idx) => {
+      try {
+        const r = JSON.parse(line) as Record<string, unknown>
+        const txId = String(r.gateway_tx_id ?? `row_${idx + 1}`).trim()
+        const epoch = Number(r.settlement_epoch ?? 0)
+        const currency = String(r.currency ?? "").trim() || "—"
+        const amount = Number(r.amount_paise ?? NaN)
+        const fee = Number(r.fee_paise ?? NaN)
+        if (!txId || !epoch || currency === "—" || Number.isNaN(amount) || Number.isNaN(fee) || amount <= 0 || fee < 0) {
+          rows.push([txId, currency, String(Number.isNaN(amount) ? 0 : amount), "QUARANTINED (Schema/Fee)"])
+          return
+        }
+        const key = `${txId}:${epoch}`
+        if (seen.has(key)) {
+          rows.push([txId, currency, String(amount), "SUPPRESSED (Duplicate Key)"])
+          return
+        }
+        seen.add(key)
+        rows.push([txId, currency, String(amount), "COMMITTED (Primary)"])
+      } catch {
+        rows.push([`line_${idx + 1}`, "—", "0", "QUARANTINED (Malformed JSON)"])
+      }
+    })
     return {
       headers: ["gateway_tx_id", "currency", "amount_paise", "pipeline_status"],
-      rows: [
-        ["gw_901", "INR", "14900", "COMMITTED (Primary)"],
-        ["gw_901", "INR", "14900", "SUPPRESSED (Duplicate Key)"],
-        ["gw_902", "—", "9900", "QUARANTINED (Negative Fee)"],
-        ["gw_903", "USD", "25000", "COMMITTED (Primary)"],
-      ],
+      rows,
     }
   }
   if (projectType === "churn-cohort-validation") {
-    return {
-      headers: ["cohort_window", "outreach_cap", "true_churners_reached", "weekly_arr_saved"],
-      rows: [
-        ["Pre-2026-06-30 (Train)", "500", "320 (64% Prec@K)", "₹53,76,000"],
-        ["Post-2026-06-30 (OOT Test)", "500", "315 (63% Prec@K)", "₹52,92,000"],
-      ],
+    try {
+      const cfg = JSON.parse(input) as Record<string, unknown>
+      const cap = Number(cfg.weeklyOutreachCapacity ?? 500)
+      const prec = Number(cfg.PrecisionAtTop500 ?? 0.64)
+      const acv = Number(cfg.avgAnnualContractValueInr ?? 48000)
+      const saveRate = Number(cfg.saveRateOnTrueChurner ?? 0.35)
+      const reached = Math.round(cap * prec)
+      const savedInr = Math.round(reached * saveRate) * acv
+      const ootReached = Math.round(cap * Math.max(0, prec - 0.01))
+      const ootSavedInr = Math.round(ootReached * saveRate) * acv
+      return {
+        headers: ["cohort_window", "outreach_cap", "true_churners_reached", "weekly_arr_saved"],
+        rows: [
+          [`Pre-${String(cfg.cutoffDate || "2026-06-30")} (Train)`, String(cap), `${reached} (${Math.round(prec * 100)}% Prec@K)`, `₹${savedInr.toLocaleString("en-IN")}`],
+          [`Post-${String(cfg.cutoffDate || "2026-06-30")} (OOT Test)`, String(cap), `${ootReached} (${Math.round(Math.max(0, prec - 0.01) * 100)}% Prec@K)`, `₹${ootSavedInr.toLocaleString("en-IN")}`],
+        ],
+      }
+    } catch {
+      return null
     }
   }
   if (projectType === "enterprise-rag-evaluation") {
-    return {
-      headers: ["doc_id", "section", "cosine_score", "citation_status"],
-      rows: [
-        ["SOP-REF-2026", "4.2", "0.86", "VERIFIED ([SOP-REF-2026, 4.2])"],
-      ],
+    try {
+      const payload = JSON.parse(input) as {
+        retrievedChunks?: Array<{ doc_id: string; section_id: string; score: number }>
+        candidateAnswer?: string
+      }
+      const ans = String(payload.candidateAnswer ?? "")
+      const rows = (payload.retrievedChunks ?? []).map((c) => {
+        const cited = ans.includes(c.doc_id) && ans.includes(c.section_id)
+        return [c.doc_id, c.section_id, Number(c.score ?? 0).toFixed(2), cited ? `VERIFIED ([${c.doc_id}, ${c.section_id}])` : "MISSING CITATION"]
+      })
+      return {
+        headers: ["doc_id", "section", "cosine_score", "citation_status"],
+        rows,
+      }
+    } catch {
+      return null
     }
   }
-  return {
-    headers: ["event_type", "idempotency_key", "delta_elixir", "resulting_balance"],
-    rows: [
-      ["webhook_credit", "workshop_reg:evt_99:usr_101", "+99", "99 Elixir"],
-      ["webhook_credit (replay)", "workshop_reg:evt_99:usr_101", "0 (No-Op)", "99 Elixir"],
-      ["resource_spend", "spend:usr_101:case_blinkit", "-99", "0 Elixir"],
-      ["resource_spend (overdraft)", "spend:usr_101:case_swiggy", "409 Rolled Back", "0 Elixir"],
-    ],
+  try {
+    const data = JSON.parse(input) as {
+      initialBalance?: number
+      events?: Array<{ type: string; userId: string; idempotencyKey: string; amount: number }>
+    }
+    let bal = Number(data.initialBalance ?? 0)
+    const keys = new Set<string>()
+    const rows: string[][] = []
+    for (const ev of data.events ?? []) {
+      const comp = `${ev.userId}:${ev.idempotencyKey}`
+      if (keys.has(comp)) {
+        rows.push([`${ev.type} (replay)`, ev.idempotencyKey, "0 (No-Op)", `${bal} Elixir`])
+        continue
+      }
+      if (ev.amount < 0 && bal + ev.amount < 0) {
+        rows.push([`${ev.type} (overdraft)`, ev.idempotencyKey, "409 Rolled Back", `${bal} Elixir`])
+        continue
+      }
+      keys.add(comp)
+      bal += ev.amount
+      rows.push([ev.type, ev.idempotencyKey, ev.amount > 0 ? `+${ev.amount}` : String(ev.amount), `${bal} Elixir`])
+    }
+    return {
+      headers: ["event_type", "idempotency_key", "delta_elixir", "resulting_balance"],
+      rows,
+    }
+  } catch {
+    return null
   }
 }
 
@@ -509,7 +579,7 @@ export default function TrackInteractiveSandbox({ projectType }: { projectType: 
             ))}
           </ul>
           {(() => {
-            const tbl = renderLiveOutputTable(projectType, result.passed)
+            const tbl = renderLiveOutputTable(projectType, input, result.passed)
             if (!tbl) return null
             return (
               <div style={{ marginTop: 12, overflowX: "auto", border: "1px solid #e2e8f0", borderRadius: 8 }}>

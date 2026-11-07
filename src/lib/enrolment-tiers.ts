@@ -72,11 +72,11 @@ export type StoredCourseTierRecord = {
   careerOsEnrolledAt?: string
 }
 
-export function buildSkylentTiersForPrice(baseCoursePrice: number, slug?: string): SkylentTierPlan[] {
+export function buildSkylentTiersForPrice(_baseCoursePrice: number, slug?: string): SkylentTierPlan[] {
   const overrides = slug ? readAdminPriceOverrides()[slug] : undefined
-  const proPrice = overrides?.proPrice ?? (baseCoursePrice > 0 ? baseCoursePrice : 3499)
-  const certPrice = overrides?.certPrice ?? Math.max(999, Math.round((proPrice * 0.43) / 100) * 100 - 1)
-  const flagshipPrice = overrides?.flagshipPrice ?? (proPrice + 3000)
+  const certPrice = overrides?.certPrice ?? 1499
+  const proPrice = overrides?.proPrice ?? 3499
+  const flagshipPrice = overrides?.flagshipPrice ?? 6499
 
   return [
     {

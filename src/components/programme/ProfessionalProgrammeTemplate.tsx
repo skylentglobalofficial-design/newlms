@@ -750,7 +750,7 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
           style={{
             background: "#FFFFFF",
             border: "1px solid #E2E8F0",
-            borderTop: "4px solid #5142B5",
+            borderTop: "1px solid #E2E8F0",
             borderRadius: 16,
             padding: "clamp(20px, 3vw, 30px)",
             color: "#0F172A",

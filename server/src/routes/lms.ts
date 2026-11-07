@@ -1,3 +1,4 @@
+import { getServerAuthoredQuiz } from "../lib/authored-quiz-banks.js"
 import { createFacultyDoubtTicket, listLearnerDoubtTickets, type FacultyDoubtTicket } from "../lib/doubt-sla.js"
 import { Router } from "express"
 import { z } from "zod"
@@ -122,13 +123,33 @@ async function newEnrolmentPolicyReady(res: import("express").Response): Promise
   return false
 }
 
-async function loadQuizQuestions(nodeId: string) {
+async function loadQuizQuestions(nodeId: string, courseSlug?: string, lessonKey?: string) {
   const explanations = (await readSchemaCapabilities()).quizExplanations
-  const rows = await prisma.quizQuestion.findMany({
+  let rows = await prisma.quizQuestion.findMany({
     where: { nodeId },
     orderBy: { sortOrder: "asc" },
     select: quizQuestionSelect(explanations),
   })
+  if (rows.length === 0 && courseSlug && lessonKey) {
+    const authoredQuestions = getServerAuthoredQuiz(courseSlug, lessonKey)
+    if (authoredQuestions && authoredQuestions.length > 0) {
+      await prisma.quizQuestion.createMany({
+        data: authoredQuestions.map((q, idx) => ({
+          nodeId,
+          sortOrder: idx,
+          question: q.question,
+          options: [...q.options],
+          correctIndex: q.correctIndex,
+          ...(explanations && q.explanation ? { explanation: q.explanation } : {}),
+        })),
+      }).catch(() => undefined)
+      rows = await prisma.quizQuestion.findMany({
+        where: { nodeId },
+        orderBy: { sortOrder: "asc" },
+        select: quizQuestionSelect(explanations),
+      })
+    }
+  }
   return rows.map((row) => ({
     ...row,
     explanation: "explanation" in row && row.explanation ? row.explanation : null,
@@ -662,7 +683,7 @@ lmsRouter.get(
       const unlock = assertLessonUnlocked(course, lessonParsed.data.lessonKey, lessonStates)
       if (!unlock.ok) return res.status(unlock.status).json(unlock.body)
 
-      const questions = await loadQuizQuestions(located.node.id)
+      const questions = await loadQuizQuestions(located.node.id, course.slug, lessonParsed.data.lessonKey)
 
       const attemptCount = await prisma.quizAttempt.count({
         where: { enrollmentId: enrollment.id, nodeId: located.node.id },
@@ -719,7 +740,7 @@ lmsRouter.post(
       const unlock = assertLessonUnlocked(course, lessonParsed.data.lessonKey, lessonStates)
       if (!unlock.ok) return res.status(unlock.status).json(unlock.body)
 
-      const questions = await loadQuizQuestions(located.node.id)
+      const questions = await loadQuizQuestions(located.node.id, course.slug, lessonParsed.data.lessonKey)
 
       if (questions.length === 0) {
         return res.status(400).json({ error: "Quiz has no questions" })

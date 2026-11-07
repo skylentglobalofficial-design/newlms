@@ -675,7 +675,7 @@ function SelectYourPlanPortalModal({
 }: {
   course: DashboardExploreCourse
   onClose: () => void
-  onSelectPlan: (tier: 'basic' | 'flagship' | 'pro', price: number) => void
+  onSelectPlan: (tier: 'certificate' | 'professional' | 'flagship', price: number) => void
 }) {
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -782,7 +782,7 @@ function SelectYourPlanPortalModal({
               </div>
               <button
                 type="button"
-                onClick={() => onSelectPlan('basic', 1499)}
+                onClick={() => onSelectPlan('certificate', 1499)}
                 style={{
                   width: '100%',
                   padding: '12px 16px',
@@ -834,7 +834,7 @@ function SelectYourPlanPortalModal({
               </div>
               <button
                 type="button"
-                onClick={() => onSelectPlan('flagship', 3499)}
+                onClick={() => onSelectPlan('professional', 3499)}
                 style={{
                   width: '100%',
                   padding: '12px 16px',
@@ -886,7 +886,7 @@ function SelectYourPlanPortalModal({
               </div>
               <button
                 type="button"
-                onClick={() => onSelectPlan('pro', 6499)}
+                onClick={() => onSelectPlan('flagship', 6499)}
                 style={{
                   width: '100%',
                   padding: '12px 16px',
@@ -1086,7 +1086,7 @@ export default function DashboardStudentPage() {
     }
   }
 
-  function handleSelectPlanAndCheckout(target: DashboardExploreCourse, tier: 'basic' | 'flagship' | 'pro', price: number) {
+  function handleSelectPlanAndCheckout(target: DashboardExploreCourse, tier: 'certificate' | 'professional' | 'flagship', price: number) {
     setCheckoutTarget(null)
     navigate(`/checkout?kind=course&slug=${encodeURIComponent(target.slug)}&tier=${tier}&price=${price}&from=dashboard`)
   }
@@ -2383,7 +2383,7 @@ export default function DashboardStudentPage() {
             style={{
               marginBottom: 16,
               padding: "16px 20px",
-              borderTop: "3px solid #5142b5",
+              borderTop: "1px solid #e2e8f0",
               background: "linear-gradient(90deg, #f5f3ff 0%, #ffffff 65%)",
               display: "flex",
               flexWrap: "wrap",

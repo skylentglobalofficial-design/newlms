@@ -149,21 +149,21 @@ const KIND_COPY: Record<Kind, { title: string; lead: string; label: string }> = 
 
 const LEARNING_STEPS = [
   {
-    code: "STAGE 01 · CONCEPT & INTUITION",
+    code: "Step 01 · Concept & Intuition",
     badge: "✓ English + Hinglish Notes",
     title: "1. Understand the concept",
     text: "Concise lessons with English & Hinglish explanations and quick concept checks.",
     pills: ["Plain-English Notes", "Hinglish Study Mode", "Concept Checks"],
   },
   {
-    code: "STAGE 02 · IN-BROWSER WORKBENCH",
+    code: "Step 02 · In-Browser Workbench",
     badge: "✓ Zero Local Setup",
     title: "2. Practise in your browser",
     text: "Run SQL queries, Python pipelines, and product specs directly in your browser.",
     pills: ["Live SQL & Python", "Harbor Desk PRD", "20-Min TA Help"],
   },
   {
-    code: "STAGE 03 · VERIFIED PROOF OF WORK",
+    code: "Step 03 · Verified Proof of Work",
     badge: "✓ Public /verify Link",
     title: "3. Build proof you keep",
     text: "Earn a verified SKL certificate (/verify) and unlock Career OS at 60% completion.",
@@ -352,7 +352,7 @@ export default function ProgramsPage() {
 
             <aside className="pgx-royal-hero-card" aria-label="Skylent Execution Standard">
               <div className="pgx-royal-hero-card__top">
-                <code className="pgx-royal-hero-card__code">SKYLENT OS · EXECUTION STANDARD</code>
+                <code className="pgx-royal-hero-card__code">Curriculum & Credential Standard</code>
                 <span className="pgx-royal-hero-card__badge">✓ 6 Live Tracks</span>
               </div>
               <strong className="pgx-royal-hero-card__title">Every Track Includes a Browser Lab &amp; Verified Capstone</strong>
@@ -512,7 +512,7 @@ export default function ProgramsPage() {
         <section className="pgx-close" aria-labelledby="pgx-close-title">
           <div className="sky-container pgx-close__inner">
             <div>
-              <code className="pgx-close__eyebrow">90-SECOND SKILL &amp; TRACK DIAGNOSTIC</code>
+              <code className="pgx-close__eyebrow">Skill & Track Diagnostic</code>
               <h2 id="pgx-close-title">Not sure which track fits you best?</h2>
               <p>Answer 3 quick questions in our 90-second path finder to see which programme matches your background and goal.</p>
             </div>

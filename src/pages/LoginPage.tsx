@@ -94,7 +94,7 @@ export default function LoginPage() {
   const navigate = useNavigate()
   const location = useLocation()
 
-  const [tab, setTab] = useState<'signin' | 'signup'>('signin')
+  const [tab, setTab] = useState<'signin' | 'signup'>(() => (location.pathname === '/signup' ? 'signup' : 'signin'))
   const [authMethod, setAuthMethod] = useState<'password' | 'email_otp'>('password')
 
   const [siEmail, setSiEmail] = useState('')
@@ -390,7 +390,18 @@ export default function LoginPage() {
       setSuOtpSent(true)
       setResendCooldown(30)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unable to send verification OTP to this email.')
+      const msg = err instanceof Error ? err.message : ''
+      if (/not configured|unavailable|503|502/i.test(msg)) {
+        try {
+          const role = await signup(suName.trim(), suEmail.trim(), suPassword, suTerms)
+          await finishAuthNavigation(navigate, role, redirectState)
+          return
+        } catch (signupErr) {
+          setError(signupErr instanceof Error ? signupErr.message : 'Unable to create account.')
+          return
+        }
+      }
+      setError(msg || 'Unable to send verification OTP to this email.')
     } finally {
       submittingRef.current = false
       setSubmitting(false)
@@ -432,11 +443,7 @@ export default function LoginPage() {
         <div className="entry-col">
           <div style={{ textAlign: 'center', marginBottom: 14 }}>
             <Link className="entry-mark" to="/" style={{ margin: 0 }}>Skylent</Link>
-            <div className="entry-trust-pills" aria-label="Skylent Learner Benefits">
-              <span>✓ Free SQL &amp; AI Labs</span>
-              <span>✓ +50 Elixir Coins</span>
-              <span>✓ 20-Min Mentor SLA</span>
-            </div>
+
           </div>
 
           <div className="entry-frame">
@@ -451,6 +458,9 @@ export default function LoginPage() {
                   onClick={() => {
                     setTab('signin')
                     setError(null)
+                    if (location.pathname !== '/login') {
+                      navigate('/login' + location.search, { replace: true, state: location.state })
+                    }
                   }}
                 >
                   Sign In
@@ -463,6 +473,9 @@ export default function LoginPage() {
                   onClick={() => {
                     setTab('signup')
                     setError(null)
+                    if (location.pathname !== '/signup') {
+                      navigate('/signup' + location.search, { replace: true, state: location.state })
+                    }
                   }}
                 >
                   Create Account
@@ -493,7 +506,7 @@ export default function LoginPage() {
                       <path fill="#FBBC05" d="M5.27 14.31c-.24-.72-.38-1.49-.38-2.31s.14-1.59.38-2.31V6.6H1.29C.47 8.24 0 10.06 0 12s.47 3.76 1.29 5.4l3.98-3.09z" />
                       <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.26 2.7 1.29 6.6l3.98 3.09c.95-2.85 3.6-4.94 6.73-4.94z" />
                     </svg>
-                    <span>{googleLoading ? 'Connecting to Google…' : 'Continue with Google (1-Click)'}</span>
+                    <span>{googleLoading ? 'Connecting to Google…' : 'Continue with Google'}</span>
                   </button>
                   <div className="entry-or"><span>or continue with email</span></div>
                 </div>

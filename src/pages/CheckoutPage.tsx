@@ -46,7 +46,8 @@ export default function CheckoutPage() {
         : "course"
   ) as "course" | "program" | "workshop"
   const slug = params.get("slug") || "data-analytics"
-  const tierParam = (params.get("tier") || "professional") as SkylentTierId
+  const rawTier = params.get("tier") || "professional"
+  const tierParam: SkylentTierId = rawTier === "basic" || rawTier === "certificate" ? "certificate" : rawTier === "pro" || rawTier === "flagship" ? "flagship" : "professional"
   const paymentStatus = params.get("payment")
 
   const [priceOverrides, setPriceOverrides] = useState<Record<string, LocalPriceOverride>>({})
@@ -79,7 +80,7 @@ export default function CheckoutPage() {
       const baseCourse = courses.find((c) => prog?.linkedCourseSlugs?.includes(c.slug))
       return {
         title: prog?.name || "Skylent Career Programme",
-        basePrice: override?.basePrice ?? baseCourse?.price ?? 5499,
+        basePrice: override?.basePrice ?? 3499,
         linkedSlugs: prog?.linkedCourseSlugs ?? [],
       }
     }

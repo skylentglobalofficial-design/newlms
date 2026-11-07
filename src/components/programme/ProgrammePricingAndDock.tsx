@@ -331,7 +331,7 @@ export default function ProgrammePricingAndDock({
       </section>
 
       {/* Clean Floating Quick-Jump Bar */}
-      <div className="pp-floating-dock-wrap" aria-label="Quick programme section navigation">
+      <div className="pp-floating-dock-wrap" style={{ display: "none" }} aria-label="Quick programme section navigation">
         <nav className="pp-floating-dock">
           <button
             type="button"

@@ -1255,7 +1255,7 @@ function HomeCareerPlate({ step }: { step: JourneyKey }) {
     return (
       <div className="hx-royal-plate">
         <div className="hx-royal-plate__top">
-          <span className="hx-royal-plate__gold">STAGE 01 · INSTANT WORKSPACE SETUP</span>
+          <span className="hx-royal-plate__gold">Step 01 · Course Workspace</span>
           <span className="hx-royal-plate__emerald">✓ +50 Elixir Welcome Bonus</span>
         </div>
         <h3 className="hx-royal-plate__title">Start {programme} in One Click</h3>
@@ -1287,7 +1287,7 @@ function HomeCareerPlate({ step }: { step: JourneyKey }) {
     return (
       <div className="hx-royal-plate">
         <div className="hx-royal-plate__top">
-          <span className="hx-royal-plate__gold">STAGE 02 · SIMPLE STEP-BY-STEP LESSONS</span>
+          <span className="hx-royal-plate__gold">Step 02 · Guided Modules</span>
           <span className="hx-royal-plate__emerald">✓ +5 to +15 Coins / Milestone</span>
         </div>
         <h3 className="hx-royal-plate__title">{facts ? facts.current.title : "SQL Joins & Revenue Hygiene"}</h3>
@@ -1318,7 +1318,7 @@ function HomeCareerPlate({ step }: { step: JourneyKey }) {
     return (
       <div className="hx-royal-plate">
         <div className="hx-royal-plate__top">
-          <span className="hx-royal-plate__gold">STAGE 03 · REAL CAPSTONE PROJECT</span>
+          <span className="hx-royal-plate__gold">Step 03 · Capstone Project</span>
           <span className="hx-royal-plate__emerald">✓ Graded on 4-Point Rubric</span>
         </div>
         <h3 className="hx-royal-plate__title">{capstone}</h3>
@@ -1349,7 +1349,7 @@ function HomeCareerPlate({ step }: { step: JourneyKey }) {
     return (
       <div className="hx-royal-plate">
         <div className="hx-royal-plate__top">
-          <span className="hx-royal-plate__gold">STAGE 04 · VERIFIED CERTIFICATE LINK</span>
+          <span className="hx-royal-plate__gold">Step 04 · Verified Credential</span>
           <span className="hx-royal-plate__emerald">✓ Publicly Verifiable at /verify</span>
         </div>
         <h3 className="hx-royal-plate__title">SKL-2026 Verified Credential &amp; Project Proof</h3>
@@ -1380,7 +1380,7 @@ function HomeCareerPlate({ step }: { step: JourneyKey }) {
     return (
       <div className="hx-royal-plate">
         <div className="hx-royal-plate__top">
-          <span className="hx-royal-plate__gold">STAGE 05 · RECRUITER-READY CAREER PROFILE</span>
+          <span className="hx-royal-plate__gold">Step 05 · Portfolio Profile</span>
           <span className="hx-royal-plate__emerald">✓ Unlocks at 60% Completion</span>
         </div>
         <h3 className="hx-royal-plate__title">Your Skills, Projects &amp; Certificates in One Link</h3>
@@ -2120,7 +2120,7 @@ export function HomeInstitutionalArchitecture() {
               </p>
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 16 }}>
-              <article style={{ background: "#FFFFFF", border: "1.5px solid #DDD7FF", borderTop: "4px solid #5142B5", borderRadius: 14, padding: 20, boxShadow: "0 8px 22px -12px rgba(81, 66, 181, 0.12)" }}>
+              <article style={{ background: "#FFFFFF", border: "1.5px solid #DDD7FF", borderTop: "1px solid #E2E8F0", borderRadius: 14, padding: 20, boxShadow: "0 8px 22px -12px rgba(81, 66, 181, 0.12)" }}>
                 <span style={{ display: "inline-block", padding: "3px 9px", borderRadius: 6, background: "#F5F3FF", border: "1px solid #DDD7FF", color: "#5142B5", fontSize: 10.5, fontFamily: "var(--font-mono)", fontWeight: 700 }}>
                   FIELDWORK ARCHETYPE 01 · MSME &amp; DISTRIBUTION
                 </span>
@@ -2129,7 +2129,7 @@ export function HomeInstitutionalArchitecture() {
                   <strong style={{ color: "#0F172A" }}>Problem Scope:</strong> 4,000+ anonymised invoice rows with falling SKU margins. Learners isolate discount leakage, submit V1 SQL/sheet memo, and incorporate supervisor V2 critique.
                 </p>
               </article>
-              <article style={{ background: "#FFFFFF", border: "1.5px solid #DDD7FF", borderTop: "4px solid #5142B5", borderRadius: 14, padding: 20, boxShadow: "0 8px 22px -12px rgba(81, 66, 181, 0.12)" }}>
+              <article style={{ background: "#FFFFFF", border: "1.5px solid #DDD7FF", borderTop: "1px solid #E2E8F0", borderRadius: 14, padding: 20, boxShadow: "0 8px 22px -12px rgba(81, 66, 181, 0.12)" }}>
                 <span style={{ display: "inline-block", padding: "3px 9px", borderRadius: 6, background: "#F5F3FF", border: "1px solid #DDD7FF", color: "#5142B5", fontSize: 10.5, fontFamily: "var(--font-mono)", fontWeight: 700 }}>
                   FIELDWORK ARCHETYPE 02 · STARTUP &amp; SaaS OPS
                 </span>
@@ -2138,7 +2138,7 @@ export function HomeInstitutionalArchitecture() {
                   <strong style={{ color: "#0F172A" }}>Problem Scope:</strong> Categorise 150 support escalations, write a 2-week engineering fix PRD, and defend trade-offs before the partner product lead.
                 </p>
               </article>
-              <article style={{ background: "#FFFFFF", border: "1.5px solid #DDD7FF", borderTop: "4px solid #5142B5", borderRadius: 14, padding: 20, boxShadow: "0 8px 22px -12px rgba(81, 66, 181, 0.12)" }}>
+              <article style={{ background: "#FFFFFF", border: "1.5px solid #DDD7FF", borderTop: "1px solid #E2E8F0", borderRadius: 14, padding: 20, boxShadow: "0 8px 22px -12px rgba(81, 66, 181, 0.12)" }}>
                 <span style={{ display: "inline-block", padding: "3px 9px", borderRadius: 6, background: "#F5F3FF", border: "1px solid #DDD7FF", color: "#5142B5", fontSize: 10.5, fontFamily: "var(--font-mono)", fontWeight: 700 }}>
                   FIELDWORK ARCHETYPE 03 · NGO &amp; CLINIC WORKFLOWS
                 </span>
@@ -2161,7 +2161,7 @@ export function HomeInstitutionalArchitecture() {
               ["05 · PulseAI", "AI & Evaluation Lab", "RAG reliability, prompt evaluation rubrics, data hygiene, and hallucination checks."],
               ["06 · Skylent Digital Systems", "Computing & Full-Stack", "API contracts, automated QA assertions, deployment readiness, and security checks."],
             ].map(([title, school, desc]) => (
-              <div key={title} style={{ background: "#FFFFFF", border: "1.5px solid #DDD7FF", borderTop: "4px solid #5142B5", borderRadius: 14, padding: 18, boxShadow: "0 8px 22px -12px rgba(81, 66, 181, 0.1)" }}>
+              <div key={title} style={{ background: "#FFFFFF", border: "1.5px solid #DDD7FF", borderTop: "1px solid #E2E8F0", borderRadius: 14, padding: 18, boxShadow: "0 8px 22px -12px rgba(81, 66, 181, 0.1)" }}>
                 <span style={{ display: "inline-block", padding: "3px 9px", borderRadius: 999, background: "#DCFCE7", border: "1px solid #86EFAC", color: "#15803D", fontSize: 11, fontFamily: "var(--font-mono)", fontWeight: 700 }}>{school}</span>
                 <h3 style={{ margin: "8px 0 6px", fontSize: 17, fontWeight: 750, color: "#0F172A" }}>{title}</h3>
                 <p style={{ margin: 0, fontSize: 13.5, color: "#334155", lineHeight: 1.55 }}>{desc}</p>
@@ -2180,7 +2180,7 @@ export function HomeInstitutionalArchitecture() {
                 ["15% · Oral Defence", "Boardroom Cold Call & stakeholder clarity"],
                 ["20% · V1 → V2 Revision", "Measurable improvement after faculty critique"],
               ].map(([k, v]) => (
-                <div key={k} style={{ background: "#FFFFFF", border: "1.5px solid #DDD7FF", borderTop: "4px solid #5142B5", borderRadius: 12, padding: 16, boxShadow: "0 6px 18px -10px rgba(81, 66, 181, 0.1)" }}>
+                <div key={k} style={{ background: "#FFFFFF", border: "1.5px solid #DDD7FF", borderTop: "1px solid #E2E8F0", borderRadius: 12, padding: 16, boxShadow: "0 6px 18px -10px rgba(81, 66, 181, 0.1)" }}>
                   <strong style={{ color: "#5142B5", fontSize: 17, fontWeight: 800, display: "block", marginBottom: 4 }}>{k}</strong>
                   <span style={{ fontSize: 13, color: "#334155", lineHeight: 1.45, display: "block" }}>{v}</span>
                 </div>

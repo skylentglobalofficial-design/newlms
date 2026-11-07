@@ -1674,3 +1674,26 @@ section.pp-practice {
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* ── V93 Fix: Prevent sticky subnav from cutting section headings & hide duplicate bottom dock ── */
+#pp-stage,
+#pp-capstone,
+#pp-curriculum,
+#pp-practice,
+#pp-review-standard,
+#pp-evidence,
+#pp-career,
+#pp-plans,
+#pp-faqs,
+.pp-plans-band,
+.pp-faqs-band {
+  scroll-margin-top: 108px !important;
+}
+
+.pp-plans-band {
+  padding-top: clamp(44px, 6vw, 68px) !important;
+}
+
+.pp-floating-dock-wrap {
+  display: none !important;
+}

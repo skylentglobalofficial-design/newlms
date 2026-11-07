@@ -167,11 +167,19 @@ export function LessonContentView({
   }
 
   if (lesson.type === 'notes') {
-    const fallback = `Structured lesson notes for ${lesson.title}. Complete the reading and practice exercises below to unlock the next milestone.`
-    const notes = material?.body ?? fallback
+    const customSummary = (lesson as { summary?: string | null }).summary
+    const customRefUrl = (lesson as { referenceUrl?: string | null }).referenceUrl
+    const fallback = `## ${lesson.title}\n\n${customSummary || `Complete the reading and applied exercises for ${lesson.title} to unlock the next milestone.`}`
+    const notes = material?.body
+      ? customSummary && !material.body.includes(customSummary)
+        ? `${customSummary}\n\n---\n\n${material.body}`
+        : material.body
+      : fallback
     const hasAttachedVideo = Boolean(
       lessonMedia && (lessonMedia.status === 'ready' || lessonMedia.playbackUrl || lessonMedia.embedUrl)
     )
+    const youtubeMatch = customRefUrl?.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([A-Za-z0-9_-]{11})/)
+    const isDirectMp4 = Boolean(customRefUrl && /\.(mp4|webm|ogg)(\?|$)/i.test(customRefUrl))
     return (
       <div className="lms-lesson-notes">
         {hasAttachedVideo ? (
@@ -183,6 +191,21 @@ export function LessonContentView({
               watched={lessonState.complete || lessonState.videoWatched}
               accent={accent}
             />
+          </div>
+        ) : null}
+        {youtubeMatch ? (
+          <div style={{ marginBottom: 20, borderRadius: 12, overflow: 'hidden', border: '1px solid #e2e8f0', aspectRatio: '16/9', background: '#0f172a' }}>
+            <iframe
+              src={`https://www.youtube.com/embed/${youtubeMatch[1]}?rel=0`}
+              title={lesson.title}
+              style={{ width: '100%', height: '100%', border: 0 }}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          </div>
+        ) : isDirectMp4 && customRefUrl ? (
+          <div style={{ marginBottom: 20, borderRadius: 12, overflow: 'hidden', border: '1px solid #e2e8f0', background: '#0f172a' }}>
+            <video src={customRefUrl} controls style={{ width: '100%', display: 'block', maxHeight: 460 }} />
           </div>
         ) : null}
         <LessonDocument markdown={notes} accent={accent} skipHeading={lesson.title} />

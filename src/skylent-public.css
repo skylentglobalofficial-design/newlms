@@ -1455,7 +1455,7 @@ html[data-native-insets="android"] .skylent-mobile-tabbar {
   background: #ffffff !important;
   color: #0f172a !important;
   border: 1px solid #e2e8f0 !important;
-  border-top: 3px solid #5142b5 !important;
+  border-top: 1px solid #e2e8f0 !important;
   box-shadow: 0 8px 24px -14px rgba(15, 23, 42, 0.08) !important;
 }
 
@@ -1527,4 +1527,28 @@ html[data-native-insets="android"] .skylent-mobile-tabbar {
 
 .hx-royal-card__cta {
   color: #5142b5 !important;
+}
+
+/* ── V93 Meaningful Brand Refinement (Clean Hairline Borders, Refined Typography, Zero AI Card Stripes) ── */
+.hx-live-course-card,
+.pgx-card,
+.hx-royal-card,
+.hx-royal-plate,
+.hx-royal-ai-card,
+.pgx .pgx-royal-hero-card,
+.pgx .pgx-royal-step,
+.pgx .pgx-close__inner {
+  border: 1px solid #e2e8f0 !important;
+  border-top: 1px solid #e2e8f0 !important;
+  border-radius: 14px !important;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03), 0 10px 24px -12px rgba(15, 23, 42, 0.06) !important;
+  transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease !important;
+}
+
+.hx-live-course-card:hover,
+.pgx-card:hover,
+.hx-royal-card:hover {
+  border-color: #cbd5e1 !important;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05), 0 16px 32px -12px rgba(15, 23, 42, 0.1) !important;
+  transform: translateY(-2px) !important;
 }

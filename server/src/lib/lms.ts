@@ -23,6 +23,8 @@ export type FormattedLesson = {
   title: string
   type: string | null
   duration?: string
+  summary?: string | null
+  referenceUrl?: string | null
   locked?: boolean
   requiredLessonKey?: string | null
   media?: {
@@ -203,6 +205,8 @@ export function formatCourseModules(
         title: node.title,
         type: nodeTypeKey(node.nodeType),
         duration: node.duration ?? undefined,
+        summary: node.summary ?? undefined,
+        referenceUrl: node.referenceUrl ?? undefined,
         locked: state?.locked ?? false,
         requiredLessonKey: state?.requiredLessonKey ?? null,
         media,

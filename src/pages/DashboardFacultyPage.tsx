@@ -34,7 +34,7 @@ const accent = getRoleAccent('faculty')
 const canvasSectionStyle = {
   background: '#ffffff',
   border: '1px solid #e2e8f0',
-  borderTop: '4px solid #5142b5',
+  borderTop: '1px solid #e2e8f0',
   borderRadius: 16,
   padding: '22px 24px',
   boxShadow: '0 10px 28px -12px rgba(15, 23, 42, 0.08)',

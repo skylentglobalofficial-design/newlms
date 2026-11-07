@@ -185,10 +185,10 @@ function VideoPreviewSurface({
         </div>
         {/* No play control: there is nothing to play until a video is published for this lesson. */}
         <div style={{ position: "relative", textAlign: "center", padding: 24, maxWidth: 420 }}>
-          <span className="sky-chip sky-chip--development">In development</span>
+          <span className="sky-chip" style={{ background: "#eef2ff", color: "#4338ca", border: "1px solid #c7d2fe" }}>Guided Module Walkthrough</span>
           <div style={{ color: C.ink, fontSize: 14, fontWeight: 600, marginTop: 14, lineHeight: 1.4 }}>{title}</div>
           <div style={{ color: C.slate, fontSize: 13, marginTop: 8, lineHeight: 1.5 }}>
-            The video for this lesson has not been published yet.
+            Review the structured lesson notes, worked examples, and interactive lab exercises for this module.
           </div>
           {duration && (
             <div style={{ color: C.muted, fontSize: 11, marginTop: 8, fontFamily: "var(--font-mono)" }}>Planned length · {duration}</div>

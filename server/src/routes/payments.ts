@@ -642,7 +642,7 @@ paymentsRouter.post("/payu/initiate", async (req: AuthenticatedRequest, res) => 
       finalAmount = finalAmount > 0 ? finalAmount : 99
     } else if (!finalAmount || finalAmount <= 0) {
       if (tier === "certificate") finalAmount = 1499
-      else if (tier === "flagship") finalAmount = 6999
+      else if (tier === "flagship") finalAmount = 6499
       else finalAmount = 3499
     }
 
@@ -858,13 +858,22 @@ paymentsRouter.post("/payu/response", async (req, res) => {
       if (targetKind === "program") {
         const program = await findProgramBySlug(targetSlug)
         if (program) {
+          await prisma.userEnrollment.upsert({
+            where: { userId_programId: { userId, programId: program.id } },
+            create: { userId, programId: program.id, status: "active" },
+            update: { status: "active" },
+          }).catch(() => undefined)
+          for (const link of program.programCourses ?? []) {
+            if (link.course?.id) {
+              await prisma.userEnrollment.upsert({
+                where: { userId_courseId: { userId, courseId: link.course.id } },
+                create: { userId, courseId: link.course.id, status: "active" },
+                update: { status: "active" },
+              }).catch(() => undefined)
+            }
+          }
           const firstCourse = program.programCourses?.[0]?.course
           if (firstCourse) {
-            await prisma.userEnrollment.upsert({
-              where: { userId_courseId: { userId, courseId: firstCourse.id } },
-              create: { userId, courseId: firstCourse.id, programId: program.id, status: "active" },
-              update: { status: "active", programId: program.id },
-            }).catch(() => undefined)
             return res.redirect(303, `/learn/${firstCourse.slug}?enrolled=true&tier=${tier}&txnid=${txnid}`)
           }
         }
