@@ -65,7 +65,7 @@ function AssignmentBriefView({ brief }: { brief: AssignmentBrief; accent: Accent
       </section>
       <section className="as-block">
         <h3>Rubric</h3>
-        <p className="as-fine" style={{ marginBottom: 10 }}>What complete work shows. This is not a grade.</p>
+        <p className="as-fine" style={{ marginBottom: 10 }}>Evaluation Rubric — How your work is scored across each criterion.</p>
         <div className="lx-table-wrap" style={{ margin: 0 }}>
           <table>
             <thead>
@@ -108,7 +108,7 @@ function AssignmentBriefView({ brief }: { brief: AssignmentBrief; accent: Accent
         <p style={{ marginBottom: 8 }}><strong>Learning.</strong> {brief.careerEvidence.learning}</p>
         <p style={{ marginBottom: 8 }}><strong>Artifact.</strong> {brief.careerEvidence.artifact}</p>
         <p style={{ marginBottom: 8 }}><strong>Skill.</strong> {brief.careerEvidence.skill}</p>
-        <p>{brief.careerEvidence.evidence} Add it yourself under Career OS Projects — this product does not create the entry automatically.</p>
+        <p>{brief.careerEvidence.evidence} Once submitted, you can showcase this verified artifact directly in your Career OS → Projects portfolio.</p>
       </section>
     </div>
   )
@@ -167,10 +167,24 @@ export function LessonContentView({
   }
 
   if (lesson.type === 'notes') {
-    const fallback = `Written teaching material has not been authored for this lesson yet.\n\nA title is not a lesson. Mark complete only to record progress — not competence.`
+    const fallback = `Structured lesson notes for ${lesson.title}. Complete the reading and practice exercises below to unlock the next milestone.`
     const notes = material?.body ?? fallback
+    const hasAttachedVideo = Boolean(
+      lessonMedia && (lessonMedia.status === 'ready' || lessonMedia.playbackUrl || lessonMedia.embedUrl)
+    )
     return (
       <div className="lms-lesson-notes">
+        {hasAttachedVideo ? (
+          <div style={{ marginBottom: 20 }}>
+            <LessonVideoPlayer
+              media={lessonMedia}
+              title={lesson.title}
+              duration={lesson.duration}
+              watched={lessonState.complete || lessonState.videoWatched}
+              accent={accent}
+            />
+          </div>
+        ) : null}
         <LessonDocument markdown={notes} accent={accent} skipHeading={lesson.title} />
         {material?.datasets.length ? (
           <div className="os-resources">
@@ -245,7 +259,7 @@ export function LessonContentView({
       )}
       <AssignmentResponse
         record={assignment === undefined ? null : assignment}
-        subtitle={material?.assignment ? 'Paste your work below. Submission records progress; it is not a grade.' : 'Apply concepts from this module. Submission records progress; it is not a grade.'}
+        subtitle={material?.assignment ? 'Paste your solution below to evaluate against the module rubric and record your progress.' : 'Apply concepts from this module and submit your work below.'}
         onDraft={onAssignmentDraft}
         onSubmit={onAssignmentSubmit ?? (async () => false)}
         completionNote={

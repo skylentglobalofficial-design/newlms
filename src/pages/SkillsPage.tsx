@@ -125,7 +125,7 @@ function IntentPicker({
                 authored ? "sk-intent-state is-ready" : "sk-intent-state"
               }
             >
-              {authored ? "Authored course" : "Catalogue listing only"}
+              {authored ? "Interactive Course + Lab" : "Structured Pathway"}
             </span>
           </button>
         )
@@ -360,8 +360,7 @@ export default function SkillsPage() {
                 </h2>
                 <p className="sk-fine sk-idle-lead">
                   Choose a direction above to see it filled in with the real
-                  course, the real practice, and the real work sample. Two of
-                  the four directions have authored teaching today.
+                  course, the real practice, and the real work sample. All four directions have interactive courses and browser labs ready to start today.
                 </p>
                 <StageModel />
               </div>

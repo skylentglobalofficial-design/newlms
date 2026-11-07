@@ -1,11 +1,11 @@
 /**
- * V90 Complete Surgical Patcher (Syncs identical buildId across Server health.ts & Client NativeAppShellController.tsx)
+ * V91 Complete Surgical Patcher (Syncs identical buildId across Server health.ts & Client NativeAppShellController.tsx)
  */
 import { existsSync, readFileSync, writeFileSync } from "node:fs"
 import { resolve } from "node:path"
 
 const root = process.cwd()
-const buildStamp = `v90-${new Date().toISOString().replace(/[-:T.Z]/g, "").slice(0, 12)}`
+const buildStamp = `v91-${new Date().toISOString().replace(/[-:T.Z]/g, "").slice(0, 12)}`
 
 // 1. Stamp server/src/routes/health.ts with buildStamp
 const healthPath = resolve(root, "server/src/routes/health.ts")
@@ -13,14 +13,14 @@ if (existsSync(healthPath)) {
   let hSrc = readFileSync(healthPath, "utf8")
   hSrc = hSrc.replace(
     /export const DEPLOYED_APP_VERSION = [^\n]+/,
-    'export const DEPLOYED_APP_VERSION = "9.0.0"',
+    'export const DEPLOYED_APP_VERSION = "9.1.0"',
   )
   hSrc = hSrc.replace(
     /export const DEPLOYED_BUILD_ID = [^\n]+/,
     `export const DEPLOYED_BUILD_ID = "${buildStamp}"`,
   )
   writeFileSync(healthPath, hSrc, "utf8")
-  console.log(`[V90 Fix] Stamped server/src/routes/health.ts with buildId: ${buildStamp}`)
+  console.log(`[V91 Fix] Stamped server/src/routes/health.ts with buildId: ${buildStamp}`)
 }
 
 // 2. Stamp src/components/skylent/NativeAppShellController.tsx with the EXACT same buildStamp
@@ -29,10 +29,10 @@ if (existsSync(nascPath)) {
   let nSrc = readFileSync(nascPath, "utf8")
   nSrc = nSrc.replace(
     /export const BUNDLED_CLIENT_BUILD_ID = [^\n]+/,
-    `export const BUNDLED_CLIENT_BUILD_ID = "9.0.0:${buildStamp}"`,
+    `export const BUNDLED_CLIENT_BUILD_ID = "9.1.0:${buildStamp}"`,
   )
   writeFileSync(nascPath, nSrc, "utf8")
-  console.log(`[V90 Fix] Stamped NativeAppShellController.tsx with matching buildId: 9.0.0:${buildStamp}`)
+  console.log(`[V91 Fix] Stamped NativeAppShellController.tsx with matching buildId: 9.1.0:${buildStamp}`)
 }
 
-console.log("[V90 Fix] All V90 Same-Origin Mobile APK & Web fixes verified!")
+console.log("[V91 Fix] All V91 Same-Origin Mobile APK & Web fixes verified!")

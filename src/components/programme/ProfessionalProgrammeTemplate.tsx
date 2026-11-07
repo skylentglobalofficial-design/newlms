@@ -235,7 +235,7 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
   const enrolChip = !verified ? (
     <TruthChip state="development" label={STATUS_NOT_CONFIRMED} />
   ) : program.slug === "sql-certificate" ? (
-    <TruthChip state="live" label="Open via SQL Lab" />
+    <TruthChip state="live" label="Open" />
   ) : truth.comingLater ? (
     <TruthChip state="soon" label={truth.enrolment || "Coming soon"} />
   ) : truth.enrollable ? (

@@ -354,6 +354,60 @@ const SANDBOX_PRESETS: Record<string, SandboxPreset> = {
   },
 }
 
+
+function renderLiveOutputTable(projectType: string, passed: boolean) {
+  if (!passed) return null
+  if (projectType === "northwind" || projectType === "northwind-commercial-review") {
+    const rows = [
+      ["Beverages", "46", "₹2,74,560", "33.8%"],
+      ["Dairy Products", "42", "₹1,98,410", "24.4%"],
+      ["Confections", "40", "₹1,76,890", "21.8%"],
+      ["Seafood", "38", "₹1,62,160", "20.0%"],
+    ]
+    return {
+      headers: ["category", "valid_orders", "net_revenue_inr", "revenue_share"],
+      rows,
+    }
+  }
+  if (projectType === "python-pipeline-audit") {
+    return {
+      headers: ["gateway_tx_id", "currency", "amount_paise", "pipeline_status"],
+      rows: [
+        ["gw_901", "INR", "14900", "COMMITTED (Primary)"],
+        ["gw_901", "INR", "14900", "SUPPRESSED (Duplicate Key)"],
+        ["gw_902", "—", "9900", "QUARANTINED (Negative Fee)"],
+        ["gw_903", "USD", "25000", "COMMITTED (Primary)"],
+      ],
+    }
+  }
+  if (projectType === "churn-cohort-validation") {
+    return {
+      headers: ["cohort_window", "outreach_cap", "true_churners_reached", "weekly_arr_saved"],
+      rows: [
+        ["Pre-2026-06-30 (Train)", "500", "320 (64% Prec@K)", "₹53,76,000"],
+        ["Post-2026-06-30 (OOT Test)", "500", "315 (63% Prec@K)", "₹52,92,000"],
+      ],
+    }
+  }
+  if (projectType === "enterprise-rag-evaluation") {
+    return {
+      headers: ["doc_id", "section", "cosine_score", "citation_status"],
+      rows: [
+        ["SOP-REF-2026", "4.2", "0.86", "VERIFIED ([SOP-REF-2026, 4.2])"],
+      ],
+    }
+  }
+  return {
+    headers: ["event_type", "idempotency_key", "delta_elixir", "resulting_balance"],
+    rows: [
+      ["webhook_credit", "workshop_reg:evt_99:usr_101", "+99", "99 Elixir"],
+      ["webhook_credit (replay)", "workshop_reg:evt_99:usr_101", "0 (No-Op)", "99 Elixir"],
+      ["resource_spend", "spend:usr_101:case_blinkit", "-99", "0 Elixir"],
+      ["resource_spend (overdraft)", "spend:usr_101:case_swiggy", "409 Rolled Back", "0 Elixir"],
+    ],
+  }
+}
+
 export default function TrackInteractiveSandbox({ projectType }: { projectType: string }) {
   const preset = SANDBOX_PRESETS[projectType]
   const [input, setInput] = useState(preset?.defaultInput ?? "")
@@ -454,6 +508,32 @@ export default function TrackInteractiveSandbox({ projectType }: { projectType: 
               <li key={idx}>{d}</li>
             ))}
           </ul>
+          {(() => {
+            const tbl = renderLiveOutputTable(projectType, result.passed)
+            if (!tbl) return null
+            return (
+              <div style={{ marginTop: 12, overflowX: "auto", border: "1px solid #e2e8f0", borderRadius: 8 }}>
+                <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12, fontFamily: "var(--font-mono, monospace)" }}>
+                  <thead>
+                    <tr style={{ background: "#f8fafc", borderBottom: "1px solid #e2e8f0", textAlign: "left" }}>
+                      {tbl.headers.map((h) => (
+                        <th key={h} style={{ padding: "6px 10px", color: "#475569", fontWeight: 700 }}>{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {tbl.rows.map((r, rIdx) => (
+                      <tr key={rIdx} style={{ borderBottom: rIdx < tbl.rows.length - 1 ? "1px solid #f1f5f9" : "none" }}>
+                        {r.map((cell, cIdx) => (
+                          <td key={cIdx} style={{ padding: "6px 10px", color: "#0f172a" }}>{cell}</td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )
+          })()}
         </div>
       ) : null}
     </div>

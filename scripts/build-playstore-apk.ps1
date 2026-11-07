@@ -1,14 +1,14 @@
 # =============================================================================
-# SKYLENT PLAY STORE NATIVE APK & SIGNED AAB BUILDER (V90 - versionCode 9000)
+# SKYLENT PLAY STORE NATIVE APK & SIGNED AAB BUILDER (V91 - versionCode 9100)
 # Generates:
 #   1. skylent-playstore-debug.apk   (Signed with Unified Production Keystore)
 #   2. skylent-playstore-release.apk (Signed Release APK for phone install)
 #   3. skylent-playstore-release.aab (Signed Release Bundle for Google Play Console)
 # Includes:
 #   - 100% Same-Origin Production Sync (https://skylent.live - Zero CORS errors on Catalogue or Login)
-#   - Pre-Load appendUserAgent (SkylentNativeApp/9.0.0 SkylentVersionCode/9000 SkylentNativeInsetsApplied)
+#   - Pre-Load appendUserAgent (SkylentNativeApp/9.1.0 SkylentVersionCode/9100 SkylentNativeInsetsApplied)
 #   - Unified Keystore Signing for both Debug & Release (prevents signature conflict on phone)
-#   - Version-Downgrade Lock (versionCode 9000 / versionName 9.0.0 blocks old APKs from overwriting)
+#   - Version-Downgrade Lock (versionCode 9100 / versionName 9.1.0 blocks old APKs from overwriting)
 #   - Exact Hardware Notification-Bar & Soft-Keyboard Inset Engine (5-inch to 6.8-inch phones)
 #   - In-App PayU India Checkout + Native UPI Intent Launcher (GPay, PhonePe, Paytm, BHIM)
 # =============================================================================
@@ -17,7 +17,7 @@ $Utf8NoBom = New-Object System.Text.UTF8Encoding($false)
 
 Write-Host ""
 Write-Host "============================================================" -ForegroundColor Cyan
-Write-Host "  SKYLENT PLAY STORE APK & SIGNED AAB BUILDER (V90 - v9.0.0)" -ForegroundColor Cyan
+Write-Host "  SKYLENT PLAY STORE APK & SIGNED AAB BUILDER (V91 - v9.1.0)" -ForegroundColor Cyan
 Write-Host "============================================================" -ForegroundColor Cyan
 
 # Step 1: Security Audit - Ensure no server secrets are prefixed with VITE_
@@ -48,7 +48,7 @@ if ($LASTEXITCODE -ne 0 -or -not (Test-Path "dist/index.html")) {
 }
 $DistApk = Join-Path (Get-Location).Path "dist\skylent-latest.apk"
 if (Test-Path $DistApk) { Remove-Item $DistApk -Force -ErrorAction SilentlyContinue }
-Write-Host "  [OK] Fresh V90 UI bundle compiled into dist/ (zero stale assets)." -ForegroundColor Green
+Write-Host "  [OK] Fresh V91 UI bundle compiled into dist/ (zero stale assets)." -ForegroundColor Green
 
 # Step 3: Ensure Capacitor Android packages are installed
 Write-Host "`n[3/7] Checking Capacitor Native Android Dependencies..." -ForegroundColor Yellow
@@ -68,7 +68,7 @@ $capConfigJson = @"
   "appName": "Skylent",
   "webDir": "dist",
   "bundledWebRuntime": false,
-  "appendUserAgent": "SkylentNativeApp/9.0.0 SkylentVersionCode/9000 SkylentNativeInsetsApplied",
+  "appendUserAgent": "SkylentNativeApp/9.1.0 SkylentVersionCode/9100 SkylentNativeInsetsApplied",
   "server": {
     "url": "https://skylent.live",
     "cleartext": false,
@@ -259,8 +259,8 @@ public class MainActivity extends BridgeActivity {
             String ua = settings.getUserAgentString();
             if (ua != null) {
                 String cleanUa = ua.replace("; wv", "").replace("wv)", "");
-                if (!cleanUa.contains("SkylentVersionCode/9000")) {
-                    cleanUa = cleanUa + " SkylentNativeApp/9.0.0 SkylentVersionCode/9000 SkylentNativeInsetsApplied";
+                if (!cleanUa.contains("SkylentVersionCode/9100")) {
+                    cleanUa = cleanUa + " SkylentNativeApp/9.1.0 SkylentVersionCode/9100 SkylentNativeInsetsApplied";
                 }
                 settings.setUserAgentString(cleanUa);
             }
@@ -522,8 +522,8 @@ $LocalPropsPath = Join-Path (Get-Location).Path "android\local.properties"
 [System.IO.File]::WriteAllText($LocalPropsPath, "sdk.dir=$EscapedSdk`n", $Utf8NoBom)
 Write-Host "  [OK] ANDROID_HOME set to: $SdkRoot" -ForegroundColor Green
 
-# Step 6: Auto-Generate Production Play Store Keystore & Configure Unified Signing (Debug + Release) + versionCode 9000
-Write-Host "`n[6/7] Configuring Unified Release Signing & versionCode 9000..." -ForegroundColor Yellow
+# Step 6: Auto-Generate Production Play Store Keystore & Configure Unified Signing (Debug + Release) + versionCode 9100
+Write-Host "`n[6/7] Configuring Unified Release Signing & versionCode 9100..." -ForegroundColor Yellow
 $KeystoreDir = Join-Path $ToolchainRoot "keystore"
 if (-not (Test-Path $KeystoreDir)) {
   New-Item -ItemType Directory -Path $KeystoreDir -Force | Out-Null
@@ -544,8 +544,8 @@ if (Test-Path $AppBuildGradle) {
   if ($markerIdx -ge 0) {
     $gradleText = $gradleText.Substring(0, $markerIdx).TrimEnd()
   }
-  $gradleText = [regex]::Replace($gradleText, 'versionCode\s+\d+', 'versionCode 9000')
-  $gradleText = [regex]::Replace($gradleText, 'versionName\s+"[^"]+"', 'versionName "9.0.0"')
+  $gradleText = [regex]::Replace($gradleText, 'versionCode\s+\d+', 'versionCode 9100')
+  $gradleText = [regex]::Replace($gradleText, 'versionName\s+"[^"]+"', 'versionName "9.1.0"')
 
   $KeystoreSlash = $KeystorePath.Replace("\", "/")
   $signingBlock = @"
@@ -577,7 +577,7 @@ android {
 "@
   $gradleText = $gradleText + $signingBlock
   [System.IO.File]::WriteAllText($AppBuildGradle, $gradleText.Replace("`r`n", "`n"), $Utf8NoBom)
-  Write-Host "  [OK] Configured versionCode 9000 (v9.0.0) & Unified Keystore Signing (Debug + Release) in android/app/build.gradle." -ForegroundColor Green
+  Write-Host "  [OK] Configured versionCode 9100 (v9.1.0) & Unified Keystore Signing (Debug + Release) in android/app/build.gradle." -ForegroundColor Green
 }
 
 # Step 7: Compile Debug APK + Signed Release APK + Signed Release AAB
@@ -628,7 +628,7 @@ if (Test-Path "android/gradlew.bat") {
     $ApkSizeMb = [math]::Round(((Get-Item $TargetApkForSize).Length / 1MB), 2)
     Write-Host ""
     Write-Host "============================================================" -ForegroundColor Green
-    Write-Host "  [SUCCESS] ALL GOOGLE PLAY STORE FILES GENERATED (V90 - v9.0.0 / versionCode 9000)!" -ForegroundColor Green
+    Write-Host "  [SUCCESS] ALL GOOGLE PLAY STORE FILES GENERATED (V91 - v9.1.0 / versionCode 9100)!" -ForegroundColor Green
     Write-Host "  1. Phone Test APK (Signed) : $OutReleaseApk ($ApkSizeMb MB)" -ForegroundColor White
     Write-Host "  2. Phone Test APK (Debug)  : $OutDebugApk" -ForegroundColor White
     Write-Host "  3. Play Store Upload (.aab): $OutReleaseAab" -ForegroundColor Cyan
