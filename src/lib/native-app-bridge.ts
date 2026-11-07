@@ -5,7 +5,7 @@ import { isNativeAppShell, PRODUCTION_API_ORIGIN } from "./api-base"
 
 const NATIVE_SESSION_KEY = "skylent:native:session-token:v1"
 const NATIVE_CSRF_KEY = "skylent:native:csrf-token:v1"
-export const APP_VERSION = "8.8.0"
+export const APP_VERSION = "9.2.0"
 
 let bridgeInstalled = false
 
