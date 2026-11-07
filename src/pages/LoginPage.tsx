@@ -442,7 +442,10 @@ export default function LoginPage() {
       <main className="entry-main">
         <div className="entry-col">
           <div style={{ textAlign: 'center', marginBottom: 14 }}>
-            <Link className="entry-mark" to="/" style={{ margin: 0 }}>Skylent</Link>
+            <Link className="entry-mark" to="/" aria-label="Skylent home" style={{ margin: 0, display: "inline-flex", flexDirection: "column", alignItems: "center", gap: 4, textDecoration: "none" }}>
+              <img src="/skylent-logo-lockup.png" alt="Skylent — Learn by Doing. Not Just Watching." style={{ height: 48, width: "auto", maxWidth: "min(280px, 82vw)", objectFit: "contain", display: "block" }} />
+              <span style={{ position: "absolute", width: 1, height: 1, overflow: "hidden", clip: "rect(0 0 0 0)" }}>Skylent</span>
+            </Link>
 
           </div>
 

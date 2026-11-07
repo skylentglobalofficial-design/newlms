@@ -466,6 +466,32 @@ $v35Dir = Join-Path (Get-Location).Path "android\app\src\main\res\values-v35"
 if (-not (Test-Path $v35Dir)) { New-Item -ItemType Directory -Path $v35Dir -Force | Out-Null }
 $v35StylesPath = Join-Path $v35Dir "styles.xml"
 [System.IO.File]::WriteAllText($v35StylesPath, $cleanStylesXml.Replace("`r`n", "`n"), $Utf8NoBom)
+
+# Step 4B: Sync Official Skylent 3D Ribbon App Icon into Android mipmap-* folders
+$AndroidResRoot = Join-Path (Get-Location).Path "android\app\src\main\res"
+$PrebuiltMipmapRoot = Join-Path (Get-Location).Path "playstore-assets\android-res"
+if (Test-Path $PrebuiltMipmapRoot) {
+  $MipmapDirs = @("mipmap-mdpi", "mipmap-hdpi", "mipmap-xhdpi", "mipmap-xxhdpi", "mipmap-xxxhdpi")
+  foreach ($mDir in $MipmapDirs) {
+    $srcDir = Join-Path $PrebuiltMipmapRoot $mDir
+    $dstDir = Join-Path $AndroidResRoot $mDir
+    if (Test-Path $srcDir) {
+      if (-not (Test-Path $dstDir)) { New-Item -ItemType Directory -Path $dstDir -Force | Out-Null }
+      Copy-Item -Path (Join-Path $srcDir "*") -Destination $dstDir -Force
+    }
+  }
+  # Remove default Capacitor vector foreground/background so our official PNG foreground/launcher is used
+  $DefaultFgXml = Join-Path $AndroidResRoot "drawable-v24\ic_launcher_foreground.xml"
+  $DefaultBgXml = Join-Path $AndroidResRoot "drawable\ic_launcher_background.xml"
+  if (Test-Path $DefaultFgXml) { Remove-Item $DefaultFgXml -Force -ErrorAction SilentlyContinue }
+  if (Test-Path $DefaultBgXml) { Remove-Item $DefaultBgXml -Force -ErrorAction SilentlyContinue }
+  $ValuesDir = Join-Path $AndroidResRoot "values"
+  if (-not (Test-Path $ValuesDir)) { New-Item -ItemType Directory -Path $ValuesDir -Force | Out-Null }
+  $BgColorXmlPath = Join-Path $ValuesDir "ic_launcher_background.xml"
+  $BgColorXml = "<?xml version=`"1.0`" encoding=`"utf-8`"?>`n<resources>`n    <color name=`"ic_launcher_background`">#3A1292</color>`n</resources>`n"
+  [System.IO.File]::WriteAllText($BgColorXmlPath, $BgColorXml, $Utf8NoBom)
+  Write-Host "  [OK] Synced Official Skylent 3D Ribbon App Icon across all Android mipmap-* densities." -ForegroundColor Green
+}
 Write-Host "  [OK] Wrote AndroidManifest.xml, MainActivity.java (Same-Origin + Exact WindowInsets), and styles.xml." -ForegroundColor Green
 
 # Step 5: Configure Java JDK 21 & Android SDK Toolchain

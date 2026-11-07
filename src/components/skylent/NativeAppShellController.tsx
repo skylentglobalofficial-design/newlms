@@ -564,26 +564,7 @@ export function NativeAppShellController() {
               boxShadow: "0 24px 60px rgba(0, 0, 0, 0.45)",
             }}
           >
-            <div
-              aria-hidden="true"
-              style={{
-                width: 54,
-                height: 54,
-                margin: "0 auto 14px",
-                borderRadius: 16,
-                background: "linear-gradient(135deg, #5142b5 0%, #7c3aed 100%)",
-                color: "#ffffff",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: 22,
-                fontWeight: 700,
-                letterSpacing: "0.06em",
-                boxShadow: "0 10px 24px rgba(124, 58, 237, 0.45)",
-              }}
-            >
-              S
-            </div>
+            <img src="/icon-192.png" alt="Skylent" width={56} height={56} style={{ width: 56, height: 56, margin: "0 auto 14px", borderRadius: 14, display: "block", boxShadow: "0 10px 24px rgba(81, 66, 181, 0.45)" }} />
             <h3 id="skylent-auto-update-title" style={{ margin: "0 0 6px", fontSize: 18, fontWeight: 600, color: "#ffffff" }}>
               Updating Skylent…
             </h3>

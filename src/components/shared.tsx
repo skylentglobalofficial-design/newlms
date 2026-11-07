@@ -850,8 +850,9 @@ export function Nav() {
               ←
             </button>
           ) : null}
-          <Link to="/" className="skn__mark" aria-label="Skylent home">
-            Skylent
+          <Link to="/" className="skn__mark" aria-label="Skylent home" style={{ display: "inline-flex", alignItems: "center", gap: 9 }}>
+            <img src="/skylent-ribbon-mark.png" alt="" aria-hidden="true" width={28} height={28} style={{ width: 28, height: 28, objectFit: "contain", display: "block", flexShrink: 0 }} />
+            <span>Skylent</span>
           </Link>
         </div>
 
@@ -1166,10 +1167,11 @@ export function Footer() {
     <footer className="skylent-site-footer skf">
       <div className="skf__top">
         <div className="skf__brand">
-          <Link to="/" className="skf__mark" aria-label="Skylent home">
-            Skylent
+          <Link to="/" className="skf__mark" aria-label="Skylent home" style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
+            <img src="/skylent-ribbon-mark.png" alt="" aria-hidden="true" width={30} height={30} style={{ width: 30, height: 30, objectFit: "contain", display: "block", flexShrink: 0 }} />
+            <span>Skylent</span>
           </Link>
-          <p className="skf__line">Programmes you can start, and a place to keep the work you do.</p>
+          <p className="skf__line">Learn by Doing. Not Just Watching.</p>
         </div>
         <nav aria-label="Footer" className="skf__nav">
           {FOOTER_COLUMNS.map((column) => (

@@ -135,7 +135,8 @@ export function AuthDashboardShell({
 
   const railContent = (
     <>
-      <Link to={brandHref} className="auth-shell-brand" onClick={() =>setMobileOpen(false)}>
+      <Link to={brandHref} className="auth-shell-brand" onClick={() =>setMobileOpen(false)} style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        <img src="/icon-192.png" alt="" aria-hidden="true" width={28} height={28} style={{ width: 28, height: 28, borderRadius: 7, objectFit: "contain", flexShrink: 0 }} />
         <span className="auth-shell-wordmark">Skylent</span>
       </Link>
 
@@ -260,7 +261,10 @@ export function AuthDashboardShell({
               <line x1="3" y1="18" x2="21" y2="18" />
             </svg>
           </button>
-          <span className="auth-shell-wordmark">Skylent</span>
+          <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+            <img src="/icon-192.png" alt="" aria-hidden="true" width={24} height={24} style={{ width: 24, height: 24, borderRadius: 6, objectFit: "contain", flexShrink: 0 }} />
+            <span className="auth-shell-wordmark">Skylent</span>
+          </span>
           <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
             <HeaderWalletAndNotifications variant="dashboard" />
           </div>
