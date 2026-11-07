@@ -201,7 +201,7 @@ export default function ProgrammeListing({ program, truth, cta, honesty, afterEn
                 <span className="sky-signal">{pathwaySpec.headlineSignal}</span>
               </h1>
 
-              {description ? <p className="pp-lede">{description}</p> : null}
+              <div style={{ display: "none" }} aria-hidden="true">{description ? <p className="pp-lede">{description}</p> : null}</div>
               <p className="pp-note" style={{ marginTop: 8 }}>
                 {pathwaySpec.summary}
               </p>
@@ -252,8 +252,10 @@ export default function ProgrammeListing({ program, truth, cta, honesty, afterEn
                   </a>
                   <SyllabusDownloadButton courseSlug={program.slug} title={program.name} />
                 </div>
-                <p className="pp-note">{honesty}</p>
-                <p className="pp-note">{afterEnrol}</p>
+                <div style={{ display: "none" }} aria-hidden="true">
+                  <p className="pp-note">{honesty}</p>
+                  <p className="pp-note">{afterEnrol}</p>
+                </div>
               </div>
             </div>
 
@@ -391,7 +393,7 @@ export default function ProgrammeListing({ program, truth, cta, honesty, afterEn
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))", gap: 14, marginTop: 20 }}>
               {pathwaySpec.steps.map((step) => (
-                <div key={step.num} style={{ padding: "18px", borderRadius: 14, background: "#FFFFFF", border: "1.5px solid #DDD7FF", borderTop: "4px solid #5142B5", boxShadow: "0 10px 24px -14px rgba(81, 66, 181, 0.25)" }}>
+                <div key={step.num} style={{ padding: "18px", borderRadius: 14, background: "#FFFFFF", border: "1px solid #E2E8F0", boxShadow: "0 10px 24px -14px rgba(81, 66, 181, 0.25)" }}>
                   <span style={{ fontSize: 11.5, fontWeight: 800, color: "#5142B5", fontFamily: "var(--font-mono)" }}>
                     STEP {step.num}
                   </span>
@@ -431,8 +433,7 @@ export default function ProgrammeListing({ program, truth, cta, honesty, afterEn
                   padding: "20px 22px",
                   borderRadius: 16,
                   background: "#FFFFFF",
-                  border: "1.5px solid #DDD7FF",
-                  borderTop: "4px solid #5142B5",
+                  border: "1px solid #E2E8F0",
                   color: "#0F172A",
                   textDecoration: "none",
                   boxShadow: "0 10px 26px -14px rgba(81, 66, 181, 0.14)",

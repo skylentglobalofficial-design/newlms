@@ -134,7 +134,7 @@ export default function ProgramPage() {
           cta={cta}
           honesty={programmeListingHonesty(program.enrollmentStatus, linked, confirmed)}
           afterEnrol={afterEnrol}
-          onEnrol={openEnrol}
+          onEnrol={program.slug === "sql-certificate" ? () => { if (confirmed) setEnrollOpen(true) } : openEnrol}
           confirmed={confirmed}
         />
       )}

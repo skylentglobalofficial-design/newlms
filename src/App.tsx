@@ -405,7 +405,7 @@ function AppRoutes() {
         <Route
           path="/dashboard/admin"
           element={
-            <RoleRouteGuard allowedRoles={["superadmin"]}>
+            <RoleRouteGuard allowedRoles={["superadmin", "admin"]}>
               <DashboardAdminPage />
             </RoleRouteGuard>
           }
@@ -422,7 +422,7 @@ function AppRoutes() {
         <Route
           path="/learn/:slug"
           element={
-            <RoleRouteGuard allowedRoles={["student"]}>
+            <RoleRouteGuard allowedRoles={["student", "admin", "faculty", "superadmin"]}>
               <LearnPage />
             </RoleRouteGuard>
           }
@@ -430,7 +430,7 @@ function AppRoutes() {
         <Route
           path="/learn/:slug/:lessonId"
           element={
-            <RoleRouteGuard allowedRoles={["student"]}>
+            <RoleRouteGuard allowedRoles={["student", "admin", "faculty", "superadmin"]}>
               <LearnPage />
             </RoleRouteGuard>
           }
@@ -438,7 +438,7 @@ function AppRoutes() {
         <Route
           path="/os/labs/data-analytics/northwind"
           element={
-            <RoleRouteGuard allowedRoles={["student"]}>
+            <RoleRouteGuard allowedRoles={["student", "admin", "faculty", "superadmin"]}>
               <NorthwindLabPage />
             </RoleRouteGuard>
           }
@@ -446,7 +446,7 @@ function AppRoutes() {
         <Route
           path="/os/projects/:courseSlug/:projectType"
           element={
-            <RoleRouteGuard allowedRoles={["student"]}>
+            <RoleRouteGuard allowedRoles={["student", "admin", "faculty", "superadmin"]}>
               <NorthwindProjectPage />
             </RoleRouteGuard>
           }

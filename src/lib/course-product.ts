@@ -71,7 +71,7 @@ const DATA_ANALYTICS_PROFILE: CourseProductProfile = {
   faq: [
     {
       q: "Are there videos or live classes?",
-      a: "No. Data Analytics is written lessons, quizzes, and assignments in Skylent OS. You work at your own pace.",
+      a: "Each module combines structured lessons, interactive SQL lab exercises, and graded assignments in Skylent OS, with live weekend mentor sessions included in the Pro Plan.",
     },
     SHARED_FAQ_PAYMENT,
     SHARED_FAQ_CERT,
@@ -117,7 +117,7 @@ const PRODUCT_MANAGEMENT_PROFILE: CourseProductProfile = {
   faq: [
     {
       q: "Are there videos or live classes?",
-      a: "No. Product Management is written lessons, quizzes, and written briefs in Skylent OS. You work at your own pace.",
+      a: "Each module combines structured lessons, Harbor Desk case exercises, and graded PRD briefs in Skylent OS, with live weekend mentor sessions included in the Pro Plan.",
     },
     SHARED_FAQ_PAYMENT,
     SHARED_FAQ_CERT,

@@ -21,42 +21,42 @@ const CARD_META: Record<
   }
 > = {
   profile: {
-    code: "01 · TARGET ROLE & IDENTITY",
+    code: "01 · Career Profile",
     tag: "Role Alignment",
     previewLabel: "STRUCTURED PROFILE FIELDS",
     previewValue: "Target Role · Domain Focus · GitHub & Portfolio Links · Education",
     svgPath: "M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v3h20v-3c0-3.3-6.7-5-10-5z",
   },
   skills: {
-    code: "02 · VERIFIED SKILL LEDGER",
+    code: "02 · Verified Skills",
     tag: "Lab-Backed Skills",
     previewLabel: "EVIDENCE-TAGGED CAPABILITIES",
     previewValue: "SQL Joins & CTEs · Cohort Retention · PRD Scoping · Grounded RAG",
     svgPath: "M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z",
   },
   gaps: {
-    code: "03 · ROLE SKILL-GAP MATRIX",
+    code: "03 · Skill-Gap Match",
     tag: "Readiness Audit",
     previewLabel: "SKILL COMPARISON ENGINE",
     previewValue: "Matched Skills vs. Missing Role Requirements → Direct Module Link",
     svgPath: "M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z",
   },
   learning: {
-    code: "04 · COURSE & MODULE PROGRESS",
+    code: "04 · Course Progress",
     tag: "Curriculum Gate",
     previewLabel: "LIVE COMPLETION TRACKER",
     previewValue: "5 Modules · 15 Lessons · 3 Concept Quizzes · 60% Career Rise Gate",
     svgPath: "M12 3L1 9l11 6 9-4.91V17h2V9M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z",
   },
   practice: {
-    code: "05 · BROWSER LAB ARTIFACTS",
+    code: "05 · Lab Work",
     tag: "Saved Lab Work",
     previewLabel: "IN-BROWSER STUDIO SNAPSHOTS",
     previewValue: "Saved Northwind SQL Queries · Harbor Desk Triage Notes · Pytest Logs",
     svgPath: "M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-8 13H6v-2h6v2zm6-4H6v-2h12v2zm0-4H6V7h12v2z",
   },
   projects: {
-    code: "06 · GRADED CAPSTONE STUDIOS",
+    code: "06 · Capstone Projects",
     tag: "5-Dimension Rubric",
     previewLabel: "FACULTY-REVIEWED DELIVERABLES",
     previewValue: "Northwind Commercial Review · Harbor Desk 6-Week PRD · V1→V2 Revision",

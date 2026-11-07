@@ -613,12 +613,12 @@ function dashRoute(role: UserRole): string {
    no such data exists. */
 type SearchEntry = { label: string; to: string; group: 'Courses' | 'Programmes' | 'Degrees' | 'Explore'; keywords?: string }
 const SEARCH_INDEX: readonly SearchEntry[] = [
-  { label: 'Data Analytics', to: '/courses/data-analytics', group: 'Courses', keywords: 'sql excel dashboards analyst data northwind' },
-  { label: 'Product Management', to: '/courses/product-management', group: 'Courses', keywords: 'product pm roadmap discovery harbor desk' },
+  { label: 'Data Analytics', to: '/programmes/data-analytics-pro', group: 'Courses', keywords: 'sql excel dashboards analyst data northwind' },
+  { label: 'Product Management', to: '/programmes/product-management', group: 'Courses', keywords: 'product pm roadmap discovery harbor desk' },
   { label: 'Python Programming & Automation', to: '/courses/python-programming', group: 'Courses', keywords: 'python coding automation scripts etl pytest' },
   { label: 'Data Science & AI (Dual Track)', to: '/programmes/data-science-ai', group: 'Programmes', keywords: 'data science machine learning python sql analytics' },
-  { label: 'Generative AI & LLM Systems', to: '/courses/generative-ai', group: 'Courses', keywords: 'genai llm rag embeddings agents prompt engineering' },
-  { label: 'Full Stack Web Engineering', to: '/courses/full-stack-web', group: 'Courses', keywords: 'full stack web react node express postgres typescript' },
+  { label: 'Generative AI & LLM Systems', to: '/programmes/generative-ai-program', group: 'Courses', keywords: 'genai llm rag embeddings agents prompt engineering' },
+  { label: 'Full Stack Web Engineering', to: '/programmes/full-stack', group: 'Courses', keywords: 'full stack web react node express postgres typescript' },
   { label: 'Workshops & Elixir Case Store', to: '/events', group: 'Explore', keywords: 'workshop webinar elixir coins case study cashback' },
   { label: 'All programmes', to: '/programmes', group: 'Programmes', keywords: 'courses certification professional' },
   { label: 'Certification programmes', to: '/programmes#certification', group: 'Programmes', keywords: 'certificate short' },

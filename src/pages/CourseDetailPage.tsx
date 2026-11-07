@@ -198,10 +198,6 @@ export default function CourseDetailPage() {
 
   function openEnrol() {
     if (!confirmed || !enrollable) return
-    if (user) {
-      navigate(`/dashboard/student#explore-programmes`)
-      return
-    }
     setEnrollOpen(true)
   }
 

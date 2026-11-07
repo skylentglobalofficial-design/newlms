@@ -11,28 +11,28 @@ import "./AboutRepolish.css"
 
 const PRODUCTS = [
   {
-    code: "PILLAR 01 · 6 CAREER TRACKS",
+    code: "01 · Career Tracks",
     title: "Applied Programmes & Browser Labs",
     text: "5-module, 15-lesson career tracks in Data Analytics, Product Management, Python, Data Science, GenAI, and Full-Stack Web with zero-setup browser sandboxes.",
     badge: "✓ Guest Lab Free · From ₹1,499",
     to: "/programmes",
   },
   {
-    code: "PILLAR 02 · UNIVERSITY ARTICULATION",
+    code: "02 · University Pathways",
     title: "Undergraduate (UG) & Postgraduate (PG)",
     text: "Structured academic degree pathways (B.Sc., BCA, BBA, M.Sc., MCA, MBA) pairing partner university credentials with Skylent OS execution labs.",
     badge: "✓ UG & PG Tracks",
     to: "/education",
   },
   {
-    code: "PILLAR 03 · MERIT-GATED PORTFOLIO",
+    code: "03 · Verified Portfolio",
     title: "Career OS & Flight Recorder",
     text: "Unlocks automatically at 60% course progress — bringing your verified project reports, 5-dimension rubric scores, and role skill-gap matching into one dossier.",
     badge: "✓ Unlocks at 60%",
     to: "/career-os",
   },
   {
-    code: "PILLAR 04 · HYBRID PEDAGOGY",
+    code: "04 · Learner Support",
     title: "Hinglish Study Support + 20-Min TA SLA",
     text: "24/7 first-principles intuition in simple Hinglish or English inside every lesson, backed by human Teaching Assistants on a 20-minute SLA.",
     badge: "✓ 20-Min Human SLA",
@@ -42,13 +42,13 @@ const PRODUCTS = [
 
 const ENVIRONMENTS = [
   {
-    code: "ENV A · SIMULATED ENTERPRISE UNITS",
+    code: "Browser Lab Environments",
     badge: "Zero Local Setup",
     title: "Northwind Retail SQL & Harbor Desk PRD Studios",
     body: "Instead of watching someone code on YouTube, you execute real SQL queries against our 166-row Northwind retail database, audit Python settlement pipelines, and write 6-week engineering PRDs inside your browser.",
   },
   {
-    code: "ENV B · WORK ASSIGNMENT EXCHANGE",
+    code: "Faculty Rubric Review",
     badge: "V1 → V2 Faculty Critique",
     title: "Human Red-Line Review & Partner Fieldwork",
     body: "Every capstone goes through a structured V1 → V2 faculty red-line critique across our 5-dimension rubric (Knowledge, Execution, Judgement, Oral Defence, and Revision) and qualifies learners for supervised partner briefs.",
