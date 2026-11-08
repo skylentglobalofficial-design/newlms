@@ -158,7 +158,23 @@ export default function CourseDetailPage() {
   }
 
   const authored = isAuthoredCourse(course.slug)
-  const authoredRecord = authored ? courseBySlug(course.slug) : undefined
+  const staticAuthoredRecord = authored ? courseBySlug(course.slug) : undefined
+  const authoredRecord = staticAuthoredRecord && course.curriculum.length >= 5
+    ? {
+        ...staticAuthoredRecord,
+        modules: course.curriculum.map((m, idx) => ({
+          id: m.sourceId ?? `m${idx + 1}`,
+          title: m.title,
+          lessons: m.nodes.map((n, lIdx) => ({
+            id: n.sourceId ?? `l${lIdx + 1}`,
+            title: n.title,
+            type: (n.nodeType.toLowerCase() === "quiz" ? "quiz" : n.nodeType.toLowerCase() === "assignment" || n.nodeType.toLowerCase() === "project" ? "assignment" : n.nodeType.toLowerCase() === "video" ? "video" : "notes") as "notes" | "video" | "quiz" | "assignment",
+            duration: n.duration ?? "45 min",
+            completed: false,
+          })),
+        })),
+      }
+    : staticAuthoredRecord
   const profile = courseProductProfile(course.slug)
   const showLiveCurriculum = authored
   // Drawn from the published record while the catalogue API is unreachable: enrolment is paused.

@@ -4,6 +4,7 @@ import { z } from 'zod'
 import { prisma } from '../lib/prisma.js'
 import { readSchemaCapabilities } from '../lib/schema-capabilities.js'
 import { overlayPublicCourse, overlayPublicProgramme, PUBLIC_COURSE_COPY } from '../lib/public-catalogue-copy.js'
+import { ensureCanonicalCourseCurriculumSynced } from '../lib/canonical-curriculum-sync.js'
 
 const router = Router()
 
@@ -181,6 +182,7 @@ function withProgramFacts<
 
 router.get('/courses', async (_request, response, next) => {
   try {
+    await ensureCanonicalCourseCurriculumSynced()
     const publication = (await readSchemaCapabilities()).coursePublication
     const courses = await prisma.course.findMany({
       ...(publication ? { where: { publicationStatus: 'PUBLISHED' as const } } : {}),
@@ -267,6 +269,7 @@ router.get('/courses/:slug', async (request, response, next) => {
 
   try {
     const publication = (await readSchemaCapabilities()).coursePublication
+    await ensureCanonicalCourseCurriculumSynced(parsed.data.slug)
     const course = await prisma.course.findUnique({
       where: { slug: parsed.data.slug },
       select: {

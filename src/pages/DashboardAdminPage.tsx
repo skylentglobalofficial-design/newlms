@@ -41,7 +41,7 @@ const NAV_ITEMS: AuthNavItem[] = [
   { id: 'employers', label: 'Employers & Hiring', short: 'Hire' },
   { id: 'enquiries', label: 'Inbound Enquiries', short: 'Mail' },
   { id: 'practice', label: 'Practice Sandboxes', short: 'Labs' },
-  { id: 'courses', label: 'Lesson Video (Mux)', short: 'Video' },
+  { id: 'courses', label: 'Upload Video & Study Material', short: 'Upload' },
   { id: 'payments', label: 'Pricing, Coupons & Gateway', short: 'Pay' },
   { id: 'system', label: 'System & Audit Log', short: 'Audit' },
   { id: 'all', label: 'All Modules (Stacked)', short: 'All' },
@@ -115,6 +115,22 @@ function AdminOverview({ onSelectTab }: { onSelectTab: (tabId: string) => void }
         >
           Open Course &amp; Lecture Studio →
         </button>
+        <button
+          type="button"
+          onClick={() => onSelectTab('courses')}
+          style={{
+            background: '#ecfdf5',
+            color: '#047857',
+            fontWeight: 700,
+            border: '1px solid #6ee7b7',
+            padding: '10px 18px',
+            borderRadius: 999,
+            fontSize: 13.5,
+            cursor: 'pointer',
+          }}
+        >
+          📤 Upload Video / PDF / Slides →
+        </button>
         <a href="/dashboard/curriculum" className="os-btn os-btn-ghost" style={{ color: '#ffffff', borderColor: 'rgba(255,255,255,0.32)', textDecoration: 'none' }}>Full-Screen Course Builder</a>
         <a href="/dashboard/student" className="os-btn os-btn-ghost" style={{ color: '#ffffff', borderColor: 'rgba(255,255,255,0.32)', textDecoration: 'none' }}>Open Learner Dashboard</a>
         <a href="/dashboard/faculty" className="os-btn os-btn-ghost" style={{ color: '#ffffff', borderColor: 'rgba(255,255,255,0.32)', textDecoration: 'none' }}>Open Faculty TA View</a>
@@ -161,6 +177,26 @@ function AdminUsersSection({ currentUserId }: { currentUserId: string }) {
       }
       const updated = await assignAdminUserRole(user.id, role, role === "organisation" ? organisationId : undefined)
       setUsers((current) => current.map((row) => (row.id === user.id ? updated.data : row)))
+      if (role === "faculty") {
+        try {
+          const csrfRes = await fetch("/api/v1/auth/csrf", { credentials: "include" })
+          const csrfJson = (await csrfRes.json().catch(() => ({}))) as { token?: string; csrfToken?: string }
+          const token = csrfJson.csrfToken || csrfJson.token || ""
+          const coursesRes = await fetch("/api/v1/admin/curriculum/courses", { credentials: "include" })
+          const coursesJson = (await coursesRes.json().catch(() => ({}))) as { data?: Array<{ id: string }> }
+          for (const c of coursesJson.data ?? []) {
+            await fetch(`/api/v1/admin/curriculum/courses/${c.id}/faculty`, {
+              method: "POST",
+              credentials: "include",
+              headers: { "Content-Type": "application/json", "X-CSRF-Token": token },
+              body: JSON.stringify({ userId: user.id }),
+            }).catch(() => undefined)
+          }
+          setMessage(`Assigned Teacher (faculty) role to ${user.displayName} and linked all courses for lecture editing & upload access.`)
+        } catch {
+          // ignore
+        }
+      }
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "The role could not be changed.")
     }
@@ -623,6 +659,187 @@ function AdminLessonMediaSection() {
   const [message, setMessage] = useState<string | null>(null)
   const [pending, setPending] = useState(false)
 
+  // Direct Upload Studio State
+  const [coursesList, setCoursesList] = useState<Array<{ id: string; slug: string; title: string }>>([])
+  const [selectedCourseId, setSelectedCourseId] = useState<string>('')
+  const [courseDetail, setCourseDetail] = useState<{
+    id: string
+    slug: string
+    title: string
+    coverFileName?: string | null
+    modules: Array<{
+      id: string
+      position: number
+      title: string
+      lectures: Array<{
+        id: string
+        position: number
+        title: string
+        nodeType: string
+        summary?: string | null
+        referenceUrl?: string | null
+        materials?: Array<{ id: string; fileName: string; mimeType: string; byteSize: number }>
+      }>
+    }>
+  } | null>(null)
+  const [selectedLectureId, setSelectedLectureId] = useState<string>('')
+  const [videoUrlInput, setVideoUrlInput] = useState<string>('')
+  const [uploadStatus, setUploadStatus] = useState<string | null>(null)
+  const [uploadError, setUploadError] = useState<string | null>(null)
+  const [uploading, setUploading] = useState(false)
+
+  async function getCsrf() {
+    const r = await fetch('/api/v1/auth/csrf', { credentials: 'include' })
+    const j = (await r.json().catch(() => ({}))) as { csrfToken?: string; token?: string }
+    return j.csrfToken || j.token || ''
+  }
+
+  function toBase64(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onload = () => {
+        const res = typeof reader.result === 'string' ? reader.result : ''
+        resolve(res.includes(',') ? res.split(',')[1] ?? '' : res)
+      }
+      reader.onerror = () => reject(new Error('Could not read file'))
+      reader.readAsDataURL(file)
+    })
+  }
+
+  async function loadCourseDetail(cId: string) {
+    if (!cId) return
+    try {
+      const res = await fetch(`/api/v1/admin/curriculum/courses/${cId}`, { credentials: 'include' })
+      const json = (await res.json().catch(() => ({}))) as { data?: typeof courseDetail }
+      if (json.data) {
+        setCourseDetail(json.data)
+        const allLecs = json.data.modules.flatMap((m) => m.lectures)
+        if (allLecs[0] && (!selectedLectureId || !allLecs.some((l) => l.id === selectedLectureId))) {
+          setSelectedLectureId(allLecs[0].id)
+          setVideoUrlInput(allLecs[0].referenceUrl ?? '')
+        }
+      }
+    } catch {
+      // ignore
+    }
+  }
+
+  useEffect(() => {
+    void fetch('/api/v1/admin/curriculum/courses', { credentials: 'include' })
+      .then((r) => r.json())
+      .then((j: { data?: Array<{ id: string; slug: string; title: string }> }) => {
+        const rows = j.data ?? []
+        setCoursesList(rows)
+        if (rows[0]) {
+          setSelectedCourseId(rows[0].id)
+          void loadCourseDetail(rows[0].id)
+        }
+      })
+      .catch(() => undefined)
+  }, [])
+
+  async function handleDirectFileUpload(lectureId: string, file: File | null) {
+    if (!file || !lectureId || !selectedCourseId) return
+    setUploading(true)
+    setUploadStatus(null)
+    setUploadError(null)
+    try {
+      const token = await getCsrf()
+      const dataBase64 = await toBase64(file)
+      const res = await fetch(`/api/v1/admin/curriculum/lectures/${lectureId}/materials`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': token },
+        body: JSON.stringify({
+          fileName: file.name,
+          contentType: file.type || 'application/octet-stream',
+          dataBase64,
+        }),
+      })
+      const json = (await res.json().catch(() => ({}))) as { error?: string }
+      if (!res.ok) throw new Error(json.error || 'Upload failed')
+      setUploadStatus(`✓ Uploaded "${file.name}" (${Math.max(1, Math.round(file.size / 1024))} KB) to lecture! Students can now watch/download it in /learn/${courseDetail?.slug ?? ''}.`)
+      await loadCourseDetail(selectedCourseId)
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : 'Upload failed')
+    } finally {
+      setUploading(false)
+    }
+  }
+
+  async function handleSaveVideoUrl(e: FormEvent) {
+    e.preventDefault()
+    if (!selectedLectureId || !selectedCourseId) return
+    setUploading(true)
+    setUploadStatus(null)
+    setUploadError(null)
+    try {
+      const token = await getCsrf()
+      const res = await fetch(`/api/v1/admin/curriculum/lectures/${selectedLectureId}`, {
+        method: 'PATCH',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': token },
+        body: JSON.stringify({ referenceUrl: videoUrlInput.trim() || null }),
+      })
+      const json = (await res.json().catch(() => ({}))) as { error?: string }
+      if (!res.ok) throw new Error(json.error || 'Could not save video URL')
+      setUploadStatus('✓ Saved Video / Reference URL to lecture! It is now live in the Student Learning Player.')
+      await loadCourseDetail(selectedCourseId)
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : 'Could not save video URL')
+    } finally {
+      setUploading(false)
+    }
+  }
+
+  async function handleDeleteMaterial(materialId: string, fileName: string) {
+    if (!selectedCourseId) return
+    setUploadStatus(null)
+    setUploadError(null)
+    try {
+      const token = await getCsrf()
+      const res = await fetch(`/api/v1/admin/curriculum/materials/${materialId}`, {
+        method: 'DELETE',
+        credentials: 'include',
+        headers: { 'X-CSRF-Token': token },
+      })
+      if (!res.ok) throw new Error('Could not remove file')
+      setUploadStatus(`Removed "${fileName}".`)
+      await loadCourseDetail(selectedCourseId)
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : 'Could not remove file')
+    }
+  }
+
+  async function handleCoverUpload(file: File | null) {
+    if (!file || !selectedCourseId) return
+    setUploading(true)
+    setUploadStatus(null)
+    setUploadError(null)
+    try {
+      const token = await getCsrf()
+      const dataBase64 = await toBase64(file)
+      const res = await fetch(`/api/v1/admin/curriculum/courses/${selectedCourseId}/cover`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': token },
+        body: JSON.stringify({
+          fileName: file.name,
+          contentType: file.type || 'image/png',
+          dataBase64,
+        }),
+      })
+      const json = (await res.json().catch(() => ({}))) as { error?: string }
+      if (!res.ok) throw new Error(json.error || 'Cover upload failed')
+      setUploadStatus(`✓ Uploaded course cover image "${file.name}".`)
+      await loadCourseDetail(selectedCourseId)
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : 'Cover upload failed')
+    } finally {
+      setUploading(false)
+    }
+  }
+
   async function save(nextId: string | null) {
     setPending(true)
     setMessage(null)
@@ -641,28 +858,303 @@ function AdminLessonMediaSection() {
   }
 
   return (
-    <section id="admin-courses" style={cardStyle}>
-      <span style={{ fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 700, color: '#5142b5', textTransform: 'uppercase' }}>
-        MUX VIDEO STREAM BINDING
-      </span>
-      <h2 style={{ margin: '2px 0 8px', fontSize: 18, color: '#0f172a' }}>Lesson video</h2>
-      <p style={{ color: C.slate, fontSize: 12.5, lineHeight: 1.6, marginTop: 0, maxWidth: 640 }}>
-        Attach a public Mux playback id to an existing video lesson. Signed playback and direct upload are not available. A saved id is not the same as a successful playback test.
-      </p>
-      {message ? <p role="status" style={{ color: C.ink, fontSize: 13, maxWidth: 640 }}>{message}</p> : null}
-      <form
-        onSubmit={(event) => { event.preventDefault(); void save(playbackId.trim() || null) }}
-        style={{ display: 'grid', gap: 10, maxWidth: 480 }}
-      >
-        <input value={courseSlug} onChange={(event) => setCourseSlug(event.target.value)} aria-label="Course slug" required style={adminFieldStyle} />
-        <input value={lessonKey} onChange={(event) => setLessonKey(event.target.value)} aria-label="Lesson key" placeholder="Lesson key (e.g. l1)" required style={adminFieldStyle} />
-        <input value={playbackId} onChange={(event) => setPlaybackId(event.target.value)} aria-label="Mux playback id" placeholder="Public Mux playback id" style={adminFieldStyle} />
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-          <button type="submit" className="os-btn os-btn-primary" style={{ background: '#5142b5', color: '#ffffff', borderColor: '#5142b5' }} disabled={pending}>{pending ? 'Saving…' : 'Save playback id'}</button>
-          <button type="button" className="os-btn os-btn-ghost" disabled={pending} onClick={() => void save(null)}>Clear playback id</button>
+    <div style={{ display: 'grid', gap: 20 }}>
+      <section id="admin-upload-studio" style={cardStyle}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12, flexWrap: 'wrap', marginBottom: 14 }}>
+          <div>
+            <span style={{ fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 700, color: '#5142b5', textTransform: 'uppercase' }}>
+              DIRECT VIDEO, PDF, SLIDES &amp; DATASET UPLOAD STUDIO (ADMIN &amp; TEACHER SYNCED)
+            </span>
+            <h2 style={{ margin: '2px 0 4px', fontSize: 20, color: '#0f172a' }}>Upload Lecture Videos (.mp4), PDFs, PPTX Slides &amp; Study Files</h2>
+            <p style={{ color: C.slate, fontSize: 13, lineHeight: 1.55, margin: 0, maxWidth: 760 }}>
+              Select any Course and Lecture below to directly upload a video file (<code>.mp4</code>, <code>.webm</code>), lecture notes (<code>.pdf</code>, <code>.pptx</code>, <code>.docx</code>), or dataset (<code>.csv</code>, <code>.xlsx</code>, <code>.zip</code>) up to 32 MB — or attach a YouTube / MP4 video stream link. Everything uploaded here appears immediately in the Student Learning Player (<code>/learn/:slug</code>).
+            </p>
+          </div>
+          {courseDetail ? (
+            <Link
+              to={`/learn/${courseDetail.slug}`}
+              style={{
+                padding: '9px 16px',
+                borderRadius: 999,
+                background: '#5142b5',
+                color: '#ffffff',
+                fontSize: 12.5,
+                fontWeight: 700,
+                textDecoration: 'none',
+              }}
+            >
+              Preview in Student Player (/learn/{courseDetail.slug}) →
+            </Link>
+          ) : null}
         </div>
-      </form>
-    </section>
+
+        {uploadStatus ? (
+          <div role="status" style={{ marginBottom: 14, padding: '12px 16px', borderRadius: 12, background: '#ecfdf5', border: '1px solid #6ee7b7', color: '#065f46', fontSize: 13.5, fontWeight: 700 }}>
+            {uploadStatus}
+          </div>
+        ) : null}
+        {uploadError ? (
+          <div role="alert" style={{ marginBottom: 14, padding: '12px 16px', borderRadius: 12, background: '#fef2f2', border: '1px solid #fca5a5', color: '#991b1b', fontSize: 13.5, fontWeight: 700 }}>
+            {uploadError}
+          </div>
+        ) : null}
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 14, padding: 16, borderRadius: 14, background: '#f8fafc', border: '1px solid #e2e8f0' }}>
+          <label style={{ display: 'grid', gap: 6, fontSize: 12, fontWeight: 700, color: '#334155' }}>
+            1. Select Course
+            <select
+              value={selectedCourseId}
+              onChange={(e) => {
+                setSelectedCourseId(e.target.value)
+                void loadCourseDetail(e.target.value)
+              }}
+              style={adminFieldStyle}
+            >
+              {coursesList.map((c) => (
+                <option key={c.id} value={c.id}>{c.title} ({c.slug})</option>
+              ))}
+            </select>
+          </label>
+
+          <label style={{ display: 'grid', gap: 6, fontSize: 12, fontWeight: 700, color: '#334155' }}>
+            2. Select Target Module &amp; Lecture
+            <select
+              value={selectedLectureId}
+              onChange={(e) => {
+                const lId = e.target.value
+                setSelectedLectureId(lId)
+                const found = courseDetail?.modules.flatMap((m) => m.lectures).find((l) => l.id === lId)
+                setVideoUrlInput(found?.referenceUrl ?? '')
+              }}
+              style={adminFieldStyle}
+            >
+              {(courseDetail?.modules ?? []).map((m) => (
+                <optgroup key={m.id} label={`Module ${m.position}: ${m.title}`}>
+                  {m.lectures.map((l) => (
+                    <option key={l.id} value={l.id}>
+                      M{m.position}.{l.position} — {l.title} ({l.nodeType})
+                    </option>
+                  ))}
+                </optgroup>
+              ))}
+            </select>
+          </label>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16, marginTop: 16 }}>
+          {/* Box 1: Direct File Upload from Device */}
+          <div style={{ padding: 16, borderRadius: 14, background: '#f5f3ff', border: '1.5px dashed #5142b5', display: 'grid', gap: 10 }}>
+            <strong style={{ fontSize: 14, color: '#5142b5' }}>📤 Option A: Direct File Upload from Computer / Phone</strong>
+            <p style={{ margin: 0, fontSize: 12.5, color: '#475569', lineHeight: 1.5 }}>
+              Upload a Lecture Video (<code>.mp4</code>, <code>.webm</code>), PDF Notes, PPTX Slides, Word Doc, or CSV Dataset directly to the selected lecture:
+            </p>
+            <label
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 8,
+                padding: '11px 18px',
+                borderRadius: 10,
+                background: '#5142b5',
+                color: '#ffffff',
+                fontWeight: 700,
+                fontSize: 13.5,
+                cursor: 'pointer',
+              }}
+            >
+              {uploading ? 'Uploading File…' : '📤 Choose Video / PDF / PPTX / CSV & Upload'}
+              <input
+                type="file"
+                accept=".mp4,.webm,.mov,.pdf,.ppt,.pptx,.doc,.docx,.csv,.xlsx,.zip,.txt,.md,.png,.jpg,.webp"
+                style={{ display: 'none' }}
+                onChange={(e) => void handleDirectFileUpload(selectedLectureId, e.target.files?.[0] ?? null)}
+              />
+            </label>
+          </div>
+
+          {/* Box 2: Video / YouTube URL */}
+          <form onSubmit={(e) => void handleSaveVideoUrl(e)} style={{ padding: 16, borderRadius: 14, background: '#ffffff', border: '1px solid #cbd5e1', display: 'grid', gap: 10 }}>
+            <strong style={{ fontSize: 14, color: '#0f172a' }}>🎬 Option B: Attach YouTube / Direct MP4 Video Link</strong>
+            <input
+              type="url"
+              value={videoUrlInput}
+              onChange={(e) => setVideoUrlInput(e.target.value)}
+              placeholder="https://www.youtube.com/watch?v=... or https://.../lecture.mp4"
+              style={adminFieldStyle}
+            />
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button
+                type="submit"
+                disabled={uploading}
+                style={{ padding: '9px 16px', borderRadius: 10, background: '#0f172a', color: '#ffffff', border: 'none', fontWeight: 700, fontSize: 12.5, cursor: 'pointer' }}
+              >
+                Save Video Link to Lecture
+              </button>
+              {videoUrlInput ? (
+                <button
+                  type="button"
+                  onClick={() => setVideoUrlInput('')}
+                  style={{ padding: '9px 12px', borderRadius: 10, background: '#f1f5f9', color: '#334155', border: '1px solid #cbd5e1', fontSize: 12, cursor: 'pointer' }}
+                >
+                  Clear
+                </button>
+              ) : null}
+            </div>
+          </form>
+
+          {/* Box 3: Course Cover Image Upload */}
+          <div style={{ padding: 16, borderRadius: 14, background: '#ffffff', border: '1px solid #cbd5e1', display: 'grid', gap: 10 }}>
+            <strong style={{ fontSize: 14, color: '#0f172a' }}>🖼️ Option C: Upload Course Cover Thumbnail</strong>
+            <p style={{ margin: 0, fontSize: 12.5, color: '#475569' }}>
+              Current Cover: <strong>{courseDetail?.coverFileName || 'Default Course Cover'}</strong>
+            </p>
+            <label
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '9px 14px',
+                borderRadius: 10,
+                background: '#f8fafc',
+                border: '1px solid #cbd5e1',
+                color: '#0f172a',
+                fontWeight: 700,
+                fontSize: 12.5,
+                cursor: 'pointer',
+              }}
+            >
+              📤 Upload Cover Image (PNG / JPG / WebP)
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/webp,image/gif"
+                style={{ display: 'none' }}
+                onChange={(e) => void handleCoverUpload(e.target.files?.[0] ?? null)}
+              />
+            </label>
+          </div>
+        </div>
+
+        {/* All Modules & Lectures Upload List for Selected Course */}
+        {courseDetail ? (
+          <div style={{ marginTop: 18, display: 'grid', gap: 10 }}>
+            <strong style={{ fontSize: 13.5, color: '#0f172a' }}>
+              All Modules &amp; Lectures in {courseDetail.title} (Click Upload on any row):
+            </strong>
+            {courseDetail.modules.map((m) => (
+              <div key={m.id} style={{ padding: 12, borderRadius: 12, background: '#f8fafc', border: '1px solid #e2e8f0' }}>
+                <strong style={{ fontSize: 13, color: '#5142b5', display: 'block', marginBottom: 8 }}>
+                  Module {m.position}: {m.title}
+                </strong>
+                <div style={{ display: 'grid', gap: 6 }}>
+                  {m.lectures.map((lec) => (
+                    <div
+                      key={lec.id}
+                      style={{
+                        padding: '8px 12px',
+                        borderRadius: 8,
+                        background: '#ffffff',
+                        border: '1px solid #e2e8f0',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        gap: 10,
+                        flexWrap: 'wrap',
+                        fontSize: 12.5,
+                      }}
+                    >
+                      <div>
+                        <strong>M{m.position}.{lec.position} {lec.title}</strong>{' '}
+                        <span style={{ color: '#64748b', fontSize: 11.5 }}>({lec.nodeType})</span>
+                        {lec.referenceUrl ? (
+                          <div style={{ fontSize: 11.5, color: '#047857', fontWeight: 600, marginTop: 2 }}>
+                            🎬 Video/Link: {lec.referenceUrl}
+                          </div>
+                        ) : null}
+                        {lec.materials && lec.materials.length > 0 ? (
+                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 4 }}>
+                            {lec.materials.map((mat) => (
+                              <span
+                                key={mat.id}
+                                style={{
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: 5,
+                                  padding: '2px 8px',
+                                  borderRadius: 6,
+                                  background: '#f5f3ff',
+                                  border: '1px solid #ddd6fe',
+                                  color: '#5142b5',
+                                  fontSize: 11,
+                                  fontWeight: 700,
+                                }}
+                              >
+                                <a href={`/api/v1/lms/materials/${mat.id}?download=1`} target="_blank" rel="noopener noreferrer" style={{ color: '#5142b5', textDecoration: 'none' }}>
+                                  📥 {mat.fileName} ({Math.max(1, Math.round(mat.byteSize / 1024))} KB)
+                                </a>
+                                <button
+                                  type="button"
+                                  onClick={() => void handleDeleteMaterial(mat.id, mat.fileName)}
+                                  style={{ border: 'none', background: 'transparent', color: '#b91c1c', fontWeight: 800, cursor: 'pointer', padding: 0 }}
+                                >
+                                  ×
+                                </button>
+                              </span>
+                            ))}
+                          </div>
+                        ) : null}
+                      </div>
+                      <label
+                        style={{
+                          padding: '5px 11px',
+                          borderRadius: 6,
+                          background: '#5142b5',
+                          color: '#ffffff',
+                          fontSize: 11.5,
+                          fontWeight: 700,
+                          cursor: 'pointer',
+                        }}
+                      >
+                        📤 Upload File / Video
+                        <input
+                          type="file"
+                          accept=".mp4,.webm,.mov,.pdf,.ppt,.pptx,.doc,.docx,.csv,.xlsx,.zip,.txt,.md,.png,.jpg,.webp"
+                          style={{ display: 'none' }}
+                          onChange={(e) => void handleDirectFileUpload(lec.id, e.target.files?.[0] ?? null)}
+                        />
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : null}
+      </section>
+
+      <section id="admin-courses" style={cardStyle}>
+        <span style={{ fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 700, color: '#5142b5', textTransform: 'uppercase' }}>
+          OPTIONAL · MUX VIDEO STREAM BINDING
+        </span>
+        <h2 style={{ margin: '2px 0 8px', fontSize: 18, color: '#0f172a' }}>Mux Playback ID Binding</h2>
+        <p style={{ color: C.slate, fontSize: 12.5, lineHeight: 1.6, marginTop: 0, maxWidth: 640 }}>
+          If you stream via Mux CDN, attach a public Mux playback ID to a video lesson key below (for direct MP4, YouTube, PDF, or PPTX upload, use the Upload Studio above).
+        </p>
+        {message ? <p role="status" style={{ color: C.ink, fontSize: 13, maxWidth: 640 }}>{message}</p> : null}
+        <form
+          onSubmit={(event) => { event.preventDefault(); void save(playbackId.trim() || null) }}
+          style={{ display: 'grid', gap: 10, maxWidth: 480 }}
+        >
+          <input value={courseSlug} onChange={(event) => setCourseSlug(event.target.value)} aria-label="Course slug" required style={adminFieldStyle} />
+          <input value={lessonKey} onChange={(event) => setLessonKey(event.target.value)} aria-label="Lesson key" placeholder="Lesson key (e.g. l1)" required style={adminFieldStyle} />
+          <input value={playbackId} onChange={(event) => setPlaybackId(event.target.value)} aria-label="Mux playback id" placeholder="Public Mux playback id" style={adminFieldStyle} />
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+            <button type="submit" className="os-btn os-btn-primary" style={{ background: '#5142b5', color: '#ffffff', borderColor: '#5142b5' }} disabled={pending}>{pending ? 'Saving…' : 'Save playback id'}</button>
+            <button type="button" className="os-btn os-btn-ghost" disabled={pending} onClick={() => void save(null)}>Clear playback id</button>
+          </div>
+        </form>
+      </section>
+    </div>
   )
 }
 

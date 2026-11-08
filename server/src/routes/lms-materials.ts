@@ -2,6 +2,7 @@ import { Router } from "express"
 import { z } from "zod"
 import { prisma } from "../lib/prisma.js"
 import { requireAuth, type AuthenticatedRequest } from "../lib/auth.js"
+import { hasApiRole } from "../lib/roles.js"
 import { resolveCourseEnrollment } from "../lib/lms.js"
 import { isDatabaseUnavailableError, isMissingSchemaError } from "../lib/schema-capabilities.js"
 import { downloadFile, StorageServiceError } from "../lib/storage.js"
@@ -20,12 +21,16 @@ lmsMaterialsRouter.get("/materials/:materialId", requireAuth, async (req: Authen
     const courseId = material?.node.module.courseId
     if (!material || !courseId) return res.status(404).json({ error: "Material not found" })
 
-    const enrollment = await resolveCourseEnrollment(req.auth!.user.id, courseId)
+    const isStaff = hasApiRole(req, "superadmin") || hasApiRole(req, "admin") || hasApiRole(req, "faculty")
+    const enrollment = isStaff ? true : await resolveCourseEnrollment(req.auth!.user.id, courseId)
     if (!enrollment) return res.status(403).json({ error: "Not enrolled in this course" })
 
     const bytes = await downloadFile(material.storageKey)
     res.setHeader("Content-Type", material.mimeType)
-    res.setHeader("Content-Disposition", `attachment; filename="${material.fileName.replace(/["\r\n]/g, "")}"`)
+    res.setHeader("Accept-Ranges", "bytes")
+    const isInlineStream = /^(video|audio|image)\//i.test(material.mimeType) && req.query.download !== "1"
+    const disp = isInlineStream ? "inline" : "attachment"
+    res.setHeader("Content-Disposition", `${disp}; filename="${material.fileName.replace(/["\r\n]/g, "")}"`)
     res.setHeader("Cache-Control", "private, no-store")
     res.send(bytes)
   } catch (error) {

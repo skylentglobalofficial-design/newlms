@@ -41,7 +41,15 @@ export type FacultyCourseModule = {
   position: number
   title: string
   lessonCount: number
-  lectures: Array<{ id: string; position: number; title: string; nodeType: string }>
+  lectures: Array<{
+    id: string
+    position: number
+    title: string
+    nodeType: string
+    summary?: string | null
+    referenceUrl?: string | null
+    materials?: Array<{ id: string; fileName: string; mimeType: string; byteSize: number }>
+  }>
 }
 
 export type FacultyDashboard = {
@@ -139,7 +147,7 @@ export async function gradeFacultySubmission(
 
 export async function createFacultyLecture(
   courseId: string,
-  input: { moduleId: string; title: string; summary?: string; nodeType?: "NOTES" | "VIDEO" | "LAB" | "ASSIGNMENT" | "PROJECT" },
+  input: { moduleId: string; title: string; summary?: string; referenceUrl?: string; nodeType?: "NOTES" | "VIDEO" | "LAB" | "ASSIGNMENT" | "PROJECT" },
 ): Promise<{ id: string; moduleId: string; title: string; nodeType: string }> {
   const token = await ensureCsrfToken()
   const response = await fetch(`${API_BASE}/faculty/courses/${encodeURIComponent(courseId)}/lectures`, {
@@ -168,5 +176,101 @@ export async function uploadFacultyLessonMaterial(
     },
   )
   const result = await parseJson<{ data: { id: string; fileName: string; byteSize: number } }>(response)
+  return result.data
+}
+
+
+export async function claimDefaultFacultyCourses(courseSlug?: string): Promise<{ assignedCount: number }> {
+  const token = await ensureCsrfToken()
+  const response = await fetch(`${API_BASE}/faculty/claim-default-courses`, {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json", "X-CSRF-Token": token },
+    body: JSON.stringify(courseSlug ? { courseSlug } : {}),
+  })
+  const result = await parseJson<{ data: { assignedCount: number } }>(response)
+  return result.data
+}
+
+export async function createFacultyModule(
+  courseId: string,
+  input: { title: string; description?: string },
+): Promise<{ id: string; title: string; position: number }> {
+  const token = await ensureCsrfToken()
+  const response = await fetch(`${API_BASE}/faculty/courses/${encodeURIComponent(courseId)}/modules`, {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json", "X-CSRF-Token": token },
+    body: JSON.stringify(input),
+  })
+  const result = await parseJson<{ data: { id: string; title: string; position: number } }>(response)
+  return result.data
+}
+
+export async function updateFacultyModule(
+  courseId: string,
+  moduleId: string,
+  input: { title?: string; description?: string | null },
+): Promise<{ id: string; title: string }> {
+  const token = await ensureCsrfToken()
+  const response = await fetch(
+    `${API_BASE}/faculty/courses/${encodeURIComponent(courseId)}/modules/${encodeURIComponent(moduleId)}`,
+    {
+      method: "PATCH",
+      credentials: "include",
+      headers: { "Content-Type": "application/json", "X-CSRF-Token": token },
+      body: JSON.stringify(input),
+    },
+  )
+  const result = await parseJson<{ data: { id: string; title: string } }>(response)
+  return result.data
+}
+
+export async function updateFacultyLecture(
+  courseId: string,
+  lectureId: string,
+  input: { title?: string; summary?: string | null; referenceUrl?: string | null; nodeType?: string },
+): Promise<{ id: string; title: string; nodeType: string; summary?: string | null; referenceUrl?: string | null }> {
+  const token = await ensureCsrfToken()
+  const response = await fetch(
+    `${API_BASE}/faculty/courses/${encodeURIComponent(courseId)}/lectures/${encodeURIComponent(lectureId)}`,
+    {
+      method: "PATCH",
+      credentials: "include",
+      headers: { "Content-Type": "application/json", "X-CSRF-Token": token },
+      body: JSON.stringify(input),
+    },
+  )
+  const result = await parseJson<{
+    data: { id: string; title: string; nodeType: string; summary?: string | null; referenceUrl?: string | null }
+  }>(response)
+  return result.data
+}
+
+export async function deleteFacultyLecture(courseId: string, lectureId: string): Promise<{ deleted: boolean }> {
+  const token = await ensureCsrfToken()
+  const response = await fetch(
+    `${API_BASE}/faculty/courses/${encodeURIComponent(courseId)}/lectures/${encodeURIComponent(lectureId)}`,
+    {
+      method: "DELETE",
+      credentials: "include",
+      headers: { "X-CSRF-Token": token },
+    },
+  )
+  const result = await parseJson<{ data: { deleted: boolean } }>(response)
+  return result.data
+}
+
+export async function deleteFacultyMaterial(courseId: string, materialId: string): Promise<{ deleted: boolean }> {
+  const token = await ensureCsrfToken()
+  const response = await fetch(
+    `${API_BASE}/faculty/courses/${encodeURIComponent(courseId)}/materials/${encodeURIComponent(materialId)}`,
+    {
+      method: "DELETE",
+      credentials: "include",
+      headers: { "X-CSRF-Token": token },
+    },
+  )
+  const result = await parseJson<{ data: { deleted: boolean } }>(response)
   return result.data
 }

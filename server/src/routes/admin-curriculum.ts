@@ -7,8 +7,10 @@ import { requireAuth, requireCsrf, type AuthenticatedRequest } from "../lib/auth
 import { requireRoles } from "../lib/roles.js"
 import { recordAdminAudit } from "../lib/admin-audit.js"
 import { capabilityAvailable, isDatabaseUnavailableError, isMissingSchemaError, readSchemaCapabilities, UNAVAILABLE_MESSAGES, unavailableBody } from "../lib/schema-capabilities.js"
-import { generateStorageKey, uploadFile, validateFile, StorageServiceError } from "../lib/storage.js"
+import { deleteFile, generateStorageKey, uploadFile, validateFile, StorageServiceError } from "../lib/storage.js"
+import { LESSON_MATERIAL_TYPES, MAX_UPLOAD_BYTES } from "../lib/upload-payload.js"
 import { describeLiveLesson } from "../lib/live-lesson.js"
+import { ensureCanonicalCourseCurriculumSynced } from "../lib/canonical-curriculum-sync.js"
 
 export const adminCurriculumRouter = Router()
 
@@ -57,7 +59,7 @@ const lectureSchema = z.object({
 const fileSchema = z.object({
   fileName: z.string().trim().min(1).max(180),
   contentType: z.string().trim().min(1).max(120),
-  dataBase64: z.string().min(1).max(700_000),
+  dataBase64: z.string().min(1).max(45_000_000),
 })
 
 function decodeFile(input: z.infer<typeof fileSchema>, allowed: string[]) {
@@ -70,18 +72,19 @@ function decodeFile(input: z.infer<typeof fileSchema>, allowed: string[]) {
   } catch {
     return { error: "File data is not valid base64" as const }
   }
-  if (data.length === 0 || data.length > 350_000) {
-    return { error: "File must be between 1 byte and 350 KB" as const }
+  if (data.length === 0 || data.length > MAX_UPLOAD_BYTES) {
+    return { error: "File must be between 1 byte and 32 MB" as const }
   }
   const checked = validateFile(
     { size: data.length, mimeType: input.contentType, fileName: input.fileName },
-    { maxSize: 350_000, allowedTypes: allowed },
+    { maxSize: MAX_UPLOAD_BYTES, allowedTypes: allowed },
   )
   if (!checked.valid) return { error: checked.error ?? "File was rejected" }
   return { data }
 }
 
 async function loadCourse(id: string) {
+  await ensureCanonicalCourseCurriculumSynced()
   const caps = await readSchemaCapabilities()
   return prisma.course.findUnique({
     where: { id },
@@ -178,6 +181,7 @@ function sendAuthoringError(res: import("express").Response, error: unknown, fal
 }
 
 adminCurriculumRouter.get("/courses", ...readGuards, async (_req, res) => {
+  await ensureCanonicalCourseCurriculumSynced()
   const caps = await readSchemaCapabilities().catch(() => null)
   if (!caps) return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.authoring))
   try {
@@ -330,6 +334,7 @@ adminCurriculumRouter.post("/courses/:courseId/modules", ...guards, async (req: 
     })
     const ordered = [...existing.slice(0, index).map((row) => row.id), created.id, ...existing.slice(index).map((row) => row.id)]
     await prisma.$transaction(ordered.map((id, order) => prisma.curriculumModule.update({ where: { id }, data: { order } })))
+    await prisma.course.update({ where: { id: course.id }, data: { authoredInApp: true } }).catch(() => undefined)
     await recordAdminAudit({
       actorId: req.auth!.user.id,
       action: "curriculum.module.create",
@@ -369,6 +374,7 @@ adminCurriculumRouter.patch("/modules/:moduleId", ...guards, async (req: Authent
       const ordered = [...rest.slice(0, index), module.id, ...rest.slice(index)]
       await prisma.$transaction(ordered.map((id, order) => prisma.curriculumModule.update({ where: { id }, data: { order } })))
     }
+    await prisma.course.update({ where: { id: module.courseId }, data: { authoredInApp: true } }).catch(() => undefined)
     const loaded = await loadCourse(module.courseId)
     res.json({ data: serializeCourse(loaded!) })
   } catch (error) {
@@ -484,6 +490,7 @@ adminCurriculumRouter.post("/modules/:moduleId/lectures", ...guards, async (req:
       ...module.nodes.slice(index).map((row) => row.id),
     ]
     await prisma.$transaction(ordered.map((id, order) => prisma.curriculumNode.update({ where: { id }, data: { order } })))
+    await prisma.course.update({ where: { id: module.courseId }, data: { authoredInApp: true } }).catch(() => undefined)
     await recordAdminAudit({
       actorId: req.auth!.user.id,
       action: "curriculum.lecture.create",
@@ -522,6 +529,7 @@ adminCurriculumRouter.patch("/lectures/:lectureId", ...guards, async (req: Authe
         ...(body.data.referenceUrl !== undefined ? { referenceUrl: body.data.referenceUrl } : {}),
       },
     })
+    await prisma.course.update({ where: { id: lecture.module.courseId }, data: { authoredInApp: true } }).catch(() => undefined)
     const loaded = await loadCourse(lecture.module.courseId)
     res.json({ data: serializeCourse(loaded!) })
   } catch (error) {
@@ -557,13 +565,7 @@ adminCurriculumRouter.post("/lectures/:lectureId/materials", ...guards, async (r
   const params = z.object({ lectureId: uuidSchema }).safeParse(req.params)
   const body = fileSchema.safeParse(req.body)
   if (!params.success || !body.success) return res.status(400).json({ error: "Validation failed" })
-  const decoded = decodeFile(body.data, [
-    "application/pdf",
-    "application/vnd.ms-powerpoint",
-    "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-    "text/plain",
-    "text/markdown",
-  ])
+  const decoded = decodeFile(body.data, LESSON_MATERIAL_TYPES)
   if ("error" in decoded) return res.status(400).json({ error: decoded.error })
   try {
     const lecture = await prisma.curriculumNode.findUnique({
@@ -573,7 +575,7 @@ adminCurriculumRouter.post("/lectures/:lectureId/materials", ...guards, async (r
     if (!lecture?.module.courseId) return res.status(404).json({ error: "Lecture not found" })
     const key = generateStorageKey(`courses/${lecture.module.courseId}/materials`, body.data.fileName)
     const stored = await uploadFile(key, decoded.data, { contentType: body.data.contentType })
-    await prisma.lessonMaterial.create({
+    const createdMat = await prisma.lessonMaterial.create({
       data: {
         nodeId: lecture.id,
         fileName: body.data.fileName,
@@ -583,6 +585,12 @@ adminCurriculumRouter.post("/lectures/:lectureId/materials", ...guards, async (r
         storageKey: stored.key,
       },
     })
+    if (body.data.contentType.startsWith("video/") || /\.(mp4|webm|mov|ogg)$/i.test(body.data.fileName)) {
+      await prisma.curriculumNode.update({
+        where: { id: lecture.id },
+        data: { referenceUrl: `/api/v1/lms/materials/${createdMat.id}` },
+      }).catch(() => undefined)
+    }
     const loaded = await loadCourse(lecture.module.courseId)
     res.status(201).json({ data: serializeCourse(loaded!) })
   } catch (error) {
@@ -771,5 +779,24 @@ adminCurriculumRouter.delete("/courses/:courseId", ...guards, async (req: Authen
     res.json({ data: { deleted: true, id: existing.id, slug: existing.slug } })
   } catch (error) {
     sendAuthoringError(res, error, "Failed to delete course")
+  }
+})
+
+
+adminCurriculumRouter.delete("/materials/:materialId", ...guards, async (req: AuthenticatedRequest, res) => {
+  const params = z.object({ materialId: uuidSchema }).safeParse(req.params)
+  if (!params.success) return res.status(400).json({ error: "Invalid material" })
+  try {
+    const mat = await prisma.lessonMaterial.findUnique({
+      where: { id: params.data.materialId },
+      include: { node: { select: { module: { select: { courseId: true } } } } },
+    })
+    if (!mat || !mat.node.module.courseId) return res.status(404).json({ error: "Material not found" })
+    await deleteFile(mat.storageKey).catch(() => undefined)
+    await prisma.lessonMaterial.delete({ where: { id: mat.id } })
+    const loaded = await loadCourse(mat.node.module.courseId)
+    res.json({ data: serializeCourse(loaded!) })
+  } catch (error) {
+    sendAuthoringError(res, error, "Failed to delete lesson material")
   }
 })

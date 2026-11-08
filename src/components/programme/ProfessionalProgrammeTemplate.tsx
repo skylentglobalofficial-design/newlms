@@ -207,15 +207,18 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
         { moduleCount: 0, lessonCount: 0, quizCount: 0, assignmentCount: 0 },
       )
     : null
-  const curriculum = effectiveCourses.length > 0
-    ? effectiveCourses.flatMap((c) =>
-        authoredCourseCurriculum(c).map((mod, modIdx) => ({
-          ...mod,
-          sourceId: effectiveCourses.length > 1 ? `${c.slug}-${mod.sourceId ?? modIdx}` : mod.sourceId,
-          title: effectiveCourses.length > 1 ? `${c.title}: ${mod.title}` : mod.title,
-        })),
-      )
-    : (course.data?.curriculum ?? [])
+  const apiHasSyncedCurriculum = effectiveCourses.length <= 1 && Boolean(course.data?.curriculum && course.data.curriculum.length >= 5)
+  const curriculum = apiHasSyncedCurriculum && course.data
+    ? course.data.curriculum
+    : effectiveCourses.length > 0
+      ? effectiveCourses.flatMap((c) =>
+          authoredCourseCurriculum(c).map((mod, modIdx) => ({
+            ...mod,
+            sourceId: effectiveCourses.length > 1 ? `${c.slug}-${mod.sourceId ?? modIdx}` : mod.sourceId,
+            title: effectiveCourses.length > 1 ? `${c.title}: ${mod.title}` : mod.title,
+          })),
+        )
+      : (course.data?.curriculum ?? [])
   const courseReady = taught != null || (!course.loading && !course.error && course.data != null)
   const courseTitle = course.data?.title || authoredCourse?.title || program.name
   const profile = courseProductProfile(content.courseSlug)

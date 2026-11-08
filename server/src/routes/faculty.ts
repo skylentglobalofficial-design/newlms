@@ -8,7 +8,8 @@ import { requireAuth, requireCsrf, type AuthenticatedRequest } from "../lib/auth
 import { hasApiRole, requireRoles } from "../lib/roles.js"
 import { capabilityAvailable, isDatabaseUnavailableError, isMissingSchemaError, readSchemaCapabilities, UNAVAILABLE_MESSAGES, unavailableBody } from "../lib/schema-capabilities.js"
 import { decodeUpload, LESSON_MATERIAL_TYPES, uploadBodySchema } from "../lib/upload-payload.js"
-import { generateStorageKey, uploadFile, StorageServiceError } from "../lib/storage.js"
+import { deleteFile, generateStorageKey, uploadFile, StorageServiceError } from "../lib/storage.js"
+import { ensureCanonicalCourseCurriculumSynced } from "../lib/canonical-curriculum-sync.js"
 
 export const facultyRouter = Router()
 
@@ -72,7 +73,7 @@ async function loadSuperadminFacultyDashboard() {
           select: {
             id: true,
             title: true,
-            nodes: { orderBy: { order: "asc" }, select: { id: true, title: true, nodeType: true } },
+            nodes: { orderBy: { order: "asc" }, select: { id: true, title: true, nodeType: true, summary: true, referenceUrl: true, lessonMaterials: { select: { id: true, fileName: true, mimeType: true, byteSize: true } } } },
           },
         },
       },
@@ -118,6 +119,9 @@ async function loadSuperadminFacultyDashboard() {
           position: nIdx + 1,
           title: n.title,
           nodeType: n.nodeType,
+          summary: "summary" in n ? (n as { summary?: string | null }).summary ?? null : null,
+          referenceUrl: "referenceUrl" in n ? (n as { referenceUrl?: string | null }).referenceUrl ?? null : null,
+          materials: "lessonMaterials" in n ? (n as { lessonMaterials?: Array<{ id: string; fileName: string; mimeType: string; byteSize: number }> }).lessonMaterials ?? [] : [],
         })),
       })),
     })),
@@ -206,6 +210,9 @@ async function loadAssignedFacultyDashboard(userId: string) {
           position: nIdx + 1,
           title: n.title,
           nodeType: n.nodeType,
+          summary: "summary" in n ? (n as { summary?: string | null }).summary ?? null : null,
+          referenceUrl: "referenceUrl" in n ? (n as { referenceUrl?: string | null }).referenceUrl ?? null : null,
+          materials: "lessonMaterials" in n ? (n as { lessonMaterials?: Array<{ id: string; fileName: string; mimeType: string; byteSize: number }> }).lessonMaterials ?? [] : [],
         })),
       })),
     })),
@@ -237,6 +244,7 @@ async function loadAssignedFacultyDashboard(userId: string) {
 
 facultyRouter.get("/dashboard", requireAuth, requireRoles("faculty", "superadmin"), async (req: AuthenticatedRequest, res) => {
   try {
+    await ensureCanonicalCourseCurriculumSynced()
     const data = hasApiRole(req, "superadmin")
       ? await loadSuperadminFacultyDashboard()
       : await loadAssignedFacultyDashboard(req.auth!.user.id)
@@ -512,6 +520,7 @@ const facultyLectureSchema = z.object({
   moduleId: z.string().uuid(),
   title: z.string().trim().min(1).max(160),
   summary: z.string().trim().max(8000).optional(),
+  referenceUrl: z.string().trim().max(500).optional(),
   nodeType: z.nativeEnum(CurriculumNodeType).default(CurriculumNodeType.NOTES),
 })
 
@@ -544,6 +553,7 @@ facultyRouter.post(
           moduleId: module.id,
           title: body.data.title,
           summary: body.data.summary ?? null,
+          referenceUrl: body.data.referenceUrl ?? null,
           nodeType: body.data.nodeType,
           order: module.nodes.length,
           sourceId: `lec-${crypto.randomUUID()}`,
@@ -614,6 +624,12 @@ facultyRouter.post(
           storageKey: stored.key,
         },
       })
+      if (body.data.contentType.startsWith("video/") || /\.(mp4|webm|mov|ogg)$/i.test(body.data.fileName)) {
+        await prisma.curriculumNode.update({
+          where: { id: lecture.id },
+          data: { referenceUrl: `/api/v1/lms/materials/${row.id}` },
+        }).catch(() => undefined)
+      }
       res.status(201).json({ data: { id: row.id, fileName: row.fileName, byteSize: row.byteSize } })
     } catch (error) {
       if (error instanceof StorageServiceError) {
@@ -671,3 +687,222 @@ facultyRouter.post("/doubts/:id/resolve", requireAuth, requireRoles("faculty", "
     res.status(500).json({ error: "Failed to resolve faculty doubt" })
   }
 })
+
+
+facultyRouter.post(
+  "/claim-default-courses",
+  requireAuth,
+  requireRoles("faculty", "superadmin"),
+  requireCsrf,
+  async (req: AuthenticatedRequest, res) => {
+    const body = z.object({ courseSlug: z.string().trim().optional() }).safeParse(req.body ?? {})
+    if (!body.success) return res.status(400).json({ error: "Invalid request" })
+    try {
+      const courses = await prisma.course.findMany({
+        where: body.data.courseSlug ? { slug: body.data.courseSlug } : {},
+        select: { id: true, slug: true, title: true },
+        take: 20,
+      })
+      for (const course of courses) {
+        await prisma.facultyCourseAssignment.upsert({
+          where: { userId_courseId: { userId: req.auth!.user.id, courseId: course.id } },
+          update: {},
+          create: { userId: req.auth!.user.id, courseId: course.id },
+        }).catch(() => undefined)
+      }
+      res.json({ data: { assignedCount: courses.length, courses } })
+    } catch (error) {
+      if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+        return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.authoring))
+      }
+      console.error("Failed to claim default faculty courses:", error instanceof Error ? error.name : "unknown")
+      res.status(500).json({ error: "Failed to assign courses" })
+    }
+  },
+)
+
+facultyRouter.post(
+  "/courses/:courseId/modules",
+  requireAuth,
+  requireRoles("faculty", "superadmin"),
+  requireCsrf,
+  async (req: AuthenticatedRequest, res) => {
+    const params = z.object({ courseId: z.string().uuid() }).safeParse(req.params)
+    const body = z.object({
+      title: z.string().trim().min(1).max(160),
+      description: z.string().trim().max(4000).optional(),
+    }).safeParse(req.body)
+    if (!params.success || !body.success) return res.status(400).json({ error: "Validation failed" })
+    try {
+      if (!(await facultyMayReadCourse(req, params.data.courseId))) {
+        return res.status(403).json({ error: "This course is outside your teaching assignment" })
+      }
+      const existingCount = await prisma.curriculumModule.count({ where: { courseId: params.data.courseId } })
+      const created = await prisma.curriculumModule.create({
+        data: {
+          courseId: params.data.courseId,
+          title: body.data.title,
+          description: body.data.description ?? null,
+          order: existingCount,
+          sourceId: `mod-${crypto.randomUUID()}`,
+          topics: [],
+        },
+      })
+      res.status(201).json({ data: { id: created.id, title: created.title, position: existingCount + 1 } })
+    } catch (error) {
+      if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+        return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.authoring))
+      }
+      console.error("Failed to create faculty module:", error instanceof Error ? error.name : "unknown")
+      res.status(500).json({ error: "Failed to create module" })
+    }
+  },
+)
+
+facultyRouter.patch(
+  "/courses/:courseId/modules/:moduleId",
+  requireAuth,
+  requireRoles("faculty", "superadmin"),
+  requireCsrf,
+  async (req: AuthenticatedRequest, res) => {
+    const params = z.object({ courseId: z.string().uuid(), moduleId: z.string().uuid() }).safeParse(req.params)
+    const body = z.object({
+      title: z.string().trim().min(1).max(160).optional(),
+      description: z.string().trim().max(4000).nullable().optional(),
+    }).safeParse(req.body)
+    if (!params.success || !body.success) return res.status(400).json({ error: "Validation failed" })
+    try {
+      if (!(await facultyMayReadCourse(req, params.data.courseId))) {
+        return res.status(403).json({ error: "This course is outside your teaching assignment" })
+      }
+      const mod = await prisma.curriculumModule.findFirst({
+        where: { id: params.data.moduleId, courseId: params.data.courseId },
+        select: { id: true },
+      })
+      if (!mod) return res.status(404).json({ error: "Module not found on this course" })
+      const updated = await prisma.curriculumModule.update({
+        where: { id: mod.id },
+        data: {
+          ...(body.data.title !== undefined ? { title: body.data.title } : {}),
+          ...(body.data.description !== undefined ? { description: body.data.description } : {}),
+        },
+      })
+      res.json({ data: { id: updated.id, title: updated.title } })
+    } catch (error) {
+      if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+        return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.authoring))
+      }
+      console.error("Failed to update faculty module:", error instanceof Error ? error.name : "unknown")
+      res.status(500).json({ error: "Failed to update module" })
+    }
+  },
+)
+
+facultyRouter.patch(
+  "/courses/:courseId/lectures/:lectureId",
+  requireAuth,
+  requireRoles("faculty", "superadmin"),
+  requireCsrf,
+  async (req: AuthenticatedRequest, res) => {
+    const params = z.object({ courseId: z.string().uuid(), lectureId: z.string().uuid() }).safeParse(req.params)
+    const body = z.object({
+      title: z.string().trim().min(1).max(160).optional(),
+      summary: z.string().trim().max(8000).nullable().optional(),
+      referenceUrl: z.string().trim().max(500).nullable().optional(),
+      nodeType: z.nativeEnum(CurriculumNodeType).optional(),
+    }).safeParse(req.body)
+    if (!params.success || !body.success) return res.status(400).json({ error: "Validation failed" })
+    try {
+      if (!(await facultyMayReadCourse(req, params.data.courseId))) {
+        return res.status(403).json({ error: "This course is outside your teaching assignment" })
+      }
+      const lecture = await prisma.curriculumNode.findFirst({
+        where: { id: params.data.lectureId, module: { courseId: params.data.courseId } },
+        select: { id: true },
+      })
+      if (!lecture) return res.status(404).json({ error: "Lecture not found on this course" })
+      const updated = await prisma.curriculumNode.update({
+        where: { id: lecture.id },
+        data: {
+          ...(body.data.title !== undefined ? { title: body.data.title } : {}),
+          ...(body.data.summary !== undefined ? { summary: body.data.summary } : {}),
+          ...(body.data.referenceUrl !== undefined ? { referenceUrl: body.data.referenceUrl } : {}),
+          ...(body.data.nodeType !== undefined ? { nodeType: body.data.nodeType } : {}),
+        },
+      })
+      res.json({
+        data: {
+          id: updated.id,
+          title: updated.title,
+          nodeType: updated.nodeType,
+          summary: updated.summary,
+          referenceUrl: updated.referenceUrl,
+        },
+      })
+    } catch (error) {
+      if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+        return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.authoring))
+      }
+      console.error("Failed to update faculty lecture:", error instanceof Error ? error.name : "unknown")
+      res.status(500).json({ error: "Failed to update lecture" })
+    }
+  },
+)
+
+facultyRouter.delete(
+  "/courses/:courseId/lectures/:lectureId",
+  requireAuth,
+  requireRoles("faculty", "superadmin"),
+  requireCsrf,
+  async (req: AuthenticatedRequest, res) => {
+    const params = z.object({ courseId: z.string().uuid(), lectureId: z.string().uuid() }).safeParse(req.params)
+    if (!params.success) return res.status(400).json({ error: "Validation failed" })
+    try {
+      if (!(await facultyMayReadCourse(req, params.data.courseId))) {
+        return res.status(403).json({ error: "This course is outside your teaching assignment" })
+      }
+      const lecture = await prisma.curriculumNode.findFirst({
+        where: { id: params.data.lectureId, module: { courseId: params.data.courseId } },
+        select: { id: true },
+      })
+      if (!lecture) return res.status(404).json({ error: "Lecture not found on this course" })
+      await prisma.curriculumNode.delete({ where: { id: lecture.id } })
+      res.json({ data: { deleted: true, id: lecture.id } })
+    } catch (error) {
+      if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+        return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.authoring))
+      }
+      console.error("Failed to delete faculty lecture:", error instanceof Error ? error.name : "unknown")
+      res.status(500).json({ error: "Failed to delete lecture" })
+    }
+  },
+)
+
+facultyRouter.delete(
+  "/courses/:courseId/materials/:materialId",
+  requireAuth,
+  requireRoles("faculty", "superadmin"),
+  requireCsrf,
+  async (req: AuthenticatedRequest, res) => {
+    const params = z.object({ courseId: z.string().uuid(), materialId: z.string().uuid() }).safeParse(req.params)
+    if (!params.success) return res.status(400).json({ error: "Validation failed" })
+    try {
+      if (!(await facultyMayReadCourse(req, params.data.courseId))) {
+        return res.status(403).json({ error: "This course is outside your teaching assignment" })
+      }
+      const mat = await prisma.lessonMaterial.findFirst({
+        where: { id: params.data.materialId, node: { module: { courseId: params.data.courseId } } },
+      })
+      if (!mat) return res.status(404).json({ error: "Material not found on this course" })
+      await deleteFile(mat.storageKey).catch(() => undefined)
+      await prisma.lessonMaterial.delete({ where: { id: mat.id } })
+      res.json({ data: { deleted: true, id: mat.id } })
+    } catch (error) {
+      if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+        return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.authoring))
+      }
+      console.error("Failed to delete faculty material:", error instanceof Error ? error.name : "unknown")
+      res.status(500).json({ error: "Failed to delete material" })
+    }
+  },
+)

@@ -252,6 +252,8 @@ export function CourseAuthoringStudio({
   const [lectureSummary, setLectureSummary] = useState("")
   const [lectureReferenceUrl, setLectureReferenceUrl] = useState("")
   const [lecturePosition, setLecturePosition] = useState("")
+  const [pendingLectureFile, setPendingLectureFile] = useState<File | null>(null)
+  const [uploadingFile, setUploadingFile] = useState(false)
   const [quizPassingScore, setQuizPassingScore] = useState("70")
   const [quizMaxAttempts, setQuizMaxAttempts] = useState("3")
   const [quizQuestions, setQuizQuestions] = useState<QuizDraftQuestion[]>([emptyQuizQuestion()])
@@ -489,15 +491,32 @@ export function CourseAuthoringStudio({
           ...(q.explanation.trim() ? { explanation: q.explanation.trim() } : {}),
         }))
       }
-      const next = await curriculumRequest<CourseRow>(`/modules/${targetModuleId}/lectures`, "POST", bodyPayload)
+      let next = await curriculumRequest<CourseRow>(`/modules/${targetModuleId}/lectures`, "POST", bodyPayload)
+      let uploadedNote = ""
+      if (pendingLectureFile) {
+        const targetMod = next.modules.find((m) => m.id === targetModuleId)
+        const newestLec = targetMod?.lectures[targetMod.lectures.length - 1]
+        if (newestLec) {
+          setUploadingFile(true)
+          const dataBase64 = await fileToBase64(pendingLectureFile)
+          next = await curriculumRequest<CourseRow>(`/lectures/${newestLec.id}/materials`, "POST", {
+            fileName: pendingLectureFile.name,
+            contentType: pendingLectureFile.type || "application/octet-stream",
+            dataBase64,
+          })
+          uploadedNote = ` + uploaded "${pendingLectureFile.name}"`
+          setUploadingFile(false)
+        }
+      }
       setSelected(next)
       setLectureTitle("")
       setLectureSummary("")
       setLectureReferenceUrl("")
       setLecturePosition("")
+      setPendingLectureFile(null)
       setQuizQuestions([emptyQuizQuestion()])
       setInlineAddLectureModuleId(null)
-      setMessage(`Lecture added under module (${lectureNodeType}).`)
+      setMessage(`Lecture added under module (${lectureNodeType})${uploadedNote}.`)
     } catch (error) {
       setErrorMsg(error instanceof Error ? error.message : "Could not add the lecture")
     }
@@ -543,17 +562,32 @@ export function CourseAuthoringStudio({
     if (!file) return
     setMessage(null)
     setErrorMsg(null)
+    setUploadingFile(true)
     try {
       const dataBase64 = await fileToBase64(file)
       const next = await curriculumRequest<CourseRow>(`/lectures/${lectureId}/materials`, "POST", {
         fileName: file.name,
-        contentType: file.type || "application/pdf",
+        contentType: file.type || "application/octet-stream",
         dataBase64,
       })
       setSelected(next)
-      setMessage(`Attached study material "${file.name}" to lecture.`)
+      setMessage(`Uploaded "${file.name}" (${Math.max(1, Math.round(file.size / 1024))} KB) to lecture.`)
     } catch (error) {
       setErrorMsg(error instanceof Error ? error.message : "Could not upload lecture material")
+    } finally {
+      setUploadingFile(false)
+    }
+  }
+
+  async function onDeleteLectureMaterial(materialId: string, fileName: string) {
+    setMessage(null)
+    setErrorMsg(null)
+    try {
+      const next = await curriculumRequest<CourseRow>(`/materials/${materialId}`, "DELETE")
+      setSelected(next)
+      setMessage(`Removed uploaded file "${fileName}".`)
+    } catch (error) {
+      setErrorMsg(error instanceof Error ? error.message : "Could not remove uploaded file")
     }
   }
 
@@ -756,6 +790,36 @@ export function CourseAuthoringStudio({
           {errorMsg}
         </div>
       ) : null}
+
+      {/* Role & Permission Architecture Strip (Admin vs Teacher) */}
+      <section
+        style={{
+          background: "#ffffff",
+          border: "1px solid #e2e8f0",
+          borderRadius: 14,
+          padding: "14px 18px",
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+          gap: 14,
+        }}
+      >
+        <div style={{ padding: "10px 14px", borderRadius: 10, background: "#f5f3ff", border: "1px solid #ddd6fe" }}>
+          <strong style={{ display: "block", fontSize: 12, fontFamily: "var(--font-mono)", color: "#5142b5", textTransform: "uppercase" }}>
+            👑 Admin Role (/dashboard/admin &amp; /dashboard/curriculum)
+          </strong>
+          <p style={{ margin: "4px 0 0", fontSize: 12.5, color: "#334155", lineHeight: 1.5 }}>
+            <strong>Full Platform Control:</strong> Create/Delete Courses · Set Pricing (₹1,499 / ₹3,499 / ₹6,499) &amp; Coupons · Publish/Unpublish to Catalogue · Assign Teachers (Faculty) · Edit All Modules &amp; Lectures · <strong>Upload Videos (.mp4), PDFs, Slides &amp; Cover Images</strong>.
+          </p>
+        </div>
+        <div style={{ padding: "10px 14px", borderRadius: 10, background: "#ecfdf5", border: "1px solid #a7f3d0" }}>
+          <strong style={{ display: "block", fontSize: 12, fontFamily: "var(--font-mono)", color: "#047857", textTransform: "uppercase" }}>
+            🎓 Teacher / Faculty Role (/dashboard/faculty)
+          </strong>
+          <p style={{ margin: "4px 0 0", fontSize: 12.5, color: "#334155", lineHeight: 1.5 }}>
+            <strong>Teaching &amp; Content Execution:</strong> Edit Assigned Course Modules &amp; Lectures (Notes, Video Links) · Add New Modules &amp; Lectures · <strong>Upload Lecture Videos (.mp4), PDFs, PPTX Slides &amp; Datasets</strong> · Grade V1→V2 Submissions · Resolve 20-Min Student Doubts. <em>(Cannot delete courses or change prices/coupons).</em>
+          </p>
+        </div>
+      </section>
 
       {/* Studio Sub-Navigation Pill Bar */}
       <div
@@ -1366,18 +1430,27 @@ export function CourseAuthoringStudio({
                                 style={inputStyle}
                               />
                             </label>
-                            {lectureNodeType === "VIDEO" || lectureNodeType === "NOTES" || lectureNodeType === "LAB" ? (
+                            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 10 }}>
                               <label style={labelStyle}>
-                                Video / Reference URL (Optional)
+                                Video / YouTube / Reference URL (Optional)
                                 <input
                                   type="url"
-                                  placeholder="https://..."
+                                  placeholder="https://youtube.com/... or https://.../video.mp4"
                                   value={lectureReferenceUrl}
                                   onChange={(e) => setLectureReferenceUrl(e.target.value)}
                                   style={inputStyle}
                                 />
                               </label>
-                            ) : null}
+                              <label style={labelStyle}>
+                                📤 Or Upload Video (.mp4) / PDF / PPTX / CSV from Device
+                                <input
+                                  type="file"
+                                  accept=".mp4,.webm,.mov,.pdf,.ppt,.pptx,.doc,.docx,.csv,.xlsx,.zip,.txt,.md,.png,.jpg,.webp"
+                                  onChange={(e) => setPendingLectureFile(e.target.files?.[0] ?? null)}
+                                  style={{ ...inputStyle, padding: "7px 10px" }}
+                                />
+                              </label>
+                            </div>
                             <div style={{ display: "flex", gap: 8 }}>
                               <button
                                 type="submit"
@@ -1479,15 +1552,34 @@ export function CourseAuthoringStudio({
                                             <span
                                               key={mat.id}
                                               style={{
+                                                display: "inline-flex",
+                                                alignItems: "center",
+                                                gap: 6,
                                                 fontSize: 11,
-                                                padding: "2px 8px",
+                                                padding: "3px 8px",
                                                 borderRadius: 6,
-                                                background: "#f1f5f9",
-                                                color: "#334155",
-                                                fontWeight: 600,
+                                                background: "#f5f3ff",
+                                                border: "1px solid #ddd6fe",
+                                                color: "#5142b5",
+                                                fontWeight: 700,
                                               }}
                                             >
-                                              PDF/Slide: {mat.fileName} ({Math.round(mat.byteSize / 1024)} KB)
+                                              <a
+                                                href={`/api/v1/lms/materials/${mat.id}?download=1`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                style={{ color: "#5142b5", textDecoration: "none" }}
+                                              >
+                                                📥 {mat.fileName} ({Math.max(1, Math.round(mat.byteSize / 1024))} KB)
+                                              </a>
+                                              <button
+                                                type="button"
+                                                onClick={() => void onDeleteLectureMaterial(mat.id, mat.fileName)}
+                                                title="Remove uploaded file"
+                                                style={{ border: "none", background: "transparent", color: "#b91c1c", fontWeight: 800, cursor: "pointer", padding: "0 2px" }}
+                                              >
+                                                ×
+                                              </button>
                                             </span>
                                           ))}
                                         </div>
@@ -1523,20 +1615,20 @@ export function CourseAuthoringStudio({
                                       </button>
                                       <label
                                         style={{
-                                          padding: "4px 10px",
+                                          padding: "5px 11px",
                                           borderRadius: 6,
-                                          border: "1px solid #cbd5e1",
-                                          background: "#f8fafc",
-                                          color: "#334155",
+                                          border: "1px solid #5142b5",
+                                          background: "#5142b5",
+                                          color: "#ffffff",
                                           fontSize: 11,
                                           fontWeight: 700,
                                           cursor: "pointer",
                                         }}
                                       >
-                                        Attach PDF/Slide
+                                        {uploadingFile ? "Uploading…" : "📤 Upload Video / PDF / Slide"}
                                         <input
                                           type="file"
-                                          accept=".pdf,.ppt,.pptx,.txt,.md"
+                                          accept=".mp4,.webm,.mov,.pdf,.ppt,.pptx,.doc,.docx,.csv,.xlsx,.zip,.txt,.md,.png,.jpg,.webp"
                                           style={{ display: "none" }}
                                           onChange={(e) => void onUploadLectureMaterial(lecture.id, e.target.files?.[0] ?? null)}
                                         />
@@ -1598,13 +1690,39 @@ export function CourseAuthoringStudio({
                                         placeholder="Lecture notes / summary"
                                         style={inputStyle}
                                       />
-                                      <input
-                                        type="url"
-                                        value={editLectureUrl}
-                                        onChange={(e) => setEditLectureUrl(e.target.value)}
-                                        placeholder="Video or reference URL (optional, https://...)"
-                                        style={inputStyle}
-                                      />
+                                      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 8 }}>
+                                        <input
+                                          type="url"
+                                          value={editLectureUrl}
+                                          onChange={(e) => setEditLectureUrl(e.target.value)}
+                                          placeholder="Video or reference URL (optional, https://...)"
+                                          style={inputStyle}
+                                        />
+                                        <label
+                                          style={{
+                                            display: "inline-flex",
+                                            alignItems: "center",
+                                            justifyContent: "center",
+                                            gap: 6,
+                                            padding: "8px 12px",
+                                            borderRadius: 8,
+                                            border: "1px dashed #5142b5",
+                                            background: "#f5f3ff",
+                                            color: "#5142b5",
+                                            fontSize: 12,
+                                            fontWeight: 700,
+                                            cursor: "pointer",
+                                          }}
+                                        >
+                                          📤 Upload Video (.mp4) / PDF / Slide to this Lecture
+                                          <input
+                                            type="file"
+                                            accept=".mp4,.webm,.mov,.pdf,.ppt,.pptx,.doc,.docx,.csv,.xlsx,.zip,.txt,.md,.png,.jpg,.webp"
+                                            style={{ display: "none" }}
+                                            onChange={(e) => void onUploadLectureMaterial(lecture.id, e.target.files?.[0] ?? null)}
+                                          />
+                                        </label>
+                                      </div>
                                       <div style={{ display: "flex", gap: 8 }}>
                                         <button
                                           type="submit"
@@ -1952,18 +2070,27 @@ export function CourseAuthoringStudio({
                 />
               </label>
 
-              {lectureNodeType === "VIDEO" || lectureNodeType === "NOTES" || lectureNodeType === "LAB" ? (
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 10 }}>
                 <label style={labelStyle}>
-                  Video / Live Session / Reference URL (Optional — e.g. https://…)
+                  Video / YouTube / Reference URL (Optional — e.g. https://…)
                   <input
                     type="url"
-                    placeholder="https://..."
+                    placeholder="https://youtube.com/... or https://.../video.mp4"
                     value={lectureReferenceUrl}
                     onChange={(e) => setLectureReferenceUrl(e.target.value)}
                     style={inputStyle}
                   />
                 </label>
-              ) : null}
+                <label style={labelStyle}>
+                  📤 Upload Video (.mp4/.webm), PDF, PPTX Slides, or CSV File
+                  <input
+                    type="file"
+                    accept=".mp4,.webm,.mov,.pdf,.ppt,.pptx,.doc,.docx,.csv,.xlsx,.zip,.txt,.md,.png,.jpg,.webp"
+                    onChange={(e) => setPendingLectureFile(e.target.files?.[0] ?? null)}
+                    style={{ ...inputStyle, padding: "7px 10px" }}
+                  />
+                </label>
+              </div>
 
               {lectureNodeType === "QUIZ" ? (
                 <div

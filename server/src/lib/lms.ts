@@ -10,6 +10,7 @@ import type {
 } from "@prisma/client"
 import { isMuxPlaybackId } from "./media/playback-id.js"
 import { prisma } from "./prisma.js"
+import { ensureCanonicalCourseCurriculumSynced } from "./canonical-curriculum-sync.js"
 import {
   assignmentProgressSelect,
   courseCurriculumInclude,
@@ -25,6 +26,7 @@ export type FormattedLesson = {
   duration?: string
   summary?: string | null
   referenceUrl?: string | null
+  materials?: Array<{ id: string; fileName: string; mimeType: string; byteSize: number }>
   locked?: boolean
   requiredLessonKey?: string | null
   media?: {
@@ -187,6 +189,7 @@ export function moduleKey(module: CurriculumModule): string {
 export function formatCourseModules(
   course: CourseWithCurriculum,
   lessonStates: Record<LessonKey, LessonStatePayload>,
+  materialsByNodeId?: Map<string, Array<{ id: string; fileName: string; mimeType: string; byteSize: number }>>,
 ): FormattedModule[] {
   return course.curriculum.map((module) => ({
     id: moduleKey(module),
@@ -200,13 +203,17 @@ export function formatCourseModules(
             ? { provider: "mux" as const, playbackId: node.muxPlaybackId }
             : { provider: "unavailable" as const }
           : undefined
+      const mats = materialsByNodeId?.get(node.id) ?? []
+      const videoMat = mats.find((m) => m.mimeType.startsWith("video/") || /\.(mp4|webm|mov|ogg)$/i.test(m.fileName))
+      const resolvedRefUrl = node.referenceUrl ?? (videoMat ? `/api/v1/lms/materials/${videoMat.id}` : undefined)
       return {
         id: key,
         title: node.title,
         type: nodeTypeKey(node.nodeType),
         duration: node.duration ?? undefined,
         summary: node.summary ?? undefined,
-        referenceUrl: node.referenceUrl ?? undefined,
+        referenceUrl: resolvedRefUrl,
+        materials: mats.length > 0 ? mats : undefined,
         locked: state?.locked ?? false,
         requiredLessonKey: state?.requiredLessonKey ?? null,
         media,
@@ -243,6 +250,7 @@ export function flattenNodes(course: CourseWithCurriculum): Array<{
 }
 
 export async function findCourseBySlug(slug: string) {
+  await ensureCanonicalCourseCurriculumSynced(slug)
   const course = await prisma.course.findUnique({
     where: { slug },
     select: await courseReadSelect(),
@@ -711,6 +719,19 @@ export async function buildCourseWorkspace(
   const lessonStates = await loadLessonStates(enrollment, enrollment.course)
   const progress = computeProgress(enrollment.course, lessonStates)
   const resume = computeResume(enrollment.course, lessonStates, enrollment.lastAccessedNodeId)
+  const nodeIds = flattenNodes(enrollment.course).map((item) => item.node.id)
+  const matRows = nodeIds.length > 0
+    ? await prisma.lessonMaterial.findMany({
+        where: { nodeId: { in: nodeIds } },
+        select: { id: true, nodeId: true, fileName: true, mimeType: true, byteSize: true },
+      }).catch(() => [])
+    : []
+  const materialsByNodeId = new Map<string, Array<{ id: string; fileName: string; mimeType: string; byteSize: number }>>()
+  for (const row of matRows) {
+    const list = materialsByNodeId.get(row.nodeId) ?? []
+    list.push({ id: row.id, fileName: row.fileName, mimeType: row.mimeType, byteSize: row.byteSize })
+    materialsByNodeId.set(row.nodeId, list)
+  }
 
   return {
     enrollment: {
@@ -724,7 +745,7 @@ export async function buildCourseWorkspace(
     course: {
       slug: enrollment.course.slug,
       title: enrollment.course.title,
-      modules: formatCourseModules(enrollment.course, lessonStates),
+      modules: formatCourseModules(enrollment.course, lessonStates, materialsByNodeId),
     },
     lessonStates,
     progress,

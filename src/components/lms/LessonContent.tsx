@@ -184,7 +184,8 @@ export function LessonContentView({
       lessonMedia && (lessonMedia.status === 'ready' || lessonMedia.playbackUrl || lessonMedia.embedUrl)
     )
     const youtubeMatch = customRefUrl?.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([A-Za-z0-9_-]{11})/)
-    const isDirectMp4 = Boolean(customRefUrl && /\.(mp4|webm|ogg)(\?|$)/i.test(customRefUrl))
+    const uploadedMaterials = (lesson as { materials?: Array<{ id: string; fileName: string; mimeType: string; byteSize: number }> }).materials ?? []
+    const isDirectMp4 = Boolean(customRefUrl && (/\.(mp4|webm|ogg|mov)(\?|$)/i.test(customRefUrl) || customRefUrl.startsWith("/api/v1/lms/materials/")))
     return (
       <div className="lms-lesson-notes">
         {hasAttachedVideo ? (
@@ -214,6 +215,27 @@ export function LessonContentView({
           </div>
         ) : null}
         <LessonDocument markdown={notes} accent={accent} skipHeading={lesson.title} />
+        {uploadedMaterials.length > 0 ? (
+          <div className="os-resources" style={{ marginTop: 18, padding: "14px 16px", borderRadius: 12, background: "#f8fafc", border: "1px solid #e2e8f0" }}>
+            <p className="os-eyebrow" style={{ margin: "0 0 8px", fontSize: 11, fontWeight: 700, color: "#5142b5", textTransform: "uppercase" }}>
+              Uploaded Lecture Materials, Slides &amp; Files
+            </p>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+              {uploadedMaterials.map((mat) => (
+                <a
+                  key={mat.id}
+                  href={`/api/v1/lms/materials/${mat.id}?download=1`}
+                  download={mat.fileName}
+                  className="lx-file"
+                  style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "7px 12px", borderRadius: 8, background: "#ffffff", border: "1px solid #cbd5e1", color: "#0f172a", fontSize: 12.5, fontWeight: 600, textDecoration: "none" }}
+                >
+                  <span>📥 {mat.fileName}</span>
+                  <span style={{ color: "#64748b", fontSize: 11 }}>({Math.max(1, Math.round(mat.byteSize / 1024))} KB)</span>
+                </a>
+              ))}
+            </div>
+          </div>
+        ) : null}
         {material?.datasets.length ? (
           <div className="os-resources">
             <p className="os-eyebrow">Practice files</p>

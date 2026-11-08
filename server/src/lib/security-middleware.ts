@@ -3,7 +3,7 @@ import cors from "cors"
 import express, { type NextFunction, type Request, type Response } from "express"
 import rateLimit from "express-rate-limit"
 
-export const JSON_BODY_LIMIT = process.env.JSON_BODY_LIMIT ?? "512kb"
+export const JSON_BODY_LIMIT = process.env.JSON_BODY_LIMIT ?? "50mb"
 
 const SAFE_REQUEST_ID = /^[a-zA-Z0-9._-]{1,64}$/
 

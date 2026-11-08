@@ -28,6 +28,9 @@ export type ApiCourseLesson = {
   title: string
   type: string | null
   duration?: string
+  summary?: string | null
+  referenceUrl?: string | null
+  materials?: Array<{ id: string; fileName: string; mimeType: string; byteSize: number }>
   media?: { provider: "mux" | "unavailable"; playbackId?: string }
 }
 
@@ -375,18 +378,20 @@ export function workspaceToCourse(workspace: ApiCourseWorkspace): LmsCourseView 
       ? authoredMods
       : workspace.course.modules.map((mod, mIdx) => {
           const fallbackMod = authoredMods?.[mIdx]
+          const isLegacyTitle = /^(Python Basics|Data with pandas|LLM Fundamentals|Building with AI|Getting Started)$/i.test(mod.title)
           return {
             id: mod.id,
-            title: fallbackMod?.title ?? mod.title,
+            title: isLegacyTitle && fallbackMod ? fallbackMod.title : (mod.title || fallbackMod?.title || "Module"),
             lessons: mod.lessons.map((lesson, lIdx) => {
               const fallbackLesson = fallbackMod?.lessons?.[lIdx]
               const resolvedType =
-                lesson.type === "video" && !lesson.media?.playbackId && fallbackLesson
+                lesson.type === "video" && !lesson.media?.playbackId && !lesson.referenceUrl && fallbackLesson
                   ? fallbackLesson.type
                   : ((lesson.type ?? fallbackLesson?.type ?? "notes") as "video" | "notes" | "quiz" | "assignment")
               return {
                 id: lesson.id,
-                title: fallbackLesson?.title ?? lesson.title,
+                title: lesson.title || fallbackLesson?.title || "Lesson",
+                materials: lesson.materials,
                 type: resolvedType,
                 duration: lesson.duration ?? fallbackLesson?.duration ?? "45 min",
                 summary: (lesson as { summary?: string | null }).summary,
@@ -417,6 +422,9 @@ export function workspaceToCourse(workspace: ApiCourseWorkspace): LmsCourseView 
         title: lesson.title,
         type: (lesson.type ?? "notes") as "video" | "notes" | "quiz" | "assignment",
         duration: lesson.duration,
+        summary: (lesson as { summary?: string | null }).summary,
+        referenceUrl: (lesson as { referenceUrl?: string | null }).referenceUrl,
+        materials: (lesson as { materials?: Array<{ id: string; fileName: string; mimeType: string; byteSize: number }> }).materials,
         completed: workspace.lessonStates[lesson.id]?.complete ?? false,
         locked: false,
         media: (lesson as { media?: ApiCourseWorkspace["course"]["modules"][number]["lessons"][number]["media"] }).media,

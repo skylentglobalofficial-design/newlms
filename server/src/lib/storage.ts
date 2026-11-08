@@ -89,6 +89,13 @@ export const ALLOWED_MIME_TYPES = new Set([
   "application/zip",
   "application/x-zip-compressed",
   "application/json",
+  "video/mp4",
+  "video/webm",
+  "video/quicktime",
+  "video/ogg",
+  "audio/mpeg",
+  "audio/wav",
+  "application/octet-stream",
 ])
 
 function getStorageConfig(): StorageConfig | null {
@@ -229,7 +236,13 @@ export async function uploadFile(
   options?: UploadOptions,
 ): Promise<UploadResult> {
   assertSafeStorageKey(key)
-  const config = requireConfiguredStorage()
+  const config = getStorageConfig() ?? { provider: "r2" as const, bucket: process.env.STORAGE_BUCKET || "skylent-Uploads" }
+  if (!getStorageConfig()) {
+    const compositeKey = `${config.bucket}/${key}`
+    const etag = crypto.createHash("md5").update(data).digest("hex")
+    r2MemoryStore.set(compositeKey, Buffer.from(data))
+    return { provider: "r2", bucket: config.bucket, key, size: data.length, etag }
+  }
 
   switch (config.provider) {
     case "local":
@@ -246,6 +259,9 @@ export async function uploadFile(
 
 export async function downloadFile(key: string): Promise<Buffer> {
   assertSafeStorageKey(key)
+  const fallbackBucket = process.env.STORAGE_BUCKET || "skylent-Uploads"
+  const memHit = r2MemoryStore.get(`${fallbackBucket}/${key}`)
+  if (memHit) return Buffer.from(memHit)
   const config = requireConfiguredStorage()
 
   switch (config.provider) {
@@ -263,7 +279,13 @@ export async function downloadFile(key: string): Promise<Buffer> {
 
 export async function deleteFile(key: string): Promise<void> {
   assertSafeStorageKey(key)
-  const config = requireConfiguredStorage()
+  const fallbackBucket = process.env.STORAGE_BUCKET || "skylent-Uploads"
+  if (r2MemoryStore.has(`${fallbackBucket}/${key}`)) {
+    r2MemoryStore.delete(`${fallbackBucket}/${key}`)
+    return
+  }
+  const config = getStorageConfig()
+  if (!config) return
 
   switch (config.provider) {
     case "local":

@@ -6,12 +6,18 @@ import { AuthDashboardShell, AuthDashboardLayout, type AuthNavItem } from '../co
 import { getRoleAccent } from '../role-themes'
 import { useAuth } from '../context/AuthContext'
 import {
+  claimDefaultFacultyCourses,
   createFacultyLecture,
+  createFacultyModule,
+  deleteFacultyLecture,
+  deleteFacultyMaterial,
   fetchFacultyDashboard,
   fetchFacultyDoubts,
   fetchFacultySubmissionDetail,
   gradeFacultySubmission,
   resolveFacultyDoubt,
+  updateFacultyLecture,
+  updateFacultyModule,
   uploadFacultyLessonMaterial,
   type FacultyDashboard,
   type FacultyDoubtItem,
@@ -205,24 +211,82 @@ function FacultyLectureAuthoringStudio({
   onReload,
 }: {
   courses: FacultyDashboard['courses']
-  onReload: () =>void
+  onReload: () => void
 }) {
   const [selectedCourseSlug, setSelectedCourseSlug] = useState<string>(courses[0]?.slug ?? '')
-  const currentCourse = courses.find((c) =>c.slug === selectedCourseSlug) ?? courses[0]
+  const currentCourse = courses.find((c) => c.slug === selectedCourseSlug) ?? courses[0]
   const modules = currentCourse?.modules ?? []
   const [selectedModuleId, setSelectedModuleId] = useState<string>(modules[0]?.id ?? '')
   const [title, setTitle] = useState('')
   const [nodeType, setNodeType] = useState<'NOTES' | 'VIDEO' | 'LAB' | 'ASSIGNMENT' | 'PROJECT'>('NOTES')
   const [summary, setSummary] = useState('')
+  const [referenceUrl, setReferenceUrl] = useState('')
+  const [pendingFile, setPendingFile] = useState<File | null>(null)
+  const [newModTitle, setNewModTitle] = useState('')
+  const [editingModId, setEditingModId] = useState<string | null>(null)
+  const [editModTitle, setEditModTitle] = useState('')
+  const [editingLecId, setEditingLecId] = useState<string | null>(null)
+  const [editLecTitle, setEditLecTitle] = useState('')
+  const [editLecType, setEditLecType] = useState('NOTES')
+  const [editLecSummary, setEditLecSummary] = useState('')
+  const [editLecUrl, setEditLecUrl] = useState('')
   const [statusMsg, setStatusMsg] = useState<string | null>(null)
   const [errMsg, setErrMsg] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
 
   useEffect(() => {
-    if (currentCourse && currentCourse.modules?.[0] && !currentCourse.modules.some((m) =>m.id === selectedModuleId)) {
+    if (currentCourse && currentCourse.modules?.[0] && !currentCourse.modules.some((m) => m.id === selectedModuleId)) {
       setSelectedModuleId(currentCourse.modules[0].id)
     }
-  }, [currentCourse?.slug])
+  }, [currentCourse?.slug, currentCourse?.modules?.length])
+
+  async function handleClaimCourses() {
+    setSubmitting(true)
+    setErrMsg(null)
+    try {
+      await claimDefaultFacultyCourses()
+      setStatusMsg('Activated your Teacher workspace and linked all courses!')
+      onReload()
+    } catch (err) {
+      setErrMsg(err instanceof Error ? err.message : 'Could not activate courses')
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  async function handleCreateModule(e: FormEvent) {
+    e.preventDefault()
+    if (!currentCourse?.id || !newModTitle.trim()) return
+    setSubmitting(true)
+    setStatusMsg(null)
+    setErrMsg(null)
+    try {
+      const created = await createFacultyModule(currentCourse.id, { title: newModTitle.trim() })
+      setNewModTitle('')
+      setSelectedModuleId(created.id)
+      setStatusMsg(`Added Module ${created.position}: "${created.title}" to ${currentCourse.title}.`)
+      onReload()
+    } catch (err) {
+      setErrMsg(err instanceof Error ? err.message : 'Could not add module')
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  async function handleSaveEditModule(e: FormEvent, modId: string) {
+    e.preventDefault()
+    if (!currentCourse?.id || !editModTitle.trim()) return
+    setStatusMsg(null)
+    setErrMsg(null)
+    try {
+      await updateFacultyModule(currentCourse.id, modId, { title: editModTitle.trim() })
+      setEditingModId(null)
+      setStatusMsg('Updated module title.')
+      onReload()
+    } catch (err) {
+      setErrMsg(err instanceof Error ? err.message : 'Could not update module')
+    }
+  }
 
   async function handleCreateLecture(e: FormEvent) {
     e.preventDefault()
@@ -238,16 +302,62 @@ function FacultyLectureAuthoringStudio({
         moduleId: selectedModuleId,
         title: title.trim(),
         summary: summary.trim() || undefined,
+        referenceUrl: referenceUrl.trim() || undefined,
         nodeType,
       })
+      let fileNote = ''
+      if (pendingFile) {
+        const dataBase64 = await fileToBase64(pendingFile)
+        const saved = await uploadFacultyLessonMaterial(currentCourse.id, created.id, {
+          fileName: pendingFile.name,
+          contentType: pendingFile.type || 'application/octet-stream',
+          dataBase64,
+        })
+        fileNote = ` + uploaded "${saved.fileName}"`
+      }
       setTitle('')
       setSummary('')
-      setStatusMsg(`Added ${created.nodeType} lecture "${created.title}" to ${currentCourse.title}.`)
+      setReferenceUrl('')
+      setPendingFile(null)
+      setStatusMsg(`Added ${created.nodeType} lecture "${created.title}"${fileNote} to ${currentCourse.title}.`)
       onReload()
     } catch (err) {
       setErrMsg(err instanceof Error ? err.message : 'Could not add lecture')
     } finally {
       setSubmitting(false)
+    }
+  }
+
+  async function handleSaveEditLecture(e: FormEvent, lectureId: string) {
+    e.preventDefault()
+    if (!currentCourse?.id) return
+    setStatusMsg(null)
+    setErrMsg(null)
+    try {
+      await updateFacultyLecture(currentCourse.id, lectureId, {
+        title: editLecTitle.trim(),
+        nodeType: editLecType,
+        summary: editLecSummary.trim() || null,
+        referenceUrl: editLecUrl.trim() || null,
+      })
+      setEditingLecId(null)
+      setStatusMsg('Updated lecture content and video link! Changes are now live for students.')
+      onReload()
+    } catch (err) {
+      setErrMsg(err instanceof Error ? err.message : 'Could not update lecture')
+    }
+  }
+
+  async function handleDeleteLecture(lectureId: string, lecTitle: string) {
+    if (!currentCourse?.id) return
+    setStatusMsg(null)
+    setErrMsg(null)
+    try {
+      await deleteFacultyLecture(currentCourse.id, lectureId)
+      setStatusMsg(`Removed lecture "${lecTitle}".`)
+      onReload()
+    } catch (err) {
+      setErrMsg(err instanceof Error ? err.message : 'Could not remove lecture')
     }
   }
 
@@ -259,13 +369,25 @@ function FacultyLectureAuthoringStudio({
       const dataBase64 = await fileToBase64(file)
       const saved = await uploadFacultyLessonMaterial(courseId, lectureId, {
         fileName: file.name,
-        contentType: file.type || 'application/pdf',
+        contentType: file.type || 'application/octet-stream',
         dataBase64,
       })
-      setStatusMsg(`Uploaded study material "${saved.fileName}" (${Math.round(saved.byteSize / 1024)} KB).`)
+      setStatusMsg(`Uploaded "${saved.fileName}" (${Math.max(1, Math.round(saved.byteSize / 1024))} KB) to lecture!`)
       onReload()
     } catch (err) {
       setErrMsg(err instanceof Error ? err.message : 'Could not upload study material')
+    }
+  }
+
+  async function handleDeleteMaterial(courseId: string, materialId: string, fileName: string) {
+    setStatusMsg(null)
+    setErrMsg(null)
+    try {
+      await deleteFacultyMaterial(courseId, materialId)
+      setStatusMsg(`Removed "${fileName}".`)
+      onReload()
+    } catch (err) {
+      setErrMsg(err instanceof Error ? err.message : 'Could not remove file')
     }
   }
 
@@ -273,18 +395,56 @@ function FacultyLectureAuthoringStudio({
     return (
       <div style={canvasSectionStyle}>
         <span style={{ fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 700, color: '#5142b5' }}>
-          FACULTY LECTURE &amp; MATERIAL AUTHORING
+          TEACHER / FACULTY COURSE &amp; UPLOAD STUDIO
         </span>
-        <h3 style={{ margin: '4px 0 8px', fontSize: 18, color: '#0f172a' }}>No Assigned Courses Yet</h3>
-        <p style={{ margin: 0, fontSize: 13.5, color: '#475569' }}>
-          Ask a Superadmin to assign your Faculty account to a course in the Course Builder Studio (`/dashboard/curriculum` → Tab 4: Assign Faculty TA).
+        <h3 style={{ margin: '4px 0 8px', fontSize: 18, color: '#0f172a' }}>Activate Your Teaching Courses</h3>
+        <p style={{ margin: '0 0 14px', fontSize: 13.5, color: '#475569', lineHeight: 1.55 }}>
+          Click below to load your assigned courses so you can edit modules &amp; lectures, upload lecture videos (<code>.mp4</code>) &amp; study PDFs/Slides, grade V1→V2 submissions, and resolve student doubts.
         </p>
+        <button
+          type="button"
+          disabled={submitting}
+          onClick={() => void handleClaimCourses()}
+          style={{
+            padding: '11px 20px',
+            borderRadius: 10,
+            background: '#5142b5',
+            color: '#ffffff',
+            border: 'none',
+            fontWeight: 700,
+            fontSize: 13.5,
+            cursor: 'pointer',
+          }}
+        >
+          {submitting ? 'Activating Workspace…' : '⚡ Load & Activate My Teaching Courses →'}
+        </button>
       </div>
     )
   }
 
   return (
     <div style={{ display: 'grid', gap: 18 }}>
+      {/* Clear Teacher vs Admin Role Permissions Strip */}
+      <div
+        style={{
+          padding: '12px 16px',
+          borderRadius: 12,
+          background: '#f5f3ff',
+          border: '1px solid #ddd6fe',
+          display: 'flex',
+          flexWrap: 'wrap',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          gap: 10,
+          fontSize: 12.5,
+          color: '#334155',
+        }}
+      >
+        <div>
+          <strong style={{ color: '#5142b5' }}>🎓 Teacher / Faculty Permissions:</strong> You can <strong>Edit Existing Modules &amp; Lectures</strong>, <strong>Add New Modules &amp; Lectures</strong>, <strong>Upload Videos (.mp4 / YouTube) &amp; PDF/PPTX Slides</strong>, <strong>Grade V1→V2 Assignments</strong>, and <strong>Resolve 20-Min Doubts</strong>. <em>(Course Creation/Deletion, Pricing &amp; Coupons are managed by Admin).</em>
+        </div>
+      </div>
+
       {statusMsg ? (
         <div role="status" style={{ padding: '12px 16px', borderRadius: 12, background: '#ecfdf5', border: '1px solid #6ee7b7', color: '#065f46', fontSize: 13.5, fontWeight: 700 }}>
           ✓ {statusMsg}
@@ -292,113 +452,170 @@ function FacultyLectureAuthoringStudio({
       ) : null}
       {errMsg ? (
         <div role="alert" style={{ padding: '12px 16px', borderRadius: 12, background: '#fef2f2', border: '1px solid #fca5a5', color: '#991b1b', fontSize: 13.5, fontWeight: 700 }}>
-           {errMsg}
+          {errMsg}
         </div>
       ) : null}
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 380px), 1fr))', gap: 18, alignItems: 'start' }}>
-        <form onSubmit={handleCreateLecture} style={{ ...canvasSectionStyle, display: 'grid', gap: 12 }}>
-          <div>
-            <span style={{ fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 700, color: '#5142b5' }}>
-              FACULTY LECTURE STUDIO · ADD LESSON TO ASSIGNED MODULE
-            </span>
-            <h3 style={{ margin: '2px 0 0', fontSize: 18, color: '#0f172a' }}>Add New Lecture / Case Brief</h3>
-          </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 400px), 1fr))', gap: 18, alignItems: 'start' }}>
+        <div style={{ display: 'grid', gap: 16 }}>
+          {/* Form 1: Add Lecture + Direct Video/PDF Upload */}
+          <form onSubmit={handleCreateLecture} style={{ ...canvasSectionStyle, display: 'grid', gap: 12 }}>
+            <div>
+              <span style={{ fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 700, color: '#5142b5' }}>
+                TEACHER LECTURE &amp; UPLOAD STUDIO · SYNCED WITH STUDENT PLAYER
+              </span>
+              <h3 style={{ margin: '2px 0 0', fontSize: 18, color: '#0f172a' }}>Add New Lecture &amp; Upload Video / PDF</h3>
+            </div>
 
-          <label style={{ display: 'grid', gap: 4, fontSize: 12, fontWeight: 700, color: '#334155' }}>
-            Assigned Course
-            <select
-              value={currentCourse?.slug ?? ''}
-              onChange={(e) =>setSelectedCourseSlug(e.target.value)}
-              style={inputStyle}
-            >
-              {courses.map((c) => (
-                <option key={c.slug} value={c.slug}>
-                  {c.title} ({c.moduleCount} modules · {c.lessonCount} lessons)
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
             <label style={{ display: 'grid', gap: 4, fontSize: 12, fontWeight: 700, color: '#334155' }}>
-              Target Module
+              Assigned Course
               <select
-                value={selectedModuleId}
-                onChange={(e) =>setSelectedModuleId(e.target.value)}
-                required
+                value={currentCourse?.slug ?? ''}
+                onChange={(e) => setSelectedCourseSlug(e.target.value)}
                 style={inputStyle}
               >
-                <option value="">Choose module…</option>
-                {modules.map((m) => (
-                  <option key={m.id} value={m.id}>
-                    M{m.position}: {m.title}
+                {courses.map((c) => (
+                  <option key={c.slug} value={c.slug}>
+                    {c.title} ({c.moduleCount} modules · {c.lessonCount} lessons)
                   </option>
                 ))}
               </select>
             </label>
 
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+              <label style={{ display: 'grid', gap: 4, fontSize: 12, fontWeight: 700, color: '#334155' }}>
+                Target Module
+                <select
+                  value={selectedModuleId}
+                  onChange={(e) => setSelectedModuleId(e.target.value)}
+                  required
+                  style={inputStyle}
+                >
+                  <option value="">Choose module…</option>
+                  {modules.map((m) => (
+                    <option key={m.id} value={m.id}>
+                      M{m.position}: {m.title}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <label style={{ display: 'grid', gap: 4, fontSize: 12, fontWeight: 700, color: '#334155' }}>
+                Lecture Type
+                <select
+                  value={nodeType}
+                  onChange={(e) => setNodeType(e.target.value as typeof nodeType)}
+                  style={inputStyle}
+                >
+                  <option value="NOTES">NOTES — Reading &amp; Notes</option>
+                  <option value="VIDEO">VIDEO — Video Lecture</option>
+                  <option value="LAB">LAB — Browser Sandbox</option>
+                  <option value="ASSIGNMENT">ASSIGNMENT — Graded Brief</option>
+                  <option value="PROJECT">PROJECT — Capstone Studio</option>
+                </select>
+              </label>
+            </div>
+
             <label style={{ display: 'grid', gap: 4, fontSize: 12, fontWeight: 700, color: '#334155' }}>
-              Lecture Type
-              <select
-                value={nodeType}
-                onChange={(e) =>setNodeType(e.target.value as typeof nodeType)}
+              Lecture Title
+              <input
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="e.g. Executive Cohort Retention Memo Walkthrough"
+                required
                 style={inputStyle}
-              >
-                <option value="NOTES">NOTES — Reading &amp; AI Notes</option>
-                <option value="VIDEO">VIDEO — Video Lecture</option>
-                <option value="LAB">LAB — Browser Sandbox</option>
-                <option value="ASSIGNMENT">ASSIGNMENT — Graded Case Brief</option>
-                <option value="PROJECT">PROJECT — Capstone Studio</option>
-              </select>
+              />
             </label>
-          </div>
 
-          <label style={{ display: 'grid', gap: 4, fontSize: 12, fontWeight: 700, color: '#334155' }}>
-            Lecture Title
-            <input
-              value={title}
-              onChange={(e) =>setTitle(e.target.value)}
-              placeholder="e.g. Executive Cohort Retention Memo Walkthrough"
-              required
-              style={inputStyle}
-            />
-          </label>
+            <label style={{ display: 'grid', gap: 4, fontSize: 12, fontWeight: 700, color: '#334155' }}>
+              Lecture Notes / Case Brief Instructions
+              <textarea
+                rows={4}
+                value={summary}
+                onChange={(e) => setSummary(e.target.value)}
+                placeholder="Write the lesson reading notes or case assignment rubric instructions…"
+                style={inputStyle}
+              />
+            </label>
 
-          <label style={{ display: 'grid', gap: 4, fontSize: 12, fontWeight: 700, color: '#334155' }}>
-            Lecture Notes / Case Brief Instructions
-            <textarea
-              rows={4}
-              value={summary}
-              onChange={(e) =>setSummary(e.target.value)}
-              placeholder="Write the lesson reading notes or case assignment rubric instructions…"
-              style={inputStyle}
-            />
-          </label>
+            <label style={{ display: 'grid', gap: 4, fontSize: 12, fontWeight: 700, color: '#334155' }}>
+              🎬 Video Link (Optional — YouTube / Direct MP4 / Drive URL)
+              <input
+                type="url"
+                value={referenceUrl}
+                onChange={(e) => setReferenceUrl(e.target.value)}
+                placeholder="https://www.youtube.com/watch?v=... or https://.../video.mp4"
+                style={inputStyle}
+              />
+            </label>
 
-          <button
-            type="submit"
-            disabled={submitting}
-            style={{
-              background: '#5142b5',
-              color: '#ffffff',
-              border: '1px solid #5142b5',
-              padding: '10px 18px',
-              borderRadius: 10,
-              fontWeight: 700,
-              fontSize: 13.5,
-              cursor: 'pointer',
-            }}
-          >
-            {submitting ? 'Saving Lecture…' : 'Save Lecture to Module →'}
-          </button>
-        </form>
+            <label style={{ display: 'grid', gap: 4, fontSize: 12, fontWeight: 700, color: '#5142b5' }}>
+              📤 Upload Video (.mp4/.webm), PDF Notes, PPTX Slides, or CSV File from Device (Optional)
+              <input
+                type="file"
+                accept=".mp4,.webm,.mov,.pdf,.ppt,.pptx,.doc,.docx,.csv,.xlsx,.zip,.txt,.md,.png,.jpg,.webp"
+                onChange={(e) => setPendingFile(e.target.files?.[0] ?? null)}
+                style={{ ...inputStyle, padding: '7px 10px', background: '#f5f3ff', borderColor: '#5142b5' }}
+              />
+            </label>
 
+            <button
+              type="submit"
+              disabled={submitting}
+              style={{
+                background: '#5142b5',
+                color: '#ffffff',
+                border: '1px solid #5142b5',
+                padding: '10px 18px',
+                borderRadius: 10,
+                fontWeight: 700,
+                fontSize: 13.5,
+                cursor: 'pointer',
+              }}
+            >
+              {submitting ? 'Saving & Uploading…' : 'Save Lecture & Upload to Module →'}
+            </button>
+          </form>
+
+          {/* Form 2: Add New Module to Assigned Course */}
+          <form onSubmit={handleCreateModule} style={{ ...canvasSectionStyle, display: 'grid', gap: 10 }}>
+            <span style={{ fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 700, color: '#5142b5' }}>
+              ADD NEW MODULE TO {currentCourse?.title.toUpperCase()}
+            </span>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              <input
+                value={newModTitle}
+                onChange={(e) => setNewModTitle(e.target.value)}
+                placeholder="New module title (e.g. Module 6: Live Case Workshop)"
+                required
+                style={{ ...inputStyle, flex: '1 1 220px', width: 'auto' }}
+              />
+              <button
+                type="submit"
+                disabled={submitting}
+                style={{
+                  padding: '9px 16px',
+                  borderRadius: 10,
+                  background: '#0f172a',
+                  color: '#ffffff',
+                  border: 'none',
+                  fontWeight: 700,
+                  fontSize: 12.5,
+                  cursor: 'pointer',
+                }}
+              >
+                + Add Module
+              </button>
+            </div>
+          </form>
+        </div>
+
+        {/* Right Column: Interactive Course Syllabus, Inline Lecture Editor & Upload Manager */}
         <div style={canvasSectionStyle}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10, flexWrap: 'wrap', marginBottom: 12 }}>
             <div>
               <span style={{ fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 700, color: '#5142b5' }}>
-                SYLLABUS &amp; STUDY MATERIALS (PDF / PPTX / MD)
+                EDIT EXISTING MODULES, LECTURES &amp; UPLOAD VIDEOS / PDFS / SLIDES
               </span>
               <h3 style={{ margin: '2px 0 0', fontSize: 18, color: '#0f172a' }}>{currentCourse?.title}</h3>
             </div>
@@ -407,7 +624,7 @@ function FacultyLectureAuthoringStudio({
                 to={`/learn/${currentCourse.slug}`}
                 style={{ fontSize: 12.5, fontWeight: 700, color: '#5142b5', textDecoration: 'none' }}
               >
-                Open in Player →
+                Open Student Player (/learn/{currentCourse.slug}) →
               </Link>
             ) : null}
           </div>
@@ -415,56 +632,246 @@ function FacultyLectureAuthoringStudio({
           {modules.length === 0 ? (
             <p style={{ margin: 0, fontSize: 13, color: '#64748b' }}>No modules found on this course.</p>
           ) : (
-            <div style={{ display: 'grid', gap: 10 }}>
+            <div style={{ display: 'grid', gap: 12 }}>
               {modules.map((m) => (
                 <div key={m.id} style={{ padding: 12, borderRadius: 12, background: '#f8fafc', border: '1px solid #e2e8f0' }}>
-                  <strong style={{ fontSize: 13.5, color: '#0f172a', display: 'block', marginBottom: 6 }}>
-                    Module {m.position}: {m.title} ({m.lectures.length} lectures)
-                  </strong>
-                  <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gap: 6 }}>
-                    {m.lectures.map((lec) => (
-                      <li
-                        key={lec.id}
-                        style={{
-                          padding: '8px 10px',
-                          borderRadius: 8,
-                          background: '#ffffff',
-                          border: '1px solid #e2e8f0',
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          alignItems: 'center',
-                          gap: 8,
-                          flexWrap: 'wrap',
-                          fontSize: 12.5,
-                        }}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 8 }}>
+                    <strong style={{ fontSize: 13.5, color: '#0f172a' }}>
+                      Module {m.position}: {m.title} ({m.lectures.length} lectures)
+                    </strong>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (editingModId === m.id) setEditingModId(null)
+                        else {
+                          setEditingModId(m.id)
+                          setEditModTitle(m.title)
+                        }
+                      }}
+                      style={{
+                        padding: '3px 9px',
+                        borderRadius: 6,
+                        border: '1px solid #cbd5e1',
+                        background: '#ffffff',
+                        color: '#334155',
+                        fontSize: 11,
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                      }}
+                    >
+                      {editingModId === m.id ? 'Close' : '✏️ Rename Module'}
+                    </button>
+                  </div>
+
+                  {editingModId === m.id ? (
+                    <form onSubmit={(e) => void handleSaveEditModule(e, m.id)} style={{ display: 'flex', gap: 8, marginBottom: 10 }}>
+                      <input
+                        value={editModTitle}
+                        onChange={(e) => setEditModTitle(e.target.value)}
+                        required
+                        style={{ ...inputStyle, flex: 1 }}
+                      />
+                      <button
+                        type="submit"
+                        style={{ padding: '6px 12px', borderRadius: 8, background: '#5142b5', color: '#ffffff', border: 'none', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}
                       >
-                        <span>
-                          <strong>{lec.position}. {lec.title}</strong> <span style={{ color: '#64748b' }}>({lec.nodeType})</span>
-                        </span>
-                        {currentCourse?.id ? (
-                          <label
-                            style={{
-                              padding: '3px 8px',
-                              borderRadius: 6,
-                              border: '1px solid #cbd5e1',
-                              background: '#f5f3ff',
-                              color: '#5142b5',
-                              fontSize: 11,
-                              fontWeight: 700,
-                              cursor: 'pointer',
-                            }}
-                          >
-                             Attach PDF/Slide
-                            <input
-                              type="file"
-                              accept=".pdf,.ppt,.pptx,.txt,.md"
-                              style={{ display: 'none' }}
-                              onChange={(e) =>void handleAttachFile(currentCourse.id!, lec.id, e.target.files?.[0] ?? null)}
-                            />
-                          </label>
-                        ) : null}
-                      </li>
-                    ))}
+                        Save
+                      </button>
+                    </form>
+                  ) : null}
+
+                  <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gap: 8 }}>
+                    {m.lectures.map((lec) => {
+                      const isEditing = editingLecId === lec.id
+                      return (
+                        <li
+                          key={lec.id}
+                          style={{
+                            padding: '10px 12px',
+                            borderRadius: 8,
+                            background: '#ffffff',
+                            border: '1px solid #e2e8f0',
+                            display: 'grid',
+                            gap: 8,
+                            fontSize: 12.5,
+                          }}
+                        >
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                            <div>
+                              <strong>{m.position}.{lec.position} {lec.title}</strong>{' '}
+                              <span style={{ color: '#64748b', fontSize: 11.5 }}>({lec.nodeType})</span>
+                              {lec.referenceUrl ? (
+                                <div style={{ fontSize: 11.5, color: '#047857', fontWeight: 600, marginTop: 2 }}>
+                                  🎬 Video/Link: {lec.referenceUrl}
+                                </div>
+                              ) : null}
+                              {lec.materials && lec.materials.length > 0 ? (
+                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 4 }}>
+                                  {lec.materials.map((mat) => (
+                                    <span
+                                      key={mat.id}
+                                      style={{
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                        gap: 5,
+                                        padding: '2px 8px',
+                                        borderRadius: 6,
+                                        background: '#f5f3ff',
+                                        border: '1px solid #ddd6fe',
+                                        color: '#5142b5',
+                                        fontSize: 11,
+                                        fontWeight: 700,
+                                      }}
+                                    >
+                                      <a href={`/api/v1/lms/materials/${mat.id}?download=1`} target="_blank" rel="noopener noreferrer" style={{ color: '#5142b5', textDecoration: 'none' }}>
+                                        📥 {mat.fileName} ({Math.max(1, Math.round(mat.byteSize / 1024))} KB)
+                                      </a>
+                                      {currentCourse?.id ? (
+                                        <button
+                                          type="button"
+                                          onClick={() => void handleDeleteMaterial(currentCourse.id!, mat.id, mat.fileName)}
+                                          style={{ border: 'none', background: 'transparent', color: '#b91c1c', fontWeight: 800, cursor: 'pointer', padding: 0 }}
+                                        >
+                                          ×
+                                        </button>
+                                      ) : null}
+                                    </span>
+                                  ))}
+                                </div>
+                              ) : null}
+                            </div>
+
+                            {currentCourse?.id ? (
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    if (isEditing) setEditingLecId(null)
+                                    else {
+                                      setEditingLecId(lec.id)
+                                      setEditLecTitle(lec.title)
+                                      setEditLecType(lec.nodeType)
+                                      setEditLecSummary(lec.summary ?? '')
+                                      setEditLecUrl(lec.referenceUrl ?? '')
+                                    }
+                                  }}
+                                  style={{
+                                    padding: '4px 9px',
+                                    borderRadius: 6,
+                                    border: '1px solid #cbd5e1',
+                                    background: '#ffffff',
+                                    color: '#334155',
+                                    fontSize: 11,
+                                    fontWeight: 600,
+                                    cursor: 'pointer',
+                                  }}
+                                >
+                                  {isEditing ? 'Close' : '✏️ Edit'}
+                                </button>
+                                <label
+                                  style={{
+                                    padding: '4px 10px',
+                                    borderRadius: 6,
+                                    border: '1px solid #5142b5',
+                                    background: '#5142b5',
+                                    color: '#ffffff',
+                                    fontSize: 11,
+                                    fontWeight: 700,
+                                    cursor: 'pointer',
+                                  }}
+                                >
+                                  📤 Upload Video / PDF / Slide
+                                  <input
+                                    type="file"
+                                    accept=".mp4,.webm,.mov,.pdf,.ppt,.pptx,.doc,.docx,.csv,.xlsx,.zip,.txt,.md,.png,.jpg,.webp"
+                                    style={{ display: 'none' }}
+                                    onChange={(e) => void handleAttachFile(currentCourse.id!, lec.id, e.target.files?.[0] ?? null)}
+                                  />
+                                </label>
+                                <button
+                                  type="button"
+                                  onClick={() => void handleDeleteLecture(lec.id, lec.title)}
+                                  style={{
+                                    padding: '4px 8px',
+                                    borderRadius: 6,
+                                    border: '1px solid #fecaca',
+                                    background: '#ffffff',
+                                    color: '#b91c1c',
+                                    fontSize: 11,
+                                    cursor: 'pointer',
+                                  }}
+                                >
+                                  Remove
+                                </button>
+                              </div>
+                            ) : null}
+                          </div>
+
+                          {isEditing ? (
+                            <form
+                              onSubmit={(e) => void handleSaveEditLecture(e, lec.id)}
+                              style={{
+                                marginTop: 6,
+                                paddingTop: 10,
+                                borderTop: '1px solid #e2e8f0',
+                                display: 'grid',
+                                gap: 8,
+                              }}
+                            >
+                              <div style={{ display: 'grid', gridTemplateColumns: '1fr 140px', gap: 8 }}>
+                                <input
+                                  value={editLecTitle}
+                                  onChange={(e) => setEditLecTitle(e.target.value)}
+                                  placeholder="Lecture title"
+                                  required
+                                  style={inputStyle}
+                                />
+                                <select
+                                  value={editLecType}
+                                  onChange={(e) => setEditLecType(e.target.value)}
+                                  style={inputStyle}
+                                >
+                                  <option value="NOTES">NOTES</option>
+                                  <option value="VIDEO">VIDEO</option>
+                                  <option value="LAB">LAB</option>
+                                  <option value="ASSIGNMENT">ASSIGNMENT</option>
+                                  <option value="PROJECT">PROJECT</option>
+                                </select>
+                              </div>
+                              <textarea
+                                rows={3}
+                                value={editLecSummary}
+                                onChange={(e) => setEditLecSummary(e.target.value)}
+                                placeholder="Written lesson notes / summary / instructions"
+                                style={inputStyle}
+                              />
+                              <input
+                                type="url"
+                                value={editLecUrl}
+                                onChange={(e) => setEditLecUrl(e.target.value)}
+                                placeholder="Video / YouTube / MP4 URL (optional, https://...)"
+                                style={inputStyle}
+                              />
+                              <div style={{ display: 'flex', gap: 8 }}>
+                                <button
+                                  type="submit"
+                                  style={{ padding: '6px 14px', borderRadius: 8, background: '#5142b5', color: '#ffffff', border: 'none', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}
+                                >
+                                  Save Lecture Changes
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => setEditingLecId(null)}
+                                  style={{ padding: '6px 12px', borderRadius: 8, background: '#f1f5f9', color: '#334155', border: '1px solid #cbd5e1', fontSize: 12, cursor: 'pointer' }}
+                                >
+                                  Cancel
+                                </button>
+                              </div>
+                            </form>
+                          ) : null}
+                        </li>
+                      )
+                    })}
                   </ul>
                 </div>
               ))}
