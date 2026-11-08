@@ -441,10 +441,18 @@ export default function LoginPage() {
 
       <main className="entry-main">
         <div className="entry-col">
-          <div style={{ textAlign: 'center', marginBottom: 14 }}>
-            <Link className="entry-mark" to="/" aria-label="Skylent home" style={{ margin: 0, display: "inline-flex", flexDirection: "column", alignItems: "center", gap: 4, textDecoration: "none" }}>
-              <img src="/skylent-logo-lockup.png" alt="Skylent — Learn by Doing. Not Just Watching." style={{ height: 48, width: "auto", maxWidth: "min(280px, 82vw)", objectFit: "contain", display: "block" }} />
-              <span style={{ position: "absolute", width: 1, height: 1, overflow: "hidden", clip: "rect(0 0 0 0)" }}>Skylent</span>
+          <div style={{ textAlign: 'center', marginBottom: 10 }}>
+            <Link className="entry-mark" to="/programmes" aria-label="Skylent home" style={{ margin: 0, display: "inline-flex", alignItems: "center", gap: 12, textDecoration: "none", textTransform: "none", letterSpacing: "normal" }}>
+              <img src="/skylent-ribbon-mark.png" alt="" aria-hidden="true" width={42} height={42} style={{ width: 42, height: 42, objectFit: "contain", display: "block", flexShrink: 0 }} />
+              <span style={{ width: 1.5, height: 34, background: "#1e1b4b", opacity: 0.85, flexShrink: 0 }} aria-hidden="true" />
+              <span style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", textAlign: "left" }}>
+                <span style={{ fontSize: 22, fontWeight: 700, letterSpacing: "0.06em", color: "#1e1b4b", lineHeight: 1.05 }}>
+                  SKYLENT<sup style={{ fontSize: 9, fontWeight: 700, letterSpacing: 0, marginLeft: 2 }}>TM</sup>
+                </span>
+                <span style={{ fontSize: 11, fontWeight: 600, color: "#312e81", letterSpacing: "-0.01em", lineHeight: 1.25, marginTop: 2 }}>
+                  <strong style={{ color: "#4338ca", fontWeight: 700 }}>Learn by Doing.</strong> Not Just Watching.
+                </span>
+              </span>
             </Link>
 
           </div>
@@ -628,7 +636,7 @@ export default function LoginPage() {
                     ) : null}
 
                     <div className="entry-field">
-                      <label htmlFor="otp-code">ENTER 6-DIGIT OTP SENT TO {otpEmail.toUpperCase()}</label>
+                      <label htmlFor="otp-code" style={{ textTransform: "none", letterSpacing: 0, fontSize: 13, color: "#334155" }}>Enter 6-digit code sent to <strong style={{ color: "#0f172a" }}>{otpEmail}</strong></label>
                       <input
                         id="otp-code"
                         type="text"

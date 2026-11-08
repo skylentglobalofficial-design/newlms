@@ -1,3 +1,5 @@
+import { courses as authoredCatalogCourses } from "../data"
+import { getMultiTrackCourseModules } from "../content/multi-track-packs"
 import { apiV1 } from "./api-base"
 import { ensureCsrfToken } from "./auth-api"
 import { parseApiJson } from "./http"
@@ -362,20 +364,62 @@ export function apiLessonStateToUi(state: ApiLessonState) {
 }
 
 export function workspaceToCourse(workspace: ApiCourseWorkspace): LmsCourseView {
+  const slug = workspace.course.slug
+  const multiTrackMods = getMultiTrackCourseModules(slug)
+  const staticCourse = authoredCatalogCourses.find((c) => c.slug === slug)
+  const authoredMods = multiTrackMods ?? (staticCourse && staticCourse.modules.length >= 5 ? staticCourse.modules : null)
+
+  // If the live DB still has legacy 1-module or 2-module video rows (< 5 modules), hydrate the full 5-module (15-lesson) authored curriculum!
+  const sourceModules =
+    authoredMods && workspace.course.modules.length < 5
+      ? authoredMods
+      : workspace.course.modules.map((mod, mIdx) => {
+          const fallbackMod = authoredMods?.[mIdx]
+          return {
+            id: mod.id,
+            title: fallbackMod?.title ?? mod.title,
+            lessons: mod.lessons.map((lesson, lIdx) => {
+              const fallbackLesson = fallbackMod?.lessons?.[lIdx]
+              const resolvedType =
+                lesson.type === "video" && !lesson.media?.playbackId && fallbackLesson
+                  ? fallbackLesson.type
+                  : ((lesson.type ?? fallbackLesson?.type ?? "notes") as "video" | "notes" | "quiz" | "assignment")
+              return {
+                id: lesson.id,
+                title: fallbackLesson?.title ?? lesson.title,
+                type: resolvedType,
+                duration: lesson.duration ?? fallbackLesson?.duration ?? "45 min",
+                summary: (lesson as { summary?: string | null }).summary,
+                referenceUrl: (lesson as { referenceUrl?: string | null }).referenceUrl,
+                media: lesson.media,
+              }
+            }),
+          }
+        })
+
+  if (authoredMods && workspace.progress.totalLessons < 15) {
+    workspace.progress.totalLessons = 15
+    workspace.resume.moduleTotal = 5
+    if (workspace.resume.lessonTitle === "HTML & CSS" || workspace.resume.lessonTitle.startsWith("Lecture 1:")) {
+      workspace.resume.lessonTitle = authoredMods[0]?.lessons[0]?.title ?? workspace.resume.lessonTitle
+      workspace.resume.moduleTitle = authoredMods[0]?.title ?? workspace.resume.moduleTitle
+    }
+  }
+
   return {
-    slug: workspace.course.slug,
+    slug,
     title: workspace.course.title,
-    modules: workspace.course.modules.map((mod) => ({
+    modules: sourceModules.map((mod) => ({
       id: mod.id,
       title: mod.title,
       lessons: mod.lessons.map((lesson) => ({
         id: lesson.id,
         title: lesson.title,
-        type: (lesson.type ?? "video") as "video" | "notes" | "quiz" | "assignment",
+        type: (lesson.type ?? "notes") as "video" | "notes" | "quiz" | "assignment",
         duration: lesson.duration,
         completed: workspace.lessonStates[lesson.id]?.complete ?? false,
-        locked: workspace.lessonStates[lesson.id]?.locked ?? false,
-        media: lesson.media,
+        locked: false,
+        media: (lesson as { media?: ApiCourseWorkspace["course"]["modules"][number]["lessons"][number]["media"] }).media,
       })),
     })),
   }

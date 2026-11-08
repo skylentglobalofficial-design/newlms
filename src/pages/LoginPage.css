@@ -299,89 +299,93 @@ html[data-native-app="true"] .entry-top {
   }
 }
 
-/* ── V81 EdTech Benchmark Login & Mobile APK Polish ── */
+/* ── V98 Mobile Web & APK Compact One-Screen Login Polish (Zero Bottom Clipping) ── */
 html[data-native-app="true"] .entry-top {
-  display: none !important;
+  display: flex !important;
+  min-height: 38px !important;
+  padding: 6px 14px 0 !important;
 }
 
-html[data-native-app="true"] .entry-main {
-  padding-top: clamp(18px, 4vh, 32px);
-}
-
-.entry-trust-pills {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 6px;
-  margin-top: 10px;
-}
-
-.entry-trust-pills span {
-  display: inline-flex;
-  align-items: center;
-  padding: 4px 10px;
-  border-radius: 999px;
-  background: #ede9fe;
-  border: 1px solid #ddd6fe;
-  color: #4c1d95;
-  font-size: 11px;
-  font-weight: 700;
-}
-
-.entry-mode-tabs {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 6px;
-  padding: 4px;
-  border-radius: 10px;
-  background: #f1f5f9;
-  border: 1px solid #e2e8f0;
-  margin-bottom: 16px;
-}
-
-.entry-mode-tab {
-  padding: 8px 12px;
-  border-radius: 7px;
-  border: none;
-  background: transparent;
-  color: #475569;
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 150ms ease;
-}
-
-.entry-mode-tab.is-active {
-  background: #ffffff;
-  color: #0f172a;
-  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
-}
-
-@media (max-width: 390px), (max-height: 680px) {
-  .entry-pane {
-    padding: 18px 14px !important;
+@media (max-width: 768px) {
+  .entry-top {
+    min-height: 40px !important;
+    padding: 6px 14px 0 !important;
   }
-  .entry-title {
-    font-size: 21px !important;
-  }
-  .entry-trust-pills span {
-    font-size: 10px;
-    padding: 3px 8px;
-  }
-}
 
-/* ── V93 Clean Auth Card Layout (Zero Top Clipping, Subtle Hairline Border) ── */
-.entry-main {
-  padding-top: 24px !important;
-  padding-bottom: 32px !important;
-  align-items: flex-start !important;
-}
-@media (min-height: 760px) {
+  .entry-back {
+    min-height: 34px !important;
+    font-size: 12.5px !important;
+  }
+
   .entry-main {
-    align-items: center !important;
+    padding: 4px 12px calc(28px + env(safe-area-inset-bottom, 14px)) !important;
   }
-}
-.entry-frame {
-  border-top: 1px solid #e2e8f0 !important;
-  box-shadow: 0 12px 32px -12px rgba(15, 23, 42, 0.08) !important;
+
+  .entry-pane {
+    padding: 16px 16px !important;
+    border-radius: 14px !important;
+  }
+
+  .entry-mode-tabs {
+    margin-bottom: 12px !important;
+  }
+
+  .entry-mode-tab {
+    min-height: 36px !important;
+    font-size: 13px !important;
+  }
+
+  .entry-head {
+    margin-bottom: 10px !important;
+  }
+
+  .entry-title {
+    font-size: 20px !important;
+    margin-bottom: 3px !important;
+  }
+
+  .entry-lead {
+    font-size: 12.5px !important;
+    line-height: 1.4 !important;
+  }
+
+  .entry-google-btn {
+    min-height: 42px !important;
+    font-size: 13.5px !important;
+  }
+
+  .entry-divider {
+    margin: 10px 0 !important;
+  }
+
+  .entry-auth-method-toggle {
+    margin-bottom: 10px !important;
+  }
+
+  .entry-field {
+    margin-bottom: 10px !important;
+  }
+
+  .entry-input {
+    min-height: 40px !important;
+    padding: 8px 12px !important;
+    font-size: 14px !important;
+  }
+
+  .entry-submit {
+    min-height: 44px !important;
+    margin-top: 4px !important;
+  }
+
+  .entry-foot {
+    margin-top: 10px !important;
+    padding-top: 10px !important;
+  }
+
+  .entry-note {
+    margin: 10px 0 6px !important;
+    padding-bottom: max(env(safe-area-inset-bottom, 10px), 10px) !important;
+    font-size: 11.5px !important;
+    line-height: 1.4 !important;
+  }
 }

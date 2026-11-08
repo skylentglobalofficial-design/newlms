@@ -136,7 +136,7 @@ export function AuthDashboardShell({
   const railContent = (
     <>
       <Link to={brandHref} className="auth-shell-brand" onClick={() =>setMobileOpen(false)} style={{ display: "flex", alignItems: "center", gap: 10 }}>
-        <img src="/icon-192.png" alt="" aria-hidden="true" width={28} height={28} style={{ width: 28, height: 28, borderRadius: 7, objectFit: "contain", flexShrink: 0 }} />
+        <span style={{ width: 30, height: 30, borderRadius: 8, background: "#ffffff", display: "inline-flex", alignItems: "center", justifyContent: "center", padding: 3, boxShadow: "0 2px 8px rgba(0,0,0,0.22)", flexShrink: 0 }}><img src="/skylent-ribbon-mark.png" alt="" aria-hidden="true" width={22} height={22} style={{ width: 22, height: 22, objectFit: "contain", display: "block" }} /></span>
         <span className="auth-shell-wordmark">Skylent</span>
       </Link>
 
@@ -262,7 +262,7 @@ export function AuthDashboardShell({
             </svg>
           </button>
           <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
-            <img src="/icon-192.png" alt="" aria-hidden="true" width={24} height={24} style={{ width: 24, height: 24, borderRadius: 6, objectFit: "contain", flexShrink: 0 }} />
+            <span style={{ width: 28, height: 28, borderRadius: 7, background: "#ffffff", display: "inline-flex", alignItems: "center", justifyContent: "center", padding: 3, boxShadow: "0 2px 6px rgba(0,0,0,0.2)", flexShrink: 0 }}><img src="/skylent-ribbon-mark.png" alt="" aria-hidden="true" width={20} height={20} style={{ width: 20, height: 20, objectFit: "contain", display: "block" }} /></span>
             <span className="auth-shell-wordmark">Skylent</span>
           </span>
           <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>

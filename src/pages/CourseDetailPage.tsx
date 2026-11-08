@@ -358,7 +358,7 @@ export default function CourseDetailPage() {
                       </button>
                       <Link
                         className="cat-btn cat-btn-ghost cat-btn-lg"
-                        to="/labs"
+                        to={`/labs?track=${encodeURIComponent(course.slug)}`}
                         style={{ borderColor: "#5142b5", color: "#5142b5", fontWeight: 700 }}
                       >
                          Try Guest Lab Free (No Login)

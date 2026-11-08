@@ -148,7 +148,7 @@ export function LessonContentView({
   const material = getCourseLessonContent(courseSlug, lesson.id)
   const evidence = getCareerEvidence(courseSlug, lesson.id)
 
-  if (lesson.type === 'video') {
+  if (lesson.type === 'video' && lessonMedia && (lessonMedia.status === 'ready' || lessonMedia.playbackUrl || lessonMedia.embedUrl)) {
     return (
       <div className="lms-lesson-video lms-activity-surface lms-activity-video">
         <LessonVideoPlayer
@@ -159,6 +159,11 @@ export function LessonContentView({
           accent={accent}
           onMarkWatched={lessonState.complete ? undefined : () => onComplete()}
         />
+        {material?.body ? (
+          <div style={{ marginTop: 20 }}>
+            <LessonDocument markdown={material.body} accent={accent} skipHeading={lesson.title} />
+          </div>
+        ) : null}
         {(lessonState.complete || lessonState.videoWatched) && (
           <p className="os-status is-done">Lesson complete</p>
         )}
@@ -166,7 +171,7 @@ export function LessonContentView({
     )
   }
 
-  if (lesson.type === 'notes') {
+  if (lesson.type === 'notes' || lesson.type === 'video') {
     const customSummary = (lesson as { summary?: string | null }).summary
     const customRefUrl = (lesson as { referenceUrl?: string | null }).referenceUrl
     const fallback = `## ${lesson.title}\n\n${customSummary || `Complete the reading and applied exercises for ${lesson.title} to unlock the next milestone.`}`

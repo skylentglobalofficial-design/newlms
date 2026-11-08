@@ -645,3 +645,19 @@ html[data-native-insets="android"] {
   --sk-safe-top: 0px !important;
   --sk-safe-bottom: 0px !important;
 }
+
+/* ── V99 Solid Opaque Dashboard Bottom Tabbar & Safe Content Clearance ── */
+@media (max-width: 900px) {
+  .auth-shell-mobile-tabs {
+    background: #ffffff !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border-top: 1px solid #e2e8f0 !important;
+    box-shadow: 0 -4px 16px rgba(15, 23, 42, 0.06) !important;
+    padding-bottom: max(env(safe-area-inset-bottom, 0px), 8px) !important;
+    z-index: 9990 !important;
+  }
+  .auth-shell-content {
+    padding-bottom: calc(96px + env(safe-area-inset-bottom, 16px)) !important;
+  }
+}

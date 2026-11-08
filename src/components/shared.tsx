@@ -837,7 +837,7 @@ export function Nav() {
     <nav ref={navRef} className="skylent-site-nav skn" aria-label="Primary">
       <div className="skn__bar">
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          {location.pathname !== '/' ? (
+          {!['/', '/programmes', '/events', '/workshops', '/labs'].includes(location.pathname) ? (
             <button
               type="button"
               className="skn__back-btn"

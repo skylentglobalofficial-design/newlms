@@ -103,7 +103,7 @@ export default function CareerRiseCard() {
         </span>
       </header>
       <p className="sh-empty" style={{ paddingBottom: 8 }}>
-        Track your module milestones to unlock AI &amp; Faculty mock interview practice and verified portfolio linking.
+        Track your module milestones to unlock 1:1 Faculty mock interview practice and verified portfolio linking.
       </p>
       {error ? <p className="sh-empty">{error}</p> : null}
       {rows == null ? (
@@ -114,7 +114,16 @@ export default function CareerRiseCard() {
         <p className="sh-empty">Enrol in a course to track your mock interview and portfolio readiness.</p>
       ) : (
         <ul className="sh-rows">
-          {rows.map((row) => (
+          {Array.from(
+            rows.reduce((acc, r) => {
+              const key = r.title.trim().toLowerCase()
+              const prev = acc.get(key)
+              if (!prev || r.percent > prev.percent || (r.kind === "course" && prev.kind === "program")) {
+                acc.set(key, { ...r, totalModules: Math.max(r.totalModules || 5, 5) })
+              }
+              return acc
+            }, new Map<string, RiseRow>()).values()
+          ).map((row) => (
             <li key={`${row.kind}:${row.slug}`} className="sh-row">
               <div className="sh-row-main">
                 <strong>{row.title}</strong>

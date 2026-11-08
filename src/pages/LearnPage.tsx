@@ -605,7 +605,7 @@ export default function LearnPage() {
   let primaryAction: { label: string; onClick: () => void; busy?: boolean } | undefined
   let navHint: string | undefined
   if (selectedLesson && !selectedState.locked) {
-    if (selectedLesson.type === 'notes' && !selectedState.complete) {
+    if ((selectedLesson.type === 'notes' || selectedLesson.type === 'video') && !selectedState.complete) {
       primaryAction = {
         label: next ? 'Complete and continue' : 'Complete lesson',
         onClick: () => { void handleCompleteAndContinue() },
@@ -677,6 +677,7 @@ export default function LearnPage() {
             </svg>
             <span>Dashboard</span>
           </Link>
+          {!compact ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
             <strong style={{ fontSize: 15, fontWeight: 700, color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
               {readyCourse.title}
@@ -687,6 +688,7 @@ export default function LearnPage() {
               </span>
             ) : null}
           </div>
+          ) : null}
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>

@@ -232,7 +232,7 @@ public class MainActivity extends BridgeActivity {
                 );
                 Insets ime = windowInsets.getInsets(WindowInsetsCompat.Type.ime());
                 int topInset = sysBars.top > 0 ? sysBars.top : dpToPx(24);
-                int bottomInset = Math.max(sysBars.bottom, ime.bottom);
+                int bottomInset = ime.bottom > 0 ? 0 : Math.max(sysBars.bottom, dpToPx(10));
                 v.setPadding(sysBars.left, topInset, sysBars.right, bottomInset);
                 return WindowInsetsCompat.CONSUMED;
             });
@@ -258,6 +258,16 @@ public class MainActivity extends BridgeActivity {
                 @android.webkit.JavascriptInterface
                 public void exitApp() {
                     runOnUiThread(() -> finish());
+                }
+                @android.webkit.JavascriptInterface
+                public void setScreenshotProtection(boolean enabled) {
+                    runOnUiThread(() -> {
+                        if (enabled) {
+                            getWindow().addFlags(android.view.WindowManager.LayoutParams.FLAG_SECURE);
+                        } else {
+                            getWindow().clearFlags(android.view.WindowManager.LayoutParams.FLAG_SECURE);
+                        }
+                    });
                 }
             }, "SkylentNativeBridge");
             settings.setStandardFontFamily("sans-serif");

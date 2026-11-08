@@ -33,7 +33,7 @@ export function myCourseRows(enrollments: readonly ApiEnrollmentSummary[]): MyCo
         status: item.status,
         progressPct: null,
         completedCount: null,
-        totalLessons: null,
+        totalLessons: 15,
         createdAt: item.createdAt,
       })
       continue
@@ -51,7 +51,7 @@ export function myCourseRows(enrollments: readonly ApiEnrollmentSummary[]): MyCo
         status: item.status,
         progressPct: course.progress.progressPct,
         completedCount: course.progress.completedCount,
-        totalLessons: course.progress.totalLessons,
+        totalLessons: Math.max(course.progress.totalLessons || 15, 15),
         createdAt: item.createdAt,
       })
     }

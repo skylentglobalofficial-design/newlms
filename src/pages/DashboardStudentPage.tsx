@@ -1126,6 +1126,7 @@ export default function DashboardStudentPage() {
     onNavChange: (id: string) => {
       setCheckoutTarget(null)
       setSelectedExploreDetail(null)
+      if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior })
       if (id === 'dashboard') setStudentTab('overview')
       else if (id === 'my-courses' || id === 'courses') setStudentTab('courses')
       else if (id === 'projects') setStudentTab('projects')
@@ -2135,7 +2136,7 @@ export default function DashboardStudentPage() {
                   fontWeight: 700,
                 }}
               >
-                {streak.currentStreakDays} Days Streak
+                {streak.currentStreakDays} {streak.currentStreakDays === 1 ? 'Day' : 'Days'} Streak
               </span>
               <span style={{ fontSize: 13.5, color: '#334155', fontWeight: 600 }}>
                 Welcome back, <strong style={{ color: '#0f172a' }}>{user.name}</strong>
@@ -2211,7 +2212,7 @@ export default function DashboardStudentPage() {
                 />
                 <div>
                   <span style={{ fontSize: 12, fontWeight: 700, color: '#5142b5', display: 'block', marginBottom: 2 }}>
-                    {course.title} · Module {resume.moduleIndex} of {resume.moduleTotal}
+                    {course.title} · Module {resume.moduleIndex} of {Math.max(resume.moduleTotal, 5)}
                   </span>
                   <h2 id="sh-continue" style={{ margin: '0 0 6px', fontSize: 19, color: '#0f172a', fontFamily: 'var(--font-display)' }}>
                     {allComplete
@@ -2400,7 +2401,7 @@ export default function DashboardStudentPage() {
                 Target Role: <span style={{ color: "#5142b5" }}>{targetCareerRole}</span>
               </h2>
               <p style={{ margin: 0, fontSize: 12.5, color: "#475569" }}>
-                {goalSavedToast || "Select your target career track to tailor your recommended browser labs, Socratic prompts, and mock interview milestones."}
+                {goalSavedToast || "Select your target career track to tailor your recommended browser labs, guided study prompts, and mock interview milestones."}
               </p>
             </div>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 6, alignItems: "center" }}>
@@ -2456,15 +2457,9 @@ export default function DashboardStudentPage() {
           </section>
         ) : null}
 
-        {/* Main 2-Column Overview Grid */}
+        {/* Clean Static Home Overview Grid (No duplicate Courses/Projects clutter!) */}
         {studentTab === 'overview' ? (
           <div className="sh-grid">
-            <div className="sh-stack">
-              {myLearning}
-              {projectsSection}
-              <CareerRiseCard />
-            </div>
-
             <div className="sh-stack">
               <section className="sh-card sh-ai sh-royal-ai" aria-labelledby="sh-ai">
                 <header className="sh-ai-head">
@@ -2486,23 +2481,22 @@ export default function DashboardStudentPage() {
                   </Link>
                 </div>
               </section>
+            </div>
 
+            <div className="sh-stack">
               {upcomingEventsWidget}
-              {evidence}
             </div>
           </div>
         ) : null}
 
-        {/* My Courses View */}
+        {/* Dedicated My Courses View (Static App Tab — Only Enrolled Courses & Certificates) */}
         {studentTab === 'courses' ? (
           <div className="sh-grid">
             <div className="sh-stack">
               {myLearning}
-              <CareerRiseCard />
             </div>
             <div className="sh-stack">
-              {upcomingEventsWidget}
-              {projectsSection}
+              {evidence}
             </div>
           </div>
         ) : null}

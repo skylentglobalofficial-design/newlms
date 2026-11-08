@@ -1424,30 +1424,126 @@ body, h1, h2, h3, h4, h5, h6, p, span, a, li, td, th, label, button, input, sele
 }
 
 
-/* ── V88 Native Android Exact Inset Guard & Single Sleek Mobile App Bar ── */
+/* ── V98 Mobile Web & APK Header, Zero-Gap Locator & Solid Bottom Tabbar ── */
 html[data-native-insets="android"] .skylent-site-nav.skn,
 html[data-native-app="true"] .skylent-site-nav.skn {
   padding-top: 0px !important;
 }
 
-html[data-native-insets="android"] .skylent-mobile-tabbar {
-  height: 54px !important;
-  padding: 4px 6px 4px !important;
+@media (max-width: 900px) {
+  .skylent-public-canvas .sk-shell-locator {
+    padding-top: 52px !important;
+  }
 }
 
 @media (max-width: 768px) {
+  /* Never show duplicate Get Started button in mobile header — keeps [Ribbon S + SKYLENT] and [Sign in] spacious */
   .skylent-site-nav .skn__cta {
+    display: none !important;
+  }
+
+  .skylent-site-nav .skn__bar {
+    height: 52px !important;
+    min-height: 52px !important;
+    padding-inline: 14px !important;
+    gap: 8px !important;
+  }
+
+  .skylent-site-nav .skn__mark {
+    font-size: 16.5px !important;
+    letter-spacing: 0.1em !important;
+    gap: 8px !important;
+  }
+
+  .skylent-site-nav .skn__signin {
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
     min-height: 34px !important;
-    padding: 0 12px !important;
-    font-size: 12.5px !important;
-    font-weight: 700 !important;
+    padding: 0 14px !important;
     border-radius: 999px !important;
+    background: #5142b5 !important;
+    border: 1px solid #5142b5 !important;
+    color: #ffffff !important;
+    font-size: 12.5px !important;
+    font-weight: 600 !important;
+    white-space: nowrap !important;
+  }
+
+  /* Solid opaque bottom tabbar so background text never bleeds through */
+  .skylent-mobile-tabbar {
+    display: grid !important;
+    height: auto !important;
+    min-height: 58px !important;
+    padding: 5px 6px max(env(safe-area-inset-bottom, 0px), 8px) !important;
+    background: #ffffff !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border-top: 1px solid #e2e8f0 !important;
+    box-shadow: 0 -4px 16px rgba(15, 23, 42, 0.06) !important;
+    z-index: 9990 !important;
+  }
+
+  .skylent-mobile-tabbar__item {
+    min-height: 44px !important;
+    font-size: 10.5px !important;
+    gap: 3px !important;
+  }
+
+  /* Compact /programmes hero on Mobile Web & APK so Search & Course Cards appear above the fold */
+  .pgx .pgx-intro {
+    padding: 12px 0 14px !important;
+  }
+
+  .pgx .pgx-intro__split {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  .pgx .pgx-royal-hero-card {
+    display: none !important;
+  }
+
+  .pgx .pgx-eyebrow {
+    margin: 0 0 4px !important;
+    font-size: 11px !important;
+  }
+
+  .pgx .pgx-intro h1 {
+    font-size: clamp(21px, 5.6vw, 25px) !important;
+    line-height: 1.18 !important;
+  }
+
+  .pgx .pgx-lede {
+    margin: 6px 0 0 !important;
+    font-size: 13.5px !important;
+    line-height: 1.45 !important;
+  }
+
+  .pgx .pgx-intro__actions {
+    margin-top: 10px !important;
+    gap: 8px !important;
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+  }
+
+  .pgx .pgx-intro__actions .sk-btn {
+    min-height: 36px !important;
+    padding: 0 12px !important;
+    font-size: 12px !important;
+    width: auto !important;
+    flex: 1 1 auto !important;
+  }
+
+  .pgx .pgx-tools {
+    padding: 10px 0 6px !important;
+  }
+
+  .pgx .pgx-section {
+    padding-top: 14px !important;
   }
 }
-
 
 /* ── V90 Unified EdTech Visual Consistency (One Brand Surface: Crisp White + Slate Ink + Indigo Accent) ── */
 .hx-royal-card,

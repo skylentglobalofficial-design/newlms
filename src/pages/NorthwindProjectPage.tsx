@@ -9,6 +9,7 @@ import {
   attachProjectEvidence,
   completeProjectTask,
   ensureLearnerProject,
+  getCachedProjectWorkspace,
   learnerProjectPath,
   projectStatusLabel,
   saveProject,
@@ -45,13 +46,14 @@ export default function LearnerProjectPage() {
   const { courseSlug, projectType } = useParams<{ courseSlug: string; projectType: string }>()
   const [searchParams] = useSearchParams()
   const requestedTask = searchParams.get("task")
-  const [project, setProject] = useState<ProjectWorkspace | null>(null)
+  const [project, setProject] = useState<ProjectWorkspace | null>(() => (projectType ? getCachedProjectWorkspace(projectType) : null))
   const [selectedKey, setSelectedKey] = useState<string | null>(null)
   const [finding, setFinding] = useState("")
   const [whyItMatters, setWhyItMatters] = useState("")
   const [recommendation, setRecommendation] = useState("")
   const [attachId, setAttachId] = useState("")
-  const [status, setStatus] = useState<"loading" | "ready" | "error" | "forbidden" | "signin">("loading")
+  const [status, setStatus] = useState<"loading" | "ready" | "error" | "forbidden" | "signin">(() => (projectType && getCachedProjectWorkspace(projectType) ? "ready" : "loading"))
+  const [studioTab, setStudioTab] = useState<"lab" | "milestones" | "submit">("lab")
   const [attempt, setAttempt] = useState(0)
   const [busy, setBusy] = useState<"save" | "task" | "attach" | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -69,7 +71,8 @@ export default function LearnerProjectPage() {
 
   useEffect(() => {
     const controller = new AbortController()
-    setStatus("loading")
+    const cached = projectType ? getCachedProjectWorkspace(projectType) : null
+    if (!cached) setStatus("loading")
     setError(null)
     if (!courseSlug || !projectType) {
       setStatus("error")
@@ -434,8 +437,53 @@ export default function LearnerProjectPage() {
           </div>
         </section>
 
-        {/* Embedded Interactive Case Data / SQL / Code Workbench right inside the Project Studio */}
-        {showCaseData ? (
+        {/* Static 3-Tab Studio Switcher (Zero Vertical Clutter on Mobile & Desktop) */}
+        <div
+          role="tablist"
+          aria-label="Project Studio Workspace Tabs"
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(3, 1fr)",
+            gap: 6,
+            padding: 5,
+            borderRadius: 12,
+            background: "#f1f5f9",
+            border: "1px solid #e2e8f0",
+          }}
+        >
+          {[
+            { id: "lab" as const, label: "1. Case Brief & Lab" },
+            { id: "milestones" as const, label: `2. Milestones (${project.progress.complete}/${project.progress.total})` },
+            { id: "submit" as const, label: "3. Submit Capstone" },
+          ].map((tab) => {
+            const active = studioTab === tab.id
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                role="tab"
+                aria-selected={active}
+                onClick={() => setStudioTab(tab.id)}
+                style={{
+                  padding: "9px 8px",
+                  borderRadius: 8,
+                  border: active ? "1px solid #cbd5e1" : "none",
+                  background: active ? "#ffffff" : "transparent",
+                  color: active ? "#5142b5" : "#475569",
+                  fontSize: 12.5,
+                  fontWeight: 600,
+                  cursor: "pointer",
+                  boxShadow: active ? "0 1px 3px rgba(15,23,42,0.08)" : "none",
+                }}
+              >
+                {tab.label}
+              </button>
+            )
+          })}
+        </div>
+
+        {/* Tab 1: Embedded Interactive Case Data / SQL / Code Workbench */}
+        {studioTab === "lab" && showCaseData ? (
           <section
             ref={workbenchRef}
             id="project-studio-workbench"
@@ -454,17 +502,17 @@ export default function LearnerProjectPage() {
           </section>
         ) : null}
 
-        {/* Clean 2-Column Guided Capstone Builder: Left = 6 Milestones & Active Task | Right = Deliverable Submission Form */}
+        {/* Tab 2 & Tab 3 Focused Views */}
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 360px), 1fr))",
+            gridTemplateColumns: "1fr",
             gap: 20,
             alignItems: "start",
           }}
         >
-          {/* Left Column: 6 Project Milestones + Active Milestone Detail */}
-          <div style={{ display: "grid", gap: 16 }}>
+          {/* Tab 2: 6 Project Milestones + Active Milestone Detail */}
+          <div style={{ display: studioTab === "milestones" ? "grid" : "none", gap: 16 }}>
             <section
               style={{
                 background: "#ffffff",
@@ -576,6 +624,7 @@ export default function LearnerProjectPage() {
                     className="os-btn os-btn-ghost"
                     style={{ minHeight: 38, fontSize: 13 }}
                     onClick={() => {
+                      setStudioTab("lab")
                       setShowCaseData(true)
                       window.setTimeout(() => {
                         workbenchRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })
@@ -646,14 +695,14 @@ export default function LearnerProjectPage() {
             ) : null}
           </div>
 
-          {/* Right Column: Deliverable Executive Write-Up Form */}
+          {/* Tab 3: Deliverable Executive Write-Up Form */}
           <section
             style={{
               background: "#ffffff",
               border: "1px solid #e2e8f0",
               borderRadius: 16,
               padding: "20px 22px",
-              display: "grid",
+              display: studioTab === "submit" ? "grid" : "none",
               gap: 12,
             }}
           >

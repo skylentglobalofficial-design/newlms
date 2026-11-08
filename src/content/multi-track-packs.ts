@@ -685,3 +685,34 @@ export function getMultiTrackQuiz(courseSlug: string, lessonId: string): DaQuizB
     ],
   }
 }
+
+
+export function getMultiTrackCourseModules(courseSlug: string) {
+  if (!isMultiTrackAuthoredCourse(courseSlug)) return null
+  const spec = TRACK_SPECS[courseSlug]
+  const modules: Array<{
+    id: string
+    title: string
+    lessons: Array<{
+      id: string
+      title: string
+      type: "notes" | "quiz" | "assignment"
+      duration: string
+    }>
+  }> = []
+  for (let i = 0; i < 5; i++) {
+    const slice = spec.lessons.slice(i * 3, i * 3 + 3)
+    if (slice.length === 0) continue
+    modules.push({
+      id: `m${i + 1}`,
+      title: slice[0].moduleTitle,
+      lessons: slice.map((l) => ({
+        id: l.id,
+        title: l.title,
+        type: l.kind === "quiz" ? "quiz" : l.kind === "assignment" || l.kind === "capstone" ? "assignment" : "notes",
+        duration: l.kind === "quiz" ? "20 min" : l.kind === "assignment" ? "3 hr" : l.kind === "capstone" ? "6 hr" : "45 min",
+      })),
+    })
+  }
+  return modules
+}

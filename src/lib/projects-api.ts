@@ -148,6 +148,30 @@ export async function listLearnerProjects(signal?: AbortSignal): Promise<Project
   return parsed.data
 }
 
+const memProjectCache = new Map<string, ProjectWorkspace>()
+export function getCachedProjectWorkspace(projectType: string): ProjectWorkspace | null {
+  if (memProjectCache.has(projectType)) return memProjectCache.get(projectType)!
+  if (typeof window !== "undefined") {
+    try {
+      const raw = window.sessionStorage.getItem(`skylent:proj:${projectType}`)
+      if (raw) {
+        const parsed = JSON.parse(raw) as ProjectWorkspace
+        memProjectCache.set(projectType, parsed)
+        return parsed
+      }
+    } catch {}
+  }
+  return null
+}
+function saveCachedProjectWorkspace(projectType: string, ws: ProjectWorkspace) {
+  memProjectCache.set(projectType, ws)
+  if (typeof window !== "undefined") {
+    try {
+      window.sessionStorage.setItem(`skylent:proj:${projectType}`, JSON.stringify(ws))
+    } catch {}
+  }
+}
+
 export async function ensureLearnerProject(projectType: string, signal?: AbortSignal): Promise<ProjectWorkspace> {
   const token = await ensureCsrfToken()
   const response = await fetch(`${API_BASE}/lms/projects`, {
@@ -160,7 +184,9 @@ export async function ensureLearnerProject(projectType: string, signal?: AbortSi
     },
     body: JSON.stringify({ projectType }),
   })
-  return readProject(response)
+  const project = await readProject(response)
+  saveCachedProjectWorkspace(projectType, project)
+  return project
 }
 
 export async function ensureNorthwindProject(signal?: AbortSignal): Promise<ProjectWorkspace> {
