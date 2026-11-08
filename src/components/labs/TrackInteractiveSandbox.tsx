@@ -85,9 +85,73 @@ const NORTHWIND_PRESET: SandboxPreset = {
   },
 }
 
+const HARBOR_DESK_PRESET: SandboxPreset = {
+  badge: "Interactive Harbor Desk PRD & Store Exception Triage Studio",
+  title: "Harbor Retail Store Exception & 6-Week Engineering Bet Validator",
+  subtitle: "Filter 18 store-manager interviews across 12 stores, isolate the delivery-exception root cause, and validate a 2-engineer, 6-week PRD scope.",
+  sampleLabel: "PRD scope & exception filter config (JSON)",
+  defaultInput: JSON.stringify(
+    {
+      targetBottleneck: "delivery_exceptions_without_written_trail",
+      affectedStores: 12,
+      interviewsReviewed: 18,
+      engineeringHeadcount: 2,
+      sprintWeeks: 6,
+      chosenBet: "Shared Store Exception Log with 1-Tap Photo + SKU Receipt",
+      nonGoals: ["Full ERP replacement", "Automated supplier ordering"],
+    },
+    null,
+    2,
+  ),
+  evaluate(input: string) {
+    try {
+      const cfg = JSON.parse(input) as Record<string, unknown>
+      const eng = Number(cfg.engineeringHeadcount ?? 0)
+      const weeks = Number(cfg.sprintWeeks ?? 0)
+      const nonGoals = Array.isArray(cfg.nonGoals) ? cfg.nonGoals : []
+      const withinConstraint = eng > 0 && eng <= 2 && weeks > 0 && weeks <= 6
+      const hasNonGoals = nonGoals.length >= 1
+      const diagnostics = [
+        withinConstraint
+          ? `✓ Scope respects engineering constraint (${eng} engineers × ${weeks} weeks).`
+          : `✗ Scope exceeds Harbor Retail constraint (must fit <= 2 engineers and <= 6 weeks, got ${eng} eng / ${weeks} wks).`,
+        hasNonGoals
+          ? `✓ Explicit non-goals defined (${nonGoals.length} out-of-scope items locked).`
+          : "✗ PRD is missing explicit non-goals to prevent scope creep.",
+        "✓ Root cause isolated: 68% of weekend escalations stem from unlogged delivery discrepancies across 12 stores.",
+      ]
+      return {
+        passed: withinConstraint && hasNonGoals,
+        headline:
+          withinConstraint && hasNonGoals
+            ? "PRD scope validated: fits 2-engineer, 6-week constraint with clear non-goals."
+            : "PRD scope violates capacity constraint or lacks non-goal boundaries.",
+        metrics: [
+          { label: "Stores Audited", value: "12 Stores" },
+          { label: "Team Constraint", value: `${eng} Eng · ${weeks} Wks` },
+          { label: "Exception Coverage", value: "68% Weekend Drops" },
+        ],
+        diagnostics,
+      }
+    } catch {
+      return {
+        passed: false,
+        headline: "Invalid JSON PRD configuration. Check syntax and try again.",
+        metrics: [],
+        diagnostics: ["Could not parse JSON input."],
+      }
+    }
+  },
+}
+
 const SANDBOX_PRESETS: Record<string, SandboxPreset> = {
   northwind: NORTHWIND_PRESET,
   "northwind-commercial-review": NORTHWIND_PRESET,
+  "northwind-margin-audit": NORTHWIND_PRESET,
+  "data-analytics": NORTHWIND_PRESET,
+  "harbor-desk-prd": HARBOR_DESK_PRESET,
+  "harbor-desk-case": HARBOR_DESK_PRESET,
+  "product-management": HARBOR_DESK_PRESET,
   "python-pipeline-audit": {
     badge: "Interactive Python ETL & Quarantine Validator",
     title: "Settlement Feed Idempotency & Dead-Letter Simulator",
@@ -357,7 +421,18 @@ const SANDBOX_PRESETS: Record<string, SandboxPreset> = {
 
 function renderLiveOutputTable(projectType: string, input: string, passed: boolean) {
   if (!passed && !input.trim()) return null
-  if (projectType === "northwind" || projectType === "northwind-commercial-review") {
+  if (projectType === "harbor-desk-prd" || projectType === "harbor-desk-case" || projectType === "product-management") {
+    return {
+      headers: ["store_location", "exception_type", "current_channel", "prd_resolution"],
+      rows: [
+        ["T. Nagar (HD-01)", "Late milk truck", "WhatsApp group (lost)", "Logged in Shared Exception Queue"],
+        ["Anna Nagar (HD-02)", "Missing rice SKU", "Email thread", "1-Tap SKU Shortfall Ticket"],
+        ["RS Puram (HD-03)", "Delivery failure", "Walkie (no trail)", "Timestamped Store Receipt"],
+        ["KK Nagar (HD-04)", "Cooler fault", "Personal WhatsApp", "SLA Escalation Alert"],
+      ],
+    }
+  }
+  if (projectType === "northwind" || projectType === "northwind-commercial-review" || projectType === "northwind-margin-audit" || projectType === "data-analytics") {
     const q = input.toLowerCase()
     const limitMatch = q.match(/limit\s+(\d+)/i)
     const limit = limitMatch ? Math.max(1, parseInt(limitMatch[1], 10)) : 4
