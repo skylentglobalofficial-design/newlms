@@ -56,35 +56,150 @@ function TabIcon({ name }: { name: "home" | "courses" | "workshops" | "labs" | "
   }
 }
 
-const INSTALLED_BUILD_KEY = "skylent:installed-build-id:v93"
-export const BUNDLED_CLIENT_BUILD_ID = "9.3.0:v93-202611071530"
+const INSTALLED_BUILD_KEY = "skylent:installed-build-id:v102"
+const LEGACY_BUILD_KEY = "skylent:installed-build-id:v93"
+const DISMISSED_BUILD_KEY = "skylent:dismissed-build-id:v102"
+const BUNDLED_CLIENT_VERSION = "10.2.0"
 
-function tryExitNativeApp(): boolean {
-  if (typeof window === "undefined") return false
+interface RemoteVersionPayload {
+  ok?: boolean
+  appVersion?: string
+  buildId?: string
+  minAndroidVersionCode?: number
+  apkDownloadUrl?: string
+}
+
+function getApkVersionCodeFromUA(): number | null {
+  if (typeof navigator === "undefined") return null
+  const match = navigator.userAgent.match(/SkylentVersionCode\/(\d+)/i)
+  return match ? Number(match[1]) : null
+}
+
+async function purgeClientCachesAndReload(nextStamp: string) {
   try {
-    const bridge = (window as unknown as { SkylentNativeBridge?: { exitApp?: () => void } }).SkylentNativeBridge
-    if (typeof bridge?.exitApp === "function") {
-      bridge.exitApp()
-      return true
+    window.localStorage.setItem(INSTALLED_BUILD_KEY, nextStamp)
+    window.localStorage.setItem(LEGACY_BUILD_KEY, nextStamp)
+    window.sessionStorage.removeItem(DISMISSED_BUILD_KEY)
+    if ("serviceWorker" in navigator) {
+      const regs = await navigator.serviceWorker.getRegistrations()
+      await Promise.all(regs.map((r) => r.unregister()))
     }
-    const cap = (window as unknown as {
-      Capacitor?: {
-        Plugins?: { App?: { exitApp?: () => void } }
-      }
-    }).Capacitor
-    if (typeof cap?.Plugins?.App?.exitApp === "function") {
-      cap.Plugins.App.exitApp()
-      return true
-    }
-    const navApp = (navigator as unknown as { app?: { exitApp?: () => void } }).app
-    if (typeof navApp?.exitApp === "function") {
-      navApp.exitApp()
-      return true
+    if ("caches" in window) {
+      const keys = await window.caches.keys()
+      await Promise.all(keys.map((k) => window.caches.delete(k)))
     }
   } catch {
-    // ignore
+    // ignore storage errors
   }
-  return false
+  const url = new URL(window.location.href)
+  url.searchParams.set("_ota", nextStamp.replace(/[^a-zA-Z0-9._-]/g, ""))
+  window.location.replace(url.toString())
+}
+
+function useLiveAppAutoUpdater() {
+  const [updateAvailable, setUpdateAvailable] = useState<{
+    version: string
+    buildId: string
+    stamp: string
+    apkOutdated: boolean
+    apkDownloadUrl: string
+  } | null>(null)
+  const [syncing, setSyncing] = useState(false)
+
+  useEffect(() => {
+    if (typeof window === "undefined") return
+    let cancelled = false
+
+    const checkRemoteBuild = async () => {
+      try {
+        const res = await fetch(`/api/health/version?_t=${Date.now()}`, {
+          cache: "no-store",
+          headers: {
+            "Cache-Control": "no-cache",
+            Pragma: "no-cache",
+          },
+        })
+        if (!res.ok) return
+        const data = (await res.json()) as RemoteVersionPayload
+        if (!data?.buildId || cancelled) return
+
+        const remoteStamp = `${data.appVersion || BUNDLED_CLIENT_VERSION}:${data.buildId}`
+        const currentStored =
+          window.localStorage.getItem(INSTALLED_BUILD_KEY) ||
+          window.localStorage.getItem(LEGACY_BUILD_KEY)
+
+        const apkCode = getApkVersionCodeFromUA()
+        const minApkCode = data.minAndroidVersionCode || 10200
+        const apkOutdated = apkCode !== null && apkCode < minApkCode
+
+        if (!currentStored) {
+          window.localStorage.setItem(INSTALLED_BUILD_KEY, remoteStamp)
+          window.localStorage.setItem(LEGACY_BUILD_KEY, remoteStamp)
+          if (apkOutdated) {
+            setUpdateAvailable({
+              version: data.appVersion || BUNDLED_CLIENT_VERSION,
+              buildId: data.buildId,
+              stamp: remoteStamp,
+              apkOutdated: true,
+              apkDownloadUrl: data.apkDownloadUrl || "/downloads/skylent-android-latest.apk",
+            })
+          }
+          return
+        }
+
+        if (currentStored !== remoteStamp || apkOutdated) {
+          const dismissed = window.sessionStorage.getItem(DISMISSED_BUILD_KEY)
+          if (dismissed !== remoteStamp) {
+            setUpdateAvailable({
+              version: data.appVersion || BUNDLED_CLIENT_VERSION,
+              buildId: data.buildId,
+              stamp: remoteStamp,
+              apkOutdated,
+              apkDownloadUrl: data.apkDownloadUrl || "/downloads/skylent-android-latest.apk",
+            })
+          }
+        }
+      } catch {
+        // offline or transient network error
+      }
+    }
+
+    const initialTimer = window.setTimeout(() => void checkRemoteBuild(), 1200)
+    const interval = window.setInterval(() => void checkRemoteBuild(), 30_000)
+
+    const onVisibility = () => {
+      if (document.visibilityState === "visible") void checkRemoteBuild()
+    }
+    const onOnline = () => void checkRemoteBuild()
+    document.addEventListener("visibilitychange", onVisibility)
+    window.addEventListener("online", onOnline)
+
+    return () => {
+      cancelled = true
+      window.clearTimeout(initialTimer)
+      window.clearInterval(interval)
+      document.removeEventListener("visibilitychange", onVisibility)
+      window.removeEventListener("online", onOnline)
+    }
+  }, [])
+
+  const applyUpdate = () => {
+    if (!updateAvailable) return
+    setSyncing(true)
+    void purgeClientCachesAndReload(updateAvailable.stamp)
+  }
+
+  const dismissUpdate = () => {
+    if (!updateAvailable) return
+    try {
+      window.sessionStorage.setItem(DISMISSED_BUILD_KEY, updateAvailable.stamp)
+    } catch {
+      // ignore
+    }
+    setUpdateAvailable(null)
+  }
+
+  return { updateAvailable, syncing, applyUpdate, dismissUpdate }
 }
 
 export function NativeAppShellController() {

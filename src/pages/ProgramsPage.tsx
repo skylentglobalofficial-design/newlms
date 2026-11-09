@@ -339,10 +339,10 @@ export default function ProgramsPage() {
                 Learn step-by-step in live browser labs and graduate with a verified capstone project.
               </p>
               <div className="pgx-intro__actions">
-                <Link className="sk-btn sk-btn-primary" to="/path">
-                  Find My Path in 90 Seconds
+                <a className="sk-btn sk-btn-primary" href="#live-courses">
+                  Browse Live Programmes
                   <ArrowRight />
-                </Link>
+                </a>
                 <Link className="sk-btn sk-btn-secondary" to="/events">
                   Try a ₹99 Live Workshop (100% Coin Back)
                 </Link>
@@ -512,13 +512,13 @@ export default function ProgramsPage() {
         <section className="pgx-close" aria-labelledby="pgx-close-title">
           <div className="sky-container pgx-close__inner">
             <div>
-              <code className="pgx-close__eyebrow">Skill & Track Diagnostic</code>
-              <h2 id="pgx-close-title">Not sure which track fits you best?</h2>
-              <p>Answer 3 quick questions in our 90-second path finder to see which programme matches your background and goal.</p>
+              <code className="pgx-close__eyebrow">Hands-On Browser Labs & Live Sprints</code>
+              <h2 id="pgx-close-title">Want to test a track before you enrol?</h2>
+              <p>Run real SQL &amp; Python queries in our interactive browser sandbox or join a ₹99 weekend live sprint with 100% Elixir cashback.</p>
             </div>
             <div className="pgx-close__actions">
-              <Link className="sk-btn sk-btn-primary" to="/path">
-                Find My Path in 90 Seconds
+              <Link className="sk-btn sk-btn-primary" to="/labs">
+                Try Free Browser Labs
                 <ArrowRight />
               </Link>
               <Link className="sk-btn sk-btn-secondary pgx-close__secondary" to="/events">

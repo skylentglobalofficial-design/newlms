@@ -1677,3 +1677,79 @@ html[data-native-app="true"] .skylent-site-nav.skn {
     color: #0f172a;
   }
 }
+
+/* ============================================================================
+   V102 MOBILE WEB, APK & DASHBOARD/LMS DECLUTTER SYSTEM
+   Clean, spacious, app-native hierarchy across phones, APK WebView & desktop
+   ============================================================================ */
+
+/* Hide duplicate Admin horizontal 11-pill bar on mobile/tablet where sidebar/bottom-nav already exists */
+@media (max-width: 960px) {
+  .adm-quick-tabs-strip {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding: 8px 10px !important;
+    gap: 6px !important;
+  }
+  .adm-quick-tabs-strip::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Mobile Web & Native APK Declutter (<= 768px) */
+@media (max-width: 768px) {
+  /* Hide oversized desktop decorative photo collage on small phone screens so Hero CTA is immediately visible */
+  .hx-hero__photo-frame,
+  .hx-hero__floating-badge {
+    display: none !important;
+  }
+
+  .hx-hero {
+    padding-top: 20px !important;
+    padding-bottom: 28px !important;
+  }
+
+  .hx-hero__title {
+    font-size: clamp(26px, 7vw, 34px) !important;
+    line-height: 1.15 !important;
+  }
+
+  /* Compact Dashboard & LMS cards on mobile */
+  .sh-card,
+  .os-card,
+  .adm-card {
+    padding: 14px 15px !important;
+    border-radius: 14px !important;
+  }
+
+  .sh-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 14px !important;
+  }
+
+  /* LMS Mobile Declutter: full-width video & clean stacked AI tutor */
+  .lp-workspace,
+  .lp-main {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    gap: 14px !important;
+  }
+
+  .lp-ai {
+    margin-top: 12px !important;
+    border-radius: 14px !important;
+    padding: 14px !important;
+  }
+}
+
+/* Extra-small phones (<= 480px): hide secondary text labels inside header pills */
+@media (max-width: 480px) {
+  .sk-hide-mobile-xs {
+    display: none !important;
+  }
+}
+

@@ -838,13 +838,7 @@ export default function LearnPage() {
                     ) : null}
                   </div>
                 </div>
-                {selectedState.locked ? null : (isAuthoredCourse(readyCourse.slug) || isMultiTrackAuthoredCourse(readyCourse.slug)) ? (
-                  <LessonContextPanel courseSlug={readyCourse.slug} lessonId={selectedLesson.id} />
-                ) : (
-                  <p className="os-lead">
-                    {getLessonMeta(readyCourse.slug, selectedLesson.id)?.objective ?? lessonObjective(selectedLesson)}
-                  </p>
-                )}
+
 
                 {playerTab === 'notes' && !selectedState.locked ? (
                   <div className="os-paper" style={{ padding: 20 }}>
@@ -968,6 +962,15 @@ export default function LearnPage() {
                       />
                     )}
                   </div>
+                )}
+                {selectedState.locked ? null : (isAuthoredCourse(readyCourse.slug) || isMultiTrackAuthoredCourse(readyCourse.slug)) ? (
+                  <div style={{ marginTop: 18 }}>
+                    <LessonContextPanel courseSlug={readyCourse.slug} lessonId={selectedLesson.id} />
+                  </div>
+                ) : (
+                  <p className="os-lead" style={{ marginTop: 14 }}>
+                    {getLessonMeta(readyCourse.slug, selectedLesson.id)?.objective ?? lessonObjective(selectedLesson)}
+                  </p>
                 )}
                 {actionError ? <p className="os-error" role="alert">{actionError}</p> : null}
                 {!selectedState.locked ? (

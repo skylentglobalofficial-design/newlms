@@ -1969,7 +1969,7 @@ export default function DashboardStudentPage() {
               </div>
               {exploreProgrammesSection}
               {allMyCourses.length > 0 ? <div className="sh-stack" style={{ marginTop: 20 }}>{myLearning}<CareerRiseCard />{evidence}</div> : null}
-              <section className="sh-card" aria-label="Elixir wallet" style={{ marginTop: 22 }}><ElixirWalletPanel /></section>
+              {user.role === 'student' ? <section className="sh-card" id="elixir-wallet" aria-label="Elixir wallet" style={{ marginTop: 22 }}><ElixirWalletPanel /></section> : null}
             </>
           )}
         </div>
@@ -2329,33 +2329,30 @@ export default function DashboardStudentPage() {
                 </span>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 4, textAlign: 'center', marginBottom: 12 }}>
-                {['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'].map((d) => (
-                  <span key={d} style={{ fontSize: 10, fontWeight: 700, color: '#94a3b8', paddingBottom: 4 }}>{d}</span>
-                ))}
-                {Array.from({ length: 30 }, (_, idx) => {
-                  const dayNum = idx + 1
-                  const isActive = activeDayNumbers.has(dayNum)
-                  return (
-                    <div
-                      key={dayNum}
-                      style={{
-                        height: 28,
-                        borderRadius: 8,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: 11.5,
-                        fontWeight: isActive ? 800 : 500,
-                        background: isActive ? '#5142b5' : '#f8fafc',
-                        color: isActive ? '#ffffff' : '#475569',
-                        border: isActive ? '1px solid #5142b5' : '1px solid #f1f5f9',
-                      }}
-                    >
-                      {dayNum}
-                    </div>
-                  )
-                })}
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(3, 1fr)',
+                  gap: 10,
+                  marginBottom: 14,
+                  padding: '10px 12px',
+                  borderRadius: 12,
+                  background: '#f8fafc',
+                  border: '1px solid #e2e8f0',
+                }}
+              >
+                <div>
+                  <span style={{ fontSize: 11, color: '#64748b', display: 'block' }}>Active Streak</span>
+                  <strong style={{ fontSize: 16, color: '#0f172a' }}>{streak.currentStreakDays}d</strong>
+                </div>
+                <div>
+                  <span style={{ fontSize: 11, color: '#64748b', display: 'block' }}>Completed</span>
+                  <strong style={{ fontSize: 16, color: '#5142b5' }}>{completedCount}/{totalLessons}</strong>
+                </div>
+                <div>
+                  <span style={{ fontSize: 11, color: '#64748b', display: 'block' }}>Certificates</span>
+                  <strong style={{ fontSize: 16, color: '#059669' }}>{certificateRows.length}</strong>
+                </div>
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(14, minmax(0, 1fr))', gap: 4 }} role="list" aria-label="Last 14 days activity heatmap">
@@ -2517,8 +2514,8 @@ export default function DashboardStudentPage() {
           </div>
         ) : null}
 
-        {studentTab === 'wallet' ? (
-          <section className="sh-card" aria-label="Elixir wallet" style={{ marginTop: 12 }}>
+        {studentTab === 'wallet' && user.role === 'student' ? (
+          <section className="sh-card" id="elixir-wallet" aria-label="Elixir wallet" style={{ marginTop: 12 }}>
             <ElixirWalletPanel />
           </section>
         ) : null}

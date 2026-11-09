@@ -113,10 +113,10 @@ export function HomeHero({
             </Link>
             <Link
               className="sk-btn sk-btn-secondary hx-btn"
-              to="/path"
+              to="/labs"
               style={{ border: "1px solid #cbd5e1", background: "#ffffff", color: "#0f172a", fontWeight: 600 }}
             >
-              Take 90-second skill check
+              Try Free Browser Labs
             </Link>
           </div>
           <ul
@@ -192,7 +192,7 @@ const GOAL_CARDS = [
   { icon: "graduation", title: "Degrees", text: "UG and PG pathways to explore, online or on campus.", to: "/education" },
   { icon: "book", title: "Skill programmes", text: "Certification and professional programmes with practice.", to: "/programmes" },
   { icon: "briefcase", title: "Career OS", text: "Your profile, projects and applications, in one place.", to: "/career-os" },
-  { icon: "sparkle", title: "Path Finder", text: "A 90-second guide for where to start across the 6 Skylent tracks.", to: "/path" },
+  { icon: "sparkle", title: "Live Browser Labs", text: "Practice SQL, Python & Product cases directly in your browser with instant feedback.", to: "/labs" },
 ] as const
 
 export function HomeGoals() {
@@ -1671,8 +1671,8 @@ export function HomeAi() {
             ))}
 
             <div className="hx-ai-studio__actions">
-              <Link className="sk-btn sk-btn-primary" to="/path">
-                Find My Path in 90s
+              <Link className="sk-btn sk-btn-primary" to="/programmes">
+                Explore All 6 Tracks
                 <ArrowRight />
               </Link>
               <Link className="sk-btn sk-btn-secondary" to="/courses/data-analytics">

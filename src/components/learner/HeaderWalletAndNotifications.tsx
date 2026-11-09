@@ -136,41 +136,7 @@ export function HeaderWalletAndNotifications({ variant = "public" }: { variant?:
     }
   }, [])
 
-  if (!user) return null
-
-  if (user.role === "superadmin" || user.role === "admin") {
-    return (
-      <div
-        ref={rootRef}
-        className={`skn-UtilityCluster skn-UtilityCluster--${variant}`}
-        style={{ display: "inline-flex", alignItems: "center", gap: 8 }}
-      >
-        <Link
-          to="/dashboard/admin#elixir"
-          className="skn__elixir-chip"
-          title="Open Admin Elixir Treasury, Grant/Deduct Coins & Reward Rules"
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: 6,
-            padding: "6px 12px",
-            borderRadius: 999,
-            border: "1px solid rgba(81, 66, 181, 0.28)",
-            background: "rgba(81, 66, 181, 0.08)",
-            color: variant === "dashboard" ? "#43349F" : "#5142b5",
-            fontSize: 12.5,
-            fontWeight: 600,
-            textDecoration: "none",
-            whiteSpace: "nowrap",
-          }}
-        >
-          <span>Elixir Treasury</span>
-        </Link>
-      </div>
-    )
-  }
-
-  if (user.role !== "student") {
+  if (!user || user.role !== "student") {
     return null
   }
 

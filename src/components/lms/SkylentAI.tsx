@@ -2,6 +2,7 @@ import { useEffect, useId, useRef, useState, type KeyboardEvent, type ReactNode 
 import { askSkylentAi, fetchSkylentAiStatus, type SkylentAiAction, type SkylentAiTurn } from "../../lib/skylent-ai-api"
 import { workspaceErrorMessage } from "../../lib/http"
 import { getLessonMeta } from "../../content/course-lookups"
+import { getCourseLessonContent } from "../../content/course-material"
 import { AiMark, AI_NAME, displayAiText } from "../skylent/primitives"
 import "./SkylentAI.css"
 
@@ -16,7 +17,7 @@ type Props = {
 }
 
 type UiState = "checking" | "unavailable" | "unreachable" | "ready" | "loading" | "error"
-type UiTurn = SkylentAiTurn & { basedOn?: string; heldBack?: boolean }
+type UiTurn = SkylentAiTurn & { basedOn?: string; heldBack?: boolean; followUps?: string[] }
 
 const QUICK: Array<{ action: SkylentAiAction; label: string }> = [
   { action: "explain", label: "Explain simpler" },
@@ -128,6 +129,21 @@ function friendlyError(err: unknown): { message: string; unavailable: boolean } 
   return { message: `${AI_NAME} couldn't answer. Try again.`, unavailable: false }
 }
 
+function extractSection(body: string, headingKeyword: string): string {
+  if (!body) return ""
+  const re = new RegExp(`##\\s+[^\\n]*${headingKeyword}[^\\n]*\\n([\\s\\S]*?)(?=\\n##\\s+|$)`, "i")
+  const match = body.match(re)
+  return match?.[1]?.trim() ?? ""
+}
+
+function cleanExcerpt(raw: string, maxLen = 680): string {
+  return raw
+    .replace(/^\|.*\|$/gm, "")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim()
+    .slice(0, maxLen)
+}
+
 function buildSmartLessonAnswer(
   courseSlug: string,
   lessonId: string,
@@ -136,61 +152,178 @@ function buildSmartLessonAnswer(
   action: SkylentAiAction,
   question: string,
   assessmentOpen: boolean,
-): { answer: string; basedOn: string; related: string; heldBack: boolean } {
+): { answer: string; basedOn: string; related: string; heldBack: boolean; followUps: string[] } {
   const qLower = question.toLowerCase().trim()
   const meta = getLessonMeta(courseSlug, lessonId)
+  const fullContent = getCourseLessonContent(courseSlug, lessonId)
+  const rawBody = fullContent?.body ?? ""
+  const explainSec = extractSection(rawBody, "Explain")
+  const workedSec = extractSection(rawBody, "Worked example")
+  const practiceSec = extractSection(rawBody, "Practice")
+  const expectedSec = extractSection(rawBody, "Expected")
+  const knowledgeSec = extractSection(rawBody, "Knowledge check")
+
   const objective = meta?.objective ?? lessonTitle
-  const concepts = meta?.concepts?.slice(0, 3).join(", ") || lessonTitle
+  const whyItMatters = meta?.whyItMatters ?? "Builds verifiable decision-making and execution proof."
+  const concepts = meta?.concepts?.slice(0, 4).join(", ") || lessonTitle
   const output = meta?.practicalOutput ?? "Complete lesson check"
   const caseName = caseChipFor(courseSlug) ?? "Workspace"
 
   if (assessmentOpen && /answer key|exact answer|write my|solve this quiz|give me the answer/i.test(qLower)) {
     return {
-      answer: `• **Open check:** Direct answers are hidden.\n• **Focus:** ${concepts}`,
+      answer: `• **Open Assessment Guardrail:** I cannot reveal the graded answer key while your check is open.\n\n• **How to Solve It Yourself:** Focus on **${concepts}** and verify your logic against **${caseName}**.\n\n• **Goal:** ${objective}`,
       basedOn: lessonTitle,
       related: concepts,
       heldBack: true,
+      followUps: ["Explain the core concept simpler", "Give me a worked example", "🇮🇳 Explain in Simple Hinglish"],
     }
   }
 
-  if (/hinglish|🇮🇳|hindi/i.test(qLower)) {
+  // 1. Hinglish mode
+  if (/hinglish|🇮🇳|hindi|samjhao|desi/i.test(qLower)) {
+    const excerpt = cleanExcerpt(explainSec || workedSec, 380)
     return {
-      answer:
-        courseSlug === "data-analytics"
-          ? `• **Goal:** ${objective}\n• **Rule:** Filter \`units > 0 AND unit_price > 0 AND returned = 'no'\` → **166 valid rows (₹8,12,020)**.`
-          : `• **Goal:** ${objective}\n• **Topics:** ${concepts}\n• **Output:** ${output}`,
+      answer: [
+        `🇮🇳 **Hinglish Intuition — ${lessonTitle}:**`,
+        `• **Asli Goal:** ${objective}`,
+        `• **Simple Desi Analogy:** Socho aap Swiggy, Flipkart, ya Razorpay ke live dataset/product par kaam kar रहे ho (${caseName}). Agar aap bina **${concepts}** verify kiye seedha output nikaloge, toh returned orders ya galat assumption pura decision kharab kar dega.`,
+        excerpt ? `• **Lesson Summary:** ${excerpt}` : `• **Why It Matters:** ${whyItMatters}`,
+        `• **Next Step:** Neeche **${output}** try karo, ya apna SQL/Python code ya doubt yahan paste karo!`,
+      ].join("\n\n"),
       basedOn: `${lessonTitle} · Hinglish`,
       related: concepts,
       heldBack: false,
+      followUps: ["Give me a runnable example", "Quiz me on this lesson", "How do I complete the assignment?"],
     }
   }
 
-  if (action === "example" || /example|udaharan|sample|query|code/i.test(qLower)) {
+  // 2. Worked Example / SQL / Python / Code Debugging
+  if (action === "example" || /example|udaharan|sample|query|code|sql|python|debug|select |def |error|syntax/i.test(qLower)) {
+    const codeSnippet =
+      courseSlug === "data-analytics"
+        ? "```sql\nSELECT\n  category,\n  COUNT(*) AS valid_orders,\n  ROUND(SUM(units * unit_price * (1.0 - discount_pct / 100.0)), 2) AS net_revenue\nFROM northwind_sales\nWHERE units > 0\n  AND unit_price > 0\n  AND LOWER(returned) = 'no'\nGROUP BY category\nORDER BY net_revenue DESC;\n```"
+        : courseSlug === "python-programming" || courseSlug === "data-science-ai" || courseSlug === "generative-ai"
+          ? "```python\ndef filter_valid_rows(rows: list[dict]) -> list[dict]:\n    return [\n        r for r in rows\n        if float(r.get('units', 0)) > 0\n        and float(r.get('unit_price', 0)) > 0\n        and str(r.get('returned', 'no')).lower() == 'no'\n    ]\n```"
+          : ""
+    const workedText = cleanExcerpt(workedSec || explainSec, 520)
     return {
-      answer:
-        courseSlug === "data-analytics"
-          ? "```sql\nSELECT category, ROUND(SUM(units * unit_price * (1 - discount_pct/100.0))) AS net_rev\nFROM northwind_sales\nWHERE units > 0 AND unit_price > 0 AND returned = 'no'\nGROUP BY category;\n```"
-          : `• **Case (${caseName}):** Apply ${concepts}\n• **Output:** ${output}`,
+      answer: [
+        `**Worked Example & Debugging Guide (${caseName}):**`,
+        workedText || `• **Scenario:** Apply **${concepts}** directly to **${caseName}**.`,
+        codeSnippet,
+        `• **Key Verification Rule:** Before finalizing **${output}**, confirm you checked boundary conditions and excluded invalid/returned records.`,
+      ]
+        .filter(Boolean)
+        .join("\n\n"),
       basedOn: lessonTitle,
       related: `${caseName} · Example`,
       heldBack: false,
+      followUps: ["🇮🇳 Explain in Simple Hinglish", "What edge cases break this?", "Quiz me on this lesson"],
     }
   }
 
-  if (action === "quiz" || action === "practice" || /quiz|practice|test me/i.test(qLower)) {
+  // 3. Quiz Me / Concept Check
+  if (action === "quiz" || /quiz|test me/i.test(qLower)) {
+    const kc = cleanExcerpt(knowledgeSec, 480)
     return {
-      answer: `• **Quick Check:** What fails in ${caseName} if you skip **${concepts}**?`,
+      answer: [
+        `**Interactive Concept Check — ${lessonTitle}:**`,
+        kc || `**Question:** In **${caseName}**, what happens to your final output (**${output}**) if you skip **${concepts}**? Why does that break decision-making?`,
+        `💡 *Reply in 1–2 sentences below and I will coach your answer!*`,
+      ].join("\n\n"),
       basedOn: lessonTitle,
       related: concepts,
       heldBack: false,
+      followUps: ["Give me a hint", "Show the worked example first", "🇮🇳 Explain in Simple Hinglish"],
     }
   }
 
+  // 4. Practice / Rubric / How to Complete
+  if (action === "practice" || /practice|rubric|criteria|how to|complete|assignment|submission|step/i.test(qLower)) {
+    const pracText = cleanExcerpt(practiceSec || expectedSec, 520)
+    const rubricItems = fullContent?.assignment?.rubric ?? []
+    return {
+      answer: [
+        `**Step-by-Step Execution & Rubric Checklist — ${lessonTitle}:**`,
+        `• **1. Objective:** ${objective}`,
+        `• **2. Core Concepts Required:** ${concepts}`,
+        pracText ? `• **3. Lesson Practice Task:**\n${pracText}` : `• **3. Required Output:** ${output}`,
+        rubricItems.length > 0 ? `• **4. Grading Rubric:** ${rubricItems.join(" · ")}` : `• **4. Why It Matters:** ${whyItMatters}`,
+      ].join("\n\n"),
+      basedOn: lessonTitle,
+      related: concepts,
+      heldBack: false,
+      followUps: ["Give an example", "🇮🇳 Explain in Simple Hinglish", "Quiz me"],
+    }
+  }
+
+  // 5. Interview Questions
+  if (/interview|hiring|recruiter/i.test(qLower)) {
+    return {
+      answer: [
+        `**Top Interview Questions from "${lessonTitle}":**`,
+        `• **Q1 (First Principles):** How do you apply **${concepts}** when working on **${caseName}**?`,
+        `• **Q2 (Trade-offs & Edge Cases):** ${whyItMatters} What breaks if a team skips this check?`,
+        `• **Q3 (Proof of Work):** Walk me through how you produced **${output}** and verified its accuracy.`,
+      ].join("\n\n"),
+      basedOn: lessonTitle,
+      related: concepts,
+      heldBack: false,
+      followUps: ["How should I answer Q1?", "Give an example", "🇮🇳 Explain in Simple Hinglish"],
+    }
+  }
+
+  // 6. Keyword search inside the actual lesson markdown body for any custom user question!
+  if (rawBody && qLower.length > 2 && action === "ask") {
+    const terms = qLower
+      .split(/[^a-z0-9]+/)
+      .filter((w) => w.length > 3 && !["what", "when", "where", "which", "this", "that", "with", "from", "explain", "lesson", "tell", "about", "simpler"].includes(w))
+    const blocks = rawBody
+      .split(/\n{2,}/)
+      .map((b) => b.trim())
+      .filter((b) => b.length > 40 && !b.startsWith("#") && !b.startsWith("|"))
+    let bestBlock = ""
+    let bestScore = 0
+    for (const b of blocks) {
+      const lowerB = b.toLowerCase()
+      let score = 0
+      for (const t of terms) {
+        if (lowerB.includes(t)) score += 2
+      }
+      if (score > bestScore) {
+        bestScore = score
+        bestBlock = b
+      }
+    }
+    if (bestBlock && bestScore >= 2) {
+      return {
+        answer: [
+          `**From "${lessonTitle}" (${caseName}):**`,
+          cleanExcerpt(bestBlock, 600),
+          `• **Key Takeaway:** Connect **${concepts}** directly to **${output}**.`,
+        ].join("\n\n"),
+        basedOn: lessonTitle,
+        related: concepts,
+        heldBack: false,
+        followUps: ["🇮🇳 Explain in Simple Hinglish", "Give an example", "Quiz me"],
+      }
+    }
+  }
+
+  // 7. Default Explain Simpler / Full Grounded Breakdown
+  const explainBody = cleanExcerpt(explainSec || workedSec || rawBody, 520)
   return {
-    answer: `• **Goal:** ${objective}\n• **Key Concepts:** ${concepts}\n• **Output:** ${output}`,
+    answer: [
+      `**${lessonTitle} — Step-by-Step Breakdown:**`,
+      explainBody || `• **Goal:** ${objective}`,
+      `• **Key Concepts:** ${concepts}`,
+      `• **Why It Matters:** ${whyItMatters}`,
+      `• **Practical Output:** ${output}`,
+    ].join("\n\n"),
     basedOn: lessonTitle,
     related: concepts,
     heldBack: false,
+    followUps: ["🇮🇳 Explain in Simple Hinglish", "Give an example", "Quiz me"],
   }
 }
 
@@ -221,6 +354,7 @@ function renderInlineMarkdown(line: string): ReactNode[] {
 }
 
 function AnswerText({ text }: { text: string }) {
+  const [copiedIndex, setCopiedIndex] = useState<number | null>(null)
   const cleaned = displayAiText(text)
   const parts = cleaned.split(/```[a-zA-Z]*\n?/)
   return (
@@ -230,9 +364,36 @@ function AnswerText({ text }: { text: string }) {
         if (!body) return null
         if (index % 2 === 1) {
           return (
-            <pre key={index} className="os-ai-code">
-              {body}
-            </pre>
+            <div key={index} style={{ position: "relative", marginTop: 8, marginBottom: 8 }}>
+              <button
+                type="button"
+                onClick={() => {
+                  try {
+                    void navigator.clipboard.writeText(body)
+                    setCopiedIndex(index)
+                    setTimeout(() => setCopiedIndex(null), 1800)
+                  } catch {}
+                }}
+                style={{
+                  position: "absolute",
+                  top: 6,
+                  right: 6,
+                  padding: "2px 8px",
+                  borderRadius: 5,
+                  border: "1px solid rgba(255,255,255,0.2)",
+                  background: "rgba(15, 23, 42, 0.75)",
+                  color: "#f8fafc",
+                  fontSize: 10.5,
+                  fontWeight: 700,
+                  cursor: "pointer",
+                }}
+              >
+                {copiedIndex === index ? "✓ Copied" : "Copy"}
+              </button>
+              <pre className="os-ai-code" style={{ paddingTop: 26 }}>
+                {body}
+              </pre>
+            </div>
           )
         }
         return (
@@ -388,7 +549,7 @@ export default function SkylentAI({
     setUi("loading")
     setError(null)
 
-    // Fast 3.5-second timeout so AI never hangs for 20-30 seconds
+    const smart = buildSmartLessonAnswer(courseSlug, lessonId, lessonTitle, lessonKind, action, text, assessmentOpen)
     const timeoutId = window.setTimeout(() => controller.abort(), 3500)
 
     try {
@@ -402,14 +563,16 @@ export default function SkylentAI({
       })
       window.clearTimeout(timeoutId)
       if (requestId !== seqRef.current) return
-      const isGenericMiss = /That is not stated as a taught fact in/i.test(result.answer)
+      const isGenericMiss =
+        /That is not stated as a taught fact in|I only have the title|not an authored Skylent flagship/i.test(result.answer)
       const finalAnswer = isGenericMiss
-        ? buildSmartLessonAnswer(courseSlug, lessonId, lessonTitle, lessonKind, action, text, assessmentOpen)
+        ? smart
         : {
             answer: result.answer,
             basedOn: result.basedOn || lessonTitle,
             related: result.related,
             heldBack: result.refused === true,
+            followUps: smart.followUps,
           }
       setTurns([
         ...pending,
@@ -419,6 +582,7 @@ export default function SkylentAI({
           related: finalAnswer.related,
           basedOn: finalAnswer.basedOn,
           heldBack: finalAnswer.heldBack,
+          followUps: finalAnswer.followUps,
         },
       ])
       setUi("ready")
@@ -428,15 +592,15 @@ export default function SkylentAI({
       const parsed = friendlyError(err)
       const isTimeout = err instanceof DOMException && err.name === "AbortError"
       if (isTimeout || parsed.unavailable || /couldn't answer/i.test(parsed.message)) {
-        const fallback = buildSmartLessonAnswer(courseSlug, lessonId, lessonTitle, lessonKind, action, text, assessmentOpen)
         setTurns([
           ...pending,
           {
             role: "assistant",
-            content: fallback.answer,
-            related: fallback.related,
-            basedOn: fallback.basedOn,
-            heldBack: fallback.heldBack,
+            content: smart.answer,
+            related: smart.related,
+            basedOn: smart.basedOn,
+            heldBack: smart.heldBack,
+            followUps: smart.followUps,
           },
         ])
         setUi("ready")
@@ -483,7 +647,7 @@ export default function SkylentAI({
             Reset Chat
           </button>
         ) : (
-          <span style={{ fontSize: 11, color: "#cbd5e1", fontWeight: 600 }}>Instant Lesson Assistant</span>
+          <span style={{ fontSize: 11, color: "#cbd5e1", fontWeight: 600 }}>Interactive Lesson Tutor</span>
         )}
       </div>
       <p className="os-ai-context" style={{ marginTop: 6, fontSize: 12.5, color: "#e2e8f0" }}>
@@ -493,7 +657,7 @@ export default function SkylentAI({
     </header>
   )
 
-  const compactPrompts = socraticQuickPromptsFor(courseSlug, lessonKind, assessmentOpen).slice(0, 2)
+  const allQuickPrompts = socraticQuickPromptsFor(courseSlug, lessonKind, assessmentOpen)
   const hinglishPrompt = hinglishIntuitionPromptFor(courseSlug, lessonTitle)
 
   const body = (
@@ -502,25 +666,25 @@ export default function SkylentAI({
         {notice ? <p className="os-ai-notice">{notice}</p> : null}
 
         {exchanges.length === 0 && ui === "ready" ? (
-          <div style={{ display: "grid", gap: 12 }}>
+          <div style={{ display: "grid", gap: 10 }}>
             <div
               style={{
-                padding: "12px 14px",
+                padding: "11px 13px",
                 borderRadius: 12,
                 background: "#f8fafc",
                 border: "1px solid #e2e8f0",
-                fontSize: 13,
+                fontSize: 12.5,
                 color: "#334155",
-                lineHeight: 1.55,
+                lineHeight: 1.5,
               }}
             >
-              <strong style={{ color: "#0f172a", display: "block", marginBottom: 4 }}>
-                Hi! Need help with this lesson?
+              <strong style={{ color: "#0f172a", display: "block", marginBottom: 3 }}>
+                Ask anything about “{lessonTitle}”
               </strong>
-              Tap a quick starter or ask a question:
+              Paste SQL/Python code to debug, ask for a step-by-step example, or tap a starter below:
             </div>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-              {compactPrompts.map((item) => (
+              {allQuickPrompts.map((item) => (
                 <button
                   key={item.label}
                   type="button"
@@ -555,7 +719,7 @@ export default function SkylentAI({
                   cursor: "pointer",
                 }}
               >
-                🇮🇳 Hinglish Summary
+                🇮🇳 Explain in Simple Hinglish
               </button>
             </div>
           </div>
@@ -588,6 +752,30 @@ export default function SkylentAI({
                 }}
               >
                 <AnswerText text={exchange.answer.content} />
+                {exchange.answer.followUps && exchange.answer.followUps.length > 0 && index === exchanges.length - 1 ? (
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 10, paddingTop: 8, borderTop: "1px dashed #e2e8f0" }}>
+                    {exchange.answer.followUps.map((f) => (
+                      <button
+                        key={f}
+                        type="button"
+                        disabled={inputDisabled}
+                        onClick={() => void submit("ask", f)}
+                        style={{
+                          padding: "4px 9px",
+                          borderRadius: 999,
+                          border: "1px solid #cbd5e1",
+                          background: "#f8fafc",
+                          color: "#5142b5",
+                          fontSize: 11,
+                          fontWeight: 700,
+                          cursor: "pointer",
+                        }}
+                      >
+                        ↳ {f}
+                      </button>
+                    ))}
+                  </div>
+                ) : null}
               </div>
             ) : null}
           </article>
@@ -630,7 +818,7 @@ export default function SkylentAI({
               value={draft}
               onChange={(event) => setDraft(event.target.value)}
               onKeyDown={onKeyDown}
-              placeholder="Ask anything about this lesson..."
+              placeholder="Ask a doubt, paste SQL/Python code, or type 'Hinglish'..."
               disabled={inputDisabled}
               maxLength={2000}
               autoComplete="off"
