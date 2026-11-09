@@ -1000,10 +1000,15 @@ export type EnrollmentCourseSummary = {
 }
 
 /** Per-course progress for one enrolment. Programme rows report each linked course, not one blended flag. */
-export async function summarizeEnrollmentCourses(enrollmentId: string): Promise<EnrollmentCourseSummary[]> {
+export async function summarizeEnrollmentsCoursesBatch(
+  enrollmentIds: string[],
+): Promise<Map<string, EnrollmentCourseSummary[]>> {
+  const result = new Map<string, EnrollmentCourseSummary[]>()
+  if (enrollmentIds.length === 0) return result
+
   const courseSelect = await courseReadSelect()
-  const enrollment = await prisma.userEnrollment.findUnique({
-    where: { id: enrollmentId },
+  const enrollments = await prisma.userEnrollment.findMany({
+    where: { id: { in: enrollmentIds } },
     include: {
       course: { select: courseSelect },
       program: {
@@ -1016,12 +1021,126 @@ export async function summarizeEnrollmentCourses(enrollmentId: string): Promise<
       },
     },
   })
-  if (!enrollment) return []
-  const courses = enrollment.program?.programCourses.map((link) => link.course) ?? (enrollment.course ? [enrollment.course] : [])
-  return Promise.all(
-    courses.map(async (course) => {
-      const progressEnrollment = (await resolveCourseEnrollment(enrollment.userId, course.id)) ?? enrollment
-      const lessonStates = await loadLessonStates(progressEnrollment, course)
+  if (enrollments.length === 0) return result
+
+  const userIds = Array.from(new Set(enrollments.map((e) => e.userId)))
+  const allUserEnrollments = await prisma.userEnrollment.findMany({
+    where: {
+      userId: { in: userIds },
+      status: { in: ["active", "completed"] },
+    },
+    orderBy: { updatedAt: "desc" },
+    include: {
+      program: {
+        select: {
+          programCourses: { select: { courseId: true } },
+        },
+      },
+    },
+  })
+
+  function resolveEnrollmentInMemory(userId: string, courseId: string, fallback: UserEnrollment): UserEnrollment {
+    const direct = allUserEnrollments.find((e) => e.userId === userId && e.courseId === courseId)
+    if (direct) return direct
+    const prog = allUserEnrollments.find(
+      (e) =>
+        e.userId === userId &&
+        e.programId !== null &&
+        e.program?.programCourses.some((pc) => pc.courseId === courseId),
+    )
+    return prog ?? fallback
+  }
+
+  const targetEnrollmentIds = new Set<string>()
+  const targetNodeIds = new Set<string>()
+
+  for (const enrollment of enrollments) {
+    const courses =
+      enrollment.program?.programCourses.map((link) => link.course) ??
+      (enrollment.course ? [enrollment.course] : [])
+    for (const course of courses) {
+      const progressEnrollment = resolveEnrollmentInMemory(enrollment.userId, course.id, enrollment)
+      targetEnrollmentIds.add(progressEnrollment.id)
+      for (const item of flattenNodes(course)) {
+        targetNodeIds.add(item.node.id)
+      }
+    }
+  }
+
+  const eIds = Array.from(targetEnrollmentIds)
+  const nIds = Array.from(targetNodeIds)
+  const grading = (await readSchemaCapabilities()).assignmentGrading
+
+  const [progressRows, quizAttempts, assignments] =
+    eIds.length > 0 && nIds.length > 0
+      ? await Promise.all([
+          prisma.lessonProgress.findMany({
+            where: { enrollmentId: { in: eIds }, nodeId: { in: nIds } },
+          }),
+          prisma.quizAttempt.findMany({
+            where: { enrollmentId: { in: eIds }, nodeId: { in: nIds } },
+            orderBy: { submittedAt: "desc" },
+          }),
+          prisma.assignmentProgress.findMany({
+            where: { enrollmentId: { in: eIds }, nodeId: { in: nIds } },
+            select: assignmentProgressSelect(grading),
+          }),
+        ])
+      : [[], [], []]
+
+  const progressByKey = new Map<string, LessonProgress>()
+  for (const row of progressRows) {
+    progressByKey.set(`${row.enrollmentId}:${row.nodeId}`, row)
+  }
+  const attemptsByKey = new Map<string, QuizAttempt[]>()
+  for (const attempt of quizAttempts) {
+    const key = `${attempt.enrollmentId}:${attempt.nodeId}`
+    const list = attemptsByKey.get(key) ?? []
+    list.push(attempt)
+    attemptsByKey.set(key, list)
+  }
+  const assignmentByKey = new Map<string, { status: string }>()
+  for (const row of assignments) {
+    assignmentByKey.set(`${row.enrollmentId}:${row.nodeId}`, row)
+  }
+
+  function buildLessonStatesInMemory(
+    enrollmentId: string,
+    course: CourseWithCurriculum,
+  ): Record<LessonKey, LessonStatePayload> {
+    const items = flattenNodes(course)
+    const baseStates: Record<LessonKey, Pick<LessonStatePayload, "complete">> = {}
+    for (const item of items) {
+      const key = `${enrollmentId}:${item.node.id}`
+      const progress = progressByKey.get(key)
+      const quizPassed = (attemptsByKey.get(key) ?? []).some((a) => a.passed)
+      const assignmentStatus = assignmentByKey.get(key)?.status
+      const assignmentSubmitted = assignmentStatus === "submitted" || assignmentStatus === "graded"
+      const complete = Boolean(progress?.completedAt) || quizPassed || assignmentSubmitted
+      baseStates[item.lessonKey] = { complete }
+    }
+    const locks = computeLessonLocks(course, baseStates)
+    const lessonStates: Record<LessonKey, LessonStatePayload> = {}
+    for (const item of items) {
+      const key = `${enrollmentId}:${item.node.id}`
+      lessonStates[item.lessonKey] = buildLessonState(
+        item.node,
+        progressByKey.get(key),
+        attemptsByKey.get(key) ?? [],
+        assignmentByKey.get(key),
+        locks[item.lessonKey] ?? { locked: false },
+      )
+    }
+    return lessonStates
+  }
+
+  for (const enrollment of enrollments) {
+    const courses =
+      enrollment.program?.programCourses.map((link) => link.course) ??
+      (enrollment.course ? [enrollment.course] : [])
+    const summaries: EnrollmentCourseSummary[] = courses.map((course) => {
+      const progressEnrollment = resolveEnrollmentInMemory(enrollment.userId, course.id, enrollment)
+      const lessonStates = buildLessonStatesInMemory(progressEnrollment.id, course)
       const openAssessments = flattenNodes(course).flatMap((item) => {
         const type = nodeTypeKey(item.node.nodeType)
         if (type !== "quiz" && type !== "assignment") return []
@@ -1035,8 +1154,16 @@ export async function summarizeEnrollmentCourses(enrollmentId: string): Promise<
         progress: computeProgress(course, lessonStates),
         openAssessments,
       }
-    }),
-  )
+    })
+    result.set(enrollment.id, summaries)
+  }
+
+  return result
+}
+
+export async function summarizeEnrollmentCourses(enrollmentId: string): Promise<EnrollmentCourseSummary[]> {
+  const batch = await summarizeEnrollmentsCoursesBatch([enrollmentId])
+  return batch.get(enrollmentId) ?? []
 }
 
 export function formatVideoMedia(node: CurriculumNode) {

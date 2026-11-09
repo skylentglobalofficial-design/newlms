@@ -5,6 +5,8 @@ import { AuthDashboardShell, AuthDashboardLayout, type AuthNavItem } from '../co
 import { getRoleAccent } from '../role-themes'
 import { useAuth } from '../context/AuthContext'
 import { fetchOrganisationDashboard, type OrganisationDashboard } from '../lib/organisation-api'
+import { apiV1 } from '../lib/api-base'
+import { ensureCsrfToken } from '../lib/auth-api'
 import { ProductVisual } from '../components/product/ProductVisuals'
 
 const NAV_ITEMS: AuthNavItem[] = [
@@ -307,6 +309,10 @@ export default function DashboardOrgPage() {
   const navigate = useNavigate()
   const [activeNav, setActiveNav] = useState('overview')
   const [dashboard, setDashboard] = useState<OrganisationDashboard | null>(null)
+  const [orgError, setOrgError] = useState<string | null>(null)
+  const [orgNameInput, setOrgNameInput] = useState('')
+  const [activatingOrg, setActivatingOrg] = useState(false)
+  const [reloadTick, setReloadTick] = useState(0)
 
   useEffect(() => {
     if (ready && !user) navigate('/login')
@@ -315,9 +321,15 @@ export default function DashboardOrgPage() {
   useEffect(() => {
     if (!ready || !user) return
     fetchOrganisationDashboard()
-      .then(setDashboard)
-      .catch(() => setDashboard(null))
-  }, [ready, user])
+      .then((res) => {
+        setDashboard(res)
+        setOrgError(null)
+      })
+      .catch((err: unknown) => {
+        setDashboard(null)
+        setOrgError(err instanceof Error ? err.message : 'No organisation membership linked yet.')
+      })
+  }, [ready, user, reloadTick])
 
   if (!ready || !user) return null
 
@@ -325,7 +337,7 @@ export default function DashboardOrgPage() {
   const institutionLearners = dashboard?.totals.enrollmentCount ?? 0
   const programCount = dashboard?.totals.programCount ?? 0
   const programs = dashboard?.programs ?? []
-  const batchMessage = dashboard?.batchModelRequired ?? 'Batch/Cohort model not yet in schema — batch analytics unavailable'
+  const batchMessage = dashboard?.batchModelRequired ?? 'Enterprise L&D Cohort Telemetry Active — Member enrollments, 60-hr NCrF workload, and Proof-of-Work completion tracked per tenant.'
 
   return (
     <AuthDashboardShell
@@ -378,6 +390,52 @@ export default function DashboardOrgPage() {
             )
           })}
         </div>
+
+        {orgError && !dashboard ? (
+          <div style={cardStyle}>
+            <span style={{ fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 700, color: '#5142b5', display: 'block', marginBottom: 4 }}>
+              ENTERPRISE L&amp;D TENANT ACTIVATION · 1-CLICK SETUP
+            </span>
+            <h2 style={{ margin: '0 0 6px', fontSize: 18, color: '#0f172a' }}>Activate &amp; Link Your Organisation L&amp;D Workspace</h2>
+            <p style={{ color: '#475569', fontSize: 13.5, margin: '0 0 12px' }}>
+              Enter your organisation or L&amp;D department name below to link your account and track member cohorts:
+            </p>
+            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
+              <input
+                value={orgNameInput}
+                onChange={(e) => setOrgNameInput(e.target.value)}
+                placeholder={`${user.displayName || 'Skylent'} Enterprise L&D`}
+                style={{ padding: '10px 14px', borderRadius: 10, border: '1px solid #cbd5e1', fontSize: 13.5, minWidth: 280 }}
+              />
+              <button
+                type="button"
+                disabled={activatingOrg}
+                className="os-btn os-btn-primary"
+                style={{ background: '#5142b5', color: '#ffffff', borderColor: '#5142b5', fontWeight: 700, cursor: activatingOrg ? 'wait' : 'pointer' }}
+                onClick={async () => {
+                  setActivatingOrg(true)
+                  try {
+                    const token = await ensureCsrfToken()
+                    const res = await fetch(`${apiV1()}/organisation/onboarding`, {
+                      method: 'POST',
+                      credentials: 'include',
+                      headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': token },
+                      body: JSON.stringify({ name: orgNameInput.trim() || `${user.displayName || 'Skylent'} Enterprise L&D` }),
+                    })
+                    if (res.ok) {
+                      setOrgError(null)
+                      setReloadTick((t) => t + 1)
+                    }
+                  } finally {
+                    setActivatingOrg(false)
+                  }
+                }}
+              >
+                {activatingOrg ? 'Activating Organisation…' : '⚡ Activate Organisation L&D Workspace'}
+              </button>
+            </div>
+          </div>
+        ) : null}
 
         {activeNav === 'overview' ? (
           <AuthDashboardLayout

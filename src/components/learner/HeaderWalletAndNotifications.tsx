@@ -19,13 +19,30 @@ export {
   type SkylentNotificationItem,
 }
 
+let doubtsInFlight: Promise<LearnerDoubtRecord[]> | null = null
+let doubtsCached: { data: LearnerDoubtRecord[]; ts: number } | null = null
+
 async function fetchLearnerDoubts(signal?: AbortSignal): Promise<LearnerDoubtRecord[]> {
-  const response = await fetch(`${apiV1()}/lms/doubts/mine`, {
-    credentials: "include",
-    signal,
+  if (doubtsCached && Date.now() - doubtsCached.ts < 8000) {
+    return doubtsCached.data
+  }
+  if (doubtsInFlight) {
+    return doubtsInFlight
+  }
+  const req = (async () => {
+    const response = await fetch(`${apiV1()}/lms/doubts/mine`, {
+      credentials: "include",
+      signal,
+    })
+    const body = await parseApiJson<{ data: LearnerDoubtRecord[] }>(response)
+    const rows = body.data ?? []
+    doubtsCached = { data: rows, ts: Date.now() }
+    return rows
+  })().finally(() => {
+    doubtsInFlight = null
   })
-  const body = await parseApiJson<{ data: LearnerDoubtRecord[] }>(response)
-  return body.data ?? []
+  doubtsInFlight = req
+  return req
 }
 
 function readSeenIds(userId: string): Set<string> {
@@ -96,8 +113,14 @@ export function HeaderWalletAndNotifications({ variant = "public" }: { variant?:
   useEffect(() => {
     if (!user) return
     const controller = new AbortController()
-    void refreshData(controller.signal)
-    return () => controller.abort()
+    const isStaffRole = user.role !== "student"
+    const timer = window.setTimeout(() => {
+      void refreshData(controller.signal)
+    }, isStaffRole ? 140 : 0)
+    return () => {
+      window.clearTimeout(timer)
+      controller.abort()
+    }
   }, [user, refreshData])
 
   useEffect(() => {

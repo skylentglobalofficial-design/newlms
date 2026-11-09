@@ -1,7 +1,7 @@
 import { Router } from "express"
 import { z } from "zod"
 import { prisma } from "../lib/prisma.js"
-import { requireAuth, type AuthenticatedRequest } from "../lib/auth.js"
+import { requireAuth, requireCsrf, type AuthenticatedRequest } from "../lib/auth.js"
 import { hasApiRole, requireRoles } from "../lib/roles.js"
 import { capabilityAvailable, isDatabaseUnavailableError, isMissingSchemaError, UNAVAILABLE_MESSAGES, unavailableBody } from "../lib/schema-capabilities.js"
 
@@ -69,6 +69,36 @@ async function membershipFor(userId: string) {
   })
 }
 
+
+const onboardCollegeSchema = z.object({
+  name: z.string().trim().min(2).max(120),
+})
+
+collegeRouter.post("/onboarding", requireAuth, requireRoles("college", "superadmin"), requireCsrf, async (req: AuthenticatedRequest, res) => {
+  const parsed = onboardCollegeSchema.safeParse(req.body)
+  if (!parsed.success) return res.status(400).json({ error: "Validation failed" })
+  try {
+    const userId = req.auth!.user.id
+    const baseSlug = parsed.data.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 56) || "partner-college"
+    const slug = `${baseSlug}-${Date.now().toString(36)}`
+    const college = await prisma.college.create({
+      data: { name: parsed.data.name, slug },
+    })
+    await prisma.collegeMembership.upsert({
+      where: { collegeId_userId: { collegeId: college.id, userId } },
+      update: {},
+      create: { collegeId: college.id, userId },
+    })
+    res.status(201).json({ data: { id: college.id, slug: college.slug, name: college.name } })
+  } catch (error) {
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+      return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.college))
+    }
+    console.error("Failed to onboard college:", error instanceof Error ? error.name : "unknown")
+    res.status(500).json({ error: "Failed to onboard college" })
+  }
+})
+
 collegeRouter.get("/dashboard", requireAuth, requireRoles("college", "superadmin"), async (req: AuthenticatedRequest, res) => {
   const requested = z.string().uuid().optional().safeParse(typeof req.query.collegeId === "string" ? req.query.collegeId : undefined)
   if (!requested.success) return res.status(400).json({ error: "Invalid college" })
@@ -76,7 +106,16 @@ collegeRouter.get("/dashboard", requireAuth, requireRoles("college", "superadmin
   try {
     const own = await membershipFor(req.auth!.user.id)
     const superadmin = hasApiRole(req, "superadmin")
-    const collegeId = superadmin && requested.data ? requested.data : own?.collegeId
+    let collegeId = superadmin && requested.data ? requested.data : own?.collegeId
+    if (!collegeId && superadmin) {
+      let fallback = await prisma.college.findFirst({ orderBy: { createdAt: "asc" } })
+      if (!fallback) {
+        fallback = await prisma.college.create({
+          data: { slug: "demo-skylent-partner-college", name: "Skylent Partner Institute (Demo)" },
+        })
+      }
+      collegeId = fallback.id
+    }
     if (!collegeId) {
       return res.status(403).json({ error: "No college membership found" })
     }
@@ -144,7 +183,11 @@ collegeRouter.get("/dashboard/export.csv", requireAuth, requireRoles("college", 
   try {
     const own = await membershipFor(req.auth!.user.id)
     const superadmin = hasApiRole(req, "superadmin")
-    const collegeId = superadmin && requested.data ? requested.data : own?.collegeId
+    let collegeId = superadmin && requested.data ? requested.data : own?.collegeId
+    if (!collegeId && superadmin) {
+      const fallback = await prisma.college.findFirst({ orderBy: { createdAt: "asc" } })
+      collegeId = fallback?.id
+    }
     if (!collegeId) return res.status(403).json({ error: "No college membership found" })
     if (!superadmin && requested.data && requested.data !== own?.collegeId) {
       return res.status(403).json({ error: "That college is outside your membership" })

@@ -41,6 +41,7 @@ import {
   loadLessonStates,
   resolveCourseEnrollment,
   summarizeEnrollmentCourses,
+  summarizeEnrollmentsCoursesBatch,
   syncCertificateState,
 } from "../lib/lms.js"
 
@@ -194,7 +195,8 @@ lmsRouter.get("/enrollments", requireAuth, async (req: AuthenticatedRequest, res
       },
     })
 
-    const data = await Promise.all(enrollments.map(async (entry) => {
+    const summariesByEnrollmentId = await summarizeEnrollmentsCoursesBatch(enrollments.map((entry) => entry.id))
+    const data = enrollments.map((entry) => {
       const linkedCourses =
         entry.program?.programCourses.map((link) => ({
           slug: link.course.slug,
@@ -202,7 +204,7 @@ lmsRouter.get("/enrollments", requireAuth, async (req: AuthenticatedRequest, res
         })) ??
         (entry.course ? [{ slug: entry.course.slug, title: entry.course.title }] : [])
       const linkedCourse = entry.course ?? entry.program?.programCourses[0]?.course ?? null
-      const courses = await summarizeEnrollmentCourses(entry.id)
+      const courses = summariesByEnrollmentId.get(entry.id) ?? []
       return {
         id: entry.id,
         status: entry.status,
@@ -217,7 +219,7 @@ lmsRouter.get("/enrollments", requireAuth, async (req: AuthenticatedRequest, res
         createdAt: entry.createdAt.toISOString(),
         updatedAt: entry.updatedAt.toISOString(),
       }
-    }))
+    })
     res.json({ data })
   } catch (error) {
     sendLmsFailure(res, error, "Failed to list enrollments")

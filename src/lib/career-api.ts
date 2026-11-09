@@ -464,6 +464,15 @@ export async function listEmployerJobs(): Promise<EmployerJobBoard> {
   return { jobs: result.data, employers: result.employers, linked: result.meta.linked }
 }
 
+export async function onboardEmployerProfile(input: {
+  name: string
+  location?: string | null
+  website?: string | null
+}): Promise<EmployerSummary> {
+  const result = await careerMutate<{ data: EmployerSummary }>("/career/employer/onboarding", "POST", input)
+  return result.data
+}
+
 export async function createEmployerJob(input: EmployerJobInput): Promise<JobListing> {
   const result = await careerMutate<{ data: JobListing }>("/career/employer/jobs", "POST", input)
   return result.data

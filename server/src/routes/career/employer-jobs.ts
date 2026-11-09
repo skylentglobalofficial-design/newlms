@@ -101,6 +101,58 @@ async function ownedJob(userId: string, jobId: string) {
   })
 }
 
+
+const onboardEmployerSchema = z.object({
+  name: z.string().trim().min(2).max(120),
+  location: z.string().trim().max(120).nullable().optional(),
+  website: z.string().trim().url().max(300).nullable().optional(),
+})
+
+employerJobsRouter.post("/onboarding", ...guards, requireCsrf, async (req: AuthenticatedRequest, res) => {
+  const parsed = onboardEmployerSchema.safeParse(req.body)
+  if (!parsed.success) return validationError(res, parsed.error)
+
+  try {
+    const userId = req.auth!.user.id
+    const baseSlug = slugify(parsed.data.name)
+    const existingEmployer = await prisma.employer.findUnique({ where: { slug: baseSlug } })
+    const slug = existingEmployer ? `${baseSlug.slice(0, 56)}-${Date.now().toString(36)}` : baseSlug
+
+    const employer = await prisma.employer.create({
+      data: {
+        name: parsed.data.name,
+        slug,
+        location: parsed.data.location ?? "Remote / Hybrid",
+        website: parsed.data.website ?? null,
+        verified: true,
+      },
+    })
+
+    await prisma.employerMembership.upsert({
+      where: {
+        employerId_userId: {
+          employerId: employer.id,
+          userId,
+        },
+      },
+      update: {},
+      create: {
+        employerId: employer.id,
+        userId,
+        role: "OWNER",
+      },
+    })
+
+    res.status(201).json({ data: serializeEmployer(employer) })
+  } catch (error) {
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+      return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.employerMembership))
+    }
+    console.error("Failed to onboard employer:", error instanceof Error ? error.name : "unknown")
+    res.status(500).json({ error: "Failed to create and link employer profile" })
+  }
+})
+
 employerJobsRouter.get("/jobs", ...guards, async (req: AuthenticatedRequest, res) => {
   try {
     const userId = req.auth!.user.id

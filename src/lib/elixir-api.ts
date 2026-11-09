@@ -50,8 +50,31 @@ async function elixirPost<T>(path: string, body: Record<string, unknown>): Promi
   return parseApiJson<T>(response)
 }
 
+let walletInFlight: Promise<{ data: ElixirWallet }> | null = null
+let walletCached: { data: ElixirWallet; ts: number } | null = null
+
+export function invalidateElixirWalletCache() {
+  walletCached = null
+  walletInFlight = null
+}
+
 export function fetchElixirWallet(signal?: AbortSignal) {
-  return elixirGet<{ data: ElixirWallet }>("/elixir", signal)
+  if (walletCached && Date.now() - walletCached.ts < 8000) {
+    return Promise.resolve({ data: walletCached.data })
+  }
+  if (walletInFlight) {
+    return walletInFlight
+  }
+  const req = elixirGet<{ data: ElixirWallet }>("/elixir", signal)
+    .then((res) => {
+      walletCached = { data: res.data, ts: Date.now() }
+      return res
+    })
+    .finally(() => {
+      walletInFlight = null
+    })
+  walletInFlight = req
+  return req
 }
 
 export function fetchElixirResources(signal?: AbortSignal) {
@@ -59,5 +82,8 @@ export function fetchElixirResources(signal?: AbortSignal) {
 }
 
 export function purchaseElixirResource(slug: string) {
-  return elixirPost<{ data: { balance: number; price: number; title: string } }>(`/elixir/resources/${slug}/purchase`, {})
+  return elixirPost<{ data: { balance: number; price: number; title: string } }>(`/elixir/resources/${slug}/purchase`, {}).then((res) => {
+    invalidateElixirWalletCache()
+    return res
+  })
 }

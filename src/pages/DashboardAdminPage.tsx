@@ -1159,7 +1159,7 @@ function AdminLessonMediaSection() {
 }
 
 export default function DashboardAdminPage() {
-  const { user, ready, authorized } = useRequireRole('superadmin')
+  const { user, ready, authorized } = useRequireRole('superadmin', 'admin')
   const { user: authUser } = useAuth()
   const [activeNav, setActiveNav] = useState('overview')
 

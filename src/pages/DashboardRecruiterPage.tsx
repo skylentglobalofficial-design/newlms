@@ -8,6 +8,7 @@ import {
   createEmployerJob,
   listEmployerJobApplications,
   listEmployerJobs,
+  onboardEmployerProfile,
   publishEmployerJob,
   updateEmployerJob,
   type EmployerSummary,
@@ -93,6 +94,9 @@ export default function DashboardRecruiterPage() {
   const [draft, setDraft] = useState<JobDraft>(emptyDraft)
   const [editing, setEditing] = useState(false)
   const [saving, setSaving] = useState(false)
+  const [companyName, setCompanyName] = useState('')
+  const [companyLocation, setCompanyLocation] = useState('Bengaluru · Remote / Hybrid')
+  const [linkingCompany, setLinkingCompany] = useState(false)
   const [applications, setApplications] = useState<SharedJobApplication[]>([])
   const [applicationsStatus, setApplicationsStatus] = useState<'idle' | 'loading' | 'ready' | 'error'>('idle')
   const [applicationsAttempt, setApplicationsAttempt] = useState(0)
@@ -318,20 +322,66 @@ export default function DashboardRecruiterPage() {
         {status === 'ready' && !linked && activeNav !== 'verify' ? (
           <div style={panelStyle}>
             <span style={{ display: "inline-block", fontSize: 11, fontFamily: "var(--font-mono)", fontWeight: 700, color: "#5142b5", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 4 }}>
-              EMPLOYER LINKING GUIDE · 2-CLICK SETUP
+              INSTANT RECRUITER ACTIVATION · 1-CLICK COMPANY SETUP
             </span>
-            <h2 style={{ margin: '0 0 8px', fontSize: 18, color: '#0f172a' }}>Link an Employer Profile to Post Jobs</h2>
+            <h2 style={{ margin: '0 0 8px', fontSize: 18, color: '#0f172a' }}>Create &amp; Link Your Company Profile to Publish Jobs</h2>
             <p style={{ color: '#475569', margin: '0 0 14px', lineHeight: 1.6, fontSize: 13.5 }}>
-              To publish jobs to the Career OS board, open <strong>Admin OS → Employers &amp; Hiring</strong>, create an Employer profile, and link your user UUID (<code>{user.id}</code>). Meanwhile, you can verify any candidate&apos;s Proof-of-Work Dossier below!
+              Enter your company or hiring team name below to instantly link your Recruiter account and unlock the Skill-Gap Matched Job Publisher.
             </p>
-            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-              <Link to="/dashboard/admin" className="os-btn os-btn-primary" style={{ background: '#5142b5', color: '#ffffff', borderColor: '#5142b5', textDecoration: 'none', fontWeight: 700 }}>
-                Open Admin Employer Linker →
-              </Link>
-              <button type="button" className="os-btn os-btn-ghost" onClick={() => setActiveNav('verify')}>
-                Open Candidate Dossier Verifier →
-              </button>
-            </div>
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault()
+                const targetName = companyName.trim() || `${user.displayName || 'Skylent'} Hiring Partner`
+                setLinkingCompany(true)
+                setMessage(null)
+                try {
+                  await onboardEmployerProfile({
+                    name: targetName,
+                    location: companyLocation.trim() || 'Remote / Hybrid',
+                  })
+                  await load()
+                } catch (err) {
+                  setMessage(err instanceof Error ? err.message : 'Could not activate company profile.')
+                } finally {
+                  setLinkingCompany(false)
+                }
+              }}
+              style={{ display: 'grid', gap: 12, maxWidth: 640 }}
+            >
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 10 }}>
+                <label style={{ display: 'grid', gap: 4, color: C.slate, fontSize: 12, fontWeight: 600 }}>
+                  Company / Employer Name
+                  <input
+                    value={companyName}
+                    onChange={(e) => setCompanyName(e.target.value)}
+                    placeholder={`${user.displayName || 'Acme'} Technologies`}
+                    style={fieldStyle}
+                  />
+                </label>
+                <label style={{ display: 'grid', gap: 4, color: C.slate, fontSize: 12, fontWeight: 600 }}>
+                  Hiring Location / Mode
+                  <input
+                    value={companyLocation}
+                    onChange={(e) => setCompanyLocation(e.target.value)}
+                    placeholder="Bengaluru · Remote / Hybrid"
+                    style={fieldStyle}
+                  />
+                </label>
+              </div>
+              <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                <button
+                  type="submit"
+                  disabled={linkingCompany}
+                  className="os-btn os-btn-primary"
+                  style={{ background: '#5142b5', color: '#ffffff', borderColor: '#5142b5', fontWeight: 700, cursor: linkingCompany ? 'wait' : 'pointer' }}
+                >
+                  {linkingCompany ? 'Activating Company Workspace…' : '⚡ Activate Company Profile & Unlock Job Posting'}
+                </button>
+                <button type="button" className="os-btn os-btn-ghost" onClick={() => setActiveNav('verify')}>
+                  Verify Candidate Proof-of-Work Dossier →
+                </button>
+              </div>
+            </form>
           </div>
         ) : null}
 

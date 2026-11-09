@@ -82,7 +82,15 @@ function fileToBase64(file: File): Promise<string> {
   })
 }
 
-function TeachingEmptyState({ message }: { message?: string | null }) {
+function TeachingEmptyState({
+  message,
+  onOpenCurriculum,
+  onQuickActivate,
+}: {
+  message?: string | null
+  onOpenCurriculum?: () => void
+  onQuickActivate?: () => void
+}) {
   return (
     <div style={{
       background: 'linear-gradient(135deg, #3b2d96 0%, #5142b5 100%)',
@@ -99,11 +107,50 @@ function TeachingEmptyState({ message }: { message?: string | null }) {
         Teaching scope &amp; V1 → V2 Red-Line Review Queue
       </h1>
       <p style={{ color: 'rgba(255,255,255,0.88)', fontSize: 15, margin: '0 0 10px', lineHeight: 1.55 }}>
-        Resolve learner doubts within the 20-minute SLA and grade Capstone Version 1 → Version 2 Red-Line Diffs below.
+        Resolve learner doubts within the 20-minute SLA, edit course modules/lectures, and upload videos or study materials below.
       </p>
-      <p style={{ color: 'rgba(255,255,255,0.75)', fontSize: 13.5, margin: 0, lineHeight: 1.6, maxWidth: 680 }}>
+      <p style={{ color: 'rgba(255,255,255,0.78)', fontSize: 13.5, margin: '0 0 16px', lineHeight: 1.6, maxWidth: 680 }}>
         {message ?? 'All 6 simulated company tracks route live learner doubts and rubric submissions directly to this terminal.'}
       </p>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
+        {onQuickActivate ? (
+          <button
+            type="button"
+            onClick={onQuickActivate}
+            style={{
+              background: '#ffffff',
+              color: '#5142b5',
+              border: '1px solid #ffffff',
+              padding: '10px 18px',
+              borderRadius: 999,
+              fontSize: 13,
+              fontWeight: 700,
+              cursor: 'pointer',
+              boxShadow: '0 8px 20px -8px rgba(0, 0, 0, 0.25)',
+            }}
+          >
+            ⚡ Load &amp; Activate My 6 Teaching Courses
+          </button>
+        ) : null}
+        {onOpenCurriculum ? (
+          <button
+            type="button"
+            onClick={onOpenCurriculum}
+            style={{
+              background: 'rgba(255,255,255,0.16)',
+              color: '#ffffff',
+              border: '1px solid rgba(255,255,255,0.38)',
+              padding: '10px 18px',
+              borderRadius: 999,
+              fontSize: 13,
+              fontWeight: 700,
+              cursor: 'pointer',
+            }}
+          >
+            🎬 Open My Courses &amp; Upload Video / Material →
+          </button>
+        ) : null}
+      </div>
     </div>
   )
 }
@@ -1464,7 +1511,14 @@ export default function DashboardFacultyPage() {
                     onAuthorLecture={() =>setActiveNav('curriculum')}
                   />
                 ) : (
-                  <TeachingEmptyState message={dashboard?.teachingScopeMessage} />
+                  <TeachingEmptyState
+                    message={dashboard?.teachingScopeMessage}
+                    onOpenCurriculum={() => setActiveNav('curriculum')}
+                    onQuickActivate={async () => {
+                      await claimFacultyDefaultScope().catch(() => null)
+                      reloadAll()
+                    }}
+                  />
                 )}
                 <FacultyDoubtQueue doubts={doubts} onResolve={(id, note) =>void handleResolveDoubt(id, note)} resolvingId={resolvingDoubtId} />
                 <div id="faculty-assignments">

@@ -1,3 +1,4 @@
+import { getServerAuthoredQuiz } from "./authored-quiz-banks.js"
 import { CurriculumNodeType } from "@prisma/client"
 import { prisma } from "./prisma.js"
 
@@ -300,13 +301,145 @@ export const CANONICAL_COURSE_MODULES: Record<string, CanonicalModule[]> = {
 }
 
 const syncedSlugs = new Set<string>()
+let inFlightSyncPromise: Promise<void> | null = null
 
-/**
- * Ensures the PostgreSQL database (`CurriculumModule` & `CurriculumNode`) for any flagship course
- * matches the canonical 5-module, 15-lesson curriculum used by the Student Learning Player,
- * UNLESS the course has been explicitly edited in the Admin/Teacher Course Builder (`authoredInApp === true`).
- * Updates rows in-place by order/sourceId so existing learner progress foreign keys are preserved.
- */
+async function runCanonicalSyncBatch(pendingSlugs: string[]): Promise<void> {
+  const courses = await prisma.course.findMany({
+    where: { slug: { in: pendingSlugs } },
+    include: {
+      curriculum: {
+        orderBy: { order: "asc" },
+        include: { nodes: { orderBy: { order: "asc" } } },
+      },
+    },
+  }).catch(() => [])
+
+  const courseBySlug = new Map(courses.map((c) => [c.slug, c]))
+
+  for (const slug of pendingSlugs) {
+    const canonical = CANONICAL_COURSE_MODULES[slug]
+    if (!canonical) continue
+    const course = courseBySlug.get(slug)
+    if (!course) continue
+    syncedSlugs.add(slug)
+
+    if ((course as { authoredInApp?: boolean }).authoredInApp) continue
+
+    const currentMods = course.curriculum
+    const needsSync =
+      currentMods.length < canonical.length ||
+      currentMods[0]?.title !== canonical[0].title ||
+      currentMods.some((m, idx) => canonical[idx] && m.nodes.length < canonical[idx].lessons.length)
+
+    if (!needsSync) {
+      for (const mod of currentMods) {
+        for (const node of mod.nodes) {
+          if (node.nodeType === CurriculumNodeType.QUIZ && node.sourceId) {
+            const qCount = await prisma.quizQuestion.count({ where: { nodeId: node.id } }).catch(() => 0)
+            if (qCount === 0) {
+              const bank = getServerAuthoredQuiz(slug, node.sourceId)
+              if (bank && bank.length > 0) {
+                await prisma.quizQuestion.createMany({
+                  data: bank.map((q, qIdx) => ({
+                    nodeId: node.id,
+                    sortOrder: qIdx,
+                    question: q.question,
+                    options: [...q.options],
+                    correctIndex: q.correctIndex,
+                  })),
+                }).catch(() => undefined)
+              }
+            }
+          }
+        }
+      }
+      continue
+    }
+
+    for (let mIdx = 0; mIdx < canonical.length; mIdx++) {
+      const specMod = canonical[mIdx]
+      const existingMod = currentMods.find((m) => m.sourceId === specMod.id) ?? currentMods[mIdx]
+      let modId: string
+      if (existingMod) {
+        await prisma.curriculumModule.update({
+          where: { id: existingMod.id },
+          data: {
+            sourceId: specMod.id,
+            order: mIdx,
+            title: specMod.title,
+          },
+        }).catch(() => undefined)
+        modId = existingMod.id
+      } else {
+        const createdMod = await prisma.curriculumModule.create({
+          data: {
+            courseId: course.id,
+            sourceId: specMod.id,
+            order: mIdx,
+            title: specMod.title,
+            topics: [],
+          },
+        })
+        modId = createdMod.id
+      }
+
+      const existingNodes = existingMod?.nodes ?? []
+      for (let lIdx = 0; lIdx < specMod.lessons.length; lIdx++) {
+        const specLec = specMod.lessons[lIdx]
+        const existingNode = existingNodes.find((n) => n.sourceId === specLec.id) ?? existingNodes[lIdx]
+        let nodeId: string | undefined = existingNode?.id
+        if (existingNode) {
+          await prisma.curriculumNode.update({
+            where: { id: existingNode.id },
+            data: {
+              moduleId: modId,
+              sourceId: specLec.id,
+              order: lIdx,
+              title: specLec.title,
+              nodeType: specLec.nodeType,
+              duration: specLec.duration,
+            },
+          }).catch(() => undefined)
+        } else {
+          const createdNode = await prisma.curriculumNode.create({
+            data: {
+              moduleId: modId,
+              sourceId: specLec.id,
+              order: lIdx,
+              title: specLec.title,
+              nodeType: specLec.nodeType,
+              duration: specLec.duration,
+            },
+          }).catch(() => undefined)
+          nodeId = createdNode?.id
+        }
+        if (nodeId && specLec.nodeType === CurriculumNodeType.QUIZ) {
+          const qCount = await prisma.quizQuestion.count({ where: { nodeId } }).catch(() => 0)
+          if (qCount === 0) {
+            const bank = getServerAuthoredQuiz(slug, specLec.id)
+            if (bank && bank.length > 0) {
+              await prisma.quizQuestion.createMany({
+                data: bank.map((q, qIdx) => ({
+                  nodeId,
+                  sortOrder: qIdx,
+                  question: q.question,
+                  options: [...q.options],
+                  correctIndex: q.correctIndex,
+                })),
+              }).catch(() => undefined)
+            }
+          }
+        }
+      }
+    }
+
+    await prisma.course.update({
+      where: { id: course.id },
+      data: { lessonCount: 15 },
+    }).catch(() => undefined)
+  }
+}
+
 export async function ensureCanonicalCourseCurriculumSynced(targetSlug?: string): Promise<void> {
   if (process.env.NODE_ENV === "test") return
   try {
@@ -318,96 +451,16 @@ export async function ensureCanonicalCourseCurriculumSynced(targetSlug?: string)
     const pendingSlugs = slugs.filter((s) => !syncedSlugs.has(s))
     if (pendingSlugs.length === 0) return
 
-    for (const slug of pendingSlugs) {
-      const canonical = CANONICAL_COURSE_MODULES[slug]
-      if (!canonical) continue
-      const course = await prisma.course.findUnique({
-        where: { slug },
-        include: {
-          curriculum: {
-            orderBy: { order: "asc" },
-            include: { nodes: { orderBy: { order: "asc" } } },
-          },
-        },
-      }).catch(() => null)
-
-      if (!course) continue
-      syncedSlugs.add(slug)
-
-      // If Admin or Teacher already customized this course via Course Builder, preserve their edits!
-      if ((course as { authoredInApp?: boolean }).authoredInApp) continue
-
-      const currentMods = course.curriculum
-      const needsSync =
-        currentMods.length < canonical.length ||
-        currentMods[0]?.title !== canonical[0].title ||
-        currentMods.some((m, idx) => canonical[idx] && m.nodes.length < canonical[idx].lessons.length)
-
-      if (!needsSync) continue
-
-      for (let mIdx = 0; mIdx < canonical.length; mIdx++) {
-        const specMod = canonical[mIdx]
-        const existingMod = currentMods.find((m) => m.sourceId === specMod.id) ?? currentMods[mIdx]
-        let modId: string
-        if (existingMod) {
-          await prisma.curriculumModule.update({
-            where: { id: existingMod.id },
-            data: {
-              sourceId: specMod.id,
-              order: mIdx,
-              title: specMod.title,
-            },
-          }).catch(() => undefined)
-          modId = existingMod.id
-        } else {
-          const createdMod = await prisma.curriculumModule.create({
-            data: {
-              courseId: course.id,
-              sourceId: specMod.id,
-              order: mIdx,
-              title: specMod.title,
-              topics: [],
-            },
-          })
-          modId = createdMod.id
-        }
-
-        const existingNodes = existingMod?.nodes ?? []
-        for (let lIdx = 0; lIdx < specMod.lessons.length; lIdx++) {
-          const specLec = specMod.lessons[lIdx]
-          const existingNode = existingNodes.find((n) => n.sourceId === specLec.id) ?? existingNodes[lIdx]
-          if (existingNode) {
-            await prisma.curriculumNode.update({
-              where: { id: existingNode.id },
-              data: {
-                moduleId: modId,
-                sourceId: specLec.id,
-                order: lIdx,
-                title: specLec.title,
-                nodeType: specLec.nodeType,
-                duration: specLec.duration,
-              },
-            }).catch(() => undefined)
-          } else {
-            await prisma.curriculumNode.create({
-              data: {
-                moduleId: modId,
-                sourceId: specLec.id,
-                order: lIdx,
-                title: specLec.title,
-                nodeType: specLec.nodeType,
-                duration: specLec.duration,
-              },
-            }).catch(() => undefined)
-          }
-        }
-      }
-
-      await prisma.course.update({
-        where: { id: course.id },
-        data: { lessonCount: 15 },
-      }).catch(() => undefined)
+    if (inFlightSyncPromise) {
+      await inFlightSyncPromise
+      const stillPending = pendingSlugs.filter((s) => !syncedSlugs.has(s))
+      if (stillPending.length === 0) return
     }
+
+    inFlightSyncPromise = runCanonicalSyncBatch(pendingSlugs).finally(() => {
+      inFlightSyncPromise = null
+    })
+    await inFlightSyncPromise
   } catch {
     // Non-fatal in offline/mock environments
   }

@@ -67,11 +67,32 @@ export type CertificateVerification =
 /** Matches the server's validation in routes/skylent/certificates.ts. */
 export const CERTIFICATE_CODE_PATTERN = /^SKL-\d{4}-[A-Z0-9]{1,6}-[A-Z0-9]{4,8}$/
 
+let certsInFlight: Promise<SkylentCertificate[]> | null = null
+let certsCached: { data: SkylentCertificate[]; ts: number } | null = null
+
+export function invalidateMyCertificatesCache() {
+  certsCached = null
+  certsInFlight = null
+}
+
 /** GET /certificates/mine — the signed-in learner's certificates, newest first. */
 export async function fetchMyCertificates(signal?: AbortSignal): Promise<SkylentCertificate[]> {
-  const response = await fetch(`${API_BASE}/certificates/mine`, { credentials: "include", signal })
-  const parsed = await parseApiJson<{ data: SkylentCertificate[] }>(response)
-  return parsed.data
+  if (certsCached && Date.now() - certsCached.ts < 8000) {
+    return Promise.resolve(certsCached.data)
+  }
+  if (certsInFlight) {
+    return certsInFlight
+  }
+  const req = (async () => {
+    const response = await fetch(`${API_BASE}/certificates/mine`, { credentials: "include", signal })
+    const parsed = await parseApiJson<{ data: SkylentCertificate[] }>(response)
+    certsCached = { data: parsed.data, ts: Date.now() }
+    return parsed.data
+  })().finally(() => {
+    certsInFlight = null
+  })
+  certsInFlight = req
+  return req
 }
 
 /** POST /certificates/issue — the server checks eligibility (every lesson complete); 403 if not eligible. */
@@ -84,6 +105,7 @@ export async function issueCertificate(courseSlug: string): Promise<SkylentCerti
     body: JSON.stringify({ courseSlug }),
   })
   const parsed = await parseApiJson<{ data: SkylentCertificate }>(response)
+  invalidateMyCertificatesCache()
   return parsed.data
 }
 
@@ -97,6 +119,7 @@ export async function issueProgrammeCertificate(programSlug: string): Promise<Sk
     body: JSON.stringify({ programSlug }),
   })
   const parsed = await parseApiJson<{ data: SkylentCertificate }>(response)
+  invalidateMyCertificatesCache()
   return parsed.data
 }
 

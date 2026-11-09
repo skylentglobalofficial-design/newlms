@@ -1,9 +1,11 @@
 import "dotenv/config"
 import { PrismaClient, RoleName } from "@prisma/client"
 import { TEST_CONSENT } from "./test-consent-payload.ts"
+import { ensureTestApiServer } from "./ensure-test-api.ts"
 
 const prisma = new PrismaClient()
-const API_BASE = process.env.API_BASE ?? "http://localhost:3000/api/v1"
+let API_BASE = process.env.API_BASE ?? "http://localhost:3000/api/v1"
+let closeTestApiServer: (() => Promise<void>) | null = null
 
 type CookieJar = Map<string, string>
 
@@ -79,6 +81,7 @@ async function completeLesson(jar: CookieJar, courseSlug: string, lessonKey: str
   assert(lesson, `Lesson ${lessonKey} must exist in ${courseSlug}`)
 
   if (lesson.type === "quiz") {
+    await request(jar, `/lms/courses/${courseSlug}/lessons/${lessonKey}/quiz`)
     const course = await prisma.course.findUnique({ where: { slug: courseSlug } })
     assert(course, `Course ${courseSlug} must exist in database`)
     const node = await prisma.curriculumNode.findFirst({
@@ -157,6 +160,9 @@ async function grantRole(email: string, role: "faculty" | "organisation", organi
 }
 
 async function main() {
+  const apiServer = await ensureTestApiServer(API_BASE)
+  API_BASE = apiServer.apiBase
+  closeTestApiServer = apiServer.close
   const courseSlug = "data-analytics"
   const userAJar: CookieJar = new Map()
   const userBJar: CookieJar = new Map()
@@ -535,12 +541,39 @@ async function main() {
   )
   assert(beforeReject === 0 && afterReject === 0, "Rejected Data Science enrolment must not create a row")
 
-  const pythonDirect = await request(programJar, "/lms/enrollments", {
-    method: "POST",
-    csrf: true,
-    body: { consent: TEST_CONSENT, courseSlug: "python-programming" },
+  const tempListingDirectSlug = `phase5-direct-listing-${Date.now()}`
+  await prisma.course.create({
+    data: {
+      slug: tempListingDirectSlug,
+      title: "Temp Direct Listing Only Course",
+      category: "Data",
+      level: "Beginner",
+      duration: "4 weeks",
+      mode: "Self-paced",
+      lessonCount: 0,
+      projectCount: 0,
+      rating: 4.8,
+      reviews: 0,
+      price: 0,
+      originalPrice: 0,
+      desc: "Temporary listing-only course",
+      longDesc: "Temporary listing-only course",
+      outcomes: [],
+      forWhom: [],
+      publicationStatus: "PUBLISHED",
+      authoredInApp: false,
+    },
   })
-  assert(pythonDirect.response.status === 400, `Direct Python enrolment should stay 400, got ${pythonDirect.response.status}`)
+  try {
+    const listingDirect = await request(programJar, "/lms/enrollments", {
+      method: "POST",
+      csrf: true,
+      body: { consent: TEST_CONSENT, courseSlug: tempListingDirectSlug },
+    })
+    assert(listingDirect.response.status === 400, `Direct listing-only enrolment should stay 400, got ${listingDirect.response.status}`)
+  } finally {
+    await prisma.course.delete({ where: { slug: tempListingDirectSlug } }).catch(() => undefined)
+  }
 
   await prisma.userEnrollment.create({
     data: { userId: rejectedLearner.id, programId: dsProgram.id, status: "active" },
@@ -607,9 +640,29 @@ async function main() {
   }
 
   console.log("14c2. OPEN program linked only to listing-only course is rejected")
-  const listingSlug = "python-programming"
-  const listingCourse = await prisma.course.findUnique({ where: { slug: listingSlug } })
-  if (!listingCourse) throw new Error(`Expected seeded listing course ${listingSlug}`)
+  const listingSlug = `phase5-listing-course-${Date.now()}`
+  const listingCourse = await prisma.course.create({
+    data: {
+      slug: listingSlug,
+      title: "Temp Listing Only Course",
+      category: "Data",
+      level: "Beginner",
+      duration: "4 weeks",
+      mode: "Self-paced",
+      lessonCount: 0,
+      projectCount: 0,
+      rating: 4.8,
+      reviews: 0,
+      price: 0,
+      originalPrice: 0,
+      desc: "Temporary listing-only course",
+      longDesc: "Temporary listing-only course",
+      outcomes: [],
+      forWhom: [],
+      publicationStatus: "PUBLISHED",
+      authoredInApp: false,
+    },
+  })
   const listingOnlyProgramSlug = `phase5-open-listing-${Date.now()}`
   await prisma.program.create({
     data: {
@@ -645,7 +698,8 @@ async function main() {
       `OPEN + listing-only link enrollment should be 400, got ${listingOnly.response.status}`,
     )
   } finally {
-    await prisma.program.delete({ where: { slug: listingOnlyProgramSlug } })
+    await prisma.program.delete({ where: { slug: listingOnlyProgramSlug } }).catch(() => undefined)
+    await prisma.course.delete({ where: { id: listingCourse.id } }).catch(() => undefined)
   }
 
   console.log("14d. Programme workspace aggregates linked-course progress and resume")
@@ -887,11 +941,13 @@ async function main() {
   assert(!maliciousRow.attachments[0].storageKey.includes("attacker/owned"), "Client cannot inject storage key")
 
   console.log("All LMS integration checks passed.")
+  if (closeTestApiServer) await closeTestApiServer().catch(() => undefined)
   await prisma.$disconnect()
 }
 
 main().catch(async (error) => {
   console.error(error)
+  if (closeTestApiServer) await closeTestApiServer().catch(() => undefined)
   await prisma.$disconnect()
   process.exit(1)
 })

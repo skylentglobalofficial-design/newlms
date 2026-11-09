@@ -3,9 +3,10 @@ import { RoleName, PrismaClient } from "@prisma/client"
 import { ensureRole } from "../server/src/lib/auth.js"
 import { resolveGoogleAccount, type GoogleIdTokenClaims } from "../server/src/lib/google-oauth.js"
 import { TEST_CONSENT } from "./test-consent-payload.ts"
+import { ensureTestApiServer } from "./ensure-test-api.ts"
 
 const prisma = new PrismaClient()
-const API_BASE = process.env.API_BASE ?? "http://localhost:3000/api/v1"
+let API_BASE = process.env.API_BASE ?? "http://localhost:3000/api/v1"
 const PASSWORD = "role-provisioning-test-123"
 
 type CookieJar = Map<string, string>
@@ -70,6 +71,7 @@ function assertNoSecrets(payload: unknown) {
 
 const createdUserIds: string[] = []
 const createdOrganisationIds: string[] = []
+let closeTestApiServer: (() => Promise<void>) | null = null
 
 async function signup(email: string, displayName: string) {
   const jar: CookieJar = new Map()
@@ -111,6 +113,9 @@ async function login(email: string) {
 }
 
 async function main() {
+  const apiServer = await ensureTestApiServer(API_BASE)
+  API_BASE = apiServer.apiBase
+  closeTestApiServer = apiServer.close
   const stamp = Date.now()
 
   console.log("1. Public signup still creates STUDENT only")
@@ -341,10 +346,6 @@ async function main() {
   const secondAdminList = await request(secondAdminSession.jar, "/admin/users?limit=1")
   assert(secondAdminList.response.ok, "A newly promoted superadmin should reach the admin API")
 
-  // A superadmin can demote another superadmin, but never themselves (test 11),
-  // so the acting account always survives a demotion. The last-superadmin 409
-  // guard in the route is a redundant server-side safety net for non-HTTP
-  // callers and cannot be triggered through the API surface.
   const demoteOtherAdmin = await request(secondAdminSession.jar, `/admin/users/${selfElevate.data.user.id}/role`, {
     method: "PATCH",
     csrf: true,
@@ -379,6 +380,9 @@ async function cleanup() {
     await prisma.organisation
       .deleteMany({ where: { id: { in: createdOrganisationIds } } })
       .catch(() => undefined)
+  }
+  if (closeTestApiServer) {
+    await closeTestApiServer().catch(() => undefined)
   }
   await prisma.$disconnect()
 }

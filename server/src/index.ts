@@ -47,7 +47,7 @@ import { paymentsRouter } from "./routes/payments.js"
 
 assertProductionEnv()
 
-const app = express()
+export const app = express()
 const port = Number(process.env.PORT ?? 3000)
 
 app.disable("x-powered-by")
@@ -207,7 +207,9 @@ async function start(): Promise<void> {
   })
 }
 
-void start()
+if (process.env.SKYLENT_EMBEDDED_TEST_SERVER !== "1") {
+  void start()
+}
 
 let shuttingDown = false
 function shutdown(signal: string) {

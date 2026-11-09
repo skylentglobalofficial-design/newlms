@@ -3,6 +3,7 @@ import { Link } from "react-router-dom"
 import { AuthDashboardShell, type AuthNavItem } from "../components/AuthDashboardShell"
 import { useAuth } from "../context/AuthContext"
 import { apiV1 } from "../lib/api-base"
+import { ensureCsrfToken } from "../lib/auth-api"
 
 type CollegeDashboard = {
   college: { id: string; slug: string; name: string; sample: boolean }
@@ -39,6 +40,9 @@ export default function DashboardCollegePage() {
   const [activeNav, setActiveNav] = useState<string>("overview")
   const [data, setData] = useState<CollegeDashboard | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [collegeNameInput, setCollegeNameInput] = useState("")
+  const [activatingCollege, setActivatingCollege] = useState(false)
+  const [reloadTick, setReloadTick] = useState(0)
 
   useEffect(() => {
     if (!ready || !user) return
@@ -54,7 +58,7 @@ export default function DashboardCollegePage() {
           setError(err instanceof Error ? err.message : "The college dashboard could not be loaded")
       })
     return () => controller.abort()
-  }, [ready, user])
+  }, [ready, user, reloadTick])
 
   if (!ready || !user) return null
 
@@ -165,7 +169,51 @@ export default function DashboardCollegePage() {
           ) : null}
         </section>
 
-        {error ? <p role="alert" className="os-error">{error}</p> : null}
+        {error ? (
+          <div style={cardStyle}>
+            <span style={{ fontSize: 11, fontFamily: "var(--font-mono)", fontWeight: 700, color: "#5142b5", display: "block", marginBottom: 4 }}>
+              INSTITUTIONAL TENANT ACTIVATION · 1-CLICK SETUP
+            </span>
+            <h2 style={{ margin: "0 0 6px", fontSize: 18, color: "#0f172a" }}>Link or Create Your College Workspace</h2>
+            <p role="alert" style={{ color: "#475569", fontSize: 13.5, margin: "0 0 12px" }}>
+              {error} — Enter your college or university name below to activate your NEP 2020 / NAAC Cohort Workspace immediately:
+            </p>
+            <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
+              <input
+                value={collegeNameInput}
+                onChange={(e) => setCollegeNameInput(e.target.value)}
+                placeholder={`${user.displayName || "Skylent"} Partner Institute of Technology`}
+                style={{ padding: "10px 14px", borderRadius: 10, border: "1px solid #cbd5e1", fontSize: 13.5, minWidth: 280 }}
+              />
+              <button
+                type="button"
+                disabled={activatingCollege}
+                className="os-btn os-btn-primary"
+                style={{ background: "#5142b5", color: "#ffffff", borderColor: "#5142b5", fontWeight: 700, cursor: activatingCollege ? "wait" : "pointer" }}
+                onClick={async () => {
+                  setActivatingCollege(true)
+                  try {
+                    const token = await ensureCsrfToken()
+                    const res = await fetch(`${apiV1()}/college/onboarding`, {
+                      method: "POST",
+                      credentials: "include",
+                      headers: { "Content-Type": "application/json", "X-CSRF-Token": token },
+                      body: JSON.stringify({ name: collegeNameInput.trim() || `${user.displayName || "Skylent"} Partner Institute` }),
+                    })
+                    if (res.ok) {
+                      setError(null)
+                      setReloadTick((t) => t + 1)
+                    }
+                  } finally {
+                    setActivatingCollege(false)
+                  }
+                }}
+              >
+                {activatingCollege ? "Activating College Tenant…" : "⚡ Activate My College Workspace"}
+              </button>
+            </div>
+          </div>
+        ) : null}
 
         {data ? (
           <>
