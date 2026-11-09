@@ -68,6 +68,42 @@ export const STARTER_ELIXIR_CASE_STUDIES: readonly StarterElixirResource[] = [
     courseSlug: "data-analytics",
     lessonKey: "l2",
   },
+  {
+    slug: "python-etl-idempotency-playbook",
+    kind: "notes",
+    title: "Python ETL Quarantine & Idempotent Settlement Playbook",
+    summary: "Production patterns for dead-letter quarantine queues, integer-paise arithmetic, and composite deduplication keys.",
+    elixirPrice: 69,
+    courseSlug: "python-programming",
+    lessonKey: "l4",
+  },
+  {
+    slug: "priority-capstone-rubric-fast-track",
+    kind: "case_study",
+    title: "Priority 4-Hour Faculty Capstone Evaluation & Rubric Audit",
+    summary: "Fast-track your Capstone Project Studio submission to the top of the Faculty TA grading queue with line-by-line rubric feedback.",
+    elixirPrice: 99,
+    courseSlug: "data-analytics",
+    lessonKey: "l14",
+  },
+  {
+    slug: "mentorship-dossier-resume-review",
+    kind: "case_study",
+    title: "1:1 Faculty TA Resume & Proof-of-Work Dossier Review",
+    summary: "Redeem Elixir Coins for a personalized 1:1 review of your Career OS profile, GitHub/SQL artifacts, and resume positioning.",
+    elixirPrice: 149,
+    courseSlug: "product-management",
+    lessonKey: "l14",
+  },
+  {
+    slug: "live-mock-interview-defense-pass",
+    kind: "case_study",
+    title: "1:1 Live Mock Technical & Product Boardroom Defense",
+    summary: "Book a 30-minute live mock interview and capstone defense session with a Skylent Faculty mentor before recruiter shortlisting.",
+    elixirPrice: 199,
+    courseSlug: "data-science-ai",
+    lessonKey: "l14",
+  },
 ] as const
 
 export function workshopCoinCashbackForRupees(workshopFeeRupees: number): number {

@@ -1,7 +1,6 @@
 import "dotenv/config"
 import { PrismaClient, RoleName } from "@prisma/client"
-import { TEST_CONSENT } from "./test-consent-payload.ts"
-import { ensureTestApiServer } from "./ensure-test-api.ts"
+import { TEST_CONSENT, ensureTestApiServer } from "./test-consent-payload.ts"
 
 const prisma = new PrismaClient()
 let API_BASE = process.env.API_BASE ?? "http://localhost:3000/api/v1"

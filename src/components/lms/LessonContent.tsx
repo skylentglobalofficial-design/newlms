@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react'
+import { useAuth } from '../../context/AuthContext'
 import type { CourseLesson } from '../../data'
 import type { LessonState } from '../../demo/types'
 import { getCareerEvidence } from '../../content/course-lookups'
@@ -11,6 +13,57 @@ import { AssignmentResponse, type AssignmentRecord } from './AssignmentResponse'
 import { lessonTypeLabel } from './lms-utils'
 
 type Accent = { primary: string; subtle: string; border: string; text: string }
+
+const WATERMARK_POSITIONS: Array<Record<string, string>> = [
+  { top: '12%', left: '8%' },
+  { top: '16%', right: '10%' },
+  { bottom: '18%', left: '12%' },
+  { bottom: '16%', right: '8%' },
+  { top: '44%', left: '28%' },
+]
+
+function LearnerAntiPiracyWatermark() {
+  const { user } = useAuth()
+  const [posIndex, setPosIndex] = useState(0)
+
+  useEffect(() => {
+    const id = window.setInterval(() => {
+      setPosIndex((prev) => (prev + 1) % WATERMARK_POSITIONS.length)
+    }, 6000)
+    return () => window.clearInterval(id)
+  }, [])
+
+  const stamp = user
+    ? `${user.email} · ID:${String(user.id).slice(0, 8).toUpperCase()} · SKYLENT DRM`
+    : 'SKYLENT PROTECTED CONTENT · DO NOT RECORD OR DISTRIBUTE'
+
+  return (
+    <div
+      aria-hidden="true"
+      style={{
+        position: 'absolute',
+        ...WATERMARK_POSITIONS[posIndex],
+        zIndex: 12,
+        pointerEvents: 'none',
+        userSelect: 'none',
+        WebkitUserSelect: 'none',
+        padding: '3px 9px',
+        borderRadius: 6,
+        background: 'rgba(15, 23, 42, 0.34)',
+        color: 'rgba(255, 255, 255, 0.78)',
+        fontSize: 10.5,
+        fontWeight: 600,
+        letterSpacing: '0.04em',
+        fontFamily: 'var(--font-mono, monospace)',
+        transition: 'top 0.6s ease, left 0.6s ease, right 0.6s ease, bottom 0.6s ease',
+        whiteSpace: 'nowrap',
+      }}
+    >
+      {stamp}
+    </div>
+  )
+}
+
 
 function AssignmentBriefView({ brief }: { brief: AssignmentBrief; accent: Accent }) {
   return (
@@ -150,7 +203,7 @@ export function LessonContentView({
 
   if (lesson.type === 'video' && lessonMedia && (lessonMedia.status === 'ready' || lessonMedia.playbackUrl || lessonMedia.embedUrl)) {
     return (
-      <div className="lms-lesson-video lms-activity-surface lms-activity-video">
+      <div className="lms-lesson-video lms-activity-surface lms-activity-video" onCopy={(e) => e.preventDefault()} onCut={(e) => e.preventDefault()} onContextMenu={(e) => e.preventDefault()} style={{ position: 'relative', userSelect: 'none', WebkitUserSelect: 'none' }}><LearnerAntiPiracyWatermark />
         <LessonVideoPlayer
           media={lessonMedia}
           title={lesson.title}
@@ -187,7 +240,7 @@ export function LessonContentView({
     const uploadedMaterials = (lesson as { materials?: Array<{ id: string; fileName: string; mimeType: string; byteSize: number }> }).materials ?? []
     const isDirectMp4 = Boolean(customRefUrl && (/\.(mp4|webm|ogg|mov)(\?|$)/i.test(customRefUrl) || customRefUrl.startsWith("/api/v1/lms/materials/")))
     return (
-      <div className="lms-lesson-notes">
+      <div className="lms-lesson-notes" onCopy={(e) => e.preventDefault()} onCut={(e) => e.preventDefault()} onContextMenu={(e) => e.preventDefault()} style={{ position: 'relative', userSelect: 'none', WebkitUserSelect: 'none' }}>
         {hasAttachedVideo ? (
           <div style={{ marginBottom: 20 }}>
             <LessonVideoPlayer
@@ -210,8 +263,19 @@ export function LessonContentView({
             />
           </div>
         ) : isDirectMp4 && customRefUrl ? (
-          <div style={{ marginBottom: 20, borderRadius: 12, overflow: 'hidden', border: '1px solid #e2e8f0', background: '#0f172a' }}>
-            <video src={customRefUrl} controls style={{ width: '100%', display: 'block', maxHeight: 460 }} />
+          <div
+            onContextMenu={(e) => e.preventDefault()}
+            style={{ position: 'relative', marginBottom: 20, borderRadius: 12, overflow: 'hidden', border: '1px solid #e2e8f0', background: '#0f172a' }}
+          >
+            <LearnerAntiPiracyWatermark />
+            <video
+              src={customRefUrl}
+              controls
+              controlsList="nodownload noremoteplayback"
+              disablePictureInPicture
+              onContextMenu={(e) => e.preventDefault()}
+              style={{ width: '100%', display: 'block', maxHeight: 460 }}
+            />
           </div>
         ) : null}
         <LessonDocument markdown={notes} accent={accent} skipHeading={lesson.title} />

@@ -2,9 +2,8 @@ import "dotenv/config"
 import crypto from "node:crypto"
 import { PrismaClient, RoleName } from "@prisma/client"
 import { ensureRole } from "../server/src/lib/auth.js"
-import { TEST_CONSENT } from "./test-consent-payload.ts"
+import { TEST_CONSENT, ensureTestApiServer } from "./test-consent-payload.ts"
 import { grantCareerOsForTest } from "./career-os-test-grant.ts"
-import { ensureTestApiServer } from "./ensure-test-api.ts"
 
 const prisma = new PrismaClient()
 let API_BASE = process.env.API_BASE ?? "http://127.0.0.1:3000/api/v1"

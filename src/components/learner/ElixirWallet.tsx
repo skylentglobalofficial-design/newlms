@@ -119,12 +119,12 @@ export default function ElixirWalletPanel() {
       >
         <div>
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <span style={{ fontSize: 13, fontWeight: 600, padding: "6px 10px", borderRadius: 8, background: "#5142b5", color: "#0F172A", border: "1px solid rgba(196, 184, 255, 0.45)" }}>ELX</span>
+            <span style={{ fontSize: 13, fontWeight: 600, padding: "6px 10px", borderRadius: 8, background: "#5142b5", color: "#ffffff", border: "1px solid rgba(196, 184, 255, 0.45)" }}>ELX</span>
             <div>
               <span style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "#5142B5" }}>
                 Elixir Learning Wallet · 100% Workshop Coin Back
               </span>
-              <h2 style={{ margin: "2px 0 0", fontSize: 24, fontWeight: 600, color: "#ffffff" }}>
+              <h2 style={{ margin: "2px 0 0", fontSize: 24, fontWeight: 600, color: "#0f172a" }}>
                 {wallet.balance} Elixir Coins
               </h2>
             </div>
@@ -135,7 +135,7 @@ export default function ElixirWalletPanel() {
         </div>
 
         <div style={{ display: "flex", flexWrap: "wrap", gap: 10, alignItems: "center" }}>
-          <Link to="/events" className="sk-btn sk-btn-primary" style={{ padding: "8px 16px", fontSize: 13, background: "#5142b5", color: "#ffffff", borderColor: "#c4b8ff", fontWeight: 600 }}>
+          <Link to="/events" className="sk-btn sk-btn-primary" style={{ padding: "8px 16px", fontSize: 13, background: "#5142b5", color: "#0f172a", borderColor: "#c4b8ff", fontWeight: 600 }}>
             Join ₹99 Workshop (+99 Coins) →
           </Link>
           <button
@@ -196,7 +196,7 @@ export default function ElixirWalletPanel() {
                   Elixir Case Study &amp; Playbook Store
                 </h3>
                 <p style={{ margin: "2px 0 0", fontSize: 13, color: "#475569" }}>
-                  Redeem your Elixir Coins for real industry SQL &amp; Product case studies.
+                  Redeem your Elixir Coins for 1:1 Faculty Mentorship, Mock Interview Defense, Priority Capstone Evaluation, and Industry Case Studies.
                 </p>
               </div>
               <span style={{ fontSize: 12, color: "#5142b5", fontWeight: 700 }}>

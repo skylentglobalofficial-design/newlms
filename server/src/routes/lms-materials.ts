@@ -26,12 +26,19 @@ lmsMaterialsRouter.get("/materials/:materialId", requireAuth, async (req: Authen
     if (!enrollment) return res.status(403).json({ error: "Not enrolled in this course" })
 
     const bytes = await downloadFile(material.storageKey)
+    const secFetchSite = String(req.headers["sec-fetch-site"] ?? "").toLowerCase()
+    if (secFetchSite === "cross-site") {
+      return res.status(403).json({ error: "Cross-site hotlinking of protected course media is forbidden" })
+    }
     res.setHeader("Content-Type", material.mimeType)
     res.setHeader("Accept-Ranges", "bytes")
+    res.setHeader("Cross-Origin-Resource-Policy", "same-origin")
+    res.setHeader("X-Content-Type-Options", "nosniff")
+    res.setHeader("X-Robots-Tag", "noindex, nofollow, noarchive, nosnippet")
     const isInlineStream = /^(video|audio|image)\//i.test(material.mimeType) && req.query.download !== "1"
     const disp = isInlineStream ? "inline" : "attachment"
     res.setHeader("Content-Disposition", `${disp}; filename="${material.fileName.replace(/["\r\n]/g, "")}"`)
-    res.setHeader("Cache-Control", "private, no-store")
+    res.setHeader("Cache-Control", "private, no-store, no-transform")
     res.send(bytes)
   } catch (error) {
     if (error instanceof StorageServiceError) {

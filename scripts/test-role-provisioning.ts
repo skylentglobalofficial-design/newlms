@@ -2,8 +2,7 @@ import "dotenv/config"
 import { RoleName, PrismaClient } from "@prisma/client"
 import { ensureRole } from "../server/src/lib/auth.js"
 import { resolveGoogleAccount, type GoogleIdTokenClaims } from "../server/src/lib/google-oauth.js"
-import { TEST_CONSENT } from "./test-consent-payload.ts"
-import { ensureTestApiServer } from "./ensure-test-api.ts"
+import { TEST_CONSENT, ensureTestApiServer } from "./test-consent-payload.ts"
 
 const prisma = new PrismaClient()
 let API_BASE = process.env.API_BASE ?? "http://localhost:3000/api/v1"

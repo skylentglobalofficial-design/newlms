@@ -1652,3 +1652,28 @@ html[data-native-app="true"] .skylent-site-nav.skn {
   box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05), 0 16px 32px -12px rgba(15, 23, 42, 0.1) !important;
   transform: translateY(-2px) !important;
 }
+
+/* ── V100 Anti-Piracy Print & Selection Guard (Physics Wallah / Coursera Grade) ── */
+.lms-lesson-notes,
+.lms-lesson-video {
+  -webkit-touch-callout: none !important;
+  -webkit-user-select: none !important;
+  user-select: none !important;
+}
+
+@media print {
+  .lms-lesson-notes,
+  .lms-lesson-video,
+  .learn-workspace {
+    display: none !important;
+  }
+  body::after {
+    content: "SKYLENT DRM PROTECTION: Printing or exporting protected course materials is disabled.";
+    display: block !important;
+    padding: 48px 24px;
+    font-size: 18px;
+    font-weight: 700;
+    text-align: center;
+    color: #0f172a;
+  }
+}

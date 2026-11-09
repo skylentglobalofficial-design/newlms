@@ -1,3 +1,4 @@
+import { adjustElixir } from "../lib/elixir.js"
 import { listFacultyDoubtTickets, resolveFacultyDoubtTicket, FACULTY_DOUBT_SLA_MINUTES } from "../lib/doubt-sla.js"
 import crypto from "node:crypto"
 import { Router } from "express"
@@ -383,7 +384,7 @@ facultyRouter.post(
 
       const submission = await prisma.assignmentProgress.findUnique({
         where: { id: idParsed.data.submissionId },
-        select: { id: true, status: true, node: { select: { module: { select: { courseId: true } } } } },
+        select: { id: true, userId: true, status: true, node: { select: { title: true, module: { select: { courseId: true } } } } },
       })
 
       if (!submission) {
@@ -408,6 +409,16 @@ facultyRouter.post(
         },
         select: { id: true, status: true, grade: true, feedback: true, gradedAt: true },
       })
+
+      if (bodyParsed.data.grade >= 80) {
+        await adjustElixir({
+          userId: submission.userId,
+          amount: 25,
+          reason: `Faculty Distinction Merit Bonus (+25 Elixir) for scoring ${bodyParsed.data.grade}/100 on ${submission.node.title}`,
+          actorId: req.auth!.user.id,
+          idempotencyKey: `faculty-distinction:${submission.id}`,
+        }).catch(() => undefined)
+      }
 
       res.json({
         data: {
