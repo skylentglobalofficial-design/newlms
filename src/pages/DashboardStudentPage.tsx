@@ -2373,108 +2373,44 @@ export default function DashboardStudentPage() {
           </div>
         ) : null}
 
-        {/* Pillar 1: 30-Second Target Career Role & Learning Path Personalizer (Unacademy / Scaler Benchmark) */}
-        {studentTab === 'overview' ? (
-          <section
-            className="sh-card"
-            aria-label="Personalize Your Target Career Role"
-            style={{
-              marginBottom: 16,
-              padding: "16px 20px",
-              borderTop: "1px solid #e2e8f0",
-              background: "linear-gradient(90deg, #f5f3ff 0%, #ffffff 65%)",
-              display: "flex",
-              flexWrap: "wrap",
-              alignItems: "center",
-              justifyContent: "space-between",
-              gap: 14,
-            }}
-          >
-            <div style={{ minWidth: 220, flex: "1 1 280px" }}>
-              <span style={{ fontSize: 10.5, fontFamily: "var(--font-mono)", fontWeight: 600, color: "#5142b5", textTransform: "uppercase", letterSpacing: "0.06em" }}>
-                PERSONALIZED CAREER GOAL · SKYLENT CAREER OS
-              </span>
-              <h2 style={{ margin: "3px 0 4px", fontSize: 16.5, color: "#0f172a" }}>
-                Target Role: <span style={{ color: "#5142b5" }}>{targetCareerRole}</span>
-              </h2>
-              <p style={{ margin: 0, fontSize: 12.5, color: "#475569" }}>
-                {goalSavedToast || "Select your target career track to tailor your recommended browser labs, guided study prompts, and mock interview milestones."}
-              </p>
-            </div>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 6, alignItems: "center" }}>
-              {[
-                { label: "Data Analyst", role: "Data Analyst & SQL Specialist", slug: "data-analytics" },
-                { label: "Product Manager", role: "Product Manager (PRD & Growth)", slug: "product-management" },
-                { label: "Python Engineer", role: "Python & Data Pipeline Engineer", slug: "python-programming" },
-                { label: "Data Scientist", role: "Data Scientist & ML Engineer", slug: "data-science-ai" },
-                { label: "GenAI Engineer", role: "Generative AI & RAG Architect", slug: "generative-ai" },
-                { label: "Full-Stack Dev", role: "Full-Stack TypeScript Engineer", slug: "full-stack-web" },
-              ].map((item) => {
-                const isSelected = targetCareerRole === item.role
-                return (
-                  <button
-                    key={item.role}
-                    type="button"
-                    onClick={() => {
-                      setTargetCareerRole(item.role)
-                      try { window.localStorage.setItem("skylent:learner-target-role", item.role) } catch {}
-                      setGoalSavedToast(`✓ Goal updated to ${item.role}! Recommended track: ${item.label}.`)
-                    }}
-                    style={{
-                      padding: "6px 11px",
-                      borderRadius: 999,
-                      border: isSelected ? "1.5px solid #5142b5" : "1px solid #cbd5e1",
-                      background: isSelected ? "#5142b5" : "#ffffff",
-                      color: isSelected ? "#ffffff" : "#334155",
-                      fontSize: 11.5,
-                      fontWeight: 700,
-                      cursor: "pointer",
-                    }}
-                  >
-                    {item.label}
-                  </button>
-                )
-              })}
-              <Link
-                to="/labs"
-                style={{
-                  padding: "6px 12px",
-                  borderRadius: 999,
-                  background: "#ecfdf5",
-                  border: "1px solid #6ee7b7",
-                  color: "#047857",
-                  fontSize: 11.5,
-                  fontWeight: 600,
-                  textDecoration: "none",
-                }}
-              >
-                Try Free Lab →
-              </Link>
-            </div>
-          </section>
-        ) : null}
-
-        {/* Clean Static Home Overview Grid (No duplicate Courses/Projects clutter!) */}
+        {/* Clean 2-Column Practice & Live Sessions Row (Zero AI Gradient Clutter) */}
         {studentTab === 'overview' ? (
           <div className="sh-grid">
             <div className="sh-stack">
-              <section className="sh-card sh-ai sh-royal-ai" aria-labelledby="sh-ai">
-                <header className="sh-ai-head">
-                  <AiMark />
-                  <span className="sh-ai-live-pill">✓ Live in Lesson</span>
-                </header>
-                <div className="sh-royal-ai__body">
-                  <h2 id="sh-ai" className="sh-royal-ai__title">Faculty Doubt &amp; Study Support</h2>
-                  <p className="sh-royal-ai__desc">
-                    Stuck on a SQL query, Python script, or case assignment? Open your active lesson to review guided hints or request a 20-minute Faculty TA review.
-                  </p>
-                  <div className="sh-royal-ai__pills">
-                    <span>Simple Hinglish Mode</span>
-                    <span>SQL &amp; Code Debugger</span>
-                    <span>20-Min Human TA SLA</span>
+              <section className="sh-card" aria-labelledby="sh-ai" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 12 }}>
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                    <h2 id="sh-ai" style={{ margin: 0, fontSize: 16.5, color: '#0f172a' }}>Doubt Desk &amp; Practice Labs</h2>
+                    <span style={{ fontSize: 11.5, fontWeight: 600, color: '#047857', background: '#ecfdf5', padding: '3px 9px', borderRadius: 6 }}>
+                      20-min TA SLA
+                    </span>
                   </div>
-                  <Link className="sh-royal-ai__cta" to={resumeHref}>
-                    Open Lesson {resumeNumber || 1} Workspace <ArrowRight />
+                  <p style={{ margin: '0 0 12px', fontSize: 13.5, color: '#475569', lineHeight: 1.55 }}>
+                    Need help with SQL, Python, or your case submission? Ask inside your active lesson or practice directly in the browser lab.
+                  </p>
+                </div>
+                <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                  <Link
+                    className="os-btn os-btn-primary"
+                    to={resumeHref}
+                    style={{ textDecoration: 'none', padding: '9px 15px', borderRadius: 9, fontSize: 13, fontWeight: 600 }}
+                  >
+                    Open Lesson {resumeNumber || 1} <ArrowRight />
+                  </Link>
+                  <Link
+                    to="/labs"
+                    style={{
+                      textDecoration: 'none',
+                      padding: '9px 15px',
+                      borderRadius: 9,
+                      border: '1px solid #cbd5e1',
+                      background: '#ffffff',
+                      color: '#0f172a',
+                      fontSize: 13,
+                      fontWeight: 600,
+                    }}
+                  >
+                    Open Browser Labs
                   </Link>
                 </div>
               </section>

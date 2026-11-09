@@ -33,6 +33,10 @@ function LearnerAntiPiracyWatermark() {
     return () => window.clearInterval(id)
   }, [])
 
+  if (user?.role === 'admin' || user?.role === 'superadmin') {
+    return null
+  }
+
   const stamp = user
     ? `${user.email} · ID:${String(user.id).slice(0, 8).toUpperCase()} · SKYLENT DRM`
     : 'SKYLENT PROTECTED CONTENT · DO NOT RECORD OR DISTRIBUTE'
@@ -237,10 +241,22 @@ export function LessonContentView({
       lessonMedia && (lessonMedia.status === 'ready' || lessonMedia.playbackUrl || lessonMedia.embedUrl)
     )
     const youtubeMatch = customRefUrl?.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([A-Za-z0-9_-]{11})/)
+    const { user: currentUser } = useAuth()
+    const isAdminViewer = currentUser?.role === 'admin' || currentUser?.role === 'superadmin'
     const uploadedMaterials = (lesson as { materials?: Array<{ id: string; fileName: string; mimeType: string; byteSize: number }> }).materials ?? []
     const isDirectMp4 = Boolean(customRefUrl && (/\.(mp4|webm|ogg|mov)(\?|$)/i.test(customRefUrl) || customRefUrl.startsWith("/api/v1/lms/materials/")))
     return (
-      <div className="lms-lesson-notes" onCopy={(e) => e.preventDefault()} onCut={(e) => e.preventDefault()} onContextMenu={(e) => e.preventDefault()} style={{ position: 'relative', userSelect: 'none', WebkitUserSelect: 'none' }}>
+      <div
+        className="lms-lesson-notes"
+        onCopy={isAdminViewer ? undefined : (e) => e.preventDefault()}
+        onCut={isAdminViewer ? undefined : (e) => e.preventDefault()}
+        onContextMenu={isAdminViewer ? undefined : (e) => e.preventDefault()}
+        style={{
+          position: 'relative',
+          userSelect: isAdminViewer ? 'text' : 'none',
+          WebkitUserSelect: isAdminViewer ? 'text' : 'none',
+        }}
+      >
         {hasAttachedVideo ? (
           <div style={{ marginBottom: 20 }}>
             <LessonVideoPlayer

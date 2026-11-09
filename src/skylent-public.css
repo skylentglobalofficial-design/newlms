@@ -1753,3 +1753,98 @@ html[data-native-app="true"] .skylent-site-nav.skn {
   }
 }
 
+/* ============================================================================
+   V104 NATIVE ANDROID APK & MOBILE HUMAN-CRAFTED UI SYSTEM
+   Eliminates AI-template gradients, duplicate website menus & marketing fluff
+   so the APK feels 100% like a native Coursera / Unacademy / Linear mobile app
+   ============================================================================ */
+
+/* 1. Inside Native APK: Hide website top hamburger menu (bottom 5-tab bar handles navigation)
+      and hide long website marketing sections so APK screens are fast, focused app views */
+html[data-native-app="true"] .skn__burger,
+html[data-native-app="true"] .pgx-royal-hero-card,
+html[data-native-app="true"] .pgx-close,
+html[data-native-app="true"] .hx-ai-studio,
+html[data-native-app="true"] .hx-elixir-flywheel,
+html[data-native-app="true"] .hx-tryout-sec,
+html[data-native-app="true"] .hx-compare-sec,
+html[data-native-app="true"] .hx-faq-sec,
+html[data-native-app="true"] .hx-closing-cta,
+html[data-native-app="true"] .sk-Foot,
+html[data-native-app="true"] footer {
+  display: none !important;
+}
+
+/* 2. Clean, flat, human-crafted App Header in APK & Mobile */
+html[data-native-app="true"] .skylent-site-nav.skn {
+  background: #ffffff !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+  box-shadow: none !important;
+}
+
+/* 3. Replace heavy AI-looking purple gradients & glowing shadows with clean product cards on Mobile/APK */
+@media (max-width: 768px) {
+  .pgx-royal-hero-card,
+  .hx-ai-studio {
+    display: none !important;
+  }
+
+  .sh-royal-hero,
+  .pgx-intro {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05) !important;
+    border-radius: 14px !important;
+  }
+
+  .sh-royal-hero h2,
+  .pgx-intro h1 {
+    color: #0f172a !important;
+    font-size: 22px !important;
+    letter-spacing: -0.02em !important;
+  }
+
+  .sh-royal-hero p,
+  .pgx-intro p {
+    color: #475569 !important;
+  }
+
+  /* Tone down screaming uppercase monospace eyebrows on mobile */
+  .pgx-eyebrow,
+  .os-eyebrow,
+  .sky-label,
+  .sh-next-label {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+    text-transform: none !important;
+    letter-spacing: 0 !important;
+    font-size: 12.5px !important;
+    font-weight: 600 !important;
+    color: #5142b5 !important;
+  }
+
+  /* Crisp, native bottom navigation bar */
+  .skylent-mobile-tabbar {
+    background: #ffffff !important;
+    border-top: 1px solid #e2e8f0 !important;
+    box-shadow: 0 -1px 4px rgba(15, 23, 42, 0.04) !important;
+  }
+
+  .skylent-mobile-tabbar__item {
+    border-radius: 8px !important;
+    font-weight: 500 !important;
+    color: #64748b !important;
+  }
+
+  .skylent-mobile-tabbar__item.is-active {
+    background: transparent !important;
+    color: #0f172a !important;
+    font-weight: 700 !important;
+  }
+
+  .skylent-mobile-tabbar__item.is-active svg {
+    color: #5142b5 !important;
+    stroke-width: 2.3px !important;
+  }
+}
+

@@ -10,7 +10,7 @@ import { describeAiReadiness } from "../lib/skylent-ai/service.js"
 const router = Router()
 const startedAt = Date.now()
 
-export const DEPLOYED_APP_VERSION = process.env.SKYLENT_APP_VERSION?.trim() || "10.3.0"
+export const DEPLOYED_APP_VERSION = process.env.SKYLENT_APP_VERSION?.trim() || "10.4.0"
 
 function computeDynamicBuildId(): string {
   if (process.env.SKYLENT_BUILD_ID?.trim()) return process.env.SKYLENT_BUILD_ID.trim()
@@ -34,13 +34,13 @@ function computeDynamicBuildId(): string {
         const html = readFileSync(candidate, "utf8")
         const mtime = Math.floor(statSync(candidate).mtimeMs / 1000)
         const digest = createHash("sha1").update(html).digest("hex").slice(0, 10)
-        return `v103-${gitSha ? `${gitSha}-` : ""}${digest}-${mtime}`
+        return `v104-${gitSha ? `${gitSha}-` : ""}${digest}-${mtime}`
       }
     } catch {
       // ignore and fall back
     }
   }
-  return `v103-${gitSha || "live"}-${Math.floor(startedAt / 1000)}`
+  return `v104-${gitSha || "live"}-${Math.floor(startedAt / 1000)}`
 }
 
 export const DEPLOYED_BUILD_ID = computeDynamicBuildId()
@@ -139,7 +139,7 @@ router.get("/app-config", async (request, response) => {
 
   response.json({
     appVersion: dynamicVersion,
-    minSupportedAppVersion: "10.3.0",
+    minSupportedAppVersion: "10.4.0",
     autoSyncUpdate: Boolean(clientInstalledStamp) && !isUpToDate,
     buildId: dynamicBuildId,
     releaseNotes: dynamicNotes,
@@ -160,7 +160,7 @@ router.get("/version", (_request, response) => {
     ok: true,
     appVersion: DEPLOYED_APP_VERSION,
     buildId: computeDynamicBuildId(),
-    minAndroidVersionCode: 10300,
+    minAndroidVersionCode: 10400,
     apkDownloadUrl: "/skylent-latest.apk",
   })
 })
