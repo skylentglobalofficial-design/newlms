@@ -29,5 +29,5 @@ All integration tests automatically boot an embedded test API server if port `30
 | `test-role-provisioning.ts` | `npm run test:roles` | 6-role authentication, role isolation, and dashboard access guards. |
 | `test-college-isolation.ts` | `npm run test:college-isolation` | Multi-tenant college cohort isolation and analytics privacy. |
 | `test-employer-jobs.ts` | `npm run test:employer` | Recruiter onboarding, job creation, and candidate application workflows. |
-| `test-skylent-ai.ts` | `npm run test:ai` | Grounded in-lesson AI tutor responses, guardrails, and refusal checks. |
+| `test-skylent-ai.ts` | `npm run test:ai` | Grounded in-lesson tutor responses, guardrails, and refusal checks. |
 | `test-elixir.ts` | `npm run test:elixir` | Elixir coin ledger idempotency, reward caps, and scholarship redemptions. |

@@ -1,6 +1,6 @@
 # Skylent Engineering Handoff Guide
 
-This document provides engineers with an end-to-end map of the Skylent monorepo, core product subsystems, and verification workflows.
+This guide provides engineers with a concise map of the Skylent monorepo, core product subsystems, and verification workflows.
 
 ---
 
@@ -10,7 +10,7 @@ This document provides engineers with an end-to-end map of the Skylent monorepo,
 | :--- | :--- |
 | `src/App.tsx` | Main React Router v7 configuration, lazy route splitting, and role redirects. |
 | `src/pages/` | Page-level views: Public catalogue (`HomePage.tsx`, `ProgramsPage.tsx`), LMS (`LearnPage.tsx`), Labs (`LabsPage.tsx`, `NorthwindLabPage.tsx`), and the 6 Role Dashboards (`DashboardStudentPage.tsx`, `DashboardFacultyPage.tsx`, `DashboardAdminPage.tsx`, `DashboardCollegePage.tsx`, `DashboardRecruiterPage.tsx`, `DashboardOrgPage.tsx`). |
-| `src/components/lms/` | Course player (`LessonContent.tsx`), role-aware anti-piracy watermark, video player, quizzes (`AssessmentSurface.tsx`), assignments (`AssignmentResponse.tsx`), and the grounded AI tutor (`SkylentAI.tsx`). |
+| `src/components/lms/` | Course player (`LessonContent.tsx`), role-aware anti-piracy watermark, video player, quizzes (`AssessmentSurface.tsx`), assignments (`AssignmentResponse.tsx`), and the lesson tutor (`SkylentAI.tsx`). |
 | `src/components/learner/` | Student navigation (`learner-nav.tsx`), header notification bell & student-only Elixir pill (`HeaderWalletAndNotifications.tsx`), and `ElixirWallet.tsx`. |
 | `src/components/skylent/` | `NativeAppShellController.tsx` (OTA auto-update polling, Android back-button guard, and `SkylentNativeBridge.setScreenshotProtection`), public navbar (`shared.tsx`), and primitives. |
 | `src/content/` | Authored markdown lessons (`l1.md`–`l15.md`), quizzes, and assignment briefs across all 6 career tracks. |
@@ -35,8 +35,6 @@ This document provides engineers with an end-to-end map of the Skylent monorepo,
 ---
 
 ## 3. Pre-Release Verification Suite
-
-Run these commands locally before pushing to `main`:
 
 ```bash
 npm run build

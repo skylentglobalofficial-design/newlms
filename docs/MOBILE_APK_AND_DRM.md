@@ -19,7 +19,7 @@ powershell -ExecutionPolicy Bypass -File .\scripts\build-playstore-apk.ps1
 ## 2. Native Android Architecture (`MainActivity.java`)
 
 Generated automatically inside `scripts/build-playstore-apk.ps1`:
-- **Seamless White Status & Navigation Bars (`#FFFFFF`):** Uses `WindowInsetsControllerCompat` with `setAppearanceLightStatusBars(true)` and `setAppearanceLightNavigationBars(true)` so the status bar blends cleanly into the app header without a dark stripe.
+- **Seamless White Status & Navigation Bars (`#FFFFFF`):** Uses `WindowInsetsControllerCompat` with `setAppearanceLightStatusBars(true)` and `setAppearanceLightNavigationBars(true)` so the status bar blends cleanly into the app header.
 - **Native UPI Intent Launcher:** Intercepts `upi://`, `tez://` (GPay), `phonepe://`, `paytmmp://`, `bhim://`, and `intent://` URLs during PayU checkout and launches the installed UPI app directly.
 - **`SkylentNativeBridge` JavaScript Interface:**
   - `window.SkylentNativeBridge.exitApp()` — Cleanly closes the activity on double-back from the home dashboard.

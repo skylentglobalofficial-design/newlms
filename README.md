@@ -1,6 +1,6 @@
 # Skylent Platform (`newlms`)
 
-Full-stack EdTech learning, interactive browser lab, and career placement platform for **Skylent** (`https://skylent.live`).
+Full-stack EdTech learning, browser lab, and career placement platform for **Skylent** (`https://skylent.live`).
 
 ---
 
@@ -15,11 +15,11 @@ Full-stack EdTech learning, interactive browser lab, and career placement platfo
 
 ---
 
-## 2. Repository Directory Structure
+## 2. Repository Structure
 
 ```text
 .
-├── README.md                   # Main repository onboarding guide
+├── README.md                   # Repository setup & architecture overview
 ├── package.json                # NPM scripts & dependencies
 ├── vite.config.ts              # Frontend Vite bundler configuration
 ├── tsconfig.json               # Frontend TypeScript configuration
@@ -27,7 +27,7 @@ Full-stack EdTech learning, interactive browser lab, and career placement platfo
 ├── server.js                   # Production Node.js entry wrapper
 │
 ├── src/                        # React 19 Frontend Application
-│   ├── assets/                 # Optimized static WebP/JPG media & brand icons
+│   ├── assets/                 # Static WebP/JPG media & brand icons
 │   ├── components/             # Reusable UI & domain components
 │   │   ├── admin/              # Superadmin & Admin console panels
 │   │   ├── career/             # Career OS (Jobs, Applications, Mock Interviews, Profile)
@@ -35,18 +35,12 @@ Full-stack EdTech learning, interactive browser lab, and career placement platfo
 │   │   ├── labs/               # Interactive SQL, Python & Case Studio workbenches
 │   │   ├── learner/            # Student header wallet, notifications, progress & nav
 │   │   ├── legal/              # Terms consent & privacy components
-│   │   ├── lms/                # Course player, video/notes surface, quiz, assignment & AI tutor
+│   │   ├── lms/                # Course player, video/notes surface, quiz, assignment & lesson tutor
 │   │   ├── product/            # Course cards, curriculum drawers & context panels
 │   │   ├── programme/          # Flagship programme templates & syllabus breakdowns
 │   │   ├── routing/            # Protected route & role-redirect guards
 │   │   └── skylent/            # App shell controller, header/footer & primitives
 │   ├── content/                # Authored course curriculum, markdown lessons (`l1.md`–`l15.md`), quizzes & rubrics
-│   │   ├── data-analytics/     # Track 1: Data Analytics & Northwind SQL
-│   │   ├── product-management/ # Track 2: Product Management & Harbor Desk Case
-│   │   ├── python-programming/ # Track 3: Python Programming & ETL Automation
-│   │   ├── data-science-ai/    # Track 4: Data Science & Machine Learning
-│   │   ├── generative-ai/      # Track 5: Generative AI & RAG Systems
-│   │   └── full-stack-web/     # Track 6: Full-Stack TypeScript Engineering
 │   ├── context/                # React AuthContext provider
 │   ├── data/                   # Degree & academic catalogue definitions
 │   ├── hooks/                  # Custom hooks (useLms, useCatalog, useJobBoard, etc.)
@@ -69,23 +63,19 @@ Full-stack EdTech learning, interactive browser lab, and career placement platfo
 ├── public/                     # Static public assets, PWA manifest & case datasets
 ├── playstore-assets/           # Official Android launcher icons (`mipmap-*`)
 ├── scripts/                    # Build, DB preflight, provisioning & automated test suites
-│   └── README.md               # Guide to all utility & test scripts
-└── docs/                       # Engineering & Product Documentation
+│   └── README.md               # Guide to utility & test scripts
+└── docs/                       # Engineering Documentation
     ├── README.md               # Documentation index
     ├── ENGINEERING_HANDOFF.md  # Codebase walkthrough & module guide
     ├── MOBILE_APK_AND_DRM.md   # Android APK build, OTA sync & role-based FLAG_SECURE DRM
     ├── PRODUCTION.md           # Production deployment, env vars & migration runbook
     ├── architecture-and-data-model.md
-    ├── roles-and-permissions.md
-    └── product/                # Product blueprints & institutional charter
-        ├── PRODUCT_BLUEPRINT.md
-        ├── INSTITUTIONAL_CHARTER.md
-        └── PRODUCT_DEVELOPMENT_HANDOFF.md
+    └── roles-and-permissions.md
 ```
 
 ---
 
-## 3. Quick Start (Local Development)
+## 3. Local Development Setup
 
 1. **Install dependencies:**
    ```bash
@@ -106,32 +96,14 @@ Full-stack EdTech learning, interactive browser lab, and career placement platfo
    npm run db:seed:career
    ```
 
-4. **Provision demo accounts for all 6 roles (optional):**
-   ```bash
-   npm run provision:demo
-   ```
-
-5. **Start Frontend (`:5173`) + Backend (`:3000`) concurrently:**
+4. **Start Frontend (`:5174`) + Backend (`:3000`) concurrently:**
    ```bash
    npm run dev:all
    ```
 
 ---
 
-## 4. 6-Role Architecture & Dashboards
-
-| Role | Dashboard Route | Key Responsibilities |
-| :--- | :--- | :--- |
-| **Student (`student`)** | `/dashboard/student` | Enrolled courses, LMS workspace (`/learn/:slug`), browser labs, Elixir wallet, certificates, and Career OS (`/career-os`). |
-| **Faculty (`faculty`)** | `/dashboard/faculty` | Course builder, module/lesson authoring, assignment grading (`+25 Elixir` Distinction bonus), and 20-min SLA doubt queue. |
-| **Admin / Superadmin (`admin`, `superadmin`)** | `/dashboard/admin` | Platform KPIs, user/role provisioning, course publication, pricing & coupons, Elixir treasury rules, and audit logs. |
-| **College Partner (`college`)** | `/dashboard/college` | Institution-scoped student batch tracking, completion analytics, and placement readiness. |
-| **Recruiter (`recruiter`)** | `/dashboard/recruiter` | Employer onboarding, job posting, proof-of-work candidate review, and application pipeline. |
-| **Organisation (`organisation`)** | `/dashboard/organisation` | Corporate L&D seat management and team skill progression. |
-
----
-
-## 5. Build, Verification & Android APK Commands
+## 4. Build, Verification & Android APK Commands
 
 ```bash
 # Full production build (Prisma Client + Vite Frontend + Backend TypeScript)
@@ -152,7 +124,7 @@ powershell -ExecutionPolicy Bypass -File .\scripts\build-playstore-apk.ps1
 
 ---
 
-## 6. Documentation Links
+## 5. Documentation
 
 - **[Documentation Index (`docs/README.md`)](./docs/README.md)**
 - **[Engineering Handoff Guide (`docs/ENGINEERING_HANDOFF.md`)](./docs/ENGINEERING_HANDOFF.md)**

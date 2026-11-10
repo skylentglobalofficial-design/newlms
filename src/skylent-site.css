@@ -7,7 +7,7 @@
    or .sk-* classes. Does NOT replace the signed-in LMS token system
    (--skylent-color-*, --skylent-surface-*, etc.).
 
-   Ported from: lovable_src/src/index.css (Skylent 2.0 approved design).
+   Skylent 2.0 core design tokens and public shell utilities.
    :root is the verified light brand. The public shell redeclares the same
    values on .skylent-public-canvas. Navy text tokens below are for dark bands only.
    ===================================================================== */
@@ -72,7 +72,7 @@
 }
 
 /* ---------- Tailwind v4 theme bridge ----------
-   The approved components are written with the Lovable (Tailwind v3) utility
+   The public components use standard Tailwind utility
    names: text-site-ink, bg-site-white, border-site-border, font-heading,
    rounded-card, rounded-sk-lg, shadow-sk. Tailwind v4 has no config file, so
    those utilities only exist once the tokens are registered here. Without this
