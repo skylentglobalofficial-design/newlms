@@ -42,7 +42,7 @@ export const CURATED_UPCOMING_WORKSHOPS: EventData[] = [
     slug: "northwind-sql-margin-audit-bootcamp",
     title: "Northwind SQL & Margin Leakage Live Workshop",
     description:
-      "Hands-on 90-minute SQL & commercial analytics workshop. Query the 166-row Northwind retail dataset live in your browser, isolate the 14.5% Apparel discount leakage, and receive 99 Elixir Coins (100% 1:1 credit) to unlock full case studies in your dashboard.",
+      "Hands-on 90-minute SQL & commercial analytics workshop. Query the 166-row Northwind retail dataset live in your browser, isolate the 14.5% Apparel discount leakage, and receive 99 Reward Coins (100% 1:1 credit) to unlock full case studies in your dashboard.",
     eventType: "WORKSHOP",
     status: "PUBLISHED",
     hostName: "Skylent Data Analytics Practice Lead",
@@ -60,7 +60,7 @@ export const CURATED_UPCOMING_WORKSHOPS: EventData[] = [
     slug: "harbor-desk-product-scoping-sprint",
     title: "Harbor Desk Product PRD & Operations Triage Sprint",
     description:
-      "Live 90-minute Product Management execution sprint. Synthesise 18 store-manager interviews, scope a 6-week engineering bet for a 2-engineer team, and earn 99 Elixir Coins (100% 1:1 credit) toward the Case Study Store.",
+      "Live 90-minute Product Management execution sprint. Synthesise 18 store-manager interviews, scope a 6-week engineering bet for a 2-engineer team, and earn 99 Reward Coins (100% 1:1 credit) toward the Case Study Store.",
     eventType: "WORKSHOP",
     status: "PUBLISHED",
     hostName: "Skylent Product Studio Lead",
@@ -78,7 +78,7 @@ export const CURATED_UPCOMING_WORKSHOPS: EventData[] = [
     slug: "genai-rag-evaluation-masterclass",
     title: "Grounded RAG & Hallucination Audit Masterclass",
     description:
-      "Practical 90-minute GenAI engineering session on building citation-enforced RAG pipelines, catching ungrounded claims, and defending system latency trade-offs. Includes 99 Elixir Coins (100% 1:1 credit) on registration.",
+      "Practical 90-minute GenAI engineering session on building citation-enforced RAG pipelines, catching ungrounded claims, and defending system latency trade-offs. Includes 99 Reward Coins (100% 1:1 credit) on registration.",
     eventType: "WEBINAR",
     status: "PUBLISHED",
     hostName: "Skylent AI Systems Architect",
@@ -96,7 +96,7 @@ export const CURATED_UPCOMING_WORKSHOPS: EventData[] = [
 const LAUNCH_TRACKS = [
   {
     badge: "TRACK 01 · DATA ANALYTICS",
-    fee: "₹99 Entry → +99 Elixir Coins",
+    fee: "₹99 Entry → +99 Reward Coins",
     title: "Northwind SQL Margin & Cohort Live Workshop",
     desc: "Query 166 validated Northwind retail rows in your browser, isolate category discount leakage, and write a 3-point commercial recommendation.",
     lab: "Northwind SQL Lab · Zero Setup",
@@ -104,7 +104,7 @@ const LAUNCH_TRACKS = [
   },
   {
     badge: "TRACK 02 · PRODUCT MANAGEMENT",
-    fee: "₹99 Entry → +99 Elixir Coins",
+    fee: "₹99 Entry → +99 Reward Coins",
     title: "Harbor Desk Product Scoping & PRD Triage Workshop",
     desc: "Synthesise 18 store-manager interviews, frame the weekend exception bottleneck, and scope a 6-week bet for a 2-engineer squad.",
     lab: "Harbor Desk PRD Studio",
@@ -112,7 +112,7 @@ const LAUNCH_TRACKS = [
   },
   {
     badge: "TRACK 03 · PYTHON & GENAI",
-    fee: "₹99 Entry → +99 Elixir Coins",
+    fee: "₹99 Entry → +99 Reward Coins",
     title: "Applied Python & GenAI Workflow Automation Workshop",
     desc: "Quarantine duplicate webhook retries, enforce schema contracts, and evaluate citation-grounded LLM outputs inside the browser sandbox.",
     lab: "Python & RAG Evaluator",
@@ -247,7 +247,7 @@ export default function EventsPage() {
                   marginBottom: 12,
                 }}
               >
-                WEEKEND MASTERCLASSES · ₹99 ENTRY = 99 ELIXIR COINS (100% COIN BACK)
+                WEEKEND WORKSHOPS · ₹99 ENTRY WITH 100% COIN BACK
               </span>
               <h1 className="cat-h1--display" style={{ marginTop: 0 }}>
                 Live Weekend Workshops &amp; Case Studies
@@ -257,7 +257,7 @@ export default function EventsPage() {
                   ? "Checking which live weekend sprints are open for registration."
                   : loadError
                     ? "Showing our curated weekend execution sprints while the live schedule refreshes."
-                    : "Join a 90-minute hands-on weekend workshop in the browser lab for ₹99 and get 99 Elixir Coins (100% cashback) instantly."}
+                    : "Join a 90-minute hands-on weekend workshop in the browser lab for ₹99 and get 99 Reward Coins (100% cashback) instantly."}
               </p>
               <div className="cat-actions" style={{ display: "flex", flexWrap: "wrap", gap: 12, marginTop: 20 }}>
                 <a className="cat-btn cat-btn-primary" href="#events-launch-tracks-title">
@@ -293,7 +293,7 @@ export default function EventsPage() {
                 Pay ₹99 → Attend Live Lab → Unlock ₹99 Case Studies Free
               </h2>
               <p style={{ margin: "0 0 16px", fontSize: 13.5, lineHeight: 1.55, color: "#475569" }}>
-                Every rupee you spend on a weekend sprint is returned 1:1 as Elixir Coins in your learner wallet so you can unlock solved industry teardowns and SQL playbooks.
+                Every rupee you spend on a weekend sprint is returned 1:1 as Reward Coins in your learner wallet so you can unlock solved industry teardowns and SQL playbooks.
               </p>
               <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10 }}>
                 {[
@@ -315,10 +315,10 @@ export default function EventsPage() {
         {/* Section 1: 3 Flagship ₹99 Live Workshop Tracks (3-Card Grid) */}
         <section className="cat-section" aria-labelledby="events-launch-tracks-title">
           <div className="cat-rail">
-            <p className="cat-label">Launch Workshop Tracks · ₹99 Entry = 99 Elixir Coins</p>
+            <p className="cat-label">Launch Workshop Tracks · ₹99 Entry = 99 Reward Coins</p>
             <h2 id="events-launch-tracks-title">3 Flagship ₹99 Live Workshop Tracks</h2>
             <p className="cat-lead">
-              Every scheduled ₹99 workshop grants 100% coin cashback (99 Elixir Coins) in your Skylent wallet immediately upon registration.
+              Every scheduled ₹99 workshop grants 100% coin cashback (99 Reward Coins) in your Skylent wallet immediately upon registration.
             </p>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 18, marginTop: 22 }}>
               {LAUNCH_TRACKS.map((track) => (
@@ -370,9 +370,9 @@ export default function EventsPage() {
         >
           <div className="cat-rail">
             <p className="cat-label">100% Coin Back Rewards</p>
-            <h2 id="events-elixir-store-title">Redeemable with your 99 Workshop Elixir Coins</h2>
+            <h2 id="events-elixir-store-title">Redeemable with your 99 Workshop Reward Coins</h2>
             <p className="cat-lead">
-              When you register for a ₹99 session, 99 Elixir Coins are credited to your wallet in My Learning. Use them to unlock these practical case studies and playbooks:
+              When you register for a ₹99 session, 99 Reward Coins are credited to your wallet in My Learning. Use them to unlock these practical case studies and playbooks:
             </p>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 16, marginTop: 22 }}>
               {CASE_STORE_ITEMS.map((item) => (

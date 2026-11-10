@@ -321,9 +321,9 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
       what: courseReady && lessonCount > 0 ? `${plural(moduleCount, "module")}, ${plural(lessonCount, "lesson")}` : "5 modules, 15 lessons",
       href: "#pp-curriculum",
     },
-    { n: "02", verb: "Live Lab", what: content.specSheet.material.value, href: "#pp-stage" },
-    { n: "03", verb: "Projects", what: `${plural(content.evidence.rows.length, "project")} & certificate`, href: "#pp-evidence" },
-    { n: "04", verb: "Plans", what: "From ₹1,499", href: "#pp-pricing" },
+    { n: "02", verb: "Plans", what: "₹1,499 & ₹11,999", href: "#pp-pricing" },
+    { n: "03", verb: "Live Lab", what: "Browser Practice", href: "#pp-stage" },
+    { n: "04", verb: "Projects", what: `${plural(content.evidence.rows.length, "project")} & internship`, href: "#pp-evidence" },
   ]
 
   const nextStepLabel = ["Next step", firstNode ? "Lesson 1" : "", firstNode ? nodeKind(firstNode.nodeType) : "", firstNode?.duration ?? ""]
@@ -654,13 +654,24 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
       </Reveal>
 
 
+      <ProgrammePricingAndDock
+        programSlug={program.slug}
+        courseSlug={content.courseSlug}
+        programName={program.name}
+        studioName={content.specSheet.material.value}
+        capstoneTitle={content.capstoneTitle}
+        canEnrol={canStartTrack}
+        onEnrol={onEnrol}
+      />
+
+
       {/* Section 01: Interactive Workbench & Deliverable Stage on Navy */}
       <section className="sky-stage sky-band-navy pp-stage" id="pp-stage" aria-labelledby="pp-build-title">
         <div className="sky-container pp-stage__inner">
           <Reveal className="pp-build">
             <div className="pp-build__header">
               <div className="pp-build__lead">
-                <SectionIndex n="02" label="Interactive Browser Lab" />
+                <SectionIndex n="03" label="Interactive Browser Lab" />
                 <h2 id="pp-build-title" className="pp-build__title">
                   {content.capstoneTitle}
                 </h2>
@@ -710,7 +721,7 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
         <div className="sky-container">
           <Reveal className="pp-section-head" style={{ marginBottom: 24 }}>
             <div>
-              <SectionIndex n="03" label="Projects & Verified Certificate" />
+              <SectionIndex n="04" label="Projects & 2-Month Internship" />
               <h2 id="pp-evidence-title" className="sky-display sky-display--md pp-h2">
                 {content.evidence.heading}
               </h2>
@@ -774,15 +785,6 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
         </div>
       </section>
 
-      <ProgrammePricingAndDock
-        programSlug={program.slug}
-        courseSlug={content.courseSlug}
-        programName={program.name}
-        studioName={content.specSheet.material.value}
-        capstoneTitle={content.capstoneTitle}
-        canEnrol={canStartTrack}
-        onEnrol={onEnrol}
-      />
 
       {/* Next action: navy closing statement */}
       <section className="sky-stage sky-band-navy pp-next" aria-labelledby="pp-next-title">

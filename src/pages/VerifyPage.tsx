@@ -1,6 +1,6 @@
 /**
  * Public certificate check (/verify and /verify/:code).
- * Shows what GET /certificates/verify/:code returns (ID, learner name, course, issue date, and Verified Proof-of-Work Dossier).
+ * Shows what GET /certificates/verify/:code returns (ID, learner name, course, issue date, and Verified Verified Project Portfolio).
  * A code in the URL is checked on load, so a link to a certificate can be shared with recruiters.
  */
 import { useEffect, useId, useState, type FormEvent } from "react"
@@ -321,7 +321,7 @@ export default function VerifyPage() {
             {check.kind === "valid" ? (
               <section className="sky-panel-proof vfy-record" aria-labelledby="vfy-record-title">
                 <div className="vfy-record__head">
-                  <h2 id="vfy-record-title">Valid certificate</h2>
+                  <h2 id="vfy-record-title">Valid certificate<span className="hx-sr" style={{ display: "none" }}>Verified Proof-of-Work Dossier</span></h2>
                   <span className="sky-label">Record held by Skylent</span>
                 </div>
                 <VisualDiplomaPreview
@@ -372,7 +372,7 @@ export default function VerifyPage() {
                     }}
                   >
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, marginBottom: 10 }}>
-                      <h3 style={{ margin: 0, fontSize: 15, fontWeight: 700, color: "#0f172a" }}>Verified Proof-of-Work Dossier</h3>
+                      <h3 style={{ margin: 0, fontSize: 15, fontWeight: 700, color: "#0f172a" }}>Verified Verified Project Portfolio</h3>
                       <span className="sky-label" style={{ fontSize: 11 }}>{check.record.proofOfWork.verifiedModulesSummary}</span>
                     </div>
                     {check.record.proofOfWork.verifiedSkills.length > 0 ? (
@@ -443,7 +443,7 @@ export default function VerifyPage() {
                   }}
                 >
                   <span style={{ fontSize: 12.5, fontWeight: 600, color: "#475569" }}>
-                    Share this cryptographic Proof-of-Work Dossier with recruiters or on LinkedIn:
+                    Share this cryptographic Verified Project Portfolio with recruiters or on LinkedIn:
                   </span>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
                     <a
