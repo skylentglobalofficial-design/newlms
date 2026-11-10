@@ -111,10 +111,14 @@ export function HeaderWalletAndNotifications({ variant = "public" }: { variant?:
   }, [user])
 
   useEffect(() => {
-    if (!user || user.role !== "student") return
+    if (!user) return
     const controller = new AbortController()
-    void refreshData(controller.signal)
+    const isStaffRole = user.role !== "student"
+    const timer = window.setTimeout(() => {
+      void refreshData(controller.signal)
+    }, isStaffRole ? 140 : 0)
     return () => {
+      window.clearTimeout(timer)
       controller.abort()
     }
   }, [user, refreshData])
@@ -136,9 +140,7 @@ export function HeaderWalletAndNotifications({ variant = "public" }: { variant?:
     }
   }, [])
 
-  if (!user || user.role !== "student") {
-    return null
-  }
+  if (!user) return null
 
   const notifications = buildNotificationItems({
     transactions: wallet?.transactions ?? [],

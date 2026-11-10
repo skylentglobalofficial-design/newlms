@@ -2,10 +2,10 @@ import "dotenv/config"
 import crypto from "node:crypto"
 import { PrismaClient, RoleName } from "@prisma/client"
 import { ensureRole } from "../server/src/lib/auth.ts"
-import { TEST_CONSENT, ensureTestApiServer } from "./test-consent-payload.ts"
+import { TEST_CONSENT } from "./test-consent-payload.ts"
 
 const prisma = new PrismaClient()
-let API_BASE = process.env.API_BASE ?? "http://127.0.0.1:3021/api/v1"
+const API_BASE = process.env.API_BASE ?? "http://127.0.0.1:3021/api/v1"
 
 type CookieJar = Map<string, string>
 
@@ -72,60 +72,49 @@ async function asRole(userId: string, email: string, role: RoleName, collegeId?:
 }
 
 async function main() {
-  const apiServer = await ensureTestApiServer(API_BASE)
-  API_BASE = apiServer.apiBase
   const suffix = crypto.randomBytes(3).toString("hex")
   const collegeA = await prisma.college.create({ data: { slug: `college-a-${suffix}`, name: `College A ${suffix}` } })
   const collegeB = await prisma.college.create({ data: { slug: `college-b-${suffix}`, name: `College B ${suffix}` } })
-  const createdUsers: string[] = []
-  try {
-    const a = await signup("a")
-    const b = await signup("b")
-    const student = await signup("student")
-    const admin = await signup("admin")
-    createdUsers.push(a.userId, b.userId, student.userId, admin.userId)
-    const jarA = await asRole(a.userId, a.email, RoleName.COLLEGE_ADMIN, collegeA.id)
-    const jarB = await asRole(b.userId, b.email, RoleName.COLLEGE_ADMIN, collegeB.id)
-    await asRole(admin.userId, admin.email, RoleName.PLATFORM_ADMIN)
+  const a = await signup("a")
+  const b = await signup("b")
+  const student = await signup("student")
+  const admin = await signup("admin")
+  const jarA = await asRole(a.userId, a.email, RoleName.COLLEGE_ADMIN, collegeA.id)
+  const jarB = await asRole(b.userId, b.email, RoleName.COLLEGE_ADMIN, collegeB.id)
+  await asRole(admin.userId, admin.email, RoleName.PLATFORM_ADMIN)
 
-    const own = await request(jarA, "/college/dashboard")
-    assert(own.response.ok, `own college dashboard failed ${own.response.status}`)
-    assert(own.data.data.college.id === collegeA.id, "college A must see only its college")
-    assert(own.data.data.members.some((member: { id: string }) => member.id === a.userId), "membership must be visible")
-    assert(!JSON.stringify(own.data).includes(collegeB.id), "college A response must not include college B")
+  const own = await request(jarA, "/college/dashboard")
+  assert(own.response.ok, `own college dashboard failed ${own.response.status}`)
+  assert(own.data.data.college.id === collegeA.id, "college A must see only its college")
+  assert(own.data.data.members.some((member: { id: string }) => member.id === a.userId), "membership must be visible")
+  assert(!JSON.stringify(own.data).includes(collegeB.id), "college A response must not include college B")
 
-    const cross = await request(jarA, `/college/dashboard?collegeId=${collegeB.id}`)
-    assert(cross.response.status === 403, "college A must not open college B")
+  const cross = await request(jarA, `/college/dashboard?collegeId=${collegeB.id}`)
+  assert(cross.response.status === 403, "college A must not open college B")
 
-    const studentJar = student.jar
-    const studentView = await request(studentJar, "/college/dashboard")
-    assert(studentView.response.status === 403, "a student must not open a college dashboard")
+  const studentJar = student.jar
+  const studentView = await request(studentJar, "/college/dashboard")
+  assert(studentView.response.status === 403, "a student must not open a college dashboard")
 
-    const adminJar: CookieJar = new Map()
-    await request(adminJar, "/auth/csrf")
-    const adminLogin = await request(adminJar, "/auth/login", {
-      method: "POST",
-      csrf: true,
-      body: { email: admin.email, password: "test-password-123" },
-    })
-    assert(adminLogin.response.ok && adminLogin.data.role === "admin", "platform admin login")
-    const adminView = await request(adminJar, "/college/dashboard")
-    assert(adminView.response.status === 403, "platform admin must not receive college access automatically")
-    const adminUsers = await request(adminJar, "/admin/colleges", { method: "POST", csrf: true, body: { name: "Nope", slug: `nope-${suffix}` } })
-    assert(adminUsers.response.status === 403, "platform admin must not create colleges")
+  const adminJar: CookieJar = new Map()
+  await request(adminJar, "/auth/csrf")
+  const adminLogin = await request(adminJar, "/auth/login", {
+    method: "POST",
+    csrf: true,
+    body: { email: admin.email, password: "test-password-123" },
+  })
+  assert(adminLogin.response.ok && adminLogin.data.role === "admin", "platform admin login")
+  const adminView = await request(adminJar, "/college/dashboard")
+  assert(adminView.response.status === 403, "platform admin must not receive college access automatically")
+  const adminUsers = await request(adminJar, "/admin/colleges", { method: "POST", csrf: true, body: { name: "Nope", slug: `nope-${suffix}` } })
+  assert(adminUsers.response.status === 403, "platform admin must not create colleges")
 
-    const otherMember = await request(jarB, "/college/dashboard")
-    assert(otherMember.response.ok && otherMember.data.data.college.id === collegeB.id, "college B sees itself")
-    assert(!JSON.stringify(otherMember.data).includes(collegeA.name), "college B must not see college A")
+  const otherMember = await request(jarB, "/college/dashboard")
+  assert(otherMember.response.ok && otherMember.data.data.college.id === collegeB.id, "college B sees itself")
+  assert(!JSON.stringify(otherMember.data).includes(collegeA.name), "college B must not see college A")
 
-    console.log("PASS college isolation")
-  } finally {
-    await prisma.college.deleteMany({ where: { id: { in: [collegeA.id, collegeB.id] } } }).catch(() => undefined)
-    if (createdUsers.length) {
-      await prisma.user.deleteMany({ where: { id: { in: createdUsers } } }).catch(() => undefined)
-    }
-    await apiServer.close()
-  }
+  console.log("PASS college isolation")
+  await prisma.college.deleteMany({ where: { id: { in: [collegeA.id, collegeB.id] } } })
 }
 
 main()

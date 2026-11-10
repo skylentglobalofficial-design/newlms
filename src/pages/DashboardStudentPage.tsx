@@ -1512,21 +1512,7 @@ export default function DashboardStudentPage() {
                       >
                         {item.category}
                       </span>
-                      <span
-                        style={{
-                          position: 'absolute',
-                          bottom: 10,
-                          right: 10,
-                          padding: '4px 10px',
-                          borderRadius: 999,
-                          background: '#dcfce7',
-                          color: '#166534',
-                          fontSize: 11,
-                          fontWeight: 700,
-                        }}
-                      >
-                        {item.labBadge}
-                      </span>
+
                     </div>
 
                     <div style={{ padding: '16px 18px 12px' }}>
@@ -1944,33 +1930,14 @@ export default function DashboardStudentPage() {
         <div className="sh" id="student-learning">
           {studentTab === 'profile' ? (
             <LearnerProfileSettingsSection />
-          ) : studentTab === 'explore' ? (
-            exploreProgrammesSection
+          ) : studentTab === 'wallet' ? (
+            <section className="sh-card" aria-label="Elixir wallet"><ElixirWalletPanel /></section>
+          ) : studentTab === 'certificates' ? (
+            <div className="sh-stack">{evidence}</div>
+          ) : studentTab === 'courses' && allMyCourses.length > 0 ? (
+            <div className="sh-stack">{myLearning}</div>
           ) : (
-            <>
-              <div className="sh-next sh-royal-hero" style={{ marginBottom: 22 }}>
-                <p className="sh-next-label"><span aria-hidden="true" />Welcome to Skylent</p>
-                <h2>Choose your first career track</h2>
-                <p className="sh-body">
-                  Pick any of our 6 flagship programmes below to open your interactive lessons, browser lab, and capstone workspace immediately.
-                </p>
-                <div className="os-actions">
-                  <button
-                    type="button"
-                    className="os-btn os-btn-primary os-btn-lg sh-royal-cta"
-                    onClick={() => setStudentTab('explore')}
-                  >
-                    Explore Programmes <ArrowRight />
-                  </button>
-                  <Link className="os-btn os-btn-ghost sh-royal-secondary" to="/programmes">
-                    Public Catalogue
-                  </Link>
-                </div>
-              </div>
-              {exploreProgrammesSection}
-              {allMyCourses.length > 0 ? <div className="sh-stack" style={{ marginTop: 20 }}>{myLearning}<CareerRiseCard />{evidence}</div> : null}
-              {user.role === 'student' ? <section className="sh-card" id="elixir-wallet" aria-label="Elixir wallet" style={{ marginTop: 22 }}><ElixirWalletPanel /></section> : null}
-            </>
+            exploreProgrammesSection
           )}
         </div>
         {checkoutTarget ? (
@@ -2247,176 +2214,62 @@ export default function DashboardStudentPage() {
           </section>
         ) : null}
 
-        {/* Today's Progress + Monthly Progress Calendar Grid */}
+        {/* Clean 2-Column Home Overview: My Courses (Left) + Progress & 14-Day Activity (Right) */}
         {studentTab === 'overview' ? (
           <div
             style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 340px), 1fr))',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 360px), 1fr))',
               gap: 18,
-              marginBottom: 20,
+              alignItems: 'start',
             }}
           >
-            <section
-              className="sh-card"
-              aria-label="Today's Progress"
-              style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-                <div>
-                  <h2 style={{ margin: 0, fontSize: 17, color: '#0f172a' }}>Today&apos;s Progress</h2>
-                  <span style={{ fontSize: 12.5, color: '#64748b' }}>
-                    {new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })}
-                  </span>
-                </div>
-                <span style={{ fontSize: 12, fontWeight: 700, padding: '4px 10px', borderRadius: 999, background: '#ecfdf5', color: '#047857' }}>
-                  +{streak.streakBonusElixir} Elixir Bonus
-                </span>
-              </div>
+            <div>{myLearning}</div>
 
-              <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: '1fr 1fr',
-                  gap: 16,
-                  padding: '14px 8px',
-                  textAlign: 'center',
-                }}
+            <div style={{ display: 'grid', gap: 18 }}>
+              <section
+                className="sh-card"
+                aria-label="Monthly Progress and 14-Day Proof-of-Work Activity Grid"
               >
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
-                  <ProgressRing
-                    percent={totalLessons ? (completedCount / totalLessons) * 100 : 0}
-                    size={96}
-                    stroke={8}
-                    color="#5142b5"
-                    label={`${completedCount}/${totalLessons}`}
-                  />
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
                   <div>
-                    <strong style={{ fontSize: 13.5, color: '#0f172a', display: 'block' }}>Lessons Completed</strong>
-                    <span style={{ fontSize: 12, color: '#64748b' }}>{progressPct}% of active track</span>
-                  </div>
-                </div>
-
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
-                  <ProgressRing
-                    percent={(checksAttempted / totalChecks) * 100}
-                    size={96}
-                    stroke={8}
-                    color="#059669"
-                    label={`${checksAttempted}/${totalChecks}`}
-                  />
-                  <div>
-                    <strong style={{ fontSize: 13.5, color: '#0f172a', display: 'block' }}>Labs &amp; Checks Attempted</strong>
-                    <span style={{ fontSize: 12, color: '#64748b' }}>Quizzes &amp; case assignments</span>
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            <section
-              className="sh-card"
-              aria-label="Monthly Progress and 14-Day Proof-of-Work Activity Grid"
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                <div>
-                  <h2 style={{ margin: 0, fontSize: 17, color: '#0f172a' }}>Monthly Progress</h2>
-                  <span style={{ fontSize: 12, color: '#64748b' }}>
-                    {new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })} · 14-Day Proof-of-Work Activity Grid
-                  </span>
-                </div>
-                <span style={{ fontSize: 12, fontWeight: 700, color: '#5142b5' }}>
-                  Best: {streak.longestStreakDays}d
-                </span>
-              </div>
-
-              <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(3, 1fr)',
-                  gap: 10,
-                  marginBottom: 14,
-                  padding: '10px 12px',
-                  borderRadius: 12,
-                  background: '#f8fafc',
-                  border: '1px solid #e2e8f0',
-                }}
-              >
-                <div>
-                  <span style={{ fontSize: 11, color: '#64748b', display: 'block' }}>Active Streak</span>
-                  <strong style={{ fontSize: 16, color: '#0f172a' }}>{streak.currentStreakDays}d</strong>
-                </div>
-                <div>
-                  <span style={{ fontSize: 11, color: '#64748b', display: 'block' }}>Completed</span>
-                  <strong style={{ fontSize: 16, color: '#5142b5' }}>{completedCount}/{totalLessons}</strong>
-                </div>
-                <div>
-                  <span style={{ fontSize: 11, color: '#64748b', display: 'block' }}>Certificates</span>
-                  <strong style={{ fontSize: 16, color: '#059669' }}>{certificateRows.length}</strong>
-                </div>
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(14, minmax(0, 1fr))', gap: 4 }} role="list" aria-label="Last 14 days activity heatmap">
-                {streak.heatmapDays.map((day) => (
-                  <div
-                    key={day.date}
-                    role="listitem"
-                    title={`${day.label}: ${day.count} verified action(s)`}
-                    style={{
-                      height: 18,
-                      borderRadius: 4,
-                      background: day.active ? '#5142b5' : '#e2e8f0',
-                    }}
-                  />
-                ))}
-              </div>
-            </section>
-          </div>
-        ) : null}
-
-        {/* Clean 2-Column Practice & Live Sessions Row (Zero AI Gradient Clutter) */}
-        {studentTab === 'overview' ? (
-          <div className="sh-grid">
-            <div className="sh-stack">
-              <section className="sh-card" aria-labelledby="sh-ai" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 12 }}>
-                <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                    <h2 id="sh-ai" style={{ margin: 0, fontSize: 16.5, color: '#0f172a' }}>Doubt Desk &amp; Practice Labs</h2>
-                    <span style={{ fontSize: 11.5, fontWeight: 600, color: '#047857', background: '#ecfdf5', padding: '3px 9px', borderRadius: 6 }}>
-                      20-min TA SLA
+                    <h2 style={{ margin: 0, fontSize: 16.5, color: '#0f172a' }}>Learning Activity</h2>
+                    <span style={{ fontSize: 12, color: '#64748b' }}>
+                      14-Day Proof-of-Work Activity Grid
                     </span>
                   </div>
-                  <p style={{ margin: '0 0 12px', fontSize: 13.5, color: '#475569', lineHeight: 1.55 }}>
-                    Need help with SQL, Python, or your case submission? Ask inside your active lesson or practice directly in the browser lab.
-                  </p>
+                  <span style={{ fontSize: 12, fontWeight: 700, padding: '4px 10px', borderRadius: 999, background: '#ecfdf5', color: '#047857' }}>
+                    +{streak.streakBonusElixir} Elixir Bonus
+                  </span>
                 </div>
-                <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-                  <Link
-                    className="os-btn os-btn-primary"
-                    to={resumeHref}
-                    style={{ textDecoration: 'none', padding: '9px 15px', borderRadius: 9, fontSize: 13, fontWeight: 600 }}
-                  >
-                    Open Lesson {resumeNumber || 1} <ArrowRight />
-                  </Link>
-                  <Link
-                    to="/labs"
-                    style={{
-                      textDecoration: 'none',
-                      padding: '9px 15px',
-                      borderRadius: 9,
-                      border: '1px solid #cbd5e1',
-                      background: '#ffffff',
-                      color: '#0f172a',
-                      fontSize: 13,
-                      fontWeight: 600,
-                    }}
-                  >
-                    Open Browser Labs
-                  </Link>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 14 }}>
+                  <div style={{ padding: '12px 14px', borderRadius: 12, background: '#f8fafc', border: '1px solid #e2e8f0' }}>
+                    <span style={{ fontSize: 11.5, color: '#64748b', display: 'block' }}>Lessons completed</span>
+                    <strong style={{ fontSize: 20, color: '#0f172a' }}>{completedCount} / {totalLessons}</strong>
+                  </div>
+                  <div style={{ padding: '12px 14px', borderRadius: 12, background: '#f8fafc', border: '1px solid #e2e8f0' }}>
+                    <span style={{ fontSize: 11.5, color: '#64748b', display: 'block' }}>Checks attempted</span>
+                    <strong style={{ fontSize: 20, color: '#0f172a' }}>{checksAttempted} / {totalChecks}</strong>
+                  </div>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(14, minmax(0, 1fr))', gap: 4 }} role="list" aria-label="Last 14 days activity heatmap">
+                  {streak.heatmapDays.map((day) => (
+                    <div
+                      key={day.date}
+                      role="listitem"
+                      title={`${day.label}: ${day.count} verified action(s)`}
+                      style={{
+                        height: 22,
+                        borderRadius: 5,
+                        background: day.active ? '#5142b5' : '#e2e8f0',
+                      }}
+                    />
+                  ))}
                 </div>
               </section>
-            </div>
 
-            <div className="sh-stack">
               {upcomingEventsWidget}
             </div>
           </div>
@@ -2450,8 +2303,8 @@ export default function DashboardStudentPage() {
           </div>
         ) : null}
 
-        {studentTab === 'wallet' && user.role === 'student' ? (
-          <section className="sh-card" id="elixir-wallet" aria-label="Elixir wallet" style={{ marginTop: 12 }}>
+        {studentTab === 'wallet' ? (
+          <section className="sh-card" aria-label="Elixir wallet" style={{ marginTop: 12 }}>
             <ElixirWalletPanel />
           </section>
         ) : null}

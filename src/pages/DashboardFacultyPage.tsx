@@ -93,24 +93,17 @@ function TeachingEmptyState({
 }) {
   return (
     <div style={{
-      background: 'linear-gradient(135deg, #3b2d96 0%, #5142b5 100%)',
-      border: '1px solid rgba(196, 184, 255, 0.42)',
-      borderRadius: 18,
-      padding: 'clamp(24px, 4vw, 34px)',
-      color: '#ffffff',
-      boxShadow: '0 18px 40px -14px rgba(59, 45, 150, 0.35)',
+      background: '#ffffff',
+      border: '1px solid #e2e8f0',
+      borderRadius: 16,
+      padding: '22px 24px',
+      boxShadow: '0 4px 16px -8px rgba(15, 23, 42, 0.06)',
     }}>
-      <p style={{ margin: '0 0 8px', color: '#e9d5ff', font: '700 11px/1.4 var(--font-mono)', letterSpacing: '0.14em', textTransform: 'uppercase' }}>
-        FACULTY TA &amp; RED-LINE REVIEW TERMINAL · 20-MINUTE SLA
-      </p>
-      <h1 className="skylent-display-sm" style={{ color: '#ffffff', margin: '0 0 8px', lineHeight: 1.1 }}>
-        Teaching scope &amp; V1 → V2 Red-Line Review Queue
+      <h1 style={{ color: '#0f172a', margin: '0 0 6px', fontSize: 22, fontFamily: 'var(--font-display)' }}>
+        Faculty Workspace
       </h1>
-      <p style={{ color: 'rgba(255,255,255,0.88)', fontSize: 15, margin: '0 0 10px', lineHeight: 1.55 }}>
-        Resolve learner doubts within the 20-minute SLA, edit course modules/lectures, and upload videos or study materials below.
-      </p>
-      <p style={{ color: 'rgba(255,255,255,0.78)', fontSize: 13.5, margin: '0 0 16px', lineHeight: 1.6, maxWidth: 680 }}>
-        {message ?? 'All 6 simulated company tracks route live learner doubts and rubric submissions directly to this terminal.'}
+      <p style={{ color: '#475569', fontSize: 13.5, margin: '0 0 14px', lineHeight: 1.55, maxWidth: 640 }}>
+        {message ?? 'Manage your courses, upload lecture videos and study materials, and review student submissions.'}
       </p>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
         {onQuickActivate ? (
@@ -118,18 +111,17 @@ function TeachingEmptyState({
             type="button"
             onClick={onQuickActivate}
             style={{
-              background: '#ffffff',
-              color: '#5142b5',
-              border: '1px solid #ffffff',
-              padding: '10px 18px',
-              borderRadius: 999,
+              background: '#5142b5',
+              color: '#ffffff',
+              border: '1px solid #5142b5',
+              padding: '9px 16px',
+              borderRadius: 10,
               fontSize: 13,
-              fontWeight: 700,
+              fontWeight: 600,
               cursor: 'pointer',
-              boxShadow: '0 8px 20px -8px rgba(0, 0, 0, 0.25)',
             }}
           >
-            ⚡ Load &amp; Activate My 6 Teaching Courses
+            Load My 6 Teaching Courses
           </button>
         ) : null}
         {onOpenCurriculum ? (
@@ -137,17 +129,17 @@ function TeachingEmptyState({
             type="button"
             onClick={onOpenCurriculum}
             style={{
-              background: 'rgba(255,255,255,0.16)',
-              color: '#ffffff',
-              border: '1px solid rgba(255,255,255,0.38)',
-              padding: '10px 18px',
-              borderRadius: 999,
+              background: '#f8fafc',
+              color: '#0f172a',
+              border: '1px solid #cbd5e1',
+              padding: '9px 16px',
+              borderRadius: 10,
               fontSize: 13,
-              fontWeight: 700,
+              fontWeight: 600,
               cursor: 'pointer',
             }}
           >
-            🎬 Open My Courses &amp; Upload Video / Material →
+            My Courses &amp; Upload Video / Material
           </button>
         ) : null}
       </div>
@@ -165,89 +157,75 @@ function CatalogOverview({
   programCount: number
   courseCount: number
   pendingCount: number
-  onReview: () =>void
-  onAuthorLecture: () =>void
+  onReview: () => void
+  onAuthorLecture: () => void
 }) {
   return (
     <div style={{
-      background: 'linear-gradient(135deg, #3b2d96 0%, #5142b5 100%)',
-      border: '1px solid rgba(196, 184, 255, 0.42)',
-      borderRadius: 18,
-      padding: 'clamp(24px, 4vw, 34px)',
-      color: '#ffffff',
-      boxShadow: '0 18px 40px -14px rgba(59, 45, 150, 0.35)',
+      background: '#ffffff',
+      border: '1px solid #e2e8f0',
+      borderRadius: 16,
+      padding: '22px 24px',
+      boxShadow: '0 4px 16px -8px rgba(15, 23, 42, 0.06)',
     }}>
-      <p style={{ margin: '0 0 8px', color: '#e9d5ff', font: '700 11px/1.4 var(--font-mono)', letterSpacing: '0.14em', textTransform: 'uppercase' }}>
-        FACULTY TA &amp; RED-LINE REVIEW TERMINAL · SUPERADMIN &amp; INSTRUCTOR VIEW
-      </p>
-      <h1 className="skylent-display-sm" style={{ color: '#ffffff', margin: '0 0 8px', lineHeight: 1.1 }}>
-        Catalog &amp; Red-Line Grading Command Center
-      </h1>
-      <p style={{ color: 'rgba(255,255,255,0.88)', fontSize: 15, margin: '0 0 22px', lineHeight: 1.5 }}>
-        Monitor 20-minute doubt SLA queues, author new lectures &amp; study materials, and grade V1 → V2 Capstone Red-Line reviews across your assigned tracks.
-      </p>
-
-      <div style={{
-        display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 14,
-        padding: '16px 0', marginBottom: 20,
-        borderTop: '1px solid rgba(255,255,255,0.18)', borderBottom: '1px solid rgba(255,255,255,0.18)',
-      }}>
-        <div style={{ background: 'rgba(15,23,42,0.35)', padding: 14, borderRadius: 12, border: '1px solid rgba(52,211,153,0.4)' }}>
-          <div style={{ color: '#34d399', fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 700, marginBottom: 4 }}>Faculty TA SLA</div>
-          <div style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 700, color: '#ffffff' }}>20 min</div>
-          <div style={{ color: 'rgba(255,255,255,0.78)', fontSize: 11, marginTop: 2 }}>20-minute doubt &amp; rubric SLA</div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 14, marginBottom: 18 }}>
+        <div>
+          <h1 style={{ color: '#0f172a', margin: '0 0 4px', fontSize: 22, fontFamily: 'var(--font-display)' }}>
+            Faculty Workspace
+          </h1>
+          <p style={{ color: '#475569', fontSize: 13.5, margin: 0 }}>
+            Manage course modules, upload lecture videos and files, and grade student submissions (20-minute doubt &amp; rubric SLA).
+          </p>
         </div>
-        <div style={{ background: 'rgba(15,23,42,0.35)', padding: 14, borderRadius: 12, border: '1px solid rgba(255,255,255,0.22)' }}>
-          <div style={{ color: '#f3e8ff', fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 700, marginBottom: 4 }}>Pending reviews</div>
-          <div style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 700, color: '#ffffff' }}>
-            {pendingCount}
-          </div>
-          <div style={{ color: 'rgba(255,255,255,0.78)', fontSize: 11, marginTop: 2 }}>V1 → V2 submissions waiting</div>
-        </div>
-        <div style={{ background: 'rgba(15,23,42,0.35)', padding: 14, borderRadius: 12, border: '1px solid rgba(255,255,255,0.22)' }}>
-          <div style={{ color: '#f3e8ff', fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 700, marginBottom: 4 }}>Programs in catalog</div>
-          <div style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 700, color: '#ffffff' }}>
-            {programCount}
-          </div>
-          <div style={{ color: 'rgba(255,255,255,0.78)', fontSize: 11, marginTop: 2 }}>career pathways</div>
-        </div>
-        <div style={{ background: 'rgba(15,23,42,0.35)', padding: 14, borderRadius: 12, border: '1px solid rgba(255,255,255,0.22)' }}>
-          <div style={{ color: '#f3e8ff', fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 700, marginBottom: 4 }}>Courses in catalog</div>
-          <div style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 700, color: '#ffffff' }}>
-            {courseCount}
-          </div>
-          <div style={{ color: 'rgba(255,255,255,0.78)', fontSize: 11, marginTop: 2 }}>simulated company tracks</div>
+        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+          <button
+            type="button"
+            onClick={onAuthorLecture}
+            style={{
+              background: '#5142b5',
+              color: '#ffffff',
+              border: '1px solid #5142b5',
+              padding: '9px 16px',
+              borderRadius: 10,
+              fontSize: 13,
+              fontWeight: 600,
+              cursor: 'pointer',
+            }}
+          >
+            + Add Lecture or Upload Video / PDF
+          </button>
+          <button
+            type="button"
+            onClick={onReview}
+            style={{
+              background: '#f8fafc',
+              color: '#0f172a',
+              border: '1px solid #cbd5e1',
+              padding: '9px 16px',
+              borderRadius: 10,
+              fontSize: 13,
+              fontWeight: 600,
+              cursor: 'pointer',
+            }}
+          >
+            Review Submissions ({pendingCount})
+          </button>
         </div>
       </div>
 
-      <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-        <button
-          type="button"
-          onClick={onReview}
-          style={{
-            display: 'inline-flex', alignItems: 'center', gap: 8,
-            background: '#ffffff', color: '#5142b5', border: '1px solid #ffffff',
-            padding: '11px 20px', borderRadius: 999,
-            fontSize: 13.5, fontWeight: 600, fontFamily: 'var(--font-body)',
-            cursor: 'pointer',
-            boxShadow: '0 6px 16px rgba(0,0,0,0.16)',
-          }}
-        >
-          Review submissions ({pendingCount}) →
-        </button>
-        <button
-          type="button"
-          onClick={onAuthorLecture}
-          style={{
-            display: 'inline-flex', alignItems: 'center', gap: 8,
-            background: 'rgba(255,255,255,0.14)', color: '#ffffff', border: '1px solid rgba(255,255,255,0.34)',
-            padding: '11px 20px', borderRadius: 999,
-            fontSize: 13.5, fontWeight: 700, fontFamily: 'var(--font-body)',
-            cursor: 'pointer',
-          }}
-        >
-          + Add Lecture or Upload PDF/Slide
-        </button>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 12 }}>
+        <div style={{ background: '#f8fafc', padding: '12px 14px', borderRadius: 12, border: '1px solid #e2e8f0' }}>
+          <span style={{ color: '#64748b', fontSize: 11.5, display: 'block' }}>Assigned courses</span>
+          <strong style={{ fontSize: 22, color: '#0f172a' }}>{courseCount}</strong>
+        </div>
+        <div style={{ background: '#f8fafc', padding: '12px 14px', borderRadius: 12, border: '1px solid #e2e8f0' }}>
+          <span style={{ color: '#64748b', fontSize: 11.5, display: 'block' }}>Linked programmes</span>
+          <strong style={{ fontSize: 22, color: '#0f172a' }}>{programCount}</strong>
+        </div>
+        <div style={{ background: '#f8fafc', padding: '12px 14px', borderRadius: 12, border: '1px solid #e2e8f0' }}>
+          <span style={{ color: '#64748b', fontSize: 11.5, display: 'block' }}>Submissions to grade</span>
+          <strong style={{ fontSize: 22, color: '#5142b5' }}>{pendingCount}</strong>
+        </div>
       </div>
     </div>
   )
@@ -1442,46 +1420,6 @@ export default function DashboardFacultyPage() {
       renderNavIcon={id => <NavIcon id={id} />}
     >
       <div id="faculty-overview" className="faculty-teaching-workspace" style={{ display: 'grid', gap: 20 }}>
-        {/* Horizontal Multi-Tab Switcher Bar */}
-        <div
-          role="tablist"
-          aria-label="Faculty Workspace Tabs"
-          style={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            gap: 8,
-            padding: '10px 12px',
-            borderRadius: 14,
-            background: '#f6f4ff',
-            border: '1px solid #ddd6fe',
-          }}
-        >
-          {NAV_ITEMS.map((item) => {
-            const active = activeNav === item.id
-            return (
-              <button
-                key={item.id}
-                type="button"
-                role="tab"
-                aria-selected={active}
-                onClick={() =>setActiveNav(item.id)}
-                style={{
-                  padding: '8px 14px',
-                  borderRadius: 999,
-                  border: active ? '1px solid #5142b5' : '1px solid #cbd5e1',
-                  background: active ? '#5142b5' : '#ffffff',
-                  color: active ? '#ffffff' : '#334155',
-                  fontSize: 12.5,
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                }}
-              >
-                {item.label}
-              </button>
-            )
-          })}
-        </div>
-
         {activeNav === 'overview' ? (
           <AuthDashboardLayout
             primary={

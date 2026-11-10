@@ -645,7 +645,7 @@ export default function SiteAssistant() {
 
             <div className="sia-scope">
               <p>Answer 2 quick questions to match your goals with live Skylent courses, programmes, or university pathways.</p>
-              <p>Want hands-on practice right now? Explore our <Link to="/programmes" onClick={close}>6 Live Career Tracks</Link> or try a <Link to="/labs" onClick={close}>Free Browser Lab</Link>.</p>
+              <p>Want a full 6-phase personalised roadmap? Try <Link to="/path" onClick={close}>Find My Path</Link> with our 90-second skill diagnostic.</p>
             </div>
 
             <div className="sia-thread" ref={threadRef} aria-live="polite" aria-busy={sending}>

@@ -83,57 +83,74 @@ function NavIcon({ id }: { id: string }) {
 function AdminOverview({ onSelectTab }: { onSelectTab: (tabId: string) => void }) {
   return (
     <div style={{
-      background: 'linear-gradient(135deg, #3b2d96 0%, #5142b5 100%)',
-      border: '1px solid rgba(196, 184, 255, 0.42)',
-      borderRadius: 18,
-      padding: 'clamp(24px, 3.5vw, 34px)',
-      color: '#ffffff',
-      boxShadow: '0 18px 40px -14px rgba(59, 45, 150, 0.35)',
+      background: '#ffffff',
+      border: '1px solid #e2e8f0',
+      borderRadius: 16,
+      padding: '20px 24px',
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      flexWrap: 'wrap',
+      gap: 16,
+      boxShadow: '0 4px 16px -8px rgba(15, 23, 42, 0.06)',
     }}>
-      <p style={{ margin: '0 0 8px', color: '#e9d5ff', font: '700 11px/1.4 var(--font-mono)', letterSpacing: '0.14em', textTransform: 'uppercase' }}>
-        SUPERADMIN C-SUITE COMMAND OS · CEO / CFO / CCRO / CAO TELEMETRY
-      </p>
-      <h1 className="skylent-display-sm" style={{ color: '#ffffff', margin: '0 0 8px' }}>Platform overview &amp; Multi-Tab Command Center</h1>
-      <p style={{ color: 'rgba(255,255,255,0.88)', fontSize: 14.5, lineHeight: 1.6, margin: 0, maxWidth: 740 }}>
-        Use the left sidebar or top workspace tabs to open any dedicated operational module (Course &amp; Lecture Studio, Users &amp; Roles, Colleges &amp; Orgs, Employers, Practice Labs, Payments &amp; Elixir, or Security Audit Log).
-      </p>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, marginTop: 18 }}>
+      <div>
+        <h1 style={{ color: '#0f172a', margin: '0 0 4px', fontSize: 22, fontFamily: 'var(--font-display)' }}>
+          Admin Console
+        </h1>
+        <p style={{ color: '#475569', fontSize: 13.5, margin: 0 }}>
+          Manage courses, upload lecture videos and study files, assign user roles, and review enquiries.
+        </p>
+      </div>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
         <button
           type="button"
           onClick={() => onSelectTab('curriculum')}
           style={{
-            background: '#ffffff',
-            color: '#5142b5',
+            background: '#5142b5',
+            color: '#ffffff',
             fontWeight: 600,
-            border: '1px solid #ffffff',
-            padding: '10px 18px',
-            borderRadius: 999,
-            fontSize: 13.5,
+            border: '1px solid #5142b5',
+            padding: '9px 16px',
+            borderRadius: 10,
+            fontSize: 13,
             cursor: 'pointer',
-            boxShadow: '0 6px 16px rgba(0,0,0,0.16)',
           }}
         >
-          Open Course &amp; Lecture Studio →
+          Course &amp; Lecture Builder
         </button>
         <button
           type="button"
           onClick={() => onSelectTab('courses')}
           style={{
-            background: '#ecfdf5',
-            color: '#047857',
-            fontWeight: 700,
-            border: '1px solid #6ee7b7',
-            padding: '10px 18px',
-            borderRadius: 999,
-            fontSize: 13.5,
+            background: '#f8fafc',
+            color: '#0f172a',
+            fontWeight: 600,
+            border: '1px solid #cbd5e1',
+            padding: '9px 16px',
+            borderRadius: 10,
+            fontSize: 13,
             cursor: 'pointer',
           }}
         >
-          📤 Upload Video / PDF / Slides →
+          Upload Video / Material
         </button>
-        <a href="/dashboard/curriculum" className="os-btn os-btn-ghost" style={{ color: '#ffffff', borderColor: 'rgba(255,255,255,0.32)', textDecoration: 'none' }}>Full-Screen Course Builder</a>
-        <a href="/dashboard/student" className="os-btn os-btn-ghost" style={{ color: '#ffffff', borderColor: 'rgba(255,255,255,0.32)', textDecoration: 'none' }}>Open Learner Dashboard</a>
-        <a href="/dashboard/faculty" className="os-btn os-btn-ghost" style={{ color: '#ffffff', borderColor: 'rgba(255,255,255,0.32)', textDecoration: 'none' }}>Open Faculty TA View</a>
+        <button
+          type="button"
+          onClick={() => onSelectTab('users')}
+          style={{
+            background: '#f8fafc',
+            color: '#0f172a',
+            fontWeight: 600,
+            border: '1px solid #cbd5e1',
+            padding: '9px 16px',
+            borderRadius: 10,
+            fontSize: 13,
+            cursor: 'pointer',
+          }}
+        >
+          Users &amp; Roles
+        </button>
       </div>
     </div>
   )
@@ -1187,113 +1204,44 @@ export default function DashboardAdminPage() {
       onNavChange={setActiveNav}
       renderNavIcon={id => <NavIcon id={id} />}
     >
-      <div id="admin-overview" style={{ display: 'grid', gap: 22 }}>
-        {/* Horizontal Multi-Tab Workspace Switcher Bar */}
-        <div
-          role="tablist"
-          aria-label="Superadmin Command Tabs"
-          style={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            gap: 8,
-            padding: '10px 12px',
-            borderRadius: 14,
-            background: '#f6f4ff',
-            border: '1px solid #ddd6fe',
-          }}
-        >
-          {NAV_ITEMS.map((item) => {
-            const active = activeNav === item.id
-            return (
-              <button
-                key={item.id}
-                type="button"
-                role="tab"
-                aria-selected={active}
-                onClick={() => setActiveNav(item.id)}
-                style={{
-                  padding: '8px 14px',
-                  borderRadius: 999,
-                  border: active ? '1px solid #5142b5' : '1px solid #cbd5e1',
-                  background: active ? '#5142b5' : '#ffffff',
-                  color: active ? '#ffffff' : '#334155',
-                  fontSize: 12.5,
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                }}
-              >
-                {item.label}
-              </button>
-            )
-          })}
-        </div>
-
-        {/* TAB 1: OVERVIEW (Hero + C-Suite KPIs + Module Launchpad Cards) */}
+      <div id="admin-overview" style={{ display: 'grid', gap: 20 }}>
+        {/* TAB 1: OVERVIEW (Clean Header + Quick Module Cards + Key Metrics) */}
         {activeNav === 'overview' ? (
           <>
             <AdminOverview onSelectTab={setActiveNav} />
-            <AdminPricingAndCouponsPanel />
-            <AdminPlatform sectionFilter="overview" />
-            <section style={{ display: 'grid', gap: 14 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 }}>
-                <div>
-                  <span style={{ fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 700, color: '#5142b5' }}>
-                    DEDICATED WORKSPACE MODULES · CLICK ANY CARD OR LEFT SIDEBAR TAB
-                  </span>
-                  <h2 style={{ margin: '2px 0 0', fontSize: 19, color: '#0f172a' }}>Superadmin Operational Workspaces</h2>
-                </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 14 }}>
+              {MODULE_LAUNCH_CARDS.map((card) => (
                 <button
+                  key={card.id}
                   type="button"
-                  onClick={() => setActiveNav('all')}
+                  onClick={() => setActiveNav(card.id)}
                   style={{
-                    padding: '7px 14px',
-                    borderRadius: 999,
-                    border: '1px solid #5142b5',
-                    background: '#ffffff',
-                    color: '#5142b5',
-                    fontSize: 12,
-                    fontWeight: 700,
+                    ...cardStyle,
+                    padding: '18px 20px',
+                    textAlign: 'left',
                     cursor: 'pointer',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                    gap: 8,
                   }}
                 >
-                  Open All Modules on One Page →
+                  <div>
+                    <h3 style={{ margin: '0 0 4px', fontSize: 16, color: '#0f172a' }}>{card.title}</h3>
+                    <p style={{ margin: 0, fontSize: 13, color: '#475569', lineHeight: 1.5 }}>{card.desc}</p>
+                  </div>
+                  <span style={{ fontSize: 12.5, fontWeight: 600, color: '#5142b5' }}>
+                    Open →
+                  </span>
                 </button>
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16 }}>
-                {MODULE_LAUNCH_CARDS.map((card) => (
-                  <button
-                    key={card.id}
-                    type="button"
-                    onClick={() => setActiveNav(card.id)}
-                    style={{
-                      ...cardStyle,
-                      textAlign: 'left',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      justifyContent: 'space-between',
-                      gap: 10,
-                    }}
-                  >
-                    <div>
-                      <span style={{ fontSize: 10.5, fontFamily: 'var(--font-mono)', fontWeight: 600, color: '#5142b5' }}>
-                        {card.badge}
-                      </span>
-                      <h3 style={{ margin: '4px 0 6px', fontSize: 17, color: '#0f172a' }}>{card.title}</h3>
-                      <p style={{ margin: 0, fontSize: 13, color: '#475569', lineHeight: 1.5 }}>{card.desc}</p>
-                    </div>
-                    <span style={{ fontSize: 12.5, fontWeight: 600, color: '#5142b5' }}>
-                      Open {card.title} Tab →
-                    </span>
-                  </button>
-                ))}
-              </div>
-            </section>
+              ))}
+            </div>
+            <AdminPlatform sectionFilter="overview" />
           </>
         ) : null}
 
         {/* TAB 2: EMBEDDED COURSE, MODULE & LECTURE STUDIO */}
-        {activeNav === 'curriculum' ? (<><CourseAuthoringStudio embedded /><AdminPricingAndCouponsPanel /></>) : null}
+        {activeNav === 'curriculum' ? <CourseAuthoringStudio embedded /> : null}
 
         {/* TAB 3: USERS & ROLES */}
         {activeNav === 'users' ? <AdminUsersSection currentUserId={currentUserId} /> : null}

@@ -1115,11 +1115,9 @@ export function Nav() {
             </Link>
             {user ? (
               <>
-                {user.role === 'student' ? (
-                  <Link to="/dashboard/student#elixir-wallet" onClick={closeSheet} className="sk-btn sk-btn-secondary">
-                    Elixir Wallet &amp; Store
-                  </Link>
-                ) : null}
+                <Link to="/dashboard/student" onClick={closeSheet} className="sk-btn sk-btn-secondary">
+                  Elixir Wallet &amp; Case Store
+                </Link>
                 <Link to={accountPath} onClick={closeSheet} className="sk-btn sk-btn-secondary">
                   Your account
                 </Link>

@@ -216,101 +216,57 @@ export default function DashboardRecruiterPage() {
       renderNavIcon={id => <NavIcon id={id} />}
     >
       <div className="recruiter-workspace" style={{ display: 'grid', gap: 20 }}>
-        {/* Multi-Tab Switcher Bar */}
-        <div
-          role="tablist"
-          aria-label="Recruiter Workspace Tabs"
-          style={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            gap: 8,
-            padding: '10px 12px',
-            borderRadius: 14,
-            background: '#f6f4ff',
-            border: '1px solid #ddd6fe',
-          }}
-        >
-          {NAV_ITEMS.map((item) => {
-            const active = activeNav === item.id
-            return (
-              <button
-                key={item.id}
-                type="button"
-                role="tab"
-                aria-selected={active}
-                onClick={() => setActiveNav(item.id)}
-                style={{
-                  padding: '8px 14px',
-                  borderRadius: 999,
-                  border: active ? '1px solid #5142b5' : '1px solid #cbd5e1',
-                  background: active ? '#5142b5' : '#ffffff',
-                  color: active ? '#ffffff' : '#334155',
-                  fontSize: 12.5,
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                }}
-              >
-                {item.label}
-              </button>
-            )
-          })}
-        </div>
-
         <section style={{
-          background: 'linear-gradient(135deg, #3b2d96 0%, #5142b5 100%)',
-          border: '1px solid rgba(196, 184, 255, 0.42)',
-          borderRadius: 18,
-          padding: '26px 28px',
-          color: '#ffffff',
-          boxShadow: '0 18px 40px -14px rgba(59, 45, 150, 0.35)',
+          background: '#ffffff',
+          border: '1px solid #e2e8f0',
+          borderRadius: 16,
+          padding: '20px 24px',
+          boxShadow: '0 4px 16px -8px rgba(15, 23, 42, 0.06)',
         }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16, flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
             <div>
-              <p style={{ margin: '0 0 8px', color: '#e9d5ff', font: '700 11px/1.4 var(--font-mono)', letterSpacing: '0.14em', textTransform: 'uppercase' }}>
-                RECRUITER TALENT TERMINAL · 15-MIN ROLE MICRO-AUDITIONS &amp; FLIGHT RECORDER VERIFIER
-              </p>
-              <h1 className="skylent-display-sm" style={{ color: '#ffffff', margin: '0 0 8px' }}>
-                {employers.length > 0 ? employers.map((employer) => employer.name).join(', ') : 'Employer workspace'}
+              <h1 style={{ color: '#0f172a', margin: '0 0 4px', fontSize: 22, fontFamily: 'var(--font-display)' }}>
+                {employers.length > 0 ? employers.map((employer) => employer.name).join(', ') : 'Recruiter Workspace'}
               </h1>
-              <p style={{ color: 'rgba(255,255,255,0.88)', fontSize: 14.5, lineHeight: 1.6, margin: 0, maxWidth: 680 }}>
+              <p style={{ color: '#475569', fontSize: 13.5, margin: 0 }}>
                 {linked
-                  ? `${jobs.length} ${jobs.length === 1 ? 'posting' : 'postings'} · ${openCount} open in the learner job board`
-                  : 'Inspect verified candidate Proof-of-Work Dossiers immediately or link your account to an Employer profile to publish jobs.'}
+                  ? `${jobs.length} ${jobs.length === 1 ? 'job posting' : 'job postings'} · ${openCount} open on the job board`
+                  : 'Post roles, review candidate applications, and verify candidate certificates.'}
               </p>
             </div>
             <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
               <button
                 type="button"
-                onClick={() => setActiveNav('verify')}
+                onClick={() => setActiveNav('jobs')}
                 style={{
-                  background: '#ffffff',
-                  color: '#5142b5',
-                  border: '1px solid #ffffff',
-                  padding: '10px 18px',
-                  borderRadius: 999,
+                  background: activeNav === 'jobs' ? '#5142b5' : '#f8fafc',
+                  color: activeNav === 'jobs' ? '#ffffff' : '#0f172a',
+                  border: activeNav === 'jobs' ? '1px solid #5142b5' : '1px solid #cbd5e1',
+                  padding: '9px 16px',
+                  borderRadius: 10,
                   fontWeight: 600,
                   fontSize: 13,
                   cursor: 'pointer',
-                  boxShadow: '0 6px 16px rgba(0,0,0,0.16)',
                 }}
               >
-                Verify Candidate Dossier →
+                Job Postings
               </button>
-              <Link
-                to="/dashboard/admin"
+              <button
+                type="button"
+                onClick={() => setActiveNav('verify')}
                 style={{
-                  background: 'rgba(255,255,255,0.14)',
-                  color: '#ffffff',
-                  border: '1px solid rgba(255,255,255,0.34)',
-                  padding: '10px 16px',
-                  borderRadius: 999,
-                  fontWeight: 700,
+                  background: activeNav === 'verify' ? '#5142b5' : '#f8fafc',
+                  color: activeNav === 'verify' ? '#ffffff' : '#0f172a',
+                  border: activeNav === 'verify' ? '1px solid #5142b5' : '1px solid #cbd5e1',
+                  padding: '9px 16px',
+                  borderRadius: 10,
+                  fontWeight: 600,
                   fontSize: 13,
-                  textDecoration: 'none',
+                  cursor: 'pointer',
                 }}
               >
-                Link Employer in Admin OS →
-              </Link>
+                Verify Certificate
+              </button>
             </div>
           </div>
         </section>

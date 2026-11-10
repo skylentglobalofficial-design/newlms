@@ -244,11 +244,11 @@ function ProgrammeCard({ row, confirmed }: { row: Row; confirmed: boolean }) {
               {live ? `✓ ${status}` : status}
             </span>
           ) : null}
-          <span className="pgx-card__lab-pill">{row.labBadge}</span>
+          
         </span>
         <span className="pgx-card__body">
           <span className="pgx-card__kicker">
-            {row.category} · <span className="pgx-card__role">{row.role}</span>
+            {row.category}
           </span>
           <span className="pgx-card__title">{row.title}</span>
           <span className="pgx-card__line">{row.line}</span>
@@ -339,10 +339,10 @@ export default function ProgramsPage() {
                 Learn step-by-step in live browser labs and graduate with a verified capstone project.
               </p>
               <div className="pgx-intro__actions">
-                <a className="sk-btn sk-btn-primary" href="#live-courses">
-                  Browse Live Programmes
+                <Link className="sk-btn sk-btn-primary" to="/path">
+                  Find My Path in 90 Seconds
                   <ArrowRight />
-                </a>
+                </Link>
                 <Link className="sk-btn sk-btn-secondary" to="/events">
                   Try a ₹99 Live Workshop (100% Coin Back)
                 </Link>
@@ -350,32 +350,22 @@ export default function ProgramsPage() {
               <p className="pgx-sr">{intro}</p>
             </div>
 
-            <aside className="pgx-royal-hero-card" aria-label="Skylent Execution Standard">
-              <div className="pgx-royal-hero-card__top">
-                <code className="pgx-royal-hero-card__code">Curriculum & Credential Standard</code>
-                <span className="pgx-royal-hero-card__badge">✓ 6 Live Tracks</span>
-              </div>
-              <strong className="pgx-royal-hero-card__title">Every Track Includes a Browser Lab &amp; Verified Capstone</strong>
-              <span className="pgx-royal-hero-card__sub">Zero local setup · Hinglish + English Study Notes · 20-Min Faculty TA Help</span>
+            <aside className="pgx-royal-hero-card" aria-label="Programme structure">
+              <strong className="pgx-royal-hero-card__title">What is included in every programme</strong>
+              <span className="pgx-royal-hero-card__sub">Structured modules, browser-based practice labs, and a graded capstone project.</span>
               <div className="pgx-royal-hero-card__metrics">
                 <div>
-                  <span>ENTRY COST</span>
-                  <strong>Guest Lab Free · Plans From ₹1,499</strong>
+                  <span>FORMAT</span>
+                  <strong>5 Modules · 15 Lessons</strong>
                 </div>
                 <div>
-                  <span>WORKSHOP CREDITS</span>
-                  <strong>₹99 = 99 Coins</strong>
+                  <span>PRACTICE</span>
+                  <strong>In-Browser Labs</strong>
                 </div>
                 <div>
-                  <span>CAREER OS GATE</span>
-                  <strong>Unlocks at 60%</strong>
+                  <span>CREDENTIAL</span>
+                  <strong>Verified Certificate</strong>
                 </div>
-              </div>
-              <div className="pgx-royal-hero-card__pills">
-                <span>Northwind SQL Lab</span>
-                <span>Harbor Desk PRD</span>
-                <span>Python &amp; RAG</span>
-                <span>Public /verify ID</span>
               </div>
             </aside>
           </div>
@@ -512,13 +502,13 @@ export default function ProgramsPage() {
         <section className="pgx-close" aria-labelledby="pgx-close-title">
           <div className="sky-container pgx-close__inner">
             <div>
-              <code className="pgx-close__eyebrow">Hands-On Browser Labs & Live Sprints</code>
-              <h2 id="pgx-close-title">Want to test a track before you enrol?</h2>
-              <p>Run real SQL &amp; Python queries in our interactive browser sandbox or join a ₹99 weekend live sprint with 100% Elixir cashback.</p>
+              <code className="pgx-close__eyebrow">Skill & Track Diagnostic</code>
+              <h2 id="pgx-close-title">Not sure which track fits you best?</h2>
+              <p>Answer 3 quick questions in our 90-second path finder to see which programme matches your background and goal.</p>
             </div>
             <div className="pgx-close__actions">
-              <Link className="sk-btn sk-btn-primary" to="/labs">
-                Try Free Browser Labs
+              <Link className="sk-btn sk-btn-primary" to="/path">
+                Find My Path in 90 Seconds
                 <ArrowRight />
               </Link>
               <Link className="sk-btn sk-btn-secondary pgx-close__secondary" to="/events">

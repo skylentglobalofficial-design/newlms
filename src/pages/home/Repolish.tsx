@@ -113,10 +113,10 @@ export function HomeHero({
             </Link>
             <Link
               className="sk-btn sk-btn-secondary hx-btn"
-              to="/labs"
+              to="/path"
               style={{ border: "1px solid #cbd5e1", background: "#ffffff", color: "#0f172a", fontWeight: 600 }}
             >
-              Try Free Browser Labs
+              Take 90-second skill check
             </Link>
           </div>
           <ul
@@ -148,8 +148,8 @@ export function HomeHero({
               <div className="hxw-ws__top">
                 <span className="hxw-ws__mark" aria-hidden="true">OS</span>
                 <div>
-                  <span className="hxw-ws__title">6 Career Tracks · In-Browser SQL &amp; Code Labs · Verified Projects</span>
-                  <span className="hxw-ws__note">20-Min Faculty TA Doubt SLA · Hinglish & English Study Notes · Verified Certificate ID</span>
+                  <span className="hxw-ws__title">Interactive SQL, Python &amp; Product Labs</span>
+                  <span className="hxw-ws__note">Practise directly in your browser and build verified projects.</span>
                 </div>
               </div>
             </div>
@@ -192,7 +192,7 @@ const GOAL_CARDS = [
   { icon: "graduation", title: "Degrees", text: "UG and PG pathways to explore, online or on campus.", to: "/education" },
   { icon: "book", title: "Skill programmes", text: "Certification and professional programmes with practice.", to: "/programmes" },
   { icon: "briefcase", title: "Career OS", text: "Your profile, projects and applications, in one place.", to: "/career-os" },
-  { icon: "sparkle", title: "Live Browser Labs", text: "Practice SQL, Python & Product cases directly in your browser with instant feedback.", to: "/labs" },
+  { icon: "sparkle", title: "Path Finder", text: "A 90-second guide for where to start across the 6 Skylent tracks.", to: "/path" },
 ] as const
 
 export function HomeGoals() {
@@ -1671,8 +1671,8 @@ export function HomeAi() {
             ))}
 
             <div className="hx-ai-studio__actions">
-              <Link className="sk-btn sk-btn-primary" to="/programmes">
-                Explore All 6 Tracks
+              <Link className="sk-btn sk-btn-primary" to="/path">
+                Find My Path in 90s
                 <ArrowRight />
               </Link>
               <Link className="sk-btn sk-btn-secondary" to="/courses/data-analytics">

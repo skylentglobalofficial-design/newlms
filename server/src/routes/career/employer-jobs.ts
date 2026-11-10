@@ -124,21 +124,22 @@ employerJobsRouter.post("/onboarding", ...guards, requireCsrf, async (req: Authe
         slug,
         location: parsed.data.location ?? "Remote / Hybrid",
         website: parsed.data.website ?? null,
-        verificationStatus: "VERIFIED",
+        verified: true,
       },
     })
 
     await prisma.employerMembership.upsert({
       where: {
-        userId_employerId: {
-          userId,
+        employerId_userId: {
           employerId: employer.id,
+          userId,
         },
       },
       update: {},
       create: {
         employerId: employer.id,
         userId,
+        role: "OWNER",
       },
     })
 

@@ -1,14 +1,14 @@
 # =============================================================================
-# SKYLENT PLAY STORE NATIVE APK & SIGNED AAB BUILDER (V104 - versionCode 10400)
+# SKYLENT PLAY STORE NATIVE APK & SIGNED AAB BUILDER (V93 - versionCode 9300)
 # Generates:
 #   1. skylent-playstore-debug.apk   (Signed with Unified Production Keystore)
 #   2. skylent-playstore-release.apk (Signed Release APK for phone install)
 #   3. skylent-playstore-release.aab (Signed Release Bundle for Google Play Console)
 # Includes:
 #   - 100% Same-Origin Production Sync (https://skylent.live - Zero CORS errors on Catalogue or Login)
-#   - Pre-Load appendUserAgent (SkylentNativeApp/10.4.0 SkylentVersionCode/10400 SkylentNativeInsetsApplied)
+#   - Pre-Load appendUserAgent (SkylentNativeApp/9.3.0 SkylentVersionCode/9300 SkylentNativeInsetsApplied)
 #   - Unified Keystore Signing for both Debug & Release (prevents signature conflict on phone)
-#   - Version-Downgrade Lock (versionCode 10400 / versionName 10.4.0 blocks old APKs from overwriting)
+#   - Version-Downgrade Lock (versionCode 9300 / versionName 9.3.0 blocks old APKs from overwriting)
 #   - Exact Hardware Notification-Bar & Soft-Keyboard Inset Engine (5-inch to 6.8-inch phones)
 #   - In-App PayU India Checkout + Native UPI Intent Launcher (GPay, PhonePe, Paytm, BHIM)
 # =============================================================================
@@ -17,7 +17,7 @@ $Utf8NoBom = New-Object System.Text.UTF8Encoding($false)
 
 Write-Host ""
 Write-Host "============================================================" -ForegroundColor Cyan
-Write-Host "  SKYLENT PLAY STORE APK & SIGNED AAB BUILDER (V104 - v10.4.0)" -ForegroundColor Cyan
+Write-Host "  SKYLENT PLAY STORE APK & SIGNED AAB BUILDER (V93 - v9.3.0)" -ForegroundColor Cyan
 Write-Host "============================================================" -ForegroundColor Cyan
 
 # Step 1: Security Audit - Ensure no server secrets are prefixed with VITE_
@@ -48,7 +48,7 @@ if ($LASTEXITCODE -ne 0 -or -not (Test-Path "dist/index.html")) {
 }
 $DistApk = Join-Path (Get-Location).Path "dist\skylent-latest.apk"
 if (Test-Path $DistApk) { Remove-Item $DistApk -Force -ErrorAction SilentlyContinue }
-Write-Host "  [OK] Fresh V104 UI bundle compiled into dist/ (zero stale assets)." -ForegroundColor Green
+Write-Host "  [OK] Fresh V93 UI bundle compiled into dist/ (zero stale assets)." -ForegroundColor Green
 
 # Step 3: Ensure Capacitor Android packages are installed
 Write-Host "`n[3/7] Checking Capacitor Native Android Dependencies..." -ForegroundColor Yellow
@@ -69,7 +69,7 @@ $capConfigJson = @"
   "appName": "Skylent",
   "webDir": "dist",
   "bundledWebRuntime": false,
-  "appendUserAgent": "SkylentNativeApp/10.4.0 SkylentVersionCode/10400 SkylentNativeInsetsApplied",
+  "appendUserAgent": "SkylentNativeApp/9.3.0 SkylentVersionCode/9300 SkylentNativeInsetsApplied",
   "server": {
     "url": "https://skylent.live",
     "cleartext": false,
@@ -213,23 +213,19 @@ public class MainActivity extends BridgeActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // 1. Hardware Screenshot Lock by Default for Students (Admin dynamically unlocks via SkylentNativeBridge)
-        getWindow().addFlags(android.view.WindowManager.LayoutParams.FLAG_SECURE);
-
-        // 2. Seamless Native White Status Bar & Bottom Bar (Matches Coursera / Unacademy / LinkedIn Android standard)
+        // 1. Exact Hardware Notification-Bar & Soft-Keyboard Inset Engine (Zero overlap, zero double gap)
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
-        getWindow().setStatusBarColor(Color.parseColor("#FFFFFF"));
+        getWindow().setStatusBarColor(Color.parseColor("#0F172A"));
         getWindow().setNavigationBarColor(Color.parseColor("#FFFFFF"));
         WindowInsetsControllerCompat insetsController =
             WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
         if (insetsController != null) {
-            insetsController.setAppearanceLightStatusBars(true);
-            insetsController.setAppearanceLightNavigationBars(true);
+            insetsController.setAppearanceLightStatusBars(false);
         }
 
         View contentView = findViewById(android.R.id.content);
         if (contentView != null) {
-            contentView.setBackgroundColor(Color.parseColor("#F8FAFC"));
+            contentView.setBackgroundColor(Color.parseColor("#0F172A"));
             ViewCompat.setOnApplyWindowInsetsListener(contentView, (v, windowInsets) -> {
                 Insets sysBars = windowInsets.getInsets(
                     WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout()
@@ -257,7 +253,7 @@ public class MainActivity extends BridgeActivity {
             float sysFontScale = getResources().getConfiguration().fontScale;
             int adaptiveTextZoom = Math.round(Math.min(Math.max(sysFontScale, 0.88f), 1.12f) * 100f);
             settings.setTextZoom(adaptiveTextZoom);
-            webView.setBackgroundColor(Color.parseColor("#F8FAFC"));
+            webView.setBackgroundColor(Color.parseColor("#0F172A"));
             webView.addJavascriptInterface(new Object() {
                 @android.webkit.JavascriptInterface
                 public void exitApp() {
@@ -282,8 +278,8 @@ public class MainActivity extends BridgeActivity {
             String ua = settings.getUserAgentString();
             if (ua != null) {
                 String cleanUa = ua.replace("; wv", "").replace("wv)", "");
-                if (!cleanUa.contains("SkylentVersionCode/10400")) {
-                    cleanUa = cleanUa + " SkylentNativeApp/10.4.0 SkylentVersionCode/10400 SkylentNativeInsetsApplied";
+                if (!cleanUa.contains("SkylentVersionCode/9300")) {
+                    cleanUa = cleanUa + " SkylentNativeApp/9.3.0 SkylentVersionCode/9300 SkylentNativeInsetsApplied";
                 }
                 settings.setUserAgentString(cleanUa);
             }
@@ -459,19 +455,19 @@ $cleanStylesXml = @"
         <item name="colorPrimary">#5142B5</item>
         <item name="colorPrimaryDark">#0F172A</item>
         <item name="colorAccent">#5142B5</item>
-        <item name="android:statusBarColor">#FFFFFF</item>
+        <item name="android:statusBarColor">#0F172A</item>
     </style>
 
     <style name="AppTheme.NoActionBar" parent="Theme.AppCompat.DayNight.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
-        <item name="android:windowBackground">#F8FAFC</item>
-        <item name="android:statusBarColor">#FFFFFF</item>
+        <item name="android:windowBackground">#0F172A</item>
+        <item name="android:statusBarColor">#0F172A</item>
     </style>
 
     <style name="AppTheme.NoActionBarLaunch" parent="AppTheme.NoActionBar">
-        <item name="android:windowBackground">#F8FAFC</item>
-        <item name="android:statusBarColor">#FFFFFF</item>
+        <item name="android:windowBackground">#0F172A</item>
+        <item name="android:statusBarColor">#0F172A</item>
     </style>
 </resources>
 "@
@@ -592,8 +588,8 @@ $LocalPropsPath = Join-Path (Get-Location).Path "android\local.properties"
 [System.IO.File]::WriteAllText($LocalPropsPath, "sdk.dir=$EscapedSdk`n", $Utf8NoBom)
 Write-Host "  [OK] ANDROID_HOME set to: $SdkRoot" -ForegroundColor Green
 
-# Step 6: Auto-Generate Production Play Store Keystore & Configure Unified Signing (Debug + Release) + versionCode 10400
-Write-Host "`n[6/7] Configuring Unified Release Signing & versionCode 10400..." -ForegroundColor Yellow
+# Step 6: Auto-Generate Production Play Store Keystore & Configure Unified Signing (Debug + Release) + versionCode 9300
+Write-Host "`n[6/7] Configuring Unified Release Signing & versionCode 9300..." -ForegroundColor Yellow
 $KeystoreDir = Join-Path $ToolchainRoot "keystore"
 if (-not (Test-Path $KeystoreDir)) {
   New-Item -ItemType Directory -Path $KeystoreDir -Force | Out-Null
@@ -614,8 +610,8 @@ if (Test-Path $AppBuildGradle) {
   if ($markerIdx -ge 0) {
     $gradleText = $gradleText.Substring(0, $markerIdx).TrimEnd()
   }
-  $gradleText = [regex]::Replace($gradleText, 'versionCode\s+\d+', 'versionCode 10400')
-  $gradleText = [regex]::Replace($gradleText, 'versionName\s+"[^"]+"', 'versionName "10.4.0"')
+  $gradleText = [regex]::Replace($gradleText, 'versionCode\s+\d+', 'versionCode 9300')
+  $gradleText = [regex]::Replace($gradleText, 'versionName\s+"[^"]+"', 'versionName "9.3.0"')
 
   $KeystoreSlash = $KeystorePath.Replace("\", "/")
   $signingBlock = @"
@@ -647,7 +643,7 @@ android {
 "@
   $gradleText = $gradleText + $signingBlock
   [System.IO.File]::WriteAllText($AppBuildGradle, $gradleText.Replace("`r`n", "`n"), $Utf8NoBom)
-  Write-Host "  [OK] Configured versionCode 10400 (v10.4.0) & Unified Keystore Signing (Debug + Release) in android/app/build.gradle." -ForegroundColor Green
+  Write-Host "  [OK] Configured versionCode 9300 (v9.3.0) & Unified Keystore Signing (Debug + Release) in android/app/build.gradle." -ForegroundColor Green
 }
 
 # Step 7: Compile Debug APK + Signed Release APK + Signed Release AAB
@@ -698,7 +694,7 @@ if (Test-Path "android/gradlew.bat") {
     $ApkSizeMb = [math]::Round(((Get-Item $TargetApkForSize).Length / 1MB), 2)
     Write-Host ""
     Write-Host "============================================================" -ForegroundColor Green
-    Write-Host "  [SUCCESS] ALL GOOGLE PLAY STORE FILES GENERATED (V104 - v10.4.0 / versionCode 10400)!" -ForegroundColor Green
+    Write-Host "  [SUCCESS] ALL GOOGLE PLAY STORE FILES GENERATED (V93 - v9.3.0 / versionCode 9300)!" -ForegroundColor Green
     Write-Host "  1. Phone Test APK (Signed) : $OutReleaseApk ($ApkSizeMb MB)" -ForegroundColor White
     Write-Host "  2. Phone Test APK (Debug)  : $OutDebugApk" -ForegroundColor White
     Write-Host "  3. Play Store Upload (.aab): $OutReleaseAab" -ForegroundColor Cyan

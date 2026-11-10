@@ -2,11 +2,11 @@ import "dotenv/config"
 import crypto from "node:crypto"
 import { PrismaClient, RoleName } from "@prisma/client"
 import { ensureRole } from "../server/src/lib/auth.js"
-import { TEST_CONSENT, ensureTestApiServer } from "./test-consent-payload.ts"
+import { TEST_CONSENT } from "./test-consent-payload.ts"
 import { grantCareerOsForTest } from "./career-os-test-grant.ts"
 
 const prisma = new PrismaClient()
-let API_BASE = process.env.API_BASE ?? "http://127.0.0.1:3000/api/v1"
+const API_BASE = process.env.API_BASE ?? "http://127.0.0.1:3000/api/v1"
 const PASSWORD = "test-password-123"
 
 type CookieJar = Map<string, string>
@@ -91,37 +91,27 @@ async function login(email: string) {
 }
 
 async function main() {
-  const apiServer = await ensureTestApiServer(API_BASE)
-  API_BASE = apiServer.apiBase
   const stamp = `${Date.now()}-${crypto.randomBytes(3).toString("hex")}`
   const title = `Employer ownership ${stamp}`
+  const student = await signup(`employer-student-${stamp}@example.com`, "Employer Student")
+  const recruiterA = await signup(`employer-a-${stamp}@example.com`, "Recruiter Alpha")
+  const recruiterB = await signup(`employer-b-${stamp}@example.com`, "Recruiter Beta")
+  const admin = await signup(`employer-admin-${stamp}@example.com`, "Employer Admin")
+  await setRoleDirectly(recruiterA.userId, RoleName.RECRUITER)
+  await setRoleDirectly(recruiterB.userId, RoleName.RECRUITER)
+  await setRoleDirectly(admin.userId, RoleName.ADMIN)
+
+  await grantCareerOsForTest(prisma, student.userId)
+  const studentJar = await login(student.email)
+  const jarA = await login(recruiterA.email)
+  const jarB = await login(recruiterB.email)
+  const adminJar = await login(admin.email)
+
   const employerIds: string[] = []
   const extraUsers: string[] = []
   let jobId: string | null = null
-  let studentId = ""
-  let recruiterAId = ""
-  let recruiterBId = ""
-  let adminId = ""
 
   try {
-    const student = await signup(`employer-student-${stamp}@example.com`, "Employer Student")
-    const recruiterA = await signup(`employer-a-${stamp}@example.com`, "Recruiter Alpha")
-    const recruiterB = await signup(`employer-b-${stamp}@example.com`, "Recruiter Beta")
-    const admin = await signup(`employer-admin-${stamp}@example.com`, "Employer Admin")
-    studentId = student.userId
-    recruiterAId = recruiterA.userId
-    recruiterBId = recruiterB.userId
-    adminId = admin.userId
-    await setRoleDirectly(recruiterA.userId, RoleName.RECRUITER)
-    await setRoleDirectly(recruiterB.userId, RoleName.RECRUITER)
-    await setRoleDirectly(admin.userId, RoleName.ADMIN)
-
-    await grantCareerOsForTest(prisma, student.userId)
-    const studentJar = await login(student.email)
-    const jarA = await login(recruiterA.email)
-    const jarB = await login(recruiterB.email)
-    const adminJar = await login(admin.email)
-
     console.log("1. Student cannot use employer job routes")
     const studentList = await request(studentJar, "/career/employer/jobs")
     assert(studentList.response.status === 403, `Student list should be 403, got ${studentList.response.status}`)
@@ -366,15 +356,11 @@ async function main() {
 
     console.log("Employer job ownership tests passed")
   } finally {
-    if (jobId) await prisma.jobApplication.deleteMany({ where: { jobId } }).catch(() => undefined)
-    if (employerIds.length) await prisma.employer.deleteMany({ where: { id: { in: employerIds } } }).catch(() => undefined)
-    const allUserIds = [studentId, recruiterAId, recruiterBId, adminId, ...extraUsers].filter(Boolean)
-    if (allUserIds.length) {
-      await prisma.user.deleteMany({
-        where: { id: { in: allUserIds } },
-      }).catch(() => undefined)
-    }
-    await apiServer.close()
+    if (jobId) await prisma.jobApplication.deleteMany({ where: { jobId } })
+    if (employerIds.length) await prisma.employer.deleteMany({ where: { id: { in: employerIds } } })
+    await prisma.user.deleteMany({
+      where: { id: { in: [student.userId, recruiterA.userId, recruiterB.userId, admin.userId, ...extraUsers] } },
+    }).catch(() => undefined)
     await prisma.$disconnect()
   }
 }

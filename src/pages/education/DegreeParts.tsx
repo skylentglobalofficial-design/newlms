@@ -269,8 +269,8 @@ export function ClosingBand({
           </h2>
         </div>
         <Reveal delay={180} className="dg-close__actions">
-          <Link className="sk-btn sk-btn-primary" to="/programmes">
-            Explore Career Tracks
+          <Link className="sk-btn sk-btn-primary" to="/path">
+            Find My Path
             <ArrowRight />
           </Link>
           <Link to={secondary.to} className="sk-btn sk-btn-secondary">

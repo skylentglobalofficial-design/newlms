@@ -63,81 +63,88 @@ function InstitutionWorkspace({
   institutionName,
   institutionLearners,
   programCount,
-  batchMessage,
+  courseCount = 0,
+  memberCount = 0,
 }: {
   institutionName: string
   institutionLearners: number
   programCount: number
-  batchMessage: string
+  courseCount?: number
+  memberCount?: number
+  batchMessage?: string
 }) {
   return (
-    <div id="org-overview" className="org-institution-workspace" style={{ display: 'grid', gap: 18 }}>
+    <div id="org-overview" className="org-institution-workspace" style={{ display: 'grid', gap: 16 }}>
       <div style={{
-        background: 'linear-gradient(135deg, #3b2d96 0%, #5142b5 100%)',
-        border: '1px solid rgba(196, 184, 255, 0.42)',
-        borderRadius: 18,
-        padding: '26px 28px',
-        color: '#ffffff',
-        boxShadow: '0 18px 40px -14px rgba(59, 45, 150, 0.35)',
+        background: '#ffffff',
+        border: '1px solid #e2e8f0',
+        borderRadius: 16,
+        padding: '20px 24px',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        gap: 16,
+        flexWrap: 'wrap',
+        boxShadow: '0 4px 16px -8px rgba(15, 23, 42, 0.06)',
       }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16, flexWrap: 'wrap' }}>
-          <div>
-            <p style={{ margin: '0 0 8px', color: '#e9d5ff', font: '700 11px/1.4 var(--font-mono)', letterSpacing: '0.14em', textTransform: 'uppercase' }}>
-              ORGANISATION &amp; ENTERPRISE L&amp;D COMMAND CENTER · MULTI-TENANT WORKSPACE
-            </p>
-            <h1 className="skylent-display-md" style={{ color: '#ffffff', margin: '0 0 8px', maxWidth: 680, lineHeight: 1.08 }}>
-              {institutionName}
-            </h1>
-            <p style={{ color: 'rgba(255,255,255,0.88)', fontSize: 14.5, margin: 0 }}>
-              {programCount} programs · {institutionLearners} enrollments · backend-backed totals
-            </p>
-          </div>
-          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-            <Link
-              to="/dashboard/college"
-              style={{
-                background: '#ffffff',
-                color: '#5142b5',
-                padding: '10px 16px',
-                borderRadius: 999,
-                fontWeight: 600,
-                fontSize: 13,
-                textDecoration: 'none',
-                boxShadow: '0 6px 16px rgba(0,0,0,0.16)',
-              }}
-            >
-              Open College NAAC / CSV Center →
-            </Link>
-            <Link
-              to="/verify"
-              style={{
-                background: 'rgba(255,255,255,0.14)',
-                color: '#ffffff',
-                border: '1px solid rgba(255,255,255,0.34)',
-                padding: '10px 16px',
-                borderRadius: 999,
-                fontWeight: 700,
-                fontSize: 13,
-                textDecoration: 'none',
-              }}
-            >
-              Verify Proof Dossiers →
-            </Link>
-          </div>
+        <div>
+          <h1 style={{ color: '#0f172a', margin: '0 0 4px', fontSize: 22, fontFamily: 'var(--font-display)' }}>
+            {institutionName}
+          </h1>
+          <p style={{ color: '#475569', fontSize: 13.5, margin: 0 }}>
+            Organisation L&amp;D dashboard — track member enrollments and active programmes.
+          </p>
+        </div>
+        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+          <Link
+            to="/dashboard/college"
+            style={{
+              background: '#5142b5',
+              color: '#ffffff',
+              padding: '9px 16px',
+              borderRadius: 10,
+              fontWeight: 600,
+              fontSize: 13,
+              textDecoration: 'none',
+            }}
+          >
+            Cohort CSV Report
+          </Link>
+          <Link
+            to="/verify"
+            style={{
+              background: '#f8fafc',
+              color: '#0f172a',
+              border: '1px solid #cbd5e1',
+              padding: '9px 16px',
+              borderRadius: 10,
+              fontWeight: 600,
+              fontSize: 13,
+              textDecoration: 'none',
+            }}
+          >
+            Verify Certificates
+          </Link>
         </div>
       </div>
 
-      <div className="org-institution-visual">
-        <ProductVisual id="institution-pipeline" themeId="institution" style={{ minHeight: 220 }} />
-      </div>
-
-      <div style={cardStyle}>
-        <span style={{ color: '#5142b5', fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 700, display: 'block', marginBottom: 6 }}>
-          OPERATIONAL STATUS
-        </span>
-        <p style={{ color: '#475569', fontSize: 14, margin: 0, lineHeight: 1.6 }}>
-          {batchMessage}
-        </p>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: 14 }}>
+        <div style={cardStyle}>
+          <span style={{ fontSize: 11.5, color: '#64748b', display: 'block' }}>Organisation members</span>
+          <strong style={{ fontSize: 24, color: '#0f172a', display: 'block', marginTop: 4 }}>{memberCount}</strong>
+        </div>
+        <div style={cardStyle}>
+          <span style={{ fontSize: 11.5, color: '#64748b', display: 'block' }}>Active programmes</span>
+          <strong style={{ fontSize: 24, color: '#0f172a', display: 'block', marginTop: 4 }}>{programCount}</strong>
+        </div>
+        <div style={cardStyle}>
+          <span style={{ fontSize: 11.5, color: '#64748b', display: 'block' }}>Active courses</span>
+          <strong style={{ fontSize: 24, color: '#0f172a', display: 'block', marginTop: 4 }}>{courseCount}</strong>
+        </div>
+        <div style={cardStyle}>
+          <span style={{ fontSize: 11.5, color: '#64748b', display: 'block' }}>Total enrollments</span>
+          <strong style={{ fontSize: 24, color: '#5142b5', display: 'block', marginTop: 4 }}>{institutionLearners}</strong>
+        </div>
       </div>
     </div>
   )
@@ -351,46 +358,6 @@ export default function DashboardOrgPage() {
       renderNavIcon={id => <NavIcon id={id} />}
     >
       <div className="organisation-workspace" style={{ display: 'grid', gap: 20 }}>
-        {/* Multi-Tab Switcher Bar */}
-        <div
-          role="tablist"
-          aria-label="Organisation Workspace Tabs"
-          style={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            gap: 8,
-            padding: '10px 12px',
-            borderRadius: 14,
-            background: '#f6f4ff',
-            border: '1px solid #ddd6fe',
-          }}
-        >
-          {NAV_ITEMS.map((item) => {
-            const active = activeNav === item.id
-            return (
-              <button
-                key={item.id}
-                type="button"
-                role="tab"
-                aria-selected={active}
-                onClick={() => setActiveNav(item.id)}
-                style={{
-                  padding: '8px 14px',
-                  borderRadius: 999,
-                  border: active ? '1px solid #5142b5' : '1px solid #cbd5e1',
-                  background: active ? '#5142b5' : '#ffffff',
-                  color: active ? '#ffffff' : '#334155',
-                  fontSize: 12.5,
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                }}
-              >
-                {item.label}
-              </button>
-            )
-          })}
-        </div>
-
         {orgError && !dashboard ? (
           <div style={cardStyle}>
             <span style={{ fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 700, color: '#5142b5', display: 'block', marginBottom: 4 }}>
@@ -438,31 +405,20 @@ export default function DashboardOrgPage() {
         ) : null}
 
         {activeNav === 'overview' ? (
-          <AuthDashboardLayout
-            primary={
-              <div style={{ display: 'grid', gap: 20 }}>
-                <InstitutionWorkspace
-                  institutionName={institutionName}
-                  institutionLearners={institutionLearners}
-                  programCount={programCount}
-                  batchMessage={batchMessage}
-                />
-                <AcademicPipeline
-                  batchMessage={batchMessage}
-                  catalogScopeMessage={dashboard?.catalogScopeMessage}
-                />
-                <div className="org-two-col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 18 }}>
-                  <ProgramOperations programs={programs} />
-                  <BatchOperations batchMessage={batchMessage} />
-                </div>
-                <div className="org-two-col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 18 }}>
-                  <LearnerProgress enrollmentCount={institutionLearners} />
-                  <FacultyOperations />
-                </div>
-              </div>
-            }
-            rail={<OrgContextRail programs={programs} />}
-          />
+          <div style={{ display: 'grid', gap: 18 }}>
+            <InstitutionWorkspace
+              institutionName={institutionName}
+              institutionLearners={institutionLearners}
+              programCount={programCount}
+              courseCount={dashboard?.totals.courseCount ?? 0}
+              memberCount={dashboard?.totals.memberCount ?? 0}
+              batchMessage={batchMessage}
+            />
+            <div className="org-two-col" style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 18, alignItems: 'start' }}>
+              <ProgramOperations programs={programs} />
+              <OrgContextRail programs={programs} />
+            </div>
+          </div>
         ) : null}
 
         {activeNav === 'programs' ? <ProgramOperations programs={programs} /> : null}

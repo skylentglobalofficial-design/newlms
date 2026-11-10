@@ -1,6 +1,3 @@
-import { createHash } from "node:crypto"
-import { existsSync, readFileSync, statSync } from "node:fs"
-import path from "node:path"
 import { Router, type Request, type Response } from "express"
 import { prisma } from "../lib/prisma.js"
 import { checkMigrationState } from "../lib/migration-guard.js"
@@ -8,46 +5,13 @@ import { redactSecrets } from "../lib/env.js"
 import { describeAiReadiness } from "../lib/skylent-ai/service.js"
 
 const router = Router()
-const startedAt = Date.now()
 
-export const DEPLOYED_APP_VERSION = process.env.SKYLENT_APP_VERSION?.trim() || "10.4.0"
-
-function computeDynamicBuildId(): string {
-  if (process.env.SKYLENT_BUILD_ID?.trim()) return process.env.SKYLENT_BUILD_ID.trim()
-  const gitSha = (
-    process.env.SKYLENT_RELEASE_SHA ||
-    process.env.RENDER_GIT_COMMIT ||
-    process.env.VERCEL_GIT_COMMIT_SHA ||
-    process.env.RAILWAY_GIT_COMMIT_SHA ||
-    ""
-  )
-    .trim()
-    .slice(0, 8)
-
-  const candidates = [
-    path.resolve(process.cwd(), "dist/index.html"),
-    path.resolve(process.cwd(), "../dist/index.html"),
-  ]
-  for (const candidate of candidates) {
-    try {
-      if (existsSync(candidate)) {
-        const html = readFileSync(candidate, "utf8")
-        const mtime = Math.floor(statSync(candidate).mtimeMs / 1000)
-        const digest = createHash("sha1").update(html).digest("hex").slice(0, 10)
-        return `v104-${gitSha ? `${gitSha}-` : ""}${digest}-${mtime}`
-      }
-    } catch {
-      // ignore and fall back
-    }
-  }
-  return `v104-${gitSha || "live"}-${Math.floor(startedAt / 1000)}`
-}
-
-export const DEPLOYED_BUILD_ID = computeDynamicBuildId()
+export const DEPLOYED_APP_VERSION = "9.3.0"
+export const DEPLOYED_BUILD_ID = "v93-202611071530"
 
 function releaseSha(): string {
   const sha = process.env.SKYLENT_RELEASE_SHA?.trim() ?? ""
-  return /^[0-9a-f]{7,40}$/i.test(sha) ? sha : computeDynamicBuildId()
+  return /^[0-9a-f]{7,40}$/i.test(sha) ? sha : DEPLOYED_BUILD_ID
 }
 
 function readinessFields() {
@@ -100,15 +64,15 @@ router.get("/live", (_request, response) => {
 })
 
 /**
- * Seamless Auto-Update Config for Skylent Mobile Web & Native APK builds.
- * Computes a fresh buildId on every `npm run build` / `git push` so installed APKs
- * and browsers detect new deployments within seconds and prompt/sync automatically.
+ * YouTube/Facebook-Style Seamless Auto-Update Config for Skylent Native APK builds.
+ * Uses a stable DEPLOYED_BUILD_ID (plus optional Admin DB override) so installed APKs
+ * sync once per deployment and never get trapped in an infinite reload loop.
  */
 router.get("/app-config", async (request, response) => {
-  response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate")
+  response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate")
   let dynamicVersion = DEPLOYED_APP_VERSION
-  let dynamicBuildId = computeDynamicBuildId()
-  let dynamicNotes = "Latest courses, AI lesson tutor, anti-piracy protection & mobile UI improvements are ready."
+  let dynamicBuildId = DEPLOYED_BUILD_ID
+  let dynamicNotes = "Zero-delay dashboard, 5-inch adaptive layout, in-app PayU & UPI checkout."
   let dynamicAnnouncement: string | null = process.env.SKYLENT_APP_BANNER?.trim() || null
 
   try {
@@ -124,11 +88,12 @@ router.get("/app-config", async (request, response) => {
       }
       if (parsed.appVersion) dynamicVersion = parsed.appVersion
       if (parsed.buildId) dynamicBuildId = parsed.buildId
+      else if (parsed.appVersion) dynamicBuildId = `v88-${parsed.appVersion}`
       if (parsed.releaseNotes) dynamicNotes = parsed.releaseNotes
       if (parsed.announcement) dynamicAnnouncement = parsed.announcement
     }
   } catch {
-    // Fallback to dynamic build hash
+    // Fallback to static constants
   }
 
   const currentStamp = `${dynamicVersion}:${dynamicBuildId}`
@@ -139,7 +104,7 @@ router.get("/app-config", async (request, response) => {
 
   response.json({
     appVersion: dynamicVersion,
-    minSupportedAppVersion: "10.4.0",
+    minSupportedAppVersion: "1.0.0",
     autoSyncUpdate: Boolean(clientInstalledStamp) && !isUpToDate,
     buildId: dynamicBuildId,
     releaseNotes: dynamicNotes,
@@ -151,17 +116,6 @@ router.get("/app-config", async (request, response) => {
     announcement: dynamicAnnouncement,
     maintenanceMode: process.env.SKYLENT_MAINTENANCE_MODE === "true",
     ...readinessFields(),
-  })
-})
-
-router.get("/version", (_request, response) => {
-  response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate")
-  response.json({
-    ok: true,
-    appVersion: DEPLOYED_APP_VERSION,
-    buildId: computeDynamicBuildId(),
-    minAndroidVersionCode: 10400,
-    apkDownloadUrl: "/skylent-latest.apk",
   })
 })
 

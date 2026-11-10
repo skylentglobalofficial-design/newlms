@@ -75,66 +75,22 @@ export default function DashboardCollegePage() {
       renderNavIcon={() => null}
     >
       <div className="sh" style={{ display: "grid", gap: 20, maxWidth: 1120 }}>
-        {/* Multi-Tab Switcher Bar */}
-        <div
-          role="tablist"
-          aria-label="College Workspace Tabs"
-          style={{
-            display: "flex",
-            flexWrap: "wrap",
-            gap: 8,
-            padding: "10px 12px",
-            borderRadius: 14,
-            background: "#f6f4ff",
-            border: "1px solid #ddd6fe",
-          }}
-        >
-          {COLLEGE_NAV.map((item) => {
-            const active = activeNav === item.id
-            return (
-              <button
-                key={item.id}
-                type="button"
-                role="tab"
-                aria-selected={active}
-                onClick={() => setActiveNav(item.id)}
-                style={{
-                  padding: "8px 14px",
-                  borderRadius: 999,
-                  border: active ? "1px solid #5142b5" : "1px solid #cbd5e1",
-                  background: active ? "#5142b5" : "#ffffff",
-                  color: active ? "#ffffff" : "#334155",
-                  fontSize: 12.5,
-                  fontWeight: 700,
-                  cursor: "pointer",
-                }}
-              >
-                {item.label}
-              </button>
-            )
-          })}
-        </div>
-
         <section
           style={{
-            background: "linear-gradient(135deg, #3b2d96 0%, #5142b5 100%)",
-            border: "1px solid rgba(196, 184, 255, 0.42)",
-            borderRadius: 18,
-            padding: "28px 30px",
-            color: "#ffffff",
-            boxShadow: "0 18px 42px -14px rgba(59, 45, 150, 0.35)",
+            background: "#ffffff",
+            border: "1px solid #e2e8f0",
+            borderRadius: 16,
+            padding: "20px 24px",
+            boxShadow: "0 4px 16px -8px rgba(15, 23, 42, 0.06)",
           }}
         >
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 16, flexWrap: "wrap" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
             <div>
-              <p style={{ margin: "0 0 8px", color: "#e9d5ff", font: "700 11px/1.4 var(--font-mono)", letterSpacing: "0.14em", textTransform: "uppercase" }}>
-                NEP 2020 · ACADEMIC BANK OF CREDITS (ABC) &amp; NAAC COHORT COMMAND CENTER
-              </p>
-              <h1 style={{ margin: "0 0 8px", fontSize: "clamp(24px, 3vw, 34px)", color: "#ffffff", fontFamily: "var(--font-display)" }}>
-                {data?.college.name ?? "College Institutional Workspace"}
+              <h1 style={{ margin: "0 0 4px", fontSize: 22, color: "#0f172a", fontFamily: "var(--font-display)" }}>
+                {data?.college.name ?? "College Dashboard"}
               </h1>
-              <p style={{ margin: 0, color: "rgba(255,255,255,0.88)", fontSize: 14.5, maxWidth: 680, lineHeight: 1.55 }}>
-                {data?.note ?? "Track student lab execution, 20-minute Faculty TA SLA compliance, and NCrF skill-credit equivalency across your institution."}
+              <p style={{ margin: 0, color: "#475569", fontSize: 13.5 }}>
+                {data?.note ?? "View enrolled students, course progress, and export cohort reports."}
               </p>
             </div>
             <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
@@ -143,12 +99,11 @@ export default function DashboardCollegePage() {
                 href={`${apiV1()}/college/dashboard/export.csv`}
                 download
                 style={{
-                  background: "#ffffff",
-                  color: "#5142b5",
+                  background: "#5142b5",
+                  color: "#ffffff",
                   fontWeight: 600,
-                  borderColor: "#ffffff",
+                  borderColor: "#5142b5",
                   textDecoration: "none",
-                  boxShadow: "0 6px 16px rgba(0,0,0,0.16)",
                 }}
               >
                 Export Cohort CSV
@@ -156,17 +111,12 @@ export default function DashboardCollegePage() {
               <Link
                 className="os-btn os-btn-ghost"
                 to="/verify"
-                style={{ color: "#ffffff", borderColor: "rgba(255,255,255,0.34)", textDecoration: "none" }}
+                style={{ textDecoration: "none" }}
               >
-                Verify Student Dossiers →
+                Verify Certificates
               </Link>
             </div>
           </div>
-          {data?.college.sample ? (
-            <p style={{ margin: "14px 0 0", padding: "6px 12px", borderRadius: 999, background: "rgba(16, 185, 129, 0.2)", border: "1px solid rgba(52, 211, 153, 0.45)", color: "#6ee7b7", display: "inline-block", fontSize: 12, fontFamily: "var(--font-mono)" }}>
-              ✓ Institutional Preview Mode · 60-Hour NCrF-Aligned Workload Ledger (Academic Credit Award Subject to Partner HEI Approval under UGC Rules)
-            </p>
-          ) : null}
         </section>
 
         {error ? (
@@ -282,9 +232,7 @@ export default function DashboardCollegePage() {
                         }}
                       >
                         <span>{row.courseTitle ?? row.programName ?? "Enrolment"}</span>
-                        <span style={{ fontSize: 12, fontFamily: "var(--font-mono)", color: "#059669" }}>
-                          ✓ Browser Lab + 20m TA SLA Active
-                        </span>
+                        <span style={{ fontSize: 12, color: "#059669", fontWeight: 600 }}>Enrolled</span>
                       </li>
                     ))}
                   </ul>

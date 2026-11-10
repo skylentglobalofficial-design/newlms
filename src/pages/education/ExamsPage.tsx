@@ -105,8 +105,8 @@ export default function ExamsPage() {
           </p>
         </div>
         <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
-          <Link to="/labs" className="sk-btn sk-btn-primary" style={{ background: "#5142B5", color: "#ffffff", border: "1px solid #C4B8FF" }}>
-            Open Live Practice Labs →
+          <Link to="/path" className="sk-btn sk-btn-primary" style={{ background: "#5142B5", color: "#ffffff", border: "1px solid #C4B8FF" }}>
+            Start 90-Second Diagnostic →
           </Link>
           <Link to="/programmes" className="sk-btn sk-btn-secondary" style={{ background: "rgba(255,255,255,0.1)", color: "#ffffff", borderColor: "rgba(255,255,255,0.24)" }}>
             Explore 6 Live Tracks

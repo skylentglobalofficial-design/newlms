@@ -633,7 +633,7 @@ export const FOOTER_COLS = [
   {
     heading: "Path",
     links: [
-      ["Interactive Browser Labs", "/labs"],
+      ["Skylent Path", "/path"],
       ["Your roadmap", "/path/result"],
     ],
   },

@@ -1,30 +1,13 @@
-# Dependencies
 node_modules/
-
-# Build outputs
 dist/
 dist-server/
-.vite/
-.turbo/
-.cache/
-
-# Environment variables
 .env
 .env.*
 !.env.example
-!.env.production
-
-# Mobile & Native Android generated artifacts
+.cache/
 android/
 ios/
 *.apk
 *.aab
-*.jks
-*.keystore
-
-# Archives, patches & logs
-*.zip
-*.patch
 *.log
 .DS_Store
-Thumbs.db

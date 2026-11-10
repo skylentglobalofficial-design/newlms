@@ -841,25 +841,28 @@ export function BoardroomColdCallCard({ courseSlug }: { courseSlug: string }) {
 
 export function LessonContextPanel({ courseSlug, lessonId }: { courseSlug: string; lessonId: string }) {
   const meta = getLessonMeta(courseSlug, lessonId)
-  if (!meta) return null
+  if (!meta?.objective) return null
   return (
-    <div style={{ marginBottom: 10 }}>
-      {meta.objective ? (
-        <div
-          style={{
-            padding: "8px 12px",
-            borderRadius: 8,
-            background: "#f8fafc",
-            border: "1px solid #e2e8f0",
-            fontSize: 13,
-            color: "#334155",
-            marginBottom: 8,
-          }}
-        >
-          <strong style={{ color: "#0f172a" }}>Goal:</strong> {meta.objective}
+    <div style={{ marginBottom: 14 }}>
+      <p
+        style={{
+          margin: 0,
+          padding: "10px 14px",
+          borderRadius: 10,
+          background: "#f8fafc",
+          border: "1px solid #e2e8f0",
+          fontSize: 13.5,
+          lineHeight: 1.55,
+          color: "#475569",
+        }}
+      >
+        <strong style={{ color: "#0f172a" }}>Lesson objective:</strong> {meta.objective}
+      </p>
+      {lessonId === "l1" ? (
+        <div style={{ marginTop: 10 }}>
+          <BoardroomColdCallCard courseSlug={courseSlug} />
         </div>
       ) : null}
-      <BoardroomColdCallCard courseSlug={courseSlug} />
     </div>
   )
 }

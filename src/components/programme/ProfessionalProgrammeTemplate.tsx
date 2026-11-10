@@ -929,8 +929,8 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
           </div>
           <Reveal delay={180} className="pp-actions">
             {primaryAction}
-            <Link className="sk-btn sk-btn-secondary" to="/programmes">
-              Compare All 6 Career Tracks
+            <Link className="sk-btn sk-btn-secondary" to="/path">
+              {canEnrol ? "Not sure yet? Find your path in 90 seconds" : "Find your path in 90 seconds"}
             </Link>
           </Reveal>
         </Reveal>

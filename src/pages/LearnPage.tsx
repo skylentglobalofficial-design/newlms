@@ -131,7 +131,7 @@ export default function LearnPage() {
   const [selectedLessonId, setSelectedLessonId] = useState(lessonId ?? firstLessonId)
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [compact, setCompact] = useState(() => typeof window !== 'undefined' && window.matchMedia('(max-width: 900px)').matches)
-  const [aiCompact, setAiCompact] = useState(() => typeof window !== 'undefined' && window.matchMedia('(max-width: 1200px)').matches)
+  const [aiCompact, setAiCompact] = useState(true)
   const [quizQuestions, setQuizQuestions] = useState<QuizQuestion[]>([])
   const [quizStatus, setQuizStatus] = useState<'loading' | 'ready' | 'error'>('ready')
   const [quizAttempt, setQuizAttempt] = useState(0)
@@ -765,9 +765,8 @@ export default function LearnPage() {
                     }}
                   >
                     {[
-                      { id: 'lesson' as const, label: 'Lesson Content' },
-                      { id: 'notes' as const, label: 'Personal Notes' },
-                      { id: 'attachments' as const, label: 'Attachments & Cheat-Sheets' },
+                      { id: 'lesson' as const, label: 'Lesson' },
+                      { id: 'notes' as const, label: 'My Notes' },
                     ].map((tab) => {
                       const active = playerTab === tab.id
                       return (
@@ -838,7 +837,13 @@ export default function LearnPage() {
                     ) : null}
                   </div>
                 </div>
-
+                {selectedState.locked ? null : (isAuthoredCourse(readyCourse.slug) || isMultiTrackAuthoredCourse(readyCourse.slug)) ? (
+                  <LessonContextPanel courseSlug={readyCourse.slug} lessonId={selectedLesson.id} />
+                ) : (
+                  <p className="os-lead">
+                    {getLessonMeta(readyCourse.slug, selectedLesson.id)?.objective ?? lessonObjective(selectedLesson)}
+                  </p>
+                )}
 
                 {playerTab === 'notes' && !selectedState.locked ? (
                   <div className="os-paper" style={{ padding: 20 }}>
@@ -962,15 +967,6 @@ export default function LearnPage() {
                       />
                     )}
                   </div>
-                )}
-                {selectedState.locked ? null : (isAuthoredCourse(readyCourse.slug) || isMultiTrackAuthoredCourse(readyCourse.slug)) ? (
-                  <div style={{ marginTop: 18 }}>
-                    <LessonContextPanel courseSlug={readyCourse.slug} lessonId={selectedLesson.id} />
-                  </div>
-                ) : (
-                  <p className="os-lead" style={{ marginTop: 14 }}>
-                    {getLessonMeta(readyCourse.slug, selectedLesson.id)?.objective ?? lessonObjective(selectedLesson)}
-                  </p>
                 )}
                 {actionError ? <p className="os-error" role="alert">{actionError}</p> : null}
                 {!selectedState.locked ? (

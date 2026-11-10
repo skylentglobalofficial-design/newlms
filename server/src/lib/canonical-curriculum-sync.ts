@@ -1,4 +1,3 @@
-import { getServerAuthoredQuiz } from "./authored-quiz-banks.js"
 import { CurriculumNodeType } from "@prisma/client"
 import { prisma } from "./prisma.js"
 
@@ -331,30 +330,7 @@ async function runCanonicalSyncBatch(pendingSlugs: string[]): Promise<void> {
       currentMods[0]?.title !== canonical[0].title ||
       currentMods.some((m, idx) => canonical[idx] && m.nodes.length < canonical[idx].lessons.length)
 
-    if (!needsSync) {
-      for (const mod of currentMods) {
-        for (const node of mod.nodes) {
-          if (node.nodeType === CurriculumNodeType.QUIZ && node.sourceId) {
-            const qCount = await prisma.quizQuestion.count({ where: { nodeId: node.id } }).catch(() => 0)
-            if (qCount === 0) {
-              const bank = getServerAuthoredQuiz(slug, node.sourceId)
-              if (bank && bank.length > 0) {
-                await prisma.quizQuestion.createMany({
-                  data: bank.map((q, qIdx) => ({
-                    nodeId: node.id,
-                    sortOrder: qIdx,
-                    question: q.question,
-                    options: [...q.options],
-                    correctIndex: q.correctIndex,
-                  })),
-                }).catch(() => undefined)
-              }
-            }
-          }
-        }
-      }
-      continue
-    }
+    if (!needsSync) continue
 
     for (let mIdx = 0; mIdx < canonical.length; mIdx++) {
       const specMod = canonical[mIdx]
@@ -387,7 +363,6 @@ async function runCanonicalSyncBatch(pendingSlugs: string[]): Promise<void> {
       for (let lIdx = 0; lIdx < specMod.lessons.length; lIdx++) {
         const specLec = specMod.lessons[lIdx]
         const existingNode = existingNodes.find((n) => n.sourceId === specLec.id) ?? existingNodes[lIdx]
-        let nodeId: string | undefined = existingNode?.id
         if (existingNode) {
           await prisma.curriculumNode.update({
             where: { id: existingNode.id },
@@ -401,7 +376,7 @@ async function runCanonicalSyncBatch(pendingSlugs: string[]): Promise<void> {
             },
           }).catch(() => undefined)
         } else {
-          const createdNode = await prisma.curriculumNode.create({
+          await prisma.curriculumNode.create({
             data: {
               moduleId: modId,
               sourceId: specLec.id,
@@ -411,24 +386,6 @@ async function runCanonicalSyncBatch(pendingSlugs: string[]): Promise<void> {
               duration: specLec.duration,
             },
           }).catch(() => undefined)
-          nodeId = createdNode?.id
-        }
-        if (nodeId && specLec.nodeType === CurriculumNodeType.QUIZ) {
-          const qCount = await prisma.quizQuestion.count({ where: { nodeId } }).catch(() => 0)
-          if (qCount === 0) {
-            const bank = getServerAuthoredQuiz(slug, specLec.id)
-            if (bank && bank.length > 0) {
-              await prisma.quizQuestion.createMany({
-                data: bank.map((q, qIdx) => ({
-                  nodeId,
-                  sortOrder: qIdx,
-                  question: q.question,
-                  options: [...q.options],
-                  correctIndex: q.correctIndex,
-                })),
-              }).catch(() => undefined)
-            }
-          }
         }
       }
     }

@@ -57,7 +57,7 @@ function TabIcon({ name }: { name: "home" | "courses" | "workshops" | "labs" | "
 }
 
 const INSTALLED_BUILD_KEY = "skylent:installed-build-id:v93"
-export const BUNDLED_CLIENT_BUILD_ID = "10.4.0:v104-20261109"
+export const BUNDLED_CLIENT_BUILD_ID = "9.3.0:v93-202611071530"
 
 function tryExitNativeApp(): boolean {
   if (typeof window === "undefined") return false
@@ -91,28 +91,6 @@ export function NativeAppShellController() {
   const location = useLocation()
   const navigate = useNavigate()
   const { user, ready } = useAuth()
-
-  // Role-Aware Hardware Screenshot Protection:
-  // Students & visitors have FLAG_SECURE ON (no screenshots/screen recording).
-  // Admin & Superadmin automatically unlock screenshots & printing for audits and demos.
-  useEffect(() => {
-    const isAdmin = user?.role === "admin" || user?.role === "superadmin"
-    if (isAdmin) {
-      document.documentElement.setAttribute("data-admin-screenshot-allowed", "true")
-    } else {
-      document.documentElement.removeAttribute("data-admin-screenshot-allowed")
-    }
-    try {
-      const bridge = (window as unknown as {
-        SkylentNativeBridge?: { setScreenshotProtection?: (enabled: boolean) => void }
-      }).SkylentNativeBridge
-      if (typeof bridge?.setScreenshotProtection === "function") {
-        bridge.setScreenshotProtection(!isAdmin)
-      }
-    } catch {
-      // ignore
-    }
-  }, [user?.role])
   const [isNative, setIsNative] = useState(() => isNativeAppShell())
   const [isOffline, setIsOffline] = useState(() => (typeof navigator !== "undefined" ? !navigator.onLine : false))
   const [appConfig, setAppConfig] = useState<AppConfigPayload | null>(null)
@@ -418,7 +396,7 @@ export function NativeAppShellController() {
       id: "labs",
       label: "Labs",
       to: "/labs",
-      match: (p) => p.startsWith("/labs") || p.startsWith("/os/"),
+      match: (p) => p.startsWith("/labs") || p.startsWith("/os/") || p.startsWith("/path"),
     },
     {
       id: "account",
@@ -516,59 +494,86 @@ export function NativeAppShellController() {
         </div>
       ) : null}
 
-      {/* Clean, Native Play-Store Style Bottom Update Pill (Zero full-screen AI gradient popup) */}
+      {/* YouTube / Facebook Style Automatic Update Sync Screen (Auto-applies & reloads once per deployment!) */}
       {(needsSeamlessAutoUpdate || updatingInApp) && appConfig ? (
         <div
-          role="status"
-          aria-live="polite"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="skylent-auto-update-title"
           style={{
             position: "fixed",
-            bottom: "calc(72px + env(safe-area-inset-bottom, 0px))",
-            left: "50%",
-            transform: "translateX(-50%)",
-            zIndex: 99999,
-            width: "min(92vw, 420px)",
-            background: "#0f172a",
+            inset: 0,
+            zIndex: 999999,
+            background: "linear-gradient(165deg, #0f172a 0%, #1e1b4b 55%, #3b2d96 100%)",
             color: "#ffffff",
-            borderRadius: 12,
-            padding: "12px 14px",
-            boxShadow: "0 12px 32px rgba(15, 23, 42, 0.28)",
-            border: "1px solid #334155",
             display: "flex",
             alignItems: "center",
-            justifyContent: "space-between",
-            gap: 12,
+            justifyContent: "center",
+            padding: 20,
           }}
         >
-          <div style={{ display: "grid", gap: 2 }}>
-            <strong style={{ fontSize: 13, fontWeight: 600, color: "#ffffff" }}>
-              {updatingInApp ? `Updating Skylent (${updateProgress || 35}%)…` : `Update available · v${appConfig.appVersion}`}
-            </strong>
-            <span style={{ fontSize: 11.5, color: "#94a3b8" }}>
-              Applying latest workspace improvements…
-            </span>
-          </div>
-          <button
-            type="button"
-            onClick={() => void triggerInAppUpdate()}
+          <div
             style={{
-              padding: "7px 12px",
-              borderRadius: 8,
-              border: "none",
-              background: "#ffffff",
-              color: "#0f172a",
-              fontWeight: 600,
-              fontSize: 12,
-              cursor: "pointer",
-              flexShrink: 0,
+              maxWidth: 360,
+              width: "100%",
+              padding: "28px 22px",
+              borderRadius: 22,
+              background: "rgba(255, 255, 255, 0.08)",
+              border: "1px solid rgba(255, 255, 255, 0.18)",
+              backdropFilter: "blur(16px)",
+              textAlign: "center",
+              boxShadow: "0 24px 60px rgba(0, 0, 0, 0.45)",
             }}
           >
-            {updatingInApp ? "Syncing…" : "Reload"}
-          </button>
+            <img src="/icon-192.png" alt="Skylent" width={56} height={56} style={{ width: 56, height: 56, margin: "0 auto 14px", borderRadius: 14, display: "block", boxShadow: "0 10px 24px rgba(81, 66, 181, 0.45)" }} />
+            <h3 id="skylent-auto-update-title" style={{ margin: "0 0 6px", fontSize: 18, fontWeight: 600, color: "#ffffff" }}>
+              Updating Skylent…
+            </h3>
+            <p style={{ margin: "0 0 18px", fontSize: 13, lineHeight: 1.55, color: "#cbd5e1" }}>
+              {appConfig.releaseNotes || `Syncing the latest courses, labs, and workspace improvements automatically (${updateProgress || 35}%).`}
+            </p>
+            <div
+              style={{
+                width: "100%",
+                height: 6,
+                borderRadius: 999,
+                background: "rgba(255, 255, 255, 0.16)",
+                overflow: "hidden",
+                marginBottom: 16,
+              }}
+            >
+              <div
+                style={{
+                  width: `${Math.max(updateProgress, 35)}%`,
+                  height: "100%",
+                  background: "linear-gradient(90deg, #a78bfa 0%, #34d399 100%)",
+                  borderRadius: 999,
+                  transition: "width 240ms ease",
+                }}
+              />
+            </div>
+            <button
+              type="button"
+              onClick={() => void triggerInAppUpdate()}
+              style={{
+                width: "100%",
+                padding: "11px 16px",
+                borderRadius: 12,
+                border: "1px solid rgba(255,255,255,0.24)",
+                background: "rgba(255,255,255,0.14)",
+                color: "#ffffff",
+                fontWeight: 700,
+                fontSize: 13,
+                cursor: "pointer",
+              }}
+            >
+              {updatingInApp ? "Opening Latest Version…" : "Update Now →"}
+            </button>
+          </div>
         </div>
       ) : null}
 
-            {!isWorkspaceOrAuthRoute ? (
+      {!isWorkspaceOrAuthRoute ? (
         <nav
           aria-label="Mobile quick navigation"
           className="skylent-mobile-tabbar"
