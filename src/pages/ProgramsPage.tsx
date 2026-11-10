@@ -147,29 +147,6 @@ const KIND_COPY: Record<Kind, { title: string; lead: string; label: string }> = 
   },
 }
 
-const LEARNING_STEPS = [
-  {
-    code: "Step 01 · Concept & Intuition",
-    badge: "✓ English + Hinglish Notes",
-    title: "1. Understand the concept",
-    text: "Concise lessons with English & Hinglish explanations and quick concept checks.",
-    pills: ["Plain-English Notes", "Hinglish Study Mode", "Concept Checks"],
-  },
-  {
-    code: "Step 02 · In-Browser Workbench",
-    badge: "✓ Zero Local Setup",
-    title: "2. Practise in your browser",
-    text: "Run SQL queries, Python pipelines, and product specs directly in your browser.",
-    pills: ["Live SQL & Python", "Harbor Desk PRD", "20-Min TA Help"],
-  },
-  {
-    code: "Step 03 · Verified Proof of Work",
-    badge: "✓ Public /verify Link",
-    title: "3. Build proof you keep",
-    text: "Earn a verified SKL certificate (/verify) and unlock Career OS at 60% completion.",
-    pills: ["Graded Capstone", "Rubric Breakdown", "Career OS Unlock"],
-  },
-] as const
 
 function kindOf(program: CatalogProgramSummary): Kind | null {
   const type = program.programType.toUpperCase()
@@ -469,35 +446,6 @@ export default function ProgramsPage() {
             )}
           </div>
         )}
-
-        <section className="pgx-how" aria-labelledby="pgx-how-title">
-          <div className="sky-container">
-            <header className="pgx-section__head">
-              <div>
-                <p className="pgx-eyebrow">Step-by-Step Execution</p>
-                <h2 id="pgx-how-title">How you go from beginner to job-ready</h2>
-              </div>
-              <p>You do not need prior work experience. Every programme builds your capability in three clear stages.</p>
-            </header>
-            <ol className="pgx-steps">
-              {LEARNING_STEPS.map((step) => (
-                <li key={step.title} className="pgx-royal-step">
-                  <div className="pgx-royal-step__top">
-                    <code className="pgx-royal-step__code">{step.code}</code>
-                    <span className="pgx-royal-step__badge">{step.badge}</span>
-                  </div>
-                  <span className="pgx-steps__title">{step.title}</span>
-                  <span className="pgx-steps__text">{step.text}</span>
-                  <div className="pgx-royal-step__pills">
-                    {step.pills.map((pill) => (
-                      <span key={pill}>{pill}</span>
-                    ))}
-                  </div>
-                </li>
-              ))}
-            </ol>
-          </div>
-        </section>
 
         <section className="pgx-close" aria-labelledby="pgx-close-title">
           <div className="sky-container pgx-close__inner">

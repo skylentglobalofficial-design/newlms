@@ -123,7 +123,7 @@ export default function DashboardCollegePage() {
         {error ? (
           <div style={cardStyle}>
             <span style={{ fontSize: 11, fontFamily: "var(--font-mono)", fontWeight: 700, color: "#5142b5", display: "block", marginBottom: 4 }}>
-              INSTITUTIONAL TENANT ACTIVATION · 1-CLICK SETUP
+              College Workspace Setup
             </span>
             <h2 style={{ margin: "0 0 6px", fontSize: 18, color: "#0f172a" }}>Link or Create Your College Workspace</h2>
             <p role="alert" style={{ color: "#475569", fontSize: 13.5, margin: "0 0 12px" }}>

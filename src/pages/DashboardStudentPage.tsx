@@ -467,10 +467,12 @@ function LearnerProfileSettingsSection() {
     <section id="profile-settings" aria-label="My Profile and Account Settings" style={{ display: "grid", gap: 20 }}>
       <div
         style={{
-          padding: "24px 26px",
-          borderRadius: 18,
-          background: "linear-gradient(135deg, #0f172a 0%, #1e1b4b 55%, #3b2d96 100%)",
-          color: "#ffffff",
+          padding: "22px 24px",
+          borderRadius: 16,
+          background: "linear-gradient(135deg, #f5f3ff 0%, #ffffff 65%)",
+          border: "1px solid #e2e8f0",
+          borderTop: "3px solid #5142b5",
+          color: "#0f172a",
           display: "flex",
           flexWrap: "wrap",
           alignItems: "center",
@@ -497,10 +499,10 @@ function LearnerProfileSettingsSection() {
           </div>
           <div>
             <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "#c4b8ff" }}>
-              LEARNER PROFILE &amp; SECURITY SETTINGS
+              Account &amp; Profile Settings
             </span>
-            <h2 style={{ margin: "4px 0 2px", fontSize: 22, color: "#ffffff" }}>{user.name}</h2>
-            <span style={{ fontSize: 13, color: "#cbd5e1" }}>{user.email}</span>
+            <h2 style={{ margin: "4px 0 2px", fontSize: 22, color: "#0f172a" }}>{user.name}</h2>
+            <span style={{ fontSize: 13, color: "#475569" }}>{user.email}</span>
           </div>
         </div>
         <Link

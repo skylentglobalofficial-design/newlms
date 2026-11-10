@@ -366,11 +366,13 @@ export default function PathPage() {
           <section
             aria-labelledby="path-skill-diag-title"
             style={{
+              display: mode === "benchmark" ? "block" : "none",
               marginBottom: 24,
               padding: "20px 22px",
               borderRadius: 18,
-              border: "1px solid #DDD7FF",
-              background: "linear-gradient(160deg, #FAF9FF 0%, #F3F0FF 100%)",
+              border: "1px solid #E2E8F0",
+              borderTop: "3px solid #5142B5",
+              background: "#FFFFFF",
             }}
           >
             <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: 10, marginBottom: 12 }}>
@@ -459,11 +461,11 @@ export default function PathPage() {
             ) : null}
           </section>
 
-          <div className="cine-in cine-in--fade cine-d1">
+          <div className="cine-in cine-in--fade cine-d1" style={{ display: mode === "guided" ? "block" : "none" }}>
             <PathProgress step={step} />
           </div>
 
-          <div className="path-v2__layout">
+          <div className="path-v2__layout" style={{ display: mode === "guided" ? "grid" : "none" }}>
             <div className="path-v2__main">
               {/* The question and its support are keyed by stage, so each new question arrives the same way.
                   The eyebrow stays mounted because it is the live region that announces the stage. */}

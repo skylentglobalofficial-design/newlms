@@ -182,7 +182,7 @@ export default function CareerOSPublicPage() {
             <aside className="cpx-dossier-preview" aria-label="Sample Career OS Proof-of-Work Dossier">
               <div className="cpx-dossier-preview__top">
                 <div>
-                  <span className="cpx-dossier-preview__eyebrow">EXEMPLAR CAREER OS DOSSIER · PUBLIC /VERIFY</span>
+                  <span className="cpx-dossier-preview__eyebrow">Sample Verified Graduate Portfolio</span>
                   <strong>Northwind Commercial Margin &amp; SQL Audit</strong>
                 </div>
                 <span className="cpx-dossier-preview__badge">✓ Verified Artefact</span>

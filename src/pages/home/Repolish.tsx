@@ -271,10 +271,10 @@ export function WalkControls({
 const DA_SLUG = "data-analytics-pro"
 const LMS_STAGES = [
   { key: "programme", label: "1. Course Syllabus", href: "/programmes/data-analytics-pro", action: "Explore Programmes" },
-  { key: "lesson", label: "2. Guided Lesson & Doubt Desk", href: "/courses/data-analytics", action: "Preview Lessons" },
-  { key: "practice", label: "3. Live SQL Lab", href: "/labs", action: "See Browser Labs" },
-  { key: "project", label: "4. Capstone Grader", href: "/verify/SKL-2026-DA-EXEMPLAR", action: "View Capstones" },
-  { key: "evidence", label: "5. Verified Dossier", href: "/verify/SKL-2026-DA-EXEMPLAR", action: "Verify Credentials" },
+  { key: "lesson", label: "2. Interactive Lesson", href: "/courses/data-analytics", action: "Preview Lessons" },
+  { key: "practice", label: "3. Browser SQL Lab", href: "/labs", action: "See Browser Labs" },
+  { key: "project", label: "4. Capstone Project", href: "/verify/SKL-2026-DA-EXEMPLAR", action: "View Capstones" },
+  { key: "evidence", label: "5. Verified Certificate", href: "/verify/SKL-2026-DA-EXEMPLAR", action: "Verify Credentials" },
 ] as const
 
 function LmsCanvas({ stage }: { stage: number }) {
@@ -284,121 +284,98 @@ function LmsCanvas({ stage }: { stage: number }) {
 
   if (stage === 0) {
     return (
-      <div className="hx-canvas hx-lms-mock">
-        <div className="hx-lms-mock__topstrip">
+      <div className="hx-canvas" style={{ padding: "8px 4px" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap", marginBottom: 16 }}>
           <div>
-            <span className="hx-k">INSIDE SKYLENT OS · COURSE DASHBOARD &amp; MODULE TREE</span>
-            <h3>{facts?.title ?? "Data Analytics"} — 5 Modules · 15 Authored Lessons</h3>
+            <span style={{ fontSize: 12, fontWeight: 700, color: "#5142b5", letterSpacing: "0.04em", textTransform: "uppercase" }}>
+              Step 1 · Structured Curriculum
+            </span>
+            <h3 style={{ margin: "4px 0 0", fontSize: 20, fontWeight: 700, color: "#0f172a" }}>
+              {facts?.title ?? "Data Analytics"} — 5 Modules · 15 Guided Lessons
+            </h3>
           </div>
-          <div className="hx-lms-mock__badges">
-            <span className="hx-lms-pill hx-lms-pill--green">✓ 60% Career OS Gate Unlocked</span>
-            <span className="hx-lms-pill hx-lms-pill--purple">Streak: 5 Days (+15 Elixir)</span>
-          </div>
+          <span style={{ padding: "5px 12px", borderRadius: 999, background: "#f5f3ff", border: "1px solid #ddd6fe", color: "#5142b5", fontSize: 12.5, fontWeight: 600 }}>
+            Self-Paced · Browser Lab Included
+          </span>
         </div>
-        <div className="hx-lms-mock__grid2">
-          <ol className="hx-mods">
-            {(facts?.modules ?? []).map((module) => (
-              <li key={module.id} className={`is-${module.state}`}>
-                <span>{module.label}</span>
-                <span>
-                  <strong>{module.title}</strong>
-                  <em>{module.lessons.length} lessons · Notes, Lab &amp; Brief</em>
-                </span>
-                <span>{module.state === "current" ? "● Active Module" : module.state === "complete" ? "✓ Completed" : "Included"}</span>
-              </li>
-            ))}
-          </ol>
-          <div className="hx-lms-mock__rightcard">
-            <span className="hx-lms-mock__subkicker">ACTIVE MODULE 03 · SQL FOR ANALYSTS</span>
-            <strong>What happens inside each module</strong>
-            <p>Each module pairs concise notes with a live browser lab and a practical project brief.</p>
-            <div className="hx-lms-mock__checklist">
-              <div><span>✓ L7 · Notes + Lab</span><b>SQL SELECT, WHERE &amp; Valid-Row Hygiene</b></div>
-              <div><span>● L8 · Active Now</span><b>Multi-Table Joins &amp; Grain-Fanout Checks</b></div>
-              <div><span>○ L9 · Concept Check</span><b>3-Question SQL Verification Quiz</b></div>
-            </div>
-            <div className="hx-lms-mock__coldcall">
-              <span>QUICK CASE POLL · PEER BENCHMARK: 78%</span>
-              <p>“Why did raw Q2 Apparel revenue drop 14.5% when unit volume stayed flat?” — Defend in 60 seconds.</p>
-            </div>
-          </div>
-        </div>
+
+        <ol className="hx-mods" style={{ display: "grid", gap: 10, margin: 0, padding: 0, listStyle: "none" }}>
+          {(facts?.modules ?? []).map((module) => (
+            <li
+              key={module.id}
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                gap: 14,
+                padding: "13px 16px",
+                borderRadius: 12,
+                background: module.state === "current" ? "#f5f3ff" : "#ffffff",
+                border: module.state === "current" ? "1.5px solid #5142b5" : "1px solid #e2e8f0",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <span style={{ fontSize: 12, fontWeight: 700, color: "#5142b5", minWidth: 72 }}>{module.label}</span>
+                <div>
+                  <strong style={{ display: "block", fontSize: 14.5, color: "#0f172a" }}>{module.title}</strong>
+                  <span style={{ fontSize: 12.5, color: "#64748b" }}>{module.lessons.length} lessons · Notes, Browser Lab &amp; Project Brief</span>
+                </div>
+              </div>
+              <span style={{ fontSize: 12, fontWeight: 600, color: module.state === "current" ? "#5142b5" : "#475569" }}>
+                {module.state === "current" ? "Active Module" : module.state === "complete" ? "✓ Completed" : "3 Lessons"}
+              </span>
+            </li>
+          ))}
+        </ol>
       </div>
     )
   }
 
   if (stage === 1) {
     return (
-      <div className="hx-canvas hx-lms-mock">
-        <div className="hx-lms-mock__topstrip">
+      <div className="hx-canvas" style={{ padding: "8px 4px" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap", marginBottom: 16 }}>
           <div>
-            <span className="hx-k">INSIDE LESSON WORKSPACE · NOTES + CONCEPT CHECK + TA DOUBT DESK</span>
-            <h3>{facts?.current.title ?? "SQL SELECT, WHERE, and aggregates"}</h3>
+            <span style={{ fontSize: 12, fontWeight: 700, color: "#5142b5", letterSpacing: "0.04em", textTransform: "uppercase" }}>
+              Step 2 · Interactive Lesson &amp; Study Notes
+            </span>
+            <h3 style={{ margin: "4px 0 0", fontSize: 20, fontWeight: 700, color: "#0f172a" }}>
+              {facts?.current.title ?? "SQL SELECT, WHERE, and aggregates"}
+            </h3>
           </div>
-          <div className="hx-lms-mock__badges">
-            <span className="hx-lms-pill hx-lms-pill--green">✓ Draft Auto-Saved</span>
-            <span className="hx-lms-pill hx-lms-pill--purple">Module {facts?.currentModuleNumber ?? 3} · 50 min</span>
-          </div>
+          <span style={{ padding: "5px 12px", borderRadius: 999, background: "#ecfdf5", border: "1px solid #a7f3d0", color: "#047857", fontSize: 12.5, fontWeight: 600 }}>
+            English + Hinglish Notes
+          </span>
         </div>
 
-        <div className="hx-lms-mock__grid3">
-          {/* Left: Module Lesson List */}
-          <div className="hx-lms-mock__col">
-            <span className="hx-lms-mock__subkicker">MODULE 03 LESSONS</span>
-            <ol className="hx-lessons">
-              {(facts?.currentModule.lessons ?? [
-                { id: "l7", label: "L7", title: "SQL SELECT, WHERE, and aggregates" },
-                { id: "l8", label: "L8", title: "SQL joins and data-quality checks" },
-                { id: "l9", label: "L9", title: "SQL check" },
-              ]).map((lesson, idx) => (
-                <li key={lesson.id} className={idx === 0 ? "is-open" : undefined}>
-                  <span>{lesson.label}</span>
-                  <span>{lesson.title}</span>
-                </li>
-              ))}
-            </ol>
-            <div className="hx-lms-mock__progressbox">
-              <span>COURSE PROGRESS · {facts?.percent ?? 68}%</span>
-              <span className="hx-bar" aria-hidden="true"><span style={{ width: `${facts?.percent ?? 68}%` }} /></span>
-              <small>Bite-sized written lessons + quick concept quizzes so you understand every concept before writing code.</small>
-            </div>
-          </div>
-
-          {/* Center: Lesson Reading + Inline Quiz Check */}
-          <div className="hx-lms-mock__col hx-lms-mock__col--main">
-            <span className="hx-lms-mock__subkicker">CONCISE LESSON NOTE &amp; QUICK CHECK</span>
-            <h4>Enforcing the Valid-Row Rule before aggregating revenue</h4>
-            <p>
-              Raw operational tables contain cancelled shipments, zero-price promo rows, and negative adjustments. In Northwind, aggregating without filtering inflates revenue by 14 rows.
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 18 }}>
+          <div style={{ padding: "20px", borderRadius: 14, background: "#ffffff", border: "1px solid #e2e8f0" }}>
+            <strong style={{ display: "block", fontSize: 15.5, color: "#0f172a", marginBottom: 8 }}>
+              Filtering valid order rows before calculating revenue
+            </strong>
+            <p style={{ margin: "0 0 14px", fontSize: 14, color: "#475569", lineHeight: 1.6 }}>
+              Raw sales tables include cancelled shipments and returned orders. Filtering those rows out first ensures your category revenue total is accurate.
             </p>
-            <pre className="hx-sql" style={{ marginTop: 8, padding: "8px 10px", fontSize: 11 }}>{
-`WHERE units > 0 AND unit_price > 0 AND returned = 'no'`
-            }</pre>
-            <div className="hx-lms-mock__quiz">
-              <span>CONCEPT CHECK · QUESTION 1 OF 3</span>
-              <strong>What happens if you SUM(order_freight) after joining orders to order_items?</strong>
-              <div className="hx-lms-mock__quizopts">
-                <span className="is-correct">✓ A. Freight is multiplied per line item (1-to-many grain fanout)</span>
-                <span>B. SQL automatically deduplicates parent order rows</span>
-              </div>
-            </div>
+            <pre className="hx-sql" style={{ margin: 0, padding: "12px 14px", borderRadius: 10, fontSize: 12.5 }}>
+              {`SELECT category, SUM(units * unit_price)
+FROM northwind_orders
+WHERE units > 0 AND returned = 'no'
+GROUP BY category;`}
+            </pre>
           </div>
 
-          {/* Right: Skylent Hinglish Socratic AI + 20-Min TA Drawer */}
-          <div className="hx-lms-mock__col hx-lms-mock__col--ai">
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 6 }}>
-              <span className="hx-lms-mock__subkicker">STUDY SUPPORT & TA DESK</span>
-              <span className="hx-lms-pill hx-lms-pill--green">Hinglish Mode</span>
-            </div>
-            <div className="hx-lms-mock__aibubble">
-              <strong>Hinglish First-Principles Intuition:</strong>
-              <p>
-                Socho ek order bill mein 4 items hain. Agar seedha JOIN karke order-level freight SUM karoge, toh woh 4 baar count ho jayega! Pehle CTE mein item revenue aggregate karo.
+          <div style={{ padding: "20px", borderRadius: 14, background: "#f8fafc", border: "1px solid #e2e8f0", borderTop: "3px solid #5142b5", display: "flex", flexDirection: "column", justifyContent: "space-between", gap: 14 }}>
+            <div>
+              <span style={{ display: "inline-block", fontSize: 11.5, fontWeight: 700, color: "#5142b5", marginBottom: 6 }}>
+                SIMPLE HINGLISH EXPLANATION
+              </span>
+              <p style={{ margin: 0, fontSize: 14, color: "#334155", lineHeight: 1.6 }}>
+                “Socho ek order bill mein 4 items hain. Agar bina filter kiye seedha JOIN karke total nikaloge, toh returned items bhi revenue mein count ho jayenge. Isliye pehle <code style={{ fontSize: 12.5 }}>WHERE returned = &apos;no&apos;</code> lagao.”
               </p>
             </div>
-            <div className="hx-lms-mock__ta">
-              <span>STUCK ON EDGE CASES?</span>
-              <strong>Flag for Faculty TA review (20-min SLA) →</strong>
+            <div style={{ paddingTop: 12, borderTop: "1px solid #e2e8f0", display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 13, color: "#475569" }}>
+              <span>Need help with a query?</span>
+              <strong style={{ color: "#5142b5" }}>Ask Mentor Desk (20-min reply) →</strong>
             </div>
           </div>
         </div>
@@ -408,29 +385,30 @@ function LmsCanvas({ stage }: { stage: number }) {
 
   if (stage === 2) {
     return (
-      <div className="hx-canvas hx-lms-mock">
-        <div className="hx-lms-mock__topstrip">
+      <div className="hx-canvas" style={{ padding: "8px 4px" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap", marginBottom: 16 }}>
           <div>
-            <span className="hx-k">STEP 03 · IN-BROWSER NORTHWIND SQL WORKBENCH (ZERO SETUP)</span>
-            <h3>Net revenue by category — Live Browser SQL Execution</h3>
+            <span style={{ fontSize: 12, fontWeight: 700, color: "#5142b5", letterSpacing: "0.04em", textTransform: "uppercase" }}>
+              Step 3 · In-Browser SQL Lab
+            </span>
+            <h3 style={{ margin: "4px 0 0", fontSize: 20, fontWeight: 700, color: "#0f172a" }}>
+              Run real SQL queries in your browser — zero setup
+            </h3>
           </div>
-          <div className="hx-lms-mock__badges">
-            <span className="hx-lms-pill hx-lms-pill--green">✓ {NORTHWIND.validRows} of {NORTHWIND.rows} valid rows</span>
-            <span className="hx-lms-pill hx-lms-pill--purple">PostgreSQL Engine · 14 ms</span>
-          </div>
+          <span style={{ padding: "5px 12px", borderRadius: 999, background: "#ecfdf5", border: "1px solid #a7f3d0", color: "#047857", fontSize: 12.5, fontWeight: 600 }}>
+            ✓ {NORTHWIND.validRows} Verified Rows
+          </span>
         </div>
-        <div className="hx-lms-mock__grid2">
+
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 18 }}>
           <div>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-              <span className="hx-lms-mock__subkicker">SQL EDITOR · northwind_sales.csv ({NORTHWIND.window})</span>
-              <span className="hx-lms-pill hx-lms-pill--purple">▶ Run Query &amp; Save to Capstone</span>
-            </div>
-            <pre className="hx-sql" style={{ marginTop: 0 }}>{NORTHWIND_CATEGORY_SQL_EXCERPT}</pre>
+            <pre className="hx-sql" style={{ margin: 0, height: "100%", boxSizing: "border-box" }}>{NORTHWIND_CATEGORY_SQL_EXCERPT}</pre>
           </div>
-          <div className="hx-lms-mock__rightcard">
-            <span className="hx-lms-mock__subkicker">QUERY RESULT TABLE &amp; VISUAL DISTRIBUTION</span>
-            <strong>4 categories returned · Verified against rubric</strong>
-            <div className="hx-bars" style={{ marginTop: 10 }}>
+          <div style={{ padding: "20px", borderRadius: 14, background: "#ffffff", border: "1px solid #e2e8f0" }}>
+            <strong style={{ display: "block", fontSize: 15, color: "#0f172a", marginBottom: 12 }}>
+              Query Output · Net Revenue by Category
+            </strong>
+            <div className="hx-bars">
               {NORTHWIND.categories.map((row) => (
                 <div key={row.name}>
                   <span>{row.name}</span>
@@ -438,10 +416,6 @@ function LmsCanvas({ stage }: { stage: number }) {
                   <span>{rupees(row.value)}</span>
                 </div>
               ))}
-            </div>
-            <div className="hx-lms-mock__coldcall" style={{ marginTop: 12 }}>
-              <span>SAVED TO CAPSTONE EVIDENCE</span>
-              <p>Query snapshot + 166-row validation log attached to your Northwind Commercial Review.</p>
             </div>
           </div>
         </div>
@@ -452,87 +426,65 @@ function LmsCanvas({ stage }: { stage: number }) {
   if (stage === 3) {
     const title = content?.capstoneTitle ?? facts?.capstoneTitle ?? "Northwind Commercial Review"
     return (
-      <div className="hx-canvas hx-lms-mock">
-        <div className="hx-lms-mock__topstrip">
+      <div className="hx-canvas" style={{ padding: "8px 4px" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap", marginBottom: 16 }}>
           <div>
-            <span className="hx-k">STEP 04 · PROJECT STUDIO &amp; SCORECARD</span>
-            <h3>{title}</h3>
+            <span style={{ fontSize: 12, fontWeight: 700, color: "#5142b5", letterSpacing: "0.04em", textTransform: "uppercase" }}>
+              Step 4 · Guided Capstone Project
+            </span>
+            <h3 style={{ margin: "4px 0 0", fontSize: 20, fontWeight: 700, color: "#0f172a" }}>
+              {title}
+            </h3>
           </div>
-          <div className="hx-lms-mock__badges">
-            <span className="hx-lms-pill hx-lms-pill--green">✓ Faculty Feedback Included</span>
-            <span className="hx-lms-pill hx-lms-pill--purple">6 Structured Tasks</span>
-          </div>
+          <span style={{ padding: "5px 12px", borderRadius: 999, background: "#f5f3ff", border: "1px solid #ddd6fe", color: "#5142b5", fontSize: 12.5, fontWeight: 600 }}>
+            Faculty Reviewed
+          </span>
         </div>
-        <div className="hx-lms-mock__grid2">
-          <div>
-            <span className="hx-lms-mock__subkicker">CAPSTONE SUBMISSION PIPELINE</span>
-            <ol className="hx-deliver" style={{ marginTop: 8 }}>
-              {[
-                "1. Audit 180 raw rows & quarantine 14 invalid/returned records",
-                "2. Execute multi-table SQL joins & category margin breakdown",
-                "3. Defend 3-part executive memo (Finding · Why It Matters · Action)",
-              ].map((task, index) => (
-                <li key={task} className={index === 1 ? "is-open" : undefined}>
-                  <span>0{index + 1}</span>
-                  <span>{task}</span>
-                  <span>{index === 1 ? "● In Review" : index === 0 ? "✓ Verified" : "Final Step"}</span>
-                </li>
-              ))}
-            </ol>
-            <p className="hx-canvas__note" style={{ marginTop: 10 }}>{content?.evidence.record.footnote}</p>
-          </div>
-          <div className="hx-lms-mock__rightcard">
-            <span className="hx-lms-mock__subkicker">PROJECT EVALUATION SCORECARD</span>
-            <strong>Evaluated by Practitioner Faculty &amp; Pre-Flight Checks</strong>
-            <div className="hx-lms-mock__checklist" style={{ marginTop: 8 }}>
-              <div><span>15% · Knowledge</span><b>SQL Grain &amp; Schema Accuracy ✓</b></div>
-              <div><span>30% · Execution</span><b>166 Validated Rows &amp; Margin CTEs ✓</b></div>
-              <div><span>20% · Judgement</span><b>Discount Leakage Trade-Off Memo ✓</b></div>
-              <div><span>15% · Oral Defence</span><b>Boardroom Cold Call Passed ✓</b></div>
-              <div><span>20% · Project Review</span><b>Mentor Feedback Addressed ✓</b></div>
-            </div>
-          </div>
-        </div>
+
+        <ol className="hx-deliver" style={{ margin: 0 }}>
+          {[
+            "Clean 180 raw order rows and filter out 14 returned or cancelled records",
+            "Run multi-table SQL joins to compare category revenue and discount leakage",
+            "Submit a concise business recommendation reviewed by faculty",
+          ].map((task, index) => (
+            <li key={task} className={index === 1 ? "is-open" : undefined}>
+              <span>0{index + 1}</span>
+              <span>{task}</span>
+              <span>{index === 0 ? "✓ Completed" : index === 1 ? "In Progress" : "Final Step"}</span>
+            </li>
+          ))}
+        </ol>
       </div>
     )
   }
 
   const record = content?.evidence.record
   return (
-    <div className="hx-canvas hx-lms-mock">
-      <div className="hx-lms-mock__topstrip">
+    <div className="hx-canvas" style={{ padding: "8px 4px" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap", marginBottom: 16 }}>
         <div>
-          <span className="hx-k">STEP 05 · VERIFIED CERTIFICATE &amp; PORTFOLIO (/VERIFY)</span>
-          <h3>{record?.title ?? "Northwind Commercial Review"} — SKL-2026-DA-EXEMPLAR</h3>
+          <span style={{ fontSize: 12, fontWeight: 700, color: "#5142b5", letterSpacing: "0.04em", textTransform: "uppercase" }}>
+            Step 5 · Shareable Certificate &amp; Portfolio
+          </span>
+          <h3 style={{ margin: "4px 0 0", fontSize: 20, fontWeight: 700, color: "#0f172a" }}>
+            {record?.title ?? "Northwind Commercial Review"} · Verified Certificate
+          </h3>
         </div>
-        <div className="hx-lms-mock__badges">
-          <span className="hx-lms-pill hx-lms-pill--green">✓ Publicly Verifiable URL</span>
-          <span className="hx-lms-pill hx-lms-pill--purple">Direct LinkedIn Share</span>
-        </div>
+        <span style={{ padding: "5px 12px", borderRadius: 999, background: "#ecfdf5", border: "1px solid #a7f3d0", color: "#047857", fontSize: 12.5, fontWeight: 600 }}>
+          ✓ Publicly Verifiable at /verify
+        </span>
       </div>
-      <div className="hx-lms-mock__grid2">
-        <div>
-          <dl className="hx-record" style={{ marginTop: 4 }}>
-            <div><dt>Credential ID &amp; Issuer</dt><dd>SKL-2026-DA-EXEMPLAR · Skylent Global Pvt. Ltd.</dd></div>
-            <div><dt>Context</dt><dd>{record?.context}</dd></div>
-            <div><dt>Verified Work Shown</dt><dd>{record?.workShown}</dd></div>
-          </dl>
-          <p className="hx-chips">
-            {(record?.skills ?? []).slice(0, 4).map((skill) => (
-              <span key={skill}>{skill}</span>
-            ))}
-          </p>
-        </div>
-        <div className="hx-lms-mock__rightcard">
-          <span className="hx-lms-mock__subkicker">CAREER OS &amp; RECRUITER VERIFICATION</span>
-          <strong>What employers see when they click your /verify link</strong>
-          <p>Recruiters inspect your saved SQL queries, project score, and executive summary in one click.</p>
-          <div className="hx-lms-mock__checklist">
-            <div><span>✓ Verified SQL Artefact</span><b>northwind_sales.csv · 166 valid rows</b></div>
-            <div><span>✓ Skill-Gap Role Match</span><b>Unlocked in Career OS for Data Analyst roles</b></div>
-          </div>
-          <p className="hx-canvas__note" style={{ marginTop: 8 }}>{record?.footnote}</p>
-        </div>
+
+      <div style={{ padding: "20px", borderRadius: 14, background: "#ffffff", border: "1px solid #e2e8f0", borderTop: "3px solid #5142b5" }}>
+        <dl className="hx-record" style={{ margin: 0 }}>
+          <div><dt>Certificate ID</dt><dd>SKL-2026-DA-EXEMPLAR · Issued by Skylent Global Pvt. Ltd.</dd></div>
+          <div><dt>Project Included</dt><dd>{record?.workShown}</dd></div>
+        </dl>
+        <p className="hx-chips" style={{ marginTop: 14, marginBottom: 0 }}>
+          {(record?.skills ?? []).slice(0, 4).map((skill) => (
+            <span key={skill}>{skill}</span>
+          ))}
+        </p>
       </div>
     </div>
   )
@@ -1410,7 +1362,7 @@ function HomeCareerPlate({ step }: { step: JourneyKey }) {
   return (
     <div className="hx-royal-plate">
       <div className="hx-royal-plate__top">
-        <span className="hx-royal-plate__gold">STAGE 06 · INTERVIEW PREP &amp; ROLE APPLICATIONS</span>
+        <span className="hx-royal-plate__gold">Step 06 · Interview Prep &amp; Role Applications</span>
         <span className="hx-royal-plate__emerald">✓ Role Skill-Gap Matcher</span>
       </div>
       <h3 className="hx-royal-plate__title">Apply with Proof &amp; Practise Mock Interviews</h3>
@@ -1921,38 +1873,6 @@ export function HomeElixirFlywheel() {
               </div>
             </Link>
           ))}
-        </div>
-
-        {/* Simple 4-Step Cashback Ribbon */}
-        <div className="hx-coin-strip" aria-label="How the ₹99 workshop cashback works">
-          <div className="hx-coin-strip__item">
-            <span className="hx-coin-strip__num">01</span>
-            <div>
-              <strong>Book Any ₹99 Workshop</strong>
-              <span>2-hour live weekend build session</span>
-            </div>
-          </div>
-          <div className="hx-coin-strip__item">
-            <span className="hx-coin-strip__num">02</span>
-            <div>
-              <strong>Get 99 Coins Back Instantly</strong>
-              <span>100% 1:1 cashback in your Skylent wallet</span>
-            </div>
-          </div>
-          <div className="hx-coin-strip__item">
-            <span className="hx-coin-strip__num">03</span>
-            <div>
-              <strong>Earn +50 Coins on Free Courses</strong>
-              <span>Plus +5 to +25 Coins on every lesson &amp; quiz</span>
-            </div>
-          </div>
-          <div className="hx-coin-strip__item">
-            <span className="hx-coin-strip__num">04</span>
-            <div>
-              <strong>Unlock Industry Case Studies</strong>
-              <span>Redeem coins for bonus SQL &amp; Product cases</span>
-            </div>
-          </div>
         </div>
 
         {/* Part 2: Crystal-Clear First-Time Visitor Comparison Table */}

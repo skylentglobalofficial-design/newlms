@@ -78,7 +78,7 @@ export default function ProgrammePricingAndDock({
 
   return (
     <>
-      <section className="pp-plans-band" id="pp-plans" aria-labelledby="pp-plans-title">
+      <section className="pp-plans-band" id="pp-pricing" aria-labelledby="pp-plans-title">
         <div className="sky-container">
           <div className="pp-plans-head">
             <span className="pp-plans-eyebrow">SKYLENT PROGRAMME &amp; CAREER OS PLANS</span>
@@ -320,8 +320,8 @@ export default function ProgrammePricingAndDock({
             </h2>
           </div>
           <div className="pp-faq-grid">
-            {faqs.map((item) => (
-              <details key={item.q} className="pp-faq-item" open>
+            {faqs.map((item, idx) => (
+              <details key={item.q} className="pp-faq-item" open={idx === 0}>
                 <summary>{item.q}</summary>
                 <p>{item.a}</p>
               </details>

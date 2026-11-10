@@ -5,11 +5,8 @@ import { HeaderWalletAndNotifications } from '../components/learner/HeaderWallet
 import { EMPTY_LESSON_STATE } from '../demo/DemoStateContext'
 import CurriculumRail from '../components/lms/CurriculumRail'
 import { LessonContentView, LessonNavigation } from '../components/lms/LessonContent'
-import { LessonContextPanel } from '../components/product/ProductLanguage'
 import { AiMark } from '../components/skylent/primitives'
 import { getLessonMeta } from '../content/course-lookups'
-import { isAuthoredCourse } from '../lib/live-intents'
-import { isMultiTrackAuthoredCourse } from '../content/multi-track-packs'
 import type { QuizQuestion } from '../components/lms/AssessmentSurface'
 import { courseProductProfile } from '../lib/course-product'
 import { lessonPracticeLink } from '../lib/practice-environments'
@@ -837,10 +834,8 @@ export default function LearnPage() {
                     ) : null}
                   </div>
                 </div>
-                {selectedState.locked ? null : (isAuthoredCourse(readyCourse.slug) || isMultiTrackAuthoredCourse(readyCourse.slug)) ? (
-                  <LessonContextPanel courseSlug={readyCourse.slug} lessonId={selectedLesson.id} />
-                ) : (
-                  <p className="os-lead">
+                {selectedState.locked ? null : (
+                  <p className="os-lead" style={{ margin: "0 0 14px", fontSize: 15, color: "#475569", lineHeight: 1.55 }}>
                     {getLessonMeta(readyCourse.slug, selectedLesson.id)?.objective ?? lessonObjective(selectedLesson)}
                   </p>
                 )}

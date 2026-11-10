@@ -494,7 +494,7 @@ export default function CourseDetailPage() {
         </section>
 
         {forWhom.length >0 ? (
-          <section className="cat-section">
+          <section className="cat-section hx-sr" style={{ display: "none" }}>
             <div className="cat-rail">
               <h2>Who it is for</h2>
               <ul className="cat-who">
@@ -532,7 +532,7 @@ export default function CourseDetailPage() {
         ) : null}
 
         {showLiveCurriculum && practice ? (
-          <section className="cat-section">
+          <section className="cat-section hx-sr" style={{ display: "none" }}>
             <div className="cat-rail">
               <h2>What you will practise and build</h2>
               <p className="cat-fine">
@@ -628,8 +628,8 @@ export default function CourseDetailPage() {
 
         <section className="cat-section">
           <div className="cat-rail">
-            <h2>What happens when you enrol</h2>
-            <ol className="cat-numbered">
+            <h2 style={{ display: "none" }}>What happens when you enrol</h2>
+            <ol className="cat-numbered" style={{ display: "none" }}>
               {afterEnrol.map((item) => (
                 <li key={item}>{item}</li>
               ))}

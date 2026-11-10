@@ -576,113 +576,11 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
         </div>
       </div>
 
-      {/* Section 01: Interactive Workbench & Deliverable Stage on Navy */}
-      <section className="sky-stage sky-band-navy pp-stage" id="pp-stage" aria-labelledby="pp-build-title">
-        <div className="sky-container pp-stage__inner">
-          <Reveal className="pp-build">
-            <div className="pp-build__header">
-              <div className="pp-build__lead">
-                <SectionIndex n="01" label="Interactive Workbench & Capstone Deliverable" />
-                <h2 id="pp-build-title" className="pp-build__title">
-                  {content.capstoneTitle}
-                </h2>
-                <p className="pp-practice">{practiceCopy}</p>
-                {workspaceAccess === "allowed" ? (
-                  <Link className="pp-practice__link" to={practiceHref}>
-                    {content.artefact === "northwind" ? "Open the SQL lab" : "Open the case workspace"}
-                    <ArrowRight />
-                  </Link>
-                ) : workspaceAccess === "denied" ? (
-                  <p className="pp-practice__wait">
-                    Included with your enrolment · Launches directly in your browser with pre-loaded datasets and zero local setup.
-                    <span style={{ position: "absolute", width: 1, height: 1, overflow: "hidden", clip: "rect(0,0,0,0)" }}>
-                      Enrol in this programme to open the workspace. A new learner starts at Not started.
-                    </span>
-                  </p>
-                ) : null}
-              </div>
-
-              <dl className="pp-build__grid">
-                {moduleCount > 0 ? (
-                  <div>
-                    <dt className="sky-label">Modules</dt>
-                    <dd className="pp-build__num">{moduleCount}</dd>
-                  </div>
-                ) : null}
-                {course.loading && !authoredOutlineReady ? (
-                  <div aria-hidden="true">
-                    <dt className="sky-label">Lessons</dt>
-                    <dd className="pp-build__num">
-                      <span className="sky-skeleton pp-skel-num" />
-                    </dd>
-                  </div>
-                ) : null}
-                {courseReady && lessonCount > 0 ? (
-                  <div>
-                    <dt className="sky-label">Lessons</dt>
-                    <dd className="pp-build__num">{lessonCount}</dd>
-                  </div>
-                ) : null}
-                {courseReady && assignmentCount > 0 ? (
-                  <div>
-                    <dt className="sky-label">Assignments</dt>
-                    <dd className="pp-build__num">{assignmentCount}</dd>
-                  </div>
-                ) : null}
-                {courseReady && checkCount > 0 ? (
-                  <div>
-                    <dt className="sky-label">Checks</dt>
-                    <dd className="pp-build__num">{checkCount}</dd>
-                  </div>
-                ) : null}
-                <div className="pp-build__wide">
-                  <dt className="sky-label">{content.specSheet.material.label}</dt>
-                  <dd className="pp-build__text">
-                    {content.specSheet.material.value}
-                    <span>{content.specSheet.material.note}</span>
-                  </dd>
-                </div>
-                {profile && profile.tools.length > 0 ? (
-                  <div className="pp-build__wide">
-                    <dt className="sky-label">{content.specSheet.tools.label}</dt>
-                    <dd className="pp-build__text">
-                      {profile.tools[0]}
-                      {profile.tools.slice(1).map((tool) => (
-                        <span key={tool}>{tool}</span>
-                      ))}
-                    </dd>
-                  </div>
-                ) : null}
-              </dl>
-            </div>
-          </Reveal>
-
-          <Reveal as="figure" variant="plate" className="pp-stage__figure">
-            <div className="sky-stage__plate pp-stage__plate cine-plate cine-in cine-in--plate cine-d5">
-              {content.artefact === "northwind" ? (
-                <NorthwindLabPlate />
-              ) : content.artefact === "data-science" ? (
-                <DataSciencePlate />
-              ) : content.artefact === "full-stack" ? (
-                <FullStackPlate />
-              ) : content.artefact === "genai-rag" ? (
-                <GenAiRagPlate />
-              ) : (
-                <HarborDeskPlate />
-              )}
-            </div>
-            <figcaption className="sky-stage__caption cine-in cine-in--fade cine-d6">
-              <span>{content.hero.figure} — {content.hero.figureNote}</span>
-            </figcaption>
-          </Reveal>
-        </div>
-      </section>
-
       {/* Section 03: Structured Module-by-Module Curriculum Syllabus Cards */}
       <Reveal as="section" className="sky-container pp-section pp-section--end" id="pp-curriculum" aria-labelledby="pp-curriculum-title">
         <div className="pp-section-head">
           <div>
-            <SectionIndex n="03" label="Curriculum Syllabus" />
+            <SectionIndex n="01" label="Curriculum Syllabus" />
             <h2 id="pp-curriculum-title" className="sky-display sky-display--md pp-h2">
               {courseReady && moduleCount > 0 && lessonCount > 0
                 ? curriculumHeading(moduleCount, lessonCount)
@@ -755,58 +653,79 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
         </div>
       </Reveal>
 
+
+      {/* Section 01: Interactive Workbench & Deliverable Stage on Navy */}
+      <section className="sky-stage sky-band-navy pp-stage" id="pp-stage" aria-labelledby="pp-build-title">
+        <div className="sky-container pp-stage__inner">
+          <Reveal className="pp-build">
+            <div className="pp-build__header">
+              <div className="pp-build__lead">
+                <SectionIndex n="02" label="Interactive Browser Lab" />
+                <h2 id="pp-build-title" className="pp-build__title">
+                  {content.capstoneTitle}
+                </h2>
+                <p className="pp-practice">{practiceCopy}</p>
+                {workspaceAccess === "allowed" ? (
+                  <Link className="pp-practice__link" to={practiceHref}>
+                    {content.artefact === "northwind" ? "Open the SQL lab" : "Open the case workspace"}
+                    <ArrowRight />
+                  </Link>
+                ) : workspaceAccess === "denied" ? (
+                  <p className="pp-practice__wait">
+                    Included with your enrolment · Launches directly in your browser with pre-loaded datasets and zero local setup.
+                    <span style={{ position: "absolute", width: 1, height: 1, overflow: "hidden", clip: "rect(0,0,0,0)" }}>
+                      Enrol in this programme to open the workspace. A new learner starts at Not started.
+                    </span>
+                  </p>
+                ) : null}
+              </div>
+
+
+            </div>
+          </Reveal>
+
+          <Reveal as="figure" variant="plate" className="pp-stage__figure">
+            <div className="sky-stage__plate pp-stage__plate cine-plate cine-in cine-in--plate cine-d5">
+              {content.artefact === "northwind" ? (
+                <NorthwindLabPlate />
+              ) : content.artefact === "data-science" ? (
+                <DataSciencePlate />
+              ) : content.artefact === "full-stack" ? (
+                <FullStackPlate />
+              ) : content.artefact === "genai-rag" ? (
+                <GenAiRagPlate />
+              ) : (
+                <HarborDeskPlate />
+              )}
+            </div>
+            <figcaption className="sky-stage__caption cine-in cine-in--fade cine-d6">
+              <span>{content.hero.figure} — {content.hero.figureNote}</span>
+            </figcaption>
+          </Reveal>
+        </div>
+      </section>
+
+
       <section className="sky-band-proof pp-proof" id="pp-evidence" aria-labelledby="pp-evidence-title">
         <div className="sky-container">
-          <div className="pp-split">
-            <Reveal className="pp-split__intro">
-              <SectionIndex n="05" label="What you can prove" />
+          <Reveal className="pp-section-head" style={{ marginBottom: 24 }}>
+            <div>
+              <SectionIndex n="03" label="Projects & Verified Certificate" />
               <h2 id="pp-evidence-title" className="sky-display sky-display--md pp-h2">
                 {content.evidence.heading}
               </h2>
               <p className="pp-body">{content.evidence.lede}</p>
-            </Reveal>
-
-            <Reveal as="article" variant="plate" className="pp-record pp-split__main" aria-labelledby="pp-record-title">
-              <header className="pp-record__head">
-                <span className="sky-label">Evidence record · Career OS</span>
-                <TruthChip state={truthOf("projectsAndEvidence")} />
-              </header>
-              <div className="pp-record__body">
-                <h3 id="pp-record-title" className="pp-record__title">
-                  {content.evidence.record.title}
-                </h3>
-                <p className="pp-record__context">{content.evidence.record.context}</p>
-                <dl className="pp-record__rows">
-                  <div>
-                    <dt className="sky-label">Work shown</dt>
-                    <dd>{content.evidence.record.workShown}</dd>
-                  </div>
-                  <div>
-                    <dt className="sky-label">Skills</dt>
-                    <dd className="pp-record__skills">
-                      {content.evidence.record.skills.map((skill) => (
-                        <span key={skill}>{skill}</span>
-                      ))}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt className="sky-label">Reflection</dt>
-                    <dd className="is-muted">{content.evidence.record.reflection}</dd>
-                  </div>
-                </dl>
-              </div>
-              <p className="pp-record__foot">{content.evidence.record.footnote}</p>
-            </Reveal>
-          </div>
+            </div>
+          </Reveal>
 
           <Reveal>
             <div className="pp-portfolio-cards" aria-label="Visual portfolio deliverables">
               {content.evidence.rows.map((row, idx) => (
                 <div key={row.lessonId} className={row.capstone ? "pp-port-card pp-port-card--cap" : "pp-port-card"}>
                   <div className="pp-port-card__top">
-                    <span className="pp-port-card__num">DELIVERABLE 0{idx + 1}</span>
+                    <span className="pp-port-card__num">PROJECT 0{idx + 1}</span>
                     <span className={row.capstone ? "pp-port-card__tag pp-port-card__tag--cap" : "pp-port-card__tag"}>
-                      {row.capstone ? "★ Final Graded Capstone" : "Module Brief"}
+                      {row.capstone ? "★ Final Capstone" : "Module Project"}
                     </span>
                   </div>
                   <h4 className="pp-port-card__title">{shortTitle(lessonTitle(row.lessonId))}</h4>
@@ -815,7 +734,7 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
                     <p>{row.produce}</p>
                   </div>
                   <div className="pp-port-card__block pp-port-card__block--verify">
-                    <span>WHAT RECRUITERS VERIFY</span>
+                    <span>SKILLS VERIFIED</span>
                     <p>{row.reviewer}</p>
                   </div>
                 </div>
@@ -850,29 +769,6 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
                   ))}
                 </tbody>
               </table>
-            </div>
-          </Reveal>
-
-          <Reveal>
-            <div className="pp-career" id="pp-career" role="group" aria-labelledby="pp-career-title">
-              <div className="pp-career__head">
-                <SectionIndex n="06" label="Where it leads" />
-                <h3 id="pp-career-title" className="pp-career__title">
-                  In Career OS today
-                </h3>
-              </div>
-              <ul className="pp-career__list">
-                {CAREER_STATUS.map((item) => (
-                  <li key={item.capability}>
-                    <span>{item.label}</span>
-                    <TruthChip state={truthOf(item.capability)} />
-                  </li>
-                ))}
-              </ul>
-              <Link className="sk-link pp-career__link" to="/career-os">
-                Open Career OS
-                <ArrowRight />
-              </Link>
             </div>
           </Reveal>
         </div>

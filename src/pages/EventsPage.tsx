@@ -250,7 +250,7 @@ export default function EventsPage() {
                 WEEKEND MASTERCLASSES · ₹99 ENTRY = 99 ELIXIR COINS (100% COIN BACK)
               </span>
               <h1 className="cat-h1--display" style={{ marginTop: 0 }}>
-                Live Execution Sprints &amp; Case Study Store
+                Live Weekend Workshops &amp; Case Studies
               </h1>
               <p className="cat-lead" style={{ maxWidth: "46ch" }}>
                 {loading
@@ -273,25 +273,26 @@ export default function EventsPage() {
             <aside
               style={{
                 padding: "24px 26px",
-                borderRadius: 20,
-                background: "linear-gradient(135deg, #3B2D96 0%, #5142B5 100%)",
-                border: "1.5px solid rgba(196, 184, 255, 0.45)",
-                color: "#FFFFFF",
-                boxShadow: "0 20px 44px -18px rgba(59, 45, 150, 0.4)",
+                borderRadius: 18,
+                background: "#FFFFFF",
+                border: "1px solid #E2E8F0",
+                borderTop: "4px solid #5142B5",
+                color: "#0F172A",
+                boxShadow: "0 14px 32px -16px rgba(15, 23, 42, 0.1)",
               }}
             >
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, marginBottom: 12 }}>
-                <span style={{ fontSize: 11, fontFamily: "var(--font-mono)", fontWeight: 700, color: "#E9D5FF", letterSpacing: "0.08em" }}>
+                <span style={{ fontSize: 11, fontFamily: "var(--font-mono)", fontWeight: 700, color: "#5142B5", letterSpacing: "0.08em" }}>
                   HOW ₹99 WORKSHOPS WORK
                 </span>
                 <span style={{ padding: "3px 10px", borderRadius: 999, background: "#DCFCE7", color: "#15803D", fontSize: 11, fontWeight: 600 }}>
                   100% Coin Back
                 </span>
               </div>
-              <h2 style={{ margin: "0 0 8px", fontSize: 21, fontWeight: 600, color: "#FFFFFF" }}>
+              <h2 style={{ margin: "0 0 8px", fontSize: 20, fontWeight: 700, color: "#0F172A" }}>
                 Pay ₹99 → Attend Live Lab → Unlock ₹99 Case Studies Free
               </h2>
-              <p style={{ margin: "0 0 16px", fontSize: 13.5, lineHeight: 1.55, color: "#E2E8F0" }}>
+              <p style={{ margin: "0 0 16px", fontSize: 13.5, lineHeight: 1.55, color: "#475569" }}>
                 Every rupee you spend on a weekend sprint is returned 1:1 as Elixir Coins in your learner wallet so you can unlock solved industry teardowns and SQL playbooks.
               </p>
               <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10 }}>
@@ -300,10 +301,10 @@ export default function EventsPage() {
                   ["STEP 02", "Get +99 Elixir", "Instant wallet credit"],
                   ["STEP 03", "Unlock Cases", "Redeem in dashboard"],
                 ].map(([step, head, sub]) => (
-                  <div key={step} style={{ padding: "10px 12px", borderRadius: 12, background: "rgba(255, 255, 255, 0.14)", border: "1px solid rgba(255, 255, 255, 0.22)" }}>
-                    <span style={{ display: "block", fontSize: 10, fontFamily: "var(--font-mono)", color: "#C4B8FF", fontWeight: 700 }}>{step}</span>
-                    <strong style={{ display: "block", fontSize: 13, color: "#FFFFFF", marginTop: 2 }}>{head}</strong>
-                    <span style={{ display: "block", fontSize: 11, color: "#E2E8F0", marginTop: 2 }}>{sub}</span>
+                  <div key={step} style={{ padding: "10px 12px", borderRadius: 12, background: "#F8FAFC", border: "1px solid #E2E8F0" }}>
+                    <span style={{ display: "block", fontSize: 10, fontFamily: "var(--font-mono)", color: "#5142B5", fontWeight: 700 }}>{step}</span>
+                    <strong style={{ display: "block", fontSize: 13, color: "#0F172A", marginTop: 2 }}>{head}</strong>
+                    <span style={{ display: "block", fontSize: 11, color: "#64748B", marginTop: 2 }}>{sub}</span>
                   </div>
                 ))}
               </div>

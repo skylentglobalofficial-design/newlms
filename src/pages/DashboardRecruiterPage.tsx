@@ -279,7 +279,7 @@ export default function DashboardRecruiterPage() {
         {status === 'ready' && !linked && activeNav !== 'verify' ? (
           <div style={panelStyle}>
             <span style={{ display: "inline-block", fontSize: 11, fontFamily: "var(--font-mono)", fontWeight: 700, color: "#5142b5", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 4 }}>
-              INSTANT RECRUITER ACTIVATION · 1-CLICK COMPANY SETUP
+              Employer Workspace Setup
             </span>
             <h2 style={{ margin: '0 0 8px', fontSize: 18, color: '#0f172a' }}>Create &amp; Link Your Company Profile to Publish Jobs</h2>
             <p style={{ color: '#475569', margin: '0 0 14px', lineHeight: 1.6, fontSize: 13.5 }}>

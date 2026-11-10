@@ -40,55 +40,6 @@ const PRODUCTS = [
   },
 ]
 
-const ENVIRONMENTS = [
-  {
-    code: "Browser Lab Environments",
-    badge: "Zero Local Setup",
-    title: "Northwind Retail SQL & Harbor Desk PRD Studios",
-    body: "Instead of watching someone code on YouTube, you execute real SQL queries against our 166-row Northwind retail database, audit Python settlement pipelines, and write 6-week engineering PRDs inside your browser.",
-  },
-  {
-    code: "Faculty Rubric Review",
-    badge: "V1 → V2 Faculty Critique",
-    title: "Human Red-Line Review & Partner Fieldwork",
-    body: "Every capstone goes through a structured V1 → V2 faculty red-line critique across our 5-dimension rubric (Knowledge, Execution, Judgement, Oral Defence, and Revision) and qualifies learners for supervised partner briefs.",
-  },
-  {
-    code: "ENV C · EXECUTION FLIGHT RECORDER",
-    badge: "Public /verify Ledger",
-    title: "Cryptographically Verifiable Proof-of-Work",
-    body: "Every graduate receives a permanent, publicly verifiable SKL credential (/verify) that displays the exact SQL queries, data-cleaning logs, and executive memos they produced — not just an attendance PDF.",
-  },
-]
-
-const COMPARISON_ROWS = [
-  {
-    dimension: "How You Learn",
-    legacy: "Passive pre-recorded videos & generic Zoom lectures where you watch someone else type.",
-    skylent: "First-principles written notes + immediate execution inside live browser SQL, Python, PRD & RAG sandboxes.",
-  },
-  {
-    dimension: "Doubt Resolution",
-    legacy: " slow forum threads or generic chatbot answers that leak code without building intuition.",
-    skylent: "Instant Hinglish + English guided study notes + live human Faculty TA escalation within 20 minutes.",
-  },
-  {
-    dimension: "How You Are Assessed",
-    legacy: "Multiple-choice trivia quizzes and auto-generated completion certificates.",
-    skylent: "5-Dimension Competency Rubric (15% Knowledge · 30% Execution · 20% Judgement · 15% Oral Defence · 20% V1→V2 Revision).",
-  },
-  {
-    dimension: "Financial Transparency",
-    legacy: "High-pressure ₹1.5L–₹2.5L NBFC loan contracts and inflated placement claims.",
-    skylent: "Try our interactive Guest Browser Labs free, attend ₹99 weekend sprints with 100% Elixir Coin cashback, and enrol in full tracks from ₹1,499.",
-  },
-  {
-    dimension: "What Employers See",
-    legacy: "A static PDF certificate that looks identical for every student.",
-    skylent: "A live Proof-of-Work Dossier on skylent.live/verify showing your saved SQL queries, rubric breakdown, and capstone defense.",
-  },
-]
-
 const AUDIENCES = [
   {
     title: "College Students (UG & PG)",
@@ -124,7 +75,7 @@ export default function AboutPage() {
                 SKYLENT GLOBAL PVT. LTD. · BHUBANESWAR, ODISHA · INDIA
               </span>
               <h1 id="abx-title" className="abx-h1">
-                An Institute of Applied Learning built on <em>verifiable execution, not passive video.</em>
+                Practical technical education built on <em>hands-on browser labs and real projects.</em>
               </h1>
               <p className="abx-lead">
                 Headquartered in Bhubaneswar, Odisha, Skylent combines structured self-paced coursework, zero-setup browser labs, 20-minute human Faculty TA support, and cryptographically verifiable Proof-of-Work dossiers into one unified operating system for learners and universities across India.
@@ -146,7 +97,7 @@ export default function AboutPage() {
             {/* Right-Hand Institutional Charter & Architecture Card */}
             <aside className="abx-charter-card" aria-label="Skylent Institutional Architecture">
               <div className="abx-charter-card__top">
-                <span className="abx-charter-card__code">INSTITUTIONAL CHARTER · SKYLENT OS</span>
+                <span className="abx-charter-card__code">How Skylent Works</span>
                 <span className="abx-charter-card__badge">✓ Live in Production</span>
               </div>
               <h2 className="abx-charter-card__title">
@@ -215,47 +166,6 @@ export default function AboutPage() {
             </div>
 
 
-          </div>
-        </section>
-
-        {/* Old EdTech vs. Skylent Execution Standard Comparison Table */}
-        <section className="abx-section abx-section--tint" aria-labelledby="abx-compare-title">
-          <div className="sky-container">
-            <div className="hx-head">
-              <div>
-                <p className="hx-eyebrow hx-eyebrow--dark">The Skylent Difference</p>
-                <h2 id="abx-compare-title" className="hx-h2 hx-h2--sm">
-                  How Skylent compares to traditional video courses &amp; bootcamps.
-                </h2>
-              </div>
-              <p className="hx-head__aside">
-                Every architectural decision in Skylent OS is designed to maximize learner execution and employer trust.
-              </p>
-            </div>
-
-            <div className="abx-compare-wrap" role="region" aria-labelledby="abx-compare-title" tabIndex={0}>
-              <table className="abx-compare-table">
-                <thead>
-                  <tr>
-                    <th scope="col">Dimension</th>
-                    <th scope="col">Traditional Video EdTech &amp; Bootcamps</th>
-                    <th scope="col" className="is-skylent">Skylent Institute of Applied Learning</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {COMPARISON_ROWS.map((row) => (
-                    <tr key={row.dimension}>
-                      <th scope="row">{row.dimension}</th>
-                      <td className="is-legacy">{row.legacy}</td>
-                      <td className="is-skylent">
-                        <span className="abx-check" aria-hidden="true">✓</span>
-                        <span>{row.skylent}</span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
           </div>
         </section>
 
