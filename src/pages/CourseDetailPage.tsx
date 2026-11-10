@@ -391,7 +391,7 @@ export default function CourseDetailPage() {
                   )}
                 </div>
                 <p className="cat-honesty">
-                  A certificate for this course is issued by the <strong>Skylent Global Assessment Board</strong> (verifiable at <Link to="/verify">/verify</Link>) when all 15 lessons, 3 module quizzes, and the graded capstone are completed. Plans: <strong>Basic ₹1,499 · Flagship ₹3,499 · Pro ₹6,499</strong> (Guest Browser Lab is free to try).
+                  A certificate for this course is issued by the <strong>Skylent Global Assessment Board</strong> (verifiable at <Link to="/verify">/verify</Link>) when all 15 lessons, 3 module quizzes, and the graded capstone are completed. Plans: <strong>Certification + 2-Month Internship (₹1,499) · Job Assistance Program (₹11,999)</strong>.
                 </p>
                 <div
                   style={{
@@ -414,7 +414,7 @@ export default function CourseDetailPage() {
                 </div>
               </div>
               {showLiveCurriculum ? (
-                <div className="cat-rubric-strip cat-hero-rubric" style={{ gridColumn: "1 / -1", marginTop: 18 }} aria-label="How Your Proof-of-Work Certificate Is Graded · 100% Elixir Fee Credit Eligible">
+                <div className="cat-rubric-strip cat-hero-rubric" style={{ display: "none" }} aria-label="How Your Proof-of-Work Certificate Is Graded · 100% Elixir Fee Credit Eligible">
                   <div className="cat-rubric-item">
                     <span className="cat-rubric-weight">15% Knowledge · 30% Execution</span>
                     <strong>Concept Checks &amp; Browser Lab Tasks</strong>

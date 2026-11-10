@@ -195,7 +195,7 @@ export function EnrollmentModal({ item, onClose }: { item: CatalogEnrollItem; on
           border: "1px solid #e2e8f0",
           borderRadius: 20,
           padding: 0,
-          width: 1040,
+          width: 820,
           maxWidth: "96vw",
           zIndex: 501,
           boxShadow: "0 28px 70px -12px rgba(15, 23, 42, 0.45)",
@@ -277,10 +277,8 @@ export function EnrollmentModal({ item, onClose }: { item: CatalogEnrollItem; on
               const isProCard = tier.id === "flagship"
               const displayTitle =
                 tier.id === "certificate"
-                  ? "Basic Plan"
-                  : tier.id === "professional"
-                    ? "Premium Plan"
-                    : "Pro Plan"
+                  ? "Certification + Internship Plan"
+                  : "Job Assistance Program"
               return (
                 <article
                   key={tier.id}
@@ -346,7 +344,7 @@ export function EnrollmentModal({ item, onClose }: { item: CatalogEnrollItem; on
                             color: tier.includesCareerOS ? "#5142b5" : "#475569",
                           }}
                         >
-                          {tier.includesCareerOS ? "Career OS Included" : "Self-Paced"}
+                          {tier.shortBadge || "2-Month Free Internship"}
                         </span>
                       )}
                     </div>

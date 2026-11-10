@@ -759,13 +759,14 @@ function SelectYourPlanPortalModal({
             alignItems: 'stretch',
           }}
         >
-          {/* Plan 1: Self-Paced Certificate Plan (₹1,499) */}
+          {/* Plan 1: Certification + 2-Month Complimentary Internship (₹1,499) */}
           <div
             style={{
               borderRadius: 16,
               border: '1px solid #e2e8f0',
+              borderTop: '4px solid #5142b5',
               background: '#ffffff',
-              padding: '22px 20px',
+              padding: '24px 22px',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'space-between',
@@ -773,14 +774,14 @@ function SelectYourPlanPortalModal({
           >
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8, marginBottom: 10 }}>
-                <strong style={{ fontSize: 18, color: '#0f172a' }}>Certificate Plan</strong>
-                <span style={{ fontSize: 11, fontWeight: 700, padding: '4px 10px', borderRadius: 999, background: '#f1f5f9', color: '#475569' }}>
-                  Self-Paced
+                <strong style={{ fontSize: 18, color: '#0f172a' }}>Certification + Internship</strong>
+                <span style={{ fontSize: 11, fontWeight: 700, padding: '4px 10px', borderRadius: 999, background: '#f5f3ff', color: '#5142b5' }}>
+                  2-Month Free Internship
                 </span>
               </div>
               <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 16 }}>
                 <strong style={{ fontSize: 28, color: '#0f172a' }}>₹1,499</strong>
-                <span style={{ fontSize: 14, color: '#94a3b8', textDecoration: 'line-through' }}>₹2,998</span>
+                <span style={{ fontSize: 14, color: '#94a3b8', textDecoration: 'line-through' }}>₹2,999</span>
               </div>
               <button
                 type="button"
@@ -798,77 +799,25 @@ function SelectYourPlanPortalModal({
                   marginBottom: 18,
                 }}
               >
-                Buy Now
+                Choose Plan
               </button>
               <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gap: 10, fontSize: 13, color: '#334155', lineHeight: 1.5 }}>
-                <li>✓ Full self-paced reading modules &amp; concept quizzes</li>
-                <li>✓ In-browser practice workbench (SQL / Python / Case Sandbox)</li>
-                <li>✓ Verifiable SKL Course Completion Certificate (/verify)</li>
-                <li style={{ color: '#94a3b8' }}>✕ Career OS &amp; Recruiter Job Board NOT included</li>
-                <li style={{ color: '#94a3b8' }}>✕ Live weekend classes &amp; 1:1 mock interviews NOT included</li>
+                <li>✓ Complete self-paced course &amp; browser practice labs</li>
+                <li>✓ Hands-on capstone project &amp; verified certificate</li>
+                <li>✓ 2-Month Complimentary Practice &amp; Internship included</li>
+                <li>✓ Top performers eligible for direct intern hiring</li>
               </ul>
             </div>
           </div>
 
-          {/* Plan 2: Premium Plan (₹3,499) */}
-          <div
-            style={{
-              borderRadius: 16,
-              border: '1.5px solid #c4b5fd',
-              background: '#ffffff',
-              padding: '22px 20px',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'space-between',
-              boxShadow: '0 12px 30px -16px rgba(81, 66, 181, 0.18)',
-            }}
-          >
-            <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8, marginBottom: 10 }}>
-                <strong style={{ fontSize: 18, color: '#0f172a' }}>Premium Plan</strong>
-                <span style={{ fontSize: 11, fontWeight: 700, padding: '4px 10px', borderRadius: 999, background: '#f3e8ff', color: '#6b21a8' }}>
-                  Career OS Included
-                </span>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 16 }}>
-                <strong style={{ fontSize: 28, color: '#0f172a' }}>₹3,499</strong>
-                <span style={{ fontSize: 14, color: '#94a3b8', textDecoration: 'line-through' }}>₹6,998</span>
-              </div>
-              <button
-                type="button"
-                onClick={() => onSelectPlan('professional', 3499)}
-                style={{
-                  width: '100%',
-                  padding: '12px 16px',
-                  borderRadius: 10,
-                  border: '1px solid #c4b5fd',
-                  background: '#ede9fe',
-                  color: '#4c1d95',
-                  fontSize: 14,
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  marginBottom: 18,
-                }}
-              >
-                Buy Now
-              </button>
-              <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gap: 10, fontSize: 13, color: '#334155', lineHeight: 1.5 }}>
-                <li>✓ Everything in Certificate Training + Graded Capstone Studio</li>
-                <li>✓ Public Proof-of-Work Dossier (/verify) for hiring managers</li>
-                <li>✓ Skylent Career OS Included (6-Month Active Window + 3-Month Practice Extension after 60% rule)</li>
-                <li>✓ Track-Specific Interview Prep, Spoken English, ATS Resume &amp; LinkedIn Makeover</li>
-              </ul>
-            </div>
-          </div>
-
-          {/* Plan 3: Pro Plan (₹6,499) */}
+          {/* Plan 2: Job Assistance Career Program (₹11,999) */}
           <div
             style={{
               borderRadius: 16,
               border: '1.5px solid #4c1d95',
               background: 'linear-gradient(160deg, #3b0764 0%, #4c1d95 50%, #5b21b6 100%)',
               color: '#ffffff',
-              padding: '22px 20px',
+              padding: '24px 22px',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'space-between',
@@ -877,18 +826,18 @@ function SelectYourPlanPortalModal({
           >
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8, marginBottom: 10 }}>
-                <strong style={{ fontSize: 18, color: '#ffffff' }}>Pro Plan</strong>
+                <strong style={{ fontSize: 18, color: '#ffffff' }}>Job Assistance Program</strong>
                 <span style={{ fontSize: 11, fontWeight: 700, padding: '4px 10px', borderRadius: 999, background: 'rgba(255,255,255,0.18)', color: '#ffffff' }}>
-                  Recommended
+                  Full Job Assistance
                 </span>
               </div>
               <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 16 }}>
-                <strong style={{ fontSize: 28, color: '#ffffff' }}>₹6,499</strong>
-                <span style={{ fontSize: 14, color: '#cbd5e1', textDecoration: 'line-through' }}>₹12,998</span>
+                <strong style={{ fontSize: 28, color: '#ffffff' }}>₹11,999</strong>
+                <span style={{ fontSize: 14, color: '#cbd5e1', textDecoration: 'line-through' }}>₹19,999</span>
               </div>
               <button
                 type="button"
-                onClick={() => onSelectPlan('flagship', 6499)}
+                onClick={() => onSelectPlan('flagship', 11999)}
                 style={{
                   width: '100%',
                   padding: '12px 16px',
@@ -902,13 +851,13 @@ function SelectYourPlanPortalModal({
                   marginBottom: 18,
                 }}
               >
-                Buy Now
+                Choose Plan
               </button>
               <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gap: 10, fontSize: 13, color: '#f1f5f9', lineHeight: 1.5 }}>
-                <li>✓ Live weekend mentor classes + full recorded lecture library</li>
-                <li>✓ Priority 20-Minute Faculty TA Doubt &amp; Rubric Review SLA</li>
-                <li>✓ Full Career OS Pro (6M Window + 3M Intensive Practice Extension at 60%)</li>
-                <li>✓ 1-on-1 Mock Interviews + Direct Recruiter Job Board &amp; Referrals</li>
+                <li>✓ Everything in Certification + 2-Month Internship Plan</li>
+                <li>✓ Dedicated Job Assistance, recruiter job board &amp; referrals</li>
+                <li>✓ 1-on-1 mock interviews, resume &amp; LinkedIn profile review</li>
+                <li>✓ Live weekend mentor sessions &amp; priority project feedback</li>
               </ul>
             </div>
           </div>

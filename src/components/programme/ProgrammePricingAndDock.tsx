@@ -15,8 +15,8 @@ type Props = {
 
 const DEFAULT_FAQS = [
   {
-    q: "How do the 3 Skylent enrolment plans work?",
-    a: "You can choose between Basic Plan (Self-Paced Certificate Track), Premium Plan (Professional Track + Career OS), or Pro Plan (Flagship Live Classes + 20-Min TA SLA + Full Career OS Pro). Clicking Buy Now takes you to the Order Details checkout page.",
+    q: "How do the 2 Skylent plans work?",
+    a: "Choose the Certification + Internship Plan (₹1,499) for part-time self-paced learning, hands-on projects, and a 2-month complimentary internship, or the Job Assistance Program (₹11,999) for full placement support, 1-on-1 mock interviews, and recruiter referrals.",
   },
   {
     q: "Do I need to install any software on my laptop?",
@@ -103,10 +103,8 @@ export default function ProgrammePricingAndDock({
               const isProCard = tier.id === "flagship"
               const displayTitle =
                 tier.id === "certificate"
-                  ? "Basic Plan"
-                  : tier.id === "professional"
-                    ? "Premium Plan"
-                    : "Pro Plan"
+                  ? "Certification + Internship Plan"
+                  : "Job Assistance Program"
               return (
                 <article
                   key={tier.id}
@@ -172,7 +170,7 @@ export default function ProgrammePricingAndDock({
                             color: tier.includesCareerOS ? "#5142b5" : "#475569",
                           }}
                         >
-                          {tier.includesCareerOS ? "Career OS Included" : "Self-Paced"}
+                          {tier.shortBadge || "2-Month Free Internship"}
                         </span>
                       )}
                     </div>

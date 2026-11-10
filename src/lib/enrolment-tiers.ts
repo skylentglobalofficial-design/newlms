@@ -75,66 +75,44 @@ export type StoredCourseTierRecord = {
 export function buildSkylentTiersForPrice(_baseCoursePrice: number, slug?: string): SkylentTierPlan[] {
   const overrides = slug ? readAdminPriceOverrides()[slug] : undefined
   const certPrice = overrides?.certPrice ?? 1499
-  const proPrice = overrides?.proPrice ?? 3499
-  const flagshipPrice = overrides?.flagshipPrice ?? 6499
+  const flagshipPrice = overrides?.flagshipPrice ?? 11999
 
   return [
     {
       id: "certificate",
-      name: "1. Certificate Training",
-      shortBadge: "Self-Paced · Certificate Only",
-      tagline: "Focused self-paced training + verified certificate (like Internshala Trainings)",
-      audience: "Best for 1st/2nd year college students & quick skill foundation",
+      name: "Certification + Internship Plan",
+      shortBadge: "2-Month Free Internship",
+      tagline: "Part-time certification course with hands-on projects & 2-month complimentary internship",
+      audience: "For learners who want practical skills, hands-on project practice & a 2-month internship",
       price: certPrice,
-      mrp: certPrice * 2,
+      mrp: 2999,
       includesCareerOS: false,
       includesLiveClasses: false,
       includesJobAssistance: false,
       features: [
-        "Full self-paced reading modules & concept quizzes",
-        "In-browser practice workbench (SQL / Python / Case Sandbox)",
-        "Verifiable SKL Course Completion Certificate (/verify)",
-      ],
-      notIncluded: [
-        "Career OS & Recruiter Job Board NOT included",
-        "Live weekend classes & 1:1 mock interviews NOT included",
-      ],
-    },
-    {
-      id: "professional",
-      name: "2. Professional Certificate",
-      shortBadge: "Job-Ready + Career OS",
-      tagline: "Job-ready curriculum + Capstone Portfolio + Career OS (No false job guarantee)",
-      audience: "Best for Final-Year Students building a recruiter-ready portfolio",
-      price: proPrice,
-      mrp: proPrice * 2,
-      includesCareerOS: true,
-      includesLiveClasses: false,
-      includesJobAssistance: true,
-      popular: true,
-      features: [
-        "Everything in Certificate Training + Graded Capstone Studio",
-        "Public Proof-of-Work Dossier (/verify) for hiring managers",
-        "Skylent Career OS Included (6-Month Active Window + 3-Month Practice Extension after 60% rule)",
-        "Track-Specific Interview Prep, Spoken English, ATS Resume & LinkedIn Makeover",
+        "Complete self-paced course modules & browser practice labs",
+        "Hands-on capstone project & verifiable certificate",
+        "2-Month Complimentary Practice & Internship included",
+        "Top performers eligible for direct intern hiring",
       ],
     },
     {
       id: "flagship",
-      name: "3. Flagship Live + Career OS Pro",
-      shortBadge: "Live Classes + Full Job Assistance",
-      tagline: "Live mentor classes + recorded sessions + 20-min TA SLA + Full Career OS & Job Board",
-      audience: "Best for serious career switchers & placement-focused learners",
+      name: "Job Assistance Program",
+      shortBadge: "Full Job Assistance",
+      tagline: "Complete training, 2-month internship, 1-on-1 mentorship & dedicated job assistance",
+      audience: "For learners targeting full-time placement & career transition",
       price: flagshipPrice,
-      mrp: flagshipPrice * 2,
+      mrp: 19999,
       includesCareerOS: true,
       includesLiveClasses: true,
       includesJobAssistance: true,
+      popular: true,
       features: [
-        "Live weekend mentor classes + full recorded lecture library",
-        "Priority 20-Minute Faculty TA Doubt & Rubric Review SLA",
-        "Full Career OS Pro (6M Window + 3M Intensive Practice Extension at 60%)",
-        "1-on-1 Mock Interviews + Direct Recruiter Job Board & Referrals",
+        "Everything in Certification + 2-Month Internship Plan",
+        "Dedicated Job Assistance, recruiter job board & referrals",
+        "1-on-1 mock interviews, resume & LinkedIn profile review",
+        "Live weekend mentor sessions & priority project feedback",
       ],
     },
   ]
@@ -199,11 +177,11 @@ export function getCourseTierRecord(slug: string, fallbackEnrolledAt?: string): 
 export function tierLabelFor(tier: SkylentTierId): string {
   switch (tier) {
     case "certificate":
-      return "Certificate Plan (Self-Paced)"
+      return "Certification + 2M Internship Plan"
     case "flagship":
-      return "Flagship Live + Career OS Pro"
+      return "Job Assistance Program"
     default:
-      return "Professional Plan · Career OS"
+      return "Job Assistance Program"
   }
 }
 

@@ -502,13 +502,13 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
                   <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 10, marginBottom: 14, paddingBottom: 14, borderBottom: "1px solid #f1f5f9" }}>
                     <div>
                       <span style={{ fontSize: 11.5, fontWeight: 600, color: "#64748b", display: "block" }}>
-                        Full Programme Access
+                        Certification + 2-Month Internship
                       </span>
                       <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
-                        <strong style={{ fontSize: 28, fontWeight: 800, color: "#0f172a", fontFamily: "var(--font-display)" }}>
+                        <strong style={{ fontSize: 26, fontWeight: 800, color: "#0f172a", fontFamily: "var(--font-display)" }}>
                           ₹1,499
                         </strong>
-                        <span style={{ fontSize: 14, color: "#94a3b8", textDecoration: "line-through" }}>₹2,999</span>
+                        <span style={{ fontSize: 12.5, color: "#5142b5", fontWeight: 600 }}>· Job Assistance: ₹11,999</span>
                       </div>
                     </div>
                     <span style={{ padding: "4px 10px", borderRadius: 999, background: "#ecfdf5", border: "1px solid #a7f3d0", color: "#047857", fontSize: 11.5, fontWeight: 700 }}>
@@ -547,7 +547,7 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
                   <div className="pp-enrol-card__cta" style={{ marginTop: 16 }}>
                     {primaryAction}
                     <a className="sk-btn sk-btn-secondary" href="#pp-pricing">
-                      Compare Plans (Basic / Premium / Pro)
+                      Compare Both Plans (₹1,499 & ₹11,999)
                     </a>
                   </div>
                 </div>
@@ -795,9 +795,9 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
           </div>
           <Reveal delay={180} className="pp-actions">
             {primaryAction}
-            <Link className="sk-btn sk-btn-secondary" to="/path">
-              {canEnrol ? "Not sure yet? Find your path in 90 seconds" : "Find your path in 90 seconds"}
-            </Link>
+            <a className="sk-btn sk-btn-secondary" href="#pp-pricing">
+              Compare Plans
+            </a>
           </Reveal>
         </Reveal>
       </section>

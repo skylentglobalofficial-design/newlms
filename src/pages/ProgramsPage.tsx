@@ -217,11 +217,10 @@ function ProgrammeCard({ row, confirmed }: { row: Row; confirmed: boolean }) {
         <span className="pgx-card__media">
           <img src={row.image} alt={row.alt} width={800} height={500} loading="lazy" decoding="async" />
           {showStatus ? (
-            <span className={live ? "pgx-status pgx-status--open" : "pgx-status"}>
+            <span className={live ? "pgx-status pgx-status--open" : "pgx-status"} style={{ display: "none" }}>
               {live ? `✓ ${status}` : status}
             </span>
           ) : null}
-          
         </span>
         <span className="pgx-card__body">
           <span className="pgx-card__kicker">
@@ -229,17 +228,10 @@ function ProgrammeCard({ row, confirmed }: { row: Row; confirmed: boolean }) {
           </span>
           <span className="pgx-card__title">{row.title}</span>
           <span className="pgx-card__line">{row.line}</span>
-          <span className="pgx-skill-tags">
-            {row.skills.map((skill) => (
-              <span key={skill} className="pgx-skill-tag">
-                {skill}
-              </span>
-            ))}
-          </span>
-          <span className="pgx-card__footer">
-            <span className="pgx-card__meta">{row.meta}</span>
+          <span className="pgx-card__footer" style={{ marginTop: "auto", paddingTop: 14 }}>
+            <span className="pgx-card__meta">2 Months · Free Internship</span>
             <span className="pgx-card__go">
-              Enroll Now <ArrowRight />
+              Explore Programme <ArrowRight />
             </span>
           </span>
         </span>
@@ -316,32 +308,29 @@ export default function ProgramsPage() {
                 Learn step-by-step in live browser labs and graduate with a verified capstone project.
               </p>
               <div className="pgx-intro__actions">
-                <Link className="sk-btn sk-btn-primary" to="/path">
-                  Find My Path in 90 Seconds
+                <a className="sk-btn sk-btn-primary" href="#live-courses">
+                  Browse Programmes
                   <ArrowRight />
-                </Link>
-                <Link className="sk-btn sk-btn-secondary" to="/events">
-                  Try a ₹99 Live Workshop (100% Coin Back)
-                </Link>
+                </a>
               </div>
               <p className="pgx-sr">{intro}</p>
             </div>
 
-            <aside className="pgx-royal-hero-card" aria-label="Programme structure">
-              <strong className="pgx-royal-hero-card__title">What is included in every programme</strong>
-              <span className="pgx-royal-hero-card__sub">Structured modules, browser-based practice labs, and a graded capstone project.</span>
+            <aside className="pgx-royal-hero-card" aria-label="Two programme plans">
+              <strong className="pgx-royal-hero-card__title">2 Simple Ways to Enrol</strong>
+              <span className="pgx-royal-hero-card__sub">Choose short-term certification with a 2-month internship, or our full Job Assistance track.</span>
               <div className="pgx-royal-hero-card__metrics">
                 <div>
-                  <span>FORMAT</span>
-                  <strong>5 Modules · 15 Lessons</strong>
+                  <span>PLAN 1 · ₹1,499</span>
+                  <strong>Course + 2M Internship</strong>
+                </div>
+                <div>
+                  <span>PLAN 2 · ₹11,999</span>
+                  <strong>Full Job Assistance</strong>
                 </div>
                 <div>
                   <span>PRACTICE</span>
-                  <strong>In-Browser Labs</strong>
-                </div>
-                <div>
-                  <span>CREDENTIAL</span>
-                  <strong>Verified Certificate</strong>
+                  <strong>Hands-On Projects</strong>
                 </div>
               </div>
             </aside>
@@ -447,24 +436,6 @@ export default function ProgramsPage() {
           </div>
         )}
 
-        <section className="pgx-close" aria-labelledby="pgx-close-title">
-          <div className="sky-container pgx-close__inner">
-            <div>
-              <code className="pgx-close__eyebrow">Skill & Track Diagnostic</code>
-              <h2 id="pgx-close-title">Not sure which track fits you best?</h2>
-              <p>Answer 3 quick questions in our 90-second path finder to see which programme matches your background and goal.</p>
-            </div>
-            <div className="pgx-close__actions">
-              <Link className="sk-btn sk-btn-primary" to="/path">
-                Find My Path in 90 Seconds
-                <ArrowRight />
-              </Link>
-              <Link className="sk-btn sk-btn-secondary pgx-close__secondary" to="/events">
-                Explore ₹99 Live Workshops
-              </Link>
-            </div>
-          </div>
-        </section>
       </div>
     </PageShell>
   )

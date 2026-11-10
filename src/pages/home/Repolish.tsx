@@ -69,65 +69,20 @@ export function HomeHero({
       <div className="sky-container hxw-hero__grid">
         <div className="hxw-hero__copy">
           <h1 id="hx-hero-title" className="hxw-hero__title hx-rise">
-            Practical courses with browser labs and verified projects.
+            Practical courses with hands-on projects &amp; internship.
           </h1>
-          <span className="hx-sr" style={{ display: "none" }}>Learn. Practise. Build. <em>Prove it.</em></span>
-          <p className="hxw-hero__lead hx-rise">
-            Learn SQL, Python, Product, Full-Stack &amp; GenAI in live browser labs with verified projects.
+          <span className="hx-sr" style={{ display: "none" }}>Learn. Practise. Build. <em>Prove it.</em> Interactive SQL &amp; Python practice</span>
+          <p className="hxw-hero__lead hx-rise" style={{ marginTop: 14, marginBottom: 24 }}>
+            Learn in live browser labs with a 2-month complimentary internship, or choose our dedicated Job Assistance track.
           </p>
           <p className="hx-sr" aria-live="polite">{availability}</p>
 
-          <div className="hxw-hero__goal-pills hx-rise" style={{ display: "flex", flexWrap: "wrap", gap: 6, margin: "12px 0 18px" }}>
-            {[
-              { label: "Data Analytics", to: "/programmes/data-analytics-pro" },
-              { label: "Generative AI", to: "/programmes/generative-ai-program" },
-              { label: "Python & Data Science", to: "/programmes/data-science-ai" },
-              { label: "Product Management", to: "/programmes/product-management" },
-              { label: "Full-Stack Web", to: "/programmes/full-stack" },
-            ].map((pill) => (
-              <Link
-                key={pill.label}
-                to={pill.to}
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  padding: "5px 11px",
-                  borderRadius: 6,
-                  background: "#f8fafc",
-                  border: "1px solid #e2e8f0",
-                  color: "#334155",
-                  fontSize: 12.5,
-                  fontWeight: 500,
-                  textDecoration: "none",
-                }}
-              >
-                {pill.label}
-              </Link>
-            ))}
-          </div>
-
-          <div className="hxw-hero__actions hx-rise" style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+          <div className="hxw-hero__actions hx-rise" style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
             <Link className="sk-btn sk-btn-primary hx-btn" to="/programmes">
-              Enroll Now — Explore Courses
+              Explore Programmes
               <ArrowRight />
             </Link>
-            <Link
-              className="sk-btn sk-btn-secondary hx-btn"
-              to="/path"
-              style={{ border: "1px solid #cbd5e1", background: "#ffffff", color: "#0f172a", fontWeight: 600 }}
-            >
-              Take 90-second skill check
-            </Link>
           </div>
-          <ul
-            className="hxw-hero__caps hx-rise"
-            aria-label="Verified platform capabilities"
-          >
-            <li>Interactive SQL &amp; Python practice</li>
-            <li>Applied business case studies</li>
-            <li>Graded assessments &amp; faculty review</li>
-            <li>Verifiable credentials</li>
-          </ul>
         </div>
         <div className="hxw-hero__visual hx-rise">
           <div className="hxw-stage">
@@ -148,8 +103,8 @@ export function HomeHero({
               <div className="hxw-ws__top">
                 <span className="hxw-ws__mark" aria-hidden="true">OS</span>
                 <div>
-                  <span className="hxw-ws__title">Interactive SQL, Python &amp; Product Labs</span>
-                  <span className="hxw-ws__note">Practise directly in your browser and build verified projects.</span>
+                  <span className="hxw-ws__title">Hands-On Labs + 2-Month Internship</span>
+                  <span className="hxw-ws__note">Certification Plan (₹1,499) · Job Assistance Track (₹11,999)</span>
                 </div>
               </div>
             </div>
@@ -899,12 +854,10 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
                   slug: "data-analytics",
                   group: "data",
                   to: "/programmes/data-analytics-pro",
-                  category: "DATA & SQL",
-                  status: "Open · 15 lessons",
-                  title: "Data Analytics & SQL",
-                  desc: "Master SQL joins, CTEs & revenue audits in a live browser database.",
-                  skills: ["SQL Workbench", "Spreadsheets", "1 Capstone"],
-                  meta: "5 modules · 1 capstone",
+                  category: "DATA ANALYTICS",
+                  title: "Data Analytics",
+                  desc: "SQL, spreadsheets & BI dashboards with real business projects.",
+                  meta: "2 Months · Free Internship",
                   img: photoAnalytics,
                   alt: "Data Analytics workspace preview",
                 },
@@ -912,12 +865,10 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
                   slug: "product-management",
                   group: "product-web",
                   to: "/programmes/product-management",
-                  category: "PRODUCT STRATEGY",
-                  status: "Open · 15 lessons",
+                  category: "PRODUCT MANAGEMENT",
                   title: "Product Management",
-                  desc: "Scope real user problems, triage metrics & ship an engineering PRD.",
-                  skills: ["PRD Studio", "Metrics", "1 Capstone"],
-                  meta: "5 modules · 1 capstone",
+                  desc: "User research, product strategy & engineering PRDs.",
+                  meta: "2 Months · Free Internship",
                   img: photoProduct,
                   alt: "Product Management studio preview",
                 },
@@ -925,12 +876,10 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
                   slug: "python-programming",
                   group: "ai",
                   to: "/courses/python-programming",
-                  category: "PYTHON & ETL",
-                  status: "Open · 15 lessons",
+                  category: "PYTHON & AUTOMATION",
                   title: "Python & Automation",
-                  desc: "Write data validators, automation scripts & tested ETL pipelines.",
-                  skills: ["Python 3", "ETL Lab", "1 Capstone"],
-                  meta: "5 modules · 1 capstone",
+                  desc: "Data automation, scripting & clean backend workflows.",
+                  meta: "2 Months · Free Internship",
                   img: photoScience,
                   alt: "Python engineering workspace preview",
                 },
@@ -939,11 +888,9 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
                   group: "data",
                   to: "/programmes/data-science-ai",
                   category: "DATA SCIENCE",
-                  status: "Open · 30 lessons",
                   title: "Data Science & AI",
-                  desc: "Combine SQL analytics and Python pipelines to model cohort retention.",
-                  skills: ["SQL + Python", "Cohorts", "2 Capstones"],
-                  meta: "10 modules · 2 capstones",
+                  desc: "SQL analytics, Python pipelines & predictive cohort models.",
+                  meta: "2 Months · Free Internship",
                   img: photoClass,
                   alt: "Data Science cohort analysis preview",
                 },
@@ -952,11 +899,9 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
                   group: "ai",
                   to: "/programmes/generative-ai-program",
                   category: "GENERATIVE AI",
-                  status: "Open · 15 lessons",
-                  title: "Generative AI & RAG",
-                  desc: "Build citation-grounded AI assistants, prompt guardrails & evals.",
-                  skills: ["Grounded RAG", "LLM Evals", "1 Capstone"],
-                  meta: "5 modules · 1 capstone",
+                  title: "Generative AI",
+                  desc: "RAG assistants, prompt engineering & AI workflows.",
+                  meta: "2 Months · Free Internship",
                   img: photoCampusPg,
                   alt: "Generative AI evaluation preview",
                 },
@@ -964,12 +909,10 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
                   slug: "full-stack-web",
                   group: "product-web",
                   to: "/programmes/full-stack",
-                  category: "WEB ENGINEERING",
-                  status: "Open · 15 lessons",
-                  title: "Full Stack TypeScript",
-                  desc: "Ship React UIs, Node/Express APIs & PostgreSQL payment ledgers.",
-                  skills: ["React + TS", "Node APIs", "PostgreSQL"],
-                  meta: "5 modules · 1 capstone",
+                  category: "FULL-STACK WEB",
+                  title: "Full-Stack Web Development",
+                  desc: "React, TypeScript, Node APIs & PostgreSQL applications.",
+                  meta: "2 Months · Free Internship",
                   img: heroStudent720,
                   alt: "Full-stack engineering preview",
                 },
@@ -978,21 +921,15 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
                   <Link to={item.to} className="hx-live-course-card">
                     <span className="hx-live-course-card__media">
                       <img src={item.img} alt={item.alt} width={800} height={530} loading="lazy" decoding="async" />
-                      <span className="hx-live-course-card__badge">{item.status}</span>
                     </span>
                     <span className="hx-live-course-card__body">
                       <span className="hx-live-course-card__cat">{item.category}</span>
                       <strong className="hx-live-course-card__title">{item.title}</strong>
                       <span className="hx-live-course-card__desc">{item.desc}</span>
-                      <span className="hx-live-course-card__skills">
-                        {item.skills.map((s) => (
-                          <span key={s} className="hx-live-course-card__skill">{s}</span>
-                        ))}
-                      </span>
                       <span className="hx-live-course-card__foot">
                         <span className="hx-live-course-card__meta">{item.meta}</span>
                         <span className="hx-live-course-card__cta">
-                          Enroll Now <ArrowRight />
+                          Explore Programme <ArrowRight />
                         </span>
                       </span>
                     </span>
@@ -1450,88 +1387,6 @@ export function HomeCareer() {
           </div>
         </div>
 
-        {/* Real Student Projects, Verified Certificates & Learner Outcomes (Royal Midnight Navy Theme) */}
-        <div className="hx-royal-showcase">
-          <div className="hx-royal-showcase__head">
-            <div>
-              <p className="hx-eyebrow hx-eyebrow--dark" style={{ marginBottom: 6 }}>
-                Capstone Project Deliverables · Publicly Verifiable Architecture
-              </p>
-              <h3 className="hx-royal-showcase__title">
-                What You Will Build &amp; Verify in Your Capstone
-              </h3>
-              <p className="hx-royal-showcase__sub">
-                Every completed capstone issues a public `/verify` ID showing your real code, SQL queries, and rubric score.
-              </p>
-            </div>
-            <Link className="sk-btn sk-btn-secondary" to="/verify">
-              Verify any certificate ID <ArrowRight />
-            </Link>
-          </div>
-
-          <div className="hx-royal-grid">
-            {[
-              {
-                code: "SKL-2026-DA-EXEMPLAR",
-                name: "Retail Revenue & Discount Leakage Audit",
-                role: "Data Analytics Capstone Deliverable",
-                score: "5-Part Rubric Graded",
-                track: "Data Analytics · Built in Northwind SQL Lab",
-                projectBuilt: "Project Built: Retail Revenue & Discount Leakage Audit",
-                finding: "Audited 180 orders in SQL and isolated a 14.5% discount leak on ₹8.12L revenue.",
-                skills: ["SQL Joins & CTEs", "Spreadsheet Audit", "Commercial BI"],
-              },
-              {
-                code: "SKL-2026-PM-EXEMPLAR",
-                name: "12-Store Exception Triage PRD",
-                role: "Product Management Capstone Deliverable",
-                score: "5-Part Rubric Graded",
-                track: "Product Management · Built in Harbor Desk Studio",
-                projectBuilt: "Project Built: 12-Store Exception Triage PRD",
-                finding: "Scoped a 6-week mobile exception triage PRD from 18 store interviews.",
-                skills: ["PRD Scoping", "Problem Framing", "Rollout Governance"],
-              },
-              {
-                code: "SKL-2026-AI-EXEMPLAR",
-                name: "Citation-Grounded Policy Assistant",
-                role: "Generative AI Capstone Deliverable",
-                score: "5-Part Rubric Graded",
-                track: "Generative AI · Built in Grounded RAG Lab",
-                projectBuilt: "Project Built: Citation-Grounded Policy Assistant",
-                finding: "Built a citation-gated RAG pipeline cutting ungrounded LLM answers to 0%.",
-                skills: ["Grounded RAG", "Citation Gates", "Prompt Defense"],
-              },
-            ].map((dossier) => (
-              <Link
-                key={dossier.code}
-                to={`/verify/${dossier.code}`}
-                className="hx-royal-card"
-              >
-                <div>
-                  <div className="hx-royal-card__top">
-                    <code className="hx-royal-card__code">{dossier.code}</code>
-                    <span className="hx-royal-card__badge">✓ {dossier.score}</span>
-                  </div>
-                  <strong className="hx-royal-card__name">{dossier.name}</strong>
-                  <span className="hx-royal-card__track">{dossier.track}</span>
-                  <span className="hx-royal-card__project">{dossier.projectBuilt}</span>
-                  <p className="hx-royal-card__quote">“{dossier.finding}”</p>
-                </div>
-                <div>
-                  <div className="hx-royal-card__pills">
-                    {dossier.skills.map((s) => (
-                      <span key={s} className="hx-royal-card__pill">{s}</span>
-                    ))}
-                  </div>
-                  <span className="hx-royal-card__cta">
-                    Inspect verified certificate &amp; project report →
-                  </span>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-
         <p className="hx-career__limits" style={{ marginTop: 20 }}>{careerLimits()}</p>
         <Link className="hx-more" to="/career-os">
           Explore Career OS
@@ -1623,8 +1478,8 @@ export function HomeAi() {
             ))}
 
             <div className="hx-ai-studio__actions">
-              <Link className="sk-btn sk-btn-primary" to="/path">
-                Find My Path in 90s
+              <Link className="sk-btn sk-btn-primary" to="/programmes">
+                Explore Programmes
                 <ArrowRight />
               </Link>
               <Link className="sk-btn sk-btn-secondary" to="/courses/data-analytics">
@@ -1802,33 +1657,6 @@ export function HomeElixirFlywheel() {
     },
   ] as const
 
-  const comparisonRows = [
-    {
-      dimension: "How You Learn Every Day",
-      skylent: "Live SQL, Python, PRD & AI browser labs from Day 1",
-      videoLms: "Long passive recorded videos",
-      bootcamps: "₹1.5L–₹3L upfront Zoom lectures",
-    },
-    {
-      dimension: "When You Get Stuck on a Doubt",
-      skylent: "Guided Study Support (EN/Hinglish) + 20-min TA reply",
-      videoLms: "Unanswered discussion forums",
-      bootcamps: "24–48 hr ticket queues",
-    },
-    {
-      dimension: "What You Show Recruiters",
-      skylent: "Graded Capstone + Verifiable SKL ID (/verify)",
-      videoLms: "A generic '100% Video Watched' PDF certificate",
-      bootcamps: "An unverified completion letter with template projects",
-    },
-    {
-      dimension: "Cost & Risk to Start",
-      skylent: "3 flexible tiers + ₹99 Live Workshops (100% Coin Back)",
-      videoLms: "Pay ₹3,000–₹15,000 upfront before testing the workspace",
-      bootcamps: "Sign high-interest EMI loans before writing a single line of code",
-    },
-  ] as const
-
   return (
     <section className="hxw-goals hx-workshops-band" aria-labelledby="hx-flywheel-title">
       <div className="sky-container">
@@ -1875,65 +1703,6 @@ export function HomeElixirFlywheel() {
           ))}
         </div>
 
-        {/* Part 2: Crystal-Clear First-Time Visitor Comparison Table */}
-        <div className="hx-moat-compare" aria-label="How Skylent OS compares with traditional platforms">
-          <div className="hx-moat-compare__head">
-            <div>
-              <p className="hx-eyebrow hx-eyebrow--dark" style={{ marginBottom: 6 }}>
-                Why First-Time Learners Choose Skylent
-              </p>
-              <h3 className="hx-moat-compare__title">
-                How Skylent compares with passive video courses &amp; ₹2L bootcamps
-              </h3>
-            </div>
-            <div className="hx-moat-compare__actions">
-              <Link className="sk-btn sk-btn-primary hx-btn" to="/programmes">
-                Explore Free Pilot Courses
-                <ArrowRight />
-              </Link>
-              <Link className="sk-btn sk-btn-secondary hx-btn" to="/events">
-                Try a ₹99 Workshop
-              </Link>
-            </div>
-          </div>
-          <div className="hx-moat-table-wrap">
-            <table className="hx-moat-table">
-              <thead>
-                <tr>
-                  <th scope="col">What Matters to You</th>
-                  <th scope="col" className="is-skylent">Skylent OS (Learn by Doing)</th>
-                  <th scope="col">Recorded Video Courses</th>
-                  <th scope="col">Traditional ₹2L Bootcamps</th>
-                </tr>
-              </thead>
-              <tbody>
-                {comparisonRows.map((row) => (
-                  <tr key={row.dimension}>
-                    <th scope="row">{row.dimension}</th>
-                    <td className="is-skylent">
-                      <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
-                        <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 20, height: 20, borderRadius: "50%", background: "#dcfce7", color: "#15803d", fontWeight: 600, fontSize: 12, flexShrink: 0 }}>✓</span>
-                        <strong>{row.skylent}</strong>
-                      </span>
-                    </td>
-                    <td>
-                      <span style={{ display: "inline-flex", alignItems: "center", gap: 8, color: "#64748b" }}>
-                        <span style={{ color: "#94a3b8", fontWeight: 700 }}>✕</span>
-                        <span>{row.videoLms}</span>
-                      </span>
-                    </td>
-                    <td>
-                      <span style={{ display: "inline-flex", alignItems: "center", gap: 8, color: "#64748b" }}>
-                        <span style={{ color: "#94a3b8", fontWeight: 700 }}>✕</span>
-                        <span>{row.bootcamps}</span>
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
       </div>
     </section>
   )

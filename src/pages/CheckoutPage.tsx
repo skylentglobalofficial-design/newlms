@@ -112,10 +112,8 @@ export default function CheckoutPage() {
     kind === "workshop"
       ? "Live Workshop · 100% Coin Cashback"
       : selectedTier.id === "certificate"
-        ? "Basic Plan · Self-Paced Certificate"
-        : selectedTier.id === "professional"
-          ? "Premium Plan · Professional + Career OS"
-          : "Pro Plan · Flagship Live + Career OS Pro"
+        ? "Certification + 2-Month Internship Plan"
+        : "Job Assistance Program"
 
   const [couponInput, setCouponInput] = useState("")
   const [validatingCoupon, setValidatingCoupon] = useState(false)
