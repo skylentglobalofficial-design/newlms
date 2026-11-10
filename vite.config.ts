@@ -3,7 +3,13 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import path from 'node:path'
 
-import siteConfiguration from './.figma/make/site.json' with { type: 'json' }
+const siteConfiguration: FigmaSiteConfiguration = {
+  title: 'Skylent — Learn. Practise. Build.',
+  description: 'Practical courses, interactive browser labs, and verified project credentials.',
+  language: 'en',
+  robots: { index: true },
+  accessibility: { addBypassLinks: true },
+}
 
 // Vite config — https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
