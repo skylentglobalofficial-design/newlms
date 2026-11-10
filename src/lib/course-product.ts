@@ -56,7 +56,7 @@ const SHARED_FAQ_CERT: CourseFaq = {
 
 const DATA_ANALYTICS_PROFILE: CourseProductProfile = {
   slug: FLAGSHIP_COURSE_SLUG,
-  tools: ["Google Sheets or Excel", "SQL as specified in the briefs", "A text editor"],
+  tools: ["PostgreSQL & SQL", "Microsoft Excel & Google Sheets", "BI Dashboards & KPIs", "Cohort & Margin Analysis"],
   prerequisite: "None. A spreadsheet or a text editor is enough.",
   datasets: [
     { filename: "northwind_sales.csv", href: "/content/data-analytics/northwind_sales.csv", detail: "180 order lines for fictional Northwind Retail, January–June 2026." },
@@ -99,7 +99,7 @@ const DATA_ANALYTICS_PROFILE: CourseProductProfile = {
 
 const PRODUCT_MANAGEMENT_PROFILE: CourseProductProfile = {
   slug: PRODUCT_MANAGEMENT_SLUG,
-  tools: ["A text editor", "The Harbor Desk case notes in this course"],
+  tools: ["PRD & Feature Scoping", "User Research & Interviews", "Metrics & Prioritisation", "Product Strategy"],
   prerequisite: "None. You do not need a research team, a design tool, or engineering access.",
   datasets: [
     {
@@ -145,7 +145,7 @@ const PRODUCT_MANAGEMENT_PROFILE: CourseProductProfile = {
 
 const PYTHON_PROGRAMMING_PROFILE: CourseProductProfile = {
   slug: PYTHON_PROGRAMMING_SLUG,
-  tools: ["Python 3.11+", "pytest", "A code or text editor"],
+  tools: ["Python 3.11+", "ETL Data Pipelines", "Pytest Automation", "JSON & CSV Processing"],
   prerequisite: "Basic familiarity with files and command-line navigation.",
   datasets: [
     {

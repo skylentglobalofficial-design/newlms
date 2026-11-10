@@ -77,8 +77,9 @@ export default function DashboardCollegePage() {
       <div className="sh" style={{ display: "grid", gap: 20, maxWidth: 1120 }}>
         <section
           style={{
-            background: "#ffffff",
-            border: "1px solid #e2e8f0",
+            background: "linear-gradient(135deg, #f5f3ff 0%, #ffffff 65%)",
+            border: "1px solid #ddd6fe",
+            borderTop: "3px solid #5142b5",
             borderRadius: 16,
             padding: "20px 24px",
             boxShadow: "0 4px 16px -8px rgba(15, 23, 42, 0.06)",

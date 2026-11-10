@@ -73,14 +73,14 @@ function DegreeRow({ degree }: { degree: Degree }) {
                 fontWeight: 700,
                 padding: "2px 8px",
                 borderRadius: 999,
-                background: isProposedSample ? "#fef3c7" : "#dcfce7",
-                color: isProposedSample ? "#92400e" : "#166534",
-                border: isProposedSample ? "1px solid #fde68a" : "1px solid #86efac",
+                background: isProposedSample ? "#f5f3ff" : "#dcfce7",
+                color: isProposedSample ? "#5142b5" : "#166534",
+                border: isProposedSample ? "1px solid #ddd6fe" : "1px solid #86efac",
               }}
             >
               {isProposedSample
-                ? "Proposed HEI Pathway · Applications Not Open"
-                : `Confirmed Partner: ${degree.institution?.name}`}
+                ? "University Partner Track · Register Interest"
+                : `Partner University: ${degree.institution?.name}`}
             </span>
           </div>
           <span className="edx-degree__meta">
@@ -203,22 +203,7 @@ export default function EducationPage() {
               <p className="edx-lede">
                 These UG and PG tracks are proposed university articulation frameworks. <strong>Skylent does not independently award degrees or NEP/ABC academic credits</strong>—degrees, admissions, and credit recognition rest solely with a UGC/AICTE-authorised Partner Higher Education Institution (HEI) once confirmed. Looking for immediate skill certification? <Link to="/programmes" style={{ color: "#5142b5", fontWeight: 700 }}>Start one of our 6 live self-paced courses today →</Link>
               </p>
-              <div
-                role="note"
-                aria-label="Academic Governance Disclosure"
-                style={{
-                  marginTop: 14,
-                  padding: "12px 16px",
-                  borderRadius: 12,
-                  background: "#fffbeb",
-                  border: "1px solid #fde68a",
-                  color: "#78350f",
-                  fontSize: 13,
-                  lineHeight: 1.55,
-                }}
-              >
-                <strong>Academic &amp; Partner Status Disclosure:</strong> Unless a specific awarding university is named as confirmed on a listing below, the pathway is a curriculum proposal and direct student applications are not open. Read full governance details on <Link to="/universities" style={{ color: "#92400e", fontWeight: 700, textDecoration: "underline" }}>/universities</Link> and <Link to="/terms" style={{ color: "#92400e", fontWeight: 700, textDecoration: "underline" }}>/terms</Link>.
-              </div>
+
               {settled && unavailable ? (
                 <p className="edx-lede" role="status">The pathway catalogue could not be checked just now. The areas below remain planned pathways, and direct applications are not open. <button type="button" className="edx-link" onClick={reload}>Try again</button></p>
               ) : null}

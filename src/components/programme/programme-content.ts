@@ -218,8 +218,8 @@ const DATA_ANALYTICS: AuthoredProgrammeContent = {
   cardLine: "Take a messy sales extract to a finding and a recommendation someone can act on.",
   capstoneTitle: "Northwind Commercial Review",
   hero: {
-    headline: "Turn a messy sales extract into a finding someone can act on.",
-    signal: "a finding someone can act on.",
+    headline: "Master SQL, spreadsheets, and business dashboards to become a job-ready Data Analyst.",
+    signal: "job-ready Data Analyst.",
     summary: dataAnalyticsModuleSummary,
     figure: "Northwind Lab, revenue by category",
     figureNote: "Northwind Retail commercial dataset (180 order lines, Q3 window)",
@@ -230,7 +230,7 @@ const DATA_ANALYTICS: AuthoredProgrammeContent = {
       value: "Northwind sales",
       note: `${NORTHWIND.rows} rows, ${NORTHWIND.window}`,
     },
-    tools: { label: "You work in" },
+    tools: { label: "Tools & Skills Covered" },
   },
   project: {
     label: "The capstone",
@@ -335,8 +335,8 @@ const PRODUCT_MANAGEMENT: AuthoredProgrammeContent = {
   cardLine: "Frame one retail operations problem and recommend a single constrained bet.",
   capstoneTitle: "Harbor Desk product case",
   hero: {
-    headline: "Decide what to build when engineering time is limited, and write the specification for it.",
-    signal: "write the specification for it.",
+    headline: "Master user research, problem framing, and product specs to become a job-ready Product Manager.",
+    signal: "job-ready Product Manager.",
     summary: productManagementModuleSummary,
     figure: "Harbor Desk case, weekend exception log",
     figureNote: "Harbor Desk operations case studio (18 interviews, 34 exception logs)",
@@ -347,7 +347,7 @@ const PRODUCT_MANAGEMENT: AuthoredProgrammeContent = {
       value: "Harbor Desk",
       note: `${HARBOR.interviews} interviews, ${HARBOR.exceptions} logged exceptions`,
     },
-    tools: { label: "You work in" },
+    tools: { label: "Tools & Skills Covered" },
   },
   project: {
     label: "The capstone",
@@ -480,7 +480,7 @@ const DATA_SCIENCE_AI: AuthoredProgrammeContent = {
       value: "Northwind & Retention Cohorts",
       note: "180 retail orders + 1,240 customer accounts",
     },
-    tools: { label: "You work in" },
+    tools: { label: "Tools & Skills Covered" },
   },
   project: {
     label: "The capstone",
@@ -587,7 +587,7 @@ const FULL_STACK: AuthoredProgrammeContent = {
       value: "Order & Payment Ledger",
       note: "React UI + Express API + PostgreSQL",
     },
-    tools: { label: "You work in" },
+    tools: { label: "Tools & Skills Covered" },
   },
   project: {
     label: "The capstone",
@@ -711,7 +711,7 @@ const GENERATIVE_AI: AuthoredProgrammeContent = {
       value: "Document Q&A Assistant",
       note: "Search + Citations + Safety Guardrails",
     },
-    tools: { label: "You work in" },
+    tools: { label: "Tools & Skills Covered" },
   },
   project: {
     label: "The capstone",

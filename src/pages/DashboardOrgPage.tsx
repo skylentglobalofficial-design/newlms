@@ -76,8 +76,9 @@ function InstitutionWorkspace({
   return (
     <div id="org-overview" className="org-institution-workspace" style={{ display: 'grid', gap: 16 }}>
       <div style={{
-        background: '#ffffff',
-        border: '1px solid #e2e8f0',
+        background: 'linear-gradient(135deg, #f5f3ff 0%, #ffffff 65%)',
+        border: '1px solid #ddd6fe',
+        borderTop: '3px solid #5142b5',
         borderRadius: 16,
         padding: '20px 24px',
         display: 'flex',

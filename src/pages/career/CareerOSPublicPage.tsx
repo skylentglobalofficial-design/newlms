@@ -148,7 +148,7 @@ const SOURCES = [
   { title: "Verifiable Project Certificates", text: "Attach publicly verifiable Course and Programme Master certificates (/verify) with project summaries.", to: "/verify" },
 ]
 
-const FEATURES = publicFeatures(CAREER_OS_FEATURES).filter((feature) => feature.id !== "next-step")
+const FEATURES = publicFeatures(CAREER_OS_FEATURES).filter((feature) => ["profile", "projects", "opportunities"].includes(feature.id))
 
 export default function CareerOSPublicPage() {
   return (
@@ -250,7 +250,7 @@ export default function CareerOSPublicPage() {
           <div className="sky-container">
             <div className="hx-head">
               <div>
-                <p className="hx-eyebrow hx-eyebrow--dark">Inside the Career OS Workspace · 9 Connected Modules</p>
+                <p className="hx-eyebrow hx-eyebrow--dark">Career OS Workspace · Core Modules</p>
                 <h2 id="cpx-parts-title" className="hx-h2">
                   Every tool required to turn coursework <em>into verified proof.</em>
                 </h2>

@@ -194,10 +194,10 @@ export default function AboutPage() {
               <div>
                 <p className="hx-eyebrow hx-eyebrow--dark">Why We Built Skylent in Bhubaneswar</p>
                 <h2 id="abx-founder" className="hx-h2 hx-h2--sm">
-                  Replacing passive attendance certificates and ₹2,00,000 bootcamp debt traps with real proof of work.
+                  Building practical, project-first technical education from Bhubaneswar, India.
                 </h2>
                 <p className="abx-founder-copy">
-                  Across engineering and degree colleges in Odisha and India, we saw bright, capable students graduate with stacks of video-completion certificates that hiring managers ignored — or get pushed into high-interest ₹2 Lakh loans for generic online lectures. We founded <strong>Skylent Global Pvt. Ltd.</strong> in Bhubaneswar with a single engineering rule: <strong>if you cannot execute the work in a live lab and defend your trade-offs, we have not taught it yet.</strong>
+                  We founded <strong>Skylent Global Pvt. Ltd.</strong> in Bhubaneswar, Odisha so students and working professionals can learn SQL, Python, Product Management, Full-Stack Web, and Generative AI by practising in live browser labs and graduating with verified project portfolios.
                 </p>
               </div>
               <div className="abx-founder-stats">
@@ -214,18 +214,7 @@ export default function AboutPage() {
               </div>
             </div>
 
-            <div className="abx-env-grid" aria-label="Three operating environments">
-              {ENVIRONMENTS.map((env) => (
-                <article key={env.code} className="abx-env-card">
-                  <div className="abx-env-card__top">
-                    <span className="abx-env-card__code">{env.code}</span>
-                    <span className="abx-env-card__badge">{env.badge}</span>
-                  </div>
-                  <h3>{env.title}</h3>
-                  <p>{env.body}</p>
-                </article>
-              ))}
-            </div>
+
           </div>
         </section>
 

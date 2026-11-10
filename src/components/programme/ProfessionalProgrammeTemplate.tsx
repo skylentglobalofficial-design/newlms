@@ -305,16 +305,15 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
 
   /* The page rail: the five things the page answers, each a jump to its section. */
   const jumps: Array<{ n: string; verb: string; what: string; href: string }> = [
-    { n: "01", verb: "Workbench", what: content.specSheet.material.value, href: "#pp-stage" },
-    { n: "02", verb: "Build", what: content.capstoneTitle, href: "#pp-capstone" },
     {
-      n: "03",
-      verb: "Learn",
-      what: courseReady && lessonCount > 0 ? `${plural(moduleCount, "module")}, ${plural(lessonCount, "lesson")}` : "Modules and lessons",
+      n: "01",
+      verb: "Syllabus",
+      what: courseReady && lessonCount > 0 ? `${plural(moduleCount, "module")}, ${plural(lessonCount, "lesson")}` : "5 modules, 15 lessons",
       href: "#pp-curriculum",
     },
-    { n: "04", verb: "Practise", what: "In-browser studio", href: "#pp-practice" },
-    { n: "05", verb: "Prove", what: `${plural(content.evidence.rows.length, "piece")} of reviewable work`, href: "#pp-evidence" },
+    { n: "02", verb: "Live Lab", what: content.specSheet.material.value, href: "#pp-stage" },
+    { n: "03", verb: "Projects", what: `${plural(content.evidence.rows.length, "project")} & certificate`, href: "#pp-evidence" },
+    { n: "04", verb: "Plans", what: "From ₹1,499", href: "#pp-pricing" },
   ]
 
   const nextStepLabel = ["Next step", firstNode ? "Lesson 1" : "", firstNode ? nodeKind(firstNode.nodeType) : "", firstNode?.duration ?? ""]
@@ -420,24 +419,36 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
             {/* Right Column: Elevated Programme Enrolment & Live Workbench Card Above the Fold */}
             <aside className="pp-hero__card cine-in cine-d3" aria-label="Programme enrolment and workbench summary">
               <div className="pp-enrol-card">
-                <div className="pp-enrol-card__top">
+                <div className="pp-enrol-card__top" style={{ padding: "22px 24px" }}>
                   <div className="pp-enrol-card__eyebrow">
                     <span className="pp-live-dot" aria-hidden="true" />
-                    <span>LIVE IN-BROWSER LAB · ZERO SETUP</span>
+                    <span>OPEN FOR ENROLMENT · SELF-PACED + LABS</span>
                   </div>
-                  <h2 className="pp-enrol-card__title">{content.capstoneTitle}</h2>
-                  <p className="pp-enrol-card__sub">{content.hero.figureNote}</p>
-                  <div className="pp-enrol-card__preview">
-                    <div className="pp-enrol-card__terminal">
-                      <div className="pp-enrol-card__dots" aria-hidden="true">
-                        <span /><span /><span />
-                        <code>{content.specSheet.material.value} · Skylent OS Studio</code>
-                      </div>
-                      <p className="pp-enrol-card__desc">{practiceCopy}</p>
-                      <a href="#pp-stage" className="pp-enrol-card__jump">
-                        Inspect live workbench below ↓
-                      </a>
+                  <h2 className="pp-enrol-card__title" style={{ fontSize: 22, marginBottom: 6 }}>{program.name}</h2>
+                  <p className="pp-enrol-card__sub" style={{ marginBottom: 14 }}>
+                    Target Role: {trackMeta.roles}
+                  </p>
+                  <div style={{
+                    display: "flex",
+                    alignItems: "baseline",
+                    justifyContent: "space-between",
+                    gap: 12,
+                    padding: "12px 16px",
+                    borderRadius: 12,
+                    background: "rgba(255, 255, 255, 0.12)",
+                    border: "1px solid rgba(255, 255, 255, 0.22)",
+                  }}>
+                    <div>
+                      <span style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.08em", color: "#e9d5ff", display: "block" }}>
+                        Programme Fee
+                      </span>
+                      <strong style={{ fontSize: 24, color: "#ffffff", fontFamily: "var(--font-display)" }}>
+                        From ₹1,499
+                      </strong>
                     </div>
+                    <a href="#pp-stage" style={{ color: "#6ee7b7", fontSize: 12.5, fontWeight: 700, textDecoration: "none" }}>
+                      Try Free Lab ↓
+                    </a>
                   </div>
                 </div>
 
@@ -604,42 +615,6 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
         </div>
       </section>
 
-      {/* Section 02: Structured 6-Step Capstone Project Roadmap Grid */}
-      <Reveal as="section" className="sky-container pp-section" id="pp-capstone" aria-labelledby="pp-capstone-title">
-        <div className="pp-section-head">
-          <div>
-            <SectionIndex n="02" label={content.project.label} />
-            <h2 id="pp-capstone-title" className="sky-display sky-display--md pp-h2">
-              {content.project.heading}
-            </h2>
-            <p className="pp-body">{content.project.intro}</p>
-          </div>
-          <div className="pp-section-head__meta">
-            <p className="pp-disclaimer">{content.project.disclaimer}</p>
-          </div>
-        </div>
-
-        <ol className="pp-steps-grid">
-          {content.project.steps.map((step) => (
-            <li className={`pp-step-card${step.worked ? " pp-step-card--worked" : ""}`} key={step.number}>
-              <div className="pp-step-card__top">
-                <span className={step.worked ? "sky-step__node sky-step__node--on" : "sky-step__node"}>
-                  STEP {step.number}
-                </span>
-                <span className="pp-step-card__badge">
-                  {step.worked ? "Lab Execution" : "Executive Synthesis"}
-                </span>
-              </div>
-              <h3 className="pp-h3">{step.title}</h3>
-              <p className="pp-step-card__summary">{step.summary}</p>
-              <div className="pp-step-card__foot">
-                <StepNote step={step} artefact={content.artefact} />
-              </div>
-            </li>
-          ))}
-        </ol>
-      </Reveal>
-
       {/* Section 03: Structured Module-by-Module Curriculum Syllabus Cards */}
       <Reveal as="section" className="sky-container pp-section pp-section--end" id="pp-curriculum" aria-labelledby="pp-curriculum-title">
         <div className="pp-section-head">
@@ -688,7 +663,7 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
                 <details
                   className="pp-mod"
                   key={module.sourceId ?? `${module.order}-${module.title}`}
-                  open={index < 2 || (module.sourceId ? module.sourceId === content.curriculum.openModuleId : index === 0)}
+                  open={index === 0}
                 >
                   <summary>
                     <span className="pp-mod__n">MODULE 0{index + 1}</span>
@@ -716,74 +691,6 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
           )}
         </div>
       </Reveal>
-
-      {/* Section 04: Practice Environment Specifications */}
-      <section className="sky-band-navy pp-practice" id="pp-practice" aria-labelledby="pp-practice-title">
-        <Reveal className="sky-container">
-          <div className="pp-split">
-            <div className="pp-split__intro">
-              <SectionIndex n="04" label="Practice Environment" />
-              <h2 id="pp-practice-title" className="sky-display sky-display--md pp-h2">
-                {content.practice.heading}
-              </h2>
-              <p className="pp-body">{content.practice.intro}</p>
-              {content.practice.link ? (
-                <Link className="sk-link pp-practice__link" to={content.practice.link.to}>
-                  {content.practice.link.label}
-                  <ArrowRight />
-                </Link>
-              ) : null}
-            </div>
-            <div className="pp-split__main">
-              <SpecSheet
-                rows={content.practice.rows.map((row) => ({
-                  label: row.label,
-                  value: row.mono ? <span className="sky-mono pp-mono">{row.value}</span> : row.value,
-                }))}
-              />
-              <p className="pp-disclaimer pp-disclaimer--plain">{content.practice.disclaimer}</p>
-            </div>
-          </div>
-        </Reveal>
-      </section>
-
-      {/* Section 05 & 06: Evidence Portfolio & Career OS Integration */}
-            <section className="sky-container pp-section" id="pp-review-standard" aria-labelledby="pp-review-standard-title">
-        <div
-          style={{
-            background: "#FFFFFF",
-            border: "1px solid #E2E8F0",
-            borderTop: "1px solid #E2E8F0",
-            borderRadius: 16,
-            padding: "clamp(20px, 3vw, 30px)",
-            color: "#0F172A",
-          }}
-        >
-          <p style={{ margin: "0 0 6px", color: "#5142B5", font: "700 11px/1.4 var(--font-mono)", letterSpacing: "0.1em", textTransform: "uppercase" }}>
-            HOW YOUR WORK IS GRADED
-          </p>
-          <h2 id="pp-review-standard-title" style={{ margin: "0 0 10px", fontSize: "clamp(20px, 2.4vw, 28px)", color: "#0F172A", fontFamily: "var(--font-display)", fontWeight: 700 }}>
-            Practical assessment across lessons, labs, and your final project
-          </h2>
-          <p style={{ margin: "0 0 16px", color: "#475569", maxWidth: 740, fontSize: 14.5, lineHeight: 1.55 }}>
-            Instead of passive video watch-time, your certificate is earned by completing concept checks, browser lab exercises, and a graded capstone project.
-          </p>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 10 }}>
-            {[
-              ["15% · Concepts", "Short module quizzes & checks"],
-              ["30% · Lab Work", "In-browser SQL, code & case tasks"],
-              ["20% · Analysis", "Written trade-off recommendations"],
-              ["15% · Case Check", "Scenario decision checkpoint"],
-              ["20% · Capstone", "Final project & faculty feedback"],
-            ].map(([title, sub]) => (
-              <div key={title} style={{ background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: 10, padding: 12 }}>
-                <strong style={{ color: "#5142B5", fontSize: 15, fontWeight: 700, display: "block", marginBottom: 3 }}>{title}</strong>
-                <span style={{ fontSize: 12.5, color: "#475569", lineHeight: 1.4, display: "block" }}>{sub}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       <section className="sky-band-proof pp-proof" id="pp-evidence" aria-labelledby="pp-evidence-title">
         <div className="sky-container">
