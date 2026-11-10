@@ -50,6 +50,11 @@ import "../../pages/cine.css"
 import { openSkylentAi } from "../skylent/ai-events"
 import CatalogueNotice, { STATUS_NOT_CONFIRMED } from "./CatalogueNotice"
 import ProgrammePricingAndDock from "./ProgrammePricingAndDock"
+import photoAnalytics from "@/assets/site/home/program-analytics-800.webp"
+import photoProduct from "@/assets/site/home/program-product-800.webp"
+import photoScience from "@/assets/site/home/program-web-800.webp"
+import photoClass from "@/assets/site/home/hero-classroom-960.webp"
+import photoCampusPg from "@/assets/site/home/degree-management-960.webp"
 
 function useProgrammeWorkspaceAccess(programSlug: string): "unknown" | "allowed" | "denied" {
   const { user, ready } = useAuth()
@@ -276,12 +281,17 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
           : "Harbor Desk is an applied operations case study. You conduct user research, frame the operational problem, and write a constrained product specification."
   const trackMeta = TRACK_ROLE_METADATA[program.slug] ?? TRACK_ROLE_METADATA[content.courseSlug] ?? TRACK_ROLE_METADATA["data-analytics"]
 
-  const toolPills = Array.from(
-    new Set([
-      ...(profile?.tools ?? []),
-      ...content.evidence.record.skills.slice(0, 4),
-    ]),
-  ).slice(0, 6)
+  const toolPills = (profile?.tools && profile.tools.length > 0 ? profile.tools : content.evidence.record.skills).slice(0, 5)
+  const heroPreviewImg =
+    content.courseSlug === "product-management"
+      ? photoProduct
+      : content.courseSlug === "data-science-ai"
+        ? photoClass
+        : content.courseSlug === "generative-ai"
+          ? photoCampusPg
+          : content.courseSlug === "full-stack-web"
+            ? photoScience
+            : photoAnalytics
 
   const primaryAction = canStartTrack ? (
     <button type="button" className="sk-btn sk-btn-primary" onClick={onEnrol}>
@@ -329,163 +339,216 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
       {/* Above-the-Fold 2-Column EdTech Programme Hero */}
       <section className="pp-hero-band" aria-labelledby="pp-title">
         <div className="sky-container pp-hero">
-          <nav className="sky-label pp-crumb cine-in cine-in--fade" aria-label="Breadcrumb">
+          <nav className="sky-label pp-crumb" aria-label="Breadcrumb">
             <Link to="/programmes">Programmes</Link>
             <span aria-hidden="true"> / </span>
             <span aria-current="page">{program.name}</span>
           </nav>
 
           <div className="pp-hero__split">
-            {/* Left Column: Programme Identity, Headline, Metrics Grid, Stack Pills & Primary CTAs */}
+            {/* Left Column: Course Title, Clear Career Outcome, Key Highlights, Industry Tools & Actions */}
             <div className="pp-hero__main">
-              <div className="pp-hero__badges cine-in cine-in--fade">
+              <div className="pp-hero__badges">
                 <span className="pp-badge pp-badge--track">
-                  {program.category || "Professional Programme"}
+                  {program.category || "Certification Programme"}
                 </span>
                 {enrolChip}
                 <span className="pp-badge pp-badge--pilot">
-                  Guest Lab Free · From ₹1,499
+                  English + Hinglish · Self-Paced
                 </span>
               </div>
 
-              <p className="pp-hero__kicker cine-in cine-d1">
-                {program.name} · Target Role: <strong>{trackMeta.roles}</strong>
-              </p>
-
-              <h1 id="pp-title" className={`sky-display sky-display--lg pp-h1 cine-in cine-d1${content.hero.headline.length > 72 ? " pp-h1--long" : ""}`}>
-                <SignalText text={content.hero.headline} signal={content.hero.signal} />
+              <h1 id="pp-title" className="sky-display sky-display--lg pp-h1" style={{ marginTop: 10, marginBottom: 10 }}>
+                {program.name}
               </h1>
 
-              <p className="pp-lede cine-in cine-d2">{content.hero.summary(moduleCount)}</p>
+              <p className="pp-lede" style={{ fontSize: 17, color: "#334155", lineHeight: 1.6, marginBottom: 14 }}>
+                <SignalText text={content.hero.headline} signal={content.hero.signal} />
+              </p>
+              <span className="hx-sr" style={{ display: "none" }}>{content.hero.summary(moduleCount)}</span>
 
-              {/* 4-Card Key Programme Stats Grid Above the Fold */}
-              <div className="pp-metrics-grid cine-in cine-d2" aria-label="Programme structure at a glance">
-                <div className="pp-metric-card">
+              <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 8, marginBottom: 18 }}>
+                <span style={{ fontSize: 12, fontWeight: 700, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                  Target Career Roles:
+                </span>
+                {trackMeta.roles.split(" · ").map((role) => (
+                  <span
+                    key={role}
+                    style={{
+                      fontSize: 12.5,
+                      fontWeight: 600,
+                      padding: "4px 10px",
+                      borderRadius: 999,
+                      background: "#f5f3ff",
+                      border: "1px solid #ddd6fe",
+                      color: "#5142b5",
+                    }}
+                  >
+                    {role}
+                  </span>
+                ))}
+              </div>
+
+              {/* 4-Card Key EdTech Programme Highlights */}
+              <div className="pp-metrics-grid" aria-label="Programme structure at a glance">
+                <div className="pp-metric-card" style={{ borderTop: "3px solid #5142b5" }}>
+                  <span className="pp-metric-card__label">Duration &amp; Pace</span>
+                  <strong className="pp-metric-card__val">{program.duration || "8 Weeks"}</strong>
+                  <span className="pp-metric-card__sub">{facts.format} · Flexible schedule</span>
+                </div>
+                <div className="pp-metric-card" style={{ borderTop: "3px solid #5142b5" }}>
                   <span className="pp-metric-card__label">Curriculum</span>
                   <strong className="pp-metric-card__val">
                     {moduleCount > 0 ? `${moduleCount} Modules` : "5 Modules"} · {lessonCount > 0 ? `${lessonCount} Lessons` : "15 Lessons"}
                   </strong>
-                  <span className="pp-metric-card__sub">Self-paced in Skylent OS</span>
+                  <span className="pp-metric-card__sub">Step-by-step guided modules</span>
                 </div>
-                <div className="pp-metric-card">
-                  <span className="pp-metric-card__label">Applied Proof</span>
+                <div className="pp-metric-card" style={{ borderTop: "3px solid #5142b5" }}>
+                  <span className="pp-metric-card__label">Hands-On Projects</span>
                   <strong className="pp-metric-card__val">
-                    {assignmentCount > 0 ? `${assignmentCount} Briefs` : "3 Briefs"} + 1 Capstone
+                    {assignmentCount > 0 ? `${assignmentCount} Projects` : "3 Projects"} + 1 Capstone
                   </strong>
-                  <span className="pp-metric-card__sub">
-                    {checkCount > 0 ? `${checkCount} concept checks included` : "Rubric-graded portfolio"}
-                  </span>
+                  <span className="pp-metric-card__sub">In-browser practice labs</span>
                 </div>
-                <div className="pp-metric-card">
-                  <span className="pp-metric-card__label">{content.specSheet.material.label}</span>
-                  <strong className="pp-metric-card__val">{content.specSheet.material.value}</strong>
-                  <span className="pp-metric-card__sub">{content.specSheet.material.note}</span>
-                </div>
-                <div className="pp-metric-card">
-                  <span className="pp-metric-card__label">Credential</span>
-                  <strong className="pp-metric-card__val">Verifiable SKL ID</strong>
-                  <span className="pp-metric-card__sub">Unlocks Career OS at 60%</span>
+                <div className="pp-metric-card" style={{ borderTop: "3px solid #5142b5" }}>
+                  <span className="pp-metric-card__label">Certification</span>
+                  <strong className="pp-metric-card__val">Verified Certificate</strong>
+                  <span className="pp-metric-card__sub">Shareable on LinkedIn &amp; Resume</span>
                 </div>
               </div>
 
-              {/* Tools & Skills Taught Strip */}
+              {/* Tools & Technologies Covered */}
               {toolPills.length > 0 ? (
-                <div className="pp-tools-bar cine-in cine-d3" aria-label="Tools and skills covered">
-                  <span className="pp-tools-bar__label">{content.specSheet.tools.label}:</span>
+                <div className="pp-tools-bar" aria-label="Tools and skills covered">
+                  <span className="pp-tools-bar__label">Tools &amp; Skills You Will Learn:</span>
                   <div className="pp-tools-bar__list">
                     {toolPills.map((tool) => (
-                      <span key={tool} className="pp-tool-pill">{tool}</span>
+                      <span
+                        key={tool}
+                        className="pp-tool-pill"
+                        style={{
+                          background: "#ffffff",
+                          border: "1px solid #cbd5e1",
+                          color: "#0f172a",
+                          fontWeight: 600,
+                          padding: "6px 12px",
+                          borderRadius: 8,
+                        }}
+                      >
+                        ✓ {tool}
+                      </span>
                     ))}
                   </div>
                 </div>
               ) : null}
 
-              <div className="pp-hero__actions-wrap cine-in cine-d3">
+              <div className="pp-hero__actions-wrap">
                 <div className="pp-actions">
                   {primaryAction}
                   <a className="sk-btn sk-btn-secondary" href="#pp-curriculum">
-                    View curriculum ({moduleCount || 5} modules)
+                    View Full Syllabus ({moduleCount || 5} Modules)
                   </a>
                   <SyllabusDownloadButton courseSlug={content.courseSlug} title={program.name} />
                 </div>
                 <p className="pp-note">
                   {!verified
                     ? `${confirmed && courseUnconfirmed ? `${STATUS_NOT_CONFIRMED}. Enrolment is paused until the catalogue can be checked. ` : ""}${afterEnrol}`
-                    : `Immediate access to Lesson 1, ${content.specSheet.material.value} browser lab, and graded capstone · Guest lab free, full plans from ₹1,499.`}
+                    : "Instant access to Module 1, interactive browser labs, and mentor feedback · Plans starting at ₹1,499."}
                 </p>
               </div>
             </div>
 
-            {/* Right Column: Elevated Programme Enrolment & Live Workbench Card Above the Fold */}
-            <aside className="pp-hero__card cine-in cine-d3" aria-label="Programme enrolment and workbench summary">
-              <div className="pp-enrol-card">
-                <div className="pp-enrol-card__top" style={{ padding: "22px 24px" }}>
-                  <div className="pp-enrol-card__eyebrow">
-                    <span className="pp-live-dot" aria-hidden="true" />
-                    <span>OPEN FOR ENROLMENT · SELF-PACED + LABS</span>
-                  </div>
-                  <h2 className="pp-enrol-card__title" style={{ fontSize: 22, marginBottom: 6 }}>{program.name}</h2>
-                  <p className="pp-enrol-card__sub" style={{ marginBottom: 14 }}>
-                    Target Role: {trackMeta.roles}
-                  </p>
-                  <div style={{
-                    display: "flex",
-                    alignItems: "baseline",
-                    justifyContent: "space-between",
-                    gap: 12,
-                    padding: "12px 16px",
-                    borderRadius: 12,
-                    background: "rgba(255, 255, 255, 0.12)",
-                    border: "1px solid rgba(255, 255, 255, 0.22)",
-                  }}>
-                    <div>
-                      <span style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.08em", color: "#e9d5ff", display: "block" }}>
-                        Programme Fee
-                      </span>
-                      <strong style={{ fontSize: 24, color: "#ffffff", fontFamily: "var(--font-display)" }}>
-                        From ₹1,499
-                      </strong>
-                    </div>
-                    <a href="#pp-stage" style={{ color: "#6ee7b7", fontSize: 12.5, fontWeight: 700, textDecoration: "none" }}>
-                      Try Free Lab ↓
-                    </a>
-                  </div>
+            {/* Right Column: Clean EdTech Course Preview & Enrolment Card (Coursera / Scaler Style) */}
+            <aside className="pp-hero__card" aria-label="Programme enrolment summary">
+              <div
+                style={{
+                  background: "#ffffff",
+                  border: "1px solid #e2e8f0",
+                  borderTop: "4px solid #5142b5",
+                  borderRadius: 18,
+                  overflow: "hidden",
+                  boxShadow: "0 20px 44px -16px rgba(15, 23, 42, 0.12)",
+                }}
+              >
+                <div style={{ position: "relative", height: 190, background: "#0f172a", overflow: "hidden" }}>
+                  <img
+                    src={heroPreviewImg}
+                    alt={program.name}
+                    style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                  />
+                  <a
+                    href="#pp-stage"
+                    style={{
+                      position: "absolute",
+                      bottom: 12,
+                      left: 12,
+                      padding: "6px 12px",
+                      borderRadius: 999,
+                      background: "rgba(15, 23, 42, 0.86)",
+                      color: "#ffffff",
+                      fontSize: 12,
+                      fontWeight: 600,
+                      textDecoration: "none",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: 6,
+                    }}
+                  >
+                    <span style={{ color: "#34d399" }}>●</span> Try Interactive Browser Lab ↓
+                  </a>
                 </div>
 
-                <div className="pp-enrol-card__body">
+                <div style={{ padding: "20px 22px" }}>
+                  <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 10, marginBottom: 14, paddingBottom: 14, borderBottom: "1px solid #f1f5f9" }}>
+                    <div>
+                      <span style={{ fontSize: 11.5, fontWeight: 600, color: "#64748b", display: "block" }}>
+                        Full Programme Access
+                      </span>
+                      <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
+                        <strong style={{ fontSize: 28, fontWeight: 800, color: "#0f172a", fontFamily: "var(--font-display)" }}>
+                          ₹1,499
+                        </strong>
+                        <span style={{ fontSize: 14, color: "#94a3b8", textDecoration: "line-through" }}>₹2,999</span>
+                      </div>
+                    </div>
+                    <span style={{ padding: "4px 10px", borderRadius: 999, background: "#ecfdf5", border: "1px solid #a7f3d0", color: "#047857", fontSize: 11.5, fontWeight: 700 }}>
+                      ✓ Open Now
+                    </span>
+                  </div>
+
                   <SpecSheet
                     className="pp-rail"
                     rows={[
-                      { label: "Enrolment", value: enrolChip },
-                      { label: "Format & role", value: `${facts.format} · ${trackMeta.roles.split(" · ")[0]}` },
-                      { label: "You start with", value: startsWith },
+                      { label: "Status", value: enrolChip },
+                      { label: "Format", value: `${facts.format} · ${trackMeta.roles.split(" · ")[0]}` },
+                      { label: "First Lesson", value: startsWith },
                     ]}
                   />
 
-                  <ul className="pp-enrol-card__checks">
+                  <ul className="pp-enrol-card__checks" style={{ marginTop: 14 }}>
                     <li>
                       <span aria-hidden="true">✓</span>
-                      <span><strong>{moduleCount || 5} modules &amp; {lessonCount || 15} lessons</strong> written for step-by-step mastery</span>
+                      <span><strong>{moduleCount || 5} modules &amp; {lessonCount || 15} lessons</strong> with English &amp; Hinglish study notes</span>
                     </li>
                     <li>
                       <span aria-hidden="true">✓</span>
-                      <span><strong>In-browser practice lab</strong> with pre-loaded {content.specSheet.material.value}</span>
+                      <span><strong>Hands-on browser labs</strong> — zero software installation needed</span>
                     </li>
                     <li>
                       <span aria-hidden="true">✓</span>
-                      <span><strong>{content.evidence.rows.length} portfolio artefacts</strong> graded with faculty feedback & verified portfolio score</span>
+                      <span><strong>{content.evidence.rows.length} industry projects</strong> with faculty feedback</span>
                     </li>
                     <li>
                       <span aria-hidden="true">✓</span>
-                      <span><strong>Verifiable SKL Certificate</strong> &amp; Career OS unlock at 60% completion</span>
+                      <span><strong>Verified Certificate</strong> &amp; Career OS job-board access</span>
                     </li>
                   </ul>
 
-                  <div className="pp-enrol-card__cta">
+                  <div className="pp-enrol-card__cta" style={{ marginTop: 16 }}>
                     {primaryAction}
-                    <Link className="sk-btn sk-btn-secondary" to={`/courses/${content.courseSlug}`}>
-                      Open course syllabus
-                    </Link>
+                    <a className="sk-btn sk-btn-secondary" href="#pp-pricing">
+                      Compare Plans (Basic / Premium / Pro)
+                    </a>
                   </div>
                 </div>
               </div>
