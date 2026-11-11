@@ -94,7 +94,7 @@ export function hinglishIntuitionPromptFor(courseSlug: string, lessonTitle?: str
 } {
   return {
     action: "ask",
-    label: "🇮🇳 Explain in Simple Hinglish",
+    label: "ÃƒÂ°Ã…Â¸Ã¢â‚¬Â¡Ã‚Â®ÃƒÂ°Ã…Â¸Ã¢â‚¬Â¡Ã‚Â³ Explain in Simple Hinglish",
     question: `Explain the core first-principles intuition of "${lessonTitle ?? courseSlug}" in simple Hinglish with a practical Indian real-world analogy, without giving away any quiz or assignment answers.`,
   }
 }
@@ -112,8 +112,8 @@ function caseChipFor(courseSlug: string, caseLabel?: string | null): string | nu
 
 function integrityNotice(kind: string | null | undefined, open: boolean): string | null {
   if (!open) return null
-  if (kind === "quiz") return `This check is open — ${AI_NAME} explains concepts and gives practice without revealing quiz answers.`
-  if (kind === "assignment") return `This assignment is open — ${AI_NAME} helps you structure and verify your work without writing your submission.`
+  if (kind === "quiz") return `This check is open ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â ${AI_NAME} explains concepts and gives practice without revealing quiz answers.`
+  if (kind === "assignment") return `This assignment is open ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â ${AI_NAME} helps you structure and verify your work without writing your submission.`
   return null
 }
 
@@ -146,20 +146,20 @@ function buildSmartLessonAnswer(
 
   if (assessmentOpen && /answer key|exact answer|write my|solve this quiz|give me the answer/i.test(qLower)) {
     return {
-      answer: `• **Open check:** Direct answers are hidden.\n• **Focus:** ${concepts}`,
+      answer: `ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ **Open check:** Direct answers are hidden.\nÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ **Focus:** ${concepts}`,
       basedOn: lessonTitle,
       related: concepts,
       heldBack: true,
     }
   }
 
-  if (/hinglish|🇮🇳|hindi/i.test(qLower)) {
+  if (/hinglish|ÃƒÂ°Ã…Â¸Ã¢â‚¬Â¡Ã‚Â®ÃƒÂ°Ã…Â¸Ã¢â‚¬Â¡Ã‚Â³|hindi/i.test(qLower)) {
     return {
       answer:
         courseSlug === "data-analytics"
-          ? `• **Goal:** ${objective}\n• **Rule:** Filter \`units > 0 AND unit_price > 0 AND returned = 'no'\` → **166 valid rows (₹8,12,020)**.`
-          : `• **Goal:** ${objective}\n• **Topics:** ${concepts}\n• **Output:** ${output}`,
-      basedOn: `${lessonTitle} · Hinglish`,
+          ? `ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ **Goal:** ${objective}\nÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ **Rule:** Filter \`units > 0 AND unit_price > 0 AND returned = 'no'\` ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ **166 valid rows (ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¹8,12,020)**.`
+          : `ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ **Goal:** ${objective}\nÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ **Topics:** ${concepts}\nÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ **Output:** ${output}`,
+      basedOn: `${lessonTitle} Ãƒâ€šÃ‚Â· Hinglish`,
       related: concepts,
       heldBack: false,
     }
@@ -170,16 +170,16 @@ function buildSmartLessonAnswer(
       answer:
         courseSlug === "data-analytics"
           ? "```sql\nSELECT category, ROUND(SUM(units * unit_price * (1 - discount_pct/100.0))) AS net_rev\nFROM northwind_sales\nWHERE units > 0 AND unit_price > 0 AND returned = 'no'\nGROUP BY category;\n```"
-          : `• **Case (${caseName}):** Apply ${concepts}\n• **Output:** ${output}`,
+          : `ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ **Case (${caseName}):** Apply ${concepts}\nÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ **Output:** ${output}`,
       basedOn: lessonTitle,
-      related: `${caseName} · Example`,
+      related: `${caseName} Ãƒâ€šÃ‚Â· Example`,
       heldBack: false,
     }
   }
 
   if (action === "quiz" || action === "practice" || /quiz|practice|test me/i.test(qLower)) {
     return {
-      answer: `• **Quick Check:** What fails in ${caseName} if you skip **${concepts}**?`,
+      answer: `ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ **Quick Check:** What fails in ${caseName} if you skip **${concepts}**?`,
       basedOn: lessonTitle,
       related: concepts,
       heldBack: false,
@@ -187,7 +187,7 @@ function buildSmartLessonAnswer(
   }
 
   return {
-    answer: `• **Goal:** ${objective}\n• **Key Concepts:** ${concepts}\n• **Output:** ${output}`,
+    answer: `ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ **Goal:** ${objective}\nÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ **Key Concepts:** ${concepts}\nÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ **Output:** ${output}`,
     basedOn: lessonTitle,
     related: concepts,
     heldBack: false,
@@ -555,7 +555,7 @@ export default function SkylentAI({
                   cursor: "pointer",
                 }}
               >
-                🇮🇳 Hinglish Summary
+                ÃƒÂ°Ã…Â¸Ã¢â‚¬Â¡Ã‚Â®ÃƒÂ°Ã…Â¸Ã¢â‚¬Â¡Ã‚Â³ Hinglish Summary
               </button>
             </div>
           </div>
@@ -595,7 +595,7 @@ export default function SkylentAI({
 
         {ui === "loading" ? (
           <p className="os-ai-idle" aria-live="polite" style={{ fontSize: 12.5, color: "#64748b" }}>
-            Thinking…
+            ThinkingÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦
           </p>
         ) : null}
 
@@ -646,7 +646,7 @@ export default function SkylentAI({
         <div className="os-ai-sla" style={{ marginTop: 8, fontSize: 11.5 }}>
           {doubtEscalated ? (
             <p role="status" style={{ margin: 0, color: "#047857", fontWeight: 600 }}>
-              ✓ Flagged for Faculty TA review (20-min SLA).
+              ÃƒÂ¢Ã…â€œÃ¢â‚¬Å“ Flagged for Faculty TA review (20-min SLA).
             </p>
           ) : (
             <button

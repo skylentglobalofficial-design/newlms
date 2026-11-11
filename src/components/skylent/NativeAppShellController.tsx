@@ -92,7 +92,7 @@ export function NativeAppShellController() {
   const navigate = useNavigate()
   const { user, ready } = useAuth()
   const [isNative, setIsNative] = useState(() => isNativeAppShell())
-  const [isOffline, setIsOffline] = useState(() => (typeof navigator !== "undefined" ? !navigator.onLine : false))
+  const [isOffline, setIsOffline] = useState(false)
   const [appConfig, setAppConfig] = useState<AppConfigPayload | null>(null)
   const [dismissedBanner, setDismissedBanner] = useState(false)
   const [installedBuildId, setInstalledBuildId] = useState<string | null>(() => {
@@ -264,7 +264,7 @@ export function NativeAppShellController() {
               }
               setInstalledBuildId(stamp)
             }
-            setAppConfig(data)
+            setIsOffline(false); setAppConfig(data)
           }
         })
         .catch(() => {})
@@ -410,7 +410,7 @@ export function NativeAppShellController() {
     <>
 
 
-      {isOffline ? (
+      {false && isOffline ? (
         <div
           role="status"
           style={{
@@ -428,7 +428,7 @@ export function NativeAppShellController() {
             borderBottom: "2px solid #5142b5",
           }}
         >
-          Offline mode — your local drafts are saved safely. Reconnecting...
+          Offline mode ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â your local drafts are saved safely. Reconnecting...
         </div>
       ) : null}
 
@@ -527,7 +527,7 @@ export function NativeAppShellController() {
           >
             <img src="/icon-192.png" alt="Skylent" width={56} height={56} style={{ width: 56, height: 56, margin: "0 auto 14px", borderRadius: 14, display: "block", boxShadow: "0 10px 24px rgba(81, 66, 181, 0.45)" }} />
             <h3 id="skylent-auto-update-title" style={{ margin: "0 0 6px", fontSize: 18, fontWeight: 600, color: "#ffffff" }}>
-              Updating Skylent…
+              Updating SkylentÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦
             </h3>
             <p style={{ margin: "0 0 18px", fontSize: 13, lineHeight: 1.55, color: "#cbd5e1" }}>
               {appConfig.releaseNotes || `Syncing the latest courses, labs, and workspace improvements automatically (${updateProgress || 35}%).`}
@@ -567,7 +567,7 @@ export function NativeAppShellController() {
                 cursor: "pointer",
               }}
             >
-              {updatingInApp ? "Opening Latest Version…" : "Update Now →"}
+              {updatingInApp ? "Opening Latest VersionÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦" : "Update Now ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢"}
             </button>
           </div>
         </div>

@@ -65,7 +65,7 @@ function AssignmentBriefView({ brief }: { brief: AssignmentBrief; accent: Accent
       </section>
       <section className="as-block">
         <h3>Rubric</h3>
-        <p className="as-fine" style={{ marginBottom: 10 }}>Evaluation Rubric — How your work is scored across each criterion.</p>
+        <p className="as-fine" style={{ marginBottom: 10 }}>Evaluation Rubric ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â How your work is scored across each criterion.</p>
         <div className="lx-table-wrap" style={{ margin: 0 }}>
           <table>
             <thead>
@@ -108,7 +108,7 @@ function AssignmentBriefView({ brief }: { brief: AssignmentBrief; accent: Accent
         <p style={{ marginBottom: 8 }}><strong>Learning.</strong> {brief.careerEvidence.learning}</p>
         <p style={{ marginBottom: 8 }}><strong>Artifact.</strong> {brief.careerEvidence.artifact}</p>
         <p style={{ marginBottom: 8 }}><strong>Skill.</strong> {brief.careerEvidence.skill}</p>
-        <p>{brief.careerEvidence.evidence} Once submitted, you can showcase this verified artifact directly in your Career OS → Projects portfolio.</p>
+        <p>{brief.careerEvidence.evidence} Once submitted, you can showcase this verified artifact directly in your Career OS ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ Projects portfolio.</p>
       </section>
     </div>
   )
@@ -148,7 +148,7 @@ export function LessonContentView({
   const material = getCourseLessonContent(courseSlug, lesson.id)
   const evidence = getCareerEvidence(courseSlug, lesson.id)
 
-  if (lesson.type === 'video' && lessonMedia && (lessonMedia.status === 'ready' || lessonMedia.playbackUrl || lessonMedia.embedUrl)) {
+  if (lesson.type === 'video' && lessonMedia && (lessonMedia.status === 'ready' || (('playbackUrl' in lessonMedia && lessonMedia.playbackUrl) || ('embedUrl' in lessonMedia && lessonMedia.embedUrl)))) {
     return (
       <div className="lms-lesson-video lms-activity-surface lms-activity-video">
         <LessonVideoPlayer
@@ -181,7 +181,7 @@ export function LessonContentView({
         : material.body
       : fallback
     const hasAttachedVideo = Boolean(
-      lessonMedia && (lessonMedia.status === 'ready' || lessonMedia.playbackUrl || lessonMedia.embedUrl)
+      lessonMedia && (lessonMedia.status === 'ready' || (('playbackUrl' in lessonMedia && lessonMedia.playbackUrl) || ('embedUrl' in lessonMedia && lessonMedia.embedUrl)))
     )
     const youtubeMatch = customRefUrl?.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([A-Za-z0-9_-]{11})/)
     const uploadedMaterials = (lesson as { materials?: Array<{ id: string; fileName: string; mimeType: string; byteSize: number }> }).materials ?? []
@@ -229,7 +229,7 @@ export function LessonContentView({
                   className="lx-file"
                   style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "7px 12px", borderRadius: 8, background: "#ffffff", border: "1px solid #cbd5e1", color: "#0f172a", fontSize: 12.5, fontWeight: 600, textDecoration: "none" }}
                 >
-                  <span>📥 {mat.fileName}</span>
+                  <span>ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã‚Â¥ {mat.fileName}</span>
                   <span style={{ color: "#64748b", fontSize: 11 }}>({Math.max(1, Math.round(mat.byteSize / 1024))} KB)</span>
                 </a>
               ))}
@@ -314,7 +314,7 @@ export function LessonContentView({
         onSubmit={onAssignmentSubmit ?? (async () => false)}
         completionNote={
           evidence
-            ? `Submission recorded. Evaluated against the structured course rubric. Add “${evidence.artifact}” to Career OS → Projects yourself if you want it as portfolio evidence.`
+            ? `Submission recorded. Evaluated against the structured course rubric. Add ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œ${evidence.artifact}ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â to Career OS ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ Projects yourself if you want it as portfolio evidence.`
             : 'Submission recorded. Evaluated against the structured course rubric. Add a project to Career OS yourself if you want portfolio evidence.'
         }
       />
@@ -355,7 +355,7 @@ export function LessonNavigation({
       <div className="lx-footer-next">
         <p className="lx-next-label">
           {upcoming ? `Next: ${upcoming.title}` : 'This is the last activity in the course.'}
-          {hint ? ` · ${hint}` : ''}
+          {hint ? ` Ãƒâ€šÃ‚Â· ${hint}` : ''}
         </p>
         {primaryAction ? (
           <button
@@ -364,7 +364,7 @@ export function LessonNavigation({
             onClick={primaryAction.onClick}
             disabled={primaryAction.busy}
           >
-            {primaryAction.busy ? 'Saving…' : primaryAction.label}
+            {primaryAction.busy ? 'SavingÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦' : primaryAction.label}
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <path d="M5 12h14M12 5l7 7-7 7" />
             </svg>

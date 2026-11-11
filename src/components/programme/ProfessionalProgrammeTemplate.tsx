@@ -7,7 +7,7 @@
  *      Lead Summary, 4-Card Key Metrics Grid, Tool Stack Pills, and Primary Actions.
  *    - Right column: Elevated Programme Enrolment & At-a-Glance Card with Live Workbench Preview,
  *      SpecSheet rail (Enrolment, Format & Role, You Start With), Included Features checklist, and Enrol CTA.
- * 2. Sticky Quick-Jump Programme Subnav (01 Live Workbench · 02 Capstone Roadmap · 03 Module Syllabus · 04 Practice Specs · 05 Proof & Career OS).
+ * 2. Sticky Quick-Jump Programme Subnav (01 Live Workbench Ãƒâ€šÃ‚Â· 02 Capstone Roadmap Ãƒâ€šÃ‚Â· 03 Module Syllabus Ãƒâ€šÃ‚Â· 04 Practice Specs Ãƒâ€šÃ‚Â· 05 Proof & Career OS).
  * 3. Full-bleed Navy Interactive Workbench & Build Stage (#pp-stage).
  * 4. Structured 6-Step Capstone Project Roadmap Grid (#pp-capstone).
  * 5. Full-width EdTech Module & Lesson Syllabus Cards (#pp-curriculum).
@@ -103,13 +103,13 @@ const CAREER_STATUS: Array<{ label: string; capability: Capability }> = [
   { label: "Openings", capability: "openings" },
 ]
 
-/** Titles are stored as "Kind — subject". The page prints them with a comma. */
+/** Titles are stored as "Kind ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â subject". The page prints them with a comma. */
 function displayTitle(title: string): string {
-  return title.replace(/\s+[—–]\s+/g, ", ")
+  return title.replace(/\s+[ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬ÂÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“]\s+/g, ", ")
 }
 
 function shortTitle(title: string): string {
-  return title.split(/\s+[—–]\s+/)[0]
+  return title.split(/\s+[ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬ÂÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“]\s+/)[0]
 }
 
 function nodeKind(nodeType: string): string {
@@ -160,7 +160,7 @@ function moduleCounts(module: CatalogCurriculumModule): string {
     checks ? plural(checks, "check") : "",
   ]
     .filter(Boolean)
-    .join(" · ")
+    .join(" Ãƒâ€šÃ‚Â· ")
 }
 
 function StepNote({ step, artefact }: { step: ProgrammeStep; artefact: AuthoredProgrammeContent["artefact"] }) {
@@ -321,14 +321,14 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
       what: courseReady && lessonCount > 0 ? `${plural(moduleCount, "module")}, ${plural(lessonCount, "lesson")}` : "5 modules, 15 lessons",
       href: "#pp-curriculum",
     },
-    { n: "02", verb: "Plans", what: "₹1,499 & ₹11,999", href: "#pp-pricing" },
+    { n: "02", verb: "Plans", what: "ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¹1,499 & ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¹11,999", href: "#pp-pricing" },
     { n: "03", verb: "Live Lab", what: "Browser Practice", href: "#pp-stage" },
     { n: "04", verb: "Projects", what: `${plural(content.evidence.rows.length, "project")} & internship`, href: "#pp-evidence" },
   ]
 
   const nextStepLabel = ["Next step", firstNode ? "Lesson 1" : "", firstNode ? nodeKind(firstNode.nodeType) : "", firstNode?.duration ?? ""]
     .filter(Boolean)
-    .join(" · ")
+    .join(" Ãƒâ€šÃ‚Â· ")
 
   return (
     <div className="pp-page">
@@ -350,11 +350,11 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
             <div className="pp-hero__main">
               <div className="pp-hero__badges">
                 <span className="pp-badge pp-badge--track">
-                  {program.category || "Certification Programme"}
+                  {(program as { category?: string }).category || "Certification Programme"}
                 </span>
                 {enrolChip}
                 <span className="pp-badge pp-badge--pilot">
-                  English + Hinglish · Self-Paced
+                  English + Hinglish Ãƒâ€šÃ‚Â· Self-Paced
                 </span>
               </div>
 
@@ -371,7 +371,7 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
                 <span style={{ fontSize: 12, fontWeight: 700, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.06em" }}>
                   Target Career Roles:
                 </span>
-                {trackMeta.roles.split(" · ").map((role) => (
+                {trackMeta.roles.split(" Ãƒâ€šÃ‚Â· ").map((role) => (
                   <span
                     key={role}
                     style={{
@@ -393,13 +393,13 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
               <div className="pp-metrics-grid" aria-label="Programme structure at a glance">
                 <div className="pp-metric-card" style={{ borderTop: "3px solid #5142b5" }}>
                   <span className="pp-metric-card__label">Duration &amp; Pace</span>
-                  <strong className="pp-metric-card__val">{program.duration || "8 Weeks"}</strong>
-                  <span className="pp-metric-card__sub">{facts.format} · Flexible schedule</span>
+                  <strong className="pp-metric-card__val">"2 Months (8 Weeks)"</strong>
+                  <span className="pp-metric-card__sub">{facts.format} Ãƒâ€šÃ‚Â· Flexible schedule</span>
                 </div>
                 <div className="pp-metric-card" style={{ borderTop: "3px solid #5142b5" }}>
                   <span className="pp-metric-card__label">Curriculum</span>
                   <strong className="pp-metric-card__val">
-                    {moduleCount > 0 ? `${moduleCount} Modules` : "5 Modules"} · {lessonCount > 0 ? `${lessonCount} Lessons` : "15 Lessons"}
+                    "5 Modules" Ãƒâ€šÃ‚Â· "15 Applied Lessons"
                   </strong>
                   <span className="pp-metric-card__sub">Step-by-step guided modules</span>
                 </div>
@@ -435,7 +435,7 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
                           borderRadius: 8,
                         }}
                       >
-                        ✓ {tool}
+                        ÃƒÂ¢Ã…â€œÃ¢â‚¬Å“ {tool}
                       </span>
                     ))}
                   </div>
@@ -453,7 +453,7 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
                 <p className="pp-note">
                   {!verified
                     ? `${confirmed && courseUnconfirmed ? `${STATUS_NOT_CONFIRMED}. Enrolment is paused until the catalogue can be checked. ` : ""}${afterEnrol}`
-                    : "Instant access to Module 1, interactive browser labs, and mentor feedback · Plans starting at ₹1,499."}
+                    : "Instant access to Module 1, interactive browser labs, and mentor feedback Ãƒâ€šÃ‚Â· Plans starting at ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¹1,499."}
                 </p>
               </div>
             </div>
@@ -494,7 +494,7 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
                       gap: 6,
                     }}
                   >
-                    <span style={{ color: "#34d399" }}>●</span> Try Interactive Browser Lab ↓
+                    <span style={{ color: "#34d399" }}>ÃƒÂ¢Ã¢â‚¬â€Ã‚Â</span> Try Interactive Browser Lab ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬Å“
                   </a>
                 </div>
 
@@ -506,13 +506,13 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
                       </span>
                       <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
                         <strong style={{ fontSize: 26, fontWeight: 800, color: "#0f172a", fontFamily: "var(--font-display)" }}>
-                          ₹1,499
+                          ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¹1,499
                         </strong>
-                        <span style={{ fontSize: 12.5, color: "#5142b5", fontWeight: 600 }}>· Job Assistance: ₹11,999</span>
+                        <span style={{ fontSize: 12.5, color: "#5142b5", fontWeight: 600 }}>Ãƒâ€šÃ‚Â· Job Assistance: ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¹11,999</span>
                       </div>
                     </div>
                     <span style={{ padding: "4px 10px", borderRadius: 999, background: "#ecfdf5", border: "1px solid #a7f3d0", color: "#047857", fontSize: 11.5, fontWeight: 700 }}>
-                      ✓ Open Now
+                      ÃƒÂ¢Ã…â€œÃ¢â‚¬Å“ Open Now
                     </span>
                   </div>
 
@@ -520,26 +520,26 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
                     className="pp-rail"
                     rows={[
                       { label: "Status", value: enrolChip },
-                      { label: "Format", value: `${facts.format} · ${trackMeta.roles.split(" · ")[0]}` },
+                      { label: "Format", value: `${facts.format} Ãƒâ€šÃ‚Â· ${trackMeta.roles.split(" Ãƒâ€šÃ‚Â· ")[0]}` },
                       { label: "First Lesson", value: startsWith },
                     ]}
                   />
 
                   <ul className="pp-enrol-card__checks" style={{ marginTop: 14 }}>
                     <li>
-                      <span aria-hidden="true">✓</span>
+                      <span aria-hidden="true">ÃƒÂ¢Ã…â€œÃ¢â‚¬Å“</span>
                       <span><strong>{moduleCount || 5} modules &amp; {lessonCount || 15} lessons</strong> with English &amp; Hinglish study notes</span>
                     </li>
                     <li>
-                      <span aria-hidden="true">✓</span>
-                      <span><strong>Hands-on browser labs</strong> — zero software installation needed</span>
+                      <span aria-hidden="true">ÃƒÂ¢Ã…â€œÃ¢â‚¬Å“</span>
+                      <span><strong>Hands-on browser labs</strong> ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â zero software installation needed</span>
                     </li>
                     <li>
-                      <span aria-hidden="true">✓</span>
+                      <span aria-hidden="true">ÃƒÂ¢Ã…â€œÃ¢â‚¬Å“</span>
                       <span><strong>{content.evidence.rows.length} industry projects</strong> with faculty feedback</span>
                     </li>
                     <li>
-                      <span aria-hidden="true">✓</span>
+                      <span aria-hidden="true">ÃƒÂ¢Ã…â€œÃ¢â‚¬Å“</span>
                       <span><strong>Verified Certificate</strong> &amp; Career OS job-board access</span>
                     </li>
                   </ul>
@@ -547,7 +547,7 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
                   <div className="pp-enrol-card__cta" style={{ marginTop: 16 }}>
                     {primaryAction}
                     <a className="sk-btn sk-btn-secondary" href="#pp-pricing">
-                      Compare Both Plans (₹1,499 & ₹11,999)
+                      Compare Both Plans (ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¹1,499 & ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¹11,999)
                     </a>
                   </div>
                 </div>
@@ -641,7 +641,7 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
                         </span>
                         <span className={`pp-mod__kind ${nodeKindClass(node.nodeType)}`}>
                           {nodeKind(node.nodeType)}
-                          {node.duration ? ` · ${node.duration}` : ""}
+                          {node.duration ? ` Ãƒâ€šÃ‚Â· ${node.duration}` : ""}
                         </span>
                       </li>
                     ))}
@@ -683,7 +683,7 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
                   </Link>
                 ) : workspaceAccess === "denied" ? (
                   <p className="pp-practice__wait">
-                    Included with your enrolment · Launches directly in your browser with pre-loaded datasets and zero local setup.
+                    Included with your enrolment Ãƒâ€šÃ‚Â· Launches directly in your browser with pre-loaded datasets and zero local setup.
                     <span style={{ position: "absolute", width: 1, height: 1, overflow: "hidden", clip: "rect(0,0,0,0)" }}>
                       Enrol in this programme to open the workspace. A new learner starts at Not started.
                     </span>
@@ -710,7 +710,7 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
               )}
             </div>
             <figcaption className="sky-stage__caption cine-in cine-in--fade cine-d6">
-              <span>{content.hero.figure} — {content.hero.figureNote}</span>
+              <span>{content.hero.figure} ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â {content.hero.figureNote}</span>
             </figcaption>
           </Reveal>
         </div>
@@ -736,7 +736,7 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
                   <div className="pp-port-card__top">
                     <span className="pp-port-card__num">PROJECT 0{idx + 1}</span>
                     <span className={row.capstone ? "pp-port-card__tag pp-port-card__tag--cap" : "pp-port-card__tag"}>
-                      {row.capstone ? "★ Final Capstone" : "Module Project"}
+                      {row.capstone ? "ÃƒÂ¢Ã‹Å“Ã¢â‚¬Â¦ Final Capstone" : "Module Project"}
                     </span>
                   </div>
                   <h4 className="pp-port-card__title">{shortTitle(lessonTitle(row.lessonId))}</h4>

@@ -16,7 +16,7 @@ type Props = {
 const DEFAULT_FAQS = [
   {
     q: "How do the 2 Skylent plans work?",
-    a: "Choose the Certification + Internship Plan (₹1,499) for part-time self-paced learning, hands-on projects, and a 2-month complimentary internship, or the Job Assistance Program (₹11,999) for full placement support, 1-on-1 mock interviews, and recruiter referrals.",
+    a: "Choose the Certification + Internship Plan (â‚¹1,499) for part-time self-paced learning, hands-on projects, and a 2-month complimentary internship, or the Job Assistance Program (â‚¹11,999) for full placement support, 1-on-1 mock interviews, and recruiter referrals.",
   },
   {
     q: "Do I need to install any software on my laptop?",
@@ -190,7 +190,7 @@ export default function ProgrammePricingAndDock({
                           color: isProCard ? "#ffffff" : "#0f172a",
                         }}
                       >
-                        ₹{tier.price.toLocaleString("en-IN")}
+                        â‚¹{tier.price.toLocaleString("en-IN")}
                       </strong>
                       <span
                         style={{
@@ -200,7 +200,7 @@ export default function ProgrammePricingAndDock({
                           fontWeight: 600,
                         }}
                       >
-                        ₹{tier.mrp.toLocaleString("en-IN")}
+                        â‚¹{tier.mrp.toLocaleString("en-IN")}
                       </span>
                     </div>
 
@@ -261,7 +261,7 @@ export default function ProgrammePricingAndDock({
                               marginTop: 1,
                             }}
                           >
-                            ✓
+                            âœ“
                           </span>
                           <span>{feat}</span>
                         </div>
@@ -294,7 +294,7 @@ export default function ProgrammePricingAndDock({
                               marginTop: 1,
                             }}
                           >
-                            ✕
+                            âœ•
                           </span>
                           <span>{nf}</span>
                         </div>
@@ -304,6 +304,21 @@ export default function ProgrammePricingAndDock({
                 </article>
               )
             })}
+          </div>
+          <div style={{ marginTop: 22, display: "grid", gap: 14 }}>
+            <div style={{ padding: "18px 20px", borderRadius: 14, background: "#ffffff", border: "1px solid #e2e8f0", borderTop: "3px solid #5142b5" }}>
+              <strong style={{ display: "block", fontSize: 15, color: "#0f172a", marginBottom: 10 }}>How Your 2-Month Complimentary Internship Works</strong>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 12, fontSize: 13, color: "#334155" }}>
+                <div><strong style={{ color: "#5142b5" }}>Step 1 · Learn & Practise:</strong> Complete 5 guided modules and browser lab tasks at your own pace.</div>
+                <div><strong style={{ color: "#5142b5" }}>Step 2 · 2-Month Guided Internship:</strong> Work on practical industry projects with mentor review.</div>
+                <div><strong style={{ color: "#5142b5" }}>Step 3 · Dual Certificates & Hiring:</strong> Receive your Course Certificate + 2-Month Internship Certificate (top performers eligible for direct hiring).</div>
+              </div>
+            </div>
+            <div style={{ padding: "12px 18px", borderRadius: 12, background: "#f8fafc", border: "1px solid #e2e8f0", display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: 10, fontSize: 13, color: "#334155" }}>
+              <span><strong>✓ 7-Day Refund Policy</strong> · Transparent cancellation within 7 days of enrolment</span>
+              <span><strong>✓ Secure Checkout</strong> · PayU Verified Gateway (UPI / Cards / NetBanking)</span>
+              <span><strong>✓ Admissions Helpline:</strong> +91 6370044001 · support@skylent.live</span>
+            </div>
           </div>
         </div>
       </section>
@@ -325,6 +340,21 @@ export default function ProgrammePricingAndDock({
               </details>
             ))}
           </div>
+          <div style={{ marginTop: 22, display: "grid", gap: 14 }}>
+            <div style={{ padding: "18px 20px", borderRadius: 14, background: "#ffffff", border: "1px solid #e2e8f0", borderTop: "3px solid #5142b5" }}>
+              <strong style={{ display: "block", fontSize: 15, color: "#0f172a", marginBottom: 10 }}>How Your 2-Month Complimentary Internship Works</strong>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 12, fontSize: 13, color: "#334155" }}>
+                <div><strong style={{ color: "#5142b5" }}>Step 1 · Learn & Practise:</strong> Complete 5 guided modules and browser lab tasks at your own pace.</div>
+                <div><strong style={{ color: "#5142b5" }}>Step 2 · 2-Month Guided Internship:</strong> Work on practical industry projects with mentor review.</div>
+                <div><strong style={{ color: "#5142b5" }}>Step 3 · Dual Certificates & Hiring:</strong> Receive your Course Certificate + 2-Month Internship Certificate (top performers eligible for direct hiring).</div>
+              </div>
+            </div>
+            <div style={{ padding: "12px 18px", borderRadius: 12, background: "#f8fafc", border: "1px solid #e2e8f0", display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: 10, fontSize: 13, color: "#334155" }}>
+              <span><strong>✓ 7-Day Refund Policy</strong> · Transparent cancellation within 7 days of enrolment</span>
+              <span><strong>✓ Secure Checkout</strong> · PayU Verified Gateway (UPI / Cards / NetBanking)</span>
+              <span><strong>✓ Admissions Helpline:</strong> +91 6370044001 · support@skylent.live</span>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -337,7 +367,7 @@ export default function ProgrammePricingAndDock({
             aria-label="Scroll to top"
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
           >
-            ↑
+            â†‘
           </button>
           <a href="#pp-title">Overview</a>
           <a href="#pp-curriculum">Curriculum</a>
