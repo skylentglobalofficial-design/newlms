@@ -34,9 +34,9 @@ const TERMS: Section[] = [
     id: "enrolment",
     title: "Enrolment, pricing, payments and refunds",
     body: [
-      "Visitors can try Skylent's public guest browser labs (/labs) and Module 1 preview tasks without payment. Full access to all 6 self-paced flagship courses and career programmes is offered across three transparent plans: Basic (Ã¢â€šÂ¹1,499), Flagship Professional (Ã¢â€šÂ¹3,499), and Pro Career OS (Ã¢â€šÂ¹6,499), alongside Ã¢â€šÂ¹99 live weekend builder workshops (which credit 99 Elixir Coins back to your learning wallet).",
+      "Visitors can try Skylent's public guest browser labs (/labs) and Module 1 preview tasks without payment. Full access to all 6 self-paced flagship courses and career programmes is offered across three transparent plans: Basic (₹1,499), Flagship Professional (₹3,499), and Pro Career OS (₹6,499), alongside ₹99 live weekend builder workshops (which credit 99 Elixir Coins back to your learning wallet).",
       "Payments are processed securely in Indian Rupees (INR) via PayU India (supporting UPI, Debit/Credit Cards, NetBanking, and EMI). Official discount codes require Admin authorization before they can be redeemed on the Order Details (/checkout) page.",
-      "Refund policy: If you request a refund within 7 calendar days of purchase and have completed less than 20% of the course lessons without claiming a certificate, you may email support@skylent.live with your PayU transaction ID for a full refund to your original payment method within 5Ã¢â‚¬â€œ7 business days.",
+      "Refund policy: If you request a refund within 7 calendar days of purchase and have completed less than 20% of the course lessons without claiming a certificate, you may email support@skylent.live with your PayU transaction ID for a full refund to your original payment method within 5–7 business days.",
       "Degree pathway disclosures: UG and PG degree listings on /education are proposed university articulation pathways. Skylent does not independently award degrees or NEP/ABC credits; degree admission, curriculum approval, and degree conferral rest solely with a UGC/AICTE-authorised Partner Higher Education Institution (HEI) once confirmed.",
     ],
   },

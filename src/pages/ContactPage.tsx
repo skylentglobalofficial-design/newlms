@@ -301,11 +301,11 @@ export default function ContactPage() {
               </div>
               <div className="sky-spec__row">
                 <dt className="sky-spec__label">Headquarters</dt>
-                <dd className="sky-spec__value">Skylent Global Pvt. Ltd.<br />InfoCity Institutional Area, Patia, Bhubaneswar, Odisha â€“ 751024, India</dd>
+                <dd className="sky-spec__value">Skylent Global Pvt. Ltd.<br />InfoCity Institutional Area, Patia, Bhubaneswar, Odisha – 751024, India</dd>
               </div>
               <div className="sky-spec__row">
                 <dt className="sky-spec__label">Office Hours &amp; SLA</dt>
-                <dd className="sky-spec__value">Mon Ã¢â‚¬â€œ Sat Ã‚Â· 9:30 AM Ã¢â‚¬â€œ 6:30 PM IST<br />Replies within 4 business hours</dd>
+                <dd className="sky-spec__value">Mon – Sat · 9:30 AM – 6:30 PM IST<br />Replies within 4 business hours</dd>
               </div>
             </dl>
           </aside>

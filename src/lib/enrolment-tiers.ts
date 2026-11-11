@@ -1,16 +1,5 @@
 /**
- * Skylent 3-Tier Course Enrolment & Smart Career OS Validity Engine.
- *
- * Tier 1 ("certificate"): Self-Paced Certificate Training (Internshala-style, budget price, NO Career OS)
- * Tier 2 ("professional"): Professional Job-Ready Certificate (For Final-Year Students, Career OS Included, no false job guarantee)
- * Tier 3 ("flagship"): Flagship Live + Career OS Pro (Live classes + Recorded + 1:1 TA Support + Full Career OS & Job Assistance)
- *
- * Career OS Smart Multi-Course Rule:
- * - Included only in Tier 2 ("professional") and Tier 3 ("flagship").
- * - Each eligible course has a 6-Month Active Course Window from enrollment date.
- * - Learner must complete >= 60% of the course BEFORE the 6-Month Course Window ends to enroll in Career OS.
- * - Enrolling in Career OS within the 6-Month window at >= 60% grants +3 Months of Intensive Practice & Placement Access.
- * - If 6 months pass without reaching 60% and enrolling in Career OS, access expires for that course.
+ * Skylent 2-Tier Course Enrolment & Smart Career OS Validity Engine.
  */
 
 export type SkylentTierId = "certificate" | "professional" | "flagship"

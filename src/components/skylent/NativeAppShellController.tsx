@@ -264,7 +264,7 @@ export function NativeAppShellController() {
               }
               setInstalledBuildId(stamp)
             }
-            setIsOffline(false); setAppConfig(data)
+            setAppConfig(data)
           }
         })
         .catch(() => {})
@@ -428,7 +428,7 @@ export function NativeAppShellController() {
             borderBottom: "2px solid #5142b5",
           }}
         >
-          Offline mode ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â your local drafts are saved safely. Reconnecting...
+          Offline mode — your local drafts are saved safely. Reconnecting...
         </div>
       ) : null}
 
@@ -527,7 +527,7 @@ export function NativeAppShellController() {
           >
             <img src="/icon-192.png" alt="Skylent" width={56} height={56} style={{ width: 56, height: 56, margin: "0 auto 14px", borderRadius: 14, display: "block", boxShadow: "0 10px 24px rgba(81, 66, 181, 0.45)" }} />
             <h3 id="skylent-auto-update-title" style={{ margin: "0 0 6px", fontSize: 18, fontWeight: 600, color: "#ffffff" }}>
-              Updating SkylentÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦
+              Updating Skylent…
             </h3>
             <p style={{ margin: "0 0 18px", fontSize: 13, lineHeight: 1.55, color: "#cbd5e1" }}>
               {appConfig.releaseNotes || `Syncing the latest courses, labs, and workspace improvements automatically (${updateProgress || 35}%).`}
@@ -567,7 +567,7 @@ export function NativeAppShellController() {
                 cursor: "pointer",
               }}
             >
-              {updatingInApp ? "Opening Latest VersionÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦" : "Update Now ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢"}
+              {updatingInApp ? "Opening Latest Version…" : "Update Now →"}
             </button>
           </div>
         </div>

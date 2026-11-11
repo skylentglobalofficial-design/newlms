@@ -16,7 +16,7 @@ type Props = {
 const DEFAULT_FAQS = [
   {
     q: "How do the 2 Skylent plans work?",
-    a: "Choose the Certification + Internship Plan (â‚¹1,499) for part-time self-paced learning, hands-on projects, and a 2-month complimentary internship, or the Job Assistance Program (â‚¹11,999) for full placement support, 1-on-1 mock interviews, and recruiter referrals.",
+    a: "Choose the Certification + Internship Plan (₹1,499) for part-time self-paced learning, hands-on projects, and a 2-month complimentary internship, or the Job Assistance Program (₹11,999) for full placement support, 1-on-1 mock interviews, and recruiter referrals.",
   },
   {
     q: "Do I need to install any software on my laptop?",
@@ -27,8 +27,8 @@ const DEFAULT_FAQS = [
     a: "Every lesson includes integrated English and simple Hinglish study explanations plus direct escalation to human Faculty TAs.",
   },
   {
-    q: "How does the certificate and verification work?",
-    a: "When you complete all modules and pass the graded capstone project, Skylent issues a verifiable certificate with a unique public ID that anyone can check at skylent.live/verify.",
+    q: "How does the certificate and 2-month internship work?",
+    a: "When you complete the 5 modules and guided project work, Skylent issues both your verifiable Course Certificate (skylent.live/verify) and your 2-Month Internship Certificate. Top performers are also eligible for direct intern hiring.",
   },
 ]
 
@@ -81,19 +81,19 @@ export default function ProgrammePricingAndDock({
       <section className="pp-plans-band" id="pp-pricing" aria-labelledby="pp-plans-title">
         <div className="sky-container">
           <div className="pp-plans-head">
-            <span className="pp-plans-eyebrow">SKYLENT PROGRAMME &amp; CAREER OS PLANS</span>
+            <span className="pp-plans-eyebrow">SIMPLE 2-PLAN ENROLMENT</span>
             <h2 id="pp-plans-title" className="pp-plans-h2">
               Choose Your Plan for <em>{programName}</em>
             </h2>
             <p className="pp-plans-sub">
-              Every plan includes your interactive modules, browser lab ({studioName}), and capstone workspace ({capstoneTitle}) inside Skylent OS.
+              Every plan includes your 5 interactive modules, browser lab ({studioName}), capstone project ({capstoneTitle}), and 2-month complimentary internship.
             </p>
           </div>
 
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 290px), 1fr))",
+              gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 310px), 1fr))",
               gap: 20,
               marginTop: 24,
               alignItems: "stretch",
@@ -117,6 +117,7 @@ export default function ProgrammePricingAndDock({
                       : "#ffffff",
                     color: isProCard ? "#ffffff" : "#0f172a",
                     border: isProCard ? "2px solid #6d28d9" : "1px solid #e2e8f0",
+                    borderTop: isProCard ? "2px solid #6d28d9" : "4px solid #5142b5",
                     boxShadow: isProCard
                       ? "0 20px 44px -14px rgba(76, 29, 149, 0.42)"
                       : "0 10px 28px -14px rgba(15, 23, 42, 0.08)",
@@ -157,7 +158,7 @@ export default function ProgrammePricingAndDock({
                             color: "#ffffff",
                           }}
                         >
-                          Recommended
+                          Full Job Assistance
                         </span>
                       ) : (
                         <span
@@ -166,8 +167,8 @@ export default function ProgrammePricingAndDock({
                             fontWeight: 700,
                             padding: "4px 10px",
                             borderRadius: 999,
-                            background: tier.includesCareerOS ? "#f5f3ff" : "#f1f5f9",
-                            color: tier.includesCareerOS ? "#5142b5" : "#475569",
+                            background: "#f5f3ff",
+                            color: "#5142b5",
                           }}
                         >
                           {tier.shortBadge || "2-Month Free Internship"}
@@ -190,7 +191,7 @@ export default function ProgrammePricingAndDock({
                           color: isProCard ? "#ffffff" : "#0f172a",
                         }}
                       >
-                        â‚¹{tier.price.toLocaleString("en-IN")}
+                        ₹{tier.price.toLocaleString("en-IN")}
                       </strong>
                       <span
                         style={{
@@ -200,7 +201,7 @@ export default function ProgrammePricingAndDock({
                           fontWeight: 600,
                         }}
                       >
-                        â‚¹{tier.mrp.toLocaleString("en-IN")}
+                        ₹{tier.mrp.toLocaleString("en-IN")}
                       </span>
                     </div>
 
@@ -261,42 +262,9 @@ export default function ProgrammePricingAndDock({
                               marginTop: 1,
                             }}
                           >
-                            âœ“
+                            ✓
                           </span>
                           <span>{feat}</span>
-                        </div>
-                      ))}
-                      {(tier.notIncluded ?? []).map((nf) => (
-                        <div
-                          key={nf}
-                          style={{
-                            display: "flex",
-                            alignItems: "flex-start",
-                            gap: 9,
-                            fontSize: 12.5,
-                            lineHeight: 1.45,
-                            color: isProCard ? "rgba(255,255,255,0.55)" : "#94a3b8",
-                          }}
-                        >
-                          <span
-                            style={{
-                              width: 18,
-                              height: 18,
-                              borderRadius: "50%",
-                              background: "#f1f5f9",
-                              color: "#94a3b8",
-                              display: "inline-flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              fontSize: 10,
-                              fontWeight: 600,
-                              flexShrink: 0,
-                              marginTop: 1,
-                            }}
-                          >
-                            âœ•
-                          </span>
-                          <span>{nf}</span>
                         </div>
                       ))}
                     </div>
@@ -305,25 +273,56 @@ export default function ProgrammePricingAndDock({
               )
             })}
           </div>
+
           <div style={{ marginTop: 22, display: "grid", gap: 14 }}>
-            <div style={{ padding: "18px 20px", borderRadius: 14, background: "#ffffff", border: "1px solid #e2e8f0", borderTop: "3px solid #5142b5" }}>
-              <strong style={{ display: "block", fontSize: 15, color: "#0f172a", marginBottom: 10 }}>How Your 2-Month Complimentary Internship Works</strong>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 12, fontSize: 13, color: "#334155" }}>
-                <div><strong style={{ color: "#5142b5" }}>Step 1 · Learn & Practise:</strong> Complete 5 guided modules and browser lab tasks at your own pace.</div>
-                <div><strong style={{ color: "#5142b5" }}>Step 2 · 2-Month Guided Internship:</strong> Work on practical industry projects with mentor review.</div>
-                <div><strong style={{ color: "#5142b5" }}>Step 3 · Dual Certificates & Hiring:</strong> Receive your Course Certificate + 2-Month Internship Certificate (top performers eligible for direct hiring).</div>
+            <div
+              style={{
+                padding: "18px 20px",
+                borderRadius: 14,
+                background: "#ffffff",
+                border: "1px solid #e2e8f0",
+                borderTop: "3px solid #5142b5",
+              }}
+            >
+              <strong style={{ display: "block", fontSize: 15, color: "#0f172a", marginBottom: 10 }}>
+                How Your 2-Month Complimentary Internship Works
+              </strong>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 12, fontSize: 13, color: "#334155", lineHeight: 1.5 }}>
+                <div>
+                  <strong style={{ color: "#5142b5" }}>Step 1 · 5 Guided Modules:</strong> Learn concepts and practise in live browser labs at your own pace.
+                </div>
+                <div>
+                  <strong style={{ color: "#5142b5" }}>Step 2 · 2-Month Guided Internship:</strong> Build practical industry projects with mentor feedback.
+                </div>
+                <div>
+                  <strong style={{ color: "#5142b5" }}>Step 3 · Dual Certificates &amp; Hiring:</strong> Earn your Course Certificate + 2-Month Internship Certificate (top performers eligible for direct hiring).
+                </div>
               </div>
             </div>
-            <div style={{ padding: "12px 18px", borderRadius: 12, background: "#f8fafc", border: "1px solid #e2e8f0", display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: 10, fontSize: 13, color: "#334155" }}>
-              <span><strong>✓ 7-Day Refund Policy</strong> · Transparent cancellation within 7 days of enrolment</span>
+
+            <div
+              style={{
+                padding: "12px 18px",
+                borderRadius: 12,
+                background: "#f8fafc",
+                border: "1px solid #e2e8f0",
+                display: "flex",
+                flexWrap: "wrap",
+                justifyContent: "space-between",
+                alignItems: "center",
+                gap: 10,
+                fontSize: 13,
+                color: "#334155",
+              }}
+            >
+              <span><strong>✓ 7-Day Refund Policy</strong> · Transparent cancellation within 7 days</span>
               <span><strong>✓ Secure Checkout</strong> · PayU Verified Gateway (UPI / Cards / NetBanking)</span>
-              <span><strong>✓ Admissions Helpline:</strong> +91 6370044001 · support@skylent.live</span>
+              <span><strong>✓ Helpline:</strong> +91 6370044001 · support@skylent.live</span>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Programme FAQs Section (#pp-faq) */}
       <section className="pp-faq-band" id="pp-faq" aria-labelledby="pp-faq-title">
         <div className="sky-container">
           <div className="pp-faq-head">
@@ -340,25 +339,9 @@ export default function ProgrammePricingAndDock({
               </details>
             ))}
           </div>
-          <div style={{ marginTop: 22, display: "grid", gap: 14 }}>
-            <div style={{ padding: "18px 20px", borderRadius: 14, background: "#ffffff", border: "1px solid #e2e8f0", borderTop: "3px solid #5142b5" }}>
-              <strong style={{ display: "block", fontSize: 15, color: "#0f172a", marginBottom: 10 }}>How Your 2-Month Complimentary Internship Works</strong>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 12, fontSize: 13, color: "#334155" }}>
-                <div><strong style={{ color: "#5142b5" }}>Step 1 · Learn & Practise:</strong> Complete 5 guided modules and browser lab tasks at your own pace.</div>
-                <div><strong style={{ color: "#5142b5" }}>Step 2 · 2-Month Guided Internship:</strong> Work on practical industry projects with mentor review.</div>
-                <div><strong style={{ color: "#5142b5" }}>Step 3 · Dual Certificates & Hiring:</strong> Receive your Course Certificate + 2-Month Internship Certificate (top performers eligible for direct hiring).</div>
-              </div>
-            </div>
-            <div style={{ padding: "12px 18px", borderRadius: 12, background: "#f8fafc", border: "1px solid #e2e8f0", display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: 10, fontSize: 13, color: "#334155" }}>
-              <span><strong>✓ 7-Day Refund Policy</strong> · Transparent cancellation within 7 days of enrolment</span>
-              <span><strong>✓ Secure Checkout</strong> · PayU Verified Gateway (UPI / Cards / NetBanking)</span>
-              <span><strong>✓ Admissions Helpline:</strong> +91 6370044001 · support@skylent.live</span>
-            </div>
-          </div>
         </div>
       </section>
 
-      {/* Clean Floating Quick-Jump Bar */}
       <div className="pp-floating-dock-wrap" style={{ display: "none" }} aria-label="Quick programme section navigation">
         <nav className="pp-floating-dock">
           <button
@@ -367,13 +350,12 @@ export default function ProgrammePricingAndDock({
             aria-label="Scroll to top"
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
           >
-            â†‘
+            ↑
           </button>
           <a href="#pp-title">Overview</a>
           <a href="#pp-curriculum">Curriculum</a>
+          <a href="#pp-pricing" className="is-highlight">Pricing</a>
           <a href="#pp-stage">Workspace</a>
-          <a href="#pp-career">Career OS</a>
-          <a href="#pp-plans" className="is-highlight">Pricing</a>
           <a href="#pp-faq">FAQs</a>
           {canEnrol ? (
             <button
@@ -392,7 +374,7 @@ export default function ProgrammePricingAndDock({
               Enroll Now
             </Link>
           ) : (
-            <a href="#pp-plans" className="pp-floating-dock__cta" style={{ textDecoration: "none" }}>
+            <a href="#pp-pricing" className="pp-floating-dock__cta" style={{ textDecoration: "none" }}>
               Enroll Now
             </a>
           )}

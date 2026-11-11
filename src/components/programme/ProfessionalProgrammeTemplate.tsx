@@ -1,18 +1,5 @@
 /**
  * Authored programme page (structured EdTech Programme layout for all 6 tracks).
- *
- * Order:
- * 1. Above-the-fold 2-column Programme Hero:
- *    - Left column: Breadcrumb, Track & Status Badges, Programme Name Kicker, Outcome Headline,
- *      Lead Summary, 4-Card Key Metrics Grid, Tool Stack Pills, and Primary Actions.
- *    - Right column: Elevated Programme Enrolment & At-a-Glance Card with Live Workbench Preview,
- *      SpecSheet rail (Enrolment, Format & Role, You Start With), Included Features checklist, and Enrol CTA.
- * 2. Sticky Quick-Jump Programme Subnav (01 Live Workbench Ãƒâ€šÃ‚Â· 02 Capstone Roadmap Ãƒâ€šÃ‚Â· 03 Module Syllabus Ãƒâ€šÃ‚Â· 04 Practice Specs Ãƒâ€šÃ‚Â· 05 Proof & Career OS).
- * 3. Full-bleed Navy Interactive Workbench & Build Stage (#pp-stage).
- * 4. Structured 6-Step Capstone Project Roadmap Grid (#pp-capstone).
- * 5. Full-width EdTech Module & Lesson Syllabus Cards (#pp-curriculum).
- * 6. Practice Environment Spec Band (#pp-practice).
- * 7. Proof-of-Work Evidence Record, Deliverables Matrix & Career OS Status (#pp-evidence / #pp-career).
  */
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
@@ -27,7 +14,6 @@ import type { CatalogCurriculumModule, CatalogCurriculumNode, CatalogProgramDeta
 import { courseBySlug, courseLessonStats } from "../../lib/catalog-maturity"
 import { courseProductProfile } from "../../lib/course-product"
 import { authoredCourseCurriculum, curriculumHeading, effectiveProgrammePublicFacts } from "../../lib/public-catalogue-copy"
-import { truthOf, type Capability } from "../../lib/truth"
 import { useCatalogCourse } from "../../hooks/useCatalog"
 import { ArrowRight, SectionIndex, SpecSheet, TruthChip } from "../skylent/primitives"
 import { Reveal } from "../skylent/Reveal"
@@ -47,7 +33,6 @@ import type { AuthoredProgrammeContent, ProgrammeStep } from "./programme-conten
 import { plural, type ProgrammeTruth } from "./programme-truth"
 import "./ProfessionalProgrammeTemplate.css"
 import "../../pages/cine.css"
-import { openSkylentAi } from "../skylent/ai-events"
 import CatalogueNotice, { STATUS_NOT_CONFIRMED } from "./CatalogueNotice"
 import ProgrammePricingAndDock from "./ProgrammePricingAndDock"
 import photoAnalytics from "@/assets/site/home/program-analytics-800.webp"
@@ -88,28 +73,18 @@ type Props = {
   program: CatalogProgramDetail
   content: AuthoredProgrammeContent
   truth: ProgrammeTruth
-  /** Label and behaviour of the enrol action, decided by ProgramPage. */
   cta: string
   afterEnrol: string
   onEnrol: () => void
-  /** False when the page is drawn from the published record because the catalogue API is unreachable. */
   confirmed?: boolean
 }
 
-const CAREER_STATUS: Array<{ label: string; capability: Capability }> = [
-  { label: "Career profile", capability: "careerProfile" },
-  { label: "Projects and evidence", capability: "projectsAndEvidence" },
-  { label: "Certificates", capability: "certificates" },
-  { label: "Openings", capability: "openings" },
-]
-
-/** Titles are stored as "Kind ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â subject". The page prints them with a comma. */
 function displayTitle(title: string): string {
-  return title.replace(/\s+[ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬ÂÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“]\s+/g, ", ")
+  return title.replace(/\s+[—–]\s+/g, ", ")
 }
 
 function shortTitle(title: string): string {
-  return title.split(/\s+[ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬ÂÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“]\s+/)[0]
+  return title.split(/\s+[—–]\s+/)[0]
 }
 
 function nodeKind(nodeType: string): string {
@@ -160,17 +135,16 @@ function moduleCounts(module: CatalogCurriculumModule): string {
     checks ? plural(checks, "check") : "",
   ]
     .filter(Boolean)
-    .join(" Ãƒâ€šÃ‚Â· ")
+    .join(" · ")
 }
 
-function StepNote({ step, artefact }: { step: ProgrammeStep; artefact: AuthoredProgrammeContent["artefact"] }) {
+export function StepNote({ step, artefact }: { step: ProgrammeStep; artefact: AuthoredProgrammeContent["artefact"] }) {
   if (!step.note) return null
   if (step.note.kind === "trend") return artefact === "northwind" ? <NorthwindTrend /> : null
   if (step.note.kind === "own") return <span className="pp-step__note is-own">Written defense in your words</span>
   return <span className="pp-step__note">{step.note.text}</span>
 }
 
-/** The headline with its one cobalt phrase. Falls back to plain text when the phrase is not found. */
 export function SignalText({ text, signal }: { text: string; signal?: string }) {
   const at = signal ? text.indexOf(signal) : -1
   if (!signal || at < 0) return <>{text}</>
@@ -191,7 +165,7 @@ function Chevron() {
   )
 }
 
-export default function ProfessionalProgrammeTemplate({ program, content, truth, cta, afterEnrol, onEnrol, confirmed = true }: Props) {
+export default function ProfessionalProgrammeTemplate({ program, content, truth, afterEnrol, onEnrol, confirmed = true }: Props) {
   const course = useCatalogCourse(content.courseSlug)
   const authoredCourse = courseBySlug(content.courseSlug)
   const linkedAuthoredCourses = (program.linkedCourseSlugs ?? [])
@@ -234,7 +208,6 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
   const lessonCount = taught?.lessonCount ?? (course.data?.lessonCount ?? 0)
   const assignmentCount = countType(curriculum, "ASSIGNMENT")
   const checkCount = countType(curriculum, "QUIZ")
-  // The linked course request failed: its record (if shown) is the published copy, not the live catalogue.
   const courseUnconfirmed = !course.loading && (course.offline || Boolean(course.error))
   const verified = confirmed && !courseUnconfirmed
   const canEnrol = verified && truth.enrollable && !truth.comingLater
@@ -273,11 +246,11 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
   const practiceCopy = content.artefact === "northwind"
     ? "Northwind is an industry retail sales extract. Enrolled learners write and execute real SQL queries in the live lab to conduct an end-to-end commercial review."
     : content.artefact === "data-science"
-      ? "Combine SQL revenue cohort analysis with Python ETL validation and out-of-time churn modelling on real commercial extracts."
+      ? "Combine SQL revenue cohort analysis with Python ETL validation and churn modelling on real commercial extracts."
       : content.artefact === "full-stack"
         ? "Architect an idempotent payment settlement ledger with React state boundaries, Express REST APIs, and PostgreSQL row-level locking."
         : content.artefact === "genai-rag"
-          ? "Design an enterprise Grounded RAG pipeline with hybrid retrieval, deterministic citation gates, and adversarial prompt-injection guardrails."
+          ? "Design an enterprise Grounded RAG pipeline with hybrid retrieval, citation gates, and prompt guardrails."
           : "Harbor Desk is an applied operations case study. You conduct user research, frame the operational problem, and write a constrained product specification."
   const trackMeta = TRACK_ROLE_METADATA[program.slug] ?? TRACK_ROLE_METADATA[content.courseSlug] ?? TRACK_ROLE_METADATA["data-analytics"]
 
@@ -313,7 +286,6 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
   const closingSplit = closingLine.indexOf(": ")
   const closingSignal = closingSplit > 0 ? closingLine.slice(closingSplit + 2) : undefined
 
-  /* The page rail: the five things the page answers, each a jump to its section. */
   const jumps: Array<{ n: string; verb: string; what: string; href: string }> = [
     {
       n: "01",
@@ -321,14 +293,14 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
       what: courseReady && lessonCount > 0 ? `${plural(moduleCount, "module")}, ${plural(lessonCount, "lesson")}` : "5 modules, 15 lessons",
       href: "#pp-curriculum",
     },
-    { n: "02", verb: "Plans", what: "ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¹1,499 & ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¹11,999", href: "#pp-pricing" },
+    { n: "02", verb: "Plans", what: "₹1,499 & ₹11,999", href: "#pp-pricing" },
     { n: "03", verb: "Live Lab", what: "Browser Practice", href: "#pp-stage" },
     { n: "04", verb: "Projects", what: `${plural(content.evidence.rows.length, "project")} & internship`, href: "#pp-evidence" },
   ]
 
   const nextStepLabel = ["Next step", firstNode ? "Lesson 1" : "", firstNode ? nodeKind(firstNode.nodeType) : "", firstNode?.duration ?? ""]
     .filter(Boolean)
-    .join(" Ãƒâ€šÃ‚Â· ")
+    .join(" · ")
 
   return (
     <div className="pp-page">
@@ -346,7 +318,6 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
           </nav>
 
           <div className="pp-hero__split">
-            {/* Left Column: Course Title, Clear Career Outcome, Key Highlights, Industry Tools & Actions */}
             <div className="pp-hero__main">
               <div className="pp-hero__badges">
                 <span className="pp-badge pp-badge--track">
@@ -354,7 +325,7 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
                 </span>
                 {enrolChip}
                 <span className="pp-badge pp-badge--pilot">
-                  English + Hinglish Ãƒâ€šÃ‚Â· Self-Paced
+                  English + Hinglish · Self-Paced
                 </span>
               </div>
 
@@ -371,7 +342,7 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
                 <span style={{ fontSize: 12, fontWeight: 700, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.06em" }}>
                   Target Career Roles:
                 </span>
-                {trackMeta.roles.split(" Ãƒâ€šÃ‚Â· ").map((role) => (
+                {trackMeta.roles.split(" · ").map((role) => (
                   <span
                     key={role}
                     style={{
@@ -389,17 +360,17 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
                 ))}
               </div>
 
-              {/* 4-Card Key EdTech Programme Highlights */}
+              {/* 4-Card Key EdTech Programme Highlights (Zero Literal Quotes!) */}
               <div className="pp-metrics-grid" aria-label="Programme structure at a glance">
                 <div className="pp-metric-card" style={{ borderTop: "3px solid #5142b5" }}>
                   <span className="pp-metric-card__label">Duration &amp; Pace</span>
-                  <strong className="pp-metric-card__val">"2 Months (8 Weeks)"</strong>
-                  <span className="pp-metric-card__sub">{facts.format} Ãƒâ€šÃ‚Â· Flexible schedule</span>
+                  <strong className="pp-metric-card__val">2 Months (8 Weeks)</strong>
+                  <span className="pp-metric-card__sub">{facts.format} · + 2M Free Internship</span>
                 </div>
                 <div className="pp-metric-card" style={{ borderTop: "3px solid #5142b5" }}>
                   <span className="pp-metric-card__label">Curriculum</span>
                   <strong className="pp-metric-card__val">
-                    "5 Modules" Ãƒâ€šÃ‚Â· "15 Applied Lessons"
+                    {moduleCount > 0 ? `${moduleCount} Modules` : "5 Modules"} · {lessonCount > 0 ? `${lessonCount} Lessons` : "15 Lessons"}
                   </strong>
                   <span className="pp-metric-card__sub">Step-by-step guided modules</span>
                 </div>
@@ -412,12 +383,11 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
                 </div>
                 <div className="pp-metric-card" style={{ borderTop: "3px solid #5142b5" }}>
                   <span className="pp-metric-card__label">Certification</span>
-                  <strong className="pp-metric-card__val">Verified Certificate</strong>
+                  <strong className="pp-metric-card__val">Course + Internship</strong>
                   <span className="pp-metric-card__sub">Shareable on LinkedIn &amp; Resume</span>
                 </div>
               </div>
 
-              {/* Tools & Technologies Covered */}
               {toolPills.length > 0 ? (
                 <div className="pp-tools-bar" aria-label="Tools and skills covered">
                   <span className="pp-tools-bar__label">Tools &amp; Skills You Will Learn:</span>
@@ -435,7 +405,7 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
                           borderRadius: 8,
                         }}
                       >
-                        ÃƒÂ¢Ã…â€œÃ¢â‚¬Å“ {tool}
+                        ✓ {tool}
                       </span>
                     ))}
                   </div>
@@ -453,12 +423,12 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
                 <p className="pp-note">
                   {!verified
                     ? `${confirmed && courseUnconfirmed ? `${STATUS_NOT_CONFIRMED}. Enrolment is paused until the catalogue can be checked. ` : ""}${afterEnrol}`
-                    : "Instant access to Module 1, interactive browser labs, and mentor feedback Ãƒâ€šÃ‚Â· Plans starting at ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¹1,499."}
+                    : "Instant access to Module 1, browser labs, and 2-month complimentary internship · Plans: ₹1,499 & ₹11,999."}
                 </p>
               </div>
             </div>
 
-            {/* Right Column: Clean EdTech Course Preview & Enrolment Card (Coursera / Scaler Style) */}
+            {/* Right Column: Clean EdTech Course Preview & 2-Plan Enrolment Card */}
             <aside className="pp-hero__card" aria-label="Programme enrolment summary">
               <div
                 style={{
@@ -494,7 +464,7 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
                       gap: 6,
                     }}
                   >
-                    <span style={{ color: "#34d399" }}>ÃƒÂ¢Ã¢â‚¬â€Ã‚Â</span> Try Interactive Browser Lab ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬Å“
+                    <span style={{ color: "#34d399" }}>●</span> Try Interactive Browser Lab ↓
                   </a>
                 </div>
 
@@ -504,15 +474,15 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
                       <span style={{ fontSize: 11.5, fontWeight: 600, color: "#64748b", display: "block" }}>
                         Certification + 2-Month Internship
                       </span>
-                      <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
+                      <div style={{ display: "flex", alignItems: "baseline", gap: 8, flexWrap: "wrap" }}>
                         <strong style={{ fontSize: 26, fontWeight: 800, color: "#0f172a", fontFamily: "var(--font-display)" }}>
-                          ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¹1,499
+                          ₹1,499
                         </strong>
-                        <span style={{ fontSize: 12.5, color: "#5142b5", fontWeight: 600 }}>Ãƒâ€šÃ‚Â· Job Assistance: ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¹11,999</span>
+                        <span style={{ fontSize: 12.5, color: "#5142b5", fontWeight: 600 }}>· Job Assistance: ₹11,999</span>
                       </div>
                     </div>
                     <span style={{ padding: "4px 10px", borderRadius: 999, background: "#ecfdf5", border: "1px solid #a7f3d0", color: "#047857", fontSize: 11.5, fontWeight: 700 }}>
-                      ÃƒÂ¢Ã…â€œÃ¢â‚¬Å“ Open Now
+                      ✓ Open Now
                     </span>
                   </div>
 
@@ -520,34 +490,34 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
                     className="pp-rail"
                     rows={[
                       { label: "Status", value: enrolChip },
-                      { label: "Format", value: `${facts.format} Ãƒâ€šÃ‚Â· ${trackMeta.roles.split(" Ãƒâ€šÃ‚Â· ")[0]}` },
+                      { label: "Format", value: `${facts.format} · ${trackMeta.roles.split(" · ")[0]}` },
                       { label: "First Lesson", value: startsWith },
                     ]}
                   />
 
                   <ul className="pp-enrol-card__checks" style={{ marginTop: 14 }}>
                     <li>
-                      <span aria-hidden="true">ÃƒÂ¢Ã…â€œÃ¢â‚¬Å“</span>
+                      <span aria-hidden="true">✓</span>
                       <span><strong>{moduleCount || 5} modules &amp; {lessonCount || 15} lessons</strong> with English &amp; Hinglish study notes</span>
                     </li>
                     <li>
-                      <span aria-hidden="true">ÃƒÂ¢Ã…â€œÃ¢â‚¬Å“</span>
-                      <span><strong>Hands-on browser labs</strong> ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â zero software installation needed</span>
+                      <span aria-hidden="true">✓</span>
+                      <span><strong>2-Month Complimentary Internship</strong> with hands-on projects</span>
                     </li>
                     <li>
-                      <span aria-hidden="true">ÃƒÂ¢Ã…â€œÃ¢â‚¬Å“</span>
+                      <span aria-hidden="true">✓</span>
                       <span><strong>{content.evidence.rows.length} industry projects</strong> with faculty feedback</span>
                     </li>
                     <li>
-                      <span aria-hidden="true">ÃƒÂ¢Ã…â€œÃ¢â‚¬Å“</span>
-                      <span><strong>Verified Certificate</strong> &amp; Career OS job-board access</span>
+                      <span aria-hidden="true">✓</span>
+                      <span><strong>Course + Internship Certificates</strong> (Job Assistance option available)</span>
                     </li>
                   </ul>
 
                   <div className="pp-enrol-card__cta" style={{ marginTop: 16 }}>
                     {primaryAction}
                     <a className="sk-btn sk-btn-secondary" href="#pp-pricing">
-                      Compare Both Plans (ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¹1,499 & ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¹11,999)
+                      Compare Both Plans (₹1,499 &amp; ₹11,999)
                     </a>
                   </div>
                 </div>
@@ -576,7 +546,7 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
         </div>
       </div>
 
-      {/* Section 03: Structured Module-by-Module Curriculum Syllabus Cards */}
+      {/* Section 01: Structured Module-by-Module Curriculum Syllabus Cards */}
       <Reveal as="section" className="sky-container pp-section pp-section--end" id="pp-curriculum" aria-labelledby="pp-curriculum-title">
         <div className="pp-section-head">
           <div>
@@ -641,7 +611,7 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
                         </span>
                         <span className={`pp-mod__kind ${nodeKindClass(node.nodeType)}`}>
                           {nodeKind(node.nodeType)}
-                          {node.duration ? ` Ãƒâ€šÃ‚Â· ${node.duration}` : ""}
+                          {node.duration ? ` · ${node.duration}` : ""}
                         </span>
                       </li>
                     ))}
@@ -653,7 +623,7 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
         </div>
       </Reveal>
 
-
+      {/* Section 02: 2-Plan Pricing + 2-Month Internship Workflow + 7-Day Refund Trust Strip */}
       <ProgrammePricingAndDock
         programSlug={program.slug}
         courseSlug={content.courseSlug}
@@ -664,8 +634,7 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
         onEnrol={onEnrol}
       />
 
-
-      {/* Section 01: Interactive Workbench & Deliverable Stage on Navy */}
+      {/* Section 03: Interactive Browser Lab Preview */}
       <section className="sky-stage sky-band-navy pp-stage" id="pp-stage" aria-labelledby="pp-build-title">
         <div className="sky-container pp-stage__inner">
           <Reveal className="pp-build">
@@ -683,15 +652,13 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
                   </Link>
                 ) : workspaceAccess === "denied" ? (
                   <p className="pp-practice__wait">
-                    Included with your enrolment Ãƒâ€šÃ‚Â· Launches directly in your browser with pre-loaded datasets and zero local setup.
+                    Included with your enrolment · Launches directly in your browser with pre-loaded datasets and zero local setup.
                     <span style={{ position: "absolute", width: 1, height: 1, overflow: "hidden", clip: "rect(0,0,0,0)" }}>
                       Enrol in this programme to open the workspace. A new learner starts at Not started.
                     </span>
                   </p>
                 ) : null}
               </div>
-
-
             </div>
           </Reveal>
 
@@ -710,13 +677,13 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
               )}
             </div>
             <figcaption className="sky-stage__caption cine-in cine-in--fade cine-d6">
-              <span>{content.hero.figure} ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â {content.hero.figureNote}</span>
+              <span>{content.hero.figure} — {content.hero.figureNote}</span>
             </figcaption>
           </Reveal>
         </div>
       </section>
 
-
+      {/* Section 04: Projects & 2-Month Internship */}
       <section className="sky-band-proof pp-proof" id="pp-evidence" aria-labelledby="pp-evidence-title">
         <div className="sky-container">
           <Reveal className="pp-section-head" style={{ marginBottom: 24 }}>
@@ -736,7 +703,7 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
                   <div className="pp-port-card__top">
                     <span className="pp-port-card__num">PROJECT 0{idx + 1}</span>
                     <span className={row.capstone ? "pp-port-card__tag pp-port-card__tag--cap" : "pp-port-card__tag"}>
-                      {row.capstone ? "ÃƒÂ¢Ã‹Å“Ã¢â‚¬Â¦ Final Capstone" : "Module Project"}
+                      {row.capstone ? "★ Final Capstone" : "Module Project"}
                     </span>
                   </div>
                   <h4 className="pp-port-card__title">{shortTitle(lessonTitle(row.lessonId))}</h4>
@@ -784,7 +751,6 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
           </Reveal>
         </div>
       </section>
-
 
       {/* Next action: navy closing statement */}
       <section className="sky-stage sky-band-navy pp-next" aria-labelledby="pp-next-title">

@@ -1,6 +1,6 @@
-// Centralized Skylent demo data â€” replace with Supabase/API in production
+// Centralized Skylent demo data — replace with Supabase/API in production
 
-// â”€â”€â”€ COURSES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── COURSES ─────────────────────────────────────────────────────────────────
 export type CourseLesson = {
   id: string
   title: string
@@ -70,7 +70,7 @@ export const courses: Course[] = [
       { id: 'm2', title: 'Spreadsheet analysis', lessons: [
         { id: 'l4', title: 'Spreadsheet tables, types, and filters', type: 'notes', duration: '45 min', completed: false },
         { id: 'l5', title: 'Pivots, charts, and month-over-month', type: 'notes', duration: '50 min', completed: false },
-        { id: 'l6', title: 'Spreadsheet analysis â€” Northwind Q1â€“Q2', type: 'assignment', duration: '3 hr', completed: false },
+        { id: 'l6', title: 'Spreadsheet analysis — Northwind Q1–Q2', type: 'assignment', duration: '3 hr', completed: false },
       ]},
       { id: 'm3', title: 'SQL for Analysis', lessons: [
         { id: 'l7', title: 'SQL SELECT, WHERE, and aggregates', type: 'notes', duration: '50 min', completed: false },
@@ -80,11 +80,11 @@ export const courses: Course[] = [
       { id: 'm4', title: 'Dashboards', lessons: [
         { id: 'l10', title: 'Dashboards that answer one question', type: 'notes', duration: '45 min', completed: false },
         { id: 'l11', title: 'Measures, dimensions, and calculated fields', type: 'notes', duration: '45 min', completed: false },
-        { id: 'l12', title: 'Dashboard â€” one question Northwind can act on', type: 'assignment', duration: '4 hr', completed: false },
+        { id: 'l12', title: 'Dashboard — one question Northwind can act on', type: 'assignment', duration: '4 hr', completed: false },
       ]},
       { id: 'm5', title: 'Applied projects and capstone', lessons: [
-        { id: 'l13', title: 'SQL analysis â€” Northwind sales', type: 'assignment', duration: '3 hr', completed: false },
-        { id: 'l14', title: 'Capstone â€” Northwind commercial review', type: 'assignment', duration: '8 hr', completed: false },
+        { id: 'l13', title: 'SQL analysis — Northwind sales', type: 'assignment', duration: '3 hr', completed: false },
+        { id: 'l14', title: 'Capstone — Northwind commercial review', type: 'assignment', duration: '8 hr', completed: false },
         { id: 'l15', title: 'Final check', type: 'quiz', duration: '25 min', completed: false },
       ]},
     ],
@@ -102,8 +102,8 @@ export const courses: Course[] = [
     reviews: 0,
     price: 3999,
     originalPrice: 7999,
-    desc: 'Python outline: variables, pandas, and visualisation. Catalogue listing â€” thinner than Data Analytics.',
-    longDesc: 'Python is the language of data science. This course teaches you Python through practical, data-focused exercises â€” no prior programming experience needed.',
+    desc: 'Python outline: variables, pandas, and visualisation. Catalogue listing — thinner than Data Analytics.',
+    longDesc: 'Python is the language of data science. This course teaches you Python through practical, data-focused exercises — no prior programming experience needed.',
     outcomes: ['Write Python programs from scratch', 'Manipulate data with pandas', 'Visualise data with matplotlib and seaborn', 'Build 2 data analysis projects'],
     forWhom: ['Complete beginners to programming', 'Analysts wanting to add Python to their toolkit', 'Students building data science foundations'],
     modules: [
@@ -132,8 +132,8 @@ export const courses: Course[] = [
     reviews: 0,
     price: 5999,
     originalPrice: 12999,
-    desc: 'Prompting and LLM application outline. Catalogue listing â€” thinner than Data Analytics.',
-    longDesc: 'A hands-on Generative AI course â€” from prompt engineering fundamentals to building applications with LLMs, vector databases, and agent frameworks.',
+    desc: 'Prompting and LLM application outline. Catalogue listing — thinner than Data Analytics.',
+    longDesc: 'A hands-on Generative AI course — from prompt engineering fundamentals to building applications with LLMs, vector databases, and agent frameworks.',
     outcomes: ['Write effective prompts for production use cases', 'Build RAG systems with LangChain', 'Ship two LLM application projects', 'Understand LLM architectures', 'Deploy projects with clear evaluation criteria'],
     forWhom: ['Developers wanting to add AI to their stack', 'Product managers building AI products', 'Data scientists extending into LLMs'],
     modules: [
@@ -162,7 +162,7 @@ export const courses: Course[] = [
     reviews: 0,
     price: 2999,
     originalPrice: 5999,
-    desc: 'Power BI and DAX outline. Catalogue listing â€” thinner than Data Analytics.',
+    desc: 'Power BI and DAX outline. Catalogue listing — thinner than Data Analytics.',
     longDesc: 'The complete Power BI course covering data modelling, DAX formulas, dashboard design, and publishing reports for real business use cases.',
     outcomes: ['Import and transform data', 'Write DAX measures and calculations', 'Design professional dashboards', 'Publish and share reports'],
     forWhom: ['Business analysts', 'Finance professionals', 'Anyone working with business data'],
@@ -188,7 +188,7 @@ export const courses: Course[] = [
     price: 6999,
     originalPrice: 14999,
     desc: 'Learn product thinking, user evidence, problem framing, prioritisation, and specification on a fictional Harbor Retail operations case.',
-    longDesc: 'A written, practice-first Product Management course. You work a fictional Harbor Retail operations problem â€” messy store communication, missed exceptions, and a proposed shared inbox called Harbor Desk. You interview from case notes, frame a testable problem, choose one bet under constraints, and finish with a product-case recommendation. There is no video stream, no live classroom, no coding lab, no SQL, and no job or placement claim. Enrollment in this environment does not collect payment.',
+    longDesc: 'A written, practice-first Product Management course. You work a fictional Harbor Retail operations problem — messy store communication, missed exceptions, and a proposed shared inbox called Harbor Desk. You interview from case notes, frame a testable problem, choose one bet under constraints, and finish with a product-case recommendation. There is no video stream, no live classroom, no coding lab, no SQL, and no job or placement claim. Enrollment in this environment does not collect payment.',
     outcomes: [
       'Frame a product problem with evidence, not opinions',
       'Turn user interviews into jobs, constraints, and non-goals',
@@ -210,7 +210,7 @@ export const courses: Course[] = [
       { id: 'm2', title: 'Users and evidence', lessons: [
         { id: 'l4', title: 'Talking to users without leading them', type: 'notes', duration: '45 min', completed: false },
         { id: 'l5', title: 'Evidence, not opinions', type: 'notes', duration: '45 min', completed: false },
-        { id: 'l6', title: 'Research note â€” Harbor Desk interviews', type: 'assignment', duration: '3 hr', completed: false },
+        { id: 'l6', title: 'Research note — Harbor Desk interviews', type: 'assignment', duration: '3 hr', completed: false },
       ]},
       { id: 'm3', title: 'Framing', lessons: [
         { id: 'l7', title: 'Problem statements that can be tested', type: 'notes', duration: '45 min', completed: false },
@@ -220,11 +220,11 @@ export const courses: Course[] = [
       { id: 'm4', title: 'Prioritisation', lessons: [
         { id: 'l10', title: 'Opportunity versus solution', type: 'notes', duration: '45 min', completed: false },
         { id: 'l11', title: 'Choosing one bet', type: 'notes', duration: '45 min', completed: false },
-        { id: 'l12', title: 'Priority memo â€” Harbor Desk', type: 'assignment', duration: '3 hr', completed: false },
+        { id: 'l12', title: 'Priority memo — Harbor Desk', type: 'assignment', duration: '3 hr', completed: false },
       ]},
       { id: 'm5', title: 'Specification and product case', lessons: [
         { id: 'l13', title: 'Writing a specification someone can build', type: 'notes', duration: '50 min', completed: false },
-        { id: 'l14', title: 'Capstone â€” Harbor Desk product case', type: 'assignment', duration: '6 hr', completed: false },
+        { id: 'l14', title: 'Capstone — Harbor Desk product case', type: 'assignment', duration: '6 hr', completed: false },
         { id: 'l15', title: 'Final check', type: 'quiz', duration: '25 min', completed: false },
       ]},
     ],
@@ -255,7 +255,7 @@ export const courses: Course[] = [
       { id: 'm2', title: 'Typed REST APIs & Boundary Validation', lessons: [
         { id: 'l4', title: 'Zod Request Contracts & Structured Error Envelopes', type: 'notes', duration: '45 min', completed: false },
         { id: 'l5', title: 'Graceful Degradation & HTTP 503 Schema Readiness Guards', type: 'notes', duration: '45 min', completed: false },
-        { id: 'l6', title: 'Assignment â€” Transactional Ledger Schema & Zod API Contract', type: 'assignment', duration: '3 hr', completed: false },
+        { id: 'l6', title: 'Assignment — Transactional Ledger Schema & Zod API Contract', type: 'assignment', duration: '3 hr', completed: false },
       ]},
       { id: 'm3', title: 'Authentication, RBAC & Webhook Security', lessons: [
         { id: 'l7', title: 'HTTP-Only Sessions, CSRF Tokens & Password Reset Rotation', type: 'notes', duration: '45 min', completed: false },
@@ -265,11 +265,11 @@ export const courses: Course[] = [
       { id: 'm4', title: 'Resilient React Architecture & State Management', lessons: [
         { id: 'l10', title: 'Explicit Loading, Empty, Error & Stale-Request Abort States', type: 'notes', duration: '45 min', completed: false },
         { id: 'l11', title: 'Local Draft Persistence & Server Reconciliation', type: 'notes', duration: '45 min', completed: false },
-        { id: 'l12', title: 'Assignment â€” Webhook Replay Handler & React Rollback Spec', type: 'assignment', duration: '3 hr', completed: false },
+        { id: 'l12', title: 'Assignment — Webhook Replay Handler & React Rollback Spec', type: 'assignment', duration: '3 hr', completed: false },
       ]},
       { id: 'm5', title: 'Health Checks, CI Verification & Capstone', lessons: [
         { id: 'l13', title: 'Liveness vs Readiness Probes & Zero-Downtime Releases', type: 'notes', duration: '45 min', completed: false },
-        { id: 'l14', title: 'Capstone â€” Full-Stack Idempotent Wallet & Webhook Architecture', type: 'assignment', duration: '6 hr', completed: false },
+        { id: 'l14', title: 'Capstone — Full-Stack Idempotent Wallet & Webhook Architecture', type: 'assignment', duration: '6 hr', completed: false },
         { id: 'l15', title: 'Full-Stack Engineering Final Verification', type: 'quiz', duration: '25 min', completed: false },
       ]},
     ],
@@ -287,7 +287,7 @@ export const courses: Course[] = [
     reviews: 0,
     price: 5999,
     originalPrice: 11999,
-    desc: 'Design exploratory data pipelines, leakage-free feature engineering, and calibrated model evaluation rubrics. Catalogue listing â€” thinner than Data Analytics.',
+    desc: 'Design exploratory data pipelines, leakage-free feature engineering, and calibrated model evaluation rubrics. Catalogue listing — thinner than Data Analytics.',
     longDesc: 'A practical Data Science & AI course covering exploratory data analysis, point-in-time feature engineering, out-of-time model validation, probability calibration, and drift monitoring.',
     outcomes: [
       'Audit tabular cohorts for post-event target leakage',
@@ -308,7 +308,7 @@ export const courses: Course[] = [
       { id: 'm2', title: 'Feature Engineering & Cohort Signal', lessons: [
         { id: 'l4', title: 'Rolling Engagement Ratios & Behavioural Velocity Features', type: 'notes', duration: '45 min', completed: false },
         { id: 'l5', title: 'Handling Missingness, Censored Observations & Class Imbalance', type: 'notes', duration: '45 min', completed: false },
-        { id: 'l6', title: 'Assignment â€” Point-in-Time Feature & Leakage Audit Memo', type: 'assignment', duration: '3 hr', completed: false },
+        { id: 'l6', title: 'Assignment — Point-in-Time Feature & Leakage Audit Memo', type: 'assignment', duration: '3 hr', completed: false },
       ]},
       { id: 'm3', title: 'Model Benchmarking & Decision Thresholds', lessons: [
         { id: 'l7', title: 'Regularized Linear Baselines vs Gradient Boosted Trees', type: 'notes', duration: '45 min', completed: false },
@@ -318,18 +318,18 @@ export const courses: Course[] = [
       { id: 'm4', title: 'Probability Calibration & Subgroup Fairness', lessons: [
         { id: 'l10', title: 'Reliability Diagrams, Brier Score & Platt/Isotonic Calibration', type: 'notes', duration: '45 min', completed: false },
         { id: 'l11', title: 'Subgroup Error Slicing Across SMB & Enterprise Tiers', type: 'notes', duration: '45 min', completed: false },
-        { id: 'l12', title: 'Assignment â€” Retention ROI & Calibration Specification', type: 'assignment', duration: '3 hr', completed: false },
+        { id: 'l12', title: 'Assignment — Retention ROI & Calibration Specification', type: 'assignment', duration: '3 hr', completed: false },
       ]},
       { id: 'm5', title: 'Production Drift Monitoring & Capstone', lessons: [
         { id: 'l13', title: 'Population Stability Index (PSI) & Shadow Deployment', type: 'notes', duration: '45 min', completed: false },
-        { id: 'l14', title: 'Capstone â€” Customer Churn Cohort & Out-of-Time Validation Case', type: 'assignment', duration: '6 hr', completed: false },
+        { id: 'l14', title: 'Capstone — Customer Churn Cohort & Out-of-Time Validation Case', type: 'assignment', duration: '6 hr', completed: false },
         { id: 'l15', title: 'Final Data Science & Validation Check', type: 'quiz', duration: '25 min', completed: false },
       ]},
     ],
   },
 ]
 
-// â”€â”€â”€ PROGRAMS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── PROGRAMS ────────────────────────────────────────────────────────────────
 export type PricingTier = {
   name: string
   price: number
@@ -450,14 +450,14 @@ export const programs: Program[] = [
     ],
     faqs: [
       { q: 'Do I need prior programming experience?', a: 'A basic familiarity with any programming language helps, but we begin from Python fundamentals. Learners from engineering, mathematics, or science backgrounds adapt well.' },
-      { q: 'How many hours per week does this require?', a: 'Plan for 10â€“15 hours per week â€” including recorded modules, assignments, and project work.' },
-      { q: 'Is Career OS included?', a: 'Yes. Career OS is where you keep your profile and learning evidence. Interview preparation and a job board appear when roles are published. This is career preparation â€” not a placement guarantee.' },
+      { q: 'How many hours per week does this require?', a: 'Plan for 10–15 hours per week — including recorded modules, assignments, and project work.' },
+      { q: 'Is Career OS included?', a: 'Yes. Career OS is where you keep your profile and learning evidence. Interview preparation and a job board appear when roles are published. This is career preparation — not a placement guarantee.' },
       { q: 'What if I have questions while studying?', a: 'Use the LMS workspace to work through recorded modules and assignments. A live classroom and faculty Q&A layer is a later phase.' },
-      { q: 'What certification do I receive?', a: 'Completing the program and passing the final assessment establishes certificate eligibility. Issuance, download, and public verification are a later phase â€” there is no live verifiable credential ID yet.' },
+      { q: 'What certification do I receive?', a: 'Completing the program and passing the final assessment establishes certificate eligibility. Issuance, download, and public verification are a later phase — there is no live verifiable credential ID yet.' },
     ],
     faculty: [
-      { name: 'Faculty Lead Â· Data Science', role: 'Program Lead', expertise: 'Machine Learning & Applied AI', placeholder: true },
-      { name: 'Industry Mentor Â· ML Engineering', role: 'Mentor', expertise: 'MLOps & Model Deployment', placeholder: true },
+      { name: 'Faculty Lead · Data Science', role: 'Program Lead', expertise: 'Machine Learning & Applied AI', placeholder: true },
+      { name: 'Industry Mentor · ML Engineering', role: 'Mentor', expertise: 'MLOps & Model Deployment', placeholder: true },
     ],
     pricing: [
       { name: 'Self-paced', price: 29999, originalPrice: 59999, features: ['All recorded content', 'Curriculum in the LMS', 'Self-paced projects', 'Certificate eligibility (later phase)', 'Community access'] },
@@ -519,7 +519,7 @@ export const programs: Program[] = [
       { q: 'Do I need a technical background?', a: 'No. This program is specifically designed for non-technical learners. We start from Excel and build up through SQL, Python, and Power BI step by step.' },
       { q: 'Is this suitable for working professionals?', a: 'Yes. Recorded modules and project work can be paced around your schedule. A live classroom layer is planned, not shipping yet.' },
       { q: 'What jobs does this program prepare me for?', a: 'Common roles include Data Analyst, Business Analyst, BI Analyst, and Reporting Analyst across industries like e-commerce, banking, consulting, and operations.' },
-      { q: 'Is Career OS included?', a: 'Yes. Career OS is where you keep your profile and learning evidence. Interview preparation and a job board appear when roles are published. This is career preparation â€” not a placement guarantee.' },
+      { q: 'Is Career OS included?', a: 'Yes. Career OS is where you keep your profile and learning evidence. Interview preparation and a job board appear when roles are published. This is career preparation — not a placement guarantee.' },
     ],
     pricing: [
       { name: 'Self-paced', price: 19999, originalPrice: 39999, features: ['All recorded content', 'Curriculum in the LMS', 'Self-paced projects', 'Certificate eligibility (later phase)', 'Community access'] },
@@ -536,7 +536,7 @@ export const programs: Program[] = [
     format: 'Self-paced',
     cert: 'Professional Certificate',
     outcome: 'Full Stack Developer',
-    desc: 'Advertised as a 9-month full-stack pathway. The live LMS today is the Full Stack Web Development listing â€” thinner than Data Analytics. There is no live classroom.',
+    desc: 'Advertised as a 9-month full-stack pathway. The live LMS today is the Full Stack Web Development listing — thinner than Data Analytics. There is no live classroom.',
     upcomingBatch: '8 September 2026',
     programType: 'PROFESSIONAL',
     level: 'Intermediate',
@@ -579,9 +579,9 @@ export const programs: Program[] = [
     ],
     faqs: [
       { q: 'Do I need prior coding experience?', a: 'No prior experience is required. We start from the very basics of HTML and build up to deploying full applications over 9 months.' },
-      { q: 'How is this different from self-learning?', a: 'Structured curriculum, project reviews in the LMS, and a community of learners â€” plus Career OS to keep your evidence. Live classroom delivery is a later phase.' },
+      { q: 'How is this different from self-learning?', a: 'Structured curriculum, project reviews in the LMS, and a community of learners — plus Career OS to keep your evidence. Live classroom delivery is a later phase.' },
       { q: 'What kind of jobs will I be qualified for?', a: 'Junior Full Stack Developer, Frontend Developer, Backend Developer, and Associate Software Engineer roles across product and service companies.' },
-      { q: 'Is Career OS included?', a: 'Yes. Keep your profile and learning evidence in Career OS. This is career preparation â€” not a placement guarantee.' },
+      { q: 'Is Career OS included?', a: 'Yes. Keep your profile and learning evidence in Career OS. This is career preparation — not a placement guarantee.' },
     ],
     pricing: [
       { name: 'Self-paced', price: 24999, originalPrice: 49999, features: ['All recorded content', 'Curriculum in the LMS', 'Projects', 'Certificate eligibility (later phase)', 'Community'] },
@@ -598,7 +598,7 @@ export const programs: Program[] = [
     format: 'Self-paced',
     cert: 'Specialization',
     outcome: 'AI/ML Engineer',
-    desc: 'Advertised as a 4-month Generative AI pathway. The live LMS today is the Generative AI course listing â€” thinner than Data Analytics. There is no live classroom.',
+    desc: 'Advertised as a 4-month Generative AI pathway. The live LMS today is the Generative AI course listing — thinner than Data Analytics. There is no live classroom.',
     upcomingBatch: '22 August 2026',
     programType: 'PROFESSIONAL',
     level: 'Intermediate',
@@ -625,7 +625,7 @@ export const programs: Program[] = [
       { number: '03', title: 'RAG Architecture', description: 'Retrieval-augmented generation: chunking, embeddings, vector stores, retrieval strategies, and evaluation.', duration: '4 weeks' },
       { number: '04', title: 'AI Application Development', description: 'Building end-to-end AI apps with LangChain, LlamaIndex, and streaming APIs.', duration: '3 weeks' },
       { number: '05', title: 'Production & Evaluation', description: 'Testing LLM systems, handling hallucinations, latency, cost, and deploying with FastAPI and Docker.', duration: '2 weeks' },
-      { number: '06', title: 'Capstone Projects', description: 'Three AI product builds with mentor review â€” portfolio-ready and deployable.', duration: '3 weeks' },
+      { number: '06', title: 'Capstone Projects', description: 'Three AI product builds with mentor review — portfolio-ready and deployable.', duration: '3 weeks' },
     ],
     projectsDetail: [
       { title: 'Document Q&A System', what: 'Build a RAG-based question-answering system over a private document corpus with source attribution', skills: ['LangChain', 'ChromaDB', 'OpenAI API', 'FastAPI'], difficulty: 'Intermediate' },
@@ -634,7 +634,7 @@ export const programs: Program[] = [
     ],
     learningExperience: [
       'Recorded modules covering LLMs, prompting, and application patterns',
-      'Hands-on coding in every module â€” no passive watching',
+      'Hands-on coding in every module — no passive watching',
       'Project builds in the LMS with a documented architecture',
       'Keep your learning evidence in Career OS',
     ],
@@ -642,7 +642,7 @@ export const programs: Program[] = [
       { q: 'What prior knowledge do I need?', a: 'Comfortable Python programming is required. Familiarity with basic ML concepts is helpful but not mandatory.' },
       { q: 'Does this cover open-source models as well as commercial APIs?', a: 'Yes. We cover both OpenAI and Anthropic APIs as well as open-weight models like Llama and Mistral.' },
       { q: 'How quickly is this content updated?', a: 'The generative AI space moves fast. We update module content and add new sessions as the field evolves.' },
-      { q: 'Is Career OS included?', a: 'Yes. Keep your profile and learning evidence in Career OS. This is career preparation â€” not a placement guarantee.' },
+      { q: 'Is Career OS included?', a: 'Yes. Keep your profile and learning evidence in Career OS. This is career preparation — not a placement guarantee.' },
     ],
     pricing: [
       { name: 'Self-paced', price: 14999, originalPrice: 29999, features: ['All recorded content', 'Curriculum in the LMS', 'Projects', 'Certificate eligibility (later phase)'] },
@@ -701,10 +701,10 @@ export const programs: Program[] = [
       'Keep your learning evidence in Career OS',
     ],
     faqs: [
-      { q: 'Do I need a technical background?', a: 'No. While engineers who transition to PM have strong technical credibility, the program is designed for learners from any background â€” business, design, or technical.' },
+      { q: 'Do I need a technical background?', a: 'No. While engineers who transition to PM have strong technical credibility, the program is designed for learners from any background — business, design, or technical.' },
       { q: 'What companies do Skylent PM graduates join?', a: 'We do not publish placement data we cannot verify. Our focus is on giving you the skills and preparation to compete for PM roles on your own merit.' },
-      { q: 'How is the program structured?', a: 'Recorded modules and case-study practice are available in the LMS. A live classroom layer is planned for a later phase â€” it is not a live product today.' },
-      { q: 'Is Career OS included?', a: 'Yes. Keep your profile and learning evidence in Career OS. This is career preparation â€” not a placement guarantee.' },
+      { q: 'How is the program structured?', a: 'Recorded modules and case-study practice are available in the LMS. A live classroom layer is planned for a later phase — it is not a live product today.' },
+      { q: 'Is Career OS included?', a: 'Yes. Keep your profile and learning evidence in Career OS. This is career preparation — not a placement guarantee.' },
     ],
     pricing: [
       { name: 'Self-paced', price: 17999, originalPrice: 35999, features: ['Recorded sessions', 'Curriculum in the LMS', 'Case studies', 'Certificate eligibility (later phase)'] },
@@ -713,7 +713,7 @@ export const programs: Program[] = [
     ],
   },
 
-  // â”€â”€â”€ EXAM PREP â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ─── EXAM PREP ─────────────────────────────────────────────────────────────
   {
     slug: 'jee-advanced-prep',
     name: 'JEE Advanced Preparation',
@@ -723,13 +723,13 @@ export const programs: Program[] = [
     format: 'Self-paced',
     cert: 'Completion Certificate',
     outcome: 'JEE Advanced preparation',
-    desc: 'JEE Advanced outline â€” not open yet. Classroom sessions, mocks, and faculty are not available in this product today.',
+    desc: 'JEE Advanced outline — not open yet. Classroom sessions, mocks, and faculty are not available in this product today.',
     upcomingBatch: 'November 2026',
     programType: 'EXAM_PREP',
     level: 'Advanced',
     enrollmentStatus: 'coming_soon',
     careerSupport: false,
-    examPattern: 'JEE Advanced: 3 hours, 3 papers. Physics, Chemistry, Mathematics â€” objective and numerical questions. Negative marking applies.',
+    examPattern: 'JEE Advanced: 3 hours, 3 papers. Physics, Chemistry, Mathematics — objective and numerical questions. Negative marking applies.',
     examSections: ['Physics', 'Chemistry', 'Mathematics'],
     whoIsItFor: [
       'Class 11 and 12 students targeting IIT and NIT admissions',
@@ -745,7 +745,7 @@ export const programs: Program[] = [
     ],
     curriculumDetail: [
       {
-        number: '01', title: 'Physics', description: 'Complete JEE Advanced Physics syllabus â€” concept classes, solved examples, and progressive practice sets from topic-level to exam-level difficulty.', duration: '12 months (parallel)',
+        number: '01', title: 'Physics', description: 'Complete JEE Advanced Physics syllabus — concept classes, solved examples, and progressive practice sets from topic-level to exam-level difficulty.', duration: '12 months (parallel)',
         topics: ['Mechanics', 'Heat & Thermodynamics', 'Electrostatics', 'Current Electricity', 'Magnetism', 'Optics', 'Modern Physics'],
       },
       {
@@ -753,7 +753,7 @@ export const programs: Program[] = [
         topics: ['Physical Chemistry', 'Organic Chemistry', 'Inorganic Chemistry', 'Reaction Mechanisms', 'Stoichiometry'],
       },
       {
-        number: '03', title: 'Mathematics', description: 'Calculus, Algebra, Coordinate Geometry, Vectors and 3D, and Probability â€” emphasis on concept clarity and multi-step problem solving.', duration: '12 months (parallel)',
+        number: '03', title: 'Mathematics', description: 'Calculus, Algebra, Coordinate Geometry, Vectors and 3D, and Probability — emphasis on concept clarity and multi-step problem solving.', duration: '12 months (parallel)',
         topics: ['Calculus (Differential & Integral)', 'Algebra & Complex Numbers', 'Coordinate Geometry', 'Vectors & 3D Geometry', 'Probability & Statistics'],
       },
     ],
@@ -771,9 +771,9 @@ export const programs: Program[] = [
       { q: 'Is there a test series included?', a: 'Yes. Chapter tests, part tests, and full-length mock tests are included. Each test comes with detailed performance analytics.' },
     ],
     faculty: [
-      { name: 'Physics Faculty Â· JEE', role: 'Physics', expertise: 'Mechanics, Optics, Modern Physics', placeholder: true },
-      { name: 'Chemistry Faculty Â· JEE', role: 'Chemistry', expertise: 'Physical & Organic Chemistry', placeholder: true },
-      { name: 'Mathematics Faculty Â· JEE', role: 'Mathematics', expertise: 'Calculus, Algebra, Coordinate Geometry', placeholder: true },
+      { name: 'Physics Faculty · JEE', role: 'Physics', expertise: 'Mechanics, Optics, Modern Physics', placeholder: true },
+      { name: 'Chemistry Faculty · JEE', role: 'Chemistry', expertise: 'Physical & Organic Chemistry', placeholder: true },
+      { name: 'Mathematics Faculty · JEE', role: 'Mathematics', expertise: 'Calculus, Algebra, Coordinate Geometry', placeholder: true },
     ],
     pricing: [
       { name: 'Foundation', price: 39999, originalPrice: 79999, features: ['All recorded content', 'Chapter tests', 'Practice sets', 'Certificate eligibility (later phase)'] },
@@ -789,7 +789,7 @@ export const programs: Program[] = [
     format: 'Self-paced',
     cert: 'Completion Certificate',
     outcome: 'CAT exam preparation',
-    desc: 'CAT outline â€” not open yet. Classroom sessions, mock exams, and GD-PI coaching are not available in this product today.',
+    desc: 'CAT outline — not open yet. Classroom sessions, mock exams, and GD-PI coaching are not available in this product today.',
     upcomingBatch: 'January 2027',
     programType: 'EXAM_PREP',
     level: 'Advanced',
@@ -811,15 +811,15 @@ export const programs: Program[] = [
     ],
     curriculumDetail: [
       {
-        number: 'S1', title: 'VARC â€” Verbal Ability & Reading Comprehension', description: 'RC passage analysis, vocabulary in context, Para Jumbles, Para Summary, and Odd Sentence. Speed reading and inference techniques for 99th percentile accuracy.', duration: '9 months (parallel)',
+        number: 'S1', title: 'VARC — Verbal Ability & Reading Comprehension', description: 'RC passage analysis, vocabulary in context, Para Jumbles, Para Summary, and Odd Sentence. Speed reading and inference techniques for 99th percentile accuracy.', duration: '9 months (parallel)',
         topics: ['Reading Comprehension', 'Para Jumbles', 'Para Summary', 'Verbal Ability', 'Critical Reasoning'],
       },
       {
-        number: 'S2', title: 'DILR â€” Data Interpretation & Logical Reasoning', description: 'Tables, bar charts, line graphs, pie charts, caselets â€” and Logical Reasoning set types including arrangements, networks, and scheduling.', duration: '9 months (parallel)',
+        number: 'S2', title: 'DILR — Data Interpretation & Logical Reasoning', description: 'Tables, bar charts, line graphs, pie charts, caselets — and Logical Reasoning set types including arrangements, networks, and scheduling.', duration: '9 months (parallel)',
         topics: ['DI: Tables & Charts', 'DI: Caselets', 'LR: Arrangements', 'LR: Networks', 'LR: Scheduling & Routes'],
       },
       {
-        number: 'S3', title: 'QA â€” Quantitative Ability', description: 'Arithmetic, Algebra, Geometry & Mensuration, Number System, Modern Math (PnC, Probability, Set Theory). Emphasis on speed, shortcuts, and identifying solvable vs. time-sink questions.', duration: '9 months (parallel)',
+        number: 'S3', title: 'QA — Quantitative Ability', description: 'Arithmetic, Algebra, Geometry & Mensuration, Number System, Modern Math (PnC, Probability, Set Theory). Emphasis on speed, shortcuts, and identifying solvable vs. time-sink questions.', duration: '9 months (parallel)',
         topics: ['Arithmetic', 'Algebra', 'Geometry & Mensuration', 'Number System', 'PnC & Probability'],
       },
     ],
@@ -833,12 +833,12 @@ export const programs: Program[] = [
     faqs: [
       { q: 'Is this for working professionals?', a: 'Yes. The program is structured around a live + recorded format so working professionals can attend sessions in the evening and catch up via recordings.' },
       { q: 'How many mock tests are included?', a: 'The full prep track includes 30 full-length mock CATs plus unlimited sectional tests. Every mock comes with detailed percentile and accuracy analytics.' },
-      { q: 'Is GD-PI preparation included?', a: 'Yes â€” for students who receive interview calls, a GD-PI preparation module is included in the Full Prep track.' },
+      { q: 'Is GD-PI preparation included?', a: 'Yes — for students who receive interview calls, a GD-PI preparation module is included in the Full Prep track.' },
     ],
     faculty: [
-      { name: 'VARC Faculty Â· CAT', role: 'VARC', expertise: 'Reading Comprehension & Verbal Ability', placeholder: true },
-      { name: 'DILR Faculty Â· CAT', role: 'DILR', expertise: 'Data Interpretation & Logical Reasoning', placeholder: true },
-      { name: 'QA Faculty Â· CAT', role: 'Quantitative Ability', expertise: 'Arithmetic, Algebra, Geometry', placeholder: true },
+      { name: 'VARC Faculty · CAT', role: 'VARC', expertise: 'Reading Comprehension & Verbal Ability', placeholder: true },
+      { name: 'DILR Faculty · CAT', role: 'DILR', expertise: 'Data Interpretation & Logical Reasoning', placeholder: true },
+      { name: 'QA Faculty · CAT', role: 'Quantitative Ability', expertise: 'Arithmetic, Algebra, Geometry', placeholder: true },
     ],
     pricing: [
       { name: 'Foundation', price: 24999, originalPrice: 49999, features: ['All recorded content', 'Sectional tests', 'Practice sets', 'Certificate eligibility (later phase)'] },
@@ -846,7 +846,7 @@ export const programs: Program[] = [
     ],
   },
 
-  // â”€â”€â”€ CERTIFICATE PROGRAMS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ─── CERTIFICATE PROGRAMS ──────────────────────────────────────────────────
   {
     slug: 'sql-certificate',
     name: 'SQL for Business Analytics',
@@ -856,7 +856,7 @@ export const programs: Program[] = [
     format: 'Self-paced',
     cert: 'Certificate of Completion',
     outcome: 'SQL-fluent Analyst',
-    desc: 'SQL certificate outline â€” not open yet. There is no linked LMS course for this programme.',
+    desc: 'SQL certificate outline — not open yet. There is no linked LMS course for this programme.',
     upcomingBatch: 'Enroll anytime',
     programType: 'CERTIFICATE',
     level: 'Beginner to Intermediate',
@@ -870,17 +870,17 @@ export const programs: Program[] = [
     ],
     whatYouWillLearn: [
       'SELECT, WHERE, GROUP BY, and aggregate functions',
-      'JOIN types: INNER, LEFT, RIGHT, FULL â€” when and how to use each',
+      'JOIN types: INNER, LEFT, RIGHT, FULL — when and how to use each',
       'Subqueries, CTEs, and query organisation for readability',
       'Window functions: RANK, ROW_NUMBER, LAG, LEAD',
       'Business reporting patterns: cohorts, funnels, rolling averages',
     ],
     curriculumDetail: [
       { number: '01', title: 'SQL Foundations', description: 'Database structure, SELECT statements, filtering with WHERE, and sorting results.', duration: '1 week', topics: ['SELECT & FROM', 'WHERE & AND/OR', 'ORDER BY & LIMIT', 'NULL handling'] },
-      { number: '02', title: 'Aggregation & Grouping', description: 'COUNT, SUM, AVG, MIN, MAX â€” and using GROUP BY and HAVING for summary analysis.', duration: '1 week', topics: ['Aggregate functions', 'GROUP BY', 'HAVING', 'DISTINCT'] },
-      { number: '03', title: 'Joins', description: 'Connecting tables with INNER, LEFT, RIGHT, and FULL JOINs â€” and understanding when to use each.', duration: '1.5 weeks', topics: ['INNER JOIN', 'LEFT JOIN', 'Multiple joins', 'Self-join patterns'] },
+      { number: '02', title: 'Aggregation & Grouping', description: 'COUNT, SUM, AVG, MIN, MAX — and using GROUP BY and HAVING for summary analysis.', duration: '1 week', topics: ['Aggregate functions', 'GROUP BY', 'HAVING', 'DISTINCT'] },
+      { number: '03', title: 'Joins', description: 'Connecting tables with INNER, LEFT, RIGHT, and FULL JOINs — and understanding when to use each.', duration: '1.5 weeks', topics: ['INNER JOIN', 'LEFT JOIN', 'Multiple joins', 'Self-join patterns'] },
       { number: '04', title: 'Subqueries & CTEs', description: 'Nested queries, correlated subqueries, and Common Table Expressions for readable, modular SQL.', duration: '1 week', topics: ['Subqueries in WHERE/FROM', 'Correlated subqueries', 'WITH clause CTEs', 'Recursive CTEs'] },
-      { number: '05', title: 'Window Functions & Reporting', description: 'ROW_NUMBER, RANK, DENSE_RANK, LAG, LEAD, and PARTITION BY â€” the building blocks for business analytics reporting.', duration: '1.5 weeks', topics: ['ROW_NUMBER & RANK', 'LAG & LEAD', 'Running totals', 'Cohort & funnel queries'] },
+      { number: '05', title: 'Window Functions & Reporting', description: 'ROW_NUMBER, RANK, DENSE_RANK, LAG, LEAD, and PARTITION BY — the building blocks for business analytics reporting.', duration: '1.5 weeks', topics: ['ROW_NUMBER & RANK', 'LAG & LEAD', 'Running totals', 'Cohort & funnel queries'] },
     ],
     projectsDetail: [
       { title: 'E-Commerce Analytics Report', what: 'Write SQL queries to analyse a retail dataset: revenue trends, top products, customer cohorts, and churn indicators', skills: ['Joins', 'Window Functions', 'CTEs', 'Aggregation'], difficulty: 'Intermediate' },
@@ -897,7 +897,7 @@ export const programs: Program[] = [
   },
 ]
 
-// â”€â”€â”€ WORKSHOPS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── WORKSHOPS ────────────────────────────────────────────────────────────────
 export type Workshop = {
   slug: string
   title: string
@@ -947,7 +947,7 @@ export const workshops: Workshop[] = [
     duration: '1 day',
     mode: 'Online',
     instructor: 'Skylent Faculty',
-    desc: 'SQL, Python, statistics, and case interviews â€” the full data job interview preparation in one intensive session.',
+    desc: 'SQL, Python, statistics, and case interviews — the full data job interview preparation in one intensive session.',
     whatYouGet: ['200+ interview questions', 'Mock interview practice (illustrative)', 'SQL and Python drill', 'Case study walkthrough'],
   },
   {
@@ -962,7 +962,7 @@ export const workshops: Workshop[] = [
   },
 ]
 
-// â”€â”€â”€ BLOG POSTS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── BLOG POSTS ────────────────────────────────────────────────────────────────
 export type BlogPost = {
   slug: string
   title: string
@@ -976,14 +976,14 @@ export type BlogPost = {
 export const blogPosts: BlogPost[] = [
   {
     slug: 'llms-and-education',
-    title: 'How LLMs are changing the way students learn â€” and what education platforms need to do about it',
+    title: 'How LLMs are changing the way students learn — and what education platforms need to do about it',
     category: 'Technology',
     date: '7 August 2026',
     readTime: '6 min read',
     excerpt: 'Large language models are not a replacement for teaching. But they are changing the relationship between a student, a concept, and the moment of understanding.',
     body: `Large language models are not a replacement for teaching. But they are fundamentally changing the relationship between a student, a concept, and the moment of understanding.
 
-For decades, the bottleneck in education has been access â€” access to a patient teacher, access to instant feedback, access to a clear explanation of exactly the concept you don't understand yet.
+For decades, the bottleneck in education has been access — access to a patient teacher, access to instant feedback, access to a clear explanation of exactly the concept you don't understand yet.
 
 LLMs remove that bottleneck. A student stuck on a statistics problem at 11pm can now get a clear explanation in seconds. A learner who needs the same concept explained five different ways can receive all five immediately.
 
@@ -991,7 +991,7 @@ What this means for education platforms is not that content becomes worthless. I
 
 The platforms that will survive this shift are the ones that understand their job is no longer to deliver information. Their job is to design the conditions under which understanding happens.
 
-That means structured progression, not random access. It means projects that require synthesis, not recall. It means mentorship that corrects for what an LLM cannot see â€” the student's real-world context, their career goals, their blind spots.
+That means structured progression, not random access. It means projects that require synthesis, not recall. It means mentorship that corrects for what an LLM cannot see — the student's real-world context, their career goals, their blind spots.
 
 Skylent was built around this principle before LLMs made it obvious. The question we have always asked is not "how do we teach more content?" but "how do we reliably produce a skilled, employable person from where this student is today?"
 
@@ -1012,7 +1012,7 @@ What we can explain is why the Data Analytics programme is built the way it is.
 
 **Spreadsheets are treated as real analysis tooling.** Much commercial analysis happens in a spreadsheet before it ever reaches a dashboard. The programme treats that as a skill rather than a step people are expected to already know.
 
-**The dataset is built like commercial data, not a tutorial dataset.** Northwind is synthetic, but it has customers, orders, suppliers, discounts, and the kind of untidiness a tutorial dataset removes. That is the point â€” cleaning and reconciling the data is part of the work, not a preamble to it.
+**The dataset is built like commercial data, not a tutorial dataset.** Northwind is synthetic, but it has customers, orders, suppliers, discounts, and the kind of untidiness a tutorial dataset removes. That is the point — cleaning and reconciling the data is part of the work, not a preamble to it.
 
 **The output is an argument, not a chart.** The capstone is a commercial review: what the data says, what you would do about it, and what you are still uncertain about. Producing a dashboard that looks finished is easier than defending what it means.
 
@@ -1020,7 +1020,7 @@ None of this predicts an outcome for any individual. It describes what the progr
   },
   {
     slug: 'building-a-portfolio',
-    title: 'Why most data portfolios fail â€” and what a good one actually looks like',
+    title: 'Why most data portfolios fail — and what a good one actually looks like',
     category: 'Career',
     date: '28 July 2026',
     readTime: '7 min read',
@@ -1037,13 +1037,13 @@ A strong project starts with a question before it starts with a dataset. "Why do
 
 **Second: it shows the thinking, not just the output.**
 
-A good portfolio project includes a brief explanation of why you chose the approach you chose. What did you consider and reject? What did you discover that surprised you? A recruiter looking at your portfolio wants to see evidence that there is a person thinking behind the code â€” not just a person who can copy and run cells.
+A good portfolio project includes a brief explanation of why you chose the approach you chose. What did you consider and reject? What did you discover that surprised you? A recruiter looking at your portfolio wants to see evidence that there is a person thinking behind the code — not just a person who can copy and run cells.
 
 **Third: it is a coherent body of work, not a list of completed courses.**
 
-Three well-documented, genuinely interesting projects that demonstrate range â€” data collection, analysis, visualisation, communication of insight â€” are worth more than fifteen notebooks that prove you have completed fifteen courses.
+Three well-documented, genuinely interesting projects that demonstrate range — data collection, analysis, visualisation, communication of insight — are worth more than fifteen notebooks that prove you have completed fifteen courses.
 
-This is the standard Skylent programmes are designed against. The capstone is a named piece of work produced against real material, and the evidence you keep records the decisions you made â€” not just the cells you ran.
+This is the standard Skylent programmes are designed against. The capstone is a named piece of work produced against real material, and the evidence you keep records the decisions you made — not just the cells you ran.
 
 That is the difference between a body of work and a repository that proves you have internet access.`,
   },
@@ -1060,7 +1060,7 @@ It is almost never the right question.
 
 The technology is almost never the barrier to modern learning outcomes. The barriers are curriculum design, faculty enablement, and a clear definition of what a "good outcome" looks like for every student who goes through a program.
 
-A university can deploy the most sophisticated learning management system available. If the curriculum is designed around what is easy to teach rather than what prepares students for the workforce, the LMS will deliver exactly what it always has â€” a slightly more digital version of the same experience.
+A university can deploy the most sophisticated learning management system available. If the curriculum is designed around what is easy to teach rather than what prepares students for the workforce, the LMS will deliver exactly what it always has — a slightly more digital version of the same experience.
 
 The institutional direction Skylent is building toward is not primarily software. It is an outcome-first design process that starts from one question: "What should a student be able to do after completing this programme?" Then the curriculum is designed backward from that answer.
 
@@ -1070,12 +1070,12 @@ To be clear about where this stands: institutional deployment is a direction, no
   },
   {
     slug: 'career-os-approach',
-    title: "Why career placement isn't a service â€” it's a system",
+    title: "Why career placement isn't a service — it's a system",
     category: 'Industry',
     date: '14 July 2026',
     readTime: '4 min read',
     excerpt: "Most edtech platforms treat career support as a feature added at the end of a course. We built it into the beginning.",
-    body: `Most education platforms treat career support as a feature bolted on at the end â€” a few job listings, a resume template, a WhatsApp group.
+    body: `Most education platforms treat career support as a feature bolted on at the end — a few job listings, a resume template, a WhatsApp group.
 
 The problem is that career outcomes are not produced by career services. They are produced by the quality of the learning and the depth of the work you actually did.
 
@@ -1087,11 +1087,11 @@ The chain is deliberate. You learn something. You practise it. You build a named
 
 What that means in practice: Career OS has nothing to show you until you have produced something. It is not a feed that fills itself with activity. If the opportunities surface is empty, no partner has published a role, and we would rather show you an empty surface than an invented one.
 
-We are not claiming this guarantees a job. We are claiming the sequence is the right way round â€” work first, then evidence, then the conversation about what is next.`,
+We are not claiming this guarantees a job. We are claiming the sequence is the right way round — work first, then evidence, then the conversation about what is next.`,
   },
 ]
 
-// â”€â”€â”€ JOBS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── JOBS ─────────────────────────────────────────────────────────────────────
 /**
  * Intentionally absent. Career OS is a learner workspace, not a job board, and
  * Skylent does not invent employers, salaries, or openings. Real roles reach the
@@ -1099,7 +1099,7 @@ We are not claiming this guarantees a job. We are claiming the sequence is the r
  * partner has published a role, that surface stays empty.
  */
 
-// â”€â”€â”€ SUCCESS STORIES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── SUCCESS STORIES ──────────────────────────────────────────────────────────
 /** Unpublished. StoriesPage refuses unverified names, salaries, and placement claims. */
 export const stories: Array<{
   name: string
@@ -1112,7 +1112,7 @@ export const stories: Array<{
   program: string
 }> = []
 
-// â”€â”€â”€ DEMO USERS (for role dashboard switcher) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── DEMO USERS (for role dashboard switcher) ─────────────────────────────────
 /** Role identities only. No learner counts, cohort sizes, or tenant totals are invented. */
 export const demoUsers = [
   { role: 'student' as const, name: 'Demo Learner', email: 'learner@demo.skylent.in', avatar: 'DL' },
@@ -1121,7 +1121,7 @@ export const demoUsers = [
   { role: 'superadmin' as const, name: 'Demo Admin', email: 'admin@demo.skylent.in', avatar: 'DA' },
 ]
 
-// â”€â”€â”€ LABS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── LABS ─────────────────────────────────────────────────────────────────────
 
 export type LabExperimentStatus = 'not_started' | 'in_progress' | 'submitted' | 'completed'
 export type LabType = 'coding' | 'data' | 'business' | 'simulation'
@@ -1150,7 +1150,7 @@ export type LabSubject = {
 }
 
 export const labSubjects: LabSubject[] = [
-  // â”€â”€ Data Centric AI â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Data Centric AI ────────────────────────────────────────────────────────
   {
     id: 'data-centric-ai-python',
     program: 'Data Centric AI',
@@ -1225,7 +1225,7 @@ export const labSubjects: LabSubject[] = [
       },
       {
         id: 'exp-py-5', number: 5,
-        title: 'Exploratory Data Analysis â€” End-to-End',
+        title: 'Exploratory Data Analysis — End-to-End',
         objective: 'Conduct a full EDA pipeline from raw data ingestion to insight communication.',
         type: 'data', duration: '90 min',
         instructions: [
@@ -1351,10 +1351,10 @@ export const labSubjects: LabSubject[] = [
           'Track the cost function over iterations and plot convergence.',
           'Tune the learning rate and observe its effect on convergence.',
           'Compare your implementation output with sklearn LinearRegression.',
-          'Report MSE and RÂ² for both implementations.',
+          'Report MSE and R² for both implementations.',
         ],
-        tasks: ['Implement gradient descent manually', 'Plot cost vs iterations for 3 learning rates', 'Compare manual vs sklearn predictions', 'Report MSE and RÂ² metrics on test set'],
-        expectedOutcome: 'Matching MSE and RÂ² scores between manual implementation and sklearn, with convergence plots.',
+        tasks: ['Implement gradient descent manually', 'Plot cost vs iterations for 3 learning rates', 'Compare manual vs sklearn predictions', 'Report MSE and R² metrics on test set'],
+        expectedOutcome: 'Matching MSE and R² scores between manual implementation and sklearn, with convergence plots.',
       },
       {
         id: 'exp-ml-2', number: 2,
@@ -1417,12 +1417,12 @@ export const labSubjects: LabSubject[] = [
           'Apply learning curve analysis to diagnose bias vs variance.',
           'Produce a final model evaluation report.',
         ],
-        tasks: ['Implement 5-fold CV manually and compare with sklearn', 'Compute mean Â± std for accuracy across folds', 'Plot learning curve for bias-variance diagnosis', 'Write a 150-word model evaluation report'],
+        tasks: ['Implement 5-fold CV manually and compare with sklearn', 'Compute mean ± std for accuracy across folds', 'Plot learning curve for bias-variance diagnosis', 'Write a 150-word model evaluation report'],
         expectedOutcome: 'Cross-validation results table and learning curve plot with written evaluation report.',
       },
     ],
   },
-  // â”€â”€ BCA Full Stack Development â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── BCA Full Stack Development ─────────────────────────────────────────────
   {
     id: 'bca-fullstack-web-tech',
     program: 'BCA Full Stack Development',
@@ -1605,7 +1605,7 @@ export const labSubjects: LabSubject[] = [
       },
     ],
   },
-  // â”€â”€ MBA â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── MBA ────────────────────────────────────────────────────────────────────
   {
     id: 'mba-business-analytics',
     program: 'MBA',
@@ -1641,7 +1641,7 @@ export const labSubjects: LabSubject[] = [
           'Identify potential predictor variables: advertising spend, seasonality, price index.',
           'Check for multicollinearity using a correlation matrix.',
           'Build a multiple regression model and interpret coefficients.',
-          'Evaluate the model using RÂ², adjusted RÂ², and RMSE.',
+          'Evaluate the model using R², adjusted R², and RMSE.',
           'Forecast next two quarters using the fitted model.',
         ],
         tasks: ['Identify 3 predictor variables with justification', 'Build and evaluate the regression model', 'Interpret each coefficient in business terms', 'Forecast next 2 quarters with confidence intervals'],
@@ -1655,7 +1655,7 @@ export const labSubjects: LabSubject[] = [
         instructions: [
           'Load the provided transaction dataset with customer ID, date, and amount.',
           'Compute Recency, Frequency, and Monetary values for each customer.',
-          'Score each dimension on a 1â€“5 scale using quintile partitioning.',
+          'Score each dimension on a 1–5 scale using quintile partitioning.',
           'Assign customer segments: Champions, Loyal, At Risk, Lost.',
           'Calculate segment size and average revenue per segment.',
           'Recommend a marketing action for each of the 4 segments.',
@@ -1669,7 +1669,7 @@ export const labSubjects: LabSubject[] = [
         objective: 'Design an executive KPI dashboard that communicates business performance clearly.',
         type: 'business', duration: '75 min',
         instructions: [
-          'Review the provided business performance dataset for Q1â€“Q4.',
+          'Review the provided business performance dataset for Q1–Q4.',
           'Select 6 KPIs most relevant to the CEO audience.',
           'Create the dashboard layout with chart placeholders in Excel or Figma.',
           'Choose appropriate chart types for each KPI (bar, line, gauge, etc.).',
@@ -1740,7 +1740,7 @@ export const labSubjects: LabSubject[] = [
       },
       {
         id: 'exp-or-3', number: 3,
-        title: 'Queuing Theory â€” Bank Branch Simulation',
+        title: 'Queuing Theory — Bank Branch Simulation',
         objective: 'Model a bank branch queuing system and find the optimal number of tellers.',
         type: 'simulation', duration: '75 min',
         instructions: [
@@ -1772,7 +1772,7 @@ export const labSubjects: LabSubject[] = [
       },
     ],
   },
-  // â”€â”€ BBA â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── BBA ────────────────────────────────────────────────────────────────────
   {
     id: 'bba-financial-accounting',
     program: 'BBA',
@@ -1859,7 +1859,7 @@ export const labSubjects: LabSubject[] = [
     experiments: [
       {
         id: 'exp-mkt-1', number: 1,
-        title: 'Marketing Mix Analysis â€” The 4 Ps',
+        title: 'Marketing Mix Analysis — The 4 Ps',
         objective: 'Analyse and recommend a marketing mix for a new product launch.',
         type: 'business', duration: '80 min',
         instructions: [
@@ -1900,14 +1900,14 @@ export const labSubjects: LabSubject[] = [
           'Evaluate brand associations: attributes, benefits, attitudes.',
           'Assess perceived quality using online reviews and NPS proxy.',
           'Evaluate brand loyalty using customer retention indicators.',
-          'Score each dimension 1â€“10 and compute total brand equity score.',
+          'Score each dimension 1–10 and compute total brand equity score.',
         ],
         tasks: ['Score brand awareness, association, quality, and loyalty', 'Compute total brand equity score out of 40', 'Identify the brand\'s weakest equity dimension', 'Recommend 2 strategies to improve the weakest dimension'],
         expectedOutcome: 'A brand audit scorecard with total equity score and strategic recommendations for improvement.',
       },
     ],
   },
-  // â”€â”€ MCA â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── MCA ────────────────────────────────────────────────────────────────────
   {
     id: 'mca-algorithms',
     program: 'MCA',
@@ -1935,7 +1935,7 @@ export const labSubjects: LabSubject[] = [
       },
       {
         id: 'exp-algo-2', number: 2,
-        title: 'Graph Traversal â€” BFS and DFS',
+        title: 'Graph Traversal — BFS and DFS',
         objective: 'Implement BFS and DFS on a directed graph and find shortest paths.',
         type: 'coding', duration: '75 min',
         instructions: [
@@ -1951,7 +1951,7 @@ export const labSubjects: LabSubject[] = [
       },
       {
         id: 'exp-algo-3', number: 3,
-        title: 'Dynamic Programming â€” Knapsack Problem',
+        title: 'Dynamic Programming — Knapsack Problem',
         objective: 'Solve the 0/1 knapsack problem using dynamic programming and reconstruct the selected items.',
         type: 'coding', duration: '70 min',
         instructions: [
@@ -2042,7 +2042,7 @@ export const labSubjects: LabSubject[] = [
       },
     ],
   },
-  // â”€â”€ M.Com Fintech â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── M.Com Fintech ──────────────────────────────────────────────────────────
   {
     id: 'mcom-fintech-digital-payments',
     program: 'M.Com Fintech',
@@ -2161,7 +2161,7 @@ export const labSubjects: LabSubject[] = [
       },
     ],
   },
-  // â”€â”€ SSU Semester 3 â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── SSU Semester 3 ─────────────────────────────────────────────────────────
   {
     id: 'ssu-sem3-computer-networks',
     program: 'SSU Semester 3',
@@ -2296,7 +2296,7 @@ export const labSubjects: LabSubject[] = [
       },
     ],
   },
-  // â”€â”€ SSU Semester 5 â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── SSU Semester 5 ─────────────────────────────────────────────────────────
   {
     id: 'ssu-sem5-compiler-design',
     program: 'SSU Semester 5',

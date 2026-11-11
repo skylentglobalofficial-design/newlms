@@ -299,7 +299,7 @@ html[data-native-app="true"] .entry-top {
   }
 }
 
-/* â”€â”€ V98 Mobile Web & APK Compact One-Screen Login Polish (Zero Bottom Clipping) â”€â”€ */
+/* ── V98 Mobile Web & APK Compact One-Screen Login Polish (Zero Bottom Clipping) ── */
 html[data-native-app="true"] .entry-top {
   display: flex !important;
   min-height: 38px !important;
