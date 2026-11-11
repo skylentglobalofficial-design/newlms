@@ -229,7 +229,7 @@ function ProgrammeCard({ row, confirmed }: { row: Row; confirmed: boolean }) {
           <span className="pgx-card__title">{row.title}</span>
           <span className="pgx-card__line">{row.line}</span>
           <span className="pgx-card__footer" style={{ marginTop: "auto", paddingTop: 14 }}>
-            <span className="pgx-card__meta">2 Months · Free Internship</span>
+            <span className="pgx-card__meta">2 Months + Internship · From ₹1,499</span>
             <span className="pgx-card__go">
               Explore Programme <ArrowRight />
             </span>
@@ -316,21 +316,30 @@ export default function ProgramsPage() {
               <p className="pgx-sr">{intro}</p>
             </div>
 
-            <aside className="pgx-royal-hero-card" aria-label="Two programme plans">
-              <strong className="pgx-royal-hero-card__title">2 Simple Ways to Enrol</strong>
-              <span className="pgx-royal-hero-card__sub">Choose short-term certification with a 2-month internship, or our full Job Assistance track.</span>
-              <div className="pgx-royal-hero-card__metrics">
-                <div>
-                  <span>PLAN 1 · ₹1,499</span>
-                  <strong>Course + 2M Internship</strong>
+            <aside
+              aria-label="Two programme plans"
+              style={{
+                padding: "22px 24px",
+                borderRadius: 16,
+                background: "#ffffff",
+                border: "1px solid #e2e8f0",
+                borderTop: "4px solid #5142b5",
+                boxShadow: "0 12px 30px -16px rgba(15, 23, 42, 0.1)",
+                display: "grid",
+                gap: 12,
+              }}
+            >
+              <strong style={{ fontSize: 17, color: "#0f172a" }}>2 Simple Plans on Every Programme</strong>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                <div style={{ padding: "12px 14px", borderRadius: 12, background: "#f8fafc", border: "1px solid #e2e8f0" }}>
+                  <span style={{ display: "block", fontSize: 11, fontWeight: 700, color: "#5142b5" }}>CERTIFICATION + INTERNSHIP</span>
+                  <strong style={{ display: "block", fontSize: 20, color: "#0f172a", marginTop: 2 }}>₹1,499</strong>
+                  <span style={{ fontSize: 12, color: "#475569" }}>2 Months + Free Internship</span>
                 </div>
-                <div>
-                  <span>PLAN 2 · ₹11,999</span>
-                  <strong>Full Job Assistance</strong>
-                </div>
-                <div>
-                  <span>PRACTICE</span>
-                  <strong>Hands-On Projects</strong>
+                <div style={{ padding: "12px 14px", borderRadius: 12, background: "#f5f3ff", border: "1px solid #ddd6fe" }}>
+                  <span style={{ display: "block", fontSize: 11, fontWeight: 700, color: "#5142b5" }}>JOB ASSISTANCE TRACK</span>
+                  <strong style={{ display: "block", fontSize: 20, color: "#5142b5", marginTop: 2 }}>₹11,999</strong>
+                  <span style={{ fontSize: 12, color: "#475569" }}>Placement + Mock Interviews</span>
                 </div>
               </div>
             </aside>

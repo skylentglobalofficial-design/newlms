@@ -82,6 +82,38 @@ export function HomeHero({
               Explore Programmes
               <ArrowRight />
             </Link>
+            <a
+              className="sk-btn sk-btn-secondary hx-btn"
+              href="#programmes"
+              style={{ background: "#ffffff", border: "1px solid #cbd5e1", color: "#0f172a", fontWeight: 600 }}
+            >
+              View Plans (₹1,499 & ₹11,999)
+            </a>
+          </div>
+          <div
+            className="hx-rise"
+            style={{
+              marginTop: 24,
+              paddingTop: 18,
+              borderTop: "1px solid #e2e8f0",
+              display: "grid",
+              gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+              gap: 12,
+              maxWidth: 520,
+            }}
+          >
+            <div>
+              <strong style={{ display: "block", fontSize: 18, fontWeight: 800, color: "#0f172a" }}>2 Months</strong>
+              <span style={{ fontSize: 12.5, color: "#475569" }}>Course + Free Internship</span>
+            </div>
+            <div>
+              <strong style={{ display: "block", fontSize: 18, fontWeight: 800, color: "#5142b5" }}>₹1,499</strong>
+              <span style={{ fontSize: 12.5, color: "#475569" }}>Certification + Internship</span>
+            </div>
+            <div>
+              <strong style={{ display: "block", fontSize: 18, fontWeight: 800, color: "#0f172a" }}>₹11,999</strong>
+              <span style={{ fontSize: 12.5, color: "#475569" }}>Full Job Assistance</span>
+            </div>
           </div>
         </div>
         <div className="hxw-hero__visual hx-rise">
@@ -856,8 +888,8 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
                   to: "/programmes/data-analytics-pro",
                   category: "DATA ANALYTICS",
                   title: "Data Analytics",
-                  desc: "SQL, spreadsheets & BI dashboards with real business projects.",
-                  meta: "2 Months · Free Internship",
+                  desc: "Master SQL queries, spreadsheets & BI dashboards with hands-on business analytics projects.",
+                  meta: "2 Months + Internship · From ₹1,499",
                   img: photoAnalytics,
                   alt: "Data Analytics workspace preview",
                 },
@@ -867,8 +899,8 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
                   to: "/programmes/product-management",
                   category: "PRODUCT MANAGEMENT",
                   title: "Product Management",
-                  desc: "User research, product strategy & engineering PRDs.",
-                  meta: "2 Months · Free Internship",
+                  desc: "Master user research, product strategy, metrics & engineering PRDs with real case studies.",
+                  meta: "2 Months + Internship · From ₹1,499",
                   img: photoProduct,
                   alt: "Product Management studio preview",
                 },
@@ -878,8 +910,8 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
                   to: "/courses/python-programming",
                   category: "PYTHON & AUTOMATION",
                   title: "Python & Automation",
-                  desc: "Data automation, scripting & clean backend workflows.",
-                  meta: "2 Months · Free Internship",
+                  desc: "Build Python data automation scripts, validators & backend ETL workflows from scratch.",
+                  meta: "2 Months + Internship · From ₹1,499",
                   img: photoScience,
                   alt: "Python engineering workspace preview",
                 },
@@ -889,8 +921,8 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
                   to: "/programmes/data-science-ai",
                   category: "DATA SCIENCE",
                   title: "Data Science & AI",
-                  desc: "SQL analytics, Python pipelines & predictive cohort models.",
-                  meta: "2 Months · Free Internship",
+                  desc: "Combine SQL revenue analytics, Python data pipelines & cohort retention modelling.",
+                  meta: "2 Months + Internship · From ₹1,499",
                   img: photoClass,
                   alt: "Data Science cohort analysis preview",
                 },
@@ -900,8 +932,8 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
                   to: "/programmes/generative-ai-program",
                   category: "GENERATIVE AI",
                   title: "Generative AI",
-                  desc: "RAG assistants, prompt engineering & AI workflows.",
-                  meta: "2 Months · Free Internship",
+                  desc: "Build grounded RAG assistants, prompt workflows & practical AI applications in your browser.",
+                  meta: "2 Months + Internship · From ₹1,499",
                   img: photoCampusPg,
                   alt: "Generative AI evaluation preview",
                 },
@@ -911,9 +943,9 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
                   to: "/programmes/full-stack",
                   category: "FULL-STACK WEB",
                   title: "Full-Stack Web Development",
-                  desc: "React, TypeScript, Node APIs & PostgreSQL applications.",
-                  meta: "2 Months · Free Internship",
-                  img: heroStudent720,
+                  desc: "Build full-stack React + TypeScript interfaces, Node APIs & PostgreSQL database apps.",
+                  meta: "2 Months + Internship · From ₹1,499",
+                  img: photoScience,
                   alt: "Full-stack engineering preview",
                 },
               ].filter((item) => trackFilter === "all" || item.group === trackFilter).map((item) => (

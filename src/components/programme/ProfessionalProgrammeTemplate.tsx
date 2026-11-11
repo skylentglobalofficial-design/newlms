@@ -528,7 +528,7 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
       </section>
 
       {/* Sticky Programme Section Navigation Bar */}
-      <div className="pp-subnav-bar">
+      <div className="pp-subnav-bar" style={{ display: "none" }}>
         <div className="sky-container">
           <nav className="pp-jump" aria-label="On this page">
             <ol>
@@ -699,22 +699,43 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
           <Reveal>
             <div className="pp-portfolio-cards" aria-label="Visual portfolio deliverables">
               {content.evidence.rows.map((row, idx) => (
-                <div key={row.lessonId} className={row.capstone ? "pp-port-card pp-port-card--cap" : "pp-port-card"}>
-                  <div className="pp-port-card__top">
-                    <span className="pp-port-card__num">PROJECT 0{idx + 1}</span>
-                    <span className={row.capstone ? "pp-port-card__tag pp-port-card__tag--cap" : "pp-port-card__tag"}>
-                      {row.capstone ? "★ Final Capstone" : "Module Project"}
+                <div
+                  key={row.lessonId}
+                  style={{
+                    padding: "22px 24px",
+                    borderRadius: 16,
+                    background: "#ffffff",
+                    border: row.capstone ? "1.5px solid #5142b5" : "1px solid #e2e8f0",
+                    borderTop: "3px solid #5142b5",
+                    boxShadow: "0 8px 24px -14px rgba(15, 23, 42, 0.08)",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 10,
+                  }}
+                >
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
+                    <span style={{ fontSize: 11.5, fontWeight: 700, color: "#5142b5", letterSpacing: "0.05em" }}>
+                      PROJECT 0{idx + 1}
+                    </span>
+                    <span
+                      style={{
+                        fontSize: 11,
+                        fontWeight: 700,
+                        padding: "3px 10px",
+                        borderRadius: 999,
+                        background: row.capstone ? "#5142b5" : "#f5f3ff",
+                        color: row.capstone ? "#ffffff" : "#5142b5",
+                      }}
+                    >
+                      {row.capstone ? "★ Final Capstone" : "Hands-On Project"}
                     </span>
                   </div>
-                  <h4 className="pp-port-card__title">{shortTitle(lessonTitle(row.lessonId))}</h4>
-                  <div className="pp-port-card__block">
-                    <span>WHAT YOU BUILD</span>
-                    <p>{row.produce}</p>
-                  </div>
-                  <div className="pp-port-card__block pp-port-card__block--verify">
-                    <span>SKILLS VERIFIED</span>
-                    <p>{row.reviewer}</p>
-                  </div>
+                  <h4 style={{ margin: 0, fontSize: 17.5, fontWeight: 700, color: "#0f172a" }}>
+                    {shortTitle(lessonTitle(row.lessonId)).replace(/^Project\s*\d+:\s*/i, "")}
+                  </h4>
+                  <p style={{ margin: 0, fontSize: 14, color: "#475569", lineHeight: 1.55 }}>
+                    {row.produce}
+                  </p>
                 </div>
               ))}
             </div>
