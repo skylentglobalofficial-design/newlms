@@ -599,7 +599,7 @@ export function InsideProgramme() {
             </h2>
           </div>
           <p className="hx-head__aside">
-            Interactive labs and SQL/code sandboxes live right inside each course — click through the 5 stages below to see how you learn and build inside Skylent OS.
+            Interactive labs and code sandboxes live right inside each course — click through the 5 stages below to see how you learn and build on Skylent.
           </p>
         </header>
         <div className="hx-app hx-app--split">

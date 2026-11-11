@@ -98,7 +98,7 @@ const LAUNCH_TRACKS = [
     badge: "TRACK 01 · DATA ANALYTICS",
     fee: "₹99 Entry → +99 Reward Coins",
     title: "Northwind SQL Margin & Cohort Live Workshop",
-    desc: "Query 166 validated Northwind retail rows in your browser, isolate category discount leakage, and write a 3-point commercial recommendation.",
+    desc: "Practise multi-table SQL joins, revenue analysis, and business reporting live in your browser.",
     lab: "Northwind SQL Lab · Zero Setup",
     to: "/courses/data-analytics",
   },
@@ -122,28 +122,28 @@ const LAUNCH_TRACKS = [
 
 const CASE_STORE_ITEMS = [
   {
-    coins: "49 Elixir",
+    coins: "49 Coins",
     kind: "Case study · Data Analytics",
     title: "Northwind Margin & Discount Leakage Case Study",
     desc: "Full SQL solution queries, cohort margin breakdown tables, and exemplar executive memo.",
     to: "/dashboard/student",
   },
   {
-    coins: "49 Elixir",
+    coins: "49 Coins",
     kind: "Case study · Product Management",
     title: "Harbor Desk Weekend Exception Queue PRD Case",
     desc: "Complete 18-interview synthesis matrix, trade-off rubric, and 6-week engineering PRD.",
     to: "/dashboard/student",
   },
   {
-    coins: "99 Elixir",
+    coins: "99 Coins",
     kind: "Flagship case · SaaS Retention",
     title: "Enterprise B2B SaaS Onboarding & Churn Case Study",
     desc: "End-to-end 90-day activation bottleneck teardown — redeemable with a single ₹99 workshop cashback.",
     to: "/dashboard/student",
   },
   {
-    coins: "39 Elixir",
+    coins: "39 Coins",
     kind: "Playbook notes · SQL",
     title: "E-Commerce SQL Cohort & Retention Playbook",
     desc: "Reusable window-function patterns, repeat-purchase SQL templates, and grain-fanout checks.",
@@ -298,7 +298,7 @@ export default function EventsPage() {
               <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10 }}>
                 {[
                   ["STEP 01", "Register for ₹99", "90-min weekend sprint"],
-                  ["STEP 02", "Get +99 Elixir", "Instant wallet credit"],
+                  ["STEP 02", "Get +99 Coins", "Instant wallet credit"],
                   ["STEP 03", "Unlock Cases", "Redeem in dashboard"],
                 ].map(([step, head, sub]) => (
                   <div key={step} style={{ padding: "10px 12px", borderRadius: 12, background: "#F8FAFC", border: "1px solid #E2E8F0" }}>
@@ -496,7 +496,7 @@ export default function EventsPage() {
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 6 }}>
                       <span style={{ padding: "4px 10px", borderRadius: 999, background: "#DCFCE7", border: "1px solid #86EFAC", color: "#15803D", fontSize: 11.5, fontWeight: 600 }}>
-                        ₹99 → +99 Elixir
+                        ₹99 → +99 Coins
                       </span>
                       <span style={{ fontSize: 12, fontWeight: 700, color: "#5142B5" }}>
                         {event.spotsRemaining === 0

@@ -162,7 +162,7 @@ export default function CareerOSPublicPage() {
                 Turn your coursework and 2-month internship into <em>a job-ready portfolio.</em>
               </h1>
               <p className="cpx-lead">
-                Resumes claim skills; Career OS proves them. As you execute SQL queries, Python pipelines, and product specs in Skylent OS, Career OS compiles your graded artefacts, 5-dimension rubric scores, and public `/verify` credentials into one recruiter-verifiable dossier.
+                Resumes claim skills; Career OS proves them. As you execute SQL queries, Python pipelines, and product specs in Skylent OS, Career OS compiles your graded artefacts, 5-dimension rubric scores, and public /verify credentials into one recruiter-verifiable dossier.
               </p>
               <div className="hx-hero__actions">
                 <Link className="sk-btn sk-btn-primary hx-btn" to="/signup">
