@@ -159,7 +159,7 @@ export default function CareerOSPublicPage() {
             <div className="cpx-hero__inner">
               <p className="hx-eyebrow hx-eyebrow--dark">Career OS · Verified Proof-of-Work &amp; Role Readiness</p>
               <h1 id="cpx-title" className="cpx-h1">
-                Turn your lab work and capstones into <em>verifiable hiring proof.</em>
+                Turn your coursework and 2-month internship into <em>a job-ready portfolio.</em>
               </h1>
               <p className="cpx-lead">
                 Resumes claim skills; Career OS proves them. As you execute SQL queries, Python pipelines, and product specs in Skylent OS, Career OS compiles your graded artefacts, 5-dimension rubric scores, and public `/verify` credentials into one recruiter-verifiable dossier.
@@ -227,17 +227,17 @@ export default function CareerOSPublicPage() {
             <div className="cpx-pillars" aria-label="Career OS 3-Pillar Architecture">
               <div className="cpx-pillar">
                 <span>01 · Execute in Skylent OS Labs</span>
-                <strong>Build Real Artefacts, Not Attendance Badges</strong>
+                <strong>Real Projects & 2-Month Internship</strong>
                 <p>Write real SQL queries on 166 retail rows, scope 6-week engineering PRDs, and run LLM accuracy evaluations inside browser sandboxes.</p>
               </div>
               <div className="cpx-pillar">
                 <span>02 · Pass the 60% Merit Gate</span>
-                <strong>Unlock Career Rise &amp; V1 → V2 Faculty Review</strong>
+                <strong>Mentor Feedback &amp; Portfolio Review</strong>
                 <p>Reach 60% course completion to unlock Career Rise, Guided Mock Interview Defense, and human faculty red-line critique on your capstone.</p>
               </div>
               <div className="cpx-pillar">
                 <span>03 · Share Verifiable Proof</span>
-                <strong>Public Flight Recorder on /verify</strong>
+                <strong>Verified Certificate & Internship Proof</strong>
                 <p>Attach your cryptographically verifiable SKL certificate and saved work samples so hiring teams can inspect your actual execution in one click.</p>
               </div>
             </div>

@@ -78,7 +78,7 @@ export default function AboutPage() {
                 Practical technical education built on <em>hands-on browser labs and real projects.</em>
               </h1>
               <p className="abx-lead">
-                Headquartered in Bhubaneswar, Odisha, Skylent combines structured self-paced coursework, zero-setup browser labs, 20-minute human Faculty TA support, and cryptographically verifiable Proof-of-Work dossiers into one unified operating system for learners and universities across India.
+                Headquartered in Bhubaneswar, Odisha, Skylent bridges the gap between education and employment — combining practical browser labs, a 2-month complimentary internship for every learner, and dedicated job assistance for students and colleges across India.
               </p>
               <div className="hx-hero__actions" style={{ marginTop: 22 }}>
                 <Link className="sk-btn sk-btn-primary hx-btn" to="/programmes">
@@ -159,8 +159,8 @@ export default function AboutPage() {
                 </div>
                 <div>
                   <span>5 Competency Levels</span>
-                  <strong>L1 Foundation → L5 Mastery</strong>
-                  <p>Weighted 5-dimension rubric grading Knowledge, Execution, Judgement, Defence &amp; Revision.</p>
+                  <strong>Course + 2-Month Internship</strong>
+                  <p>Every track includes hands-on projects, mentor feedback, and a 2-month complimentary internship.</p>
                 </div>
               </div>
             </div>

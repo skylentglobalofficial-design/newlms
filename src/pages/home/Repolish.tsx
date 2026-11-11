@@ -101,7 +101,7 @@ export function HomeHero({
 
             <div className="hxw-ws" aria-label="Skylent OS workspace summary">
               <div className="hxw-ws__top">
-                <span className="hxw-ws__mark" aria-hidden="true">OS</span>
+                <span className="hxw-ws__mark" aria-hidden="true">✓</span>
                 <div>
                   <span className="hxw-ws__title">Hands-On Labs + 2-Month Internship</span>
                   <span className="hxw-ws__note">Certification Plan (₹1,499) · Job Assistance Track (₹11,999)</span>
