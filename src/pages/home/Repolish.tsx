@@ -73,7 +73,7 @@ export function HomeHero({
           </h1>
           <span className="hx-sr" style={{ display: "none" }}>Learn. Practise. Build. <em>Prove it.</em> Interactive SQL &amp; Python practice</span>
           <p className="hxw-hero__lead hx-rise" style={{ marginTop: 14, marginBottom: 24 }}>
-            Learn in live browser labs with a 2-month complimentary internship, or choose our dedicated Job Assistance track.
+            Learn in live browser labs with a real-world industry case studies, browser labs & guided internship projects, or choose our dedicated Job Assistance track.
           </p>
           <p className="hx-sr" aria-live="polite">{availability}</p>
 
