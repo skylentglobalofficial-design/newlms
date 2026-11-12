@@ -747,7 +747,7 @@ const FOCUS_FACE: Record<string, { title: string; image: string; width: number; 
     width: 800,
     height: 530,
     alt: "Illustrative analytics charts.",
-    line: "Interactive SQL practice on the Northwind sales extract, 15 written lessons, and a commercial review capstone.",
+    line: "Interactive SQL practice on the Northwind sales extract, 15 interactive lessons, and a commercial review capstone.",
   },
   "product-management": {
     title: "Product Management",
@@ -755,7 +755,7 @@ const FOCUS_FACE: Record<string, { title: string; image: string; width: number; 
     width: 800,
     height: 534,
     alt: "Illustrative product working session.",
-    line: "Harbor Desk operations case workspace, 15 written lessons, and a constrained product specification.",
+    line: "Harbor Desk operations case workspace, 15 interactive lessons, and a constrained product specification.",
   },
   "data-science-ai": {
     title: "Data Science & AI",
@@ -951,8 +951,43 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
               ].filter((item) => trackFilter === "all" || item.group === trackFilter).map((item) => (
                 <li key={item.slug}>
                   <Link to={item.to} className="hx-live-course-card">
-                    <span className="hx-live-course-card__media">
-                      <img src={item.img} alt={item.alt} width={800} height={530} loading="lazy" decoding="async" />
+                    <span className="hx-live-course-card__media" style={{ position: "relative" }}>
+                      <img
+                        src={item.img}
+                        alt={item.alt}
+                        width={800}
+                        height={530}
+                        loading="lazy"
+                        decoding="async"
+                        style={item.slug === "full-stack-web" ? { objectPosition: "left center", filter: "hue-rotate(-14deg) saturate(1.08)" } : undefined}
+                      />
+                      <span
+                        style={{
+                          position: "absolute",
+                          left: 12,
+                          bottom: 10,
+                          padding: "4px 10px",
+                          borderRadius: 999,
+                          background: "rgba(15, 23, 42, 0.84)",
+                          backdropFilter: "blur(6px)",
+                          color: "#ffffff",
+                          fontSize: 11,
+                          fontWeight: 600,
+                          letterSpacing: "0.02em",
+                        }}
+                      >
+                        {item.slug === "data-analytics"
+                          ? "SQL · Excel · BI Dashboards"
+                          : item.slug === "product-management"
+                            ? "PRDs · User Research · Metrics"
+                            : item.slug === "python-programming"
+                              ? "Python 3 · Pandas · ETL"
+                              : item.slug === "data-science-ai"
+                                ? "SQL · Python · Cohort Models"
+                                : item.slug === "generative-ai"
+                                  ? "OpenAI · RAG · Prompt Evals"
+                                  : "React · TypeScript · Node · SQL"}
+                      </span>
                     </span>
                     <span className="hx-live-course-card__body">
                       <span className="hx-live-course-card__cat">{item.category}</span>
@@ -1070,7 +1105,7 @@ export function HomeDegrees() {
 
 const JOURNEY = [
   { key: "enrol", title: "Pick a Career Track", sub: "Start free in Skylent OS (+50 Coins)", text: "Choose any of our 6 career tracks and unlock your interactive learning workspace immediately." },
-  { key: "learn", title: "Learn Step-by-Step", sub: "Simple written lessons + concept checks", text: "Master concepts in plain language with instant English & Hinglish AI explanations." },
+  { key: "learn", title: "Learn Step-by-Step", sub: "Interactive lessons + concept checks", text: "Master concepts in plain language with instant English & Hinglish AI explanations." },
   { key: "build", title: "Practise in Live Labs", sub: "SQL, Python, PRDs & RAG in browser", text: "Run real queries and build real deliverables without installing anything on your laptop." },
   { key: "evidence", title: "Earn Verified Certificate", sub: "Graded capstone + public ID link", text: "Every completed course issues a verifiable SKL certificate linked to your actual project work." },
   { key: "profile", title: "Unlock Career Profile", sub: "Auto-unlocks at 60% course progress", text: "Your completed projects, skills, and certificates come together in one recruiter-ready profile." },

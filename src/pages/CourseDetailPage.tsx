@@ -319,7 +319,7 @@ export default function CourseDetailPage() {
                 </div>
                 <p className="cat-statline">
                   <span>
-                    {authored ? "Written lessons + practice" : "Outline"}
+                    {authored ? "Interactive lessons + browser lab" : "Outline"}
                   </span>
                   <span>{authored ? presented.mode : course.mode}</span>
                   <span>
@@ -486,7 +486,7 @@ export default function CourseDetailPage() {
             </h2>
             <p className="cat-fine">
               {showLiveCurriculum
-                ? "Each module mixes short written lessons with practice. You study them in your Skylent workspace after enrolling."
+                ? "Each module combines interactive lessons, browser labs, and project practice. You study them in your Skylent workspace after enrolling."
                 : "These are the planned modules. Lessons are added as they are ready."}
             </p>
             <ModuleLane modules={modules} />
@@ -667,7 +667,7 @@ export default function CourseDetailPage() {
                 </h2>
                 <p>
                   {showLiveCurriculum
-                    ? "Enrolment opens your interactive written course, in-browser workbench, and capstone studio in Skylent OS."
+                    ? "Enrolment opens your interactive course modules, browser lab, and 2-month internship project workspace."
                     : "This listing is thinner than Data Analytics. Start a ready course, or read the outline below."}
                 </p>
               </div>

@@ -216,6 +216,21 @@ function ProgrammeCard({ row, confirmed }: { row: Row; confirmed: boolean }) {
       <Link to={to} className="pgx-card__link" data-clear-launcher>
         <span className="pgx-card__media">
           <img src={row.image} alt={row.alt} width={800} height={500} loading="lazy" decoding="async" />
+          <span
+            style={{
+              position: "absolute",
+              left: 12,
+              bottom: 10,
+              padding: "4px 10px",
+              borderRadius: 999,
+              background: "rgba(15, 23, 42, 0.84)",
+              color: "#ffffff",
+              fontSize: 11,
+              fontWeight: 600,
+            }}
+          >
+            {row.skills.slice(0, 3).join(" · ")}
+          </span>
           {showStatus ? (
             <span className={live ? "pgx-status pgx-status--open" : "pgx-status"} style={{ display: "none" }}>
               {live ? `✓ ${status}` : status}
