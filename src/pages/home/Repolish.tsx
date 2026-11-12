@@ -73,7 +73,7 @@ export function HomeHero({
           </h1>
           <span className="hx-sr" style={{ display: "none" }}>Learn. Practise. Build. <em>Prove it.</em> Interactive SQL &amp; Python practice</span>
           <p className="hxw-hero__lead hx-rise" style={{ marginTop: 14, marginBottom: 24 }}>
-            Learn in live browser labs with a real-world industry case studies, browser labs & guided internship projects, or choose our dedicated Job Assistance track.
+            Build job-ready proof through real-world industry case studies and zero-setup browser labs — or upgrade to our Professional Job Assistance & 9–12M Industry Expert programs.
           </p>
           <p className="hx-sr" aria-live="polite">{availability}</p>
 
@@ -104,11 +104,11 @@ export function HomeHero({
           >
             <div>
               <strong style={{ display: "block", fontSize: 18, fontWeight: 800, color: "#0f172a" }}>2 Months</strong>
-              <span style={{ fontSize: 12.5, color: "#475569" }}>Course + Free Internship</span>
+              <span style={{ fontSize: 12.5, color: "#475569" }}>Case Studies + Browser Labs</span>
             </div>
             <div>
               <strong style={{ display: "block", fontSize: 18, fontWeight: 800, color: "#5142b5" }}>₹1,499</strong>
-              <span style={{ fontSize: 12.5, color: "#475569" }}>Certification + Internship</span>
+              <span style={{ fontSize: 12.5, color: "#475569" }}>50% OFF · Practical Track</span>
             </div>
             <div>
               <strong style={{ display: "block", fontSize: 18, fontWeight: 800, color: "#0f172a" }}>₹11,999</strong>
@@ -135,7 +135,7 @@ export function HomeHero({
               <div className="hxw-ws__top">
                 <span className="hxw-ws__mark" aria-hidden="true">✓</span>
                 <div>
-                  <span className="hxw-ws__title">Hands-On Labs + 2-Month Internship</span>
+                  <span className="hxw-ws__title">Industry Case Studies + Live Browser Labs</span>
                   <span className="hxw-ws__note">Certification Plan (₹1,499) · Job Assistance Track (₹11,999)</span>
                 </div>
               </div>

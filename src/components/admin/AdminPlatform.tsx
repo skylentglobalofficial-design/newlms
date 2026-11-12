@@ -1,3 +1,4 @@
+import { AdminCatalogLockStudio } from "./AdminCatalogLockStudio";
 import { useEffect, useState, type FormEvent } from "react"
 import {
   adjustLearnerElixir,

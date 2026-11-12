@@ -12,14 +12,13 @@ export interface CatalogLockItem {
   discountLabel: string;
   locked: boolean;
   badge: string;
-  mentorOrUniversity: string;
   semestersTotal?: number;
   unlockedSemesters?: number[];
   caseStudiesCount: number;
   labsCount: number;
 }
 
-const STORAGE_KEY = "skylent_catalog_locks_v123";
+const STORAGE_KEY = "skylent_catalog_locks_v124";
 
 export const DEFAULT_CATALOG_ITEMS: CatalogLockItem[] = [
   {
@@ -34,7 +33,6 @@ export const DEFAULT_CATALOG_ITEMS: CatalogLockItem[] = [
     discountLabel: "50% OFF Launch Scholarship",
     locked: false,
     badge: "Case Study + Practical Labs",
-    mentorOrUniversity: "Skylent Analytics Practice",
     caseStudiesCount: 6,
     labsCount: 18
   },
@@ -50,7 +48,6 @@ export const DEFAULT_CATALOG_ITEMS: CatalogLockItem[] = [
     discountLabel: "50% OFF Launch Scholarship",
     locked: false,
     badge: "Case Study + Practical Labs",
-    mentorOrUniversity: "Skylent Engineering Practice",
     caseStudiesCount: 5,
     labsCount: 22
   },
@@ -65,8 +62,7 @@ export const DEFAULT_CATALOG_ITEMS: CatalogLockItem[] = [
     originalPriceInr: 2999,
     discountLabel: "50% OFF Launch Scholarship",
     locked: false,
-    badge: "High Demand · AI Case Studies",
-    mentorOrUniversity: "Skylent AI Studio",
+    badge: "AI Case Studies + Labs",
     caseStudiesCount: 6,
     labsCount: 16
   },
@@ -82,7 +78,6 @@ export const DEFAULT_CATALOG_ITEMS: CatalogLockItem[] = [
     discountLabel: "50% OFF Launch Scholarship",
     locked: false,
     badge: "8 Industry Case Studies",
-    mentorOrUniversity: "Skylent Product Council",
     caseStudiesCount: 8,
     labsCount: 12
   },
@@ -91,14 +86,13 @@ export const DEFAULT_CATALOG_ITEMS: CatalogLockItem[] = [
     code: "SKY-EXP-901",
     title: "12-Month Executive Program in Applied AI & Cloud Systems",
     category: "expert-9-12m",
-    subtitle: "Live weekend masterclasses with Top Industry Experts + 12 Capstones + Dedicated Job Assistance",
+    subtitle: "Live classes with Top Industry Experts + 12 Capstones + Dedicated Job Assistance",
     duration: "12 Months (48 Weeks)",
     priceInr: 44999,
     originalPriceInr: 79999,
     discountLabel: "Early Cohort Merit Grant",
     locked: false,
     badge: "12M Industry Expert Program",
-    mentorOrUniversity: "Principal Architects & Senior AI Leaders",
     caseStudiesCount: 12,
     labsCount: 45
   },
@@ -107,14 +101,13 @@ export const DEFAULT_CATALOG_ITEMS: CatalogLockItem[] = [
     code: "SKY-EXP-902",
     title: "9-Month Professional Program in Data Science & Decision Systems",
     category: "expert-9-12m",
-    subtitle: "Co-taught by Senior Data Scientists with live case study defense & placement desk",
+    subtitle: "Led by Senior Data Scientists with live case study defense & placement support",
     duration: "9 Months (36 Weeks)",
     priceInr: 34999,
     originalPriceInr: 59999,
     discountLabel: "Early Cohort Merit Grant",
     locked: false,
     badge: "9M Industry Expert Program",
-    mentorOrUniversity: "Senior Data Science & Analytics Leaders",
     caseStudiesCount: 10,
     labsCount: 36
   },
@@ -123,30 +116,28 @@ export const DEFAULT_CATALOG_ITEMS: CatalogLockItem[] = [
     code: "SKY-EXP-903",
     title: "9-Month Professional Program in Distributed Full-Stack & DevOps",
     category: "expert-9-12m",
-    subtitle: "High-scale system design, Kubernetes case studies & direct recruiter referrals",
+    subtitle: "System design, Kubernetes case studies & direct recruiter referrals",
     duration: "9 Months (36 Weeks)",
     priceInr: 34999,
     originalPriceInr: 59999,
-    discountLabel: "Cohort Controlled by Admin",
+    discountLabel: "Controlled by Admin",
     locked: true,
-    badge: "9M Expert Track · Admin Locked",
-    mentorOrUniversity: "Principal Cloud & Platform Engineers",
+    badge: "9M Expert Track · Locked",
     caseStudiesCount: 10,
     labsCount: 40
   },
   {
     id: "degree-btech-cse-ai",
     code: "DEG-UG-01",
-    title: "B.Tech in Computer Science & AI (Industry Integrated)",
+    title: "B.Tech in Computer Science & AI (Curriculum Skeleton)",
     category: "degree-sem",
-    subtitle: "8-Semester credit-aligned degree track with browser labs & case study evaluations",
+    subtitle: "8-Semester credit-aligned curriculum with browser labs & case study evaluations",
     duration: "4 Years (8 Semesters)",
     priceInr: 11999,
     originalPriceInr: 19999,
-    discountLabel: "Partner University Semester Fee",
+    discountLabel: "Per-Semester Institutional Track",
     locked: false,
-    badge: "UG Degree · Sem 1-2 Open",
-    mentorOrUniversity: "Partner University Credit Framework",
+    badge: "UG Degree · Sem 1-2 Unlocked",
     semestersTotal: 8,
     unlockedSemesters: [1, 2],
     caseStudiesCount: 24,
@@ -157,14 +148,13 @@ export const DEFAULT_CATALOG_ITEMS: CatalogLockItem[] = [
     code: "DEG-UG-02",
     title: "BCA Honours in Data Analytics & Cloud Engineering",
     category: "degree-sem",
-    subtitle: "6-Semester career-first degree track with embedded Skylent workspace projects",
+    subtitle: "6-Semester degree pathway with embedded Skylent workspace projects",
     duration: "3 Years (6 Semesters)",
     priceInr: 9999,
     originalPriceInr: 16999,
-    discountLabel: "Partner University Semester Fee",
+    discountLabel: "Per-Semester Institutional Track",
     locked: false,
-    badge: "UG Degree · Sem 1-2 Open",
-    mentorOrUniversity: "Partner University Credit Framework",
+    badge: "UG Degree · Sem 1-2 Unlocked",
     semestersTotal: 6,
     unlockedSemesters: [1, 2],
     caseStudiesCount: 18,
@@ -175,14 +165,13 @@ export const DEFAULT_CATALOG_ITEMS: CatalogLockItem[] = [
     code: "DEG-PG-01",
     title: "MCA in Applied AI & Enterprise Software Systems",
     category: "degree-sem",
-    subtitle: "4-Semester postgraduate degree track with industry thesis & Career OS placement cell",
+    subtitle: "4-Semester postgraduate degree track with industry thesis & Career OS",
     duration: "2 Years (4 Semesters)",
     priceInr: 14999,
     originalPriceInr: 24999,
-    discountLabel: "Academic Cell Controlled",
+    discountLabel: "Academic Lock Enabled",
     locked: true,
     badge: "PG Degree · Locked",
-    mentorOrUniversity: "Postgraduate Academic Council",
     semestersTotal: 4,
     unlockedSemesters: [1],
     caseStudiesCount: 12,
@@ -193,14 +182,13 @@ export const DEFAULT_CATALOG_ITEMS: CatalogLockItem[] = [
     code: "DEG-PG-02",
     title: "MBA in Digital Finance, Product Strategy & Analytics",
     category: "degree-sem",
-    subtitle: "4-Semester executive management degree built on real Indian & global business case studies",
+    subtitle: "4-Semester executive management degree built on real business case studies",
     duration: "2 Years (4 Semesters)",
     priceInr: 14999,
     originalPriceInr: 24999,
-    discountLabel: "Academic Cell Controlled",
+    discountLabel: "Academic Lock Enabled",
     locked: true,
     badge: "PG Degree · Locked",
-    mentorOrUniversity: "School of Management & Industry Council",
     semestersTotal: 4,
     unlockedSemesters: [1],
     caseStudiesCount: 16,
