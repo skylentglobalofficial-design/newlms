@@ -467,7 +467,7 @@ export const programs: Program[] = [
   },
   {
     slug: 'data-analytics-pro',
-    name: 'Data Analytics with Gen AI',
+    name: 'Data Analytics',
     duration: '8 months',
     modules: 14,
     projects: 5,

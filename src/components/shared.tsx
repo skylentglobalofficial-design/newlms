@@ -277,7 +277,7 @@ export function EnrollmentModal({ item, onClose }: { item: CatalogEnrollItem; on
               const isProCard = tier.id === "flagship"
               const displayTitle =
                 tier.id === "certificate"
-                  ? "Certification + Internship Plan"
+                  ? "Skill Certificate Only Plan"
                   : "Job Assistance Program"
               return (
                 <article

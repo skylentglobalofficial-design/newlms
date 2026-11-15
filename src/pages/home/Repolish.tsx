@@ -73,7 +73,7 @@ export function HomeHero({
           </h1>
           <span className="hx-sr" style={{ display: "none" }}>Learn. Practise. Build. <em>Prove it.</em> Interactive SQL &amp; Python practice</span>
           <p className="hxw-hero__lead hx-rise" style={{ marginTop: 14, marginBottom: 24 }}>
-            Build job-ready proof through real-world industry case studies and zero-setup browser labs — or upgrade to our Professional Job Assistance & 9–12M Industry Expert programs.
+            Choose a ₹1,499 Skill Certificate course strictly for practical skill development, or enrol in our ₹11,999 & 9–12 Month Professional Programs for mentor reviews and dedicated job assistance.
           </p>
           <p className="hx-sr" aria-live="polite">{availability}</p>
 
@@ -104,11 +104,11 @@ export function HomeHero({
           >
             <div>
               <strong style={{ display: "block", fontSize: 18, fontWeight: 800, color: "#0f172a" }}>2 Months</strong>
-              <span style={{ fontSize: 12.5, color: "#475569" }}>Case Studies + Browser Labs</span>
+              <span style={{ fontSize: 12.5, color: "#475569" }}>Only Skill Development</span>
             </div>
             <div>
               <strong style={{ display: "block", fontSize: 18, fontWeight: 800, color: "#5142b5" }}>₹1,499</strong>
-              <span style={{ fontSize: 12.5, color: "#475569" }}>50% OFF · Practical Track</span>
+              <span style={{ fontSize: 12.5, color: "#475569" }}>Skill Certificate Only</span>
             </div>
             <div>
               <strong style={{ display: "block", fontSize: 18, fontWeight: 800, color: "#0f172a" }}>₹11,999</strong>
@@ -135,7 +135,7 @@ export function HomeHero({
               <div className="hxw-ws__top">
                 <span className="hxw-ws__mark" aria-hidden="true">✓</span>
                 <div>
-                  <span className="hxw-ws__title">Industry Case Studies + Live Browser Labs</span>
+                  <span className="hxw-ws__title">Hands-On Labs + 2-Month Internship</span>
                   <span className="hxw-ws__note">Certification Plan (₹1,499) · Job Assistance Track (₹11,999)</span>
                 </div>
               </div>
@@ -889,7 +889,7 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
                   category: "DATA ANALYTICS",
                   title: "Data Analytics",
                   desc: "Master SQL queries, spreadsheets & BI dashboards with hands-on business analytics projects.",
-                  meta: "2 Months + Internship · From ₹1,499",
+                  meta: "2 Months · Skill Certificate · From ₹1,499",
                   img: photoAnalytics,
                   alt: "Data Analytics workspace preview",
                 },
@@ -900,7 +900,7 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
                   category: "PRODUCT MANAGEMENT",
                   title: "Product Management",
                   desc: "Master user research, product strategy, metrics & engineering PRDs with real case studies.",
-                  meta: "2 Months + Internship · From ₹1,499",
+                  meta: "2 Months · Skill Certificate · From ₹1,499",
                   img: photoProduct,
                   alt: "Product Management studio preview",
                 },
@@ -911,7 +911,7 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
                   category: "PYTHON & AUTOMATION",
                   title: "Python & Automation",
                   desc: "Build Python data automation scripts, validators & backend ETL workflows from scratch.",
-                  meta: "2 Months + Internship · From ₹1,499",
+                  meta: "2 Months · Skill Certificate · From ₹1,499",
                   img: photoScience,
                   alt: "Python engineering workspace preview",
                 },
@@ -922,7 +922,7 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
                   category: "DATA SCIENCE",
                   title: "Data Science & AI",
                   desc: "Combine SQL revenue analytics, Python data pipelines & cohort retention modelling.",
-                  meta: "2 Months + Internship · From ₹1,499",
+                  meta: "2 Months · Skill Certificate · From ₹1,499",
                   img: photoClass,
                   alt: "Data Science cohort analysis preview",
                 },
@@ -933,7 +933,7 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
                   category: "GENERATIVE AI",
                   title: "Generative AI",
                   desc: "Build grounded RAG assistants, prompt workflows & practical AI applications in your browser.",
-                  meta: "2 Months + Internship · From ₹1,499",
+                  meta: "2 Months · Skill Certificate · From ₹1,499",
                   img: photoCampusPg,
                   alt: "Generative AI evaluation preview",
                 },
@@ -944,7 +944,7 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
                   category: "FULL-STACK WEB",
                   title: "Full-Stack Web Development",
                   desc: "Build full-stack React + TypeScript interfaces, Node APIs & PostgreSQL database apps.",
-                  meta: "2 Months + Internship · From ₹1,499",
+                  meta: "2 Months · Skill Certificate · From ₹1,499",
                   img: photoScience,
                   alt: "Full-stack engineering preview",
                 },

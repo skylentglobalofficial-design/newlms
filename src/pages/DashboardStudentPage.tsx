@@ -774,7 +774,7 @@ function SelectYourPlanPortalModal({
           >
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8, marginBottom: 10 }}>
-                <strong style={{ fontSize: 18, color: '#0f172a' }}>Certification + Internship</strong>
+                <strong style={{ fontSize: 18, color: '#0f172a' }}>Skill Certificate Only</strong>
                 <span style={{ fontSize: 11, fontWeight: 700, padding: '4px 10px', borderRadius: 999, background: '#f5f3ff', color: '#5142b5' }}>
                   2-Month Free Internship
                 </span>
@@ -805,7 +805,7 @@ function SelectYourPlanPortalModal({
                 <li>✓ Complete self-paced course &amp; browser practice labs</li>
                 <li>✓ Hands-on capstone project &amp; verified certificate</li>
                 <li>✓ 2-Month Complimentary Practice &amp; Internship included</li>
-                <li>✓ Top performers eligible for direct intern hiring</li>
+                <li>✓ ✕ No Job Assistance, Mock Interviews, or Live Mentor Classes (Included only in ₹11,999 Professional Program)</li>
               </ul>
             </div>
           </div>

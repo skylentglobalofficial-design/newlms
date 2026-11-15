@@ -1,3 +1,4 @@
+import { ThreePillarShowcase } from "../components/programme/ThreePillarShowcase";
 /**
  * Education landing (repolish): degrees only, organised the way learners choose.
  * Includes unmistakable Academic Governance & Partner HEI Status Disclosure right on the hero and degree cards.

@@ -1,3 +1,4 @@
+import { ThreePillarShowcase } from "../components/programme/ThreePillarShowcase";
 /**
  * /programmes — clean 3x2 catalogue index in the Skylent Royal Midnight Navy + Crisp White theme.
  *
@@ -244,7 +245,7 @@ function ProgrammeCard({ row, confirmed }: { row: Row; confirmed: boolean }) {
           <span className="pgx-card__title">{row.title}</span>
           <span className="pgx-card__line">{row.line}</span>
           <span className="pgx-card__footer" style={{ marginTop: "auto", paddingTop: 14 }}>
-            <span className="pgx-card__meta">2 Months + Internship · From ₹1,499</span>
+            <span className="pgx-card__meta">2 Months · Skill Certificate · From ₹1,499</span>
             <span className="pgx-card__go">
               Explore Programme <ArrowRight />
             </span>
