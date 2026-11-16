@@ -774,7 +774,7 @@ function SelectYourPlanPortalModal({
           >
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8, marginBottom: 10 }}>
-                <strong style={{ fontSize: 18, color: '#0f172a' }}>Skill Certificate Only</strong>
+                <strong style={{ fontSize: 18, color: '#0f172a' }}>Browser Practice Labs</strong>
                 <span style={{ fontSize: 11, fontWeight: 700, padding: '4px 10px', borderRadius: 999, background: '#f5f3ff', color: '#5142b5' }}>
                   2-Month Free Internship
                 </span>

@@ -277,7 +277,7 @@ export function EnrollmentModal({ item, onClose }: { item: CatalogEnrollItem; on
               const isProCard = tier.id === "flagship"
               const displayTitle =
                 tier.id === "certificate"
-                  ? "Skill Certificate Only Plan"
+                  ? "Browser Practice Labs Plan"
                   : "Job Assistance Program"
               return (
                 <article
@@ -522,7 +522,7 @@ const PUBLIC_NAV: readonly PublicNavGroup[] = [
           { label: 'Product Management', sub: 'User research, product strategy & engineering PRDs.', to: '/programmes/product-management', mark: 'live' },
           { label: 'Python & Automation', sub: 'Python 3, data automation & backend workflows.', to: '/courses/python-programming', mark: 'live' },
           { label: '₹99 Weekend Workshops', sub: '90-minute live weekend sessions with coin cashback.', to: '/workshops', mark: 'live' },
-          { label: 'Explore All Programmes →', sub: 'Compare all 6 tracks, 2-month internship & job assistance plans.', to: '/programmes' },
+          { label: 'Explore All Programmes →', sub: 'Compare all 6 tracks, practical case studies & learning paths.', to: '/programmes' },
         ],
       },
     ],
