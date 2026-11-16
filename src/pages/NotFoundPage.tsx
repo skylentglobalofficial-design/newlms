@@ -12,7 +12,7 @@ const QUICK_DESTINATIONS = [
   {
     badge: "₹99 LIVE · 100% COIN BACK",
     title: "Workshops & Masterclasses",
-    desc: "Weekend live builder sprints with 99 Elixir Coins cashback and standalone campus topic syllabi.",
+    desc: "Weekend live builder sprints with 99 Workshop Coins cashback and standalone campus topic syllabi.",
     to: "/workshops",
     cta: "Open Workshops →",
   },

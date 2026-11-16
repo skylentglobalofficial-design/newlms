@@ -67,7 +67,7 @@ export default function WorkshopDetailPage() {
                   ["Schedule", "Weekend Cohort (/events) or Custom Campus Date"],
                   ["Duration", workshop.duration],
                   ["Mode", workshop.mode],
-                  ["Access", "₹99 Live Bootcamp (+99 Elixir Coins)"],
+                  ["Access", "₹99 Live Bootcamp (+99 Workshop Coins)"],
                 ].map(([dt, dd]) => (
                   <div
                     key={dt}

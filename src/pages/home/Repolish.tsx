@@ -69,7 +69,7 @@ export function HomeHero({
       <div className="sky-container hxw-hero__grid">
         <div className="hxw-hero__copy">
           <h1 id="hx-hero-title" className="hxw-hero__title hx-rise">
-            Practical courses with hands-on projects &amp; internship.
+            Practical courses with real industry case studies.
           </h1>
           <span className="hx-sr" style={{ display: "none" }}>Learn. Practise. Build. <em>Prove it.</em> Interactive SQL &amp; Python practice</span>
           <p className="hxw-hero__lead hx-rise" style={{ marginTop: 14, marginBottom: 24 }}>
@@ -1698,7 +1698,7 @@ export function HomeElixirFlywheel() {
       priceBadge: "₹99 · 100% Coin Back",
       title: "AI Systems & Grounded RAG Masterclass",
       audience: "For Aspiring AI & Software Engineers · Live Build + Q&A",
-      desc: "Build a citation-grounded RAG assistant & evaluation pipeline in 120 minutes.",
+      desc: "Build a citation-grounded RAG assistant & evaluation pipeline in 90 minutes.",
       skills: ["Grounded RAG", "Prompt Guardrails", "Workshop Certificate"],
       cta: "Book ₹99 Seat & Get 99 Coins →",
     },
@@ -1737,7 +1737,7 @@ export function HomeElixirFlywheel() {
               Weekend live workshops for ₹99
             </h2>
             <p className="hx-royal-showcase__sub">
-              Join a 2-hour weekend workshop for ₹99 — earn a verified certificate plus 99 Elixir Coins (100% cashback) to unlock case studies.
+              Join a 90-minute live weekend workshop for ₹99 — earn a verified certificate plus 99 Workshop Coins (100% cashback) to unlock case studies.
             </p>
           </div>
           <Link className="sk-btn sk-btn-primary hx-btn" to="/events">

@@ -503,7 +503,7 @@ const PUBLIC_NAV: readonly PublicNavGroup[] = [
   {
     label: 'Programmes',
     to: '/programmes',
-    tagline: '6 career tracks with browser labs and a 2-month free internship',
+    tagline: '6 Practical Career Tracks with Live Browser Workspaces',
     match: ['/programmes', '/programs', '/courses', '/skills', '/workshops', '/workshop', '/labs', '/events'],
     items: [],
     sections: [

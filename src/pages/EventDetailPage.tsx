@@ -268,7 +268,7 @@ export default function EventDetailPage() {
                   </div>
                   <div className="cat-fact">
                     <span>Coin Cashback</span>
-                    <strong>₹99 → 99 Elixir Coins (100%)</strong>
+                    <strong>₹99 → 99 Workshop Coins (100%)</strong>
                   </div>
                   <div className="cat-fact">
                     <span>Location</span>
@@ -296,7 +296,7 @@ export default function EventDetailPage() {
                   ) : isRegistered ? (
                     <>
                       <p className="cat-note" style={{ marginBottom: 12 }}>
-                        ✓ You are registered! +99 Elixir Coins (100% Coin Cashback) credited to your wallet for Case Studies.
+                        ✓ You are registered! +99 Workshop Coins (100% Coin Cashback) credited to your wallet for Case Studies.
                       </p>
                       <Link
                         className="cat-btn cat-btn-ghost"

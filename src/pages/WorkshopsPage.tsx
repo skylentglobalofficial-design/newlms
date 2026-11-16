@@ -44,7 +44,7 @@ export default function WorkshopsPage() {
                   textTransform: "uppercase",
                 }}
               >
-                WORKSHOPS &amp; TOPIC INTENSIVES · ₹99 LIVE SESSIONS = 99 ELIXIR COINS (100% COIN BACK)
+                WORKSHOPS &amp; TOPIC INTENSIVES · ₹99 LIVE SESSIONS = 99 Workshop Coins (100% COIN BACK)
               </p>
               <h1
                 style={{
@@ -197,7 +197,7 @@ export default function WorkshopsPage() {
               </ul>
             )}
             <p className="cat-fine" style={{ marginTop: 22 }}>
-              To book an upcoming weekend live slot with +99 Elixir Coins cashback, open the{" "}
+              To book an upcoming weekend live slot with +99 Workshop Coins cashback, open the{" "}
               <Link to="/events">Events &amp; Bootcamps page →</Link>
             </p>
           </div>
