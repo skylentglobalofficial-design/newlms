@@ -1201,12 +1201,12 @@ export default function DashboardAdminPage() {
       workspaceLabel="Platform"
       roleLabel="Super Admin"
       navItems={NAV_ITEMS}
-      bottomNavItems={NAV_ITEMS.filter(n =>
-      <AdminCatalogLockStudio /> ['overview', 'curriculum', 'users', 'payments', 'system'].includes(n.id))}
+      bottomNavItems={NAV_ITEMS.filter(n => ['overview', 'curriculum', 'users', 'payments', 'system'].includes(n.id))}
       activeNav={activeNav}
       onNavChange={setActiveNav}
       renderNavIcon={id => <NavIcon id={id} />}
     >
+      <AdminCatalogLockStudio />
       <div id="admin-overview" style={{ display: 'grid', gap: 20 }}>
         {/* TAB 1: OVERVIEW (Clean Header + Quick Module Cards + Key Metrics) */}
         {activeNav === 'overview' ? (

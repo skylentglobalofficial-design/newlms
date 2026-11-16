@@ -18,7 +18,6 @@ export function ThreePillarShowcase() {
 
   return (
     <section style={{ maxWidth: 1240, margin: "36px auto", padding: "0 20px", fontFamily: "Inter, system-ui, sans-serif" }}>
-      {/* Meaning Legend Bar: Every Dot & Color Has a Strict Meaning */}
       <div style={{ background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 12, padding: "12px 18px", marginBottom: 24, display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
         <div style={{ fontSize: 13, fontWeight: 700, color: "#0f172a" }}>
           Clear Visual Guide — How Skylent Programs Are Structured:
@@ -31,7 +30,6 @@ export function ThreePillarShowcase() {
         </div>
       </div>
 
-      {/* Filter Tabs */}
       <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 28 }}>
         {[
           { id: "all", label: "All Categories (Complete View)" },
@@ -59,7 +57,6 @@ export function ThreePillarShowcase() {
         ))}
       </div>
 
-      {/* SECTION A: SKILL CERTIFICATE COURSES (CLEAN WHITE CARDS — ONLY FOR SKILL DEVELOPMENT) */}
       {(selectedTier === "all" || selectedTier === "skill-certificate") && (
         <div style={{ marginBottom: 44 }}>
           <div style={{ borderLeft: "4px solid #0f172a", paddingLeft: 14, marginBottom: 18 }}>
@@ -89,7 +86,6 @@ export function ThreePillarShowcase() {
                   <h3 style={{ margin: "0 0 6px", fontSize: 18, fontWeight: 800, color: "#0f172a" }}>{item.title}</h3>
                   <p style={{ margin: "0 0 14px", fontSize: 13, color: "#475569", lineHeight: 1.5 }}>{item.subtitle}</p>
 
-                  {/* Explicit Tick & Cross Box inside Skill Certificate Card */}
                   <div style={{ background: "#f8fafc", borderRadius: 10, padding: 12, fontSize: 12, display: "grid", gap: 5, marginBottom: 16, border: "1px solid #e2e8f0" }}>
                     <div style={{ color: "#15803d", fontWeight: 700 }}>✓ {item.caseStudiesCount} Practical Case Studies & Workspace</div>
                     <div style={{ color: "#15803d", fontWeight: 700 }}>✓ Self-Paced Modules & Verified Skill Certificate</div>
@@ -125,7 +121,6 @@ export function ThreePillarShowcase() {
         </div>
       )}
 
-      {/* SECTION B: PROFESSIONAL CAREER PROGRAMS (ROYAL PURPLE + SAPPHIRE BLUE EXECUTIVE CARDS) */}
       {(selectedTier === "all" || selectedTier === "professional-career") && (
         <div style={{ marginBottom: 44 }}>
           <div style={{ borderLeft: "4px solid #1d4ed8", paddingLeft: 14, marginBottom: 18 }}>
@@ -202,7 +197,6 @@ export function ThreePillarShowcase() {
         </div>
       )}
 
-      {/* SECTION C: ONLINE & CAMPUS DEGREE SKELETON (WITH SEM 1-8 LOCK INDICATORS) */}
       {(selectedTier === "all" || selectedTier === "degree-sem") && (
         <div>
           <div style={{ borderLeft: "4px solid #3b2d96", paddingLeft: 14, marginBottom: 18 }}>

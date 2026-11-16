@@ -17,10 +17,9 @@ export interface CatalogLockItem {
   caseStudiesCount: number;
 }
 
-const STORAGE_KEY = "skylent_catalog_locks_v125";
+const STORAGE_KEY = "skylent_catalog_locks_v126";
 
 export const DEFAULT_CATALOG_ITEMS: CatalogLockItem[] = [
-  // TIER 1: SKILL CERTIFICATE COURSES (ONLY FOR SKILL DEVELOPMENT - ₹1,499)
   {
     id: "data-analytics-pro",
     code: "CERT-101",
@@ -77,8 +76,6 @@ export const DEFAULT_CATALOG_ITEMS: CatalogLockItem[] = [
     locked: false,
     caseStudiesCount: 5
   },
-
-  // TIER 2: PROFESSIONAL COURSES (JOB ASSISTANCE + 9-12 MONTH INDUSTRY EXPERT PROGRAMS)
   {
     id: "pro-job-assistance-analytics",
     code: "PRO-201",
@@ -135,8 +132,6 @@ export const DEFAULT_CATALOG_ITEMS: CatalogLockItem[] = [
     locked: true,
     caseStudiesCount: 14
   },
-
-  // TIER 3: ONLINE & CAMPUS DEGREE SKELETON (SEMESTER 1 TO 8 LOCK CONTROL)
   {
     id: "degree-ug-management",
     code: "DEG-UG-01",
