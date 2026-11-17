@@ -16,7 +16,7 @@ import CareerRiseCard from '../components/learner/CareerRiseCard'
 import { findProjectForCourse, listLearnerProjects, learnerProjectPath, projectStatusLabel, type ProjectSummary } from '../lib/projects-api'
 import { fetchMyCertificates, issueCertificate, issueProgrammeCertificate, type SkylentCertificate } from '../lib/skylent-api'
 import { fetchSkylentAiStatus } from '../lib/skylent-ai-api'
-import CreditsWalletPanel from '../components/learner/CreditsWallet'
+import ElixirWalletPanel from '../components/learner/ElixirWallet'
 import { computeLearnerExecutionStreak } from '../lib/execution-streak'
 import { truthOf } from '../lib/truth'
 import { courseProductProfile } from '../lib/course-product'
@@ -1054,7 +1054,7 @@ export default function DashboardStudentPage() {
             : studentTab === 'certificates'
               ? 'Certificates & Proof'
               : studentTab === 'wallet'
-                ? 'Credits Wallet'
+                ? 'Elixir Wallet'
                 : 'Dashboard'
 
   const effectiveActiveNav =
@@ -1839,7 +1839,7 @@ export default function DashboardStudentPage() {
           {
             title: 'SQL Revenue & Margin Diagnostics Workshop',
             when: 'Sat, Nov 14 · 6:00 PM IST',
-            badge: '₹99 → 99 Credits Cashback',
+            badge: '₹99 → 99 Elixir Cashback',
             href: '/events',
           },
           {
@@ -1882,7 +1882,7 @@ export default function DashboardStudentPage() {
           {studentTab === 'profile' ? (
             <LearnerProfileSettingsSection />
           ) : studentTab === 'wallet' ? (
-            <section className="sh-card" aria-label="Credits wallet"><CreditsWalletPanel /></section>
+            <section className="sh-card" aria-label="Elixir wallet"><ElixirWalletPanel /></section>
           ) : studentTab === 'certificates' ? (
             <div className="sh-stack">{evidence}</div>
           ) : studentTab === 'courses' && allMyCourses.length > 0 ? (
@@ -2191,7 +2191,7 @@ export default function DashboardStudentPage() {
                     </span>
                   </div>
                   <span style={{ fontSize: 12, fontWeight: 700, padding: '4px 10px', borderRadius: 999, background: '#ecfdf5', color: '#047857' }}>
-                    +{streak.streakBonusCredits} Credits Bonus
+                    +{streak.streakBonusElixir} Elixir Bonus
                   </span>
                 </div>
 
@@ -2256,8 +2256,8 @@ export default function DashboardStudentPage() {
         ) : null}
 
         {studentTab === 'wallet' ? (
-          <section className="sh-card" aria-label="Credits wallet" style={{ marginTop: 12 }}>
-            <CreditsWalletPanel />
+          <section className="sh-card" aria-label="Elixir wallet" style={{ marginTop: 12 }}>
+            <ElixirWalletPanel />
           </section>
         ) : null}
 
