@@ -104,11 +104,11 @@ function AssignmentBriefView({ brief }: { brief: AssignmentBrief; accent: Accent
         </section>
       ) : null}
       <section className="as-block as-evidence">
-        <h3>Career OS evidence</h3>
+        <h3>TalentBridge evidence</h3>
         <p style={{ marginBottom: 8 }}><strong>Learning.</strong> {brief.careerEvidence.learning}</p>
         <p style={{ marginBottom: 8 }}><strong>Artifact.</strong> {brief.careerEvidence.artifact}</p>
         <p style={{ marginBottom: 8 }}><strong>Skill.</strong> {brief.careerEvidence.skill}</p>
-        <p>{brief.careerEvidence.evidence} Once submitted, you can showcase this verified artifact directly in your Career OS → Projects portfolio.</p>
+        <p>{brief.careerEvidence.evidence} Once submitted, you can showcase this verified artifact directly in your TalentBridge → Projects portfolio.</p>
       </section>
     </div>
   )
@@ -314,8 +314,8 @@ export function LessonContentView({
         onSubmit={onAssignmentSubmit ?? (async () => false)}
         completionNote={
           evidence
-            ? `Submission recorded. Evaluated against the structured course rubric. Add “${evidence.artifact}” to Career OS → Projects yourself if you want it as portfolio evidence.`
-            : 'Submission recorded. Evaluated against the structured course rubric. Add a project to Career OS yourself if you want portfolio evidence.'
+            ? `Submission recorded. Evaluated against the structured course rubric. Add “${evidence.artifact}” to TalentBridge → Projects yourself if you want it as portfolio evidence.`
+            : 'Submission recorded. Evaluated against the structured course rubric. Add a project to TalentBridge yourself if you want portfolio evidence.'
         }
       />
     </div>

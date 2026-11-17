@@ -63,7 +63,7 @@ export default function OnlineDegreeView({ degree }: { degree: Degree }) {
         <div className="dg-hero__row">
           <p className="dg-lead cine-in cine-d2">
             {degree.sample || !degree.institution
-              ? "Designed for learners seeking a structured online degree pathway alongside hands-on Skylent OS labs and portfolio projects. Register interest below for partner university intake dates and syllabus details."
+              ? "Designed for learners seeking a structured online degree pathway alongside hands-on Skilab labs and portfolio projects. Register interest below for partner university intake dates and syllabus details."
               : "Live sessions, recorded lectures, reading and assessed work all happen in one online learning environment, so the week runs on a laptop and not on a campus."}
           </p>
           <div className="dg-actions cine-in cine-d3">
@@ -136,7 +136,7 @@ export default function OnlineDegreeView({ degree }: { degree: Degree }) {
                 <dd className="dg-stagefacts__unpub">{orUnpublished(degree.assessments?.join(", "))}</dd>
               </div>
             </dl>
-            <p className="dg-note">Degrees are conferred by partner universities; Skylent provides the integrated execution labs and Career OS portfolio.</p>
+            <p className="dg-note">Degrees are conferred by partner universities; Skylent provides the integrated execution labs and TalentBridge portfolio.</p>
           </Reveal>
         </div>
       </section>
@@ -244,11 +244,11 @@ export default function OnlineDegreeView({ degree }: { degree: Degree }) {
           <div className="dg-prove">
             <div className="dg-prove__lead">
               <SectionIndex n="05" label="What you can prove" />
-              <h2 className="dg-h2 dg-h2--sm">Your Career OS profile, alongside the degree.</h2>
+              <h2 className="dg-h2 dg-h2--sm">Your TalentBridge profile, alongside the degree.</h2>
               <p>
                 {degree.sample || !degree.institution
-                  ? "Combine academic degree foundations with verifiable Skylent OS capstones, SQL labs, and cryptographic credentials."
-                  : "The degree is awarded by the partner institution. Skylent programmes, labs and projects you take while you study are kept in Career OS."}
+                  ? "Combine academic degree foundations with verifiable Skilab capstones, SQL labs, and cryptographic credentials."
+                  : "The degree is awarded by the partner institution. Skylent programmes, labs and projects you take while you study are kept in TalentBridge."}
               </p>
             </div>
             <dl className="dg-prove__rows dg-rows">

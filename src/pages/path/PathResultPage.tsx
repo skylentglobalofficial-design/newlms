@@ -38,7 +38,7 @@ const EVIDENCE_KIND_LABEL: Record<PathEvidenceKind, string> = {
   lab_completed: "Lab work saved",
   project_completed: "Project completed",
   project_artifact: "Assignment submitted",
-  portfolio_evidence: "Career OS evidence",
+  portfolio_evidence: "TalentBridge evidence",
 }
 
 function formatPathDate(iso: string | undefined): string {
@@ -509,7 +509,7 @@ export default function PathResultPage() {
 
             <p className="path-result-v2__disclaimer">
               This path is produced in your browser from your answers by fixed rules. It does not predict hiring or
-              admission outcomes. The LMS and Career OS remain the source of truth for verified work.
+              admission outcomes. The LMS and TalentBridge remain the source of truth for verified work.
             </p>
           </div>
 

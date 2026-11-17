@@ -435,7 +435,7 @@ export const programs: Program[] = [
       { number: '03', title: 'Machine Learning', description: 'Supervised and unsupervised learning algorithms, model evaluation, feature engineering, and ensemble methods.', duration: '6 weeks', topics: ['Linear and logistic regression', 'Decision trees and random forests', 'SVM, KNN, Naive Bayes', 'K-Means, PCA, DBSCAN'] },
       { number: '04', title: 'Deep Learning & NLP', description: 'Neural network architectures, computer vision, sequence models, and applied NLP using transformers.', duration: '6 weeks', topics: ['Feed-forward and convolutional networks', 'RNNs, LSTMs, and attention', 'Transfer learning with HuggingFace', 'Prompt engineering basics'] },
       { number: '05', title: 'Applied Industry Projects', description: 'Three end-to-end projects built with real-world datasets, kept as portfolio artifacts.', duration: '6 weeks' },
-      { number: '06', title: 'Career Bootcamp', description: 'Resume structure, interview practice, and Career OS access for job-search readiness.', duration: '3 weeks' },
+      { number: '06', title: 'Career Bootcamp', description: 'Resume structure, interview practice, and TalentBridge access for job-search readiness.', duration: '3 weeks' },
     ],
     projectsDetail: [
       { title: 'Customer Churn Prediction', what: 'Build a classification model to identify at-risk customers using telecom subscriber data', skills: ['Python', 'scikit-learn', 'Feature Engineering', 'XGBoost'], difficulty: 'Intermediate' },
@@ -446,12 +446,12 @@ export const programs: Program[] = [
       'Structured modules with recorded lessons and applied practice',
       'Recorded sessions accessible anytime',
       'Project submissions in the LMS',
-      'Keep your learning evidence in Career OS',
+      'Keep your learning evidence in TalentBridge',
     ],
     faqs: [
       { q: 'Do I need prior programming experience?', a: 'A basic familiarity with any programming language helps, but we begin from Python fundamentals. Learners from engineering, mathematics, or science backgrounds adapt well.' },
       { q: 'How many hours per week does this require?', a: 'Plan for 10–15 hours per week — including recorded modules, assignments, and project work.' },
-      { q: 'Is Career OS included?', a: 'Yes. Career OS is where you keep your profile and learning evidence. Interview preparation and a job board appear when roles are published. This is career preparation — not a placement guarantee.' },
+      { q: 'Is TalentBridge included?', a: 'Yes. TalentBridge is where you keep your profile and learning evidence. Interview preparation and a job board appear when roles are published. This is career preparation — not a placement guarantee.' },
       { q: 'What if I have questions while studying?', a: 'Use the LMS workspace to work through recorded modules and assignments. A live classroom and faculty Q&A layer is a later phase.' },
       { q: 'What certification do I receive?', a: 'Completing the program and passing the final assessment establishes certificate eligibility. Issuance, download, and public verification are a later phase — there is no live verifiable credential ID yet.' },
     ],
@@ -501,7 +501,7 @@ export const programs: Program[] = [
       { number: '04', title: 'Power BI', description: 'Connecting data sources, data modelling, DAX formulas, and building professional BI dashboards.', duration: '4 weeks' },
       { number: '05', title: 'Python for Analytics', description: 'pandas for data manipulation, matplotlib and seaborn for visualisation, and basic statistical analysis.', duration: '4 weeks' },
       { number: '06', title: 'Generative AI for Analysts', description: 'Using LLMs to accelerate data tasks: generating SQL, summarising reports, and building analytical workflows.', duration: '2 weeks' },
-      { number: '07', title: 'Industry Projects & Career', description: 'Five real-world analytics projects, presentation skills, and Career OS access.', duration: '5 weeks' },
+      { number: '07', title: 'Industry Projects & Career', description: 'Five real-world analytics projects, presentation skills, and TalentBridge access.', duration: '5 weeks' },
     ],
     projectsDetail: [
       { title: 'Sales Performance Dashboard', what: 'Build an end-to-end Power BI dashboard from a raw sales dataset, including DAX measures and drill-through pages', skills: ['Power BI', 'DAX', 'Data Modelling'], difficulty: 'Intermediate' },
@@ -513,13 +513,13 @@ export const programs: Program[] = [
       'Recorded sessions for flexible learning',
       'Hands-on SQL and Python exercises in every module',
       'Project submissions in the LMS',
-      'Keep your learning evidence in Career OS',
+      'Keep your learning evidence in TalentBridge',
     ],
     faqs: [
       { q: 'Do I need a technical background?', a: 'No. This program is specifically designed for non-technical learners. We start from Excel and build up through SQL, Python, and Power BI step by step.' },
       { q: 'Is this suitable for working professionals?', a: 'Yes. Recorded modules and project work can be paced around your schedule. A live classroom layer is planned, not shipping yet.' },
       { q: 'What jobs does this program prepare me for?', a: 'Common roles include Data Analyst, Business Analyst, BI Analyst, and Reporting Analyst across industries like e-commerce, banking, consulting, and operations.' },
-      { q: 'Is Career OS included?', a: 'Yes. Career OS is where you keep your profile and learning evidence. Interview preparation and a job board appear when roles are published. This is career preparation — not a placement guarantee.' },
+      { q: 'Is TalentBridge included?', a: 'Yes. TalentBridge is where you keep your profile and learning evidence. Interview preparation and a job board appear when roles are published. This is career preparation — not a placement guarantee.' },
     ],
     pricing: [
       { name: 'Self-paced', price: 19999, originalPrice: 39999, features: ['All recorded content', 'Curriculum in the LMS', 'Self-paced projects', 'Certificate eligibility (later phase)', 'Community access'] },
@@ -564,7 +564,7 @@ export const programs: Program[] = [
       { number: '04', title: 'Node.js & APIs', description: 'Server-side development with Node.js and Express, REST API design, middleware, and error handling.', duration: '4 weeks' },
       { number: '05', title: 'Databases', description: 'PostgreSQL database design, SQL queries, Prisma ORM, and connecting backends to data.', duration: '4 weeks' },
       { number: '06', title: 'Auth, Security & Deployment', description: 'JWT authentication, OWASP security basics, Docker, and deploying full applications to cloud platforms.', duration: '4 weeks' },
-      { number: '07', title: 'Client Projects & Career', description: 'Five real-world projects with code reviews, portfolio review, and Career OS access.', duration: '10 weeks' },
+      { number: '07', title: 'Client Projects & Career', description: 'Five real-world projects with code reviews, portfolio review, and TalentBridge access.', duration: '10 weeks' },
     ],
     projectsDetail: [
       { title: 'E-Commerce Platform', what: 'Build a full-stack shopping application with product listings, cart, checkout, and order management', skills: ['React', 'Node.js', 'PostgreSQL', 'Stripe'], difficulty: 'Advanced' },
@@ -575,13 +575,13 @@ export const programs: Program[] = [
       'Recorded modules with hands-on builds in the LMS',
       'Project submissions you can keep in a portfolio',
       'Structured practice across frontend and backend',
-      'Keep your learning evidence in Career OS',
+      'Keep your learning evidence in TalentBridge',
     ],
     faqs: [
       { q: 'Do I need prior coding experience?', a: 'No prior experience is required. We start from the very basics of HTML and build up to deploying full applications over 9 months.' },
-      { q: 'How is this different from self-learning?', a: 'Structured curriculum, project reviews in the LMS, and a community of learners — plus Career OS to keep your evidence. Live classroom delivery is a later phase.' },
+      { q: 'How is this different from self-learning?', a: 'Structured curriculum, project reviews in the LMS, and a community of learners — plus TalentBridge to keep your evidence. Live classroom delivery is a later phase.' },
       { q: 'What kind of jobs will I be qualified for?', a: 'Junior Full Stack Developer, Frontend Developer, Backend Developer, and Associate Software Engineer roles across product and service companies.' },
-      { q: 'Is Career OS included?', a: 'Yes. Keep your profile and learning evidence in Career OS. This is career preparation — not a placement guarantee.' },
+      { q: 'Is TalentBridge included?', a: 'Yes. Keep your profile and learning evidence in TalentBridge. This is career preparation — not a placement guarantee.' },
     ],
     pricing: [
       { name: 'Self-paced', price: 24999, originalPrice: 49999, features: ['All recorded content', 'Curriculum in the LMS', 'Projects', 'Certificate eligibility (later phase)', 'Community'] },
@@ -636,13 +636,13 @@ export const programs: Program[] = [
       'Recorded modules covering LLMs, prompting, and application patterns',
       'Hands-on coding in every module — no passive watching',
       'Project builds in the LMS with a documented architecture',
-      'Keep your learning evidence in Career OS',
+      'Keep your learning evidence in TalentBridge',
     ],
     faqs: [
       { q: 'What prior knowledge do I need?', a: 'Comfortable Python programming is required. Familiarity with basic ML concepts is helpful but not mandatory.' },
       { q: 'Does this cover open-source models as well as commercial APIs?', a: 'Yes. We cover both OpenAI and Anthropic APIs as well as open-weight models like Llama and Mistral.' },
       { q: 'How quickly is this content updated?', a: 'The generative AI space moves fast. We update module content and add new sessions as the field evolves.' },
-      { q: 'Is Career OS included?', a: 'Yes. Keep your profile and learning evidence in Career OS. This is career preparation — not a placement guarantee.' },
+      { q: 'Is TalentBridge included?', a: 'Yes. Keep your profile and learning evidence in TalentBridge. This is career preparation — not a placement guarantee.' },
     ],
     pricing: [
       { name: 'Self-paced', price: 14999, originalPrice: 29999, features: ['All recorded content', 'Curriculum in the LMS', 'Projects', 'Certificate eligibility (later phase)'] },
@@ -697,14 +697,14 @@ export const programs: Program[] = [
       'Case studies and recorded modules in the LMS',
       'Practice from Indian and global product examples',
       'Project submissions for a PM portfolio',
-      'Interview-style prompts you can rehearse in Career OS',
-      'Keep your learning evidence in Career OS',
+      'Interview-style prompts you can rehearse in TalentBridge',
+      'Keep your learning evidence in TalentBridge',
     ],
     faqs: [
       { q: 'Do I need a technical background?', a: 'No. While engineers who transition to PM have strong technical credibility, the program is designed for learners from any background — business, design, or technical.' },
       { q: 'What companies do Skylent PM graduates join?', a: 'We do not publish placement data we cannot verify. Our focus is on giving you the skills and preparation to compete for PM roles on your own merit.' },
       { q: 'How is the program structured?', a: 'Recorded modules and case-study practice are available in the LMS. A live classroom layer is planned for a later phase — it is not a live product today.' },
-      { q: 'Is Career OS included?', a: 'Yes. Keep your profile and learning evidence in Career OS. This is career preparation — not a placement guarantee.' },
+      { q: 'Is TalentBridge included?', a: 'Yes. Keep your profile and learning evidence in TalentBridge. This is career preparation — not a placement guarantee.' },
     ],
     pricing: [
       { name: 'Self-paced', price: 17999, originalPrice: 35999, features: ['Recorded sessions', 'Curriculum in the LMS', 'Case studies', 'Certificate eligibility (later phase)'] },
@@ -1081,11 +1081,11 @@ The problem is that career outcomes are not produced by career services. They ar
 
 Career services at the end of a course is like adding a quality check at the end of a manufacturing line. By the time you get there, the product is already determined.
 
-So Career OS is not a placement service and it is not a job board. It is the workspace where the work you produced while learning becomes evidence you can present.
+So TalentBridge is not a placement service and it is not a job board. It is the workspace where the work you produced while learning becomes evidence you can present.
 
-The chain is deliberate. You learn something. You practise it. You build a named piece of work against real material. That work is kept as evidence. Career OS is where that evidence lives, alongside your profile, your applications, and interview preparation.
+The chain is deliberate. You learn something. You practise it. You build a named piece of work against real material. That work is kept as evidence. TalentBridge is where that evidence lives, alongside your profile, your applications, and interview preparation.
 
-What that means in practice: Career OS has nothing to show you until you have produced something. It is not a feed that fills itself with activity. If the opportunities surface is empty, no partner has published a role, and we would rather show you an empty surface than an invented one.
+What that means in practice: TalentBridge has nothing to show you until you have produced something. It is not a feed that fills itself with activity. If the opportunities surface is empty, no partner has published a role, and we would rather show you an empty surface than an invented one.
 
 We are not claiming this guarantees a job. We are claiming the sequence is the right way round — work first, then evidence, then the conversation about what is next.`,
   },
@@ -1093,7 +1093,7 @@ We are not claiming this guarantees a job. We are claiming the sequence is the r
 
 // ─── JOBS ─────────────────────────────────────────────────────────────────────
 /**
- * Intentionally absent. Career OS is a learner workspace, not a job board, and
+ * Intentionally absent. TalentBridge is a learner workspace, not a job board, and
  * Skylent does not invent employers, salaries, or openings. Real roles reach the
  * learner through `/api/v1/career/jobs` and render in /career-os/jobs; when no
  * partner has published a role, that surface stays empty.

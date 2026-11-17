@@ -166,7 +166,7 @@ function Frame({
     <div className="hp-lpb-frame">
       <aside className="hp-lpb-side">
         <p className="hp-lpb-brand">Skylent.</p>
-        <nav aria-label="Skylent OS">
+        <nav aria-label="Skilab">
           {OS_ITEMS.map((item) => {
             const on = item.stage === stage
             if (item.to) {
@@ -759,7 +759,7 @@ function BuildBody({
           <p className="hp-lpb-kicker">Showcase</p>
           <h3>Keep the work. Carry it yourself.</h3>
           <p>
-            Work you keep can move into Career OS. Nothing is published automatically, and
+            Work you keep can move into TalentBridge. Nothing is published automatically, and
             nothing is invented here.
           </p>
           <div className="hp-lpb-tiles">
@@ -894,7 +894,7 @@ export default function SkylentHeroLearningModel() {
             </h1>
             <p className="hp-lpb-intro-lead">
               Skylent is an editorial learning platform and OS for structured teaching, applied practice, real
-              projects, and evidence you can carry into Career OS.
+              projects, and evidence you can carry into TalentBridge.
             </p>
             <div className="hp-lpb-intro-actions">
               <Link className="hp-lpb-cta hp-lpb-cta-primary" to="/programs">
@@ -907,7 +907,7 @@ export default function SkylentHeroLearningModel() {
           </header>
           <h2 className="hp-lpb-journey-title">Learn → Practice → Build</h2>
           <p className="hp-lpb-journey-note">
-            The same model runs inside Skylent OS — pick a stage to see how it works.
+            The same model runs inside Skilab — pick a stage to see how it works.
           </p>
           {STAGES.map((item) => {
             const on = stage === item.id

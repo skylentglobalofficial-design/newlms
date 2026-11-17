@@ -85,13 +85,13 @@ function CareerOsLockedInsideLearnerShell({
               marginBottom: 10,
             }}
           >
-            SKYLENT CAREER OS · PLACEMENT &amp; READINESS GATE
+            SKYLENT TALENTBRIDGE · PLACEMENT &amp; READINESS GATE
           </span>
           <h1 id="cos-locked-title" style={{ margin: "0 0 8px", fontSize: "clamp(22px, 2.8vw, 30px)", color: "#ffffff" }}>
-            Unlock Career OS Exclusive
+            Unlock TalentBridge Exclusive
           </h1>
           <p style={{ margin: 0, fontSize: 14.5, lineHeight: 1.6, color: "#cbd5e1", maxWidth: 680 }}>
-            Complete <strong style={{ color: "#ffffff" }}>60% of your course + quizzes + project</strong> within 6 months to unlock Career OS &amp; get <strong style={{ color: "#ffffff" }}>+3 Months Extra Practice</strong>.
+            Complete <strong style={{ color: "#ffffff" }}>60% of your course + quizzes + project</strong> within 6 months to unlock TalentBridge &amp; get <strong style={{ color: "#ffffff" }}>+3 Months Extra Practice</strong>.
           </p>
         </div>
 
@@ -150,7 +150,7 @@ function CareerOsLockedInsideLearnerShell({
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
                 <div>
                   <span style={{ fontSize: 11, fontWeight: 600, color: "#5142b5", textTransform: "uppercase", letterSpacing: "0.06em" }}>
-                    ACTIVE TRACK · FLAGSHIP LIVE + CAREER OS PRO
+                    ACTIVE TRACK · FLAGSHIP LIVE + TALENTBRIDGE PRO
                   </span>
                   <h2 style={{ margin: "4px 0 0", fontSize: 21, color: "#0f172a" }}>
                     {activeTrack.title} — Eligibility Progress
@@ -284,7 +284,7 @@ function CareerOsLockedInsideLearnerShell({
           >
             <h2 style={{ margin: "0 0 8px", fontSize: 20, color: "#0f172a" }}>Enrol in a Course First</h2>
             <p style={{ margin: "0 0 18px", fontSize: 14, color: "#64748b" }}>
-              Choose a Premium or Pro career track to start your learning and unlock Career OS.
+              Choose a Premium or Pro career track to start your learning and unlock TalentBridge.
             </p>
             <Link
               to="/dashboard/student#explore-programmes"
@@ -433,7 +433,7 @@ export default function CareerOSLayout() {
     return (
       <CareerOSShell hideSubnav>
         <div style={{ padding: "32px 24px", color: "#475569", fontSize: 14 }}>
-          Loading Career OS…
+          Loading TalentBridge…
         </div>
       </CareerOSShell>
     )

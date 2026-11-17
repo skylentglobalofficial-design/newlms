@@ -1,5 +1,5 @@
 /**
- * Public entry to Career OS (signed out) — V32 Interactive Dossier & Crisp White + Royal Purple Card Architecture.
+ * Public entry to TalentBridge (signed out) — V32 Interactive Dossier & Crisp White + Royal Purple Card Architecture.
  */
 import { Link } from "react-router-dom"
 import { PageShell } from "../../components/shared"
@@ -94,10 +94,10 @@ function statusLabel(status: ProductFeature["status"]): string {
 
 function FeatureCard({ feature, index }: { feature: ProductFeature; index: number }) {
   const meta = CARD_META[feature.id] ?? {
-    code: `0${index + 1} · CAREER OS MODULE`,
+    code: `0${index + 1} · TALENTBRIDGE MODULE`,
     tag: "Portfolio Tool",
-    previewLabel: "INCLUDED IN CAREER OS",
-    previewValue: "Connected to your Skylent OS coursework and graded labs.",
+    previewLabel: "INCLUDED IN TALENTBRIDGE",
+    previewValue: "Connected to your Skilab coursework and graded labs.",
     svgPath: "M12 2L2 7l10 5 10-5-10-5zm0 7.5l-6-3 6-3 6 3-6 3z",
   }
 
@@ -157,12 +157,12 @@ export default function CareerOSPublicPage() {
         <section className="cpx-hero" aria-labelledby="cpx-title">
           <div className="sky-container cpx-hero__split">
             <div className="cpx-hero__inner">
-              <p className="hx-eyebrow hx-eyebrow--dark">Career OS · Verified Proof-of-Work &amp; Role Readiness</p>
+              <p className="hx-eyebrow hx-eyebrow--dark">TalentBridge · Verified Proof-of-Work &amp; Role Readiness</p>
               <h1 id="cpx-title" className="cpx-h1">
                 Turn your coursework and 2-month internship into <em>a job-ready portfolio.</em>
               </h1>
               <p className="cpx-lead">
-                Resumes claim skills; Career OS proves them. As you execute SQL queries, Python pipelines, and product specs in Skylent OS, Career OS compiles your graded artefacts, 5-dimension rubric scores, and public /verify credentials into one recruiter-verifiable dossier.
+                Resumes claim skills; TalentBridge proves them. As you execute SQL queries, Python pipelines, and product specs in Skilab, TalentBridge compiles your graded artefacts, 5-dimension rubric scores, and public /verify credentials into one recruiter-verifiable dossier.
               </p>
               <div className="hx-hero__actions">
                 <Link className="sk-btn sk-btn-primary hx-btn" to="/signup">
@@ -179,7 +179,7 @@ export default function CareerOSPublicPage() {
             </div>
 
             {/* Right-Hand Interactive Proof-of-Work Dossier Preview Card */}
-            <aside className="cpx-dossier-preview" aria-label="Sample Career OS Proof-of-Work Dossier">
+            <aside className="cpx-dossier-preview" aria-label="Sample TalentBridge Proof-of-Work Dossier">
               <div className="cpx-dossier-preview__top">
                 <div>
                   <span className="cpx-dossier-preview__eyebrow">Sample Verified Graduate Portfolio</span>
@@ -224,9 +224,9 @@ export default function CareerOSPublicPage() {
           </div>
 
           <div className="sky-container">
-            <div className="cpx-pillars" aria-label="Career OS 3-Pillar Architecture">
+            <div className="cpx-pillars" aria-label="TalentBridge 3-Pillar Architecture">
               <div className="cpx-pillar">
-                <span>01 · Execute in Skylent OS Labs</span>
+                <span>01 · Execute in Skilab Labs</span>
                 <strong>Real Projects & 2-Month Internship</strong>
                 <p>Write real SQL queries on 166 retail rows, scope 6-week engineering PRDs, and run LLM accuracy evaluations inside browser sandboxes.</p>
               </div>
@@ -250,13 +250,13 @@ export default function CareerOSPublicPage() {
           <div className="sky-container">
             <div className="hx-head">
               <div>
-                <p className="hx-eyebrow hx-eyebrow--dark">Career OS Workspace · Core Modules</p>
+                <p className="hx-eyebrow hx-eyebrow--dark">TalentBridge Workspace · Core Modules</p>
                 <h2 id="cpx-parts-title" className="hx-h2">
                   Every tool required to turn coursework <em>into verified proof.</em>
                 </h2>
               </div>
               <p className="hx-head__aside">
-                Each module connects directly to the lessons, browser labs, and capstones you complete inside Skylent OS.
+                Each module connects directly to the lessons, browser labs, and capstones you complete inside Skilab.
               </p>
             </div>
             <ul className="cpx-grid">
@@ -287,7 +287,7 @@ export default function CareerOSPublicPage() {
                 <span />
               </div>
               <div className="cpx-hub">
-                <b>Career OS</b>
+                <b>TalentBridge</b>
                 <span>Profile · Verified Projects · Role Skill-Gap Match</span>
               </div>
             </div>
@@ -307,7 +307,7 @@ export default function CareerOSPublicPage() {
                 <ArrowRight />
               </Link>
               <Link className="sk-btn hx-btn hx-btn--ghost" to="/login" state={{ returnTo: "/career-os" }}>
-                Sign in to Career OS
+                Sign in to TalentBridge
               </Link>
             </div>
           </div>

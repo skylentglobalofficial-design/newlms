@@ -1,7 +1,7 @@
 /**
- * The Career OS workspace, drawn from src/lib/product-manifest.ts. The homepage plate and the
- * public Career OS plate both render through this, so they show the same names, order and states
- * as the signed-in Career OS overview.
+ * The TalentBridge workspace, drawn from src/lib/product-manifest.ts. The homepage plate and the
+ * public TalentBridge plate both render through this, so they show the same names, order and states
+ * as the signed-in TalentBridge overview.
  *
  * mode "example": public pages. Live features show a label example; the plate is marked Example.
  * mode "empty":   what a new account sees. Every feature shows its empty state.
@@ -28,7 +28,7 @@ function valueOf(item: ProductFeature, mode: Mode): string | null {
 export function careerSpecimenLabel(): string {
   const features = publicFeatures(CAREER_OS_FEATURES)
   const parts = features.map((item) => `${item.label}: ${item.status === "live" ? "live" : item.status === "soon" ? "coming soon" : "in development"}`)
-  return `Career OS workspace, example. ${parts.join(". ")}. No readiness score, job match or salary is shown.`
+  return `TalentBridge workspace, example. ${parts.join(". ")}. No readiness score, job match or salary is shown.`
 }
 
 export default function CareerOSSpecimen({ mode = "example", activeNav = "overview" }: { mode?: Mode; activeNav?: string }) {
@@ -42,7 +42,7 @@ export default function CareerOSSpecimen({ mode = "example", activeNav = "overvi
   return (
     <div className="cspec" role="img" aria-label={careerSpecimenLabel()}>
       <div className="cspec__bar">
-        <span className="cspec__brand">Career OS</span>
+        <span className="cspec__brand">TalentBridge</span>
         <span className="cspec__nav" aria-hidden="true">
           {CAREER_OS_NAV.slice(0, 4).map((item) => (
             <span key={item.id} className={item.id === activeNav ? "is-on" : undefined}>

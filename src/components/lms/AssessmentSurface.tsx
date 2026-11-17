@@ -61,10 +61,10 @@ export function AssessmentSurface({
         <div className="lx-submitted">
           <h2>Submission recorded</h2>
           <p className="dash-empty-copy">
-            {completionNote ?? 'Evaluated against the structured course rubric. Record the artifact on Career OS → Projects if you want portfolio evidence.'}
+            {completionNote ?? 'Evaluated against the structured course rubric. Record the artifact on TalentBridge → Projects if you want portfolio evidence.'}
           </p>
           <Link className="os-link" to="/career-os/projects" style={{ display: 'inline-block', marginTop: 14 }}>
-            Open Career OS Projects
+            Open TalentBridge Projects
           </Link>
         </div>
       )

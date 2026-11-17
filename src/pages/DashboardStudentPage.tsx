@@ -659,7 +659,7 @@ function LearnerProfileSettingsSection() {
             3. Password Security &amp; 3-Month (90-Day) Auto-Rotation Policy
           </strong>
           <span className="sh-note">
-            To protect your certificates and Career OS portfolio, Skylent prompts you every 3 months (90 days) to rotate your account password.
+            To protect your certificates and TalentBridge portfolio, Skylent prompts you every 3 months (90 days) to rotate your account password.
           </span>
         </div>
         <Link className="os-btn os-btn-primary" to="/account/password" style={{ textDecoration: "none" }}>
@@ -774,7 +774,7 @@ function SelectYourPlanPortalModal({
           >
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8, marginBottom: 10 }}>
-                <strong style={{ fontSize: 18, color: '#0f172a' }}>Browser Practice Labs</strong>
+                <strong style={{ fontSize: 18, color: '#0f172a' }}>Skilab Practice Studio</strong>
                 <span style={{ fontSize: 11, fontWeight: 700, padding: '4px 10px', borderRadius: 999, background: '#f5f3ff', color: '#5142b5' }}>
                   2-Month Free Internship
                 </span>
@@ -1822,7 +1822,7 @@ export default function DashboardStudentPage() {
         </>
       )}
       <p className="sh-foot">
-        Project evidence is kept in Career OS.{' '}
+        Project evidence is kept in TalentBridge.{' '}
         <Link className="os-link" to="/career-os/projects">View your projects <ArrowRight /></Link>
       </p>
     </section>

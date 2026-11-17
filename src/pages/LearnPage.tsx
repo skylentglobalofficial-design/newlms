@@ -736,11 +736,11 @@ export default function LearnPage() {
                     {access.workspace.program.progress.totalCourses - access.workspace.program.progress.completedCourses === 1 ? 'course' : 'courses'}; My learning shows where to resume.
                   </p>
                 ) : (
-                  <p className="os-lead">You have completed every lesson. Claim your certificate from My learning, and add your project to Career OS when you want it on your profile.</p>
+                  <p className="os-lead">You have completed every lesson. Claim your certificate from My learning, and add your project to TalentBridge when you want it on your profile.</p>
                 )}
                 <div className="os-actions">
                   <Link className="os-btn os-btn-primary" to="/dashboard/student">Go to my learning</Link>
-                  <Link className="os-btn os-btn-ghost" to="/career-os">Open Career OS</Link>
+                  <Link className="os-btn os-btn-ghost" to="/career-os">Open TalentBridge</Link>
                 </div>
               </div>
             ) : null}

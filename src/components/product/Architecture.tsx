@@ -237,7 +237,7 @@ export function PracticePillarSubnav({ current }: { current: string }) {
 
 export function CareerPublicSubnav({ current }: { current: string }) {
   return (
-    <nav className="arch-pillar-subnav cos-public-subnav" aria-label="Career OS destinations">
+    <nav className="arch-pillar-subnav cos-public-subnav" aria-label="TalentBridge destinations">
       <span className="arch-pillar-kicker">Career</span>
       {CAREER_PUBLIC_DESTINATIONS.map((line) => (
         <Link

@@ -502,7 +502,7 @@ function AdminEmployersSection() {
   return (
     <section id="admin-employers" style={cardStyle}>
       <span style={{ fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 700, color: '#5142b5', textTransform: 'uppercase' }}>
-        CAREER OS HIRING PARTNERS &amp; RECRUITER LINKING
+        TALENTBRIDGE HIRING PARTNERS &amp; RECRUITER LINKING
       </span>
       <h2 style={{ margin: '2px 0 8px', fontSize: 18, color: '#0f172a' }}>Employers</h2>
       <p style={{ color: C.slate, fontSize: 12.5, lineHeight: 1.6, marginTop: 0 }}>
@@ -1190,7 +1190,7 @@ export default function DashboardAdminPage() {
     { id: 'curriculum', badge: 'STEP 01 · AUTHORING', title: 'Course, Module & Lecture Studio', desc: 'Create draft courses, structure modules, add Notes/Video/Labs/Quizzes, assign Faculty TAs & publish.' },
     { id: 'users', badge: 'STEP 02 · IDENTITY', title: 'Users & Role Provisioning', desc: 'Search accounts and assign Student, Faculty TA, College/Org, Recruiter, or Superadmin roles.' },
     { id: 'orgs', badge: 'STEP 03 · CAMPUS B2B', title: 'Colleges & Organisations', desc: 'Create isolated College and Enterprise tenants for cohort tracking & CSV reporting.' },
-    { id: 'employers', badge: 'STEP 04 · CAREER OS', title: 'Employers & Recruiter Linking', desc: 'Create hiring partner companies and link Recruiter accounts to post jobs.' },
+    { id: 'employers', badge: 'STEP 04 · TALENTBRIDGE', title: 'Employers & Recruiter Linking', desc: 'Create hiring partner companies and link Recruiter accounts to post jobs.' },
     { id: 'payments', badge: 'STEP 05 · ECONOMY', title: 'Payments, Refunds & Elixir Store', desc: 'Record verified payments, manage Elixir earning rules, and publish Case Studies.' },
     { id: 'practice', badge: 'STEP 06 · SANDBOXES', title: 'Practice Studios & Video Media', desc: 'Configure browser case workspaces and attach Mux video playback IDs.' },
   ]

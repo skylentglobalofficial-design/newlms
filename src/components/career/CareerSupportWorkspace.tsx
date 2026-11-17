@@ -82,7 +82,7 @@ export default function CareerSupportWorkspace() {
   return (
     <div className="support-workspace cos-work" style={{ maxWidth: 1100, margin: "0 auto", minWidth: 0, overflowX: "hidden" }}>
       <PageHead
-        eyebrow="Career OS · Support"
+        eyebrow="TalentBridge · Support"
         title="Career support"
         lead="See your support requests, track assigned tasks, and request help when you need it."
       />

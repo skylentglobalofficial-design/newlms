@@ -23,7 +23,7 @@ const STAGES = [
   { title: "Practice", body: "Quizzes and tasks inside each course." },
   { title: "Build", body: "Applied work where the curriculum includes it." },
   { title: "Prove", body: "Certificates with an ID anyone can check." },
-  { title: "Grow", body: "Carry your record into Career OS." },
+  { title: "Grow", body: "Carry your record into TalentBridge." },
 ] as const
 
 const CAREER_STATUS = [
@@ -48,14 +48,14 @@ const SCREENS = [
   },
   {
     src: learningPlayer,
-    alt: "The Skylent OS learning player with module curriculum, lessons and quizzes",
+    alt: "The Skilab learning player with module curriculum, lessons and quizzes",
     label: "Learning player",
     note: "Structured lessons, practice and progress.",
   },
   {
     src: careerEvidence,
-    alt: "Career OS evidence panels: what I completed, what I built and what I can show",
-    label: "Career OS",
+    alt: "TalentBridge evidence panels: what I completed, what I built and what I can show",
+    label: "TalentBridge",
     note: "Turn completed learning into a record.",
   },
 ] as const
@@ -168,7 +168,7 @@ function Hero() {
     <section className="ph-hero">
       <div className="ph-container ph-hero-grid">
         <div>
-          <p className="ph-eyebrow">Skill programs · Degrees · Career OS</p>
+          <p className="ph-eyebrow">Skill programs · Degrees · TalentBridge</p>
           <h1>
             Education built <span>for <em>what comes next.</em></span>
           </h1>
@@ -493,15 +493,15 @@ function CareerOSSpotlight() {
           <div>
             <img
               src={careerEvidence}
-              alt="Career OS evidence panels: what I completed, what I built and what I can show"
+              alt="TalentBridge evidence panels: what I completed, what I built and what I can show"
               width={1600}
               height={1000}
             />
           </div>
-          <figcaption>Career OS in the student workspace — real screen.</figcaption>
+          <figcaption>TalentBridge in the student workspace — real screen.</figcaption>
         </figure>
         <div>
-          <p className="ph-kicker">Career OS</p>
+          <p className="ph-kicker">TalentBridge</p>
           <h2>Turn learning into evidence you can use.</h2>
           <p className="ph-lead">One record that connects your enrolled learning, completed work and certificates.</p>
           <ul className="ph-status">
@@ -515,8 +515,8 @@ function CareerOSSpotlight() {
               </li>
             ))}
           </ul>
-          <p className="ph-note">Career OS does not guarantee a job.</p>
-          <ButtonLink to="/career-os" primary>Explore Career OS</ButtonLink>
+          <p className="ph-note">TalentBridge does not guarantee a job.</p>
+          <ButtonLink to="/career-os" primary>Explore TalentBridge</ButtonLink>
         </div>
       </div>
     </section>
@@ -534,7 +534,7 @@ function PathSection() {
           <p className="ph-kicker">Not sure where to start?</p>
           <h2>Tell us what you&apos;re trying to do.</h2>
           <p className="ph-lead">
-            Find My Path asks about your stage and goals, then suggests a sensible next step across programmes, degrees and Career OS. It is a guidance tool — clear rules, not a prediction.
+            Find My Path asks about your stage and goals, then suggests a sensible next step across programmes, degrees and TalentBridge. It is a guidance tool — clear rules, not a prediction.
           </p>
           <ButtonLink to="/path" primary>Find My Path</ButtonLink>
         </div>

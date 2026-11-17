@@ -63,7 +63,7 @@ const TYPE_ACTIVITIES: Record<ProgramType, string[]> = {
     'Complete structured modules with hands-on work',
     'Build portfolio projects from coursework',
     'Pass assessments that prove applied skill',
-    'Move into Career OS after program completion',
+    'Move into TalentBridge after program completion',
   ],
   CERTIFICATE: [
     'Complete module exercises on a fixed schedule',
@@ -258,7 +258,7 @@ export function ProgramCareerSection({
               From learning to application tracking.
             </h2>
             <p style={{ color: C.slate, fontSize: 16, lineHeight: 1.75, margin: '0 0 28px', maxWidth: 440 }}>
-              Completing this Professional Program activates Career OS. Build proof from coursework, then discover roles, apply, prepare, and track — without unsupported placement claims.
+              Completing this Professional Program activates TalentBridge. Build proof from coursework, then discover roles, apply, prepare, and track — without unsupported placement claims.
             </p>
             <FlowStrip
               tone="light"
@@ -276,7 +276,7 @@ export function ProgramCareerSection({
             <div key={step} style={{ padding: '14px 16px', borderTop: `1px solid ${T.lineDark}` }}>
               <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: C.ink, marginBottom: 4 }}>{step}</div>
               <div style={{ color: C.muted, fontSize: 11, lineHeight: 1.45 }}>
-                {step === 'Track' ? 'See what happens after you apply' : `Career OS · ${step.toLowerCase()}`}
+                {step === 'Track' ? 'See what happens after you apply' : `TalentBridge · ${step.toLowerCase()}`}
               </div>
             </div>
           ))}

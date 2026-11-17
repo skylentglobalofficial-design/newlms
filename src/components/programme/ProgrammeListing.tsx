@@ -52,7 +52,7 @@ const PATHWAY_CAPSTONES: Record<
     headlinePrefix: "Combine commercial SQL analytics with ",
     headlineSignal: "production Python & cohort validation.",
     sandboxType: "churn-cohort-validation",
-    figureCaption: "Skylent OS · Out-of-time Churn Cohort & SQL Validation Workbench",
+    figureCaption: "Skilab · Out-of-time Churn Cohort & SQL Validation Workbench",
     studio: "Northwind SQL Lab + Python ETL & Churn Cohort Sandbox",
     capstoneTitle: "Dual Capstone: Commercial Margin Audit & Out-of-Time Churn Pipeline",
     summary: "Complete both the 15-lesson Data Analytics course and the 15-lesson Python Programming & Automation course, plus the Churn Cohort Leakage validator.",
@@ -62,14 +62,14 @@ const PATHWAY_CAPSTONES: Record<
       { num: "01", title: "Audit Commercial SQL Grain", detail: "Validate 166 Northwind order rows, remove returned/invalid units, and compute category net revenue." },
       { num: "02", title: "Build Python ETL & Pytest Validators", detail: "Quarantine malformed settlement records, enforce unique transaction keys, and pass automated pytest suites." },
       { num: "03", title: "Verify Cohort Split & Leakage Guards", detail: "Enforce chronological train/test splits and audit precision-recall lift without future data leakage." },
-      { num: "04", title: "Publish Verified Project & Certificate", detail: "Submit both capstones to unlock your verified project report (/verify) and Career OS profile." },
+      { num: "04", title: "Publish Verified Project & Certificate", detail: "Submit both capstones to unlock your verified project report (/verify) and TalentBridge profile." },
     ],
   },
   "full-stack": {
     headlinePrefix: "Ship end-to-end TypeScript applications with ",
     headlineSignal: "safe PostgreSQL payment ledgers.",
     sandboxType: "idempotent-ledger-architecture",
-    figureCaption: "Skylent OS · Full-Stack Transactional Outbox & Ledger Sandbox",
+    figureCaption: "Skilab · Full-Stack Transactional Outbox & Ledger Sandbox",
     studio: "Full-Stack TypeScript, Express & PostgreSQL Ledger Sandbox",
     capstoneTitle: "Capstone: Safe Financial Settlement & Transactional Ledger API",
     summary: "Master end-to-end web engineering across 5 modules and 15 lessons: React 18 state architecture, Node/Express REST APIs, PostgreSQL indexing, and safe transaction handling.",
@@ -86,7 +86,7 @@ const PATHWAY_CAPSTONES: Record<
     headlinePrefix: "Architect citation-grounded RAG pipelines and ",
     headlineSignal: "reliable LLM evaluation suites.",
     sandboxType: "enterprise-rag-evaluation",
-    figureCaption: "Skylent OS · Citation-Grounded Enterprise RAG & Guardrail Evaluator",
+    figureCaption: "Skilab · Citation-Grounded Enterprise RAG & Guardrail Evaluator",
     studio: "Grounded RAG, Vector Retrieval & LLM Evaluation Sandbox",
     capstoneTitle: "Capstone: Citation-Grounded Enterprise RAG & Accuracy Eval Suite",
     summary: "Build production LLM systems across 5 modules and 15 lessons: structured JSON prompting, chunking & embeddings, hybrid RAG retrieval, tool-calling agents, and hallucination guardrails.",
@@ -213,7 +213,7 @@ export default function ProgrammeListing({ program, truth, cta, honesty, afterEn
                   <strong className="pp-metric-card__val">
                     {moduleCount} Modules · {lessonCount} Lessons
                   </strong>
-                  <span className="pp-metric-card__sub">Self-paced in Skylent OS</span>
+                  <span className="pp-metric-card__sub">Self-paced in Skilab</span>
                 </div>
                 <div className="pp-metric-card">
                   <span className="pp-metric-card__label">Applied Proof</span>
@@ -230,7 +230,7 @@ export default function ProgrammeListing({ program, truth, cta, honesty, afterEn
                 <div className="pp-metric-card">
                   <span className="pp-metric-card__label">Credential</span>
                   <strong className="pp-metric-card__val">Verifiable SKL ID</strong>
-                  <span className="pp-metric-card__sub">Unlocks Career OS at 60%</span>
+                  <span className="pp-metric-card__sub">Unlocks TalentBridge at 60%</span>
                 </div>
               </div>
 
@@ -308,7 +308,7 @@ export default function ProgrammeListing({ program, truth, cta, honesty, afterEn
                     </li>
                     <li>
                       <span aria-hidden="true">✓</span>
-                      <span><strong>Verifiable SKL Certificate</strong> &amp; Career OS unlock at 60% completion</span>
+                      <span><strong>Verifiable SKL Certificate</strong> &amp; TalentBridge unlock at 60% completion</span>
                     </li>
                   </ul>
 

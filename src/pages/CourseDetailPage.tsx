@@ -449,7 +449,7 @@ export default function CourseDetailPage() {
                   </h2>
                 </div>
                 <span style={{ fontSize: 13, color: "#cbd5e1" }}>
-                  Zero local setup · Runs directly inside Skylent OS
+                  Zero local setup · Runs directly inside Skilab
                 </span>
               </div>
               <div className="sky-stage__plate" style={{ borderRadius: 14, overflow: "hidden" }}>
@@ -537,13 +537,13 @@ export default function CourseDetailPage() {
               <h2>What you will practise and build</h2>
               <p className="cat-fine">
                 {profile?.practiceIntro ??
-                  "Practice is written work in Skylent OS. There is no live classroom and no video stream."}
+                  "Practice is written work in Skilab. There is no live classroom and no video stream."}
               </p>
               <div className="cat-practice">
                 <article>
                   <h3>Learning</h3>
                   <p>
-                    {practice.learning.length} written lessons in Skylent OS.
+                    {practice.learning.length} written lessons in Skilab.
                   </p>
                 </article>
                 <article>
@@ -636,7 +636,7 @@ export default function CourseDetailPage() {
             </ol>
             <p className="cat-fine">
               Progress and submitted work stay on your enrolment. You can carry
-              learning evidence into Career OS. Career OS is a workspace — not a
+              learning evidence into TalentBridge. TalentBridge is a workspace — not a
               job guarantee.
             </p>
             {showLiveCurriculum ? (

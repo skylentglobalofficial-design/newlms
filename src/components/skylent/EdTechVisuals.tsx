@@ -264,7 +264,7 @@ export function BrandTrustRibbon({ compact = false }: { compact?: boolean }) {
     >
       <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: 8, marginBottom: 12 }}>
         <span style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "#5142B5" }}>
-          Production Stack &amp; Evaluation Standard Across Skylent OS
+          Production Stack &amp; Evaluation Standard Across Skilab
         </span>
         <span style={{ fontSize: 11.5, fontWeight: 600, color: "#475569" }}>
           In-Browser Sandboxes · 20-Min Faculty TA Doubt SLA · SHA-256 Verifiable Dossiers
@@ -532,7 +532,7 @@ ${course.outcomes.map((o) => `- ${o}`).join("\n")}
 ## Complete 5-Module, 15-Lesson Syllabus
 ${modulesMd}
 
-## Verification & Career OS Standard
+## Verification & TalentBridge Standard
 Completing 60% of this curriculum unlocks Career Rise (skill-gap role matching & mock defense). Completing 100% issues a cryptographic Proof-of-Work Dossier verifiable at https://skylent.live/verify.
 `
     const blob = new Blob([docText], { type: "text/markdown;charset=utf-8" })

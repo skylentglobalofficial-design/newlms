@@ -1,7 +1,7 @@
 /**
  * /institutions (repolish). The B2B entry point, linked from the main navigation and the
  * homepage. It describes what Skylent provides to learners today (programmes, labs, LMS progress,
- * Career OS, lesson help, and the isolated College Tenant OS with 1-click CSV export) and how a
+ * TalentBridge, lesson help, and the isolated College Tenant OS with 1-click CSV export) and how a
  * partnership is set up.
  */
 import { Link } from "react-router-dom"
@@ -44,7 +44,7 @@ export default function InstitutionsPage() {
             <div>
               <p className="hx-eyebrow">For institutions · Multi-Tenant College OS</p>
               <h1 id="inx-title" className="hx-hero__title">
-                Practical learning and <em>Career OS</em> for your learners.
+                Practical learning and <em>TalentBridge</em> for your learners.
               </h1>
               <p className="hx-hero__lead">
                 Deploy Skylent’s 6 live 15-lesson courses, interactive SQL &amp; Python sandboxes, verifiable project certificates, and Isolated College Tenant OS alongside your campus curriculum.

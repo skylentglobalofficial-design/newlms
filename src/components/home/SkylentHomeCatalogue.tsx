@@ -13,7 +13,7 @@ const ECOSYSTEM = [
   {
     id: "data" as const,
     title: "Programmes",
-    copy: "Authored teaching you progress through in Skylent OS.",
+    copy: "Authored teaching you progress through in Skilab.",
     to: "/programmes",
   },
   {
@@ -37,7 +37,7 @@ const ECOSYSTEM = [
   {
     id: "tech" as const,
     title: "Projects",
-    copy: "Applied work and evidence you keep in Career OS.",
+    copy: "Applied work and evidence you keep in TalentBridge.",
     to: "/career-os/projects",
   },
 ] as const

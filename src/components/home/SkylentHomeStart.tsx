@@ -2,7 +2,7 @@ import { Link } from "react-router-dom"
 import "./SkylentHomeStart.css"
 
 const PATHS = [
-  { id: "career", index: "01", title: "Build a career", dest: "Career OS", to: "/career-os" },
+  { id: "career", index: "01", title: "Build a career", dest: "TalentBridge", to: "/career-os" },
   { id: "exam", index: "02", title: "Prepare for an exam", dest: "Competitive exams", to: "/exams" },
   { id: "subject", index: "03", title: "Study a subject", dest: "Programmes", to: "/programs" },
   { id: "skill", index: "04", title: "Learn something new", dest: "Programmes", to: "/programs" },

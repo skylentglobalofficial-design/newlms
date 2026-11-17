@@ -121,7 +121,7 @@ export default function AdminPricingAndCouponsPanel() {
   const [reqReason, setReqReason] = useState("Learner ready to enroll today if ₹1,500 concession is authorized.")
   const [showCounselorRequestForm, setShowCounselorRequestForm] = useState(false)
   const [appUpdateVersion, setAppUpdateVersion] = useState("1.5.0")
-  const [appUpdateNotes, setAppUpdateNotes] = useState("Zero-delay dashboard, PayU in-app checkout, Career OS strict lock & static mobile text sizing.")
+  const [appUpdateNotes, setAppUpdateNotes] = useState("Zero-delay dashboard, PayU in-app checkout, TalentBridge strict lock & static mobile text sizing.")
   const [appForceUpdate, setAppForceUpdate] = useState(false)
 
   async function handlePushAppUpdate(e: FormEvent) {

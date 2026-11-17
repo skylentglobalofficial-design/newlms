@@ -25,7 +25,7 @@ const DOCUMENTING = [
   },
   {
     label: "Career preparation",
-    desc: "How Career OS was used — only when the learner agrees to share.",
+    desc: "How TalentBridge was used — only when the learner agrees to share.",
   },
   {
     label: "Institution stories",
@@ -80,7 +80,7 @@ export default function StoriesPage() {
               Every Skylent graduate story is anchored in verifiable proof of work — audited Northwind SQL queries, Harbor Desk product specifications, and cryptographic (-PGM) credentials rather than generic quotes.
             </p>
             <p className="pe-note">
-              Explore how learners progress from their first module to a verified Career OS portfolio below.
+              Explore how learners progress from their first module to a verified TalentBridge portfolio below.
             </p>
           </div>
           <figure className="pe-figure">
@@ -168,7 +168,7 @@ export default function StoriesPage() {
           </h2>
           <p className="pe-lead">
             Skylent is documenting how learning becomes work you can show:
-            written lessons, practice, projects, and evidence in Career OS. A
+            written lessons, practice, projects, and evidence in TalentBridge. A
             story here will be a reviewed account of that work — never a
             fabricated outcome.
           </p>
@@ -256,7 +256,7 @@ export default function StoriesPage() {
             The work first. The story later.
           </h2>
           <p className="pe-lead">
-            Every graduate record is backed by live programme work inside Skylent OS: the Northwind SQL Lab, Harbor Desk PRD Studio, and Career OS.
+            Every graduate record is backed by live programme work inside Skilab: the Northwind SQL Lab, Harbor Desk PRD Studio, and TalentBridge.
           </p>
 
           {live.length >0 ? (
@@ -297,7 +297,7 @@ export default function StoriesPage() {
           )}
 
           <p className="pe-kicker is-spaced">
-            Career OS — how verified work becomes a job application
+            TalentBridge — how verified work becomes a job application
           </p>
           <ul className="pe-plain">
             {CAREER_OS_IA.map((item) => (
@@ -308,7 +308,7 @@ export default function StoriesPage() {
           </ul>
           <p className="pe-actions">
             <Link className="pe-cta-ghost" to="/career-os">
-              Explore Career OS
+              Explore TalentBridge
             </Link>
             <Link className="pe-cta-ghost" to="/institutions">
               For institutions

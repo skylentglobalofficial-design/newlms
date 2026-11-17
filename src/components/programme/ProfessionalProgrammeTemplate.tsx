@@ -464,7 +464,7 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
                       gap: 6,
                     }}
                   >
-                    <span style={{ color: "#34d399" }}>●</span> Try Interactive Browser Lab ↓
+                    <span style={{ color: "#34d399" }}>●</span> Try Interactive Skilab Studio ↓
                   </a>
                 </div>
 
@@ -634,13 +634,13 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
         onEnrol={onEnrol}
       />
 
-      {/* Section 03: Interactive Browser Lab Preview */}
+      {/* Section 03: Interactive Skilab Studio Preview */}
       <section className="sky-stage sky-band-navy pp-stage" id="pp-stage" aria-labelledby="pp-build-title">
         <div className="sky-container pp-stage__inner">
           <Reveal className="pp-build">
             <div className="pp-build__header">
               <div className="pp-build__lead">
-                <SectionIndex n="03" label="Interactive Browser Lab" />
+                <SectionIndex n="03" label="Interactive Skilab Studio" />
                 <h2 id="pp-build-title" className="pp-build__title">
                   {content.capstoneTitle}
                 </h2>

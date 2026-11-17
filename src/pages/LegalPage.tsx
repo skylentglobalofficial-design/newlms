@@ -1,6 +1,6 @@
 /**
  * /terms and /privacy. Plain-language documents that describe what the Skylent product actually
- * does today (accounts, enrolment, live PayU payment & refund terms, progress, Career OS records, enquiries, session cookies).
+ * does today (accounts, enrolment, live PayU payment & refund terms, progress, TalentBridge records, enquiries, session cookies).
  */
 import { Link } from "react-router-dom"
 import { PageShell } from "@/components/shared"
@@ -16,7 +16,7 @@ const TERMS: Section[] = [
     id: "using",
     title: "Using Skylent",
     body: [
-      "These terms apply when you browse skylent.live, try the public guest browser labs, create an account, enrol in a course, programme, or workshop, or use Career OS and Skylent AI.",
+      "These terms apply when you browse skylent.live, try the public guest browser labs, create an account, enrol in a course, programme, or workshop, or use TalentBridge and Skylent AI.",
       "By creating an account, completing checkout, enrolling, or sending an enquiry, you agree to these terms and to the Privacy Policy. If you do not agree, please do not create an account, enrol, or send an enquiry.",
       "When you agree, Skylent records the date and the version of these documents that you accepted.",
     ],
@@ -34,7 +34,7 @@ const TERMS: Section[] = [
     id: "enrolment",
     title: "Enrolment, pricing, payments and refunds",
     body: [
-      "Visitors can try Skylent's public guest browser labs (/labs) and Module 1 preview tasks without payment. Full access to all 6 self-paced flagship courses and career programmes is offered across three transparent plans: Basic (₹1,499), Flagship Professional (₹3,499), and Pro Career OS (₹6,499), alongside ₹99 live weekend builder workshops (which credit 99 Workshop Coins back to your learning wallet).",
+      "Visitors can try Skylent's public guest browser labs (/labs) and Module 1 preview tasks without payment. Full access to all 6 self-paced flagship courses and career programmes is offered across three transparent plans: Basic (₹1,499), Flagship Professional (₹3,499), and Pro TalentBridge (₹6,499), alongside ₹99 live weekend builder workshops (which credit 99 Workshop Coins back to your learning wallet).",
       "Payments are processed securely in Indian Rupees (INR) via PayU India (supporting UPI, Debit/Credit Cards, NetBanking, and EMI). Official discount codes require Admin authorization before they can be redeemed on the Order Details (/checkout) page.",
       "Refund policy: If you request a refund within 7 calendar days of purchase and have completed less than 20% of the course lessons without claiming a certificate, you may email support@skylent.live with your PayU transaction ID for a full refund to your original payment method within 5–7 business days.",
       "Degree pathway disclosures: UG and PG degree listings on /education are proposed university articulation pathways. Skylent does not independently award degrees or NEP/ABC credits; degree admission, curriculum approval, and degree conferral rest solely with a UGC/AICTE-authorised Partner Higher Education Institution (HEI) once confirmed.",
@@ -65,9 +65,9 @@ const TERMS: Section[] = [
   },
   {
     id: "careers",
-    title: "Career OS and opportunities",
+    title: "TalentBridge and opportunities",
     body: [
-      "Career OS unlocks once a learner completes at least 60% of an eligible course curriculum, passes module quizzes, and submits their graded capstone project. Career OS helps you organize your verified portfolio, skill-gap match, and mock defense prep; Skylent does not promise job placement or guaranteed salary outcomes.",
+      "TalentBridge unlocks once a learner completes at least 60% of an eligible course curriculum, passes module quizzes, and submits their graded capstone project. TalentBridge helps you organize your verified portfolio, skill-gap match, and mock defense prep; Skylent does not promise job placement or guaranteed salary outcomes.",
     ],
   },
   {
@@ -89,7 +89,7 @@ const PRIVACY: Section[] = [
     body: [
       "Account details: your name, email address and password (stored only as a secure bcrypt hash), or your Google account name and email if you sign in with Google.",
       "Learning records: enrolments, payment transaction references (processed via PayU India; Skylent never stores raw card numbers or UPI PINs), lesson progress, quiz attempts, assignment and lab submissions, and project work.",
-      "Career OS records you enter: target role, skills, education, experience, links, projects, applications and support requests.",
+      "TalentBridge records you enter: target role, skills, education, experience, links, projects, applications and support requests.",
       "Enquiries: the name, email, optional phone number and message you send through a contact or degree enquiry form.",
       "Skylent AI: the questions you ask and the lesson they relate to, so that a mentor response can be produced. If you are signed in, the site assistant also sends your display name and the names of the courses you are enrolled in.",
       "Acceptance records: the date and the version of the Terms & Conditions and Privacy Policy you accepted when you created an account, enrolled or sent an enquiry.",
@@ -115,7 +115,7 @@ const PRIVACY: Section[] = [
     id: "sharing",
     title: "Who can see it",
     body: [
-      "Your learning and Career OS records are visible to you and to authorised Skylent faculty and staff who grade submissions and support the service.",
+      "Your learning and TalentBridge records are visible to you and to authorised Skylent faculty and staff who grade submissions and support the service.",
       "A certificate verification code (/verify/:code) can be checked by anyone you share it with; the check shows your name, the completed course, rubric evidence summary, and the issue date.",
       "We share information with infrastructure providers that host and operate the platform (hosting, PostgreSQL database, PayU payment gateway, transactional SMTP email, Google sign-in, and the AI service behind Skylent AI), only as needed to run it.",
     ],

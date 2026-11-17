@@ -118,7 +118,7 @@ const STATIC_DEGREE_ENRICHMENT: Record<string, Partial<Degree>> = {
       visiting: "Mon–Sat · 10:00 AM to 4:00 PM (Prior campus tour booking required)",
     },
     learningMode: {
-      pacing: "Full-time classroom lectures + 8 hrs/week Skylent OS Lab studio",
+      pacing: "Full-time classroom lectures + 8 hrs/week Skilab Lab studio",
       liveSessions: "Daily campus lectures, mentored lab hours & code reviews",
       support: "On-campus faculty mentors + 20-Min Skylent TA Doubt SLA",
     },
@@ -126,7 +126,7 @@ const STATIC_DEGREE_ENRICHMENT: Record<string, Partial<Degree>> = {
       {
         label: "Year 1 (Sem 1–2)",
         subjects: ["Programming Foundations in Python", "Discrete Mathematics & Linear Algebra", "Relational Databases & Northwind SQL Lab", "Web Fundamentals & Git Workflows"],
-        teaching: "Classroom lectures + weekly graded Skylent OS SQL & Python labs",
+        teaching: "Classroom lectures + weekly graded Skilab SQL & Python labs",
       },
       {
         label: "Year 2 (Sem 3–4)",
@@ -140,14 +140,14 @@ const STATIC_DEGREE_ENRICHMENT: Record<string, Partial<Degree>> = {
       },
       {
         label: "Year 4 (Sem 7–8)",
-        subjects: ["6-Month Industry Internship / Production Capstone", "Security, Observability & Idempotent Ledgers", "Career OS Proof-of-Work Portfolio Defense"],
+        subjects: ["6-Month Industry Internship / Production Capstone", "Security, Observability & Idempotent Ledgers", "TalentBridge Proof-of-Work Portfolio Defense"],
         teaching: "Mentored industry capstone + external architecture defense",
       },
     ],
     tools: ["Python 3 & Pytest", "PostgreSQL & Northwind SQL", "React 18 & TypeScript", "Node.js & Express", "Grounded RAG & LLM Eval Suite"],
     labs: ["Northwind SQL Revenue Lab", "Python ETL Pipeline Validator", "Full-Stack Idempotent Ledger Sandbox", "GenAI RAG Evaluation Studio"],
     projects: ["End-to-End Transactional Ledger API", "Enterprise Grounded RAG Assistant", "Production ETL & Data Quality Suite"],
-    assessments: ["University Semester Examinations (60%)", "Continuous Skylent OS Lab & Capstone Defense (40%)"],
+    assessments: ["University Semester Examinations (60%)", "Continuous Skilab Lab & Capstone Defense (40%)"],
     skills: ["Full-Stack TypeScript", "SQL & PostgreSQL", "Python Automation", "System Design", "Grounded RAG"],
     careerRoles: ["Software Development Engineer (SDE-1)", "Full-Stack Engineer", "Data & Python Engineer", "Applied AI Engineer"],
   },
@@ -174,7 +174,7 @@ const STATIC_DEGREE_ENRICHMENT: Record<string, Partial<Degree>> = {
       },
       {
         label: "Year 3 (Sem 5–6)",
-        subjects: ["Strategic Management & Competitive Moats", "AI Workflows for Business & Operations", "Executive Capstone: Commercial & Product Defense", "Career OS Portfolio & Mock Boardroom Defense"],
+        subjects: ["Strategic Management & Competitive Moats", "AI Workflows for Business & Operations", "Executive Capstone: Commercial & Product Defense", "TalentBridge Portfolio & Mock Boardroom Defense"],
         teaching: "Graded capstone dossier + live panel defense",
       },
     ],
@@ -213,7 +213,7 @@ const STATIC_DEGREE_ENRICHMENT: Record<string, Partial<Degree>> = {
       },
       {
         label: "Semester 4",
-        subjects: ["Master's Thesis & Executive Capstone Defense", "Boardroom Cold Call Simulation & Peer Benchmarking", "Career OS Verified Dossier & Leadership Transition"],
+        subjects: ["Master's Thesis & Executive Capstone Defense", "Boardroom Cold Call Simulation & Peer Benchmarking", "TalentBridge Verified Dossier & Leadership Transition"],
         teaching: "1-on-1 faculty mentorship + graded executive dossier",
       },
     ],
@@ -252,7 +252,7 @@ const STATIC_DEGREE_ENRICHMENT: Record<string, Partial<Degree>> = {
       },
       {
         label: "Semester 4",
-        subjects: ["Production Engineering Capstone & System Defense", "Open-Source / Enterprise Architecture Dossier", "Career OS Technical Verification & Mock System Design"],
+        subjects: ["Production Engineering Capstone & System Defense", "Open-Source / Enterprise Architecture Dossier", "TalentBridge Technical Verification & Mock System Design"],
         teaching: "Graded production codebase + cryptographic proof dossier",
       },
     ],

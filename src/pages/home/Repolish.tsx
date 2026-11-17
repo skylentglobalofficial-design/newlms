@@ -87,7 +87,7 @@ export function HomeHero({
               href="#programmes"
               style={{ background: "#ffffff", border: "1px solid #cbd5e1", color: "#0f172a", fontWeight: 600 }}
             >
-              Try Interactive Browser Lab →
+              Try Interactive Skilab Studio →
             </a>
           </div>
           <div
@@ -108,7 +108,7 @@ export function HomeHero({
             </div>
             <div>
               <strong style={{ display: "block", fontSize: 18, fontWeight: 800, color: "#5142b5" }}>18+ Labs</strong>
-              <span style={{ fontSize: 12.5, color: "#475569" }}>Browser Practice Labs</span>
+              <span style={{ fontSize: 12.5, color: "#475569" }}>Skilab Practice Studio</span>
             </div>
             <div>
               <strong style={{ display: "block", fontSize: 18, fontWeight: 800, color: "#0f172a" }}>100% Practical</strong>
@@ -131,11 +131,11 @@ export function HomeHero({
               />
             </div>
 
-            <div className="hxw-ws" aria-label="Skylent OS workspace summary">
+            <div className="hxw-ws" aria-label="Skilab workspace summary">
               <div className="hxw-ws__top">
                 <span className="hxw-ws__mark" aria-hidden="true">✓</span>
                 <div>
-                  <span className="hxw-ws__title">Interactive Browser Labs & Case Studies</span>
+                  <span className="hxw-ws__title">Interactive Skilab Studios & Case Studies</span>
                   <span className="hxw-ws__note">Zero-Setup Workspaces · Verified Project Portfolios</span>
                 </div>
               </div>
@@ -178,7 +178,7 @@ export function HomeTrust() {
 const GOAL_CARDS = [
   { icon: "graduation", title: "Degrees", text: "UG and PG pathways to explore, online or on campus.", to: "/education" },
   { icon: "book", title: "Skill programmes", text: "Certification and professional programmes with practice.", to: "/programmes" },
-  { icon: "briefcase", title: "Career OS", text: "Your profile, projects and applications, in one place.", to: "/career-os" },
+  { icon: "briefcase", title: "TalentBridge", text: "Your profile, projects and applications, in one place.", to: "/career-os" },
   { icon: "sparkle", title: "Path Finder", text: "A 90-second guide for where to start across the 6 Skylent tracks.", to: "/path" },
 ] as const
 
@@ -259,7 +259,7 @@ const DA_SLUG = "data-analytics-pro"
 const LMS_STAGES = [
   { key: "programme", label: "1. Course Syllabus", href: "/programmes/data-analytics-pro", action: "Explore Programmes" },
   { key: "lesson", label: "2. Interactive Lesson", href: "/courses/data-analytics", action: "Preview Lessons" },
-  { key: "practice", label: "3. Browser SQL Lab", href: "/labs", action: "See Browser Labs" },
+  { key: "practice", label: "3. Skilab SQL Studio", href: "/labs", action: "See Browser Labs" },
   { key: "project", label: "4. Capstone Project", href: "/verify/SKL-2026-DA-EXEMPLAR", action: "View Capstones" },
   { key: "evidence", label: "5. Verified Certificate", href: "/verify/SKL-2026-DA-EXEMPLAR", action: "Verify Credentials" },
 ] as const
@@ -376,7 +376,7 @@ GROUP BY category;`}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap", marginBottom: 16 }}>
           <div>
             <span style={{ fontSize: 12, fontWeight: 700, color: "#5142b5", letterSpacing: "0.04em", textTransform: "uppercase" }}>
-              Step 3 · In-Browser SQL Lab
+              Step 3 · In-Skilab SQL Studio
             </span>
             <h3 style={{ margin: "4px 0 0", fontSize: 20, fontWeight: 700, color: "#0f172a" }}>
               Run real SQL queries in your browser — zero setup
@@ -656,7 +656,7 @@ export function InsideProgramme() {
           <div className="hx-app__stage">
             <div className="hx-app__bar">
               <span>Inside Course Preview · Data Analytics</span>
-              <span>15 Lessons · Browser SQL Lab · Graded Capstone</span>
+              <span>15 Lessons · Skilab SQL Studio · Graded Capstone</span>
             </div>
             <div className="hx-app__body" id="lms-panel" role="tabpanel" aria-labelledby={`lms-tab-${LMS_STAGES[stage].key}`}>
               <div className="hx-stable">
@@ -763,7 +763,7 @@ const FOCUS_FACE: Record<string, { title: string; image: string; width: number; 
     width: 800,
     height: 534,
     alt: "Illustrative code on a screen.",
-    line: "Pathway linking our authored Data Analytics and Python Programming & Automation courses in Skylent OS.",
+    line: "Pathway linking our authored Data Analytics and Python Programming & Automation courses in Skilab.",
   },
 }
 
@@ -1048,7 +1048,7 @@ export function HomeDegrees() {
               Undergraduate and postgraduate pathways
             </h2>
           </div>
-          <p className="hx-head__aside">Academic curriculum tracks built for university articulation and autonomous campus integration. Partner institutions confer the degree while Skylent powers the applied lab and Career OS stack.</p>
+          <p className="hx-head__aside">Academic curriculum tracks built for university articulation and autonomous campus integration. Partner institutions confer the degree while Skylent powers the applied lab and TalentBridge stack.</p>
         </Reveal>
         <ul className="hx-doors">
           {DEGREE_DOORS.map((door) => {
@@ -1101,10 +1101,10 @@ export function HomeDegrees() {
   )
 }
 
-/* ── Career OS walkthrough & Student Portfolio Showcase ──────────────────── */
+/* ── TalentBridge walkthrough & Student Portfolio Showcase ──────────────────── */
 
 const JOURNEY = [
-  { key: "enrol", title: "Pick a Career Track", sub: "Start free in Skylent OS (+50 Coins)", text: "Choose any of our 6 career tracks and unlock your interactive learning workspace immediately." },
+  { key: "enrol", title: "Pick a Career Track", sub: "Start free in Skilab (+50 Coins)", text: "Choose any of our 6 career tracks and unlock your interactive learning workspace immediately." },
   { key: "learn", title: "Learn Step-by-Step", sub: "Interactive lessons + concept checks", text: "Master concepts in plain language with instant English & Hinglish AI explanations." },
   { key: "build", title: "Practise in Live Labs", sub: "SQL, Python, PRDs & RAG in browser", text: "Run real queries and build real deliverables without installing anything on your laptop." },
   { key: "evidence", title: "Earn Verified Certificate", sub: "Graded capstone + public ID link", text: "Every completed course issues a verifiable SKL certificate linked to your actual project work." },
@@ -1114,7 +1114,7 @@ const JOURNEY = [
 
 type JourneyKey = (typeof JOURNEY)[number]["key"]
 
-export function CareerJourney({ eyebrow = "Career OS", showLink = true }: { eyebrow?: string; showLink?: boolean } = {}) {
+export function CareerJourney({ eyebrow = "TalentBridge", showLink = true }: { eyebrow?: string; showLink?: boolean } = {}) {
   const walk = useWalkthrough<HTMLElement>(JOURNEY.length, 1650)
   const active = walk.active
   const step = JOURNEY[active]
@@ -1132,7 +1132,7 @@ export function CareerJourney({ eyebrow = "Career OS", showLink = true }: { eyeb
         </Reveal>
         <div className="hx-journey__grid" {...walk.regionProps}>
           <div className="hx-journey__nav">
-            <ol className="hx-steps" aria-label="How Career OS organises your work">
+            <ol className="hx-steps" aria-label="How TalentBridge organises your work">
               {JOURNEY.map((item, i) => (
                 <li key={item.key}>
                   <button
@@ -1157,13 +1157,13 @@ export function CareerJourney({ eyebrow = "Career OS", showLink = true }: { eyeb
             </div>
           </div>
           <div className="hx-journey__stage">
-            <p className="hx-journey__note">Interactive Career OS Walkthrough <span className="hx-sr">Illustrative preview · Not connected</span></p>
+            <p className="hx-journey__note">Interactive TalentBridge Walkthrough <span className="hx-sr">Illustrative preview · Not connected</span></p>
             <div className="hx-window">
               <div className="hx-window__bar" aria-hidden="true">
                 <span />
                 <span />
                 <span />
-                <em>Career OS</em>
+                <em>TalentBridge</em>
               </div>
               <div className="hx-window__body">
                 <p className="hx-sr">Illustrative preview · Not connected. {step.title}. {step.text}</p>
@@ -1185,7 +1185,7 @@ export function CareerJourney({ eyebrow = "Career OS", showLink = true }: { eyeb
               <WalkControls active={active} count={JOURNEY.length} title={step.title} playing={walk.playing} onPrev={walk.prev} onNext={walk.next} onToggle={walk.toggle} />
               {showLink ? (
                 <Link className="sk-btn sk-btn-primary" to="/career-os">
-                  How Career OS works
+                  How TalentBridge works
                   <ArrowRight />
                 </Link>
               ) : null}
@@ -1198,7 +1198,7 @@ export function CareerJourney({ eyebrow = "Career OS", showLink = true }: { eyeb
 }
 
 function careerLimits(): string {
-  return "Your Career OS profile unlocks automatically once you complete 60% of any course — bringing your verified projects, certificates, and role skill-match score together in one shareable link."
+  return "Your TalentBridge profile unlocks automatically once you complete 60% of any course — bringing your verified projects, certificates, and role skill-match score together in one shareable link."
 }
 
 function HomeCareerPlate({ step }: { step: JourneyKey }) {
@@ -1215,7 +1215,7 @@ function HomeCareerPlate({ step }: { step: JourneyKey }) {
           <span className="hx-royal-plate__emerald">✓ +50 Elixir Welcome Bonus</span>
         </div>
         <h3 className="hx-royal-plate__title">Start {programme} in One Click</h3>
-        <p className="hx-royal-plate__sub">5 Modules · 15 Guided Lessons · Pre-Loaded Browser SQL Lab · Zero Setup</p>
+        <p className="hx-royal-plate__sub">5 Modules · 15 Guided Lessons · Pre-Loaded Skilab SQL Studio · Zero Setup</p>
         <div className="hx-royal-plate__metrics">
           <div>
             <span>Cost to Start</span>
@@ -1226,7 +1226,7 @@ function HomeCareerPlate({ step }: { step: JourneyKey }) {
             <strong>What is Data Analytics?</strong>
           </div>
           <div>
-            <span>Career OS Unlock</span>
+            <span>TalentBridge Unlock</span>
             <strong>At 60% Progress (9/15 Lessons)</strong>
           </div>
         </div>
@@ -1414,7 +1414,7 @@ export function HomeCareer() {
 
         <div className="hx-career__grid">
           <div className="hx-career__nav-col">
-            <ol className="hx-career__steps" aria-label="Career OS steps">
+            <ol className="hx-career__steps" aria-label="TalentBridge steps">
               {JOURNEY.map((item, index) => (
                 <li key={item.key}>
                   <button
@@ -1456,7 +1456,7 @@ export function HomeCareer() {
 
         <p className="hx-career__limits" style={{ marginTop: 20 }}>{careerLimits()}</p>
         <Link className="hx-more" to="/career-os">
-          Explore Career OS
+          Explore TalentBridge
           <ArrowRight />
         </Link>
       </div>
@@ -1596,7 +1596,7 @@ export function HomeAi() {
 const INSTITUTION_POINTS = [
   { title: "Practical programmes", text: "Certification and professional programmes your learners take alongside their studies." },
   { title: "A structured learner experience", text: "Lessons, checks, assignments and progress for every enrolled learner." },
-  { title: "Evidence learners keep", text: "Each learner keeps a profile of skills, projects and certificates in Career OS." },
+  { title: "Evidence learners keep", text: "Each learner keeps a profile of skills, projects and certificates in TalentBridge." },
 ] as const
 
 export function HomeInstitutions() {
@@ -1640,7 +1640,7 @@ export function HomeSystems() {
       <div className="sky-container">
         <header className="hx-head">
           <div>
-            <p className="hx-eyebrow hx-eyebrow--dark">Skylent OS and Career OS</p>
+            <p className="hx-eyebrow hx-eyebrow--dark">Skilab and TalentBridge</p>
             <h2 id="hx-systems-title" className="hx-h2 hx-h2--sm">Learning progress and career work, kept apart until you connect them.</h2>
           </div>
         </header>
@@ -1653,7 +1653,7 @@ export function HomeSystems() {
           ))}
         </ul>
         <Link className="hx-more" to="/career-os">
-          How Career OS works
+          How TalentBridge works
           <ArrowRight />
         </Link>
       </div>
@@ -1707,7 +1707,7 @@ export function HomeElixirFlywheel() {
       tag: "LIVE SQL STUDIO · 2 HOURS",
       priceBadge: "₹99 · 100% Coin Back",
       title: "Commercial SQL & Revenue Analytics Bootcamp",
-      audience: "For Future Data & Business Analysts · Browser SQL Lab",
+      audience: "For Future Data & Business Analysts · Skilab SQL Studio",
       desc: "Write multi-table SQL joins & CTEs on 180 retail orders to find margin leaks.",
       skills: ["Multi-Table SQL", "Margin Audit", "Workshop Certificate"],
       cta: "Book ₹99 Seat & Get 99 Coins →",

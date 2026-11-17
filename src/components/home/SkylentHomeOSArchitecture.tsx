@@ -10,23 +10,23 @@ export default function SkylentHomeOSArchitecture() {
         <header className="hp-ch-copy">
           <p className="hp-ch-kicker">
             <i aria-hidden="true" />
-            Skylent OS
+            Skilab
           </p>
           <h2 id="home-os-arch-heading" className="hp-ch-title">
             Learning, work, evidence, and career — together.
           </h2>
           <p className="hp-ch-lead">
-            Skylent OS is the workspace where teaching, practice, labs, projects, and career activity connect —
+            Skilab is the workspace where teaching, practice, labs, projects, and career activity connect —
             so progress is not scattered across tabs and tools.
           </p>
           <Link className="hp-ch-cta" to={OS_HREF}>
-            Explore Skylent OS
+            Explore Skilab
             <span aria-hidden="true"> →</span>
           </Link>
         </header>
 
-        <div className="hp-osx-frame" aria-label="Skylent OS architecture">
-          <p className="hp-osx-label">Skylent OS</p>
+        <div className="hp-osx-frame" aria-label="Skilab architecture">
+          <p className="hp-osx-label">Skilab</p>
           <div className="hp-osx-arch">
             <svg className="hp-osx-wires" viewBox="0 0 320 340" aria-hidden="true">
               <line x1="160" y1="42" x2="160" y2="86" />
@@ -46,7 +46,7 @@ export default function SkylentHomeOSArchitecture() {
             </Link>
             <span className="hp-osx-n is-evidence">Evidence</span>
             <Link className="hp-osx-n is-career" to="/career-os">
-              Career OS
+              TalentBridge
             </Link>
           </div>
         </div>

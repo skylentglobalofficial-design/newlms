@@ -216,7 +216,7 @@ export default function LearnerProjectPage() {
       setCareerLink({ id: linked.id, href: `/career-os/projects/${linked.id}` })
       setCareerNotice(null)
     } catch (err) {
-      setCareerNotice(learnerErrorMessage(err, "The project could not be added to Career OS right now. Try again in a moment."))
+      setCareerNotice(learnerErrorMessage(err, "The project could not be added to TalentBridge right now. Try again in a moment."))
     } finally {
       setCareerBusy(false)
     }
@@ -396,7 +396,7 @@ export default function LearnerProjectPage() {
               </button>
               {careerLink ? (
                 <Link className="os-btn os-btn-primary" to={careerLink.href} style={{ minHeight: 38, fontSize: 13 }}>
-                  ✓ Published in Career OS →
+                  ✓ Published in TalentBridge →
                 </Link>
               ) : project.progress.complete === project.progress.total && careerLinkStatus !== "locked" ? (
                 <button
@@ -406,7 +406,7 @@ export default function LearnerProjectPage() {
                   disabled={careerBusy}
                   onClick={() => void onAddToCareer()}
                 >
-                  {careerBusy ? "Adding…" : "Publish Project to Career OS →"}
+                  {careerBusy ? "Adding…" : "Publish Project to TalentBridge →"}
                 </button>
               ) : null}
             </div>

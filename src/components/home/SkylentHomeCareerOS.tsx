@@ -4,7 +4,7 @@ import "./SkylentHomeCareerOS.css"
 
 const CAREER_LAYERS = [
   { label: "Profile", to: "/career-os/profile", sub: "Identity, skills, and evidence" },
-  { label: "Projects", to: "/career-os/projects", sub: "Work you keep from Skylent OS" },
+  { label: "Projects", to: "/career-os/projects", sub: "Work you keep from Skilab" },
   { label: "Opportunities", to: "/career-os/jobs", sub: "Roles when partners publish them" },
   { label: "Applications", to: "/career-os/applications", sub: "Track what you submitted" },
   { label: "Interviews", to: "/career-os/interviews", sub: "Rounds and preparation" },
@@ -96,15 +96,15 @@ function NavGlyph({ label }: { label: string }) {
 
 function CareerOSWorkspace() {
   return (
-    <div className="hp-cos-work" aria-label="Career OS workspace">
+    <div className="hp-cos-work" aria-label="TalentBridge workspace">
       <header className="hp-cos-work-bar">
-        <p className="hp-cos-brand">Skylent OS</p>
-        <p className="hp-cos-work-kicker">Career OS</p>
+        <p className="hp-cos-brand">Skilab</p>
+        <p className="hp-cos-work-kicker">TalentBridge</p>
       </header>
 
       <div className="hp-cos-work-grid">
-        <nav className="hp-cos-shell-nav" aria-label="Career OS">
-          <p className="hp-cos-shell-title">Career OS</p>
+        <nav className="hp-cos-shell-nav" aria-label="TalentBridge">
+          <p className="hp-cos-shell-title">TalentBridge</p>
           <ul>
             {CAREER_OS_IA.map((item) => (
               <li key={item.to}>
@@ -176,14 +176,14 @@ export default function SkylentHomeCareerOS() {
         <header className="hp-cos-copy">
           <p className="hp-cos-kicker">
             <i aria-hidden="true" />
-            Career OS
+            TalentBridge
           </p>
           <h2 id="home-career-os-heading">The career layer connected to your learning.</h2>
           <p className="hp-cos-lead">
-            Career OS holds profile, projects, opportunities, applications, interviews, and support — so evidence
-            from Skylent OS can move toward real next steps when they exist.
+            TalentBridge holds profile, projects, opportunities, applications, interviews, and support — so evidence
+            from Skilab can move toward real next steps when they exist.
           </p>
-          <ol className="hp-cos-dest" aria-label="Career OS destinations">
+          <ol className="hp-cos-dest" aria-label="TalentBridge destinations">
             {CAREER_LAYERS.map((item, index) => (
               <li key={item.to}>
                 <span>{String(index + 1).padStart(2, "0")}</span>
@@ -201,7 +201,7 @@ export default function SkylentHomeCareerOS() {
 
       <div className="hp-rail hp-cos-foot">
         <p>Your work should open doors.</p>
-        <Link to="/career-os">Explore Career OS →</Link>
+        <Link to="/career-os">Explore TalentBridge →</Link>
       </div>
     </section>
   )

@@ -32,7 +32,7 @@ export default function CampusDegreeView({ degree }: { degree: Degree }) {
             <h1 className="dg-h1 dg-h1--campus cine-in cine-d1">{degree.title}</h1>
             <p className="dg-lead cine-in cine-d2">
               {degree.sample || !degree.institution
-                ? "An in-person university degree pathway enriched with Skylent OS execution labs, industry case studies, and Career OS portfolio tracking."
+                ? "An in-person university degree pathway enriched with Skilab execution labs, industry case studies, and TalentBridge portfolio tracking."
                 : "A degree you attend in person, taught on campus by the institution that awards it."}
             </p>
             <div className="dg-actions cine-in cine-d3">
@@ -259,9 +259,9 @@ export default function CampusDegreeView({ degree }: { degree: Degree }) {
             <QuietLink to="/programmes#professional">See professional programmes</QuietLink>
           </div>
           <div className="dg-add">
-            <h3 className="dg-h3">A Career OS profile</h3>
+            <h3 className="dg-h3">A TalentBridge profile</h3>
             <p>Keep your education, projects and certificates together in one career profile.</p>
-            <QuietLink to="/career-os">How Career OS works</QuietLink>
+            <QuietLink to="/career-os">How TalentBridge works</QuietLink>
           </div>
         </div>
       </Reveal>

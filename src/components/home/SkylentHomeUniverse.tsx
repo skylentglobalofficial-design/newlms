@@ -5,7 +5,7 @@ const ARMS = [
   { id: "education", label: "Education", to: "/education", active: false },
   { id: "learning", label: "Professional learning", to: "/programs", active: true },
   { id: "exams", label: "Competitive exams", to: "/exams", active: false },
-  { id: "career", label: "Career OS", to: "/career-os", active: false },
+  { id: "career", label: "TalentBridge", to: "/career-os", active: false },
   { id: "workshops", label: "Workshops", to: "/workshops", active: false },
 ] as const
 

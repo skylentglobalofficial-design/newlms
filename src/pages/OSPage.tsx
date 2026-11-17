@@ -44,7 +44,7 @@ export default function OSPage() {
         <section className="cat-hero">
           <div className="cat-rail cat-hero-split">
             <div>
-              <p className="cat-label">Skylent OS · public entry</p>
+              <p className="cat-label">Skilab · public entry</p>
               <h1>Your learning workspace</h1>
               <p className="cat-lead">
                 This page explains the workspace. After you enrol, lessons, checks, and assignments open in Skylent
@@ -76,7 +76,7 @@ export default function OSPage() {
                 ))}
               </div>
               <p className="cat-fine">
-                Counted across all six authored flagship courses (Data Analytics, Product Management, Python Programming, Data Science & AI, Generative AI, and Full Stack Web) in Skylent OS.
+                Counted across all six authored flagship courses (Data Analytics, Product Management, Python Programming, Data Science & AI, Generative AI, and Full Stack Web) in Skilab.
               </p>
             </div>
             {featured ? (
@@ -130,7 +130,7 @@ export default function OSPage() {
               <article className="cat-cap">
                 <strong>Progress and evidence</strong>
                 <p>
-                  The student dashboard tracks what is done. Finished work can be carried into Career OS as
+                  The student dashboard tracks what is done. Finished work can be carried into TalentBridge as
                   evidence.
                 </p>
               </article>

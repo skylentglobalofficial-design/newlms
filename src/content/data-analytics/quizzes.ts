@@ -263,11 +263,11 @@ export const DA_QUIZZES: Record<string, DaQuizBank> = {
           'Nothing — progress percent is competence',
           'A demonstrated work sample: cleaning, analysis, visual, and recommendations on Northwind',
           'A Skylent certificate',
-          'Automatic Career OS project creation',
+          'Automatic TalentBridge project creation',
         ],
         correctIndex: 1,
         explanation:
-          'This product records progress separately from competence. Career OS does not auto-create projects. Verified SKL certificates are issued upon completing all modules and the capstone.',
+          'This product records progress separately from competence. TalentBridge does not auto-create projects. Verified SKL certificates are issued upon completing all modules and the capstone.',
         lessonId: 'l14',
         moduleId: 'm5',
       },

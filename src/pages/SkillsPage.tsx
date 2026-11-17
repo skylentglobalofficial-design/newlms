@@ -239,7 +239,7 @@ function IntentJourney({ intentId }: { intentId: LearnIntentId }) {
               </ul>
               {journey.lab ? (
                 <p className="sk-stage-note">
-                  <span>Lab in Skylent OS · after enrol</span>
+                  <span>Lab in Skilab · after enrol</span>
                   {journey.lab.note}
                 </p>
               ) : journey.labOmission ? (
@@ -264,7 +264,7 @@ function IntentJourney({ intentId }: { intentId: LearnIntentId }) {
                 </p>
               ) : null}
               <p className="sk-stage-source">
-                Kept in your workspace and can be carried into Career OS.
+                Kept in your workspace and can be carried into TalentBridge.
               </p>
             </>
           ) : (
@@ -342,7 +342,7 @@ export default function SkillsPage() {
             <p className="sk-fine">
               Skills connects to <Link to="/programmes">programmes</Link>,{" "}
               <Link to="/labs">practice</Link>, and{" "}
-              <Link to="/career-os">Career OS evidence</Link> when a path is
+              <Link to="/career-os">TalentBridge evidence</Link> when a path is
               authored.
             </p>
             <IntentPicker value={intentId} onChange={selectIntent} />

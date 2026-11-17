@@ -58,7 +58,7 @@ export default function HomeDirectionPreview() {
           <nav className="hpv-nav__links" aria-label="Preview">
             <Link to="/programmes">Programmes</Link>
             <Link to="/education">Education</Link>
-            <Link to="/career-os">Career OS</Link>
+            <Link to="/career-os">TalentBridge</Link>
             <Link to="/about">About</Link>
           </nav>
           <div className="hpv-nav__actions">
@@ -141,11 +141,11 @@ export default function HomeDirectionPreview() {
         <section className="hpv-feature" aria-labelledby="hpv-career">
           <div className="hpv-wrap hpv-feature__grid">
             <div>
-              <p className="hpv-kicker hpv-kicker--light">Career OS</p>
+              <p className="hpv-kicker hpv-kicker--light">TalentBridge</p>
               <h2 id="hpv-career">One profile for what you learn and keep.</h2>
-              <p>Skill programmes can feed learning into Career OS after you enrol. A degree pathway is not connected, and nothing here is your account.</p>
-              <p>No roles are published, and Career OS does not apply for you.</p>
-              <Link className="hpv-btn hpv-btn--light" to="/career-os">How Career OS works</Link>
+              <p>Skill programmes can feed learning into TalentBridge after you enrol. A degree pathway is not connected, and nothing here is your account.</p>
+              <p>No roles are published, and TalentBridge does not apply for you.</p>
+              <Link className="hpv-btn hpv-btn--light" to="/career-os">How TalentBridge works</Link>
             </div>
             <ol className="hpv-feature__steps">
               <li><span>01</span> Enrol in a programme that is open.</li>
@@ -175,7 +175,7 @@ export default function HomeDirectionPreview() {
           <nav aria-label="Preview footer">
             <Link to="/programmes">Programmes</Link>
             <Link to="/education">Degrees</Link>
-            <Link to="/career-os">Career OS</Link>
+            <Link to="/career-os">TalentBridge</Link>
             <Link to="/path">Find My Path</Link>
             <Link to="/about">About</Link>
             <Link to="/contact">Contact</Link>

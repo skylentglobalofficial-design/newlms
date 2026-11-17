@@ -46,7 +46,7 @@ const STAGES = [
   {
     id: "evidence",
     title: "Evidence",
-    copy: "Keep the work sample. Carry it into Career OS yourself.",
+    copy: "Keep the work sample. Carry it into TalentBridge yourself.",
     mark: "Work sample",
     kind: "evidence",
   },

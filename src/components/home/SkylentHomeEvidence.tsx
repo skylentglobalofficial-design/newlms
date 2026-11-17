@@ -12,7 +12,7 @@ const STEPS = [
 ]
 
 const SYSTEM_CHAIN = [
-  { label: "Learn", detail: "Structured lessons and teaching in Skylent OS.", to: "/programmes" },
+  { label: "Learn", detail: "Structured lessons and teaching in Skilab.", to: "/programmes" },
   { label: "Practice", detail: "Quizzes, labs, and checks after you learn.", to: "/labs" },
   { label: "Build", detail: "Projects and applied work on real briefs.", to: "/career-os/projects" },
   { label: "Evidence", detail: "Artifacts you keep and can showcase.", to: "/career-os/projects" },
@@ -23,7 +23,7 @@ function HarborEvidenceWorkspace({ active }: { active: boolean }) {
   return (
     <div className={active ? "hp-ev-work is-in" : "hp-ev-work"} aria-label="Harbor Desk project case">
       <header className="hp-ev-work-bar">
-        <p className="hp-ev-brand">Skylent OS</p>
+        <p className="hp-ev-brand">Skilab</p>
         <p className="hp-ev-work-kicker">Project case</p>
       </header>
 
@@ -108,7 +108,7 @@ export default function SkylentHomeEvidence() {
           <h2 id="home-evidence-heading">One connected system from learning to career.</h2>
           <p className="hp-ev-lead">
             Skylent is not a catalogue of videos — it is Learn → Practice → Build → Evidence → Career, wired
-            together in Skylent OS.
+            together in Skilab.
           </p>
           <ol className="hp-ev-chain" aria-label="Skylent learning system">
             {SYSTEM_CHAIN.map((step, index) => (
@@ -131,7 +131,7 @@ export default function SkylentHomeEvidence() {
 
       <div className="hp-rail hp-ev-foot">
         <p>Keep work that proves what you can do.</p>
-        <Link to="/career-os">Open Career OS →</Link>
+        <Link to="/career-os">Open TalentBridge →</Link>
       </div>
     </section>
   )

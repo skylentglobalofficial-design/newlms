@@ -1,7 +1,7 @@
 // Skylent design tokens — single source of truth for JS inline styles.
 // CSS custom properties live in src/styles/design-system.css; keep both in sync.
 //
-// Light workspaces (public site, login, dashboards, lesson reading, Career OS):
+// Light workspaces (public site, login, dashboards, lesson reading, TalentBridge):
 //   white paper · near-black ink · violet #5142B5 for action · deep navy reserved for rails and the lesson stage.
 // Type: Inter (headings + body), DM Mono (labels, numbers, code). No serif.
 // Deep navy is reserved for the shell rail, product top bars and the code workbench.

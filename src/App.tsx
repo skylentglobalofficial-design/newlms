@@ -62,7 +62,7 @@ const PAGE_TITLES: Array<[string, string]> = [
   ["/career-os/applications", "Applications"],
   ["/career-os/interviews", "Interviews"],
   ["/career-os/support", "Support"],
-  ["/career-os", "Career OS"],
+  ["/career-os", "TalentBridge"],
   ["/education/school", "School"],
   ["/education/postgraduate", "Postgraduate"],
   ["/education/exams", "Exams"],
@@ -90,7 +90,7 @@ const PAGE_TITLES: Array<[string, string]> = [
   ["/reset-password", "Reset password"],
   ["/path/result", "Path result"],
   ["/path", "Find a path"],
-  ["/os", "Skylent OS"],
+  ["/os", "Skilab"],
 ]
 
 function titleForPath(pathname: string): string {

@@ -1,7 +1,7 @@
 /**
- * Skylent Career OS — Strict 2-State Flow:
+ * Skylent TalentBridge — Strict 2-State Flow:
  *
- * STATE 1 (Before Enrolling in Career OS):
+ * STATE 1 (Before Enrolling in TalentBridge):
  *   - Shows ONLY the Visual Eligibility & Progress Gate Screen (AlmaX-inspired structure, Skylent visual design).
  *   - Requires:
  *       1. Course Curriculum >= 60% completed within the 6-Month Course Window
@@ -525,12 +525,12 @@ export default function CareerOSOverviewPage({ onEnrolled }: { onEnrolled?: () =
   )
 
   // ============================================================================
-  // STATE 1: BEFORE ENROLLING IN CAREER OS (Strict Progress Gate Screen Only!)
+  // STATE 1: BEFORE ENROLLING IN TALENTBRIDGE (Strict Progress Gate Screen Only!)
   // ============================================================================
   if (!isEnrolledInCareerOS) {
     return (
       <div className="cosh" style={{ maxWidth: 880, margin: "0 auto", display: "grid", gap: 18 }}>
-        {/* Top Banner: Unlock Career OS + Validity */}
+        {/* Top Banner: Unlock TalentBridge + Validity */}
         <section
           style={{
             background: "linear-gradient(135deg, #0f172a 0%, #1e1b4b 58%, #3b2d96 100%)",
@@ -559,13 +559,13 @@ export default function CareerOSOverviewPage({ onEnrolled }: { onEnrolled?: () =
                 marginBottom: 8,
               }}
             >
-              SKYLENT CAREER OS · PLACEMENT &amp; READINESS GATE
+              SKYLENT TALENTBRIDGE · PLACEMENT &amp; READINESS GATE
             </span>
             <h1 style={{ margin: "0 0 4px", fontSize: "clamp(20px, 2.5vw, 26px)", color: "#ffffff", fontFamily: "var(--font-display)" }}>
-              Unlock Career OS Exclusive
+              Unlock TalentBridge Exclusive
             </h1>
             <p style={{ margin: 0, fontSize: 13, color: "#cbd5e1" }}>
-              Complete <strong>60% of your course + quizzes + project</strong>within 6 months to unlock Career OS &amp; get <strong>+3 Months Extra Practice</strong>.
+              Complete <strong>60% of your course + quizzes + project</strong>within 6 months to unlock TalentBridge &amp; get <strong>+3 Months Extra Practice</strong>.
             </p>
           </div>
 
@@ -629,7 +629,7 @@ export default function CareerOSOverviewPage({ onEnrolled }: { onEnrolled?: () =
           >
             <h2 style={{ margin: "0 0 8px", fontSize: 19, color: "#0f172a" }}>Enrol in a Course First</h2>
             <p style={{ margin: "0 0 16px", fontSize: 13.5, color: "#64748b" }}>
-              Choose a Tier 2 (Professional) or Tier 3 (Flagship Live) course to start your Career OS track.
+              Choose a Tier 2 (Professional) or Tier 3 (Flagship Live) course to start your TalentBridge track.
             </p>
             <Link
               to="/dashboard/student#explore-programmes"
@@ -676,7 +676,7 @@ export default function CareerOSOverviewPage({ onEnrolled }: { onEnrolled?: () =
                     cursor: "pointer",
                   }}
                 >
-                  Upgrade to Tier 2 (Include Career OS) →
+                  Upgrade to Tier 2 (Include TalentBridge) →
                 </button>
               ) : (
                 <span
@@ -877,7 +877,7 @@ export default function CareerOSOverviewPage({ onEnrolled }: { onEnrolled?: () =
                   {activating
                     ? "Enrolling…"
                     : allThreeGatesPassed
-                      ? "Enroll Now in Career OS (+3M Practice) →"
+                      ? "Enroll Now in TalentBridge (+3M Practice) →"
                       : "Complete 60%, Quizzes & Project to Enroll"}
                 </button>
               </div>
@@ -889,7 +889,7 @@ export default function CareerOSOverviewPage({ onEnrolled }: { onEnrolled?: () =
   }
 
   // ============================================================================
-  // STATE 2: AFTER ENROLLING IN CAREER OS (Visual Zero-to-Hero Hub + Job Board)
+  // STATE 2: AFTER ENROLLING IN TALENTBRIDGE (Visual Zero-to-Hero Hub + Job Board)
   // ============================================================================
   return (
     <div className="cosh" style={{ display: "grid", gap: 18 }}>
@@ -910,7 +910,7 @@ export default function CareerOSOverviewPage({ onEnrolled }: { onEnrolled?: () =
         <div>
           <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap", marginBottom: 4 }}>
             <span style={{ fontSize: 11, fontWeight: 600, padding: "3px 9px", borderRadius: 999, background: "#10b981", color: "#064e3b" }}>
-              ✓ CAREER OS ACTIVE · +3 MONTHS PRACTICE EXTENSION
+              ✓ TALENTBRIDGE ACTIVE · +3 MONTHS PRACTICE EXTENSION
             </span>
             {activeCourseValidity ? (
               <span style={{ fontSize: 12, color: "#cbd5e1" }}>

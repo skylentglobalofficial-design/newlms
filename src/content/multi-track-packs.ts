@@ -590,7 +590,7 @@ export function getMultiTrackLessonMeta(courseSlug: string, lessonId: string): W
     kind: lesson.kind,
     duration: lesson.kind === "quiz" ? "20 min" : lesson.kind === "capstone" ? "6 hr" : lesson.kind === "assignment" ? "3 hr" : "45 min",
     objective: lesson.objective,
-    nextAction: next ? `Continue to ${next.title}` : "Claim your verified course certificate and link your Capstone Project Studio to Career OS.",
+    nextAction: next ? `Continue to ${next.title}` : "Claim your verified course certificate and link your Capstone Project Studio to TalentBridge.",
     WhyThisMatters: `Part of the ${spec.title} production verification path.`,
   }
 }

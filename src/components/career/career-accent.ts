@@ -1,6 +1,6 @@
 /**
- * Career OS accent in the frozen palette: cobalt is the one action colour.
- * Same shape as getDomainAccent() so the Career OS components keep their inline styles;
+ * TalentBridge accent in the frozen palette: cobalt is the one action colour.
+ * Same shape as getDomainAccent() so the TalentBridge components keep their inline styles;
  * the values resolve through the --site-* tokens in src/skylent-site.css.
  */
 export const careerAccent = {

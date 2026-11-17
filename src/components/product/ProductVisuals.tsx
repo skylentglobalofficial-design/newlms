@@ -301,7 +301,7 @@ function SkillsWorkspace({ accent }: { accent: Accent }) {
           { label: 'Webinar', active: false },
           { label: 'Certificate', active: false },
           { label: 'Professional', active: true },
-          { label: 'Career OS', active: false },
+          { label: 'TalentBridge', active: false },
         ].map(item => (
           <div key={item.label} style={{
             padding: '8px 6px', textAlign: 'center', borderRadius: 6, fontSize: 9,
@@ -323,7 +323,7 @@ function SkillsWorkspace({ accent }: { accent: Accent }) {
           <div style={{ fontSize: 9, fontFamily: 'var(--font-mono)', color: C.slate, marginTop: 8 }}>Project · portfolio artifact</div>
         </div>
         <div style={{ padding: 12, background: careerAccent.subtle, border: `1px solid ${careerAccent.border}`, borderRadius: 8 }}>
-          <div className="skylent-label" style={{ color: careerAccent.text, marginBottom: 8 }}>Career OS</div>
+          <div className="skylent-label" style={{ color: careerAccent.text, marginBottom: 8 }}>TalentBridge</div>
           <div style={{ fontSize: 10, color: C.ink, lineHeight: 1.5 }}>Unlocks on program completion</div>
           <div style={{ fontSize: 9, fontFamily: 'var(--font-mono)', color: C.slate, marginTop: 8 }}>Profile → apply → track</div>
         </div>
@@ -532,7 +532,7 @@ function AboutEcosystem({ accent }: { accent: Accent }) {
 }
 
 function SkillsLadder({ accent }: { accent: Accent }) {
-  const items = ['Webinar', 'Certificate', 'Professional', 'Career OS']
+  const items = ['Webinar', 'Certificate', 'Professional', 'TalentBridge']
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
       {items.map((item, i) => (
@@ -601,7 +601,7 @@ function InstitutionOps({ accent }: { accent: Accent }) {
 
 const VISUAL_LABELS: Record<ProductVisualId, string> = {
   'ecosystem-flow': 'Skylent · workspace',
-  'career-pipeline': 'Career OS · pipeline',
+  'career-pipeline': 'TalentBridge · pipeline',
   'catalog-browser': 'Programs · catalog',
   'data-workspace': 'Data Science · pipeline',
   'analytics-workspace': 'Analytics · SQL + dashboard',
@@ -626,7 +626,7 @@ const VISUAL_LABELS: Record<ProductVisualId, string> = {
   'curriculum-map': 'UG · curriculum map',
   'curriculum-rail': 'Curriculum · module rail',
   'learning-loop': 'Learning · workflow',
-  'career-workspace': 'Career OS · workspace',
+  'career-workspace': 'TalentBridge · workspace',
   'institution-pipeline': 'Institution OS · pipeline',
   'about-ecosystem': 'Skylent · ecosystem',
   'generic-program': 'Program · workspace',

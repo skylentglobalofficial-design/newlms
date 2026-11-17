@@ -1,7 +1,7 @@
 import type { ReactNode } from "react"
 import type { AuthNavItem } from "../AuthDashboardShell"
 
-/** One learner application. The same items stay in the sidebar on My Courses and Career OS. */
+/** One learner application. The same items stay in the sidebar on My Courses and TalentBridge. */
 export const LEARNER_NAV: AuthNavItem[] = [
   {
     id: "dashboard",
@@ -27,7 +27,7 @@ export const LEARNER_NAV: AuthNavItem[] = [
     short: "Explore",
     href: "/dashboard/student#explore-programmes",
   },
-  { id: "career-os", label: "Career OS", short: "Career", href: "/career-os" },
+  { id: "career-os", label: "TalentBridge", short: "Career", href: "/career-os" },
 ]
 
 export function learnerNavId(pathname: string, hash: string): string {

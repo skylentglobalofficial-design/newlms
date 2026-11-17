@@ -84,5 +84,5 @@ export const PATH_V2_HOW_IT_WORKS: { title: string; body: string }[] = [
 export const PATH_V2_CLOSING_LINKS: { label: string; to: string }[] = [
   { label: "Explore programmes", to: "/programmes" },
   { label: "See degree routes", to: "/education" },
-  { label: "Open Career OS", to: "/career-os" },
+  { label: "Open TalentBridge", to: "/career-os" },
 ]

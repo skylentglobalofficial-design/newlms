@@ -430,7 +430,7 @@ export function PageHero({
   )
 }
 
-// ── Flow / journey strip (Professional Program → Career OS style) ─────────────
+// ── Flow / journey strip (Professional Program → TalentBridge style) ─────────────
 export function FlowStrip({ steps }: { steps: { label: string; sub?: string; highlight?: boolean }[]; tone?: Tone }) {
   return (
     <div className="flow-strip" style={{ display: 'flex', alignItems: 'stretch', gap: 0, flexWrap: 'wrap' }}>
@@ -487,7 +487,7 @@ export function CTABand({
   )
 }
 
-// ── Interactive pillar card (Education / Skills / Career OS) ──────────────────
+// ── Interactive pillar card (Education / Skills / TalentBridge) ──────────────────
 export function PillarCard({
   index,
   name,

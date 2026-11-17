@@ -149,7 +149,7 @@ export const PM_ASSIGNMENTS: Record<string, AssignmentBrief> = {
       'Write a thin spec: trigger, happy path, one edge case, acceptance check, out of scope.',
       'Write the four-week check: what you would count, compared with the July weekend log.',
       'Add a limitations paragraph: no prototype test, no revenue proof, SKU frequency unknown.',
-      'Do not claim a job, a certificate, or a placement. Do not add this to Career OS automatically — if you want it there, add the learner project yourself after you finish the project workspace.',
+      'Do not claim a job, a certificate, or a placement. Do not add this to TalentBridge automatically — if you want it there, add the learner project yourself after you finish the project workspace.',
     ],
     requiredOutput: [
       'Evidence summary with quotes/IDs.',

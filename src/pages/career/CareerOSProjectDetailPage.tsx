@@ -62,7 +62,7 @@ export default function CareerOSProjectDetailPage() {
       await removeCareerEvidenceProject(project.id)
       navigate("/career-os/projects")
     } catch (err) {
-      setError(workspaceErrorMessage(err) || "Could not remove this project from Career OS.")
+      setError(workspaceErrorMessage(err) || "Could not remove this project from TalentBridge.")
       setBusy(false)
     }
   }
@@ -174,7 +174,7 @@ export default function CareerOSProjectDetailPage() {
 
           <section className="cos-panel">
             <p style={{ margin: "0 0 10px", color: C.slate, fontSize: 13, lineHeight: 1.55 }}>
-              Source: {project.title}. Removing this from Career OS does not delete your project or lab work.
+              Source: {project.title}. Removing this from TalentBridge does not delete your project or lab work.
             </p>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
               {project.projectHref ? (
@@ -187,7 +187,7 @@ export default function CareerOSProjectDetailPage() {
               ) : null}
               {!confirmRemove ? (
                 <button type="button" onClick={() => setConfirmRemove(true)} style={{ ...secondaryButtonStyle, marginTop: 0 }}>
-                  Remove from Career OS
+                  Remove from TalentBridge
                 </button>
               ) : (
                 <>

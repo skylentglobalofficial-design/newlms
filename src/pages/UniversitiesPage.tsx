@@ -22,7 +22,7 @@ const CHAPTERS = [
   {
     n: "04",
     title: "Career and skills connection",
-    desc: "Where programmes qualify, learners move into Career OS for portfolios, applications, and interview prep. Opportunities stay empty until a partner publishes a role.",
+    desc: "Where programmes qualify, learners move into TalentBridge for portfolios, applications, and interview prep. Opportunities stay empty until a partner publishes a role.",
   },
 ] as const
 
@@ -30,14 +30,14 @@ const IMPLEMENTATION = [
   "Curriculum mapping across schools and departments",
   "Faculty dashboards and assessment workflows",
   "Learner progress parents and admins can audit",
-  "Career OS for qualifying professional pathways",
+  "TalentBridge for qualifying professional pathways",
 ] as const
 
 const EXAMPLE_REFERENCES = [
   {
     n: "01",
     name: "A technology bachelor's pathway",
-    focus: "Undergraduate B.Tech / B.Sc curriculum track integrating Skylent OS SQL, Python, and AI execution labs alongside university credit modules.",
+    focus: "Undergraduate B.Tech / B.Sc curriculum track integrating Skilab SQL, Python, and AI execution labs alongside university credit modules.",
   },
   {
     n: "02",
@@ -66,11 +66,11 @@ export default function UniversitiesPage() {
               <span>with institutional depth.</span>
             </h1>
             <p className="pe-lead">
-              Curriculum design, delivery infrastructure, assessment, and a Career OS profile — structured for
+              Curriculum design, delivery infrastructure, assessment, and a TalentBridge profile — structured for
               multi-department universities. This is a partnership and product page, not a student course catalogue.
             </p>
             <p className="pe-note">
-              Designed for autonomous colleges and multi-department universities integrating Skylent OS labs and Career OS cohort tracking.
+              Designed for autonomous colleges and multi-department universities integrating Skilab labs and TalentBridge cohort tracking.
             </p>
             <p className="pe-actions">
               <Link className="pe-cta" to="/contact">
@@ -95,7 +95,7 @@ export default function UniversitiesPage() {
                 decoding="async"
               />
             </div>
-            <figcaption>Integrated academic pathways and applied Skylent OS lab cohorts</figcaption>
+            <figcaption>Integrated academic pathways and applied Skilab lab cohorts</figcaption>
           </figure>
         </div>
       </section>
@@ -150,7 +150,7 @@ export default function UniversitiesPage() {
             <p className="pe-kicker">Programme workspace</p>
             <h2 id="uni-work-title">Build the degree around the work.</h2>
             <p className="pe-lead">
-              Partner institutions combine their credit-bearing academic modules with Skylent OS execution labs, graded capstones, and real-time cohort analytics.
+              Partner institutions combine their credit-bearing academic modules with Skilab execution labs, graded capstones, and real-time cohort analytics.
             </p>
             <p className="pe-note">
               Institutional cohorts include dedicated College & Organisation dashboards for tracking student progress.
@@ -159,7 +159,7 @@ export default function UniversitiesPage() {
           <div className="pe-product">
             <CertificateOsPreview />
             <p className="pe-caption">
-              Learner programme workspace already in Skylent OS. Not a faculty dashboard and not a certificate being
+              Learner programme workspace already in Skilab. Not a faculty dashboard and not a certificate being
               issued.
             </p>
           </div>

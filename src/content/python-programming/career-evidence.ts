@@ -6,7 +6,7 @@ export type CareerEvidenceMap = {
   evidence: string
 }
 
-/** What a learner can actually show. Career OS connects these to verifiable proof-of-work. */
+/** What a learner can actually show. TalentBridge connects these to verifiable proof-of-work. */
 export const PYTHON_CAREER_EVIDENCE: CareerEvidenceMap[] = [
   {
     lessonId: 'l6',

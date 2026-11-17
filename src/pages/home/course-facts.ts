@@ -6,7 +6,7 @@ import { AUTHORED_COURSE_SLUG, courseBySlug, courseLessonStats } from "@/lib/cat
 
 /** The lesson every homepage plate is "open on". */
 export const PLATE_LESSON_ID = "l7"
-/** The capstone assignment used as the project in Build, Prove and Career OS. */
+/** The capstone assignment used as the project in Build, Prove and TalentBridge. */
 const CAPSTONE_LESSON_ID = "l14"
 
 export type PlateLesson = { id: string; label: string; title: string; kind: string; duration: string }

@@ -61,7 +61,7 @@ const KNOWN_ROUTES: Record<string, string> = {
   "/programmes": "Open programmes",
   "/courses": "Open programmes (redirects)",
   "/education": "Open degrees",
-  "/career-os": "Open Career OS",
+  "/career-os": "Open TalentBridge",
   "/verify": "Check a certificate",
   "/about": "About Skylent",
   "/contact": "Contact Skylent",
@@ -75,7 +75,7 @@ const SLUG = "[a-z0-9]+(?:-[a-z0-9]+)*"
 
 /**
  * The server speaks in its own paths (server/src/routes/skylent/reva.ts): /programs/<slug> is a programme,
- * /courses/<slug> a course, /career-os/<area> a Career OS area. Map them to this app's routes and drop
+ * /courses/<slug> a course, /career-os/<area> a TalentBridge area. Map them to this app's routes and drop
  * anything that is not a known route.
  */
 export function mapAssistantPath(path: string | null): { to: string; label: string } | null {
@@ -89,7 +89,7 @@ export function mapAssistantPath(path: string | null): { to: string; label: stri
   const course = clean.match(new RegExp(`^/courses/(${SLUG})$`))
   if (course) return { to: `/courses/${course[1]}`, label: "Open this course" }
   const careerArea = clean.match(/^\/career-os\/(profile|projects|jobs|applications|interviews|support)$/)
-  if (careerArea) return { to: clean, label: "Open Career OS" }
+  if (careerArea) return { to: clean, label: "Open TalentBridge" }
   return KNOWN_ROUTES[to] ? { to, label: KNOWN_ROUTES[to] } : null
 }
 

@@ -23,7 +23,7 @@ const AREA_PREVIEW_ITEMS: Record<
   },
   projects: {
     kicker: "Projects & Evidence Preview",
-    headline: "Every capstone and applied brief you complete in Skylent OS, organised as proof of work.",
+    headline: "Every capstone and applied brief you complete in Skilab, organised as proof of work.",
     bullets: [
       "Northwind SQL Audit: 166-row revenue and promotional margin analysis with executive memo.",
       "Harbor Desk PRD Studio: 6-week engineering scope, user interview synthesis, and acceptance criteria.",
@@ -88,8 +88,8 @@ export default function CareerOSPublicAreaPage() {
         <div className="cos-public-page">
           <div className="sk-rail">
             <CareerPublicSubnav current={navId} />
-            <p className="cos-public-lead">This Career OS destination is not recognised.</p>
-            <Link to="/career-os">Back to Career OS overview</Link>
+            <p className="cos-public-lead">This TalentBridge destination is not recognised.</p>
+            <Link to="/career-os">Back to TalentBridge overview</Link>
           </div>
         </div>
       </PageShell>
@@ -104,7 +104,7 @@ export default function CareerOSPublicAreaPage() {
         <section className="cos-public-area" aria-labelledby="cos-area-title">
           <div className="sk-rail">
             <CareerPublicSubnav current={navId} />
-            <p className="cos-eyebrow">CAREER OS · WORKSPACE PREVIEW</p>
+            <p className="cos-eyebrow">TALENTBRIDGE · WORKSPACE PREVIEW</p>
             <h1 id="cos-area-title">{area.label}</h1>
             <p className="cos-public-lead">{preview.headline}</p>
 
@@ -136,7 +136,7 @@ export default function CareerOSPublicAreaPage() {
                 Inspect Sample Graduate Dossiers (/verify)
               </Link>
               <Link className="sk-btn sk-btn-secondary" to="/career-os">
-                Career OS Overview
+                TalentBridge Overview
               </Link>
             </div>
           </div>

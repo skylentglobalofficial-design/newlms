@@ -103,7 +103,7 @@ export function AssignmentResponse({
         </div>
       ) : view.summary === "recorded" ? (
         <Link className="os-link" to="/career-os/projects">
-          Open Career OS Projects
+          Open TalentBridge Projects
         </Link>
       ) : null}
     </div>

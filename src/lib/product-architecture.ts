@@ -22,9 +22,9 @@ export const LIVE_CORE = [
     to: "/skills",
     note: "Choose what you want to be able to do",
   },
-  { label: "Skylent OS", to: "/os", note: "Your learning workspace" },
+  { label: "Skilab", to: "/os", note: "Your learning workspace" },
   {
-    label: "Career OS",
+    label: "TalentBridge",
     to: "/career-os",
     note: "Profile and learning evidence",
   },
@@ -90,7 +90,7 @@ export const UG_PATHWAY = [
   { label: "Module", sub: "Taught topics inside a subject" },
   { label: "Project", sub: "Portfolio evidence" },
   { label: "Internship", sub: "Where institutions offer it" },
-  { label: "Progression", sub: "Skills and Career OS when qualifying" },
+  { label: "Progression", sub: "Skills and TalentBridge when qualifying" },
 ] as const
 
 export const SCHOOLING_PATHWAY = [
@@ -271,7 +271,7 @@ export const PRACTICE_NAV: MegaNavGroup = {
     },
     {
       label: "Projects",
-      sub: "Course projects inside Skylent OS when you are enrolled.",
+      sub: "Course projects inside Skilab when you are enrolled.",
       to: "/os",
     },
   ],
@@ -496,14 +496,14 @@ export const EXAM_STUBS: Record<string, {
   },
 }
 
-/** Primary pillar: Career OS public entry and workflow destinations. */
+/** Primary pillar: TalentBridge public entry and workflow destinations. */
 export const CAREER_NAV: MegaNavGroup = {
   label: "Career",
   to: "/career-os",
-  tagline: "Profile, evidence, opportunities, and support in Career OS.",
+  tagline: "Profile, evidence, opportunities, and support in TalentBridge.",
   items: [
     {
-      label: "Career OS",
+      label: "TalentBridge",
       sub: "Overview of the career workflow on Skylent.",
       to: "/career-os",
     },
@@ -552,7 +552,7 @@ export function studyNavGroup(session: {
       items: [
         {
           label: "Your learning workspace",
-          sub: "Student dashboard — Skylent OS",
+          sub: "Student dashboard — Skilab",
           to: "/dashboard/student",
         },
       ],
@@ -571,7 +571,7 @@ export function studyNavGroup(session: {
           to: "/programmes",
         },
         {
-          label: "Skylent OS",
+          label: "Skilab",
           sub: "How the learning workspace works",
           to: "/os",
         },
@@ -665,7 +665,7 @@ export const FOOTER_COLS = [
   {
     heading: "Career",
     links: [
-      ["Career OS", "/career-os"],
+      ["TalentBridge", "/career-os"],
       ["Profile", "/career-os/profile"],
       ["Projects", "/career-os/projects"],
       ["Opportunities", "/career-os/jobs"],
@@ -690,7 +690,7 @@ export const FOOTER_COLS = [
 /** Legal labels shown in the footer until dedicated routes exist. */
 export const FOOTER_LEGAL_LABELS = ["Privacy", "Terms", "Cookies"] as const
 
-/** Career OS workspace areas (signed-in nav minus Overview), from src/lib/product-manifest.ts. */
+/** TalentBridge workspace areas (signed-in nav minus Overview), from src/lib/product-manifest.ts. */
 export const CAREER_OS_IA: readonly {
   id: string
   label: string
@@ -756,14 +756,14 @@ export const PRACTICE_DESTINATIONS: readonly PillarDestinationLine[] = [
   },
   {
     id: "os",
-    label: "Skylent OS",
+    label: "Skilab",
     to: "/os",
     job: "How the learning workspace works before you sign in.",
     maturity: "live",
   },
 ] as const
 
-/** Career OS public subnav — overview plus workspace areas (sign-in required for data). */
+/** TalentBridge public subnav — overview plus workspace areas (sign-in required for data). */
 export const CAREER_PUBLIC_DESTINATIONS: readonly {
   id: string
   label: string

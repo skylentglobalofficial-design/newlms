@@ -43,7 +43,7 @@ function CareerOSPageNav({ pathname }: { pathname: string }) {
   }, [pathname])
 
   return (
-    <nav className="cos-pagenav" aria-label="Career OS" ref={navRef}>
+    <nav className="cos-pagenav" aria-label="TalentBridge" ref={navRef}>
       <ul>
         {items.map((item) => (
           <li key={item.id}>

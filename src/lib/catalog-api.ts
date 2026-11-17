@@ -104,11 +104,11 @@ export function programEnrollmentMessage(
   if (program.linkedCourseSlugs.length === 0) {
     return "Enrollment is not available yet. Learning content for this program is still being prepared."
   }
-  return "If you are signed in, enrolment opens the linked course in Skylent OS. If you are not, you will be asked to sign in first. Payment is not collected."
+  return "If you are signed in, enrolment opens the linked course in Skilab. If you are not, you will be asked to sign in first. Payment is not collected."
 }
 
 export function courseEnrollmentMessage(): string {
-  return "If you are signed in, enrolment opens Skylent OS at the first lesson. If you are not, you will be asked to sign in first. Payment is not collected."
+  return "If you are signed in, enrolment opens Skilab at the first lesson. If you are not, you will be asked to sign in first. Payment is not collected."
 }
 
 export async function fetchCatalogCourses(): Promise<CatalogCourseSummary[]> {

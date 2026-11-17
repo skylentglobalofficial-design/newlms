@@ -1,5 +1,5 @@
 /**
- * Skylent 2-Tier Course Enrolment & Smart Career OS Validity Engine.
+ * Skylent 2-Tier Course Enrolment & Smart TalentBridge Validity Engine.
  */
 
 export type SkylentTierId = "certificate" | "professional" | "flagship"
@@ -69,7 +69,7 @@ export function buildSkylentTiersForPrice(_baseCoursePrice: number, slug?: strin
   return [
     {
       id: "certificate",
-      name: "Browser Practice Labs Plan",
+      name: "Skilab Practice Studio Plan",
       shortBadge: "2-Month Free Internship",
       tagline: "Part-time certification course with hands-on projects & 2-month complimentary internship",
       audience: "For learners who want practical skills, hands-on project practice & a 2-month internship",

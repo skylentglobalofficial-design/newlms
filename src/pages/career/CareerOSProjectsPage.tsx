@@ -29,9 +29,9 @@ export default function CareerOSProjectsPage() {
 
   const head = (
     <header className="cos-head">
-      <span className="cos-eyebrow">Career OS · Projects</span>
+      <span className="cos-eyebrow">TalentBridge · Projects</span>
       <h1>Projects</h1>
-      <p>Learner work you chose to keep as Career OS evidence.</p>
+      <p>Learner work you chose to keep as TalentBridge evidence.</p>
     </header>
   )
 
@@ -41,7 +41,7 @@ export default function CareerOSProjectsPage() {
         {head}
         <div className="cos-state">
           <FeedbackBanner tone="error" message={error} />
-          <Link to="/career-os">Back to Career OS overview</Link>
+          <Link to="/career-os">Back to TalentBridge overview</Link>
         </div>
       </div>
     )

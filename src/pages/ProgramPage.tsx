@@ -174,10 +174,10 @@ function programmeListingHonesty(
     return "Enrolment for this programme has not opened yet. No class schedule or batch has been set."
   }
   if (authored.length && linked.length === authored.length) {
-    return `This pathway includes the authored 15-lesson ${authored[0].title} course in Skylent OS, which is ready for immediate self-paced study.`
+    return `This pathway includes the authored 15-lesson ${authored[0].title} course in Skilab, which is ready for immediate self-paced study.`
   }
   if (authored.length) {
-    return `This pathway combines our authored 15-lesson ${authored.map((item) => item.title).join(" and ")} courses in Skylent OS, which are ready for immediate self-paced study.`
+    return `This pathway combines our authored 15-lesson ${authored.map((item) => item.title).join(" and ")} courses in Skilab, which are ready for immediate self-paced study.`
   }
   if (linked.length) {
     return "The course for this programme is still being prepared, so enrolment is not open yet. You can see its outline now."

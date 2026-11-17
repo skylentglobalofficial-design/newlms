@@ -277,7 +277,7 @@ export function EnrollmentModal({ item, onClose }: { item: CatalogEnrollItem; on
               const isProCard = tier.id === "flagship"
               const displayTitle =
                 tier.id === "certificate"
-                  ? "Browser Practice Labs Plan"
+                  ? "Skilab Practice Studio Plan"
                   : "Job Assistance Program"
               return (
                 <article
@@ -538,12 +538,12 @@ const PUBLIC_NAV: readonly PublicNavGroup[] = [
     ],
   },
   {
-    label: 'Career OS',
+    label: 'TalentBridge',
     to: '/career-os',
     tagline: 'Your verified projects, certificates, and job applications in one place',
     match: ['/career-os'],
     items: [
-      { label: 'How Career OS works', sub: 'Build your portfolio and apply to roles with verified projects.', to: '/career-os' },
+      { label: 'How TalentBridge works', sub: 'Build your portfolio and apply to roles with verified projects.', to: '/career-os' },
       { label: 'Career profile', sub: 'Organise your target role, skills, and certificates.', to: '/career-os/profile' },
       { label: 'Projects & portfolio', sub: 'Showcase completed hands-on projects to employers.', to: '/career-os/projects' },
       { label: 'Applications & prep', sub: 'Track job applications and practise mock interviews.', to: '/career-os/applications' },
@@ -625,7 +625,7 @@ const SEARCH_INDEX: readonly SearchEntry[] = [
   { label: 'Postgraduate degrees', to: '/education?level=pg', group: 'Degrees', keywords: 'pg postgraduate degree' },
   { label: 'Online degrees', to: '/education?mode=online', group: 'Degrees', keywords: 'distance remote' },
   { label: 'Campus degrees', to: '/education?mode=campus', group: 'Degrees', keywords: 'offline in person college' },
-  { label: 'Career OS', to: '/career-os', group: 'Explore', keywords: 'career profile resume jobs projects evidence' },
+  { label: 'TalentBridge', to: '/career-os', group: 'Explore', keywords: 'career profile resume jobs projects evidence' },
   { label: 'For institutions', to: '/institutions', group: 'Explore', keywords: 'college university partner' },
   { label: 'Check a certificate', to: '/verify', group: 'Explore', keywords: 'verify certificate' },
   { label: 'Contact', to: '/contact', group: 'Explore', keywords: 'help support call counselling' },
@@ -934,7 +934,7 @@ export function Nav() {
                   ref={searchRef}
                   value={searchQuery}
                   onChange={(event) => setSearchQuery(event.target.value)}
-                  placeholder="Search programmes, degrees, Career OS"
+                  placeholder="Search programmes, degrees, TalentBridge"
                   aria-label="Search Skylent"
                   autoComplete="off"
                 />
@@ -1156,7 +1156,7 @@ export function Nav() {
 const FOOTER_COLUMNS: readonly { title: string; links: readonly (readonly [string, string])[] }[] = [
   { title: 'Programmes', links: [['All programmes', '/programmes'], ['Certification', '/programmes#certification'], ['Professional', '/programmes#professional']] },
   { title: 'Degrees', links: [['Undergraduate', '/education?level=ug'], ['Postgraduate', '/education?level=pg'], ['Online and campus', '/education']] },
-  { title: 'Career OS', links: [['How it works', '/career-os'], ['Check a certificate', '/verify'], ['Sign in', '/login']] },
+  { title: 'TalentBridge', links: [['How it works', '/career-os'], ['Check a certificate', '/verify'], ['Sign in', '/login']] },
   { title: 'Skylent', links: [['About', '/about'], ['Institutions', '/institutions'], ['Contact', '/contact']] },
 ]
 

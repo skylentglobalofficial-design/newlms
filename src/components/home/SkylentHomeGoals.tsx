@@ -16,7 +16,7 @@ const DESTINATIONS: Array<{
     id: "career",
     index: "01",
     title: "Career",
-    copy: "Build skills, ship real work, and connect what you learn to Career OS.",
+    copy: "Build skills, ship real work, and connect what you learn to TalentBridge.",
     node: "Career",
     to: "/career-os",
   },

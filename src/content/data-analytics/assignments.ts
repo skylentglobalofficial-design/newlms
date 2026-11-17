@@ -233,7 +233,7 @@ export const DA_ASSIGNMENTS: Record<string, AssignmentBrief> = {
       'HR snapshot table.',
       'Dashboard (file or layout write-up).',
       'Findings memo with three recommendations.',
-      'A one-paragraph “what this work sample shows” blurb for Career OS.',
+      'A one-paragraph “what this work sample shows” blurb for TalentBridge.',
     ],
     submissionFormat: pasteNote,
     evaluationCriteria: [

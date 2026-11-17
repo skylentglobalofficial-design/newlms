@@ -5,7 +5,7 @@
  *
  * Already reusable: Course / Module / CurriculumNode, enrolment, sequential
  * lesson lock, quiz and assignment progress, dashboard resume via primary
- * enrolment, LearnerProject unique on (userId, projectType), Career OS
+ * enrolment, LearnerProject unique on (userId, projectType), TalentBridge
  * evidence FK, intent matching on catalogue rows.
  *
  * Data Analytics-specific (keep): Northwind Lab, SQL engine, chart adapter,

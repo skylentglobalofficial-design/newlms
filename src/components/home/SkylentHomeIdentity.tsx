@@ -116,7 +116,7 @@ export default function SkylentHomeIdentity() {
             Projects, skills and learning evidence come together to form a professional identity.
           </p>
           <Link className="hp-id-cta" to="/career-os">
-            Explore Career OS
+            Explore TalentBridge
             <span aria-hidden="true"> →</span>
           </Link>
           <ol className="hp-id-chain" aria-label="How learning becomes identity">
@@ -173,7 +173,7 @@ export default function SkylentHomeIdentity() {
             </section>
 
             <blockquote className="hp-id-quote">
-              <p>Career OS holds a professional identity you write. Nothing is published automatically.</p>
+              <p>TalentBridge holds a professional identity you write. Nothing is published automatically.</p>
             </blockquote>
 
             <ol className="hp-id-ia" aria-label="Identity surface">
@@ -243,7 +243,7 @@ export default function SkylentHomeIdentity() {
             </section>
           </div>
 
-          <p className="hp-id-foot">Everything here is created and managed in Career OS. Nothing is published automatically.</p>
+          <p className="hp-id-foot">Everything here is created and managed in TalentBridge. Nothing is published automatically.</p>
         </article>
       </div>
     </section>

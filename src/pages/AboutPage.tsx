@@ -20,13 +20,13 @@ const PRODUCTS = [
   {
     code: "02 · University Pathways",
     title: "Undergraduate (UG) & Postgraduate (PG)",
-    text: "Structured academic degree pathways (B.Sc., BCA, BBA, M.Sc., MCA, MBA) pairing partner university credentials with Skylent OS execution labs.",
+    text: "Structured academic degree pathways (B.Sc., BCA, BBA, M.Sc., MCA, MBA) pairing partner university credentials with Skilab execution labs.",
     badge: "✓ UG & PG Tracks",
     to: "/education",
   },
   {
     code: "03 · Verified Portfolio",
-    title: "Career OS & Flight Recorder",
+    title: "TalentBridge & Flight Recorder",
     text: "Unlocks automatically at 60% course progress — bringing your verified project reports, 5-dimension rubric scores, and role skill-gap matching into one dossier.",
     badge: "✓ Unlocks at 60%",
     to: "/career-os",
@@ -239,7 +239,7 @@ export default function AboutPage() {
           <div className="hx-hero__glow" aria-hidden="true" />
           <div className="sky-container hx-close__inner">
             <h2 id="abx-close" className="hx-close__title">
-              Ready to experience <em>Skylent OS firsthand?</em>
+              Ready to experience <em>Skilab firsthand?</em>
             </h2>
             <div className="hx-hero__actions">
               <Link className="sk-btn sk-btn-primary hx-btn" to="/programmes">
