@@ -1191,7 +1191,7 @@ export default function DashboardAdminPage() {
     { id: 'users', badge: 'STEP 02 · IDENTITY', title: 'Users & Role Provisioning', desc: 'Search accounts and assign Student, Faculty TA, College/Org, Recruiter, or Superadmin roles.' },
     { id: 'orgs', badge: 'STEP 03 · CAMPUS B2B', title: 'Colleges & Organisations', desc: 'Create isolated College and Enterprise tenants for cohort tracking & CSV reporting.' },
     { id: 'employers', badge: 'STEP 04 · TALENTBRIDGE', title: 'Employers & Recruiter Linking', desc: 'Create hiring partner companies and link Recruiter accounts to post jobs.' },
-    { id: 'payments', badge: 'STEP 05 · ECONOMY', title: 'Payments, Refunds & Credits Store', desc: 'Record verified payments, manage Credits earning rules, and publish Case Studies.' },
+    { id: 'payments', badge: 'STEP 05 · ECONOMY', title: 'Payments, Refunds & Elixir Store', desc: 'Record verified payments, manage Elixir earning rules, and publish Case Studies.' },
     { id: 'practice', badge: 'STEP 06 · SANDBOXES', title: 'Practice Studios & Video Media', desc: 'Configure browser case workspaces and attach Mux video playback IDs.' },
   ]
 
@@ -1264,7 +1264,7 @@ export default function DashboardAdminPage() {
         {/* TAB 8: LESSON VIDEO (MUX) */}
         {activeNav === 'courses' ? <AdminLessonMediaSection /> : null}
 
-        {/* TAB 9: PAYMENTS, REFUNDS & CREDITS */}
+        {/* TAB 9: PAYMENTS, REFUNDS & ELIXIR */}
         {activeNav === 'payments' ? (<><AdminPricingAndCouponsPanel /><AdminPlatform sectionFilter="payments" /></>) : null}
 
         {/* TAB 10: SYSTEM & SECURITY AUDIT LOG */}
