@@ -23,6 +23,50 @@ if (typeof window !== "undefined" && !(window as any).__skylentMasterQaInstalled
   const styleEl = document.createElement("style");
   styleEl.id = "skylent-master-qa-styles";
   styleEl.textContent = `
+    /* Minimal, compact Navbar Dropdowns: Hide noisy descriptions, LIVE badges, and long headers */
+    header [class*="dropdown"] p,
+    nav [class*="dropdown"] p,
+    header [class*="mega"] p,
+    nav [class*="mega"] p,
+    header [class*="dropdown"] small,
+    nav [class*="dropdown"] small {
+      display: none !important;
+    }
+    /* Hide the secondary description line inside dropdown links while keeping the main title */
+    header [class*="dropdown"] a > span:nth-of-type(2),
+    nav [class*="dropdown"] a > span:nth-of-type(2),
+    header [class*="dropdown"] a > div:nth-of-type(2),
+    nav [class*="dropdown"] a > div:nth-of-type(2) {
+      display: none !important;
+    }
+    /* Make dropdown box compact & clean */
+    header [class*="dropdown"],
+    nav [class*="dropdown"],
+    header [class*="mega"],
+    nav [class*="mega"] {
+      max-width: 340px !important;
+      min-width: 240px !important;
+      padding: 10px !important;
+      border-radius: 12px !important;
+    }
+    header [class*="dropdown"] > div > div,
+    nav [class*="dropdown"] > div > div {
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 2px !important;
+    }
+    header [class*="dropdown"] a,
+    nav [class*="dropdown"] a {
+      padding: 8px 12px !important;
+      border-radius: 8px !important;
+      font-size: 14px !important;
+      font-weight: 600 !important;
+    }
+    header [class*="dropdown"] a:hover,
+    nav [class*="dropdown"] a:hover {
+      background: #f1f5f9 !important;
+    }
+  
     /* 1. Prevent card footer buttons & price labels from wrapping onto 2 lines */
     /* Keep links & dropdown items wrapping naturally */
     nav a, [class*="dropdown"] a, [class*="menu"] a, a[href*="/programmes/"] {
@@ -94,6 +138,30 @@ if (typeof window !== "undefined" && !(window as any).__skylentMasterQaInstalled
         node.nodeValue = val.replace(/hands-on projects & internship\./gi, "real industry case studies.");
       }
     }
+
+    // Clean up header dropdown clutter (remove LIVE pills & long sub-descriptions inside nav menus)
+    document.querySelectorAll("header span, nav span, header div, nav div").forEach((el) => {
+      const s = el as HTMLElement;
+      const t = (s.textContent || "").trim();
+      if (
+        s.children.length === 0 &&
+        (t === "LIVE" ||
+         t === "6 PRACTICAL CAREER TRACKS WITH LIVE BROWSER WORKSPACES" ||
+         t === "6 CAREER TRACKS WITH BROWSER LABS AND A 2-MONTH FREE INTERNSHIP" ||
+         t === "DATA, AI & SOFTWARE TRACKS" ||
+         t === "PRODUCT, PYTHON & WORKSHOPS" ||
+         t.startsWith("SQL, Excel & BI") ||
+         t.startsWith("SQL analytics, Python") ||
+         t.startsWith("RAG assistants, prompt") ||
+         t.startsWith("React, TypeScript, Node") ||
+         t.startsWith("User research, product") ||
+         t.startsWith("Python 3, data automation") ||
+         t.startsWith("90-minute live weekend") ||
+         t.startsWith("Compare all 6 tracks"))
+      ) {
+        s.style.setProperty("display", "none", "important");
+      }
+    });
 
     // 2. Fix Crushed Vertical Stepper ("Pick a Career Track" / "Learn Step-by-Step" / "Practise in Live Labs")
     document.querySelectorAll("button, div, li").forEach((el) => {
