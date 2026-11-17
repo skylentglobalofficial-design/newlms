@@ -24,12 +24,32 @@ if (typeof window !== "undefined" && !(window as any).__skylentMasterQaInstalled
   styleEl.id = "skylent-master-qa-styles";
   styleEl.textContent = `
     /* 1. Prevent card footer buttons & price labels from wrapping onto 2 lines */
-    a[href*="/programmes/"],
-    button,
-    [class*="pill"],
-    [class*="badge"],
-    [class*="tag"] {
-      white-space: nowrap;
+    /* Keep links & dropdown items wrapping naturally */
+    nav a, [class*="dropdown"] a, [class*="menu"] a, a[href*="/programmes/"] {
+      white-space: normal !important;
+    }
+    /* Spacious 2-column navbar dropdown layout with zero text collision */
+    [class*="dropdown-grid"],
+    [class*="mega-grid"],
+    nav [class*="dropdown"] > div > div {
+      column-gap: 32px !important;
+      row-gap: 14px !important;
+    }
+    nav [class*="dropdown"] a {
+      display: block !important;
+      padding: 8px 10px !important;
+      border-radius: 10px !important;
+      transition: background 0.15s ease !important;
+      overflow: hidden !important;
+    }
+    nav [class*="dropdown"] a:hover {
+      background: #f8fafc !important;
+    }
+    nav [class*="dropdown"] p,
+    nav [class*="dropdown"] span {
+      white-space: normal !important;
+      word-break: break-word !important;
+      line-height: 1.45 !important;
     }
 
     /* 2. Compact Homepage Course Cards */
@@ -117,6 +137,20 @@ if (typeof window !== "undefined" && !(window as any).__skylentMasterQaInstalled
       }
     });
 
+    // Tone down navbar LIVE badges & ensure dropdown columns never collide
+    document.querySelectorAll("header span, nav span").forEach((el) => {
+      const s = el as HTMLElement;
+      if ((s.textContent || "").trim() === "LIVE") {
+        s.style.setProperty("background", "#f0fdf4", "important");
+        s.style.setProperty("color", "#15803d", "important");
+        s.style.setProperty("border", "1px solid #bbf7d0", "important");
+        s.style.setProperty("font-size", "10px", "important");
+        s.style.setProperty("padding", "2px 7px", "important");
+        s.style.setProperty("border-radius", "999px", "important");
+        s.style.setProperty("font-weight", "700", "important");
+        s.style.setProperty("box-shadow", "none", "important");
+      }
+    });
     // 3. Fix Purple-on-Purple Invisible Badges & Low-Contrast Mint Labels
     document.querySelectorAll("span, div, a").forEach((el) => {
       const htmlEl = el as HTMLElement;
