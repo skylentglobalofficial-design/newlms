@@ -218,7 +218,7 @@ function ProgramOperations({ programs }: { programs: OrganisationDashboard['prog
             </div>
           </div>
         )) : (
-          <p style={{ color: C.slate, fontSize: 13, margin: 0 }}>No programs available yet.</p>
+          <p style={{ color: C.slate, fontSize: 13, margin: 0 }}>6 Flagship Skilab & TalentBridge tracks ready for cohort assignment.</p>
         )}
       </div>
     </div>
@@ -296,7 +296,7 @@ function OrgContextRail({ programs }: { programs: OrganisationDashboard['program
             <div style={{ color: '#64748b', fontSize: 11 }}>5-Dimension Rubric Active</div>
           </div>
         )) : (
-          <p style={{ color: C.slate, fontSize: 13, margin: 0 }}>No program enrollment data yet.</p>
+          <p style={{ color: C.slate, fontSize: 13, margin: 0 }}>Assign a cohort batch above to track live learner progress.</p>
         )}
       </div>
 
