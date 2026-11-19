@@ -32,7 +32,7 @@ export default function CampusDegreeView({ degree }: { degree: Degree }) {
             <h1 className="dg-h1 dg-h1--campus cine-in cine-d1">{degree.title}</h1>
             <p className="dg-lead cine-in cine-d2">
               {degree.sample || !degree.institution
-                ? "An in-person university degree pathway enriched with Skilab execution labs, industry case studies, and TalentBridge portfolio tracking."
+                ? "An in-person university degree pathway enriched with SkyLab execution labs, industry case studies, and TalentBridge portfolio tracking."
                 : "A degree you attend in person, taught on campus by the institution that awards it."}
             </p>
             <div className="dg-actions cine-in cine-d3">

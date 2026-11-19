@@ -12,7 +12,7 @@ export default function SkylentOsShowcase({ wide = false }: { wide?: boolean }) 
     <div className={wide ? "hp-show is-wide" : "hp-show"}>
       <div className="hp-show-collage">
         <div className="hp-show-main">
-          <ProductFrame brand="Skilab" title="" meta={`Lesson 7 of ${analytics.lessonCount}`}>
+          <ProductFrame brand="SkyLab" title="" meta={`Lesson 7 of ${analytics.lessonCount}`}>
             <div className="hp-show-os">
               <div className="hp-show-learn">
                 <p className="hp-show-continue">Continue learning</p>
@@ -39,7 +39,7 @@ export default function SkylentOsShowcase({ wide = false }: { wide?: boolean }) 
         <div className="hp-show-proof">
           {product ? (
             <div className="hp-show-float is-project">
-              <ProductFrame brand="Skilab" title="" meta="Your project" compact>
+              <ProductFrame brand="SkyLab" title="" meta="Your project" compact>
                 <p className="hp-show-case-kicker">Harbor Desk</p>
                 <p className="hp-show-case-title">{product.workTitle}</p>
               </ProductFrame>
@@ -60,7 +60,7 @@ export default function SkylentOsShowcase({ wide = false }: { wide?: boolean }) 
         </div>
       </div>
       <p className="hp-show-note">
-        Live product UI from Skilab and TalentBridge. Data Analytics and Product Management are the two authored windows — not the brand.
+        Live product UI from SkyLab and TalentBridge. Data Analytics and Product Management are the two authored windows — not the brand.
       </p>
     </div>
   )

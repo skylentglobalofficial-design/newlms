@@ -20,7 +20,7 @@ const PRODUCTS = [
   {
     code: "02 · University Pathways",
     title: "Undergraduate (UG) & Postgraduate (PG)",
-    text: "Structured academic degree pathways (B.Sc., BCA, BBA, M.Sc., MCA, MBA) pairing partner university credentials with Skilab execution labs.",
+    text: "Structured academic degree pathways (B.Sc., BCA, BBA, M.Sc., MCA, MBA) pairing partner university credentials with SkyLab execution labs.",
     badge: "✓ UG & PG Tracks",
     to: "/education",
   },
@@ -239,7 +239,7 @@ export default function AboutPage() {
           <div className="hx-hero__glow" aria-hidden="true" />
           <div className="sky-container hx-close__inner">
             <h2 id="abx-close" className="hx-close__title">
-              Ready to experience <em>Skilab firsthand?</em>
+              Ready to experience <em>SkyLab firsthand?</em>
             </h2>
             <div className="hx-hero__actions">
               <Link className="sk-btn sk-btn-primary hx-btn" to="/programmes">

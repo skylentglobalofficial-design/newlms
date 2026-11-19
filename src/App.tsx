@@ -90,7 +90,7 @@ const PAGE_TITLES: Array<[string, string]> = [
   ["/reset-password", "Reset password"],
   ["/path/result", "Path result"],
   ["/path", "Find a path"],
-  ["/os", "Skilab"],
+  ["/os", "SkyLab"],
 ]
 
 function titleForPath(pathname: string): string {

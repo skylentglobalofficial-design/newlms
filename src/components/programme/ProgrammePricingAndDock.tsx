@@ -16,7 +16,7 @@ type Props = {
 const DEFAULT_FAQS = [
   {
     q: "How do the 2 Skylent plans work?",
-    a: "Choose the Skilab Practice Studio Plan (₹1,499) for part-time self-paced learning, hands-on projects, and a 2-month complimentary internship, or the Job Assistance Program (₹11,999) for full placement support, 1-on-1 mock interviews, and recruiter referrals.",
+    a: "Choose the SkyLab Practice Studio Plan (₹1,499) for part-time self-paced learning, hands-on projects, and a 2-month complimentary internship, or the Job Assistance Program (₹11,999) for full placement support, 1-on-1 mock interviews, and recruiter referrals.",
   },
   {
     q: "Do I need to install any software on my laptop?",
@@ -103,7 +103,7 @@ export default function ProgrammePricingAndDock({
               const isProCard = tier.id === "flagship"
               const displayTitle =
                 tier.id === "certificate"
-                  ? "Skilab Practice Studio Plan"
+                  ? "SkyLab Practice Studio Plan"
                   : "Job Assistance Program"
               return (
                 <article

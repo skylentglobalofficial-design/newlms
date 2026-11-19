@@ -97,7 +97,7 @@ function FeatureCard({ feature, index }: { feature: ProductFeature; index: numbe
     code: `0${index + 1} · TALENTBRIDGE MODULE`,
     tag: "Portfolio Tool",
     previewLabel: "INCLUDED IN TALENTBRIDGE",
-    previewValue: "Connected to your Skilab coursework and graded labs.",
+    previewValue: "Connected to your SkyLab coursework and graded labs.",
     svgPath: "M12 2L2 7l10 5 10-5-10-5zm0 7.5l-6-3 6-3 6 3-6 3z",
   }
 
@@ -162,7 +162,7 @@ export default function CareerOSPublicPage() {
                 Turn your coursework and 2-month internship into <em>a job-ready portfolio.</em>
               </h1>
               <p className="cpx-lead">
-                Resumes claim skills; TalentBridge proves them. As you execute SQL queries, Python pipelines, and product specs in Skilab, TalentBridge compiles your graded artefacts, 5-dimension rubric scores, and public /verify credentials into one recruiter-verifiable dossier.
+                Resumes claim skills; TalentBridge proves them. As you execute SQL queries, Python pipelines, and product specs in SkyLab, TalentBridge compiles your graded artefacts, 5-dimension rubric scores, and public /verify credentials into one recruiter-verifiable dossier.
               </p>
               <div className="hx-hero__actions">
                 <Link className="sk-btn sk-btn-primary hx-btn" to="/signup">
@@ -226,7 +226,7 @@ export default function CareerOSPublicPage() {
           <div className="sky-container">
             <div className="cpx-pillars" aria-label="TalentBridge 3-Pillar Architecture">
               <div className="cpx-pillar">
-                <span>01 · Execute in Skilab Labs</span>
+                <span>01 · Execute in SkyLab Labs</span>
                 <strong>Real Projects & 2-Month Internship</strong>
                 <p>Write real SQL queries on 166 retail rows, scope 6-week engineering PRDs, and run LLM accuracy evaluations inside browser sandboxes.</p>
               </div>
@@ -256,7 +256,7 @@ export default function CareerOSPublicPage() {
                 </h2>
               </div>
               <p className="hx-head__aside">
-                Each module connects directly to the lessons, browser labs, and capstones you complete inside Skilab.
+                Each module connects directly to the lessons, browser labs, and capstones you complete inside SkyLab.
               </p>
             </div>
             <ul className="cpx-grid">

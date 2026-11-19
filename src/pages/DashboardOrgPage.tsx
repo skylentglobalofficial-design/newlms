@@ -218,7 +218,7 @@ function ProgramOperations({ programs }: { programs: OrganisationDashboard['prog
             </div>
           </div>
         )) : (
-          <p style={{ color: C.slate, fontSize: 13, margin: 0 }}>6 Flagship Skilab & TalentBridge tracks ready for cohort assignment.</p>
+          <p style={{ color: C.slate, fontSize: 13, margin: 0 }}>6 Flagship SkyLab & TalentBridge tracks ready for cohort assignment.</p>
         )}
       </div>
     </div>

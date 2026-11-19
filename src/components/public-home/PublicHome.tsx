@@ -48,7 +48,7 @@ const SCREENS = [
   },
   {
     src: learningPlayer,
-    alt: "The Skilab learning player with module curriculum, lessons and quizzes",
+    alt: "The SkyLab learning player with module curriculum, lessons and quizzes",
     label: "Learning player",
     note: "Structured lessons, practice and progress.",
   },

@@ -37,7 +37,7 @@ const EXAMPLE_REFERENCES = [
   {
     n: "01",
     name: "A technology bachelor's pathway",
-    focus: "Undergraduate B.Tech / B.Sc curriculum track integrating Skilab SQL, Python, and AI execution labs alongside university credit modules.",
+    focus: "Undergraduate B.Tech / B.Sc curriculum track integrating SkyLab SQL, Python, and AI execution labs alongside university credit modules.",
   },
   {
     n: "02",
@@ -70,7 +70,7 @@ export default function UniversitiesPage() {
               multi-department universities. This is a partnership and product page, not a student course catalogue.
             </p>
             <p className="pe-note">
-              Designed for autonomous colleges and multi-department universities integrating Skilab labs and TalentBridge cohort tracking.
+              Designed for autonomous colleges and multi-department universities integrating SkyLab labs and TalentBridge cohort tracking.
             </p>
             <p className="pe-actions">
               <Link className="pe-cta" to="/contact">
@@ -95,7 +95,7 @@ export default function UniversitiesPage() {
                 decoding="async"
               />
             </div>
-            <figcaption>Integrated academic pathways and applied Skilab lab cohorts</figcaption>
+            <figcaption>Integrated academic pathways and applied SkyLab lab cohorts</figcaption>
           </figure>
         </div>
       </section>
@@ -150,7 +150,7 @@ export default function UniversitiesPage() {
             <p className="pe-kicker">Programme workspace</p>
             <h2 id="uni-work-title">Build the degree around the work.</h2>
             <p className="pe-lead">
-              Partner institutions combine their credit-bearing academic modules with Skilab execution labs, graded capstones, and real-time cohort analytics.
+              Partner institutions combine their credit-bearing academic modules with SkyLab execution labs, graded capstones, and real-time cohort analytics.
             </p>
             <p className="pe-note">
               Institutional cohorts include dedicated College & Organisation dashboards for tracking student progress.
@@ -159,7 +159,7 @@ export default function UniversitiesPage() {
           <div className="pe-product">
             <CertificateOsPreview />
             <p className="pe-caption">
-              Learner programme workspace already in Skilab. Not a faculty dashboard and not a certificate being
+              Learner programme workspace already in SkyLab. Not a faculty dashboard and not a certificate being
               issued.
             </p>
           </div>

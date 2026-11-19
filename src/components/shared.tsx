@@ -277,7 +277,7 @@ export function EnrollmentModal({ item, onClose }: { item: CatalogEnrollItem; on
               const isProCard = tier.id === "flagship"
               const displayTitle =
                 tier.id === "certificate"
-                  ? "Skilab Practice Studio Plan"
+                  ? "SkyLab Practice Studio Plan"
                   : "Job Assistance Program"
               return (
                 <article
@@ -501,7 +501,7 @@ type PublicNavGroup = MegaNavGroup & { to: string; match: readonly string[] }
    certification and professional; labs live inside programmes rather than in the menu. */
 const PUBLIC_NAV: readonly PublicNavGroup[] = [
   {
-    label: 'Programmes',
+    label: 'Courses',
     to: '/programmes',
     tagline: '6 Practical Career Tracks with Live Browser Workspaces',
     match: ['/programmes', '/programs', '/courses', '/skills', '/workshops', '/workshop', '/labs', '/events'],
@@ -528,7 +528,7 @@ const PUBLIC_NAV: readonly PublicNavGroup[] = [
     ],
   },
   {
-    label: 'Education',
+    label: 'Degrees',
     to: '/education',
     tagline: 'Undergraduate & Postgraduate Degree Pathways',
     match: ['/education', '/exams'],
@@ -538,8 +538,8 @@ const PUBLIC_NAV: readonly PublicNavGroup[] = [
     ],
   },
   {
-    label: 'TalentBridge',
-    to: '/career-os',
+    label: 'For Colleges',
+    to: '/institutions',
     tagline: 'Your verified projects, certificates, and job applications in one place',
     match: ['/career-os'],
     items: [
@@ -625,7 +625,7 @@ const SEARCH_INDEX: readonly SearchEntry[] = [
   { label: 'Postgraduate degrees', to: '/education?level=pg', group: 'Degrees', keywords: 'pg postgraduate degree' },
   { label: 'Online degrees', to: '/education?mode=online', group: 'Degrees', keywords: 'distance remote' },
   { label: 'Campus degrees', to: '/education?mode=campus', group: 'Degrees', keywords: 'offline in person college' },
-  { label: 'TalentBridge', to: '/career-os', group: 'Explore', keywords: 'career profile resume jobs projects evidence' },
+  { label: 'For Colleges', to: '/institutions', group: 'Explore', keywords: 'career profile resume jobs projects evidence' },
   { label: 'For institutions', to: '/institutions', group: 'Explore', keywords: 'college university partner' },
   { label: 'Check a certificate', to: '/verify', group: 'Explore', keywords: 'verify certificate' },
   { label: 'Contact', to: '/contact', group: 'Explore', keywords: 'help support call counselling' },

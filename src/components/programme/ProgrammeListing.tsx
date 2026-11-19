@@ -52,7 +52,7 @@ const PATHWAY_CAPSTONES: Record<
     headlinePrefix: "Combine commercial SQL analytics with ",
     headlineSignal: "production Python & cohort validation.",
     sandboxType: "churn-cohort-validation",
-    figureCaption: "Skilab · Out-of-time Churn Cohort & SQL Validation Workbench",
+    figureCaption: "SkyLab · Out-of-time Churn Cohort & SQL Validation Workbench",
     studio: "Northwind SQL Lab + Python ETL & Churn Cohort Sandbox",
     capstoneTitle: "Dual Capstone: Commercial Margin Audit & Out-of-Time Churn Pipeline",
     summary: "Complete both the 15-lesson Data Analytics course and the 15-lesson Python Programming & Automation course, plus the Churn Cohort Leakage validator.",
@@ -69,7 +69,7 @@ const PATHWAY_CAPSTONES: Record<
     headlinePrefix: "Ship end-to-end TypeScript applications with ",
     headlineSignal: "safe PostgreSQL payment ledgers.",
     sandboxType: "idempotent-ledger-architecture",
-    figureCaption: "Skilab · Full-Stack Transactional Outbox & Ledger Sandbox",
+    figureCaption: "SkyLab · Full-Stack Transactional Outbox & Ledger Sandbox",
     studio: "Full-Stack TypeScript, Express & PostgreSQL Ledger Sandbox",
     capstoneTitle: "Capstone: Safe Financial Settlement & Transactional Ledger API",
     summary: "Master end-to-end web engineering across 5 modules and 15 lessons: React 18 state architecture, Node/Express REST APIs, PostgreSQL indexing, and safe transaction handling.",
@@ -86,7 +86,7 @@ const PATHWAY_CAPSTONES: Record<
     headlinePrefix: "Architect citation-grounded RAG pipelines and ",
     headlineSignal: "reliable LLM evaluation suites.",
     sandboxType: "enterprise-rag-evaluation",
-    figureCaption: "Skilab · Citation-Grounded Enterprise RAG & Guardrail Evaluator",
+    figureCaption: "SkyLab · Citation-Grounded Enterprise RAG & Guardrail Evaluator",
     studio: "Grounded RAG, Vector Retrieval & LLM Evaluation Sandbox",
     capstoneTitle: "Capstone: Citation-Grounded Enterprise RAG & Accuracy Eval Suite",
     summary: "Build production LLM systems across 5 modules and 15 lessons: structured JSON prompting, chunking & embeddings, hybrid RAG retrieval, tool-calling agents, and hallucination guardrails.",
@@ -213,7 +213,7 @@ export default function ProgrammeListing({ program, truth, cta, honesty, afterEn
                   <strong className="pp-metric-card__val">
                     {moduleCount} Modules · {lessonCount} Lessons
                   </strong>
-                  <span className="pp-metric-card__sub">Self-paced in Skilab</span>
+                  <span className="pp-metric-card__sub">Self-paced in SkyLab</span>
                 </div>
                 <div className="pp-metric-card">
                   <span className="pp-metric-card__label">Applied Proof</span>

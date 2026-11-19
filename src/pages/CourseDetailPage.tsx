@@ -449,7 +449,7 @@ export default function CourseDetailPage() {
                   </h2>
                 </div>
                 <span style={{ fontSize: 13, color: "#cbd5e1" }}>
-                  Zero local setup · Runs directly inside Skilab
+                  Zero local setup · Runs directly inside SkyLab
                 </span>
               </div>
               <div className="sky-stage__plate" style={{ borderRadius: 14, overflow: "hidden" }}>
@@ -537,13 +537,13 @@ export default function CourseDetailPage() {
               <h2>What you will practise and build</h2>
               <p className="cat-fine">
                 {profile?.practiceIntro ??
-                  "Practice is written work in Skilab. There is no live classroom and no video stream."}
+                  "Practice is written work in SkyLab. There is no live classroom and no video stream."}
               </p>
               <div className="cat-practice">
                 <article>
                   <h3>Learning</h3>
                   <p>
-                    {practice.learning.length} written lessons in Skilab.
+                    {practice.learning.length} written lessons in SkyLab.
                   </p>
                 </article>
                 <article>

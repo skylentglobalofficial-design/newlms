@@ -19,7 +19,7 @@ import "./EducationRepolish.css"
 type Level = "UNDERGRADUATE" | "POSTGRADUATE"
 
 const LEVELS: { id: Level; param: "ug" | "pg"; title: string; short: string; lead: string }[] = [
-  { id: "UNDERGRADUATE", param: "ug", title: "Undergraduate Degree Pathways", short: "UG", lead: "Proposed undergraduate curriculum pathways designed for partner university articulation, combining foundational academic modules with Skilab labs." },
+  { id: "UNDERGRADUATE", param: "ug", title: "Undergraduate Degree Pathways", short: "UG", lead: "Proposed undergraduate curriculum pathways designed for partner university articulation, combining foundational academic modules with SkyLab labs." },
   { id: "POSTGRADUATE", param: "pg", title: "Postgraduate Degree Pathways", short: "PG", lead: "Proposed postgraduate specialisation pathways for working professionals and partner campuses, built around applied capstones and executive case studios." },
 ]
 

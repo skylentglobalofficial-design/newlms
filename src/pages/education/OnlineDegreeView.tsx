@@ -63,7 +63,7 @@ export default function OnlineDegreeView({ degree }: { degree: Degree }) {
         <div className="dg-hero__row">
           <p className="dg-lead cine-in cine-d2">
             {degree.sample || !degree.institution
-              ? "Designed for learners seeking a structured online degree pathway alongside hands-on Skilab labs and portfolio projects. Register interest below for partner university intake dates and syllabus details."
+              ? "Designed for learners seeking a structured online degree pathway alongside hands-on SkyLab labs and portfolio projects. Register interest below for partner university intake dates and syllabus details."
               : "Live sessions, recorded lectures, reading and assessed work all happen in one online learning environment, so the week runs on a laptop and not on a campus."}
           </p>
           <div className="dg-actions cine-in cine-d3">
@@ -247,7 +247,7 @@ export default function OnlineDegreeView({ degree }: { degree: Degree }) {
               <h2 className="dg-h2 dg-h2--sm">Your TalentBridge profile, alongside the degree.</h2>
               <p>
                 {degree.sample || !degree.institution
-                  ? "Combine academic degree foundations with verifiable Skilab capstones, SQL labs, and cryptographic credentials."
+                  ? "Combine academic degree foundations with verifiable SkyLab capstones, SQL labs, and cryptographic credentials."
                   : "The degree is awarded by the partner institution. Skylent programmes, labs and projects you take while you study are kept in TalentBridge."}
               </p>
             </div>

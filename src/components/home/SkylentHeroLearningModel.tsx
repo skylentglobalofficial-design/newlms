@@ -166,7 +166,7 @@ function Frame({
     <div className="hp-lpb-frame">
       <aside className="hp-lpb-side">
         <p className="hp-lpb-brand">Skylent.</p>
-        <nav aria-label="Skilab">
+        <nav aria-label="SkyLab">
           {OS_ITEMS.map((item) => {
             const on = item.stage === stage
             if (item.to) {
@@ -907,7 +907,7 @@ export default function SkylentHeroLearningModel() {
           </header>
           <h2 className="hp-lpb-journey-title">Learn → Practice → Build</h2>
           <p className="hp-lpb-journey-note">
-            The same model runs inside Skilab — pick a stage to see how it works.
+            The same model runs inside SkyLab — pick a stage to see how it works.
           </p>
           {STAGES.map((item) => {
             const on = stage === item.id

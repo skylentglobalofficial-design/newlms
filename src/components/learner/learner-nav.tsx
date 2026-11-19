@@ -27,7 +27,7 @@ export const LEARNER_NAV: AuthNavItem[] = [
     short: "Explore",
     href: "/dashboard/student#explore-programmes",
   },
-  { id: "career-os", label: "TalentBridge", short: "Career", href: "/career-os" },
+  { id: "career-os", label: "Portfolio & Jobs", short: "Career", href: "/career-os" },
 ]
 
 export function learnerNavId(pathname: string, hash: string): string {

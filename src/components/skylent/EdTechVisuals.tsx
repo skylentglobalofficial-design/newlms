@@ -264,7 +264,7 @@ export function BrandTrustRibbon({ compact = false }: { compact?: boolean }) {
     >
       <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: 8, marginBottom: 12 }}>
         <span style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "#5142B5" }}>
-          Production Stack &amp; Evaluation Standard Across Skilab
+          Production Stack &amp; Evaluation Standard Across SkyLab
         </span>
         <span style={{ fontSize: 11.5, fontWeight: 600, color: "#475569" }}>
           In-Browser Sandboxes · 20-Min Faculty TA Doubt SLA · SHA-256 Verifiable Dossiers

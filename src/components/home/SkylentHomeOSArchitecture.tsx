@@ -10,23 +10,23 @@ export default function SkylentHomeOSArchitecture() {
         <header className="hp-ch-copy">
           <p className="hp-ch-kicker">
             <i aria-hidden="true" />
-            Skilab
+            SkyLab
           </p>
           <h2 id="home-os-arch-heading" className="hp-ch-title">
             Learning, work, evidence, and career — together.
           </h2>
           <p className="hp-ch-lead">
-            Skilab is the workspace where teaching, practice, labs, projects, and career activity connect —
+            SkyLab is the workspace where teaching, practice, labs, projects, and career activity connect —
             so progress is not scattered across tabs and tools.
           </p>
           <Link className="hp-ch-cta" to={OS_HREF}>
-            Explore Skilab
+            Explore SkyLab
             <span aria-hidden="true"> →</span>
           </Link>
         </header>
 
-        <div className="hp-osx-frame" aria-label="Skilab architecture">
-          <p className="hp-osx-label">Skilab</p>
+        <div className="hp-osx-frame" aria-label="SkyLab architecture">
+          <p className="hp-osx-label">SkyLab</p>
           <div className="hp-osx-arch">
             <svg className="hp-osx-wires" viewBox="0 0 320 340" aria-hidden="true">
               <line x1="160" y1="42" x2="160" y2="86" />

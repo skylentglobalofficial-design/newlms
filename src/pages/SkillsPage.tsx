@@ -239,7 +239,7 @@ function IntentJourney({ intentId }: { intentId: LearnIntentId }) {
               </ul>
               {journey.lab ? (
                 <p className="sk-stage-note">
-                  <span>Lab in Skilab · after enrol</span>
+                  <span>Lab in SkyLab · after enrol</span>
                   {journey.lab.note}
                 </p>
               ) : journey.labOmission ? (

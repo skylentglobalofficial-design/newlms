@@ -4,7 +4,7 @@ import "./SkylentHomeCareerOS.css"
 
 const CAREER_LAYERS = [
   { label: "Profile", to: "/career-os/profile", sub: "Identity, skills, and evidence" },
-  { label: "Projects", to: "/career-os/projects", sub: "Work you keep from Skilab" },
+  { label: "Projects", to: "/career-os/projects", sub: "Work you keep from SkyLab" },
   { label: "Opportunities", to: "/career-os/jobs", sub: "Roles when partners publish them" },
   { label: "Applications", to: "/career-os/applications", sub: "Track what you submitted" },
   { label: "Interviews", to: "/career-os/interviews", sub: "Rounds and preparation" },
@@ -98,7 +98,7 @@ function CareerOSWorkspace() {
   return (
     <div className="hp-cos-work" aria-label="TalentBridge workspace">
       <header className="hp-cos-work-bar">
-        <p className="hp-cos-brand">Skilab</p>
+        <p className="hp-cos-brand">SkyLab</p>
         <p className="hp-cos-work-kicker">TalentBridge</p>
       </header>
 
@@ -181,7 +181,7 @@ export default function SkylentHomeCareerOS() {
           <h2 id="home-career-os-heading">The career layer connected to your learning.</h2>
           <p className="hp-cos-lead">
             TalentBridge holds profile, projects, opportunities, applications, interviews, and support — so evidence
-            from Skilab can move toward real next steps when they exist.
+            from SkyLab can move toward real next steps when they exist.
           </p>
           <ol className="hp-cos-dest" aria-label="TalentBridge destinations">
             {CAREER_LAYERS.map((item, index) => (

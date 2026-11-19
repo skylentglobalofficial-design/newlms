@@ -256,7 +256,7 @@ export default function StoriesPage() {
             The work first. The story later.
           </h2>
           <p className="pe-lead">
-            Every graduate record is backed by live programme work inside Skilab: the Northwind SQL Lab, Harbor Desk PRD Studio, and TalentBridge.
+            Every graduate record is backed by live programme work inside SkyLab: the Northwind SQL Lab, Harbor Desk PRD Studio, and TalentBridge.
           </p>
 
           {live.length >0 ? (

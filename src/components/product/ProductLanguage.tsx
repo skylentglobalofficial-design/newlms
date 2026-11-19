@@ -5,7 +5,7 @@ import { formatInr, NORTHWIND_PREVIEW as NW } from "../../lib/northwind-preview"
 import "./ProductLanguage.css"
 
 export function ProductFrame({
-  brand = "Skilab",
+  brand = "SkyLab",
   title,
   meta,
   children,
@@ -235,7 +235,7 @@ const WORKFLOW_STAGES = [
 
 export function SkylentWorkflowStory() {
   return (
-    <ProductFrame title="Data Analytics" meta={`${NW.filename} · one pathway through Skilab`}>
+    <ProductFrame title="Data Analytics" meta={`${NW.filename} · one pathway through SkyLab`}>
       <div className="pl-workflow-rail" aria-hidden="true">
         {WORKFLOW_STAGES.map((stage, index) => (
           <span key={stage.id} className={index === 0 ? "is-on" : undefined}>
@@ -299,7 +299,7 @@ export function SkylentWorkflowStory() {
 export function SkylentOsPreview() {
   return (
     <ProductFrame title="Progress" meta="Learning · Practice · Projects · Evidence">
-      <div className="pl-os-layers" aria-label="Skilab layers">
+      <div className="pl-os-layers" aria-label="SkyLab layers">
         <article className="pl-os-layer">
           <div className="pl-flow-visual is-learn">
             <div className="pl-flow-lesson">
@@ -374,7 +374,7 @@ export function CertificateOsPreview() {
   return (
     <ProductFrame title="Professional learning" meta="Programme workspace">
       <div className="pl-cert">
-        <ol className="pl-cert-rail" aria-label="Learner journey in Skilab">
+        <ol className="pl-cert-rail" aria-label="Learner journey in SkyLab">
           {CERTIFICATE_JOURNEY.map((step) => (
             <li key={step.id} className={`is-${step.state}`}>
               <JourneyMark state={step.state} />

@@ -9,12 +9,12 @@ export function SkillTalentGoalCards() {
           Choose your learning goal
         </h2>
         <p style={{ margin: 0, fontSize: 14.5, color: "#475569" }}>
-          Build practical skills inside <strong>Skilab</strong> or prepare for placements through <strong>TalentBridge</strong>.
+          Build practical skills inside <strong>SkyLab</strong> or prepare for placements through <strong>TalentBridge</strong>.
         </p>
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))", gap: 22, marginBottom: 36 }}>
-        {/* CARD 1: GET CERTIFIED (SKILAB) */}
+        {/* CARD 1: GET CERTIFIED (SKYLAB) */}
         <div
           className="skylent-smooth-card"
           style={{
@@ -30,7 +30,7 @@ export function SkillTalentGoalCards() {
           <div>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
               <span style={{ fontSize: 11, fontWeight: 800, color: "#1d4ed8", background: "#dbeafe", padding: "4px 10px", borderRadius: 999 }}>
-                POWERED BY SKILAB · 6–8 WEEKS
+                POWERED BY SKYLAB · 6–8 WEEKS
               </span>
               <span style={{ fontSize: 17, fontWeight: 800, color: "#0f172a" }}>
                 ₹1,499 <span style={{ fontSize: 12, textDecoration: "line-through", color: "#64748b", fontWeight: 500 }}>₹2,999</span>
@@ -40,7 +40,7 @@ export function SkillTalentGoalCards() {
               Get certified
             </h3>
             <p style={{ margin: "0 0 16px", fontSize: 13.5, color: "#334155", lineHeight: 1.5 }}>
-              Learn in-demand skills with <strong>Recorded Lessons + Live Practice & Real Case Studies in Skilab</strong>.
+              Learn in-demand skills with <strong>Recorded Lessons + Live Practice & Real Case Studies in SkyLab</strong>.
             </p>
 
             <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 18 }}>
@@ -72,7 +72,7 @@ export function SkillTalentGoalCards() {
 
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid #dbeafe", paddingTop: 14 }}>
             <span style={{ fontSize: 12, color: "#475569", fontWeight: 600 }}>
-              ✓ Skilab Case Studies · ✓ Verified Certificate
+              ✓ SkyLab Case Studies · ✓ Verified Certificate
             </span>
             <Link
               to="/programmes"
@@ -175,10 +175,10 @@ export function SkillTalentGoalCards() {
         <div style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr 1.2fr", background: "#f8fafc", borderBottom: "1px solid #e2e8f0", fontSize: 13, fontWeight: 800, color: "#0f172a" }}>
           <div style={{ padding: "14px 20px" }}>How You Learn & Grow</div>
           <div style={{ padding: "14px 16px", textAlign: "center", color: "#64748b" }}>Ordinary Video Courses</div>
-          <div style={{ padding: "14px 16px", textAlign: "center", background: "linear-gradient(135deg, #3b2d96, #1d4ed8)", color: "#ffffff" }}>Skylent (Skilab + TalentBridge)</div>
+          <div style={{ padding: "14px 16px", textAlign: "center", background: "linear-gradient(135deg, #3b2d96, #1d4ed8)", color: "#ffffff" }}>Skylent (SkyLab + TalentBridge)</div>
         </div>
         {[
-          "Recorded Lessons + Live In-Browser Practice (Skilab)",
+          "Recorded Lessons + Live In-Browser Practice (SkyLab)",
           "Real Business Case Studies Instead of Toy Examples",
           "QR-Verified Certificate & Public Portfolio (/verify)",
           "1-on-1 Mentor Project Feedback & 20-Min Doubt Support",

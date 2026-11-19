@@ -36,7 +36,7 @@ export default function AcademicPageShell({
             <p style={{ margin: "0 0 8px", color: "#c4b8ff", font: "700 11px/1.4 var(--font-mono)", letterSpacing: "0.14em", textTransform: "uppercase" }}>
               LIVE SIMULATED COMPANY TRACKS · NEP 2020 &amp; NCrF CREDIT-READY
             </p>
-            <LiveCoreRail lead="Academic lines above are product direction. Start with a live course or programme, then Skilab and TalentBridge." />
+            <LiveCoreRail lead="Academic lines above are product direction. Start with a live course or programme, then SkyLab and TalentBridge." />
             <div className="edu-start-row" style={{ marginTop: 14 }}>
               <Link to="/courses/data-analytics" style={{ background: "rgba(255, 255, 255, 0.14)", border: "1px solid rgba(196, 184, 255,0.38)", borderRadius: 12, padding: "14px 18px", color: "#ffffff", textDecoration: "none" }}>
                 <strong style={{ color: "#c4b8ff", display: "block" }}>Start Data Analytics →</strong>

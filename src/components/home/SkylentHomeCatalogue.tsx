@@ -13,7 +13,7 @@ const ECOSYSTEM = [
   {
     id: "data" as const,
     title: "Programmes",
-    copy: "Authored teaching you progress through in Skilab.",
+    copy: "Authored teaching you progress through in SkyLab.",
     to: "/programmes",
   },
   {

@@ -22,7 +22,7 @@ export const LIVE_CORE = [
     to: "/skills",
     note: "Choose what you want to be able to do",
   },
-  { label: "Skilab", to: "/os", note: "Your learning workspace" },
+  { label: "SkyLab", to: "/os", note: "Your learning workspace" },
   {
     label: "TalentBridge",
     to: "/career-os",
@@ -271,7 +271,7 @@ export const PRACTICE_NAV: MegaNavGroup = {
     },
     {
       label: "Projects",
-      sub: "Course projects inside Skilab when you are enrolled.",
+      sub: "Course projects inside SkyLab when you are enrolled.",
       to: "/os",
     },
   ],
@@ -552,7 +552,7 @@ export function studyNavGroup(session: {
       items: [
         {
           label: "Your learning workspace",
-          sub: "Student dashboard — Skilab",
+          sub: "Student dashboard — SkyLab",
           to: "/dashboard/student",
         },
       ],
@@ -571,7 +571,7 @@ export function studyNavGroup(session: {
           to: "/programmes",
         },
         {
-          label: "Skilab",
+          label: "SkyLab",
           sub: "How the learning workspace works",
           to: "/os",
         },
@@ -756,7 +756,7 @@ export const PRACTICE_DESTINATIONS: readonly PillarDestinationLine[] = [
   },
   {
     id: "os",
-    label: "Skilab",
+    label: "SkyLab",
     to: "/os",
     job: "How the learning workspace works before you sign in.",
     maturity: "live",

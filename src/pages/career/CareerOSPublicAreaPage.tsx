@@ -23,7 +23,7 @@ const AREA_PREVIEW_ITEMS: Record<
   },
   projects: {
     kicker: "Projects & Evidence Preview",
-    headline: "Every capstone and applied brief you complete in Skilab, organised as proof of work.",
+    headline: "Every capstone and applied brief you complete in SkyLab, organised as proof of work.",
     bullets: [
       "Northwind SQL Audit: 166-row revenue and promotional margin analysis with executive memo.",
       "Harbor Desk PRD Studio: 6-week engineering scope, user interview synthesis, and acceptance criteria.",

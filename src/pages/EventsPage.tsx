@@ -484,7 +484,7 @@ export default function EventsPage() {
                           {event.eventType}
                         </span>
                         <span style={{ fontSize: 12, color: "#475569", fontWeight: 600 }}>
-                          {event.location || "Online · Skilab"}
+                          {event.location || "Online · SkyLab"}
                         </span>
                       </div>
                       <strong style={{ display: "block", fontSize: 17.5, fontWeight: 600, color: "#0F172A" }}>

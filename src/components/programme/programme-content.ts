@@ -279,7 +279,7 @@ const DATA_ANALYTICS: AuthoredProgrammeContent = {
   practice: {
     heading: "You practise in the Northwind Lab.",
     intro:
-      "The lab is a workspace inside Skilab where you run read-only SQL against the course extract and keep the work you want to use in the capstone. You open it from a lesson after you enrol.",
+      "The lab is a workspace inside SkyLab where you run read-only SQL against the course extract and keep the work you want to use in the capstone. You open it from a lesson after you enrol.",
     rows: [
       { label: "Dataset", value: `${NORTHWIND.filename} · ${NORTHWIND.rows} order lines · ${NORTHWIND.window}`, mono: true },
       { label: "Valid-row rule", value: "units > 0, unit_price > 0, returned = 'no'", mono: true },
@@ -541,7 +541,7 @@ const DATA_SCIENCE_AI: AuthoredProgrammeContent = {
   practice: {
     heading: "You practise in the browser SQL Lab and Python Sandbox.",
     intro:
-      "No local installation needed. You run real SQL queries and Python validation scripts right inside Skilab and save your outputs for your final portfolio.",
+      "No local installation needed. You run real SQL queries and Python validation scripts right inside SkyLab and save your outputs for your final portfolio.",
     rows: [
       { label: "Datasets included", value: "northwind_sales.csv · customer_cohorts.json", mono: true },
       { label: "Core skills built", value: "SQL joins & aggregations, Python 3 ETL scripts, pytest checks, and cohort retention analysis." },

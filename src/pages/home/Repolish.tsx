@@ -87,7 +87,7 @@ export function HomeHero({
               href="#programmes"
               style={{ background: "#ffffff", border: "1px solid #cbd5e1", color: "#0f172a", fontWeight: 600 }}
             >
-              Try Interactive Skilab Studio →
+              Try Interactive SkyLab Studio →
             </a>
           </div>
           <div
@@ -108,7 +108,7 @@ export function HomeHero({
             </div>
             <div>
               <strong style={{ display: "block", fontSize: 18, fontWeight: 800, color: "#5142b5" }}>18+ Labs</strong>
-              <span style={{ fontSize: 12.5, color: "#475569" }}>Skilab Practice Studio</span>
+              <span style={{ fontSize: 12.5, color: "#475569" }}>SkyLab Practice Studio</span>
             </div>
             <div>
               <strong style={{ display: "block", fontSize: 18, fontWeight: 800, color: "#0f172a" }}>100% Practical</strong>
@@ -131,11 +131,11 @@ export function HomeHero({
               />
             </div>
 
-            <div className="hxw-ws" aria-label="Skilab workspace summary">
+            <div className="hxw-ws" aria-label="SkyLab workspace summary">
               <div className="hxw-ws__top">
                 <span className="hxw-ws__mark" aria-hidden="true">✓</span>
                 <div>
-                  <span className="hxw-ws__title">Interactive Skilab Studios & Case Studies</span>
+                  <span className="hxw-ws__title">Interactive SkyLab Studios & Case Studies</span>
                   <span className="hxw-ws__note">Zero-Setup Workspaces · Verified Project Portfolios</span>
                 </div>
               </div>
@@ -259,7 +259,7 @@ const DA_SLUG = "data-analytics-pro"
 const LMS_STAGES = [
   { key: "programme", label: "1. Course Syllabus", href: "/programmes/data-analytics-pro", action: "Explore Programmes" },
   { key: "lesson", label: "2. Interactive Lesson", href: "/courses/data-analytics", action: "Preview Lessons" },
-  { key: "practice", label: "3. Skilab SQL Studio", href: "/labs", action: "See Browser Labs" },
+  { key: "practice", label: "3. SkyLab SQL Studio", href: "/labs", action: "See Browser Labs" },
   { key: "project", label: "4. Capstone Project", href: "/verify/SKL-2026-DA-EXEMPLAR", action: "View Capstones" },
   { key: "evidence", label: "5. Verified Certificate", href: "/verify/SKL-2026-DA-EXEMPLAR", action: "Verify Credentials" },
 ] as const
@@ -376,7 +376,7 @@ GROUP BY category;`}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap", marginBottom: 16 }}>
           <div>
             <span style={{ fontSize: 12, fontWeight: 700, color: "#5142b5", letterSpacing: "0.04em", textTransform: "uppercase" }}>
-              Step 3 · In-Skilab SQL Studio
+              Step 3 · In-SkyLab SQL Studio
             </span>
             <h3 style={{ margin: "4px 0 0", fontSize: 20, fontWeight: 700, color: "#0f172a" }}>
               Run real SQL queries in your browser — zero setup
@@ -656,7 +656,7 @@ export function InsideProgramme() {
           <div className="hx-app__stage">
             <div className="hx-app__bar">
               <span>Inside Course Preview · Data Analytics</span>
-              <span>15 Lessons · Skilab SQL Studio · Graded Capstone</span>
+              <span>15 Lessons · SkyLab SQL Studio · Graded Capstone</span>
             </div>
             <div className="hx-app__body" id="lms-panel" role="tabpanel" aria-labelledby={`lms-tab-${LMS_STAGES[stage].key}`}>
               <div className="hx-stable">
@@ -763,7 +763,7 @@ const FOCUS_FACE: Record<string, { title: string; image: string; width: number; 
     width: 800,
     height: 534,
     alt: "Illustrative code on a screen.",
-    line: "Pathway linking our authored Data Analytics and Python Programming & Automation courses in Skilab.",
+    line: "Pathway linking our authored Data Analytics and Python Programming & Automation courses in SkyLab.",
   },
 }
 
@@ -1104,7 +1104,7 @@ export function HomeDegrees() {
 /* ── TalentBridge walkthrough & Student Portfolio Showcase ──────────────────── */
 
 const JOURNEY = [
-  { key: "enrol", title: "Pick a Career Track", sub: "Start free in Skilab (+50 Coins)", text: "Choose any of our 6 career tracks and unlock your interactive learning workspace immediately." },
+  { key: "enrol", title: "Pick a Career Track", sub: "Start free in SkyLab (+50 Coins)", text: "Choose any of our 6 career tracks and unlock your interactive learning workspace immediately." },
   { key: "learn", title: "Learn Step-by-Step", sub: "Interactive lessons + concept checks", text: "Master concepts in plain language with instant English & Hinglish AI explanations." },
   { key: "build", title: "Practise in Live Labs", sub: "SQL, Python, PRDs & RAG in browser", text: "Run real queries and build real deliverables without installing anything on your laptop." },
   { key: "evidence", title: "Earn Verified Certificate", sub: "Graded capstone + public ID link", text: "Every completed course issues a verifiable SKL certificate linked to your actual project work." },
@@ -1215,7 +1215,7 @@ function HomeCareerPlate({ step }: { step: JourneyKey }) {
           <span className="hx-royal-plate__emerald">✓ +50 Elixir Welcome Bonus</span>
         </div>
         <h3 className="hx-royal-plate__title">Start {programme} in One Click</h3>
-        <p className="hx-royal-plate__sub">5 Modules · 15 Guided Lessons · Pre-Loaded Skilab SQL Studio · Zero Setup</p>
+        <p className="hx-royal-plate__sub">5 Modules · 15 Guided Lessons · Pre-Loaded SkyLab SQL Studio · Zero Setup</p>
         <div className="hx-royal-plate__metrics">
           <div>
             <span>Cost to Start</span>
@@ -1640,7 +1640,7 @@ export function HomeSystems() {
       <div className="sky-container">
         <header className="hx-head">
           <div>
-            <p className="hx-eyebrow hx-eyebrow--dark">Skilab and TalentBridge</p>
+            <p className="hx-eyebrow hx-eyebrow--dark">SkyLab and TalentBridge</p>
             <h2 id="hx-systems-title" className="hx-h2 hx-h2--sm">Learning progress and career work, kept apart until you connect them.</h2>
           </div>
         </header>
@@ -1707,7 +1707,7 @@ export function HomeElixirFlywheel() {
       tag: "LIVE SQL STUDIO · 2 HOURS",
       priceBadge: "₹99 · 100% Coin Back",
       title: "Commercial SQL & Revenue Analytics Bootcamp",
-      audience: "For Future Data & Business Analysts · Skilab SQL Studio",
+      audience: "For Future Data & Business Analysts · SkyLab SQL Studio",
       desc: "Write multi-table SQL joins & CTEs on 180 retail orders to find margin leaks.",
       skills: ["Multi-Table SQL", "Margin Audit", "Workshop Certificate"],
       cta: "Book ₹99 Seat & Get 99 Coins →",

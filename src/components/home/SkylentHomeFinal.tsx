@@ -14,7 +14,7 @@ export default function SkylentHomeFinal() {
             Start learning on Skylent.
           </h2>
           <p className="hp-ch-lead">
-            Choose a programme with authored teaching, or sign in to resume where you left off in Skilab.
+            Choose a programme with authored teaching, or sign in to resume where you left off in SkyLab.
           </p>
         </div>
         <div className="hp-end-links">

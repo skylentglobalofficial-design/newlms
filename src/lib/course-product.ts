@@ -63,7 +63,7 @@ const DATA_ANALYTICS_PROFILE: CourseProductProfile = {
     { filename: "northwind_hr.csv", href: "/content/data-analytics/northwind_hr.csv", detail: "56 staff rows used where the briefs ask for a companion HR extract." },
   ],
   learningSteps: [
-    { label: "Learning", detail: "Interactive written lessons, worked examples, and English + Hinglish study notes in Skilab." },
+    { label: "Learning", detail: "Interactive written lessons, worked examples, and English + Hinglish study notes in SkyLab." },
     { label: "Practice", detail: "Short checks after a block of lessons." },
     { label: "Assignment", detail: "Applied spreadsheet, SQL, and dashboard work on Northwind." },
     { label: "Capstone", detail: "A commercial review you keep as a work sample." },
@@ -71,7 +71,7 @@ const DATA_ANALYTICS_PROFILE: CourseProductProfile = {
   faq: [
     {
       q: "Are there videos or live classes?",
-      a: "Each module combines structured lessons, interactive SQL lab exercises, and graded assignments in Skilab, with live weekend mentor sessions included in the Pro Plan.",
+      a: "Each module combines structured lessons, interactive SQL lab exercises, and graded assignments in SkyLab, with live weekend mentor sessions included in the Pro Plan.",
     },
     SHARED_FAQ_PAYMENT,
     SHARED_FAQ_CERT,
@@ -93,7 +93,7 @@ const DATA_ANALYTICS_PROFILE: CourseProductProfile = {
     note: "Northwind Commercial Review — use lab work to write a commercial summary.",
   },
   labOmission: null,
-  afterEnrol: "Skilab opens Data Analytics at the first lesson.",
+  afterEnrol: "SkyLab opens Data Analytics at the first lesson.",
   ctaTitle: "Start Data Analytics",
 }
 
@@ -109,7 +109,7 @@ const PRODUCT_MANAGEMENT_PROFILE: CourseProductProfile = {
     },
   ],
   learningSteps: [
-    { label: "Learning", detail: "Interactive written lessons, worked examples, and English + Hinglish study notes in Skilab." },
+    { label: "Learning", detail: "Interactive written lessons, worked examples, and English + Hinglish study notes in SkyLab." },
     { label: "Practice", detail: "Short checks after a block of lessons." },
     { label: "Assignment", detail: "Research notes, a priority memo, and a product-case recommendation on Harbor Desk." },
     { label: "Capstone", detail: "A product case you can keep as a work sample." },
@@ -117,7 +117,7 @@ const PRODUCT_MANAGEMENT_PROFILE: CourseProductProfile = {
   faq: [
     {
       q: "Are there videos or live classes?",
-      a: "Each module combines structured lessons, Harbor Desk case exercises, and graded PRD briefs in Skilab, with live weekend mentor sessions included in the Pro Plan.",
+      a: "Each module combines structured lessons, Harbor Desk case exercises, and graded PRD briefs in SkyLab, with live weekend mentor sessions included in the Pro Plan.",
     },
     SHARED_FAQ_PAYMENT,
     SHARED_FAQ_CERT,
@@ -139,7 +139,7 @@ const PRODUCT_MANAGEMENT_PROFILE: CourseProductProfile = {
     note: "Harbor Desk product case — a written recommendation, not a SQL lab.",
   },
   labOmission: "This course does not use Northwind Lab. Practice is the Harbor Desk case: interview notes, an exception log, and a written product case saved in the project workspace.",
-  afterEnrol: "Skilab opens Product Management at the first lesson.",
+  afterEnrol: "SkyLab opens Product Management at the first lesson.",
   ctaTitle: "Start Product Management",
 }
 
@@ -154,7 +154,7 @@ const PYTHON_PROGRAMMING_PROFILE: CourseProductProfile = {
     },
   ],
   learningSteps: [
-    { label: "Learning", detail: "15 authored engineering lessons in Skilab covering data structures, ETL validation, and CLI packaging." },
+    { label: "Learning", detail: "15 authored engineering lessons in SkyLab covering data structures, ETL validation, and CLI packaging." },
     { label: "Practice", detail: "Checkpoint quizzes and interactive engineering trade-off scenarios." },
     { label: "Assignment", detail: "Idempotent ingestion, dead-letter quarantine, and pytest test suites." },
     { label: "Capstone", detail: "Python Transaction Pipeline & Anomaly Audit saved in your project studio." },
@@ -176,7 +176,7 @@ const PYTHON_PROGRAMMING_PROFILE: CourseProductProfile = {
     note: "Python Transaction Pipeline & Anomaly Audit — 6-task engineering project studio.",
   },
   labOmission: null,
-  afterEnrol: "Skilab opens Python Programming & Automation at the first lesson.",
+  afterEnrol: "SkyLab opens Python Programming & Automation at the first lesson.",
   ctaTitle: "Start Python Programming",
 }
 
@@ -213,7 +213,7 @@ const DATA_SCIENCE_AI_PROFILE: CourseProductProfile = {
     note: "Customer Churn Cohort & Out-of-Time Validation Case — 6-task ML validation studio.",
   },
   labOmission: null,
-  afterEnrol: "Skilab opens Data Science & AI at the first lesson.",
+  afterEnrol: "SkyLab opens Data Science & AI at the first lesson.",
   ctaTitle: "Start Data Science & AI",
 }
 
@@ -250,7 +250,7 @@ const GENERATIVE_AI_PROFILE: CourseProductProfile = {
     note: "Enterprise Policy RAG Grounding & Citation Audit — 6-task AI systems studio.",
   },
   labOmission: null,
-  afterEnrol: "Skilab opens Generative AI & LLM Systems at the first lesson.",
+  afterEnrol: "SkyLab opens Generative AI & LLM Systems at the first lesson.",
   ctaTitle: "Start Generative AI & LLM Systems",
 }
 
@@ -287,7 +287,7 @@ const FULL_STACK_WEB_PROFILE: CourseProductProfile = {
     note: "Full-Stack Idempotent Wallet & Webhook Spec — 6-task system architecture studio.",
   },
   labOmission: null,
-  afterEnrol: "Skilab opens Full Stack Web Engineering at the first lesson.",
+  afterEnrol: "SkyLab opens Full Stack Web Engineering at the first lesson.",
   ctaTitle: "Start Full Stack Web Engineering",
 }
 

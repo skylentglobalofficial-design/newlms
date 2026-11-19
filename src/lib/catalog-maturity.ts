@@ -149,8 +149,8 @@ export function courseAfterEnrolSteps(authored: boolean, courseTitle?: string): 
     "If you are not signed in, you will be asked to sign in or create an account.",
     "Guest browser labs (/labs) are free to try without payment. Full course enrolment (Basic ₹1,499 · Flagship ₹3,499 · Pro ₹6,499) unlocks all 15 lessons, graded capstone review, and certificate verification.",
     authored
-      ? afterEnrol ?? (courseTitle ? `Skilab opens ${courseTitle} at the first lesson.` : "Skilab opens the course at the first lesson.")
-      : "Skilab opens the course outline. Full teaching content is still being built.",
+      ? afterEnrol ?? (courseTitle ? `SkyLab opens ${courseTitle} at the first lesson.` : "SkyLab opens the course at the first lesson.")
+      : "SkyLab opens the course outline. Full teaching content is still being built.",
   ]
 }
 
@@ -256,10 +256,10 @@ export function programmeAfterEnrolCopy(view: {
   const authored = view.linked.find((item) => item.authored)
   if (view.maturity === "coming_later") return "Enrolment is not open on this listing."
   if (authored) {
-    return `Enrolment opens ${authored.title} in Skilab. It does not create a separate taught programme. Payment is not collected on preview lessons; full paid plans start from ₹1,499.`
+    return `Enrolment opens ${authored.title} in SkyLab. It does not create a separate taught programme. Payment is not collected on preview lessons; full paid plans start from ₹1,499.`
   }
   if (view.linked[0]) {
-    return `Enrolment opens the ${view.linked[0].title} outline in Skilab. Payment is not collected.`
+    return `Enrolment opens the ${view.linked[0].title} outline in SkyLab. Payment is not collected.`
   }
   return "There is no linked course to open yet."
 }
