@@ -33,7 +33,7 @@ export function ThreePillarShowcase() {
       <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 28 }}>
         {[
           { id: "all", label: "All Categories (Complete View)" },
-          { id: "skill-certificate", label: "1. Skill Certificate Courses (₹1,499 · Self-Paced & Mentor Tracks)" },
+          { id: "skill-certificate", label: "1. Skill Certificate Courses (₹1,499 · Recorded + Live SkyLab)" },
           { id: "professional-career", label: "2. Professional Programs (₹11,999 Job Assistance & 9–12M Experts)" },
           { id: "degree-sem", label: "3. Online Degree Pathways (Sem 1–8)" }
         ].map((t) => (

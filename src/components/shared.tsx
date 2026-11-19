@@ -277,7 +277,7 @@ export function EnrollmentModal({ item, onClose }: { item: CatalogEnrollItem; on
               const isProCard = tier.id === "flagship"
               const displayTitle =
                 tier.id === "certificate"
-                  ? "SkyLab Practice Studio Plan"
+                  ? "Skill Course Plan"
                   : "Job Assistance Program"
               return (
                 <article
@@ -344,7 +344,7 @@ export function EnrollmentModal({ item, onClose }: { item: CatalogEnrollItem; on
                             color: tier.includesCareerOS ? "#5142b5" : "#475569",
                           }}
                         >
-                          {tier.shortBadge || "2-Month Free Internship"}
+                          {tier.shortBadge || "Recorded + Live SkyLab"}
                         </span>
                       )}
                     </div>
@@ -501,14 +501,14 @@ type PublicNavGroup = MegaNavGroup & { to: string; match: readonly string[] }
    certification and professional; labs live inside programmes rather than in the menu. */
 const PUBLIC_NAV: readonly PublicNavGroup[] = [
   {
-    label: 'Courses',
+    label: 'Skill Courses',
     to: '/programmes',
-    tagline: '6 Practical Career Tracks with Live Browser Workspaces',
+    tagline: 'SKILL COURSES & PRO CAREER PROGRAMS',
     match: ['/programmes', '/programs', '/courses', '/skills', '/workshops', '/workshop', '/labs', '/events'],
     items: [],
     sections: [
       {
-        heading: 'Data, AI & Software Tracks',
+        heading: 'SKILL COURSES (₹1,499 · 6–8 WEEKS)',
         items: [
           { label: 'Data Analytics', sub: 'SQL, Excel & BI dashboards with real business projects.', to: '/programmes/data-analytics-pro', mark: 'live' },
           { label: 'Data Science & AI', sub: 'SQL analytics, Python pipelines & predictive models.', to: '/programmes/data-science-ai', mark: 'live' },
@@ -517,7 +517,7 @@ const PUBLIC_NAV: readonly PublicNavGroup[] = [
         ],
       },
       {
-        heading: 'Product, Python & Workshops',
+        heading: 'PRO PROGRAMS (₹11,999 · JOB ASSISTANCE)',
         items: [
           { label: 'Product Management', sub: 'User research, product strategy & engineering PRDs.', to: '/programmes/product-management', mark: 'live' },
           { label: 'Python & Automation', sub: 'Python 3, data automation & backend workflows.', to: '/courses/python-programming', mark: 'live' },
@@ -538,8 +538,8 @@ const PUBLIC_NAV: readonly PublicNavGroup[] = [
     ],
   },
   {
-    label: 'For Colleges',
-    to: '/institutions',
+    label: 'Pro Programs',
+    to: '/programmes?type=professional',
     tagline: 'Your verified projects, certificates, and job applications in one place',
     match: ['/career-os'],
     items: [
@@ -625,7 +625,7 @@ const SEARCH_INDEX: readonly SearchEntry[] = [
   { label: 'Postgraduate degrees', to: '/education?level=pg', group: 'Degrees', keywords: 'pg postgraduate degree' },
   { label: 'Online degrees', to: '/education?mode=online', group: 'Degrees', keywords: 'distance remote' },
   { label: 'Campus degrees', to: '/education?mode=campus', group: 'Degrees', keywords: 'offline in person college' },
-  { label: 'For Colleges', to: '/institutions', group: 'Explore', keywords: 'career profile resume jobs projects evidence' },
+  { label: 'Pro Programs', to: '/programmes?type=professional', group: 'Explore', keywords: 'career profile resume jobs projects evidence' },
   { label: 'For institutions', to: '/institutions', group: 'Explore', keywords: 'college university partner' },
   { label: 'Check a certificate', to: '/verify', group: 'Explore', keywords: 'verify certificate' },
   { label: 'Contact', to: '/contact', group: 'Explore', keywords: 'help support call counselling' },

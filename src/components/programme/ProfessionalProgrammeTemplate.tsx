@@ -325,7 +325,7 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
                 </span>
                 {enrolChip}
                 <span className="pp-badge pp-badge--pilot">
-                  English + Hinglish · Self-Paced
+                  RECORDED + LIVE SKYLAB · ENGLISH + HINGLISH
                 </span>
               </div>
 
@@ -472,7 +472,7 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
                   <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 10, marginBottom: 14, paddingBottom: 14, borderBottom: "1px solid #f1f5f9" }}>
                     <div>
                       <span style={{ fontSize: 11.5, fontWeight: 600, color: "#64748b", display: "block" }}>
-                        Certification + 2-Month Internship
+                        Skill Course · Recorded + Live SkyLab
                       </span>
                       <div style={{ display: "flex", alignItems: "baseline", gap: 8, flexWrap: "wrap" }}>
                         <strong style={{ fontSize: 26, fontWeight: 800, color: "#0f172a", fontFamily: "var(--font-display)" }}>

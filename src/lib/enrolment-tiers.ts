@@ -69,8 +69,8 @@ export function buildSkylentTiersForPrice(_baseCoursePrice: number, slug?: strin
   return [
     {
       id: "certificate",
-      name: "SkyLab Practice Studio Plan",
-      shortBadge: "2-Month Free Internship",
+      name: "Skill Course Plan",
+      shortBadge: "Recorded + Live SkyLab",
       tagline: "Part-time certification course with hands-on projects & 2-month complimentary internship",
       audience: "For learners who want practical skills, hands-on project practice & a 2-month internship",
       price: certPrice,
@@ -98,7 +98,7 @@ export function buildSkylentTiersForPrice(_baseCoursePrice: number, slug?: strin
       includesJobAssistance: true,
       popular: true,
       features: [
-        "Everything in Certification + 2-Month Internship Plan",
+        "Everything in Skill Course · Recorded + Live SkyLab Plan",
         "Dedicated Job Assistance, recruiter job board & referrals",
         "1-on-1 mock interviews, resume & LinkedIn profile review",
         "Live weekend mentor sessions & priority project feedback",

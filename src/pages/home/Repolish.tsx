@@ -104,7 +104,7 @@ export function HomeHero({
           >
             <div>
               <strong style={{ display: "block", fontSize: 18, fontWeight: 800, color: "#0f172a" }}>2 Months</strong>
-              <span style={{ fontSize: 12.5, color: "#475569" }}>Self-Paced & Mentor Tracks</span>
+              <span style={{ fontSize: 12.5, color: "#475569" }}>Recorded + Live SkyLab</span>
             </div>
             <div>
               <strong style={{ display: "block", fontSize: 18, fontWeight: 800, color: "#5142b5" }}>18+ Labs</strong>
@@ -282,7 +282,7 @@ function LmsCanvas({ stage }: { stage: number }) {
             </h3>
           </div>
           <span style={{ padding: "5px 12px", borderRadius: 999, background: "#f5f3ff", border: "1px solid #ddd6fe", color: "#5142b5", fontSize: 12.5, fontWeight: 600 }}>
-            Self-Paced · Browser Lab Included
+            Recorded + Live SkyLab · Browser Lab Included
           </span>
         </div>
 

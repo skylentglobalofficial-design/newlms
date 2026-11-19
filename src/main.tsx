@@ -123,13 +123,13 @@ if (typeof window !== "undefined" && !(window as any).__skylentMasterQaInstalled
 
   // B. Runtime DOM Normalizer (Fixes crushed vertical stepper, purple-on-purple pills, DB title "with Gen AI", duplicate card image, and interactive SQL verification button)
   const applyDomFixes = () => {
-    // 1. Strip " with Gen AI" & "2-Month Free Internship" from any API-rendered text nodes
+    // 1. Strip " with Gen AI" & "Recorded + Live SkyLab" from any API-rendered text nodes
     const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
     let node: Text | null;
     while ((node = walker.nextNode() as Text | null)) {
       const val = node.nodeValue || "";
-      if (/Data Analytics with Gen AI/i.test(val)) {
-        node.nodeValue = val.replace(/Data Analytics with Gen AI/gi, "Data Analytics");
+      if (/Data Analytics/i.test(val)) {
+        node.nodeValue = val.replace(/Data Analytics/gi, "Data Analytics");
       }
       if (/6 CAREER TRACKS WITH BROWSER LABS AND A 2-MONTH FREE INTERNSHIP/i.test(val)) {
         node.nodeValue = val.replace(/6 CAREER TRACKS WITH BROWSER LABS AND A 2-MONTH FREE INTERNSHIP/gi, "6 PRACTICAL CAREER TRACKS WITH LIVE BROWSER WORKSPACES");
@@ -311,4 +311,33 @@ if (typeof window !== "undefined" && !(window as any).__skylentMasterQaInstalled
       }, 400);
     }
   });
+}
+
+// v139 Lightweight Route Tier Sync & Red Cross Fix (Zero MutationObserver overhead)
+if (typeof window !== "undefined" && !(window as any).__skylentV139RouteSync) {
+  (window as any).__skylentV139RouteSync = true;
+  const PRO_SLUGS = ["data-science", "full-stack", "generative-ai", "ai-engineering"];
+  const syncCourseIdentity = () => {
+    const p = window.location.pathname.toLowerCase();
+    const s = window.location.search.toLowerCase();
+    if (p.startsWith("/programmes/") && p.length > 12) {
+      const isPro = s.includes("tier=professional") || (!s.includes("tier=skill") && PRO_SLUGS.some((slug) => p.includes(slug)));
+      document.body.setAttribute("data-skylent-tier", isPro ? "pro" : "skill");
+    } else {
+      document.body.removeAttribute("data-skylent-tier");
+    }
+    // Fix green checkmark -> red cross (✕) on the "No Job Assistance" bullet
+    document.querySelectorAll("#pp-pricing li, #pp-pricing div").forEach((el) => {
+      const htmlEl = el as HTMLElement;
+      const txt = (htmlEl.textContent || "").trim();
+      if (txt.includes("No Job Assistance") && htmlEl.children.length <= 2) {
+        const icon = htmlEl.querySelector("span, svg") as HTMLElement | null;
+        if (icon && icon.textContent?.trim() !== "✕") {
+          icon.outerHTML = '<span style="color:#dc2626;font-weight:800;margin-right:8px;">✕</span>';
+        }
+        htmlEl.style.color = "#64748b";
+      }
+    });
+  };
+  setInterval(syncCourseIdentity, 600);
 }

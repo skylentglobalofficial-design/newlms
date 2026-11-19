@@ -391,7 +391,7 @@ export default function CourseDetailPage() {
                   )}
                 </div>
                 <p className="cat-honesty">
-                  A certificate for this course is issued by the <strong>Skylent Global Assessment Board</strong> (verifiable at <Link to="/verify">/verify</Link>) when all 15 lessons, 3 module quizzes, and the graded capstone are completed. Plans: <strong>Certification + 2-Month Internship (₹1,499) · Job Assistance Program (₹11,999)</strong>.
+                  A certificate for this course is issued by the <strong>Skylent Global Assessment Board</strong> (verifiable at <Link to="/verify">/verify</Link>) when all 15 lessons, 3 module quizzes, and the graded capstone are completed. Plans: <strong>Skill Course · Recorded + Live SkyLab (₹1,499) · Job Assistance Program (₹11,999)</strong>.
                 </p>
                 <div
                   style={{

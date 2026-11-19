@@ -776,7 +776,7 @@ function SelectYourPlanPortalModal({
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8, marginBottom: 10 }}>
                 <strong style={{ fontSize: 18, color: '#0f172a' }}>SkyLab Practice Studio</strong>
                 <span style={{ fontSize: 11, fontWeight: 700, padding: '4px 10px', borderRadius: 999, background: '#f5f3ff', color: '#5142b5' }}>
-                  2-Month Free Internship
+                  Recorded + Live SkyLab
                 </span>
               </div>
               <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 16 }}>
@@ -854,7 +854,7 @@ function SelectYourPlanPortalModal({
                 Choose Plan
               </button>
               <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gap: 10, fontSize: 13, color: '#f1f5f9', lineHeight: 1.5 }}>
-                <li>✓ Everything in Certification + 2-Month Internship Plan</li>
+                <li>✓ Everything in Skill Course · Recorded + Live SkyLab Plan</li>
                 <li>✓ Dedicated Job Assistance, recruiter job board &amp; referrals</li>
                 <li>✓ 1-on-1 mock interviews, resume &amp; LinkedIn profile review</li>
                 <li>✓ Live weekend mentor sessions &amp; priority project feedback</li>
@@ -1258,7 +1258,7 @@ export default function DashboardStudentPage() {
                   ₹{(selectedExploreDetail.price * 2).toLocaleString('en-IN')}
                 </span>
                 <span style={{ fontSize: 12, fontWeight: 700, padding: '3px 10px', borderRadius: 999, background: '#dcfce7', color: '#166534' }}>
-                  Self-Paced · Premium · Pro Plans
+                  Recorded + Live SkyLab · Premium · Pro Plans
                 </span>
               </div>
               <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
@@ -1512,7 +1512,7 @@ export default function DashboardStudentPage() {
                         From ₹{item.price.toLocaleString('en-IN')}
                       </strong>
                       <span style={{ fontSize: 11, color: '#5142b5', fontWeight: 700 }}>
-                        Self-Paced · Premium · Pro
+                        Recorded + Live SkyLab · Premium · Pro
                       </span>
                     </div>
                     <div style={{ display: 'flex', gap: 8 }}>

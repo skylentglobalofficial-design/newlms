@@ -16,7 +16,7 @@ type Props = {
 const DEFAULT_FAQS = [
   {
     q: "How do the 2 Skylent plans work?",
-    a: "Choose the SkyLab Practice Studio Plan (₹1,499) for part-time self-paced learning, hands-on projects, and a 2-month complimentary internship, or the Job Assistance Program (₹11,999) for full placement support, 1-on-1 mock interviews, and recruiter referrals.",
+    a: "Choose the Skill Course Plan (₹1,499) for part-time self-paced learning, hands-on projects, and a 2-month complimentary internship, or the Job Assistance Program (₹11,999) for full placement support, 1-on-1 mock interviews, and recruiter referrals.",
   },
   {
     q: "Do I need to install any software on my laptop?",
@@ -103,7 +103,7 @@ export default function ProgrammePricingAndDock({
               const isProCard = tier.id === "flagship"
               const displayTitle =
                 tier.id === "certificate"
-                  ? "SkyLab Practice Studio Plan"
+                  ? "Skill Course Plan"
                   : "Job Assistance Program"
               return (
                 <article
@@ -171,7 +171,7 @@ export default function ProgrammePricingAndDock({
                             color: "#5142b5",
                           }}
                         >
-                          {tier.shortBadge || "2-Month Free Internship"}
+                          {tier.shortBadge || "Recorded + Live SkyLab"}
                         </span>
                       )}
                     </div>

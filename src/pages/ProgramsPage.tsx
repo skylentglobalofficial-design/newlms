@@ -345,15 +345,15 @@ export default function ProgramsPage() {
                 gap: 12,
               }}
             >
-              <strong style={{ fontSize: 17, color: "#0f172a" }}>2 Simple Plans on Every Programme</strong>
+              <strong style={{ fontSize: 17, color: "#0f172a" }}>Two Clear Tracks — Pick What Fits Your Goal</strong>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
                 <div style={{ padding: "12px 14px", borderRadius: 12, background: "#f8fafc", border: "1px solid #e2e8f0" }}>
-                  <span style={{ display: "block", fontSize: 11, fontWeight: 700, color: "#5142b5" }}>CERTIFICATION + INTERNSHIP</span>
+                  <span style={{ display: "block", fontSize: 11, fontWeight: 700, color: "#5142b5" }}>SKILL COURSES (6–8 WEEKS)</span>
                   <strong style={{ display: "block", fontSize: 20, color: "#0f172a", marginTop: 2 }}>₹1,499</strong>
-                  <span style={{ fontSize: 12, color: "#475569" }}>2 Months + Free Internship</span>
+                  <span style={{ fontSize: 12, color: "#475569" }}>Recorded + Live SkyLab Practice</span>
                 </div>
                 <div style={{ padding: "12px 14px", borderRadius: 12, background: "#f5f3ff", border: "1px solid #ddd6fe" }}>
-                  <span style={{ display: "block", fontSize: 11, fontWeight: 700, color: "#5142b5" }}>JOB ASSISTANCE TRACK</span>
+                  <span style={{ display: "block", fontSize: 11, fontWeight: 700, color: "#5142b5" }}>PRO PROGRAMS (4–6 MONTHS)</span>
                   <strong style={{ display: "block", fontSize: 20, color: "#5142b5", marginTop: 2 }}>₹11,999</strong>
                   <span style={{ fontSize: 12, color: "#475569" }}>Placement + Mock Interviews</span>
                 </div>
