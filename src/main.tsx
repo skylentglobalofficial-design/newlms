@@ -341,3 +341,41 @@ if (typeof window !== "undefined" && !(window as any).__skylentV139RouteSync) {
   };
   setInterval(syncCourseIdentity, 600);
 }
+
+// v140 Distinct View Sync for Skill Courses (?type=certification) vs Pro Programs (?type=professional)
+if (typeof window !== "undefined" && !(window as any).__skylentV140RouteSplit) {
+  (window as any).__skylentV140RouteSplit = true;
+  let lastQueryKey = "";
+  setInterval(() => {
+    const p = window.location.pathname;
+    const s = window.location.search;
+    if (p !== "/programmes") {
+      lastQueryKey = "";
+      return;
+    }
+    const typeParam = new URLSearchParams(s).get("type") || "all";
+    const key = p + "|" + typeParam;
+    if (key === lastQueryKey) return;
+    lastQueryKey = key;
+
+    // 1. Click the corresponding TYPE filter button ("Certification" or "Professional" or "All")
+    const targetLabel = typeParam === "professional" ? "Professional" : typeParam === "certification" ? "Certification" : "All";
+    const buttons = Array.from(document.querySelectorAll("button"));
+    const matchBtn = buttons.find((b) => (b.textContent || "").trim() === targetLabel);
+    if (matchBtn) {
+      matchBtn.click();
+    }
+
+    // 2. Visually distinguish the /programmes hero headline & subtext for Skill Courses vs Pro Programs
+    const h1 = document.querySelector("h1");
+    if (h1) {
+      if (typeParam === "professional") {
+        h1.textContent = "Pro Career Programs — Built to get you hired.";
+      } else if (typeParam === "certification") {
+        h1.textContent = "Skill Certification Courses — Master a skill in 6–8 weeks.";
+      } else {
+        h1.textContent = "Choose the skill you want to build and prove.";
+      }
+    }
+  }, 250);
+}

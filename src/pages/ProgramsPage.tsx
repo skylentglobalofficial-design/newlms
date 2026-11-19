@@ -261,7 +261,7 @@ export default function ProgramsPage() {
   const [params, setParams] = useSearchParams()
   const urlQuery = params.get("q") ?? ""
   const [query, setQuery] = useState(urlQuery)
-  const [kind, setKind] = useState<"all" | Kind>("all")
+  const [kind, setKind] = useState<any>(() => (typeof window !== "undefined" ? (new URLSearchParams(window.location.search).get("type") || "all") : "all"))
   const [category, setCategory] = useState("All")
 
   useEffect(() => {

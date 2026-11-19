@@ -502,7 +502,7 @@ type PublicNavGroup = MegaNavGroup & { to: string; match: readonly string[] }
 const PUBLIC_NAV: readonly PublicNavGroup[] = [
   {
     label: 'Skill Courses',
-    to: '/programmes',
+    to: '/programmes?type=certification',
     tagline: 'SKILL COURSES & PRO CAREER PROGRAMS',
     match: ['/programmes', '/programs', '/courses', '/skills', '/workshops', '/workshop', '/labs', '/events'],
     items: [],
