@@ -847,7 +847,7 @@ export function confirmedOpenTitles(programmes: CatalogProgramSummary[]): string
 }
 
 export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { programmes: CatalogProgramSummary[]; loading: boolean; confirmed: boolean; onRetry?: () => void }) {
-  const [trackFilter, setTrackFilter] = useState<"all" | "data" | "ai" | "product-web">("all")
+  const [trackFilter, setTrackFilter] = useState<"skill" | "pro" | "all">("skill")
   const rows = homeRows(programmes).filter((row) => FOCUS_SLUGS.includes(row.program.slug as (typeof FOCUS_SLUGS)[number]))
   const ordered = [...rows].sort((a, b) => FOCUS_SLUGS.indexOf(a.program.slug as (typeof FOCUS_SLUGS)[number]) - FOCUS_SLUGS.indexOf(b.program.slug as (typeof FOCUS_SLUGS)[number]))
   return (
@@ -863,10 +863,9 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
           </div>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center" }}>
             {[
+              { id: "skill" as const, label: "Skill Courses (3)" },
+              { id: "pro" as const, label: "Pro Programs (3)" },
               { id: "all" as const, label: "All (6)" },
-              { id: "data" as const, label: "Data & SQL" },
-              { id: "ai" as const, label: "Python & Data" },
-              { id: "product-web" as const, label: "Product & Web" },
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -920,67 +919,67 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
               {[
                 {
                   slug: "data-analytics",
-                  group: "data",
+                  group: "skill",
                   to: "/programmes/data-analytics-pro",
                   category: "DATA ANALYTICS",
                   title: "Data Analytics",
                   desc: "Master SQL queries, spreadsheets & BI dashboards with hands-on business analytics projects.",
-                  meta: "2 Months · Skill Certificate · Case Studies + Labs",
+                  meta: "6–8 Weeks · Skill Course · SkyLab Case Studies",
                   img: photoAnalytics,
                   alt: "Data Analytics workspace preview",
                 },
                 {
                   slug: "product-management",
-                  group: "product-web",
+                  group: "skill",
                   to: "/programmes/product-management",
                   category: "PRODUCT MANAGEMENT",
                   title: "Product Management",
                   desc: "Master user research, product strategy, metrics & engineering PRDs with real case studies.",
-                  meta: "2 Months · Skill Certificate · Case Studies + Labs",
+                  meta: "6–8 Weeks · Skill Course · SkyLab Case Studies",
                   img: photoProduct,
                   alt: "Product Management studio preview",
                 },
                 {
                   slug: "python-programming",
-                  group: "ai",
+                  group: "skill",
                   to: "/courses/python-programming",
                   category: "PYTHON & AUTOMATION",
                   title: "Python & Automation",
                   desc: "Build Python data automation scripts, validators & backend ETL workflows from scratch.",
-                  meta: "2 Months · Skill Certificate · Case Studies + Labs",
+                  meta: "6–8 Weeks · Skill Course · SkyLab Case Studies",
                   img: photoScience,
                   alt: "Python engineering workspace preview",
                 },
                 {
                   slug: "data-science-ai",
-                  group: "data",
+                  group: "pro",
                   to: "/programmes/data-science-ai",
                   category: "DATA SCIENCE",
                   title: "Data Science & AI",
                   desc: "Combine SQL revenue analytics, Python data pipelines & cohort retention modelling.",
-                  meta: "2 Months · Skill Certificate · Case Studies + Labs",
+                  meta: "4–6 Months · Pro Program · Job Assistance",
                   img: photoClass,
                   alt: "Data Science cohort analysis preview",
                 },
                 {
                   slug: "generative-ai",
-                  group: "ai",
+                  group: "pro",
                   to: "/programmes/generative-ai-program",
                   category: "GENERATIVE AI",
                   title: "Generative AI",
                   desc: "Build grounded RAG assistants, prompt workflows & practical AI applications in your browser.",
-                  meta: "2 Months · Skill Certificate · Case Studies + Labs",
+                  meta: "4–6 Months · Pro Program · Job Assistance",
                   img: photoCampusPg,
                   alt: "Generative AI evaluation preview",
                 },
                 {
                   slug: "full-stack-web",
-                  group: "product-web",
+                  group: "pro",
                   to: "/programmes/full-stack",
                   category: "FULL-STACK WEB",
                   title: "Full-Stack Web Development",
                   desc: "Build full-stack React + TypeScript interfaces, Node APIs & PostgreSQL database apps.",
-                  meta: "2 Months · Skill Certificate · Case Studies + Labs",
+                  meta: "4–6 Months · Pro Program · Job Assistance",
                   img: photoClass,
                   alt: "Full-stack engineering preview",
                 },
