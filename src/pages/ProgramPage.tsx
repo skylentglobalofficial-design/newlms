@@ -119,14 +119,14 @@ export default function ProgramPage() {
       <div className="skylent-course-purpose-box" style={{ background: "#f8fafc", borderBottom: "1px solid #e2e8f0", padding: "12px 20px", fontFamily: "Inter, system-ui, sans-serif" }}>
         <div style={{ maxWidth: 1200, margin: "0 auto", display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
-            <span style={{ fontSize: 11, fontWeight: 800, background: "#1d4ed8", color: "#ffffff", padding: "4px 10px", borderRadius: 999 }}>
+            <span style={{ fontSize: 11, fontWeight: 800, background: "#5142b5", color: "#ffffff", padding: "4px 10px", borderRadius: 999 }}>
               POWERED BY SKYLAB
             </span>
             <span style={{ fontSize: 13, color: "#0f172a", fontWeight: 600 }}>
               <strong>Built for practical mastery:</strong> Recorded lessons + live case-study practice in SkyLab, with Verified Portfolio &amp; Placement Support on Career Tracks.
             </span>
           </div>
-          <a href="/verify" style={{ fontSize: 12, fontWeight: 700, color: "#1d4ed8", textDecoration: "underline" }}>
+          <a href="/verify" style={{ fontSize: 12, fontWeight: 700, color: "#5142b5", textDecoration: "underline" }}>
             Inspect Sample Verified Certificate &rarr;
           </a>
         </div>
@@ -189,10 +189,10 @@ function programmeListingHonesty(
     return "Enrolment for this programme has not opened yet. No class schedule or batch has been set."
   }
   if (authored.length && linked.length === authored.length) {
-    return `This pathway includes the authored 15-lesson ${authored[0].title} course in SkyLab, which is ready for immediate self-paced study.`
+    return `This pathway includes the authored 15-lesson ${authored[0].title} course in SkyLab, which is ready for immediate Recorded + SkyLab study.`
   }
   if (authored.length) {
-    return `This pathway combines our authored 15-lesson ${authored.map((item) => item.title).join(" and ")} courses in SkyLab, which are ready for immediate self-paced study.`
+    return `This pathway combines our authored 15-lesson ${authored.map((item) => item.title).join(" and ")} courses in SkyLab, which are ready for immediate Recorded + SkyLab study.`
   }
   if (linked.length) {
     return "The course for this programme is still being prepared, so enrolment is not open yet. You can see its outline now."
