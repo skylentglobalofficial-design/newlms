@@ -510,19 +510,19 @@ const PUBLIC_NAV: readonly PublicNavGroup[] = [
       {
         heading: 'SKILL COURSES (₹1,499 · 6–8 WEEKS)',
         items: [
-          { label: 'Data Analytics', sub: 'SQL, Excel & BI dashboards with real business projects.', to: '/programmes/data-analytics-pro', mark: 'live' },
-          { label: 'Product Management', sub: 'User research, product strategy & engineering PRDs.', to: '/programmes/product-management', mark: 'live' },
+          { label: 'Data Analytics', sub: 'SQL, Excel & BI dashboards with real business projects.', to: '/courses/data-analytics-pro', mark: 'live' },
+          { label: 'Product Management', sub: 'User research, product strategy & engineering PRDs.', to: '/courses/product-management', mark: 'live' },
           { label: 'Python & Automation', sub: 'Python 3, data automation & backend workflows.', to: '/courses/python-programming', mark: 'live' },
-          { label: 'Explore Skill Courses →', sub: 'Focused recorded lessons + live SkyLab case studies.', to: '/programmes?type=certification' },
+          { label: 'Explore Skill Courses →', sub: 'Focused recorded lessons + live SkyLab case studies.', to: '/courses?type=certification' },
         ],
       },
       {
         heading: 'PRO PROGRAMS (₹11,999 · JOB ASSISTANCE)',
         items: [
-          { label: 'Full-Stack Web Development', sub: 'React, TypeScript, Node APIs & PostgreSQL apps.', to: '/programmes/full-stack', mark: 'live' },
-          { label: 'Data Science & AI', sub: 'SQL analytics, Python pipelines & predictive models.', to: '/programmes/data-science-ai', mark: 'live' },
-          { label: 'Generative AI', sub: 'RAG assistants, prompt evals & production workflows.', to: '/programmes/generative-ai-program', mark: 'live' },
-          { label: 'Explore Pro Programs →', sub: 'Mentor reviews, 2-month internship letter & job assistance.', to: '/programmes?type=professional' },
+          { label: 'Full-Stack Web Development', sub: 'React, TypeScript, Node APIs & PostgreSQL apps.', to: '/courses/full-stack', mark: 'live' },
+          { label: 'Data Science & AI', sub: 'SQL analytics, Python pipelines & predictive models.', to: '/courses/data-science-ai', mark: 'live' },
+          { label: 'Generative AI', sub: 'RAG assistants, prompt evals & production workflows.', to: '/courses/generative-ai-program', mark: 'live' },
+          { label: 'Explore Pro Programs →', sub: 'Mentor reviews, 2-month internship letter & job assistance.', to: '/courses?type=professional' },
         ],
       },
     ],
@@ -599,12 +599,12 @@ function dashRoute(role: UserRole): string {
    no such data exists. */
 type SearchEntry = { label: string; to: string; group: 'Courses' | 'Programmes' | 'Degrees' | 'Explore'; keywords?: string }
 const SEARCH_INDEX: readonly SearchEntry[] = [
-  { label: 'Data Analytics', to: '/programmes/data-analytics-pro', group: 'Courses', keywords: 'sql excel dashboards analyst data northwind' },
-  { label: 'Product Management', to: '/programmes/product-management', group: 'Courses', keywords: 'product pm roadmap discovery harbor desk' },
+  { label: 'Data Analytics', to: '/courses/data-analytics-pro', group: 'Courses', keywords: 'sql excel dashboards analyst data northwind' },
+  { label: 'Product Management', to: '/courses/product-management', group: 'Courses', keywords: 'product pm roadmap discovery harbor desk' },
   { label: 'Python Programming & Automation', to: '/courses/python-programming', group: 'Courses', keywords: 'python coding automation scripts etl pytest' },
-  { label: 'Data Science & AI (Dual Track)', to: '/programmes/data-science-ai', group: 'Programmes', keywords: 'data science machine learning python sql analytics' },
-  { label: 'Generative AI & LLM Systems', to: '/programmes/generative-ai-program', group: 'Courses', keywords: 'genai llm rag embeddings agents prompt engineering' },
-  { label: 'Full Stack Web Engineering', to: '/programmes/full-stack', group: 'Courses', keywords: 'full stack web react node express postgres typescript' },
+  { label: 'Data Science & AI (Dual Track)', to: '/courses/data-science-ai', group: 'Programmes', keywords: 'data science machine learning python sql analytics' },
+  { label: 'Generative AI & LLM Systems', to: '/courses/generative-ai-program', group: 'Courses', keywords: 'genai llm rag embeddings agents prompt engineering' },
+  { label: 'Full Stack Web Engineering', to: '/courses/full-stack', group: 'Courses', keywords: 'full stack web react node express postgres typescript' },
   { label: 'Workshops & Elixir Case Store', to: '/events', group: 'Explore', keywords: 'workshop webinar elixir coins case study cashback' },
   { label: 'All programmes', to: '/programmes', group: 'Programmes', keywords: 'courses certification professional' },
   { label: 'Certification programmes', to: '/programmes#certification', group: 'Programmes', keywords: 'certificate short' },
@@ -613,7 +613,7 @@ const SEARCH_INDEX: readonly SearchEntry[] = [
   { label: 'Postgraduate degrees', to: '/education?level=pg', group: 'Degrees', keywords: 'pg postgraduate degree' },
   { label: 'Online degrees', to: '/education?mode=online', group: 'Degrees', keywords: 'distance remote' },
   { label: 'Campus degrees', to: '/education?mode=campus', group: 'Degrees', keywords: 'offline in person college' },
-  { label: 'Pro Programs', to: '/programmes?type=professional', group: 'Explore', keywords: 'career profile resume jobs projects evidence' },
+  { label: 'Pro Programs', to: '/courses?type=professional', group: 'Explore', keywords: 'career profile resume jobs projects evidence' },
   { label: 'For institutions', to: '/institutions', group: 'Explore', keywords: 'college university partner' },
   { label: 'Check a certificate', to: '/verify', group: 'Explore', keywords: 'verify certificate' },
   { label: 'Contact', to: '/contact', group: 'Explore', keywords: 'help support call counselling' },
@@ -1142,7 +1142,7 @@ export function Nav() {
 
 /* Footer: four short columns of real routes, then the legal line. */
 const FOOTER_COLUMNS: readonly { title: string; links: readonly (readonly [string, string])[] }[] = [
-  { title: 'Courses', links: [['All courses', '/programmes'], ['Skill Courses (₹1,499)', '/programmes?type=certification'], ['Pro Programs (₹11,999)', '/programmes?type=professional']] },
+  { title: 'Courses', links: [['All courses', '/programmes'], ['Skill Courses (₹1,499)', '/courses?type=certification'], ['Pro Programs (₹11,999)', '/courses?type=professional']] },
   { title: 'Degrees', links: [['Undergraduate (UG)', '/education?level=ug'], ['Postgraduate (PG)', '/education?level=pg'], ['Online & Campus', '/education']] },
   { title: 'Verify & Access', links: [['Verify a certificate', '/verify'], ['Sign in to SkyLab', '/login'], ['Create free account', '/signup']] },
   { title: 'Skylent', links: [['About Us', '/about'], ['For Colleges', '/institutions'], ['Contact', '/contact']] },

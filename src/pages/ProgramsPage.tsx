@@ -212,7 +212,7 @@ function statusText(row: Row, confirmed: boolean): string {
 }
 
 function ProgrammeCard({ row }: { row: Row; confirmed: boolean }) {
-  const to = `/programmes/${row.program.slug}`
+  const to = `/courses/${row.program.slug}`
   const isPro = row.kind === "professional"
   return (
     <li className="pgx-card" style={{ borderRadius: 16, border: "1px solid #e2e8f0", background: "#ffffff", overflow: "hidden", boxShadow: "0 10px 28px -18px rgba(15,23,42,0.14)", transition: "transform 180ms ease, border-color 180ms ease" }}>

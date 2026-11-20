@@ -99,7 +99,7 @@ export function HomeHero({
           <Link to="/login" className="hx-hero-v144__btn-p">
             Get started <ArrowRight />
           </Link>
-          <Link to="/programmes" className="hx-hero-v144__btn-o">
+          <Link to="/courses" className="hx-hero-v144__btn-o">
             Explore courses
           </Link>
         </div>
@@ -108,7 +108,7 @@ export function HomeHero({
       {/* Calm Stationary 5-Card Premium Mini-UI Fan */}
       <div className="hx-fan-wrap">
         <div className="hx-fan">
-          <Link to="/programmes/data-analytics-pro" className="hx-fcard">
+          <Link to="/courses/data-analytics-pro" className="hx-fcard">
             <span className="hx-fcard__lbl">Data Analytics</span>
             <div className="hx-fcard__viz">
               <div className="hx-m-row"><span>Net Revenue</span><span className="hx-m-pill">+24.8%</span></div>
@@ -123,7 +123,7 @@ export function HomeHero({
             <span className="hx-fcard__title">SQL &amp; KPI Dashboards</span>
           </Link>
 
-          <Link to="/programmes/product-management" className="hx-fcard">
+          <Link to="/courses/product-management" className="hx-fcard">
             <span className="hx-fcard__lbl">Product</span>
             <div className="hx-fcard__viz">
               <div className="hx-m-row"><span>Checkout Funnel</span><span className="hx-m-pill">+6.4%</span></div>
@@ -158,7 +158,7 @@ export function HomeHero({
             <span className="hx-fcard__title">Verified Portfolio</span>
           </Link>
 
-          <Link to="/programmes/full-stack" className="hx-fcard">
+          <Link to="/courses/full-stack" className="hx-fcard">
             <span className="hx-fcard__lbl">Engineering</span>
             <div className="hx-fcard__viz" style={{ background: "#f8fafc" }}>
               <div className="hx-m-row"><span className="hx-m-mono" style={{ color: "#5142b5", fontWeight: 700 }}>GET /api/verify</span><span className="hx-m-pill">200 OK</span></div>
@@ -293,7 +293,7 @@ export function WalkControls({
 
 const DA_SLUG = "data-analytics-pro"
 const LMS_STAGES = [
-  { key: "programme", label: "1. Course Syllabus", href: "/programmes/data-analytics-pro", action: "Explore Programmes" },
+  { key: "programme", label: "1. Course Syllabus", href: "/courses/data-analytics-pro", action: "Explore Programmes" },
   { key: "lesson", label: "2. Interactive Lesson", href: "/courses/data-analytics", action: "Preview Lessons" },
   { key: "practice", label: "3. SkyLab SQL Studio", href: "/labs", action: "See Browser Labs" },
   { key: "project", label: "4. Capstone Project", href: "/verify/SKL-2026-DA-EXEMPLAR", action: "View Capstones" },
@@ -817,7 +817,7 @@ function ProgrammeGroup({ title, rows, confirmed }: { title: string; rows: HomeR
           const action = state === "closed" ? "See what is listed" : "View programme"
           return (
             <li key={row.program.slug}>
-              <Link to={`/programmes/${row.program.slug}`} className={open ? "hx-focus__card is-open" : "hx-focus__card is-soon"} data-clear-launcher>
+              <Link to={`/courses/${row.program.slug}`} className={open ? "hx-focus__card is-open" : "hx-focus__card is-soon"} data-clear-launcher>
                 <span className="hx-focus__media">
                   {face ? <img src={face.image} alt={face.alt} width={face.width} height={face.height} loading="lazy" decoding="async" /> : null}
                 </span>
@@ -885,7 +885,7 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
                 {tab.label}
               </button>
             ))}
-            <Link className="hx-more" to="/programmes" style={{ marginLeft: 6 }}>
+            <Link className="hx-more" to="/courses" style={{ marginLeft: 6 }}>
               Compare all
               <ArrowRight />
             </Link>
@@ -912,7 +912,7 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
                     {" · "}
                   </>
                 ) : null}
-                <Link to="/programmes">See programmes</Link>
+                <Link to="/courses">See programmes</Link>
               </p>
             )}
             <ul className="hx-live-courses-grid" aria-label="All 6 programmes and courses">
@@ -920,7 +920,7 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
                 {
                   slug: "data-analytics",
                   group: "skill",
-                  to: "/programmes/data-analytics-pro",
+                  to: "/courses/data-analytics-pro",
                   category: "DATA ANALYTICS",
                   title: "Data Analytics",
                   desc: "Master SQL queries, spreadsheets & BI dashboards with hands-on business analytics projects.",
@@ -931,7 +931,7 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
                 {
                   slug: "product-management",
                   group: "skill",
-                  to: "/programmes/product-management",
+                  to: "/courses/product-management",
                   category: "PRODUCT MANAGEMENT",
                   title: "Product Management",
                   desc: "Master user research, product strategy, metrics & engineering PRDs with real case studies.",
@@ -953,7 +953,7 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
                 {
                   slug: "data-science-ai",
                   group: "pro",
-                  to: "/programmes/data-science-ai",
+                  to: "/courses/data-science-ai",
                   category: "DATA SCIENCE",
                   title: "Data Science & AI",
                   desc: "Combine SQL revenue analytics, Python data pipelines & cohort retention modelling.",
@@ -964,7 +964,7 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
                 {
                   slug: "generative-ai",
                   group: "pro",
-                  to: "/programmes/generative-ai-program",
+                  to: "/courses/generative-ai-program",
                   category: "GENERATIVE AI",
                   title: "Generative AI",
                   desc: "Build grounded RAG assistants, prompt workflows & practical AI applications in your browser.",
@@ -975,7 +975,7 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
                 {
                   slug: "full-stack-web",
                   group: "pro",
-                  to: "/programmes/full-stack",
+                  to: "/courses/full-stack",
                   category: "FULL-STACK WEB",
                   title: "Full-Stack Web Development",
                   desc: "Build full-stack React + TypeScript interfaces, Node APIs & PostgreSQL database apps.",
@@ -1580,7 +1580,7 @@ export function HomeAi() {
             ))}
 
             <div className="hx-ai-studio__actions">
-              <Link className="sk-btn sk-btn-primary" to="/programmes">
+              <Link className="sk-btn sk-btn-primary" to="/courses">
                 Explore Programmes
                 <ArrowRight />
               </Link>
@@ -1740,7 +1740,7 @@ export function HomeClosing() {
               Start free <ArrowRight />
             </Link>
             <Link
-              to="/programmes"
+              to="/courses"
               style={{
                 display: "inline-flex",
                 alignItems: "center",
