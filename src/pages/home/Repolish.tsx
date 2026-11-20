@@ -105,18 +105,19 @@ export function HomeHero({
         </div>
       </div>
 
-      {/* Calm Stationary 5-Card Visual Fan (Zero Moving Ticker) */}
+      {/* Calm Stationary 5-Card Premium Mini-UI Fan */}
       <div className="hx-fan-wrap">
         <div className="hx-fan">
           <Link to="/programmes/data-analytics-pro" className="hx-fcard">
             <span className="hx-fcard__lbl">Data Analytics</span>
             <div className="hx-fcard__viz">
-              <svg width="140" height="64" viewBox="0 0 140 64" fill="none">
-                <rect x="8" y="34" width="18" height="24" rx="4" fill="#ddd6fe" />
-                <rect x="34" y="22" width="18" height="36" rx="4" fill="#a5b4fc" />
-                <rect x="60" y="14" width="18" height="44" rx="4" fill="#5142b5" />
-                <rect x="86" y="26" width="18" height="32" rx="4" fill="#a5b4fc" />
-                <rect x="112" y="8" width="18" height="50" rx="4" fill="#5142b5" />
+              <div className="hx-m-row"><span>Net Revenue</span><span className="hx-m-pill">+24.8%</span></div>
+              <svg width="100%" height="58" viewBox="0 0 160 58" fill="none" preserveAspectRatio="none">
+                <line x1="0" y1="14" x2="160" y2="14" stroke="#f1f5f9" strokeWidth="1" />
+                <line x1="0" y1="34" x2="160" y2="34" stroke="#f1f5f9" strokeWidth="1" />
+                <path d="M4 48 L36 38 L68 42 L100 22 L130 26 L156 8 L156 56 L4 56 Z" fill="#f5f3ff" />
+                <path d="M4 48 L36 38 L68 42 L100 22 L130 26 L156 8" stroke="#5142b5" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+                <circle cx="156" cy="8" r="3.5" fill="#5142b5" />
               </svg>
             </div>
             <span className="hx-fcard__title">SQL &amp; KPI Dashboards</span>
@@ -125,36 +126,47 @@ export function HomeHero({
           <Link to="/programmes/product-management" className="hx-fcard">
             <span className="hx-fcard__lbl">Product</span>
             <div className="hx-fcard__viz">
-              <svg width="140" height="64" viewBox="0 0 140 64" fill="none">
-                <rect x="10" y="8" width="120" height="12" rx="6" fill="#5142b5" />
-                <rect x="24" y="26" width="92" height="12" rx="6" fill="#818cf8" />
-                <rect x="42" y="44" width="56" height="12" rx="6" fill="#c4b5fd" />
-              </svg>
+              <div className="hx-m-row"><span>Checkout Funnel</span><span className="hx-m-pill">+6.4%</span></div>
+              <div style={{ display: "grid", gap: 6 }}>
+                <div style={{ display: "grid", gridTemplateColumns: "34px 1fr 28px", alignItems: "center", gap: 6, fontSize: 10, color: "#475569" }}>
+                  <span>View</span><div style={{ height: 6, background: "#f1f5f9", borderRadius: 99 }}><div style={{ width: "100%", height: "100%", background: "#5142b5", borderRadius: 99 }} /></div><strong>100%</strong>
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "34px 1fr 28px", alignItems: "center", gap: 6, fontSize: 10, color: "#475569" }}>
+                  <span>UPI</span><div style={{ height: 6, background: "#f1f5f9", borderRadius: 99 }}><div style={{ width: "74%", height: "100%", background: "#818cf8", borderRadius: 99 }} /></div><strong>74%</strong>
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "34px 1fr 28px", alignItems: "center", gap: 6, fontSize: 10, color: "#475569" }}>
+                  <span>Paid</span><div style={{ height: 6, background: "#f1f5f9", borderRadius: 99 }}><div style={{ width: "62%", height: "100%", background: "#0f766e", borderRadius: 99 }} /></div><strong>62%</strong>
+                </div>
+              </div>
             </div>
             <span className="hx-fcard__title">PRDs &amp; Funnel Cases</span>
           </Link>
 
           <Link to="/verify/SKL-2026-DA-EXEMPLAR" className="hx-fcard">
             <span className="hx-fcard__lbl">Verified Proof</span>
-            <div className="hx-fcard__viz" style={{ background: "#f5f3ff", borderColor: "#ddd6fe" }}>
-              <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
-                <circle cx="32" cy="32" r="24" fill="#5142b5" />
-                <path d="M22 32.5L28.8 39.2L42.5 25.5" stroke="#ffffff" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
+            <div className="hx-fcard__viz" style={{ background: "#faf9ff", borderColor: "#ddd6fe" }}>
+              <div className="hx-m-row"><span style={{ color: "#5142b5" }}>SKYLENT CREDENTIAL</span><span className="hx-m-pill">✓ Live</span></div>
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <div style={{ width: 32, height: 32, borderRadius: "50%", background: "#5142b5", color: "#fff", display: "inline-flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 14, flexShrink: 0 }}>✓</div>
+                <div style={{ minWidth: 0 }}>
+                  <div className="hx-m-mono" style={{ fontWeight: 700, color: "#5142b5" }}>SKL-2026-DA</div>
+                  <div style={{ fontSize: 10, color: "#475569" }}>Rubric 96/100 &middot; Graded</div>
+                </div>
+              </div>
+              <div style={{ fontSize: 10, color: "#64748b", borderTop: "1px solid #ede9fe", paddingTop: 5 }}>Employer-verifiable portfolio</div>
             </div>
             <span className="hx-fcard__title">Verified Portfolio</span>
           </Link>
 
           <Link to="/programmes/full-stack" className="hx-fcard">
             <span className="hx-fcard__lbl">Engineering</span>
-            <div className="hx-fcard__viz">
-              <svg width="140" height="64" viewBox="0 0 140 64" fill="none">
-                <rect x="8" y="10" width="124" height="44" rx="8" fill="#ffffff" stroke="#cbd5e1" />
-                <circle cx="20" cy="22" r="3" fill="#5142b5" />
-                <rect x="30" y="19" width="56" height="6" rx="3" fill="#5142b5" />
-                <rect x="20" y="33" width="84" height="5" rx="2.5" fill="#cbd5e1" />
-                <rect x="20" y="42" width="60" height="5" rx="2.5" fill="#0f766e" />
-              </svg>
+            <div className="hx-fcard__viz" style={{ background: "#f8fafc" }}>
+              <div className="hx-m-row"><span className="hx-m-mono" style={{ color: "#5142b5", fontWeight: 700 }}>GET /api/verify</span><span className="hx-m-pill">200 OK</span></div>
+              <div className="hx-m-mono" style={{ fontSize: 10, color: "#334155", lineHeight: 1.5 }}>
+                {'{ verified: true,'}<br />
+                {'  latency: "18ms" }'}
+              </div>
+              <div style={{ fontSize: 10, color: "#0f766e", fontWeight: 600 }}>✓ 18 / 18 tests passing</div>
             </div>
             <span className="hx-fcard__title">Full-Stack &amp; APIs</span>
           </Link>
@@ -162,11 +174,14 @@ export function HomeHero({
           <Link to="/education" className="hx-fcard">
             <span className="hx-fcard__lbl">Degrees</span>
             <div className="hx-fcard__viz">
-              <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
-                <circle cx="32" cy="32" r="22" stroke="#e2e8f0" strokeWidth="6" />
-                <circle cx="32" cy="32" r="22" stroke="#5142b5" strokeWidth="6" strokeDasharray="104 140" strokeLinecap="round" transform="rotate(-90 32 32)" />
-                <text x="32" y="36" textAnchor="middle" fill="#0f172a" fontSize="12" fontWeight="700">1-8</text>
-              </svg>
+              <div className="hx-m-row"><span>BCA &middot; BBA &middot; MBA</span><span style={{ color: "#5142b5" }}>Sem 1–8</span></div>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 5 }}>
+                <span style={{ textAlign: "center", padding: "5px 0", borderRadius: 6, fontSize: 10, fontWeight: 700, background: "#f5f3ff", color: "#5142b5", border: "1px solid #ddd6fe" }}>S1 ✓</span>
+                <span style={{ textAlign: "center", padding: "5px 0", borderRadius: 6, fontSize: 10, fontWeight: 700, background: "#f5f3ff", color: "#5142b5", border: "1px solid #ddd6fe" }}>S2 ✓</span>
+                <span style={{ textAlign: "center", padding: "5px 0", borderRadius: 6, fontSize: 10, fontWeight: 700, background: "#5142b5", color: "#ffffff" }}>S3</span>
+                <span style={{ textAlign: "center", padding: "5px 0", borderRadius: 6, fontSize: 10, fontWeight: 600, background: "#f1f5f9", color: "#64748b" }}>S4</span>
+              </div>
+              <div style={{ fontSize: 10, color: "#64748b" }}>Online &amp; Campus pathways</div>
             </div>
             <span className="hx-fcard__title">UG &amp; PG Semesters</span>
           </Link>
