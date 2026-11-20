@@ -292,7 +292,7 @@ const DATA_ANALYTICS: AuthoredProgrammeContent = {
   },
   evidence: {
     heading: "Four pieces of work a reviewer can check.",
-    lede: "Hiring teams evaluate how you clean data, structure queries, and defend trade-offs. Each module produces a concrete, reviewable deliverable.",
+    lede: "Hiring teams evaluate how you frame problems, build practical deliverables, and defend trade-offs. Each module produces a concrete, reviewable deliverable.",
     record: {
       title: "Northwind Commercial Review",
       context: "Capstone · Data Analytics · your own work",
@@ -428,7 +428,7 @@ const PRODUCT_MANAGEMENT: AuthoredProgrammeContent = {
   },
   evidence: {
     heading: "Three pieces of work a reviewer can check.",
-    lede: "Hiring teams evaluate how you clean data, structure queries, and defend trade-offs. Each module produces a concrete, reviewable deliverable.",
+    lede: "Hiring teams evaluate how you frame problems, build practical deliverables, and defend trade-offs. Each module produces a concrete, reviewable deliverable.",
     record: {
       title: "Harbor Desk product case",
       context: "Capstone · Product Management · your own work",
