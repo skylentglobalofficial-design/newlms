@@ -137,19 +137,24 @@ const CARD_FACE: Record<
 
 const KIND_COPY: Record<Kind, { title: string; lead: string; label: string }> = {
   certification: {
-    title: "Certification programmes",
+    title: "Skill Courses (₹1,499)",
     lead: "Focused single-skill tracks backed by in-browser practice.",
-    label: "Certification",
+    label: "Skill Courses",
   },
   professional: {
-    title: "Professional programmes",
+    title: "Pro Programs (₹11,999)",
     lead: "Step-by-step career tracks combining lessons, live labs, and a final capstone project you can show employers.",
-    label: "Professional",
+    label: "Pro Programs",
   },
 }
 
 
 function kindOf(program: CatalogProgramSummary): Kind | null {
+  const slugKey = (program.slug || "").toLowerCase()
+  const SKILL_SLUGS = ["data-analytics-pro", "data-analytics", "product-management", "python-programming", "sql-for-business-analytics"]
+  const PRO_SLUGS = ["full-stack", "full-stack-web", "data-science-ai", "generative-ai-program", "generative-ai"]
+  if (SKILL_SLUGS.includes(slugKey)) return "certification"
+  if (PRO_SLUGS.includes(slugKey)) return "professional"
   const type = program.programType.toUpperCase()
   if (type === "CERTIFICATE") return "certification"
   if (type === "PROFESSIONAL" || !type) return "professional"
@@ -245,7 +250,7 @@ function ProgrammeCard({ row, confirmed }: { row: Row; confirmed: boolean }) {
           <span className="pgx-card__title">{row.title}</span>
           <span className="pgx-card__line">{row.line}</span>
           <span className="pgx-card__footer" style={{ marginTop: "auto", paddingTop: 14 }}>
-            <span className="pgx-card__meta">2 Months · Skill Certificate · From ₹1,499</span>
+            <span className="pgx-card__meta">{row.kind === "professional" ? "4–6 Months · Pro Program · ₹11,999" : "6–8 Weeks · Skill Course · ₹1,499"}</span>
             <span className="pgx-card__go">
               Explore Programme <ArrowRight />
             </span>
