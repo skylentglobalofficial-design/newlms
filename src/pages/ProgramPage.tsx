@@ -25,7 +25,8 @@ function Shell({ children }: { children: ReactNode }) {
 const stripGenAi = (s?: string) => (s || "").replace(/\s+with\s+Gen\s*AI/gi, "")
 
 export default function ProgramPage() {
-  const { slug } = useParams()
+  const { slug: paramSlug } = useParams()
+  const slug = paramSlug || (typeof window !== "undefined" ? window.location.pathname.split("/").filter(Boolean).pop() : undefined)
   const catalog = useCatalogProgram(slug)
   const [enrollOpen, setEnrollOpen] = useState(false)
   useEffect(() => {

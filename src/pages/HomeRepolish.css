@@ -2979,3 +2979,6 @@ html {
   background: #f5f3ff !important;
   border-color: #ddd6fe !important;
 }
+
+/* v154.1 sk-btn-primary white text */
+.sk-btn-primary { color: #ffffff !important; }
