@@ -312,7 +312,7 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
       <section className="pp-hero-band" aria-labelledby="pp-title">
         <div className="sky-container pp-hero">
           <nav className="sky-label pp-crumb" aria-label="Breadcrumb">
-            <Link to="/programmes">Programmes</Link>
+            <Link to="/programmes">Courses</Link>
             <span aria-hidden="true"> / </span>
             <span aria-current="page">{program.name}</span>
           </nav>
@@ -365,7 +365,7 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
                 <div className="pp-metric-card" style={{ borderTop: "3px solid #5142b5" }}>
                   <span className="pp-metric-card__label">Duration &amp; Pace</span>
                   <strong className="pp-metric-card__val">2 Months (8 Weeks)</strong>
-                  <span className="pp-metric-card__sub">{facts.format} · + 2M Free Internship</span>
+                  <span className="pp-metric-card__sub">{facts.format} · + SkyLab Case Studies</span>
                 </div>
                 <div className="pp-metric-card" style={{ borderTop: "3px solid #5142b5" }}>
                   <span className="pp-metric-card__label">Curriculum</span>
@@ -383,7 +383,7 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
                 </div>
                 <div className="pp-metric-card" style={{ borderTop: "3px solid #5142b5" }}>
                   <span className="pp-metric-card__label">Certification</span>
-                  <strong className="pp-metric-card__val">Course + Internship</strong>
+                  <strong className="pp-metric-card__val">Verified Certificate</strong>
                   <span className="pp-metric-card__sub">Shareable on LinkedIn &amp; Resume</span>
                 </div>
               </div>
@@ -478,7 +478,7 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
                         <strong style={{ fontSize: 26, fontWeight: 800, color: "#0f172a", fontFamily: "var(--font-display)" }}>
                           ₹1,499
                         </strong>
-                        <span style={{ fontSize: 12.5, color: "#5142b5", fontWeight: 600 }}>· Job Assistance: ₹11,999</span>
+                        
                       </div>
                     </div>
                     <span style={{ padding: "4px 10px", borderRadius: 999, background: "#ecfdf5", border: "1px solid #a7f3d0", color: "#047857", fontSize: 11.5, fontWeight: 700 }}>
@@ -510,7 +510,7 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
                     </li>
                     <li>
                       <span aria-hidden="true">✓</span>
-                      <span><strong>Course + Internship Certificates</strong> (Job Assistance option available)</span>
+                      <span><strong>Verified Certificate Certificates</strong> (Job Assistance option available)</span>
                     </li>
                   </ul>
 

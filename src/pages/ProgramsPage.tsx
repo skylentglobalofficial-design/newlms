@@ -211,17 +211,31 @@ function statusText(row: Row, confirmed: boolean): string {
   return publicCatalogueStatus("closed")
 }
 
-function ProgrammeCard({ row, confirmed }: { row: Row; confirmed: boolean }) {
+function ProgrammeCard({ row }: { row: Row; confirmed: boolean }) {
   const to = `/programmes/${row.program.slug}`
-  const status = statusText(row, confirmed)
-  const hasAuthoredTrack = row.truth.linked.some((l) => l.authored)
-  const live = (presentedOpen(row) || hasAuthoredTrack || row.program.slug === "sql-certificate") && confirmed
-  const showStatus = status !== STATUS_NOT_CONFIRMED
+  const isPro = row.kind === "professional"
   return (
-    <li className="pgx-card">
-      <Link to={to} className="pgx-card__link" data-clear-launcher>
-        <span className="pgx-card__media">
-          <img src={row.image} alt={row.alt} width={800} height={500} loading="lazy" decoding="async" />
+    <li className="pgx-card" style={{ borderRadius: 16, border: "1px solid #e2e8f0", background: "#ffffff", overflow: "hidden", boxShadow: "0 10px 28px -18px rgba(15,23,42,0.14)", transition: "transform 180ms ease, border-color 180ms ease" }}>
+      <Link to={to} className="pgx-card__link" data-clear-launcher style={{ display: "flex", flexDirection: "column", height: "100%", textDecoration: "none", color: "#0f172a" }}>
+        <span className="pgx-card__media" style={{ position: "relative", height: 184, overflow: "hidden", display: "block", background: "#f1f5f9" }}>
+          <img src={row.image} alt={row.alt} width={800} height={500} loading="lazy" decoding="async" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+          <span
+            style={{
+              position: "absolute",
+              top: 12,
+              right: 12,
+              padding: "4px 10px",
+              borderRadius: 999,
+              background: isPro ? "#5142b5" : "rgba(255,255,255,0.94)",
+              color: isPro ? "#ffffff" : "#0f172a",
+              fontSize: 11,
+              fontWeight: 700,
+              letterSpacing: "0.02em",
+              boxShadow: "0 4px 12px rgba(15,23,42,0.12)",
+            }}
+          >
+            {isPro ? "Pro Program" : "Skill Course"}
+          </span>
           <span
             style={{
               position: "absolute",
@@ -237,22 +251,28 @@ function ProgrammeCard({ row, confirmed }: { row: Row; confirmed: boolean }) {
           >
             {row.skills.slice(0, 3).join(" · ")}
           </span>
-          {showStatus ? (
-            <span className={live ? "pgx-status pgx-status--open" : "pgx-status"} style={{ display: "none" }}>
-              {live ? `✓ ${status}` : status}
-            </span>
-          ) : null}
         </span>
-        <span className="pgx-card__body">
-          <span className="pgx-card__kicker">
-            {row.category}
+        <span className="pgx-card__body" style={{ padding: "18px 20px 20px", display: "flex", flexDirection: "column", flex: 1, gap: 8 }}>
+          <span style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
+            <span className="pgx-card__kicker" style={{ fontSize: 11.5, fontWeight: 700, letterSpacing: "0.05em", color: "#5142b5", textTransform: "uppercase" }}>
+              {row.category}
+            </span>
+            <strong style={{ fontSize: 16, fontWeight: 800, color: "#0f172a" }}>
+              {isPro ? "₹11,999" : "₹1,499"}
+            </strong>
           </span>
-          <span className="pgx-card__title">{row.title}</span>
-          <span className="pgx-card__line">{row.line}</span>
-          <span className="pgx-card__footer" style={{ marginTop: "auto", paddingTop: 14 }}>
-            <span className="pgx-card__meta">{row.kind === "professional" ? "4–6 Months · Pro Program · ₹11,999" : "6–8 Weeks · Skill Course · ₹1,499"}</span>
-            <span className="pgx-card__go">
-              Explore Programme <ArrowRight />
+          <span className="pgx-card__title" style={{ fontSize: 18.5, fontWeight: 700, color: "#0f172a", letterSpacing: "-0.02em", lineHeight: 1.25 }}>
+            {row.title}
+          </span>
+          <span className="pgx-card__line" style={{ fontSize: 13.5, color: "#475569", lineHeight: 1.55 }}>
+            {row.line}
+          </span>
+          <span className="pgx-card__footer" style={{ marginTop: "auto", paddingTop: 14, borderTop: "1px solid #f1f5f9", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
+            <span className="pgx-card__meta" style={{ fontSize: 12.5, color: "#64748b", fontWeight: 500 }}>
+              {isPro ? "4–6 Months · Job Assistance" : "6–8 Weeks · Live SkyLab"}
+            </span>
+            <span className="pgx-card__go" style={{ fontSize: 13, fontWeight: 700, color: "#5142b5", whiteSpace: "nowrap", display: "inline-flex", alignItems: "center", gap: 4 }}>
+              View details <ArrowRight />
             </span>
           </span>
         </span>

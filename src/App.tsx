@@ -304,7 +304,7 @@ function AppRoutes() {
         <Route path="/universities" element={<UniversitiesPage />} />
         <Route path="/labs" element={<LabsPage />} />
         <Route path="/os" element={<OSPage />} />
-        <Route path="/courses" element={<Navigate to="/programmes" replace />} />
+        <Route path="/courses" element={<ProgramsPage />} />
         <Route path="/courses/:slug" element={<CourseDetailPage />} />
         <Route path="/workshops" element={<WorkshopsPage />} />
         <Route path="/workshops/:slug" element={<WorkshopDetailPage />} />
