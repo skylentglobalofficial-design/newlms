@@ -61,86 +61,14 @@ export function HomeHero({
       ? AVAILABILITY_UNKNOWN
       : programmesIndexIntro(true, openTitles)
 
-  const rail = [
-    {
-      label: "Data Analytics",
-      to: "/programmes/data-analytics-pro",
-      icon: (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M3 3v18h18" /><path d="M18 17V9" /><path d="M13 17V5" /><path d="M8 17v-3" />
-        </svg>
-      ),
-    },
-    {
-      label: "Product Management",
-      to: "/programmes/product-management",
-      icon: (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-          <rect x="3" y="3" width="7" height="7" rx="1.5" /><rect x="14" y="3" width="7" height="7" rx="1.5" /><rect x="14" y="14" width="7" height="7" rx="1.5" /><rect x="3" y="14" width="7" height="7" rx="1.5" />
-        </svg>
-      ),
-    },
-    {
-      label: "Full-Stack Web",
-      to: "/programmes/full-stack",
-      icon: (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-          <polyline points="16 18 22 12 16 6" /><polyline points="8 6 2 12 8 18" />
-        </svg>
-      ),
-    },
-    {
-      label: "Python & Data",
-      to: "/courses/python-programming",
-      icon: (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-          <ellipse cx="12" cy="5" rx="9" ry="3" /><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" /><path d="M3 12c0 1.66 4 3 9 3s9-1.34 9-3" />
-        </svg>
-      ),
-    },
-    {
-      label: "Online Degrees",
-      to: "/education",
-      icon: (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-          <path d="m22 10-10-5L2 10l10 5z" /><path d="M6 12v5c0 2 3 3 6 3s6-1 6-3v-5" />
-        </svg>
-      ),
-    },
-  ]
-
   return (
-    <section
-      aria-labelledby="hx-hero-title"
-      className="hx-hero-onepage"
-      style={{
-        background: "#ffffff",
-        minHeight: "calc(100vh - 72px)",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "space-between",
-      }}
-    >
-      {/* Exact Optical Center */}
-      <div
-        className="sky-container"
-        style={{
-          flex: 1,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          textAlign: "center",
-          padding: "clamp(40px, 6vw, 72px) 0 clamp(32px, 4vw, 48px)",
-          maxWidth: 880,
-          margin: "0 auto",
-        }}
-      >
+    <section aria-labelledby="hx-hero-title" className="hx-hero-v144">
+      <div className="hx-hero-v144__top">
         <h1
           id="hx-hero-title"
           className="hxw-hero__title"
           style={{
-            margin: "0 auto 18px",
+            margin: "0 auto 16px",
             maxWidth: 780,
             fontFamily: "var(--font-display, inherit)",
             fontSize: "clamp(36px, 5.4vw, 62px)",
@@ -156,9 +84,9 @@ export function HomeHero({
 
         <p
           style={{
-            margin: "0 auto 30px",
+            margin: "0 auto 28px",
             maxWidth: 560,
-            fontSize: "clamp(15.5px, 1.7vw, 18px)",
+            fontSize: "clamp(15.5px, 1.65vw, 18px)",
             lineHeight: 1.6,
             color: "#475569",
           }}
@@ -167,105 +95,81 @@ export function HomeHero({
         </p>
         <p className="hx-sr" aria-live="polite">{availability}</p>
 
-        <div style={{ display: "flex", justifyContent: "center", flexWrap: "wrap", gap: 12, marginBottom: 34 }}>
-          <Link
-            to="/login"
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 8,
-              padding: "13px 28px",
-              borderRadius: 999,
-              background: "#5142b5",
-              color: "#ffffff",
-              fontSize: 15,
-              fontWeight: 600,
-              textDecoration: "none",
-              boxShadow: "0 10px 24px -8px rgba(81, 66, 181, 0.45)",
-            }}
-          >
+        <div style={{ display: "flex", justifyContent: "center", flexWrap: "wrap", gap: 12 }}>
+          <Link to="/login" className="hx-hero-v144__btn-p">
             Get started <ArrowRight />
           </Link>
-          <Link
-            to="/programmes"
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 8,
-              padding: "13px 26px",
-              borderRadius: 999,
-              background: "#ffffff",
-              color: "#0f172a",
-              border: "1px solid #cbd5e1",
-              fontSize: 15,
-              fontWeight: 600,
-              textDecoration: "none",
-            }}
-          >
+          <Link to="/programmes" className="hx-hero-v144__btn-o">
             Explore courses
           </Link>
         </div>
-
-        {/* Quiet 3-Stage Process Line */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            flexWrap: "wrap",
-            gap: 10,
-            fontSize: 13.5,
-            fontWeight: 600,
-            color: "#334155",
-          }}
-        >
-          <span style={{ padding: "8px 14px", borderRadius: 999, border: "1px solid #e2e8f0", background: "#ffffff", display: "inline-flex", alignItems: "center", gap: 7 }}>
-            <span style={{ color: "#94a3b8", fontWeight: 500 }}>01</span> Recorded Lesson
-          </span>
-          <span aria-hidden="true" style={{ color: "#cbd5e1" }}>→</span>
-          <span style={{ padding: "8px 14px", borderRadius: 999, border: "1.5px solid #5142b5", background: "#f5f3ff", color: "#5142b5", display: "inline-flex", alignItems: "center", gap: 7 }}>
-            <span>02</span> Live SkyLab Case Study
-          </span>
-          <span aria-hidden="true" style={{ color: "#cbd5e1" }}>→</span>
-          <span style={{ padding: "8px 14px", borderRadius: 999, border: "1px solid #e2e8f0", background: "#ffffff", display: "inline-flex", alignItems: "center", gap: 7 }}>
-            <span style={{ color: "#94a3b8", fontWeight: 500 }}>03</span> Verified Portfolio
-          </span>
-        </div>
       </div>
 
-      {/* Minimalist Bottom-Docked 5-Icon Rail (Brilliant-grade Calm Premiumness) */}
-      <div style={{ borderTop: "1px solid #e2e8f0", background: "#ffffff" }}>
-        <div
-          className="sky-container"
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            flexWrap: "wrap",
-            gap: 12,
-            padding: "18px 0",
-          }}
-        >
-          {rail.map((item) => (
-            <Link
-              key={item.label}
-              to={item.to}
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 9,
-                fontSize: 13.5,
-                fontWeight: 600,
-                color: "#334155",
-                textDecoration: "none",
-                padding: "6px 10px",
-                borderRadius: 10,
-              }}
-            >
-              <span style={{ color: "#5142b5", display: "inline-flex" }}>{item.icon}</span>
-              <span>{item.label}</span>
-            </Link>
-          ))}
+      {/* Calm Stationary 5-Card Visual Fan (Zero Moving Ticker) */}
+      <div className="hx-fan-wrap">
+        <div className="hx-fan">
+          <Link to="/programmes/data-analytics-pro" className="hx-fcard">
+            <span className="hx-fcard__lbl">Data Analytics</span>
+            <div className="hx-fcard__viz">
+              <svg width="140" height="64" viewBox="0 0 140 64" fill="none">
+                <rect x="8" y="34" width="18" height="24" rx="4" fill="#ddd6fe" />
+                <rect x="34" y="22" width="18" height="36" rx="4" fill="#a5b4fc" />
+                <rect x="60" y="14" width="18" height="44" rx="4" fill="#5142b5" />
+                <rect x="86" y="26" width="18" height="32" rx="4" fill="#a5b4fc" />
+                <rect x="112" y="8" width="18" height="50" rx="4" fill="#5142b5" />
+              </svg>
+            </div>
+            <span className="hx-fcard__title">SQL &amp; KPI Dashboards</span>
+          </Link>
+
+          <Link to="/programmes/product-management" className="hx-fcard">
+            <span className="hx-fcard__lbl">Product</span>
+            <div className="hx-fcard__viz">
+              <svg width="140" height="64" viewBox="0 0 140 64" fill="none">
+                <rect x="10" y="8" width="120" height="12" rx="6" fill="#5142b5" />
+                <rect x="24" y="26" width="92" height="12" rx="6" fill="#818cf8" />
+                <rect x="42" y="44" width="56" height="12" rx="6" fill="#c4b5fd" />
+              </svg>
+            </div>
+            <span className="hx-fcard__title">PRDs &amp; Funnel Cases</span>
+          </Link>
+
+          <Link to="/verify/SKL-2026-DA-EXEMPLAR" className="hx-fcard">
+            <span className="hx-fcard__lbl">Verified Proof</span>
+            <div className="hx-fcard__viz" style={{ background: "#f5f3ff", borderColor: "#ddd6fe" }}>
+              <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+                <circle cx="32" cy="32" r="24" fill="#5142b5" />
+                <path d="M22 32.5L28.8 39.2L42.5 25.5" stroke="#ffffff" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div>
+            <span className="hx-fcard__title">Verified Portfolio</span>
+          </Link>
+
+          <Link to="/programmes/full-stack" className="hx-fcard">
+            <span className="hx-fcard__lbl">Engineering</span>
+            <div className="hx-fcard__viz">
+              <svg width="140" height="64" viewBox="0 0 140 64" fill="none">
+                <rect x="8" y="10" width="124" height="44" rx="8" fill="#ffffff" stroke="#cbd5e1" />
+                <circle cx="20" cy="22" r="3" fill="#5142b5" />
+                <rect x="30" y="19" width="56" height="6" rx="3" fill="#5142b5" />
+                <rect x="20" y="33" width="84" height="5" rx="2.5" fill="#cbd5e1" />
+                <rect x="20" y="42" width="60" height="5" rx="2.5" fill="#0f766e" />
+              </svg>
+            </div>
+            <span className="hx-fcard__title">Full-Stack &amp; APIs</span>
+          </Link>
+
+          <Link to="/education" className="hx-fcard">
+            <span className="hx-fcard__lbl">Degrees</span>
+            <div className="hx-fcard__viz">
+              <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+                <circle cx="32" cy="32" r="22" stroke="#e2e8f0" strokeWidth="6" />
+                <circle cx="32" cy="32" r="22" stroke="#5142b5" strokeWidth="6" strokeDasharray="104 140" strokeLinecap="round" transform="rotate(-90 32 32)" />
+                <text x="32" y="36" textAnchor="middle" fill="#0f172a" fontSize="12" fontWeight="700">1-8</text>
+              </svg>
+            </div>
+            <span className="hx-fcard__title">UG &amp; PG Semesters</span>
+          </Link>
         </div>
       </div>
     </section>

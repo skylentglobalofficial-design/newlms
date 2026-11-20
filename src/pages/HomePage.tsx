@@ -5,7 +5,7 @@
  * 3. Inside the Learning Workspace (How you learn + Login Gate)
  * 4. Clean CTA + Legit Footer
  */
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { Link, useNavigate, useSearchParams } from "react-router-dom"
 import { useAuth } from "@/context/AuthContext"
 import { PageShell } from "@/components/shared"
@@ -22,6 +22,39 @@ import "./HomePage.v2.css"
 import "./HomeRepolish.css"
 import degreeUgImg from "@/assets/site/home/hero-classroom-960.webp"
 import degreePgImg from "@/assets/site/home/degree-management-960.webp"
+
+const OUTCOME_CARDS = [
+  {
+    tag: "Data Analytics",
+    body: "Write multi-table SQL queries on retail datasets and deliver a graded revenue & churn capstone.",
+    title: "Northwind SQL Capstone",
+    sub: "Skill Course &middot; SkyLab SQL Studio",
+  },
+  {
+    tag: "Product Management",
+    body: "Diagnose checkout drop-offs, write a crisp 1-page PRD, and defend launch metrics with real data.",
+    title: "Checkout Funnel PRD",
+    sub: "Skill Course &middot; Product Case Study",
+  },
+  {
+    tag: "Verified Portfolio",
+    body: "Every completed capstone publishes to a public, tamper-evident Skylent link employers can verify in one click.",
+    title: "Public /verify Proof Link",
+    sub: "SKL-2026-DA-EXEMPLAR &middot; Employer Ready",
+  },
+  {
+    tag: "Full-Stack Pro",
+    body: "Ship TypeScript, React, Node APIs, and PostgreSQL schemas reviewed directly by industry mentors.",
+    title: "Production Web Application",
+    sub: "Pro Program &middot; Mentor Code Reviews",
+  },
+  {
+    tag: "Career Support",
+    body: "Graduate with 3 structured mock interviews, resume feedback, job assistance, and a verifiable internship letter.",
+    title: "2-Month Internship Letter",
+    sub: "Pro Program &middot; Placement Support",
+  },
+] as const
 
 export default function HomePage() {
   const { user, ready } = useAuth()
@@ -47,6 +80,7 @@ export default function HomePage() {
   }, [ready, user, params, navigate])
 
   const catalog = useCatalogPrograms()
+  const [activeOutcome, setActiveOutcome] = useState(2)
   const catalogue = homeCataloguePhase(catalog.loading, catalog.offline)
 
   return (
@@ -68,73 +102,6 @@ export default function HomePage() {
             paddingBottom: "clamp(20px, 3vw, 32px)",
           }}
         >
-          <div className="sky-container" style={{ marginBottom: 8 }}>
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-                gap: 14,
-                marginBottom: 24,
-              }}
-            >
-              <Link
-                to="/programmes?type=certification"
-                style={{
-                  padding: "18px 20px",
-                  borderRadius: 12,
-                  border: "1px solid #e2e8f0",
-                  background: "#ffffff",
-                  textDecoration: "none",
-                  color: "#0f172a",
-                }}
-              >
-                <div style={{ fontSize: 12, fontWeight: 700, color: "#5142b5", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-                  Skill Courses &middot; 6–8 Weeks
-                </div>
-                <div style={{ fontSize: 14, color: "#475569", marginTop: 4 }}>
-                  Recorded concept lessons + live SkyLab case studies.
-                </div>
-              </Link>
-              <Link
-                to="/programmes?type=professional"
-                style={{
-                  padding: "18px 20px",
-                  borderRadius: 12,
-                  border: "1px solid #e2e8f0",
-                  borderTop: "3px solid #5142b5",
-                  background: "#ffffff",
-                  textDecoration: "none",
-                  color: "#0f172a",
-                }}
-              >
-                <div style={{ fontSize: 12, fontWeight: 700, color: "#5142b5", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-                  Pro Programs &middot; 4–6 Months
-                </div>
-                <div style={{ fontSize: 14, color: "#475569", marginTop: 4 }}>
-                  Mentor reviews, 2-month internship letter &amp; job assistance.
-                </div>
-              </Link>
-              <Link
-                to="/education"
-                style={{
-                  padding: "18px 20px",
-                  borderRadius: 12,
-                  border: "1px solid #e2e8f0",
-                  background: "#ffffff",
-                  textDecoration: "none",
-                  color: "#0f172a",
-                }}
-              >
-                <div style={{ fontSize: 12, fontWeight: 700, color: "#5142b5", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-                  Degrees &middot; UG &amp; PG
-                </div>
-                <div style={{ fontSize: 14, color: "#475569", marginTop: 4 }}>
-                  Sem 1–8 &middot; Structured online and campus university degree pathways.
-                </div>
-              </Link>
-            </div>
-          </div>
-
           <HomeProgrammes
             programmes={catalog.data ?? []}
             loading={catalogue === "loading"}
@@ -246,6 +213,52 @@ export default function HomePage() {
                 Sign in free to unlock SkyLab →
               </Link>
             </div>
+          </div>
+        </section>
+
+        {/* Section 4: Interactive 5-Card Depth-Layered Outcomes Showcase */}
+        <section className="hx-depth-sec" aria-label="What you graduate with on Skylent">
+          <div className="sky-container" style={{ textAlign: "center", marginBottom: 22 }}>
+            <div style={{ fontSize: 12, fontWeight: 700, color: "#5142b5", letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: 8 }}>
+              REAL OUTCOMES &middot; ZERO FLUFF
+            </div>
+            <h2
+              style={{
+                margin: "0 auto",
+                maxWidth: 640,
+                fontFamily: "var(--font-display, inherit)",
+                fontSize: "clamp(26px, 3.4vw, 38px)",
+                fontWeight: 700,
+                color: "#0f172a",
+                letterSpacing: "-0.025em",
+              }}
+            >
+              What you actually graduate with.
+            </h2>
+          </div>
+          <div className="hx-depth-stage">
+            {OUTCOME_CARDS.map((card, i) => {
+              const dist = Math.min(2, Math.abs(i - activeOutcome))
+              return (
+                <button
+                  key={card.title}
+                  type="button"
+                  className="hx-depth-card"
+                  data-dist={dist}
+                  onClick={() => setActiveOutcome(i)}
+                  aria-pressed={i === activeOutcome}
+                >
+                  <div>
+                    <span className="hx-depth-pill">{card.tag}</span>
+                    <p className="hx-depth-quote" style={{ marginTop: 14 }}>{card.body}</p>
+                  </div>
+                  <div className="hx-depth-foot">
+                    <span className="hx-depth-title">{card.title}</span>
+                    <span className="hx-depth-sub" dangerouslySetInnerHTML={{ __html: card.sub }} />
+                  </div>
+                </button>
+              )
+            })}
           </div>
         </section>
 
