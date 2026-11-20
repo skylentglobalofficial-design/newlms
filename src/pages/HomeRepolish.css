@@ -2943,3 +2943,13 @@ html {
 .hx-m-row { display: flex; justify-content: space-between; align-items: center; font-size: 10.5px; color: #64748b; font-weight: 600; }
 .hx-m-pill { font-size: 10px; font-weight: 700; color: #0f766e; background: #ecfdf5; padding: 2px 7px; border-radius: 999px; }
 .hx-m-mono { font-family: var(--font-mono, monospace); font-size: 10.5px; color: #0f172a; }
+
+
+/* v145.5 QA polish: photo crop & card CTA nowrap */
+.hx-deg-card__media img {
+  object-position: center 18% !important;
+}
+.hx-live-courses-grid a,
+.hx-live-courses-grid .hx-more {
+  white-space: nowrap;
+}

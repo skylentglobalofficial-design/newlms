@@ -270,53 +270,7 @@ export function WalkControls({
   tone?: "light" | "dark"
 }) {
   return (
-    <div className={`hx-walk hx-walk--${tone}`}>
-      <button type="button" className="hx-walk__btn" onClick={onPrev} aria-label="Previous step">
-        <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M10 3 5 8l5 5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
-      </button>
-      <span className="hx-walk__count" aria-live="polite">
-        <span className="hx-walk__n">{active + 1}</span> / {count} · {title}
-      </span>
-      <button type="button" className="hx-walk__btn" onClick={onNext} aria-label="Next step">
-        <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="m6 3 5 5-5 5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
-      </button>
-      <button type="button" className="hx-walk__btn hx-walk__btn--play" onClick={onToggle} aria-label={playing ? "Pause walkthrough" : "Play walkthrough"} aria-pressed={!playing}>
-        {playing ? (
-          <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M5 3v10M11 3v10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
-        ) : (
-          <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M5 3.5v9l7.5-4.5z" fill="currentColor" /></svg>
-        )}
-      </button>
-    </div>
-  )
-}
-
-const DA_SLUG = "data-analytics-pro"
-const LMS_STAGES = [
-  { key: "programme", label: "1. Course Syllabus", href: "/programmes/data-analytics-pro", action: "Explore Programmes" },
-  { key: "lesson", label: "2. Interactive Lesson", href: "/courses/data-analytics", action: "Preview Lessons" },
-  { key: "practice", label: "3. SkyLab SQL Studio", href: "/labs", action: "See Browser Labs" },
-  { key: "project", label: "4. Capstone Project", href: "/verify/SKL-2026-DA-EXEMPLAR", action: "View Capstones" },
-  { key: "evidence", label: "5. Verified Certificate", href: "/verify/SKL-2026-DA-EXEMPLAR", action: "Verify Credentials" },
-] as const
-
-function LmsCanvas({ stage }: { stage: number }) {
-  const facts = courseFacts()
-  const content = authoredProgrammeContent(DA_SLUG)
-  const max = NORTHWIND.categories[0].value
-
-  if (stage === 0) {
-    return (
-      <div className="hx-canvas" style={{ padding: "8px 4px" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap", marginBottom: 16 }}>
-          <div>
-            <span style={{ fontSize: 12, fontWeight: 700, color: "#5142b5", letterSpacing: "0.04em", textTransform: "uppercase" }}>
-              Step 1 · Structured Curriculum
-            </span>
-            <h3 style={{ margin: "4px 0 0", fontSize: 20, fontWeight: 700, color: "#0f172a" }}>
-              {facts?.title ?? "Data Analytics"} — 5 Modules · 15 Guided Lessons
-            </h3>
-          </div>
+    
           <span style={{ padding: "5px 12px", borderRadius: 999, background: "#f5f3ff", border: "1px solid #ddd6fe", color: "#5142b5", fontSize: 12.5, fontWeight: 600 }}>
             Recorded + Live SkyLab · Browser Lab Included
           </span>
@@ -980,7 +934,7 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
                   title: "Full-Stack Web Development",
                   desc: "Build full-stack React + TypeScript interfaces, Node APIs & PostgreSQL database apps.",
                   meta: "4–6 Months · Pro Program · Job Assistance",
-                  img: photoClass,
+                  img: photoMacbook,
                   alt: "Full-stack engineering preview",
                 },
               ].filter((item) => trackFilter === "all" || item.group === trackFilter).map((item) => (
