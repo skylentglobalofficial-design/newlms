@@ -2982,3 +2982,14 @@ html {
 
 /* v154.1 sk-btn-primary white text */
 .sk-btn-primary { color: #ffffff !important; }
+
+
+/* v155.1 unify dark-navy course bands to Skylent Royal Purple gradient */
+.pp-studio-band,
+.pp-next-band,
+.pp-dark-band,
+section[class*="pp-"][style*="#0d2b45"],
+section[class*="pp-"][style*="#0f2942"],
+section[class*="pp-"][style*="#102a43"] {
+  background: linear-gradient(160deg, #2e1065 0%, #4c1d95 55%, #5142b5 100%) !important;
+}
