@@ -450,7 +450,7 @@ export default function LoginPage() {
                   SKYLENT<sup style={{ fontSize: 9, fontWeight: 700, letterSpacing: 0, marginLeft: 2 }}>TM</sup>
                 </span>
                 <span style={{ fontSize: 11, fontWeight: 600, color: "#312e81", letterSpacing: "-0.01em", lineHeight: 1.25, marginTop: 2 }}>
-                  <strong style={{ color: "#4338ca", fontWeight: 700 }}>Learn by Doing.</strong> Not Just Watching.
+                  <strong style={{ color: "#4338ca", fontWeight: 700 }}>Build real skills.</strong> Prove your work.
                 </span>
               </span>
             </Link>
@@ -499,7 +499,7 @@ export default function LoginPage() {
                   ? 'Sign in to resume your courses, interactive labs, and certificates.'
                   : suOtpSent
                     ? `Enter the 6-digit verification code sent to ${suEmail} to activate your account.`
-                    : 'Create your free Skylent account in 30 seconds and get +50 Elixir Coins.'}
+                    : 'Create your free Skylent account in 30 seconds to unlock SkyLab.'}
               </p>
 
               {/* 1-Tap Google Sign-In/Sign-Up at the top (PW / Unacademy / Scaler / Coursera Benchmark) */}

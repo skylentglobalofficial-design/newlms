@@ -26,7 +26,7 @@ const PRODUCTS = [
   },
   {
     code: "03 · Verified Portfolio",
-    title: "TalentBridge & Flight Recorder",
+    title: "Verified Portfolios & SkyLab",
     text: "Unlocks automatically at 60% course progress — bringing your verified project reports, 5-dimension rubric scores, and role skill-gap matching into one dossier.",
     badge: "✓ Unlocks at 60%",
     to: "/career-os",
@@ -48,7 +48,7 @@ const AUDIENCES = [
   },
   {
     title: "Working Professionals & Career Switchers",
-    text: "Master applied data, product, or engineering workflows through self-paced modules and weekend ₹99 live execution sprints.",
+    text: "Master applied data, product, or engineering workflows through structured lessons, live SkyLab case studies, and verified capstones.",
     to: "/events",
   },
   {

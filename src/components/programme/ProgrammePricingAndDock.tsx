@@ -16,7 +16,7 @@ type Props = {
 const DEFAULT_FAQS = [
   {
     q: "How do the 2 Skylent plans work?",
-    a: "Choose the Skill Course Plan (₹1,499) for part-time self-paced learning, hands-on projects, and a 2-month complimentary internship, or the Job Assistance Program (₹11,999) for full placement support, 1-on-1 mock interviews, and recruiter referrals.",
+    a: "Choose the Skill Course Plan (₹1,499) for part-time practical learning, hands-on projects, and a 2-month complimentary internship, or the Job Assistance Program (₹11,999) for full placement support, 1-on-1 mock interviews, and recruiter referrals.",
   },
   {
     q: "Do I need to install any software on my laptop?",
@@ -58,7 +58,11 @@ export default function ProgrammePricingAndDock({
       })
       .catch(() => {})
   }, [])
-  const tiers = buildSkylentTiersForPrice(listedCoursePrice, courseSlug || programSlug)
+  const allTiers = buildSkylentTiersForPrice(listedCoursePrice, courseSlug || programSlug)
+  const slugKey = (programSlug || courseSlug || "").toLowerCase()
+  const isProSlug = ["full-stack", "full-stack-web", "data-science-ai", "generative-ai-program", "generative-ai"].includes(slugKey)
+  const filteredTiers = allTiers.filter((t) => (isProSlug ? t.id === "flagship" : t.id === "certificate"))
+  const tiers = filteredTiers.length ? filteredTiers : allTiers
 
   function handleBuyTier(tierId: SkylentTierId) {
     const targetSlug = programSlug || courseSlug || "data-analytics"
@@ -81,19 +85,19 @@ export default function ProgrammePricingAndDock({
       <section className="pp-plans-band" id="pp-pricing" aria-labelledby="pp-plans-title">
         <div className="sky-container">
           <div className="pp-plans-head">
-            <span className="pp-plans-eyebrow">SIMPLE 2-PLAN ENROLMENT</span>
+            <span className="pp-plans-eyebrow">TRANSPARENT ENROLMENT</span>
             <h2 id="pp-plans-title" className="pp-plans-h2">
-              Choose Your Plan for <em>{programName}</em>
+              Enrol in <em>{programName}</em>
             </h2>
             <p className="pp-plans-sub">
-              Every plan includes your 5 interactive modules, browser lab ({studioName}), capstone project ({capstoneTitle}), and 2-month complimentary internship.
+              Includes structured modules, live browser lab ({studioName}), graded capstone ({capstoneTitle}), and a publicly verifiable Skylent portfolio.
             </p>
           </div>
 
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 320px), 1fr))",
+              gridTemplateColumns: "minmax(0, 520px)", justifyContent: "center",
               gap: 22,
               marginTop: 24,
               alignItems: "stretch",
