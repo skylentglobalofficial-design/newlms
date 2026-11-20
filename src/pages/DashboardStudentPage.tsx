@@ -84,7 +84,7 @@ const EXPLORE_CATALOGUE: DashboardExploreCourse[] = [
     title: 'Data Analytics & Business SQL',
     subtitle: 'Clean raw spreadsheets, write multi-table SQL queries, and defend a commercial revenue review.',
     category: 'Data & SQL',
-    duration: '12 Weeks · Self-Paced',
+    duration: '12 Weeks · Recorded + SkyLab',
     modulesCount: 5,
     lessonsCount: 15,
     price: 1499,
@@ -105,7 +105,7 @@ const EXPLORE_CATALOGUE: DashboardExploreCourse[] = [
     title: 'Product Management & Strategy',
     subtitle: 'Isolate user activation bottlenecks, prioritize engineering sprints, and author a 6-week PRD.',
     category: 'Product & Full-Stack',
-    duration: '12 Weeks · Self-Paced',
+    duration: '12 Weeks · Recorded + SkyLab',
     modulesCount: 5,
     lessonsCount: 15,
     price: 1499,
@@ -126,7 +126,7 @@ const EXPLORE_CATALOGUE: DashboardExploreCourse[] = [
     title: 'Python Programming & Automation',
     subtitle: 'Build resilient ETL data pipelines, automated anomaly detectors, and clean production Python code.',
     category: 'AI & Data Science',
-    duration: '10 Weeks · Self-Paced',
+    duration: '10 Weeks · Recorded + SkyLab',
     modulesCount: 5,
     lessonsCount: 15,
     price: 1499,
@@ -147,7 +147,7 @@ const EXPLORE_CATALOGUE: DashboardExploreCourse[] = [
     title: 'Data Science & Machine Learning',
     subtitle: 'Combine SQL analytics and Python statistical modelling to predict churn and validate uplift.',
     category: 'AI & Data Science',
-    duration: '16 Weeks · Self-Paced',
+    duration: '16 Weeks · Recorded + SkyLab',
     modulesCount: 5,
     lessonsCount: 15,
     price: 1499,
@@ -168,7 +168,7 @@ const EXPLORE_CATALOGUE: DashboardExploreCourse[] = [
     title: 'Generative AI & Grounded RAG Systems',
     subtitle: 'Architect enterprise LLM assistants with vector retrieval, strict source citations, and eval harnesses.',
     category: 'AI & Data Science',
-    duration: '12 Weeks · Self-Paced',
+    duration: '12 Weeks · Recorded + SkyLab',
     modulesCount: 5,
     lessonsCount: 15,
     price: 1499,
@@ -189,7 +189,7 @@ const EXPLORE_CATALOGUE: DashboardExploreCourse[] = [
     title: 'Full-Stack Web Engineering (React, Node & SQL)',
     subtitle: 'Ship production-grade web apps with React, TypeScript, Express REST APIs, and PostgreSQL transactions.',
     category: 'Product & Full-Stack',
-    duration: '16 Weeks · Self-Paced',
+    duration: '16 Weeks · Recorded + SkyLab',
     modulesCount: 5,
     lessonsCount: 15,
     price: 1499,
@@ -659,7 +659,7 @@ function LearnerProfileSettingsSection() {
             3. Password Security &amp; 3-Month (90-Day) Auto-Rotation Policy
           </strong>
           <span className="sh-note">
-            To protect your certificates and TalentBridge portfolio, Skylent prompts you every 3 months (90 days) to rotate your account password.
+            To protect your certificates and verified Skylent portfolio, Skylent prompts you every 3 months (90 days) to rotate your account password.
           </span>
         </div>
         <Link className="os-btn os-btn-primary" to="/account/password" style={{ textDecoration: "none" }}>
@@ -802,10 +802,10 @@ function SelectYourPlanPortalModal({
                 Choose Plan
               </button>
               <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gap: 10, fontSize: 13, color: '#334155', lineHeight: 1.5 }}>
-                <li>✓ Complete self-paced course &amp; browser practice labs</li>
+                <li>✓ Complete recorded lessons &amp; live SkyLab workspaces</li>
                 <li>✓ Hands-on capstone project &amp; verified certificate</li>
                 <li>✓ 2-Month Complimentary Practice &amp; Internship included</li>
-                <li>✓ ✕ No Job Assistance, Mock Interviews, or Live Mentor Classes (Included only in ₹11,999 Professional Program)</li>
+                <li style={{ color: "#dc2626" }}>✕ No Job Assistance, Mock Interviews, or Live Mentor Classes (Included only in ₹11,999 Pro Program)</li>
               </ul>
             </div>
           </div>
@@ -1054,7 +1054,7 @@ export default function DashboardStudentPage() {
             : studentTab === 'certificates'
               ? 'Certificates & Proof'
               : studentTab === 'wallet'
-                ? 'Elixir Wallet'
+                ? 'Learning Credits'
                 : 'Dashboard'
 
   const effectiveActiveNav =
