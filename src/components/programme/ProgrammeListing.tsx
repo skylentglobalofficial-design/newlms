@@ -62,7 +62,7 @@ const PATHWAY_CAPSTONES: Record<
       { num: "01", title: "Audit Commercial SQL Grain", detail: "Validate 166 Northwind order rows, remove returned/invalid units, and compute category net revenue." },
       { num: "02", title: "Build Python ETL & Pytest Validators", detail: "Quarantine malformed settlement records, enforce unique transaction keys, and pass automated pytest suites." },
       { num: "03", title: "Verify Cohort Split & Leakage Guards", detail: "Enforce chronological train/test splits and audit precision-recall lift without future data leakage." },
-      { num: "04", title: "Publish Verified Project & Certificate", detail: "Submit both capstones to unlock your verified project report (/verify) and TalentBridge profile." },
+      { num: "04", title: "Publish Verified Project & Certificate", detail: "Submit both capstones to unlock your verified project report (/verify) and Skylent Career Support profile." },
     ],
   },
   "full-stack": {
@@ -230,7 +230,7 @@ export default function ProgrammeListing({ program, truth, cta, honesty, afterEn
                 <div className="pp-metric-card">
                   <span className="pp-metric-card__label">Credential</span>
                   <strong className="pp-metric-card__val">Verifiable SKL ID</strong>
-                  <span className="pp-metric-card__sub">Unlocks TalentBridge at 60%</span>
+                  <span className="pp-metric-card__sub">Unlocks Skylent Career Support at 60%</span>
                 </div>
               </div>
 
@@ -308,7 +308,7 @@ export default function ProgrammeListing({ program, truth, cta, honesty, afterEn
                     </li>
                     <li>
                       <span aria-hidden="true">✓</span>
-                      <span><strong>Verifiable SKL Certificate</strong> &amp; TalentBridge unlock at 60% completion</span>
+                      <span><strong>Verifiable SKL Certificate</strong> &amp; Skylent Career Support unlock at 60% completion</span>
                     </li>
                   </ul>
 

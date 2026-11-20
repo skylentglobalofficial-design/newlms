@@ -238,7 +238,7 @@ const DATA_ANALYTICS: AuthoredProgrammeContent = {
     intro:
       "The Northwind Commercial Review walks you through cleaning a 180-row retail extract, isolating category margin leakage in SQL, and defending an executive recommendation.",
     disclaimer:
-      "Completed capstone work is evaluated against our 5-dimension competency rubric (15% Knowledge · 30% Execution · 20% Judgement · 15% Oral Defence · 20% V1→V2 Revision) and links directly to your TalentBridge portfolio and verified credential record.",
+      "Completed capstone work is evaluated against our 5-dimension competency rubric (15% Knowledge · 30% Execution · 20% Judgement · 15% Oral Defence · 20% V1→V2 Revision) and links directly to your Skylent Career Support portfolio and verified credential record.",
     steps: [
       {
         number: "01",
@@ -355,7 +355,7 @@ const PRODUCT_MANAGEMENT: AuthoredProgrammeContent = {
     intro:
       "The Harbor Desk product case challenges you to diagnose weekend delivery failures across 12 retail stores and scope a shippable 6-week engineering specification.",
     disclaimer:
-      "Completed Harbor Desk specifications are evaluated against our product rubric and link directly to your TalentBridge portfolio.",
+      "Completed Harbor Desk specifications are evaluated against our product rubric and link directly to your Skylent Career Support portfolio.",
     photo: {
       src: productReviewPhoto,
       width: 1600,
@@ -423,7 +423,7 @@ const PRODUCT_MANAGEMENT: AuthoredProgrammeContent = {
       { label: "What you write", value: "A research note, a priority memo and a product-case recommendation." },
     ],
     disclaimer:
-      "Every research note, priority memo, and specification in the Harbor Desk studio can be attached directly to your TalentBridge evidence record.",
+      "Every research note, priority memo, and specification in the Harbor Desk studio can be attached directly to your Skylent Career Support evidence record.",
     link: null,
   },
   evidence: {
@@ -488,7 +488,7 @@ const DATA_SCIENCE_AI: AuthoredProgrammeContent = {
     intro:
       "You do not need prior machine-learning experience. You start by cleaning sales tables in SQL, automate data checks in Python, and step-by-step build a customer retention model you can explain in any interview.",
     disclaimer:
-      "Completed work is graded against our 5-dimension competency rubric (15% Knowledge · 30% Execution · 20% Judgement · 15% Oral Defence · 20% V1→V2 Revision) and saved directly to your verifiable TalentBridge portfolio.",
+      "Completed work is graded against our 5-dimension competency rubric (15% Knowledge · 30% Execution · 20% Judgement · 15% Oral Defence · 20% V1→V2 Revision) and saved directly to your verifiable Skylent Career Support portfolio.",
     steps: [
       {
         number: "01",
@@ -549,7 +549,7 @@ const DATA_SCIENCE_AI: AuthoredProgrammeContent = {
       { label: "What you walk away with", value: "Saved SQL queries, a working Python validator, and a verified Dual-Track Capstone dossier." },
     ],
     disclaimer:
-      "Every query and Python check you complete attaches directly to your verifiable TalentBridge profile.",
+      "Every query and Python check you complete attaches directly to your verifiable Skylent Career Support profile.",
     link: { label: "Explore interactive labs", to: "/labs" },
   },
   evidence: {
@@ -595,7 +595,7 @@ const FULL_STACK: AuthoredProgrammeContent = {
     intro:
       "Instead of building another toy to-do list, you will build a real-world order and payment web app—learning how the React screen, the Node.js server, and the PostgreSQL database work together safely.",
     disclaimer:
-      "Your completed architecture and code checks link directly to your verifiable TalentBridge portfolio.",
+      "Your completed architecture and code checks link directly to your verifiable Skylent Career Support portfolio.",
     steps: [
       {
         number: "01",
@@ -656,7 +656,7 @@ const FULL_STACK: AuthoredProgrammeContent = {
       { label: "What you keep", value: "A complete Full-Stack Architecture Dossier and verifiable SKL credential." },
     ],
     disclaimer:
-      "Every completed engineering check and architecture write-up is saved to your TalentBridge profile.",
+      "Every completed engineering check and architecture write-up is saved to your Skylent Career Support profile.",
     link: { label: "Explore the Full-Stack Sandbox", to: "/labs" },
   },
   evidence: {
@@ -719,7 +719,7 @@ const GENERATIVE_AI: AuthoredProgrammeContent = {
     intro:
       "Anyone can call a basic chatbot API—companies hire AI engineers who can make AI trustworthy. You will build step-by-step an AI assistant that searches real company policy documents, attaches exact page citations, and safely says 'I don't know' when an answer isn't in the docs.",
     disclaimer:
-      "Your completed AI evaluation report and system design link directly to your verifiable TalentBridge portfolio.",
+      "Your completed AI evaluation report and system design link directly to your verifiable Skylent Career Support portfolio.",
     steps: [
       {
         number: "01",
@@ -780,7 +780,7 @@ const GENERATIVE_AI: AuthoredProgrammeContent = {
       { label: "What you keep", value: "A verified AI Evaluation Dossier and cryptographic SKL credential." },
     ],
     disclaimer:
-      "Every evaluation run and system specification you complete is saved to your TalentBridge profile.",
+      "Every evaluation run and system specification you complete is saved to your Skylent Career Support profile.",
     link: { label: "Explore the GenAI Sandbox", to: "/labs" },
   },
   evidence: {

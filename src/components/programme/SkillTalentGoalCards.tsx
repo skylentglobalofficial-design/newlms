@@ -9,7 +9,7 @@ export function SkillTalentGoalCards() {
           Choose your learning goal
         </h2>
         <p style={{ margin: 0, fontSize: 14.5, color: "#475569" }}>
-          Build practical skills inside <strong>SkyLab</strong> or prepare for placements through <strong>TalentBridge</strong>.
+          Build practical skills inside <strong>SkyLab</strong> or prepare for placements through <strong>Skylent Career Support</strong>.
         </p>
       </div>
 
@@ -175,14 +175,14 @@ export function SkillTalentGoalCards() {
         <div style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr 1.2fr", background: "#f8fafc", borderBottom: "1px solid #e2e8f0", fontSize: 13, fontWeight: 800, color: "#0f172a" }}>
           <div style={{ padding: "14px 20px" }}>How You Learn & Grow</div>
           <div style={{ padding: "14px 16px", textAlign: "center", color: "#64748b" }}>Ordinary Video Courses</div>
-          <div style={{ padding: "14px 16px", textAlign: "center", background: "linear-gradient(135deg, #3b2d96, #1d4ed8)", color: "#ffffff" }}>Skylent (SkyLab + TalentBridge)</div>
+          <div style={{ padding: "14px 16px", textAlign: "center", background: "linear-gradient(135deg, #3b2d96, #1d4ed8)", color: "#ffffff" }}>Skylent (SkyLab + Skylent Career Support)</div>
         </div>
         {[
           "Recorded Lessons + Live In-Browser Practice (SkyLab)",
           "Real Business Case Studies Instead of Toy Examples",
           "QR-Verified Certificate & Public Portfolio (/verify)",
           "1-on-1 Mentor Project Feedback & 20-Min Doubt Support",
-          "Placement Assistance, Mock Interviews & Referrals (TalentBridge)"
+          "Placement Assistance, Mock Interviews & Referrals (Skylent Career Support)"
         ].map((benefit, idx) => (
           <div key={benefit} style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr 1.2fr", borderBottom: idx === 4 ? "none" : "1px solid #f1f5f9", fontSize: 13, alignItems: "center" }}>
             <div style={{ padding: "13px 20px", fontWeight: 600, color: "#334155" }}>{benefit}</div>
