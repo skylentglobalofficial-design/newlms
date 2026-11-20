@@ -305,12 +305,8 @@ function AppRoutes() {
         <Route path="/labs" element={<LabsPage />} />
         <Route path="/os" element={<OSPage />} />
         <Route path="/courses" element={<ProgramsPage />} />
-        <Route path="/courses/data-analytics-pro" element={<ProgramPage />} />
-        <Route path="/courses/product-management" element={<ProgramPage />} />
-        <Route path="/courses/full-stack" element={<ProgramPage />} />
-        <Route path="/courses/data-science-ai" element={<ProgramPage />} />
-        <Route path="/courses/generative-ai-program" element={<ProgramPage />} />
-        <Route path="/courses/:slug" element={<CourseDetailPage />} />
+        <Route path="/courses/python-programming" element={<CourseDetailPage />} />
+        <Route path="/courses/:slug" element={<ProgramPage />} />
         <Route path="/workshops" element={<WorkshopsPage />} />
         <Route path="/workshops/:slug" element={<WorkshopDetailPage />} />
         <Route path="/workshop" element={<Navigate to="/workshops" replace />} />
