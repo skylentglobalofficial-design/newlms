@@ -423,7 +423,7 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
                 <p className="pp-note">
                   {!verified
                     ? `${confirmed && courseUnconfirmed ? `${STATUS_NOT_CONFIRMED}. Enrolment is paused until the catalogue can be checked. ` : ""}${afterEnrol}`
-                    : "Instant access to Module 1, browser labs, and 2-month complimentary internship · Plans: ₹1,499 & ₹11,999."}
+                    : "Instant access to Module 1, browser labs, and a publicly verifiable Skylent portfolio."}
                 </p>
               </div>
             </div>
@@ -502,7 +502,7 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
                     </li>
                     <li>
                       <span aria-hidden="true">✓</span>
-                      <span><strong>2-Month Complimentary Internship</strong> with hands-on projects</span>
+                      <span><strong>Graded Capstone Project</strong> with hands-on projects</span>
                     </li>
                     <li>
                       <span aria-hidden="true">✓</span>
@@ -510,14 +510,14 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
                     </li>
                     <li>
                       <span aria-hidden="true">✓</span>
-                      <span><strong>Verified Certificate Certificates</strong> (Job Assistance option available)</span>
+                      <span><strong>Verified Skill Certificate</strong> </span>
                     </li>
                   </ul>
 
                   <div className="pp-enrol-card__cta" style={{ marginTop: 16 }}>
                     {primaryAction}
                     <a className="sk-btn sk-btn-secondary" href="#pp-pricing">
-                      Compare Both Plans (₹1,499 &amp; ₹11,999)
+                      View Enrolment Details
                     </a>
                   </div>
                 </div>

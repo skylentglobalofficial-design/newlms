@@ -79,9 +79,9 @@ export function buildSkylentTiersForPrice(_baseCoursePrice: number, slug?: strin
       includesLiveClasses: false,
       includesJobAssistance: false,
       features: [
-        "Complete self-paced course modules & browser practice labs",
+        "Complete recorded lessons & live SkyLab workspaces",
         "Hands-on capstone project & verifiable certificate",
-        "2-Month Complimentary Practice & Internship included",
+        "Live SkyLab case studies & rubric feedback included",
         "✕ No Job Assistance, Mock Interviews, or Live Mentor Classes (Included only in ₹11,999 Professional Program)",
       ],
     },

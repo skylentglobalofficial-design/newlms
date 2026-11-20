@@ -228,7 +228,7 @@ export function EnrollmentModal({ item, onClose }: { item: CatalogEnrollItem; on
                 marginBottom: 4,
               }}
             >
-              {item.title}
+              {(item.title || "").replace(/\s+with\s+Gen\s*AI/gi, "")}
             </span>
             <h2
               id="enrollment-modal-title"

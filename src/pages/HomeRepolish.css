@@ -2953,3 +2953,18 @@ html {
 .hx-live-courses-grid .hx-more {
   white-space: nowrap;
 }
+
+
+/* v152 unified deep Royal Purple brand gradient */
+:root {
+  --skylent-purple-grad: linear-gradient(135deg, #3b1c8c 0%, #4c1d95 50%, #5142b5 100%);
+}
+.hx-hero-v144__btn-p,
+.sk-btn-primary {
+  background: linear-gradient(135deg, #3b1c8c 0%, #4c1d95 50%, #5142b5 100%) !important;
+  box-shadow: 0 12px 26px -10px rgba(76, 29, 149, 0.5) !important;
+}
+.hx-hero-v144__btn-p:hover,
+.sk-btn-primary:hover {
+  filter: brightness(1.06);
+}
