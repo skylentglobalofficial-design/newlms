@@ -2418,3 +2418,116 @@
 .hx-page--home .hx-app__body {
   background: #ffffff !important;
 }
+
+
+/* v143.3 light-slate SkyLab code surface */
+.hx-platform-hub pre,
+.hx-platform-hub code {
+  background: #f8fafc !important;
+  color: #0f172a !important;
+  border-color: #e2e8f0 !important;
+}
+.hx-platform-hub pre {
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: none !important;
+}
+
+
+/* v143.4 hide redundant workspace pills & unify run button */
+.hx-platform-hub .hx-inside__links,
+.hx-platform-hub .hx-inside__actions,
+.hx-platform-hub .hx-inside__pills {
+  display: none !important;
+}
+.hx-platform-hub button[style*="background: rgb(37, 99, 235)"],
+.hx-platform-hub button[style*="background:#2563eb"],
+.hx-platform-hub button[style*="#2563eb"],
+.hx-platform-hub button[style*="#1d4ed8"],
+.hx-platform-hub button[style*="#3b82f6"] {
+  background: #5142b5 !important;
+  border-color: #5142b5 !important;
+}
+
+
+/* v143.5 responsive degrees & font consistency */
+.hx-deg-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+.hx-deg-card {
+  display: flex;
+  flex-direction: column;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  overflow: hidden;
+  text-decoration: none;
+  color: #0f172a;
+  transition: transform 160ms ease, border-color 160ms ease;
+}
+.hx-deg-card:hover {
+  transform: translateY(-2px);
+  border-color: #cbd5e1;
+}
+.hx-deg-card__media {
+  position: relative;
+  height: 180px;
+  overflow: hidden;
+  background: #f1f5f9;
+}
+.hx-deg-card__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.hx-deg-card__pill {
+  position: absolute;
+  left: 14px;
+  bottom: 12px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.86);
+  color: #ffffff;
+  font-size: 11.5px;
+  font-weight: 600;
+}
+.hx-deg-card__body {
+  padding: 20px 22px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.hx-deg-card__eyebrow {
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: #5142b5;
+}
+.hx-deg-card__body h3 {
+  margin: 0;
+  font-family: var(--font-display, inherit);
+  font-size: clamp(18px, 2vw, 21px);
+  font-weight: 700;
+  color: #0f172a;
+}
+.hx-deg-card__body p {
+  margin: 2px 0 8px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: #475569;
+}
+.hx-deg-card__cta {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #5142b5;
+}
+@media (max-width: 768px) {
+  .hx-deg-grid {
+    grid-template-columns: 1fr;
+  }
+  .hx-deg-card__media {
+    height: 156px;
+  }
+}

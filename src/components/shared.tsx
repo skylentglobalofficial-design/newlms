@@ -501,28 +501,28 @@ type PublicNavGroup = MegaNavGroup & { to: string; match: readonly string[] }
    certification and professional; labs live inside programmes rather than in the menu. */
 const PUBLIC_NAV: readonly PublicNavGroup[] = [
   {
-    label: 'Skill Courses',
-    to: '/programmes?type=certification',
+    label: 'Courses',
+    to: '/programmes',
     tagline: 'SKILL COURSES & PRO CAREER PROGRAMS',
-    match: ['/programmes', '/programs', '/courses', '/skills', '/workshops', '/workshop', '/labs', '/events'],
+    match: ['/programmes', '/programs', '/courses', '/skills', '/labs'],
     items: [],
     sections: [
       {
         heading: 'SKILL COURSES (₹1,499 · 6–8 WEEKS)',
         items: [
           { label: 'Data Analytics', sub: 'SQL, Excel & BI dashboards with real business projects.', to: '/programmes/data-analytics-pro', mark: 'live' },
-          { label: 'Data Science & AI', sub: 'SQL analytics, Python pipelines & predictive models.', to: '/programmes/data-science-ai', mark: 'live' },
-          { label: 'Generative AI', sub: 'RAG assistants, prompt engineering & AI workflows.', to: '/programmes/generative-ai-program', mark: 'live' },
-          { label: 'Full-Stack Web Development', sub: 'React, TypeScript, Node APIs & PostgreSQL apps.', to: '/programmes/full-stack', mark: 'live' },
+          { label: 'Product Management', sub: 'User research, product strategy & engineering PRDs.', to: '/programmes/product-management', mark: 'live' },
+          { label: 'Python & Automation', sub: 'Python 3, data automation & backend workflows.', to: '/courses/python-programming', mark: 'live' },
+          { label: 'Explore Skill Courses →', sub: 'Focused recorded lessons + live SkyLab case studies.', to: '/programmes?type=certification' },
         ],
       },
       {
         heading: 'PRO PROGRAMS (₹11,999 · JOB ASSISTANCE)',
         items: [
-          { label: 'Product Management', sub: 'User research, product strategy & engineering PRDs.', to: '/programmes/product-management', mark: 'live' },
-          { label: 'Python & Automation', sub: 'Python 3, data automation & backend workflows.', to: '/courses/python-programming', mark: 'live' },
-          { label: '₹99 Weekend Workshops', sub: '90-minute live weekend sessions with coin cashback.', to: '/workshops', mark: 'live' },
-          { label: 'Explore All Programmes →', sub: 'Compare all 6 tracks, practical case studies & learning paths.', to: '/programmes' },
+          { label: 'Full-Stack Web Development', sub: 'React, TypeScript, Node APIs & PostgreSQL apps.', to: '/programmes/full-stack', mark: 'live' },
+          { label: 'Data Science & AI', sub: 'SQL analytics, Python pipelines & predictive models.', to: '/programmes/data-science-ai', mark: 'live' },
+          { label: 'Generative AI', sub: 'RAG assistants, prompt evals & production workflows.', to: '/programmes/generative-ai-program', mark: 'live' },
+          { label: 'Explore Pro Programs →', sub: 'Mentor reviews, 2-month internship letter & job assistance.', to: '/programmes?type=professional' },
         ],
       },
     ],
@@ -538,27 +538,15 @@ const PUBLIC_NAV: readonly PublicNavGroup[] = [
     ],
   },
   {
-    label: 'Pro Programs',
-    to: '/programmes?type=professional',
-    tagline: 'Your verified projects, certificates, and job applications in one place',
-    match: ['/career-os'],
-    items: [
-      { label: 'How TalentBridge works', sub: 'Build your portfolio and apply to roles with verified projects.', to: '/career-os' },
-      { label: 'Career profile', sub: 'Organise your target role, skills, and certificates.', to: '/career-os/profile' },
-      { label: 'Projects & portfolio', sub: 'Showcase completed hands-on projects to employers.', to: '/career-os/projects' },
-      { label: 'Applications & prep', sub: 'Track job applications and practise mock interviews.', to: '/career-os/applications' },
-    ],
-  },
-  {
-    label: 'About',
+    label: 'About Us',
     to: '/about',
-    tagline: 'Who we are, verified certificates, and how to reach us',
-    match: ['/about', '/stories', '/blog', '/contact', '/terms', '/privacy', '/institutions'],
+    tagline: 'Who we are, verified credentials, and institutional partnerships',
+    match: ['/about', '/stories', '/blog', '/contact', '/terms', '/privacy', '/institutions', '/verify'],
     items: [
-      { label: 'About Skylent', sub: 'Our mission, hands-on learning approach, and Bhubaneswar HQ.', to: '/about' },
+      { label: 'About Skylent', sub: 'Our mission, SkyLab learning approach, and Bhubaneswar HQ.', to: '/about' },
       { label: 'For Colleges & Institutions', sub: 'Campus partner labs, student tracking, and reporting.', to: '/institutions' },
       { label: 'Verify a Certificate (/verify)', sub: 'Check any graduate certificate ID and project work.', to: '/verify' },
-      { label: 'Contact', sub: 'Ask a question or request a callback.', to: '/contact' },
+      { label: 'Contact', sub: 'Ask a question or reach support@skylent.live.', to: '/contact' },
     ],
   },
 ]
@@ -934,7 +922,7 @@ export function Nav() {
                   ref={searchRef}
                   value={searchQuery}
                   onChange={(event) => setSearchQuery(event.target.value)}
-                  placeholder="Search programmes, degrees, TalentBridge"
+                  placeholder="Search courses, degrees, or verify a certificate"
                   aria-label="Search Skylent"
                   autoComplete="off"
                 />
@@ -1154,10 +1142,10 @@ export function Nav() {
 
 /* Footer: four short columns of real routes, then the legal line. */
 const FOOTER_COLUMNS: readonly { title: string; links: readonly (readonly [string, string])[] }[] = [
-  { title: 'Programmes', links: [['All programmes', '/programmes'], ['Certification', '/programmes#certification'], ['Professional', '/programmes#professional']] },
-  { title: 'Degrees', links: [['Undergraduate', '/education?level=ug'], ['Postgraduate', '/education?level=pg'], ['Online and campus', '/education']] },
-  { title: 'TalentBridge', links: [['How it works', '/career-os'], ['Check a certificate', '/verify'], ['Sign in', '/login']] },
-  { title: 'Skylent', links: [['About', '/about'], ['Institutions', '/institutions'], ['Contact', '/contact']] },
+  { title: 'Courses', links: [['All courses', '/programmes'], ['Skill Courses (₹1,499)', '/programmes?type=certification'], ['Pro Programs (₹11,999)', '/programmes?type=professional']] },
+  { title: 'Degrees', links: [['Undergraduate (UG)', '/education?level=ug'], ['Postgraduate (PG)', '/education?level=pg'], ['Online & Campus', '/education']] },
+  { title: 'Verify & Access', links: [['Verify a certificate', '/verify'], ['Sign in to SkyLab', '/login'], ['Create free account', '/signup']] },
+  { title: 'Skylent', links: [['About Us', '/about'], ['For Colleges', '/institutions'], ['Contact', '/contact']] },
 ]
 
 export function Footer() {
@@ -1169,7 +1157,10 @@ export function Footer() {
             <img src="/skylent-ribbon-mark.png" alt="" aria-hidden="true" width={30} height={30} style={{ width: 30, height: 30, objectFit: "contain", display: "block", flexShrink: 0 }} />
             <span>Skylent</span>
           </Link>
-          <p className="skf__line">Learn by Doing. Not Just Watching.</p>
+          <p className="skf__line">Build real skills. Prove your work.</p>
+          <p style={{ margin: "8px 0 0", fontSize: 12.5, opacity: 0.78 }}>
+            support@skylent.live &middot; Patia, Bhubaneswar, Odisha 751024
+          </p>
         </div>
         <nav aria-label="Footer" className="skf__nav">
           {FOOTER_COLUMNS.map((column) => (
@@ -1177,7 +1168,7 @@ export function Footer() {
               <h2 className="skf__title">{column.title}</h2>
               <ul className="skf__links">
                 {column.links.map(([label, to]) => (
-                  <li key={to}>
+                  <li key={to + label}>
                     <Link to={to}>{label}</Link>
                   </li>
                 ))}
@@ -1187,7 +1178,7 @@ export function Footer() {
         </nav>
       </div>
       <div className="skf__meta">
-        <p>© 2026 Skylent Global. All rights reserved.</p>
+        <p>© 2026 Skylent Global Pvt. Ltd. All rights reserved.</p>
         <p className="skf__legal">
           <Link to="/terms">Terms &amp; Conditions</Link>
           <Link to="/privacy">Privacy Policy</Link>

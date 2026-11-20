@@ -1,57 +1,27 @@
 /**
- * HomePage — the public homepage (V51 Human-Crafted EdTech Standard).
- *
- * 1. Hero (Clear value proposition + direct navigation links)
- * 2. Courses & Career Tracks (Category filter tabs + clean course cards)
- * 3. Platform Overview (Clean 4-tab switcher: Workspace · Live Workshops · Mentor Support · Career & Degrees)
- * 4. Closing CTA
+ * HomePage - Proof-First Skylent Homepage (v143.2)
+ * 1. Pure-White Centered Hero (Clarity Proof + 3-Stage Pipeline)
+ * 2. Career Tracks & Transparent Paths (What you can learn + Pricing)
+ * 3. Inside the Learning Workspace (How you learn + Login Gate)
+ * 4. Clean CTA + Legit Footer
  */
-import { useEffect, useState } from "react"
-import { useNavigate, useSearchParams } from "react-router-dom"
+import { useEffect } from "react"
+import { Link, useNavigate, useSearchParams } from "react-router-dom"
 import { useAuth } from "@/context/AuthContext"
 import { PageShell } from "@/components/shared"
 import { homeCataloguePhase } from "@/lib/catalogue-availability"
 import { useCatalogPrograms } from "@/hooks/useCatalog"
 import {
-  HomeAi,
-  HomeCareer,
-  HomeClosing,
-  HomeDegrees,
-  HomeElixirFlywheel,
   confirmedOpenTitles,
+  HomeClosing,
   HomeHero,
-  HomeInstitutionalArchitecture,
   HomeProgrammes,
   InsideProgramme,
-  ZeroLoginInteractiveTryout,
 } from "./home/Repolish"
 import "./HomePage.v2.css"
 import "./HomeRepolish.css"
-
-const EXPLORE_TABS = [
-  {
-    id: "workspace" as const,
-    label: "Course Workspace",
-    sub: "Lessons, labs & projects",
-  },
-  {
-    id: "workshops" as const,
-    label: "Live Workshops",
-    sub: "₹99 weekend sessions",
-  },
-  {
-    id: "ai" as const,
-    label: "Doubt Support",
-    sub: "Guided support & 20-min TA",
-  },
-  {
-    id: "career" as const,
-    label: "Certificates & Degrees",
-    sub: "Portfolios & university tracks",
-  },
-] as const
-
-type ExploreTabId = (typeof EXPLORE_TABS)[number]["id"]
+import degreeUgImg from "@/assets/site/home/hero-classroom-960.webp"
+import degreePgImg from "@/assets/site/home/degree-management-960.webp"
 
 export default function HomePage() {
   const { user, ready } = useAuth()
@@ -78,139 +48,208 @@ export default function HomePage() {
 
   const catalog = useCatalogPrograms()
   const catalogue = homeCataloguePhase(catalog.loading, catalog.offline)
-  const [activeTab, setActiveTab] = useState<ExploreTabId>("workspace")
 
   return (
     <PageShell aurora={false}>
-      <div className="site-light hm-page hx-page hx-page--home">
+      <div className="site-light hm-page hx-page hx-page--home" style={{ background: "#ffffff" }}>
+        {/* Section 1: Pure-White Centered Hero */}
         <HomeHero
           catalogue={catalogue}
           openTitles={catalogue === "confirmed" ? confirmedOpenTitles(catalog.data ?? []) : []}
         />
-        <HomeProgrammes
-          programmes={catalog.data ?? []}
-          loading={catalogue === "loading"}
-          confirmed={catalogue === "confirmed"}
-          onRetry={() => void catalog.reload()}
-        />
-        <ZeroLoginInteractiveTryout />
 
-        {/* Clean 4-Tab Platform Switcher (Zero Emojis, Zero AI Slogans) */}
+        {/* Section 2: Transparent Paths + Career Track Cards (FIRST, so users see what they can learn) */}
         <section
-          className="hx-platform-hub"
-          aria-label="How Skylent works"
           style={{
-            background: "#f8fafc",
+            background: "#fafaf8",
             borderTop: "1px solid #e2e8f0",
             borderBottom: "1px solid #e2e8f0",
-            padding: "clamp(28px, 4vw, 44px) 0 8px",
+            paddingTop: "clamp(20px, 2.5vw, 28px)",
+            paddingBottom: "clamp(20px, 3vw, 32px)",
           }}
         >
-          <div className="sky-container">
+          <div className="sky-container" style={{ marginBottom: 8 }}>
             <div
               style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "flex-end",
-                gap: 16,
-                flexWrap: "wrap",
-                marginBottom: 20,
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+                gap: 14,
+                marginBottom: 24,
               }}
             >
-              <div>
-                <h2
-                  style={{
-                    margin: "0 0 6px",
-                    fontSize: "clamp(22px, 2.5vw, 30px)",
-                    fontWeight: 700,
-                    color: "#0f172a",
-                    letterSpacing: "-0.02em",
-                  }}
-                >
-                  How learning works on Skylent
-                </h2>
-                <p style={{ margin: 0, fontSize: 14.5, color: "#475569" }}>
-                  Select a tab below to preview the course workspace, weekend workshops, mentor support, or verified credentials.
-                </p>
-              </div>
-
-              <div
-                role="tablist"
-                aria-label="Platform sections"
-                className="hx-hub-tabs"
+              <Link
+                to="/programmes?type=certification"
                 style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(4, minmax(150px, 1fr))",
-                  gap: 8,
-                  width: "100%",
-                  overflowX: "auto",
-                  paddingBottom: 4,
+                  padding: "18px 20px",
+                  borderRadius: 12,
+                  border: "1px solid #e2e8f0",
+                  background: "#ffffff",
+                  textDecoration: "none",
+                  color: "#0f172a",
                 }}
               >
-                {EXPLORE_TABS.map((tab) => {
-                  const isActive = activeTab === tab.id
-                  return (
-                    <button
-                      key={tab.id}
-                      type="button"
-                      role="tab"
-                      aria-selected={isActive}
-                      onClick={() => setActiveTab(tab.id)}
-                      style={{
-                        textAlign: "left",
-                        padding: "12px 14px",
-                        borderRadius: 10,
-                        border: isActive ? "1.5px solid #5142b5" : "1px solid #cbd5e1",
-                        background: isActive ? "#5142b5" : "#ffffff",
-                        color: isActive ? "#ffffff" : "#0f172a",
-                        cursor: "pointer",
-                        transition: "background-color 140ms ease, border-color 140ms ease",
-                      }}
-                    >
-                      <strong
-                        style={{
-                          display: "block",
-                          fontSize: 13.5,
-                          fontWeight: 600,
-                          color: isActive ? "#ffffff" : "#0f172a",
-                          whiteSpace: "nowrap",
-                        }}
-                      >
-                        {tab.label}
-                      </strong>
-                      <small
-                        style={{
-                          display: "block",
-                          marginTop: 2,
-                          fontSize: 11.5,
-                          color: isActive ? "#e0e7ff" : "#64748b",
-                          whiteSpace: "nowrap",
-                        }}
-                      >
-                        {tab.sub}
-                      </small>
-                    </button>
-                  )
-                })}
-              </div>
+                <div style={{ fontSize: 12, fontWeight: 700, color: "#5142b5", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                  Skill Courses &middot; 6–8 Weeks
+                </div>
+                <div style={{ fontSize: 14, color: "#475569", marginTop: 4 }}>
+                  Recorded concept lessons + live SkyLab case studies.
+                </div>
+              </Link>
+              <Link
+                to="/programmes?type=professional"
+                style={{
+                  padding: "18px 20px",
+                  borderRadius: 12,
+                  border: "1px solid #e2e8f0",
+                  borderTop: "3px solid #5142b5",
+                  background: "#ffffff",
+                  textDecoration: "none",
+                  color: "#0f172a",
+                }}
+              >
+                <div style={{ fontSize: 12, fontWeight: 700, color: "#5142b5", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                  Pro Programs &middot; 4–6 Months
+                </div>
+                <div style={{ fontSize: 14, color: "#475569", marginTop: 4 }}>
+                  Mentor reviews, 2-month internship letter &amp; job assistance.
+                </div>
+              </Link>
+              <Link
+                to="/education"
+                style={{
+                  padding: "18px 20px",
+                  borderRadius: 12,
+                  border: "1px solid #e2e8f0",
+                  background: "#ffffff",
+                  textDecoration: "none",
+                  color: "#0f172a",
+                }}
+              >
+                <div style={{ fontSize: 12, fontWeight: 700, color: "#5142b5", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                  Degrees &middot; UG &amp; PG
+                </div>
+                <div style={{ fontSize: 14, color: "#475569", marginTop: 4 }}>
+                  Sem 1–8 &middot; Structured online and campus university degree pathways.
+                </div>
+              </Link>
             </div>
           </div>
 
-          <div style={{ display: activeTab === "workspace" ? "block" : "none" }}>
-            <InsideProgramme />
-          </div>
-          <div style={{ display: activeTab === "workshops" ? "block" : "none" }}>
-            <HomeElixirFlywheel />
-          </div>
-          <div style={{ display: activeTab === "ai" ? "block" : "none" }}>
-            <HomeAi />
-          </div>
-          <div style={{ display: activeTab === "career" ? "block" : "none" }}>
-            <HomeCareer />
-            <HomeDegrees />
+          <HomeProgrammes
+            programmes={catalog.data ?? []}
+            loading={catalogue === "loading"}
+            confirmed={true}
+            onRetry={() => void catalog.reload()}
+          />
+        </section>
+
+        {/* Visual Degree Pathways Band (UG & PG) */}
+        <section
+          aria-label="Degree pathways"
+          style={{
+            background: "#ffffff",
+            borderBottom: "1px solid #e2e8f0",
+            padding: "clamp(40px, 5vw, 64px) 0",
+          }}
+        >
+          <div className="sky-container">
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: 12, marginBottom: 24 }}>
+              <div>
+                <div style={{ fontSize: 12, fontWeight: 700, color: "#5142b5", letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: 6 }}>
+                  UNIVERSITY DEGREE PATHWAYS
+                </div>
+                <h2 style={{ margin: 0, fontFamily: "var(--font-display, inherit)", fontSize: "clamp(24px, 3vw, 34px)", fontWeight: 700, color: "#0f172a", letterSpacing: "-0.02em" }}>
+                  Online &amp; Campus Degrees (Sem 1–8)
+                </h2>
+              </div>
+              <Link to="/education" style={{ fontSize: 14, fontWeight: 600, color: "#5142b5", textDecoration: "none" }}>
+                Explore all degrees →
+              </Link>
+            </div>
+            <div className="hx-deg-grid">
+              <Link to="/education?level=ug" className="hx-deg-card">
+                <div className="hx-deg-card__media">
+                  <img src={degreeUgImg} alt="Undergraduate degree pathways" loading="lazy" />
+                  <span className="hx-deg-card__pill">BCA &middot; BBA &middot; B.Sc &middot; B.Tech</span>
+                </div>
+                <div className="hx-deg-card__body">
+                  <div className="hx-deg-card__eyebrow">UNDERGRADUATE (UG) &middot; 3–4 YEARS</div>
+                  <h3>Undergraduate Degree Pathways</h3>
+                  <p>Semester-wise university curriculum paired with practical SkyLab projects &amp; verified portfolio tracking.</p>
+                  <span className="hx-deg-card__cta">Explore UG degrees →</span>
+                </div>
+              </Link>
+              <Link to="/education?level=pg" className="hx-deg-card">
+                <div className="hx-deg-card__media">
+                  <img src={degreePgImg} alt="Postgraduate degree pathways" loading="lazy" />
+                  <span className="hx-deg-card__pill">MCA &middot; MBA &middot; M.Sc</span>
+                </div>
+                <div className="hx-deg-card__body">
+                  <div className="hx-deg-card__eyebrow">POSTGRADUATE (PG) &middot; 2 YEARS</div>
+                  <h3>Postgraduate Specialisations</h3>
+                  <p>Designed for graduates and working professionals with applied capstones and executive case studies.</p>
+                  <span className="hx-deg-card__cta">Explore PG degrees →</span>
+                </div>
+              </Link>
+            </div>
           </div>
         </section>
 
+        {/* Section 3: Product Proof - Inside the Learning Workspace (AFTER Courses, with Login Gate) */}
+        <section
+          className="hx-platform-hub"
+          aria-label="Inside the Skylent learning workspace"
+          style={{
+            background: "#ffffff",
+            padding: "clamp(32px, 4vw, 48px) 0 clamp(36px, 4vw, 48px)",
+          }}
+        >
+          <InsideProgramme />
+          <div className="sky-container" style={{ marginTop: 20 }}>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                flexWrap: "wrap",
+                gap: 14,
+                padding: "16px 22px",
+                borderRadius: 14,
+                background: "#fafaf8",
+                border: "1px solid #e2e8f0",
+              }}
+            >
+              <div>
+                <strong style={{ display: "block", fontSize: 14.5, color: "#0f172a" }}>
+                  Interactive preview mode &mdash; full SkyLab workspaces require a free account
+                </strong>
+                <span style={{ fontSize: 13.5, color: "#475569" }}>
+                  Sign in to write queries, submit business case studies, and publish verified /verify portfolio links.
+                </span>
+              </div>
+              <Link
+                to="/login"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 6,
+                  padding: "10px 20px",
+                  borderRadius: 999,
+                  background: "#5142b5",
+                  color: "#ffffff",
+                  fontSize: 13.5,
+                  fontWeight: 600,
+                  textDecoration: "none",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                Sign in free to unlock SkyLab →
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        {/* Section 4: Clean Final CTA */}
         <HomeClosing />
       </div>
     </PageShell>

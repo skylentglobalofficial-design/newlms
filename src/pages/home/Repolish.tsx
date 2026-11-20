@@ -3,7 +3,7 @@
  *
  * Visual Identity (V18 Royal Midnight Navy + Gold + Emerald on Crisp White):
  *   - Page background: Crisp White (#ffffff) & Soft Ice (#f8fafc)
- *   - Feature Cards: Royal Midnight Navy (linear-gradient(135deg, #3B2D96 0%, #5142B5 100%))
+ *   - Feature Cards: Royal Midnight Navy (linear-gradient(135deg, #5142b5 0%, #5142B5 100%))
  *   - Accents: Warm Gold (#c4b8ff), Emerald Verified Badges (#34d399), Periwinkle (#a5b4fc),
  *     and Crisp Pure White Skill Pills (#ffffff with #0f172a ink).
  */
@@ -28,6 +28,7 @@ import photoAnalytics from "@/assets/site/home/program-analytics-800.webp"
 import photoProduct from "@/assets/site/home/program-product-800.webp"
 import photoScience from "@/assets/site/home/program-web-800.webp"
 import photoClass from "@/assets/site/home/hero-classroom-960.webp"
+import photoMacbook from "@/assets/home/pexels-3987012-macbook.jpg"
 import photoCampusPg from "@/assets/site/home/degree-management-960.webp"
 import { STATUS_NOT_CONFIRMED } from "../../components/programme/CatalogueNotice"
 
@@ -54,106 +55,222 @@ export function HomeHero({
   catalogue?: "loading" | "confirmed" | "unknown"
   openTitles?: readonly string[]
 }) {
-  const dataAnalyticsOpen = catalogue === "confirmed" && openTitles.includes("Data Analytics")
-  const productManagementOpen = catalogue === "confirmed" && openTitles.includes("Product Management")
   const availability = catalogue === "loading"
     ? CATALOGUE_CHECKING
     : catalogue === "unknown"
       ? AVAILABILITY_UNKNOWN
-      : dataAnalyticsOpen && productManagementOpen
-        ? "Two programmes are open to start: Data Analytics (with Northwind SQL labs) and Product Management (with the Harbor Desk case), alongside all 6 live self-paced courses."
-        : programmesIndexIntro(true, openTitles)
-  return (
-    <section className="hxw-hero" data-clear-launcher aria-labelledby="hx-hero-title">
-      <div className="hxw-hero__bg" aria-hidden="true" />
-      <div className="sky-container hxw-hero__grid">
-        <div className="hxw-hero__copy">
-          <h1 id="hx-hero-title" className="hxw-hero__title hx-rise">
-            Practical courses with real industry case studies.
-          </h1>
-          <span className="hx-sr" style={{ display: "none" }}>Learn. Practise. Build. <em>Prove it.</em> Interactive SQL &amp; Python practice</span>
-          <p className="hxw-hero__lead hx-rise" style={{ marginTop: 14, marginBottom: 24 }}>
-            Practise SQL, Python, Product Strategy, and Web Engineering inside zero-setup browser workspaces — and build a verified project portfolio step by step.
-          </p>
-          <p className="hx-sr" aria-live="polite">{availability}</p>
+      : programmesIndexIntro(true, openTitles)
 
-          <div className="hxw-hero__actions hx-rise" style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
-            <Link className="sk-btn sk-btn-primary hx-btn" to="/programmes">
-              Explore Programmes
-              <ArrowRight />
-            </Link>
-            <a
-              className="sk-btn sk-btn-secondary hx-btn"
-              href="#programmes"
-              style={{ background: "#ffffff", border: "1px solid #cbd5e1", color: "#0f172a", fontWeight: 600 }}
-            >
-              Try Interactive SkyLab Studio →
-            </a>
-          </div>
-          <div
-            className="hx-rise"
+  const rail = [
+    {
+      label: "Data Analytics",
+      to: "/programmes/data-analytics-pro",
+      icon: (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M3 3v18h18" /><path d="M18 17V9" /><path d="M13 17V5" /><path d="M8 17v-3" />
+        </svg>
+      ),
+    },
+    {
+      label: "Product Management",
+      to: "/programmes/product-management",
+      icon: (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="3" y="3" width="7" height="7" rx="1.5" /><rect x="14" y="3" width="7" height="7" rx="1.5" /><rect x="14" y="14" width="7" height="7" rx="1.5" /><rect x="3" y="14" width="7" height="7" rx="1.5" />
+        </svg>
+      ),
+    },
+    {
+      label: "Full-Stack Web",
+      to: "/programmes/full-stack",
+      icon: (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <polyline points="16 18 22 12 16 6" /><polyline points="8 6 2 12 8 18" />
+        </svg>
+      ),
+    },
+    {
+      label: "Python & Data",
+      to: "/courses/python-programming",
+      icon: (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <ellipse cx="12" cy="5" rx="9" ry="3" /><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" /><path d="M3 12c0 1.66 4 3 9 3s9-1.34 9-3" />
+        </svg>
+      ),
+    },
+    {
+      label: "Online Degrees",
+      to: "/education",
+      icon: (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <path d="m22 10-10-5L2 10l10 5z" /><path d="M6 12v5c0 2 3 3 6 3s6-1 6-3v-5" />
+        </svg>
+      ),
+    },
+  ]
+
+  return (
+    <section
+      aria-labelledby="hx-hero-title"
+      className="hx-hero-onepage"
+      style={{
+        background: "#ffffff",
+        minHeight: "calc(100vh - 72px)",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+      }}
+    >
+      {/* Exact Optical Center */}
+      <div
+        className="sky-container"
+        style={{
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          textAlign: "center",
+          padding: "clamp(40px, 6vw, 72px) 0 clamp(32px, 4vw, 48px)",
+          maxWidth: 880,
+          margin: "0 auto",
+        }}
+      >
+        <h1
+          id="hx-hero-title"
+          className="hxw-hero__title"
+          style={{
+            margin: "0 auto 18px",
+            maxWidth: 780,
+            fontFamily: "var(--font-display, inherit)",
+            fontSize: "clamp(36px, 5.4vw, 62px)",
+            lineHeight: 1.07,
+            fontWeight: 700,
+            letterSpacing: "-0.03em",
+            color: "#0f172a",
+          }}
+        >
+          Build real skills.<br />
+          <span style={{ color: "#5142b5" }}>Prove your work.</span>
+        </h1>
+
+        <p
+          style={{
+            margin: "0 auto 30px",
+            maxWidth: 560,
+            fontSize: "clamp(15.5px, 1.7vw, 18px)",
+            lineHeight: 1.6,
+            color: "#475569",
+          }}
+        >
+          Recorded concept lessons, real business case studies in SkyLab, and verified portfolios employers trust.
+        </p>
+        <p className="hx-sr" aria-live="polite">{availability}</p>
+
+        <div style={{ display: "flex", justifyContent: "center", flexWrap: "wrap", gap: 12, marginBottom: 34 }}>
+          <Link
+            to="/login"
             style={{
-              marginTop: 24,
-              paddingTop: 18,
-              borderTop: "1px solid #e2e8f0",
-              display: "grid",
-              gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
-              gap: 12,
-              maxWidth: 520,
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 8,
+              padding: "13px 28px",
+              borderRadius: 999,
+              background: "#5142b5",
+              color: "#ffffff",
+              fontSize: 15,
+              fontWeight: 600,
+              textDecoration: "none",
+              boxShadow: "0 10px 24px -8px rgba(81, 66, 181, 0.45)",
             }}
           >
-            <div>
-              <strong style={{ display: "block", fontSize: 18, fontWeight: 800, color: "#0f172a" }}>2 Months</strong>
-              <span style={{ fontSize: 12.5, color: "#475569" }}>Recorded + Live SkyLab</span>
-            </div>
-            <div>
-              <strong style={{ display: "block", fontSize: 18, fontWeight: 800, color: "#5142b5" }}>18+ Labs</strong>
-              <span style={{ fontSize: 12.5, color: "#475569" }}>SkyLab Practice Studio</span>
-            </div>
-            <div>
-              <strong style={{ display: "block", fontSize: 18, fontWeight: 800, color: "#0f172a" }}>100% Practical</strong>
-              <span style={{ fontSize: 12.5, color: "#475569" }}>Verified Portfolio Proof</span>
-            </div>
-          </div>
+            Get started <ArrowRight />
+          </Link>
+          <Link
+            to="/programmes"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 8,
+              padding: "13px 26px",
+              borderRadius: 999,
+              background: "#ffffff",
+              color: "#0f172a",
+              border: "1px solid #cbd5e1",
+              fontSize: 15,
+              fontWeight: 600,
+              textDecoration: "none",
+            }}
+          >
+            Explore courses
+          </Link>
         </div>
-        <div className="hxw-hero__visual hx-rise">
-          <div className="hxw-stage">
-            <div className="hxw-hero__photo">
-              <img
-                src={heroStudent1024}
-                srcSet={`${heroStudent720} 720w, ${heroStudent1024} 1024w`}
-                sizes="(max-width: 1100px) min(640px, 92vw), 46vw"
-                width={1024}
-                height={1280}
-                alt="A student holding a laptop and notebook."
-                decoding="async"
-                fetchPriority="high"
-              />
-            </div>
 
-            <div className="hxw-ws" aria-label="SkyLab workspace summary">
-              <div className="hxw-ws__top">
-                <span className="hxw-ws__mark" aria-hidden="true">✓</span>
-                <div>
-                  <span className="hxw-ws__title">Interactive SkyLab Studios & Case Studies</span>
-                  <span className="hxw-ws__note">Zero-Setup Workspaces · Verified Project Portfolios</span>
-                </div>
-              </div>
-            </div>
-          </div>
+        {/* Quiet 3-Stage Process Line */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexWrap: "wrap",
+            gap: 10,
+            fontSize: 13.5,
+            fontWeight: 600,
+            color: "#334155",
+          }}
+        >
+          <span style={{ padding: "8px 14px", borderRadius: 999, border: "1px solid #e2e8f0", background: "#ffffff", display: "inline-flex", alignItems: "center", gap: 7 }}>
+            <span style={{ color: "#94a3b8", fontWeight: 500 }}>01</span> Recorded Lesson
+          </span>
+          <span aria-hidden="true" style={{ color: "#cbd5e1" }}>→</span>
+          <span style={{ padding: "8px 14px", borderRadius: 999, border: "1.5px solid #5142b5", background: "#f5f3ff", color: "#5142b5", display: "inline-flex", alignItems: "center", gap: 7 }}>
+            <span>02</span> Live SkyLab Case Study
+          </span>
+          <span aria-hidden="true" style={{ color: "#cbd5e1" }}>→</span>
+          <span style={{ padding: "8px 14px", borderRadius: 999, border: "1px solid #e2e8f0", background: "#ffffff", display: "inline-flex", alignItems: "center", gap: 7 }}>
+            <span style={{ color: "#94a3b8", fontWeight: 500 }}>03</span> Verified Portfolio
+          </span>
+        </div>
+      </div>
+
+      {/* Minimalist Bottom-Docked 5-Icon Rail (Brilliant-grade Calm Premiumness) */}
+      <div style={{ borderTop: "1px solid #e2e8f0", background: "#ffffff" }}>
+        <div
+          className="sky-container"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            flexWrap: "wrap",
+            gap: 12,
+            padding: "18px 0",
+          }}
+        >
+          {rail.map((item) => (
+            <Link
+              key={item.label}
+              to={item.to}
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 9,
+                fontSize: 13.5,
+                fontWeight: 600,
+                color: "#334155",
+                textDecoration: "none",
+                padding: "6px 10px",
+                borderRadius: 10,
+              }}
+            >
+              <span style={{ color: "#5142b5", display: "inline-flex" }}>{item.icon}</span>
+              <span>{item.label}</span>
+            </Link>
+          ))}
         </div>
       </div>
     </section>
   )
 }
-
-const JOURNEY_STEPS = [
-  { n: "01", title: "Explore", text: "Find a meaningful learning direction." },
-  { n: "02", title: "Learn", text: "Build knowledge through structured learning." },
-  { n: "03", title: "Practise", text: "Apply concepts through assignments and practical work." },
-  { n: "04", title: "Build", text: "Create work that demonstrates developing capability." },
-  { n: "05", title: "Progress", text: "Use learning progress and completed work to inform the next step." },
-] as const
 
 export function HomeTrust() {
   return (
@@ -362,7 +479,7 @@ GROUP BY category;`}
             </div>
             <div style={{ paddingTop: 12, borderTop: "1px solid #e2e8f0", display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 13, color: "#475569" }}>
               <span>Need help with a query?</span>
-              <strong style={{ color: "#5142b5" }}>Ask Mentor Desk (20-min reply) →</strong>
+              <strong style={{ color: "#5142b5" }}>Sign in to open full SkyLab →</strong>
             </div>
           </div>
         </div>
@@ -829,7 +946,7 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
             {[
               { id: "all" as const, label: "All (6)" },
               { id: "data" as const, label: "Data & SQL" },
-              { id: "ai" as const, label: "AI & Python" },
+              { id: "ai" as const, label: "Python & Data" },
               { id: "product-web" as const, label: "Product & Web" },
             ].map((tab) => (
               <button
@@ -945,7 +1062,7 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
                   title: "Full-Stack Web Development",
                   desc: "Build full-stack React + TypeScript interfaces, Node APIs & PostgreSQL database apps.",
                   meta: "2 Months · Skill Certificate · Case Studies + Labs",
-                  img: photoScience,
+                  img: photoClass,
                   alt: "Full-stack engineering preview",
                 },
               ].filter((item) => trackFilter === "all" || item.group === trackFilter).map((item) => (
@@ -1663,25 +1780,66 @@ export function HomeSystems() {
 
 export function HomeClosing() {
   return (
-    <section className="hx-close hx-close--final" aria-labelledby="hx-close-title">
-      <div className="hx-close__glow" aria-hidden="true" />
-      <div className="sky-container hx-close__layout">
-        <div>
-          <h2 id="hx-close-title" className="hx-close__title">
-            Start learning for free today
-          </h2>
-          <p className="hx-close__lead">
-            Try our interactive Guest Browser Labs free, enrol in any of our 6 self-paced flagship courses from ₹1,499, or book a live ₹99 weekend workshop (with 100% Coin Back).
-          </p>
-        </div>
-        <div className="hx-close__actions">
-          <Link className="sk-btn sk-btn-primary hx-btn" to="/programmes">
-            Explore programmes
-            <ArrowRight />
-          </Link>
-          <Link className="sk-btn sk-btn-secondary hx-btn" to="/events" style={{ background: "rgba(255,255,255,0.12)", color: "#ffffff", borderColor: "rgba(255,255,255,0.28)" }}>
-            Explore ₹99 Workshops
-          </Link>
+    <section style={{ background: "#ffffff", padding: "clamp(44px, 5vw, 68px) 0" }}>
+      <div className="sky-container">
+        <div
+          style={{
+            background: "#5142b5",
+            color: "#ffffff",
+            borderRadius: 18,
+            padding: "clamp(28px, 4vw, 44px)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            flexWrap: "wrap",
+            gap: 20,
+          }}
+        >
+          <div style={{ maxWidth: 620 }}>
+            <h2 style={{ margin: "0 0 8px", fontSize: "clamp(24px, 3vw, 34px)", fontWeight: 700, color: "#ffffff", letterSpacing: "-0.02em" }}>
+              Ready to build your first case study?
+            </h2>
+            <p style={{ margin: 0, fontSize: 15, color: "#ddd6fe", lineHeight: 1.55 }}>
+              Start with Skill Courses from ₹1,499 or Pro Programs at ₹11,999 &mdash; with live SkyLab sandboxes and public /verify portfolios.
+            </p>
+          </div>
+          <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+            <Link
+              to="/login"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 8,
+                padding: "12px 24px",
+                borderRadius: 999,
+                background: "#ffffff",
+                color: "#5142b5",
+                fontSize: 14.5,
+                fontWeight: 700,
+                textDecoration: "none",
+              }}
+            >
+              Start free <ArrowRight />
+            </Link>
+            <Link
+              to="/programmes"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 8,
+                padding: "12px 22px",
+                borderRadius: 999,
+                background: "#ede9fe",
+                color: "#5142b5",
+                border: "1px solid #ddd6fe",
+                fontSize: 14.5,
+                fontWeight: 600,
+                textDecoration: "none",
+              }}
+            >
+              Explore courses
+            </Link>
+          </div>
         </div>
       </div>
     </section>
