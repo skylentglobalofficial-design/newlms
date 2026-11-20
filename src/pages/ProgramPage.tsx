@@ -22,6 +22,8 @@ function Shell({ children }: { children: ReactNode }) {
   )
 }
 
+const stripGenAi = (s?: string) => (s || "").replace(/\s+with\s+Gen\s*AI/gi, "")
+
 export default function ProgramPage() {
   const { slug } = useParams()
   const catalog = useCatalogProgram(slug)
@@ -159,7 +161,7 @@ export default function ProgramPage() {
           item={{
             kind: "program",
             slug: program.slug,
-            title: program.name,
+            title: stripGenAi(program.name),
             price: lowestProgramPrice(program) ?? 0,
             enrollmentStatus: program.enrollmentStatus ?? undefined,
             enrollable: enrollable || program.slug === "sql-certificate",

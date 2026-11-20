@@ -5,7 +5,7 @@
  * 1. 2-Column Hero with 4-Card Key Metrics Grid, Tools & Skills Stack Bar, and Elevated Royal Midnight Navy Enrolment Card (`.pp-enrol-card`)
  * 2. Sticky Sub-Navigation Bar (`.pp-subnav-bar`)
  * 3. Full-bleed Royal Workbench Stage (`.sky-stage.sky-band-navy.pp-stage`) with interactive code/SQL sandbox
- * 4. Included Self-Paced Coursework & Complete 5-Module / 15-Lesson Curriculum
+ * 4. Included Recorded + SkyLab Coursework & Complete 5-Module / 15-Lesson Curriculum
  */
 import { Link } from "react-router-dom"
 import type { CatalogProgramDetail } from "../../lib/catalog-api"
@@ -213,7 +213,7 @@ export default function ProgrammeListing({ program, truth, cta, honesty, afterEn
                   <strong className="pp-metric-card__val">
                     {moduleCount} Modules · {lessonCount} Lessons
                   </strong>
-                  <span className="pp-metric-card__sub">Self-paced in SkyLab</span>
+                  <span className="pp-metric-card__sub">Recorded + SkyLab in SkyLab</span>
                 </div>
                 <div className="pp-metric-card">
                   <span className="pp-metric-card__label">Applied Proof</span>
@@ -341,7 +341,7 @@ export default function ProgrammeListing({ program, truth, cta, honesty, afterEn
                 <a href="#pp-courses">
                   <span className="pp-jump__n">02</span>
                   <span className="pp-jump__verb">Courses</span>
-                  <span className="pp-jump__what">Included self-paced tracks</span>
+                  <span className="pp-jump__what">Included Recorded + SkyLab tracks</span>
                 </a>
               </li>
               <li>
@@ -408,12 +408,12 @@ export default function ProgrammeListing({ program, truth, cta, honesty, afterEn
         </div>
       </section>
 
-      {/* Section 02: Included Self-Paced Coursework Cards */}
-      <section id="pp-courses" className="sky-container" style={{ paddingBlock: "36px 24px" }} aria-label="Included self-paced courses">
+      {/* Section 02: Included Recorded + SkyLab Coursework Cards */}
+      <section id="pp-courses" className="sky-container" style={{ paddingBlock: "36px 24px" }} aria-label="Included Recorded + SkyLab courses">
         <div style={{ padding: "24px", borderRadius: 16, border: "1px solid #e2e8f0", background: "#f8fafc" }}>
           <SectionIndex n="02" label="Included Flagship Coursework" />
           <h2 style={{ margin: "8px 0 6px", fontSize: "clamp(20px, 2.4vw, 26px)", fontWeight: 750, color: "#0f172a" }}>
-            Start the linked self-paced course immediately
+            Start the linked Recorded + SkyLab course immediately
           </h2>
           <p style={{ margin: "0 0 18px", fontSize: 15, color: "#475569", maxWidth: "54em" }}>
             {pathwaySpec.summary}
@@ -536,7 +536,7 @@ export default function ProgrammeListing({ program, truth, cta, honesty, afterEn
               {!confirmed
                 ? `${STATUS_NOT_CONFIRMED}. Enrolment is paused until the catalogue can be checked.`
                 : truth.linked.some((l) => l.authored)
-                  ? "Start with the linked self-paced course today."
+                  ? "Start with the linked Recorded + SkyLab course today."
                   : "Start SQL practice inside Data Analytics today."}
             </h2>
             <div className="pp-actions">

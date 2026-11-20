@@ -61,7 +61,7 @@ export function ThreePillarShowcase() {
         <div style={{ marginBottom: 44 }}>
           <div style={{ borderLeft: "4px solid #0f172a", paddingLeft: 14, marginBottom: 18 }}>
             <span style={{ fontSize: 11, fontWeight: 800, letterSpacing: "0.08em", color: "#475569", textTransform: "uppercase" }}>
-              CATEGORY 01 · SELF-PACED SKILL DEVELOPMENT
+              CATEGORY 01 · Recorded + SkyLab SKILL DEVELOPMENT
             </span>
             <h2 style={{ margin: "4px 0", fontSize: 22, fontWeight: 800, color: "#0f172a" }}>
               Skill Certificate Courses — ₹1,499 <span style={{ fontSize: 14, fontWeight: 600, color: "#16a34a" }}>(50% OFF from ₹2,999)</span>
@@ -88,7 +88,7 @@ export function ThreePillarShowcase() {
 
                   <div style={{ background: "#f8fafc", borderRadius: 10, padding: 12, fontSize: 12, display: "grid", gap: 5, marginBottom: 16, border: "1px solid #e2e8f0" }}>
                     <div style={{ color: "#15803d", fontWeight: 700 }}>✓ {item.caseStudiesCount} Practical Case Studies & Workspace</div>
-                    <div style={{ color: "#15803d", fontWeight: 700 }}>✓ Self-Paced Modules & Verified Skill Certificate</div>
+                    <div style={{ color: "#15803d", fontWeight: 700 }}>✓ Recorded + SkyLab Modules & Verified Skill Certificate</div>
                     <div style={{ color: "#94a3b8", fontWeight: 600 }}>✕ No Dedicated Job Assistance / Referrals</div>
                     <div style={{ color: "#94a3b8", fontWeight: 600 }}>✕ No Live Industry Expert Classes or Mock Interviews</div>
                   </div>
