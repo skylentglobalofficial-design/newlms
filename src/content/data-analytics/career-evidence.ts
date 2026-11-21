@@ -6,7 +6,7 @@ export type CareerEvidenceMap = {
   evidence: string
 }
 
-/** What a learner can actually show. TalentBridge does not auto-create these. */
+/** What a learner can actually show. Career Portfolio does not auto-create these. */
 export const DA_CAREER_EVIDENCE: CareerEvidenceMap[] = [
   {
     lessonId: 'l6',

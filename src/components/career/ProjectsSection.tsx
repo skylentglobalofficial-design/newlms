@@ -134,7 +134,7 @@ export default function ProjectsSection({ profile, onProfileUpdate }: Props) {
         <p style={{ margin: "0 0 12px", color: C.slate, fontSize: 13.5, lineHeight: 1.55 }}>
           Learner projects you added as evidence live in{" "}
           <Link to="/career-os/projects" style={{ color: accent.text, textDecoration: "none", fontWeight: 600 }}>
-            TalentBridge Projects
+            Career Portfolio Projects
           </Link>
           .
         </p>

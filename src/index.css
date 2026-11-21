@@ -2010,3 +2010,16 @@ code:not(pre code) {
 .sh-card > .sh-card-head .sh-note {
   color: #DDD6FE !important;
 }
+
+
+/* v170 White text on Deep Royal Purple card headers */
+.sh-card > .sh-card-head,
+.sh-card > .sh-card-head h1,
+.sh-card > .sh-card-head h2,
+.sh-card > .sh-card-head h3,
+.sh-card > .sh-card-head strong {
+  color: #ffffff !important;
+}
+.sh-card > .sh-card-head .sh-note {
+  color: #DDD6FE !important;
+}

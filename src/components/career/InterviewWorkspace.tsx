@@ -28,7 +28,7 @@ export default function InterviewWorkspace() {
   return (
     <div className="interview-workspace cos-work" style={{ maxWidth: 1100, margin: "0 auto", minWidth: 0, overflowX: "hidden" }}>
       <PageHead
-        eyebrow="TalentBridge · Interviews"
+        eyebrow="Career Portfolio · Interviews"
         title="Interview prep"
         lead="See your interview rounds, practice questions, and track your preparation."
       />

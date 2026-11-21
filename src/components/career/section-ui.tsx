@@ -34,7 +34,7 @@ export function SectionShell({
   )
 }
 
-/** TalentBridge page header: mono eyebrow, Space Grotesk title, muted lead (styles in CareerOS.css). */
+/** Career Portfolio page header: mono eyebrow, Space Grotesk title, muted lead (styles in CareerOS.css). */
 export function PageHead({ eyebrow, title, lead, action }: { eyebrow: string; title: string; lead?: ReactNode; action?: ReactNode }) {
   const head = (
     <header className="cos-head">

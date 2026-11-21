@@ -55,7 +55,7 @@ export default function CareerProfileWorkspace() {
     return (
       <div className="cos-profile" style={{ maxWidth: 1100, margin: "0 auto", minWidth: 0 }}>
         <header className="cos-head">
-          <span className="cos-eyebrow">TalentBridge · Profile</span>
+          <span className="cos-eyebrow">Career Portfolio · Profile</span>
           <h1>Career profile</h1>
         </header>
         <div className="cos-state">
@@ -71,7 +71,7 @@ export default function CareerProfileWorkspace() {
   return (
     <div className="cos-profile" style={{ maxWidth: 1100, margin: "0 auto", minWidth: 0 }}>
       <header className="cos-head">
-        <span className="cos-eyebrow">TalentBridge · Profile</span>
+        <span className="cos-eyebrow">Career Portfolio · Profile</span>
         <h1>Career profile</h1>
         <p>This profile is yours. Applications you track in your Career Portfolio are saved on your account.</p>
       </header>
