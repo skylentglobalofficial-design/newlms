@@ -169,7 +169,7 @@ export function HomeHero({
         <span className="hx-hero-v159__eyebrow">Courses · SkyLab · University Degrees</span>
 
         <h1 id="hx-hero-title" className="hx-hero-v159__title">
-          Master real skills.{" "}
+          Master real skills.<br />
           <span className="hx-hero-v158__typed">Prove your work.</span>
         </h1>
 

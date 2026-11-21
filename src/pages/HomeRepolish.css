@@ -3295,3 +3295,12 @@ section[class*="pp-"][style*="#102a43"] {
 .hx-hero-v158__chip:active {
   transform: translateY(1px) !important;
 }
+
+
+/* v159.2 fix Learn space & crisp subline gap */
+.hx-hero-v159__subline {
+  gap: 6px !important;
+}
+.hx-hero-v159__cursor {
+  margin-left: -3px !important;
+}
