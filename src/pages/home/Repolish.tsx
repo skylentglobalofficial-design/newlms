@@ -8,7 +8,7 @@
  *     and Crisp Pure White Skill Pills (#ffffff with #0f172a ink).
  */
 import { useCallback, useEffect, useRef, useState } from "react"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { ArrowRight } from "@/components/skylent/primitives"
 import { Reveal } from "@/components/skylent/Reveal"
 import { SkylentBot } from "@/components/skylent/SiteAssistant"
@@ -48,6 +48,50 @@ function OfferingIcon({ type }: { type: string }) {
   }
 }
 
+const HERO_PHRASES = [
+  { text: "Data Analytics", chip: 0, placeholder: "Try 'SQL, Excel & Data Analytics'..." },
+  { text: "Product Management", chip: 1, placeholder: "Try 'Product Management & PRDs'..." },
+  { text: "Full-Stack Engineering", chip: 2, placeholder: "Try 'Full-Stack, React & APIs'..." },
+  { text: "Python & Automation", chip: 0, placeholder: "Try 'Python & Automation'..." },
+  { text: "UG & PG Degrees", chip: 3, placeholder: "Try 'BCA, BBA, or MBA Degrees'..." },
+] as const
+
+const HERO_CHIPS = [
+  { label: "Data Analytics", to: "/courses/data-analytics-pro", icon: "chart" },
+  { label: "Product Management", to: "/courses/product-management", icon: "layers" },
+  { label: "Full-Stack Engineering", to: "/courses/full-stack", icon: "code" },
+  { label: "UG & PG Degrees", to: "/education", icon: "cap" },
+] as const
+
+function HeroChipIcon({ kind }: { kind: (typeof HERO_CHIPS)[number]["icon"] }) {
+  if (kind === "chart") {
+    return (
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <path d="M2.5 13.5V9.5M6.5 13.5V6.5M10.5 13.5V4M14 13.5V2.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+      </svg>
+    )
+  }
+  if (kind === "layers") {
+    return (
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <path d="M8 2.2 2 5.4 8 8.6l6-3.2L8 2.2ZM2 8.6l6 3.2 6-3.2M2 11.4l6 3.2 6-3.2" stroke="currentColor" strokeWidth="1.35" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    )
+  }
+  if (kind === "code") {
+    return (
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <path d="M5.2 4.5 1.8 8l3.4 3.5M10.8 4.5 14.2 8l-3.4 3.5M9.2 3.2 6.8 12.8" stroke="currentColor" strokeWidth="1.45" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    )
+  }
+  return (
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <path d="M1.5 6.2 8 3l6.5 3.2L8 9.4 1.5 6.2ZM4 7.7v3.4c0 1.1 1.8 2 4 2s4-.9 4-2V7.7" stroke="currentColor" strokeWidth="1.35" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
 export function HomeHero({
   catalogue = "confirmed",
   openTitles = [],
@@ -55,137 +99,124 @@ export function HomeHero({
   catalogue?: "loading" | "confirmed" | "unknown"
   openTitles?: readonly string[]
 }) {
+  const navigate = useNavigate()
+  const [query, setQuery] = useState("")
+  const [phraseIdx, setPhraseIdx] = useState(0)
+  const [typed, setTyped] = useState<string>(HERO_PHRASES[0].text)
+  const [deleting, setDeleting] = useState(false)
+
   const availability = catalogue === "loading"
     ? CATALOGUE_CHECKING
     : catalogue === "unknown"
       ? AVAILABILITY_UNKNOWN
       : programmesIndexIntro(true, openTitles)
 
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
+      setTyped(HERO_PHRASES[0].text)
+      return
+    }
+    const target = HERO_PHRASES[phraseIdx].text
+    if (!deleting && typed === target) {
+      const pause = window.setTimeout(() => setDeleting(true), 2100)
+      return () => window.clearTimeout(pause)
+    }
+    if (deleting && typed === "") {
+      setDeleting(false)
+      setPhraseIdx((i) => (i + 1) % HERO_PHRASES.length)
+      return
+    }
+    const speed = deleting ? 32 : 52
+    const timer = window.setTimeout(() => {
+      setTyped(deleting ? target.slice(0, Math.max(0, typed.length - 1)) : target.slice(0, typed.length + 1))
+    }, speed)
+    return () => window.clearTimeout(timer)
+  }, [typed, deleting, phraseIdx])
+
+  const activeChip = HERO_PHRASES[phraseIdx].chip
+
+  function handleGoalSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    const q = query.trim().toLowerCase()
+    if (!q) {
+      navigate("/courses")
+      return
+    }
+    if (/(degree|bca|bba|mba|ug|pg|college|univ)/.test(q)) {
+      navigate("/education")
+    } else if (/(data|sql|excel|analytic|bi|dashboard)/.test(q)) {
+      navigate("/courses/data-analytics-pro")
+    } else if (/(product|pm|prd|roadmap)/.test(q)) {
+      navigate("/courses/product-management")
+    } else if (/(python|automat)/.test(q)) {
+      navigate("/courses/python-programming")
+    } else if (/(full|stack|web|react|node|dev|code|eng)/.test(q)) {
+      navigate("/courses/full-stack")
+    } else if (/(science|ml|machine)/.test(q)) {
+      navigate("/courses/data-science-ai")
+    } else if (/(gen|ai|llm|prompt)/.test(q)) {
+      navigate("/courses/generative-ai-program")
+    } else if (/(verify|cert)/.test(q)) {
+      navigate("/verify")
+    } else {
+      navigate("/courses")
+    }
+  }
+
   return (
-    <section aria-labelledby="hx-hero-title" className="hx-hero-v144">
-      <div className="hx-hero-v144__top">
-        <h1
-          id="hx-hero-title"
-          className="hxw-hero__title"
-          style={{
-            margin: "0 auto 16px",
-            maxWidth: 780,
-            fontFamily: "var(--font-display, inherit)",
-            fontSize: "clamp(36px, 5.4vw, 62px)",
-            lineHeight: 1.07,
-            fontWeight: 700,
-            letterSpacing: "-0.03em",
-            color: "#0f172a",
-          }}
-        >
-          Build real skills.<br />
-          <span style={{ color: "#5142b5" }}>Prove your work.</span>
+    <section aria-labelledby="hx-hero-title" className="hx-hero-v158 hx-hero-v159">
+      <div className="hx-hero-v158__inner">
+        <span className="hx-hero-v159__eyebrow">Courses · SkyLab · University Degrees</span>
+
+        <h1 id="hx-hero-title" className="hx-hero-v159__title">
+          Master real skills.{" "}
+          <span className="hx-hero-v158__typed">Prove your work.</span>
         </h1>
 
-        <p
-          style={{
-            margin: "0 auto 28px",
-            maxWidth: 560,
-            fontSize: "clamp(15.5px, 1.65vw, 18px)",
-            lineHeight: 1.6,
-            color: "#475569",
-          }}
-        >
-          Recorded concept lessons, real business case studies in SkyLab, and verified portfolios employers trust.
+        <p className="hx-hero-v159__subline" aria-live="polite">
+          <span>Learn </span>
+          <strong className="hx-hero-v159__typed">{typed}</strong>
+          <span className="hx-hero-v159__cursor" aria-hidden="true" />
         </p>
+
+        <p className="hx-hero-v159__desc">
+          Not sure where to start? Pick a practical Skill Course, a career-backed Pro Program, or a full University Degree — every project built in SkyLab and publicly verifiable.
+        </p>
+
         <p className="hx-sr" aria-live="polite">{availability}</p>
 
-        <div style={{ display: "flex", justifyContent: "center", flexWrap: "wrap", gap: 12 }}>
-          <Link to="/login" className="hx-hero-v144__btn-p">
-            Get started <ArrowRight />
-          </Link>
-          <Link to="/courses" className="hx-hero-v144__btn-o">
-            Explore courses
-          </Link>
+        <form className="hx-hero-v158__bar" onSubmit={handleGoalSubmit} role="search" aria-label="Find a course or degree">
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder={HERO_PHRASES[phraseIdx].placeholder}
+            aria-label="What do you want to learn or build today?"
+            className="hx-hero-v158__input"
+          />
+          <button type="submit" className="hx-hero-v158__submit" aria-label="Explore">
+            <ArrowRight />
+          </button>
+        </form>
+
+        <div className="hx-hero-v158__chips" role="list">
+          {HERO_CHIPS.map((chip, idx) => (
+            <Link
+              key={chip.to}
+              to={chip.to}
+              role="listitem"
+              className={`hx-hero-v158__chip${activeChip === idx ? " is-active" : ""}`}
+            >
+              <HeroChipIcon kind={chip.icon} />
+              <span>{chip.label}</span>
+            </Link>
+          ))}
         </div>
-      </div>
 
-      {/* Calm Stationary 5-Card Premium Mini-UI Fan */}
-      <div className="hx-fan-wrap">
-        <div className="hx-fan">
-          <Link to="/courses/data-analytics-pro" className="hx-fcard">
-            <span className="hx-fcard__lbl">Data Analytics</span>
-            <div className="hx-fcard__viz">
-              <div className="hx-m-row"><span>Net Revenue</span><span className="hx-m-pill">+24.8%</span></div>
-              <svg width="100%" height="58" viewBox="0 0 160 58" fill="none" preserveAspectRatio="none">
-                <line x1="0" y1="14" x2="160" y2="14" stroke="#f1f5f9" strokeWidth="1" />
-                <line x1="0" y1="34" x2="160" y2="34" stroke="#f1f5f9" strokeWidth="1" />
-                <path d="M4 48 L36 38 L68 42 L100 22 L130 26 L156 8 L156 56 L4 56 Z" fill="#f5f3ff" />
-                <path d="M4 48 L36 38 L68 42 L100 22 L130 26 L156 8" stroke="#5142b5" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
-                <circle cx="156" cy="8" r="3.5" fill="#5142b5" />
-              </svg>
-            </div>
-            <span className="hx-fcard__title">SQL &amp; KPI Dashboards</span>
-          </Link>
-
-          <Link to="/courses/product-management" className="hx-fcard">
-            <span className="hx-fcard__lbl">Product</span>
-            <div className="hx-fcard__viz">
-              <div className="hx-m-row"><span>Checkout Funnel</span><span className="hx-m-pill">+6.4%</span></div>
-              <div style={{ display: "grid", gap: 6 }}>
-                <div style={{ display: "grid", gridTemplateColumns: "34px 1fr 28px", alignItems: "center", gap: 6, fontSize: 10, color: "#475569" }}>
-                  <span>View</span><div style={{ height: 6, background: "#f1f5f9", borderRadius: 99 }}><div style={{ width: "100%", height: "100%", background: "#5142b5", borderRadius: 99 }} /></div><strong>100%</strong>
-                </div>
-                <div style={{ display: "grid", gridTemplateColumns: "34px 1fr 28px", alignItems: "center", gap: 6, fontSize: 10, color: "#475569" }}>
-                  <span>UPI</span><div style={{ height: 6, background: "#f1f5f9", borderRadius: 99 }}><div style={{ width: "74%", height: "100%", background: "#818cf8", borderRadius: 99 }} /></div><strong>74%</strong>
-                </div>
-                <div style={{ display: "grid", gridTemplateColumns: "34px 1fr 28px", alignItems: "center", gap: 6, fontSize: 10, color: "#475569" }}>
-                  <span>Paid</span><div style={{ height: 6, background: "#f1f5f9", borderRadius: 99 }}><div style={{ width: "62%", height: "100%", background: "#0f766e", borderRadius: 99 }} /></div><strong>62%</strong>
-                </div>
-              </div>
-            </div>
-            <span className="hx-fcard__title">PRDs &amp; Funnel Cases</span>
-          </Link>
-
-          <Link to="/verify/SKL-2026-DA-EXEMPLAR" className="hx-fcard">
-            <span className="hx-fcard__lbl">Verified Proof</span>
-            <div className="hx-fcard__viz" style={{ background: "#faf9ff", borderColor: "#ddd6fe" }}>
-              <div className="hx-m-row"><span style={{ color: "#5142b5" }}>SKYLENT CREDENTIAL</span><span className="hx-m-pill">✓ Live</span></div>
-              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <div style={{ width: 32, height: 32, borderRadius: "50%", background: "#5142b5", color: "#fff", display: "inline-flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 14, flexShrink: 0 }}>✓</div>
-                <div style={{ minWidth: 0 }}>
-                  <div className="hx-m-mono" style={{ fontWeight: 700, color: "#5142b5" }}>SKL-2026-DA</div>
-                  <div style={{ fontSize: 10, color: "#475569" }}>Rubric 96/100 &middot; Graded</div>
-                </div>
-              </div>
-              <div style={{ fontSize: 10, color: "#64748b", borderTop: "1px solid #ede9fe", paddingTop: 5 }}>Employer-verifiable portfolio</div>
-            </div>
-            <span className="hx-fcard__title">Verified Portfolio</span>
-          </Link>
-
-          <Link to="/courses/full-stack" className="hx-fcard">
-            <span className="hx-fcard__lbl">Engineering</span>
-            <div className="hx-fcard__viz" style={{ background: "#f8fafc" }}>
-              <div className="hx-m-row"><span className="hx-m-mono" style={{ color: "#5142b5", fontWeight: 700 }}>GET /api/verify</span><span className="hx-m-pill">200 OK</span></div>
-              <div className="hx-m-mono" style={{ fontSize: 10, color: "#334155", lineHeight: 1.5 }}>
-                {'{ verified: true,'}<br />
-                {'  latency: "18ms" }'}
-              </div>
-              <div style={{ fontSize: 10, color: "#0f766e", fontWeight: 600 }}>✓ 18 / 18 tests passing</div>
-            </div>
-            <span className="hx-fcard__title">Full-Stack &amp; APIs</span>
-          </Link>
-
-          <Link to="/education" className="hx-fcard">
-            <span className="hx-fcard__lbl">Degrees</span>
-            <div className="hx-fcard__viz">
-              <div className="hx-m-row"><span>BCA &middot; BBA &middot; MBA</span><span style={{ color: "#5142b5" }}>Sem 1–8</span></div>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 5 }}>
-                <span style={{ textAlign: "center", padding: "5px 0", borderRadius: 6, fontSize: 10, fontWeight: 700, background: "#f5f3ff", color: "#5142b5", border: "1px solid #ddd6fe" }}>S1 ✓</span>
-                <span style={{ textAlign: "center", padding: "5px 0", borderRadius: 6, fontSize: 10, fontWeight: 700, background: "#f5f3ff", color: "#5142b5", border: "1px solid #ddd6fe" }}>S2 ✓</span>
-                <span style={{ textAlign: "center", padding: "5px 0", borderRadius: 6, fontSize: 10, fontWeight: 700, background: "#5142b5", color: "#ffffff" }}>S3</span>
-                <span style={{ textAlign: "center", padding: "5px 0", borderRadius: 6, fontSize: 10, fontWeight: 600, background: "#f1f5f9", color: "#64748b" }}>S4</span>
-              </div>
-              <div style={{ fontSize: 10, color: "#64748b" }}>Online &amp; Campus pathways</div>
-            </div>
-            <span className="hx-fcard__title">UG &amp; PG Semesters</span>
-          </Link>
-        </div>
+        <p className="hx-hero-v158__proof">
+          In-Browser SkyLab <span aria-hidden="true">·</span> Graded Capstones <span aria-hidden="true">·</span>{" "}
+          Verifiable at <Link to="/verify" className="hx-hero-v158__verify-link">skylent.live/verify</Link>
+        </p>
       </div>
     </section>
   )
