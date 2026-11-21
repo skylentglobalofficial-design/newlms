@@ -3647,3 +3647,16 @@ section[class*="pp-"][style*="#102a43"] {
   transform: translateY(0);
   pointer-events: auto;
 }
+
+
+/* v162.1 Brilliant-style smooth scroll fade-up for below-the-fold sections */
+.hx-scroll-fade {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 520ms cubic-bezier(0.22, 1, 0.36, 1), transform 520ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+.hx-scroll-fade.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}

@@ -83,6 +83,32 @@ export default function HomePage() {
   const [activeOutcome, setActiveOutcome] = useState(2)
   const catalogue = homeCataloguePhase(catalog.loading, catalog.offline)
 
+  
+  useEffect(() => {
+    if (typeof window === "undefined") return
+    const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches
+    const sections = Array.from(document.querySelectorAll(".site-light section:not(.hx-hero-v160)"))
+    if (!sections.length) return
+    if (reduce || !("IntersectionObserver" in window)) {
+      sections.forEach((el) => el.classList.add("hx-scroll-fade", "is-visible"))
+      return
+    }
+    sections.forEach((el) => el.classList.add("hx-scroll-fade"))
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible")
+            io.unobserve(entry.target)
+          }
+        }
+      },
+      { threshold: 0.08, rootMargin: "0px 0px -36px 0px" }
+    )
+    sections.forEach((el) => io.observe(el))
+    return () => io.disconnect()
+  }, [])
+
   return (
     <PageShell aurora={false}>
       <div className="site-light hm-page hx-page hx-page--home" style={{ background: "#ffffff" }}>
