@@ -689,7 +689,7 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
         <div className="sky-container">
           <Reveal className="pp-section-head" style={{ marginBottom: 24 }}>
             <div>
-              <SectionIndex n="04" label="Projects & 2-Month Internship" />
+              <SectionIndex n="04" label={isProTrack ? "Projects & 2-Month Internship" : "Verified Project Portfolio"} />
               <h2 id="pp-evidence-title" className="sky-display sky-display--md pp-h2">
                 {content.evidence.heading}
               </h2>

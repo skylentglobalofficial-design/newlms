@@ -3887,3 +3887,49 @@ footer a[href="/courses"]:hover {
 .site-light [class*="edu"][class*="grid"] {
   align-items: start !important;
 }
+
+
+/* v166 P0+P1 Craft Polish: Hero breathing, Track cards 16:10, About CTA white, Education align-start */
+/* 1. Guarantee crisp white text on all primary purple buttons site-wide */
+.site-light .sk-btn-primary,
+.site-light a.sk-btn-primary,
+.site-light .sk-btn-primary:hover,
+.site-light .sk-btn-primary:visited {
+  color: #ffffff !important;
+}
+
+/* 2. Prevent PG on campus card from stretching to match tall PG online sibling */
+.edx-mode {
+  align-self: start !important;
+}
+
+/* 3. Tighten Homepage Hero vertical air so first fold feels anchored */
+.hx-hero-v160 {
+  padding-top: 44px !important;
+  padding-bottom: 36px !important;
+  min-height: auto !important;
+}
+
+/* 4. Clean Homepage Career Track cards: 16:10 full-bleed image, no grey strip or top purple line, crisp price meta */
+.hx-live-course-card {
+  border-top: 1px solid #e7e5e4 !important;
+  overflow: hidden !important;
+}
+.hx-live-course-card__media {
+  display: block !important;
+  overflow: hidden !important;
+  aspect-ratio: 16 / 10 !important;
+  height: auto !important;
+  background: #0f172a !important;
+}
+.hx-live-course-card__media > img {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+}
+.hx-live-course-card__meta {
+  white-space: nowrap !important;
+  font-weight: 600 !important;
+  color: #0f172a !important;
+}

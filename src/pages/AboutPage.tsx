@@ -81,7 +81,7 @@ export default function AboutPage() {
                 Headquartered in Bhubaneswar, Odisha, Skylent bridges the gap between education and employment — combining practical browser labs, a 2-month complimentary internship for every learner, and dedicated job assistance for students and colleges across India.
               </p>
               <div className="hx-hero__actions" style={{ marginTop: 22 }}>
-                <Link className="sk-btn sk-btn-primary hx-btn" to="/programmes">
+                <Link className="sk-btn sk-btn-primary hx-btn" to="/programmes" style={{ color: "#ffffff" }}>
                   Explore courses
                   <ArrowRight />
                 </Link>
@@ -242,7 +242,7 @@ export default function AboutPage() {
               Ready to experience <em>SkyLab firsthand?</em>
             </h2>
             <div className="hx-hero__actions">
-              <Link className="sk-btn sk-btn-primary hx-btn" to="/programmes">
+              <Link className="sk-btn sk-btn-primary hx-btn" to="/programmes" style={{ color: "#ffffff" }}>
                 Explore programmes
                 <ArrowRight />
               </Link>

@@ -503,6 +503,7 @@ export default function VerifyPage() {
                     <section
             aria-labelledby="vfy-exemplar-gallery-title"
             style={{
+              gridColumn: "1 / -1",
               marginTop: 32,
               padding: "22px 24px",
               borderRadius: 18,
