@@ -49,11 +49,11 @@ function OfferingIcon({ type }: { type: string }) {
 }
 
 const HERO_PHRASES = [
-  { text: "Data Analytics", chip: 0, placeholder: "Try 'SQL, Excel & Data Analytics'..." },
-  { text: "Product Management", chip: 1, placeholder: "Try 'Product Management & PRDs'..." },
-  { text: "Full-Stack Engineering", chip: 2, placeholder: "Try 'Full-Stack, React & APIs'..." },
-  { text: "Python & Automation", chip: 0, placeholder: "Try 'Python & Automation'..." },
-  { text: "UG & PG Degrees", chip: 3, placeholder: "Try 'BCA, BBA, or MBA Degrees'..." },
+  { text: "Data Analytics", chip: 0, placeholder: "Ask SkyAI: e.g. 'I want to become a Data Analyst'" },
+  { text: "Product Management", chip: 1, placeholder: "Ask SkyAI: e.g. 'How do I transition into Product Management?'" },
+  { text: "Full-Stack Engineering", chip: 2, placeholder: "Ask SkyAI: e.g. 'Build real web apps & APIs'" },
+  { text: "Python & Automation", chip: 0, placeholder: "Ask SkyAI: e.g. 'Start with Python from scratch'" },
+  { text: "UG & PG Degrees", chip: 3, placeholder: "Ask SkyAI: e.g. 'Online BCA, BBA or MBA pathways'" },
 ] as const
 
 const HERO_CHIPS = [
@@ -62,6 +62,92 @@ const HERO_CHIPS = [
   { label: "Full-Stack Engineering", to: "/courses/full-stack", icon: "code" },
   { label: "UG & PG Degrees", to: "/education", icon: "cap" },
 ] as const
+
+type SkyAiMatch = {
+  title: string
+  badge: string
+  reason: string
+  to: string
+  cta: string
+}
+
+function matchSkyAiGoal(raw: string): SkyAiMatch | null {
+  const q = raw.trim().toLowerCase()
+  if (!q) return null
+  if (/(degree|bca|bba|mba|bcom|b.com|ug|pg|college|univ|graduat)/.test(q)) {
+    return {
+      title: "Undergraduate & Postgraduate Degrees",
+      badge: "UG & PG · Online & Campus",
+      reason: "Structured semester-wise university pathways paired with practical SkyLab projects.",
+      to: "/education",
+      cta: "Explore Degree Pathways",
+    }
+  }
+  if (/(data|sql|excel|analytic|bi|dashboard|analyst|finance)/.test(q)) {
+    return {
+      title: "Data Analytics",
+      badge: "Skill Course · 8 Weeks · ₹1,499",
+      reason: "Master PostgreSQL, Excel/Sheets, and business KPI dashboards with 4 graded projects in SkyLab.",
+      to: "/courses/data-analytics-pro",
+      cta: "View Data Analytics",
+    }
+  }
+  if (/(product|pm|prd|roadmap|manager|strategy|business)/.test(q)) {
+    return {
+      title: "Product Management",
+      badge: "Skill Course · 8 Weeks · ₹1,499",
+      reason: "Practise user research, problem framing, and real product specs on the Harbor Desk case study.",
+      to: "/courses/product-management",
+      cta: "View Product Management",
+    }
+  }
+  if (/(python|automat|script|beginner|scratch)/.test(q)) {
+    return {
+      title: "Python & Automation",
+      badge: "Skill Course · 6 Weeks · ₹1,499",
+      reason: "Build practical Python automation scripts, data cleaners, and verifiable portfolio projects.",
+      to: "/courses/python-programming",
+      cta: "View Python & Automation",
+    }
+  }
+  if (/(science|ml|machine|deep learning)/.test(q)) {
+    return {
+      title: "Data Science & AI",
+      badge: "Pro Program · 5 Months · ₹11,999",
+      reason: "End-to-end applied ML, modeling capstones, mentor reviews, and Skylent Career Support.",
+      to: "/courses/data-science-ai",
+      cta: "View Data Science & AI",
+    }
+  }
+  if (/(gen|ai|llm|prompt|agent)/.test(q)) {
+    return {
+      title: "Generative AI Program",
+      badge: "Pro Program · 4 Months · ₹11,999",
+      reason: "Build production AI workflows, RAG pipelines, and graded capstones with career support.",
+      to: "/courses/generative-ai-program",
+      cta: "View Generative AI",
+    }
+  }
+  if (/(full|stack|web|react|node|dev|code|eng|software|backend|frontend)/.test(q)) {
+    return {
+      title: "Full-Stack Engineering",
+      badge: "Pro Program · 6 Months · ₹11,999",
+      reason: "Ship production APIs, React apps, and databases in SkyLab with mentor feedback & career support.",
+      to: "/courses/full-stack",
+      cta: "View Full-Stack Program",
+    }
+  }
+  if (/(verify|cert|portfolio)/.test(q)) {
+    return {
+      title: "Public Credential Verification",
+      badge: "Verified Proof · skylent.live/verify",
+      reason: "Inspect how employers verify Skylent project portfolios and rubric-graded certificates.",
+      to: "/verify",
+      cta: "Open Verification Portal",
+    }
+  }
+  return null
+}
 
 function HeroChipIcon({ kind }: { kind: (typeof HERO_CHIPS)[number]["icon"] }) {
   if (kind === "chart") {
@@ -99,8 +185,9 @@ export function HomeHero({
   catalogue?: "loading" | "confirmed" | "unknown"
   openTitles?: readonly string[]
 }) {
-  const navigate = useNavigate()
   const [query, setQuery] = useState("")
+  const [submitted, setSubmitted] = useState(false)
+  const [aiMatch, setAiMatch] = useState<SkyAiMatch | null>(null)
   const [phraseIdx, setPhraseIdx] = useState(0)
   const [typed, setTyped] = useState<string>(HERO_PHRASES[0].text)
   const [deleting, setDeleting] = useState(false)
@@ -118,7 +205,7 @@ export function HomeHero({
     }
     const target = HERO_PHRASES[phraseIdx].text
     if (!deleting && typed === target) {
-      const pause = window.setTimeout(() => setDeleting(true), 2100)
+      const pause = window.setTimeout(() => setDeleting(true), 2200)
       return () => window.clearTimeout(pause)
     }
     if (deleting && typed === "") {
@@ -135,69 +222,90 @@ export function HomeHero({
 
   const activeChip = HERO_PHRASES[phraseIdx].chip
 
-  function handleGoalSubmit(e: React.FormEvent) {
+  function handleSkyAiSubmit(e: React.FormEvent) {
     e.preventDefault()
-    const q = query.trim().toLowerCase()
-    if (!q) {
-      navigate("/courses")
+    if (!query.trim()) {
+      setSubmitted(true)
+      setAiMatch(null)
       return
     }
-    if (/(degree|bca|bba|mba|ug|pg|college|univ)/.test(q)) {
-      navigate("/education")
-    } else if (/(data|sql|excel|analytic|bi|dashboard)/.test(q)) {
-      navigate("/courses/data-analytics-pro")
-    } else if (/(product|pm|prd|roadmap)/.test(q)) {
-      navigate("/courses/product-management")
-    } else if (/(python|automat)/.test(q)) {
-      navigate("/courses/python-programming")
-    } else if (/(full|stack|web|react|node|dev|code|eng)/.test(q)) {
-      navigate("/courses/full-stack")
-    } else if (/(science|ml|machine)/.test(q)) {
-      navigate("/courses/data-science-ai")
-    } else if (/(gen|ai|llm|prompt)/.test(q)) {
-      navigate("/courses/generative-ai-program")
-    } else if (/(verify|cert)/.test(q)) {
-      navigate("/verify")
-    } else {
-      navigate("/courses")
-    }
+    setAiMatch(matchSkyAiGoal(query))
+    setSubmitted(true)
   }
 
   return (
-    <section aria-labelledby="hx-hero-title" className="hx-hero-v158 hx-hero-v159">
+    <section aria-labelledby="hx-hero-title" className="hx-hero-v158 hx-hero-v159 hx-hero-v160">
       <div className="hx-hero-v158__inner">
         <span className="hx-hero-v159__eyebrow">Courses · SkyLab · University Degrees</span>
 
-        <h1 id="hx-hero-title" className="hx-hero-v159__title">
+        <h1 id="hx-hero-title" className="hx-hero-v159__title hx-hero-v160__title">
           Master real skills.<br />
-          <span className="hx-hero-v158__typed">Prove your work.</span>
+          <span className="hx-hero-v160__accent">Prove your work.</span>
         </h1>
 
         <p className="hx-hero-v159__subline" aria-live="polite">
-          <span>Learn </span>
+          <span>Learn</span>
           <strong className="hx-hero-v159__typed">{typed}</strong>
           <span className="hx-hero-v159__cursor" aria-hidden="true" />
         </p>
 
         <p className="hx-hero-v159__desc">
-          Not sure where to start? Pick a practical Skill Course, a career-backed Pro Program, or a full University Degree — every project built in SkyLab and publicly verifiable.
+          Not sure where to start? Tell SkyAI your goal — or explore Skill Courses, career-backed Pro Programs, and University Degrees built around verified work.
         </p>
 
         <p className="hx-sr" aria-live="polite">{availability}</p>
 
-        <form className="hx-hero-v158__bar" onSubmit={handleGoalSubmit} role="search" aria-label="Find a course or degree">
+        <form className="hx-hero-v158__bar hx-hero-v160__bar" onSubmit={handleSkyAiSubmit} role="search" aria-label="Ask SkyAI for a learning path">
+          <span className="hx-hero-v160__ai-tag" aria-hidden="true">✦ SkyAI</span>
           <input
             type="text"
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={(e) => {
+              setQuery(e.target.value)
+              if (submitted) setSubmitted(false)
+            }}
             placeholder={HERO_PHRASES[phraseIdx].placeholder}
-            aria-label="What do you want to learn or build today?"
-            className="hx-hero-v158__input"
+            aria-label="Ask SkyAI what you want to learn or build"
+            className="hx-hero-v158__input hx-hero-v160__input"
           />
-          <button type="submit" className="hx-hero-v158__submit" aria-label="Explore">
+          <button type="submit" className="hx-hero-v158__submit hx-hero-v160__submit" aria-label="Ask SkyAI">
             <ArrowRight />
           </button>
         </form>
+
+        {submitted ? (
+          <div className="hx-hero-v160__reply" role="region" aria-live="polite">
+            {aiMatch ? (
+              <div className="hx-hero-v160__reply-inner">
+                <div className="hx-hero-v160__reply-copy">
+                  <span className="hx-hero-v160__reply-badge">✦ SkyAI Recommendation · {aiMatch.badge}</span>
+                  <strong>{aiMatch.title}</strong>
+                  <p>{aiMatch.reason}</p>
+                </div>
+                <div className="hx-hero-v160__reply-actions">
+                  <Link to={aiMatch.to} className="hx-hero-v160__reply-btn">
+                    {aiMatch.cta} →
+                  </Link>
+                  <Link to="/path" className="hx-hero-v160__reply-link">
+                    Full Path Finder
+                  </Link>
+                </div>
+              </div>
+            ) : (
+              <div className="hx-hero-v160__reply-inner">
+                <div className="hx-hero-v160__reply-copy">
+                  <span className="hx-hero-v160__reply-badge">✦ SkyAI Path Guide</span>
+                  <p style={{ margin: "4px 0 0" }}>
+                    Tell me a role or topic (like <strong>Data Analytics</strong>, <strong>Product Management</strong>, <strong>Full-Stack</strong>, or <strong>MBA/BCA</strong>) and I’ll match the right track.
+                  </p>
+                </div>
+                <Link to="/courses" className="hx-hero-v160__reply-btn">
+                  Browse All Courses →
+                </Link>
+              </div>
+            )}
+          </div>
+        ) : null}
 
         <div className="hx-hero-v158__chips" role="list">
           {HERO_CHIPS.map((chip, idx) => (
