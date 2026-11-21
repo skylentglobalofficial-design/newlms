@@ -1,7 +1,7 @@
 /**
  * The product manifest: one ordered list of what each Skylent product area contains, in the
  * words the product itself uses. Public pages (homepage, /career-os signed out) and the signed-in
- * product (TalentBridge overview and nav) read their feature names, order, summaries and status from
+ * product (Skylent Career Support overview and nav) read their feature names, order, summaries and status from
  * here, so the website and the product cannot describe two different things.
  *
  * Rules
@@ -73,7 +73,7 @@ function feature(def: FeatureDef): ProductFeature {
   return { ...def, status: statusOf(def.capability) }
 }
 
-/* ── TalentBridge ─────────────────────────────────────────────────────────────── */
+/* ── Skylent Career Support ─────────────────────────────────────────────────────────────── */
 
 /**
  * Order: Profile → Skills → (Gaps) → Learning → Practice → Projects → Evidence → Certificates →
@@ -81,7 +81,7 @@ function feature(def: FeatureDef): ProductFeature {
  * - /career/profile (target role, education, experience, links, self-entered skills): live.
  * - Required skills per role, gaps, readiness: no model or endpoint exists.
  * - /lms/* and the Northwind lab: live in the flagship course.
- * - /projects and /career/projects (learner projects and the records added to TalentBridge): exist,
+ * - /projects and /career/projects (learner projects and the records added to Skylent Career Support): exist,
  *   not released as a finished evidence product.
  * - /certificates/issue, /mine, /verify/:code: exist, not yet checked in production.
  * - /career/jobs: exists, no openings published.
@@ -108,7 +108,7 @@ export const CAREER_OS_FEATURES: readonly ProductFeature[] = [
   feature({
     id: "gaps",
     label: "Gaps",
-    summary: "TalentBridge holds no required skills per role, so it cannot compare your skills with a role yet.",
+    summary: "Skylent Career Support holds no required skills per role, so it cannot compare your skills with a role yet.",
     route: null,
     capability: "skillGaps",
     publicSafe: true,
@@ -193,7 +193,7 @@ export const CAREER_OS_FEATURES: readonly ProductFeature[] = [
   }),
 ]
 
-/** The TalentBridge workspace areas, in the order of the signed-in navigation. */
+/** The Skylent Career Support workspace areas, in the order of the signed-in navigation. */
 export const CAREER_OS_NAV: readonly ProductNavItem[] = [
   { id: "overview", label: "Overview", short: "Home", route: "/career-os", summary: "Target role, skills, evidence and the next step", empty: "Yours starts empty" },
   { id: "projects", label: "Projects", short: "Work", route: "/career-os/projects", summary: "Learner work kept as evidence", empty: "Filled from your finished work" },
@@ -327,7 +327,7 @@ export const PRODUCT_AREAS: readonly ProductArea[] = [
   },
   {
     id: "career-os",
-    label: "TalentBridge",
+    label: "Skylent Career Support",
     summary: "The signed-in workspace that reads your career profile and your learning.",
     route: "/career-os",
     features: CAREER_OS_FEATURES,
@@ -349,7 +349,7 @@ export function publicFeatures(features: readonly ProductFeature[]): ProductFeat
 
 export function careerFeature(id: string): ProductFeature {
   const found = CAREER_OS_FEATURES.find((item) => item.id === id)
-  if (!found) throw new Error(`product-manifest: no TalentBridge feature "${id}"`)
+  if (!found) throw new Error(`product-manifest: no Skylent Career Support feature "${id}"`)
   return found
 }
 

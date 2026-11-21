@@ -129,7 +129,7 @@ export const PROGRAMME_WORK_SURFACES = [
   {
     id: "lessons",
     label: "Written lessons",
-    detail: "Self-paced written teaching in the enrolled course. No video stream and no live classroom.",
+    detail: "Recorded + SkyLab written teaching in the enrolled course. No video stream and no live classroom.",
     learnerOnly: true,
   },
   {
@@ -157,5 +157,5 @@ export const PROGRAMME_ENROLMENT_FACTS = [
   "Enrolment opens the linked authored course in SkyLab. It does not create a separate taught programme, cohort, or batch.",
   "Payment is not collected in this environment.",
   "Certificates are not issued in this pilot.",
-  "Work you produce can be carried into TalentBridge as evidence. TalentBridge is a workspace for your profile and work — not a placement service.",
+  "Work you produce can be carried into Skylent Career Support as evidence. Skylent Career Support is a workspace for your profile and work — not a placement service.",
 ] as const

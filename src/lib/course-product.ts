@@ -50,8 +50,8 @@ const SHARED_FAQ_PAYMENT: CourseFaq = {
 }
 
 const SHARED_FAQ_CERT: CourseFaq = {
-  q: "How do I earn my verified SKL certificate and unlock TalentBridge?",
-  a: "When you complete 60% of the course along with your module quizzes and capstone project, TalentBridge unlocks automatically. Completing all 15 lessons and the capstone issues your verifiable SKL certificate (/verify).",
+  q: "How do I earn my verified SKL certificate and unlock Skylent Career Support?",
+  a: "When you complete 60% of the course along with your module quizzes and capstone project, Skylent Career Support unlocks automatically. Completing all 15 lessons and the capstone issues your verifiable SKL certificate (/verify).",
 }
 
 const DATA_ANALYTICS_PROFILE: CourseProductProfile = {

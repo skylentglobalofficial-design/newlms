@@ -121,7 +121,7 @@ export default function ProgramPage() {
     <Shell>
       <div className="skylent-course-purpose-box" style={{ background: "#f8fafc", borderBottom: "1px solid #e2e8f0", padding: "12px 20px", fontFamily: "Inter, system-ui, sans-serif" }}>
         <div style={{ maxWidth: 1200, margin: "0 auto", display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
-          <div style={{ display: "none",  display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
             <span style={{ fontSize: 11, fontWeight: 800, background: "#5142b5", color: "#ffffff", padding: "4px 10px", borderRadius: 999 }}>
               POWERED BY SKYLAB
             </span>

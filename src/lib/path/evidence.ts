@@ -47,7 +47,7 @@ export function trustLabel(trust: PathEvidenceTrustClass): string {
     case "project_verified":
       return "Verified by Skylent learner project"
     case "career_evidence":
-      return "Verified by TalentBridge evidence"
+      return "Verified by Skylent Career Support evidence"
   }
 }
 
@@ -81,7 +81,7 @@ export function demonstratedStatement(kind: PathEvidenceKind, action: PathPhaseE
     case "project_artifact":
       return "Submitted Skylent assignment work on the linked lesson."
     case "portfolio_evidence":
-      return "TalentBridge holds eligible evidence from the linked project."
+      return "Skylent Career Support holds eligible evidence from the linked project."
     case "learning_completed":
     default:
       return action.label

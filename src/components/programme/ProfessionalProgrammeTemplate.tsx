@@ -785,7 +785,7 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
           <Reveal delay={180} className="pp-actions">
             {primaryAction}
             <a className="sk-btn sk-btn-secondary" href="#pp-pricing">
-              Compare Plans
+              View Enrolment
             </a>
           </Reveal>
         </Reveal>

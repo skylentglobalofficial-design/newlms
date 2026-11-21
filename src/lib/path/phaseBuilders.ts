@@ -352,7 +352,7 @@ function proofFor(ctx: PathRecommendationContext): RoadmapPhase {
         "Evidence = reproducible analysis + clear recommendation.",
         [
           "Publish case note: question, method, findings, recommendation, limits.",
-          "Add to TalentBridge or portfolio; link datasets and queries where allowed.",
+          "Add to Skylent Career Support or portfolio; link datasets and queries where allowed.",
           "Request review on whether the recommendation follows from the data.",
         ],
       )
@@ -363,7 +363,7 @@ function proofFor(ctx: PathRecommendationContext): RoadmapPhase {
         [
           "Share spec with rationale for trade-offs and rejected options.",
           "If user research exists, tie claims to quotes or data.",
-          "Add to TalentBridge as a work sample for product roles.",
+          "Add to Skylent Career Support as a work sample for product roles.",
         ],
       )
     case "competitive_exams":
@@ -402,7 +402,7 @@ function proofFor(ctx: PathRecommendationContext): RoadmapPhase {
         "Evidence that you can explain your direction choice.",
         [
           "One-page decision memo: options, criteria, choice, next step.",
-          "Store in TalentBridge or personal notes.",
+          "Store in Skylent Career Support or personal notes.",
           "Revisit in 30 days — update or pivot with reason.",
         ],
       )
@@ -437,7 +437,7 @@ function opportunityFor(ctx: PathRecommendationContext): RoadmapPhase {
       break
     case "data_analytics":
       actions.push("Target analyst or data-adjacent roles when your memo answers a real question.")
-      actions.push("Use TalentBridge (/career-os) to carry evidence — not as a placement promise.")
+      actions.push("Use Skylent Career Support (/career-os) to carry evidence — not as a placement promise.")
       break
     case "product_business":
       actions.push("Share spec work with PM communities or mentors for feedback.")
@@ -449,7 +449,7 @@ function opportunityFor(ctx: PathRecommendationContext): RoadmapPhase {
           ? "Shortlist roles that match your repo stack; tailor README bullets to each."
           : "Seek stretch projects internally or in open source aligned to your stack.",
       )
-      actions.push("TalentBridge organises applications — it does not guarantee interviews.")
+      actions.push("Skylent Career Support organises applications — it does not guarantee interviews.")
       break
     default:
       actions.push("Re-run Skylent Path after your next experiment if direction shifts.")

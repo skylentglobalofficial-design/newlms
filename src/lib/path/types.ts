@@ -127,7 +127,7 @@ export type PathEvidenceRecord = {
   demonstrated: string
   resourceId?: string
   href?: string
-  /** TalentBridge evidence project id when trust is career_evidence. */
+  /** Skylent Career Support evidence project id when trust is career_evidence. */
   sourceRef?: string
   recordedAt: string
 }

@@ -297,7 +297,7 @@ export default function ProgrammePricingAndDock({
           </div>
 
           {/* Skylent Signature Dual Credential & 2-Month Internship Visual Showcase */}
-          <div style={{ marginTop: 26, display: "grid", gap: 18 }}>
+          <div style={{ marginTop: 26, display: ["full-stack", "data-science-ai", "generative-ai-program"].includes((programSlug || courseSlug || "").toLowerCase()) ? "grid" : "none", gap: 18 }}>
             <div
               style={{
                 padding: "22px 24px",

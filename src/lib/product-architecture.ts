@@ -24,7 +24,7 @@ export const LIVE_CORE = [
   },
   { label: "SkyLab", to: "/os", note: "Your learning workspace" },
   {
-    label: "TalentBridge",
+    label: "Skylent Career Support",
     to: "/career-os",
     note: "Profile and learning evidence",
   },
@@ -90,7 +90,7 @@ export const UG_PATHWAY = [
   { label: "Module", sub: "Taught topics inside a subject" },
   { label: "Project", sub: "Portfolio evidence" },
   { label: "Internship", sub: "Where institutions offer it" },
-  { label: "Progression", sub: "Skills and TalentBridge when qualifying" },
+  { label: "Progression", sub: "Skills and Skylent Career Support when qualifying" },
 ] as const
 
 export const SCHOOLING_PATHWAY = [
@@ -496,14 +496,14 @@ export const EXAM_STUBS: Record<string, {
   },
 }
 
-/** Primary pillar: TalentBridge public entry and workflow destinations. */
+/** Primary pillar: Skylent Career Support public entry and workflow destinations. */
 export const CAREER_NAV: MegaNavGroup = {
   label: "Career",
   to: "/career-os",
-  tagline: "Profile, evidence, opportunities, and support in TalentBridge.",
+  tagline: "Profile, evidence, opportunities, and support in Skylent Career Support.",
   items: [
     {
-      label: "TalentBridge",
+      label: "Skylent Career Support",
       sub: "Overview of the career workflow on Skylent.",
       to: "/career-os",
     },
@@ -665,7 +665,7 @@ export const FOOTER_COLS = [
   {
     heading: "Career",
     links: [
-      ["TalentBridge", "/career-os"],
+      ["Skylent Career Support", "/career-os"],
       ["Profile", "/career-os/profile"],
       ["Projects", "/career-os/projects"],
       ["Opportunities", "/career-os/jobs"],
@@ -690,7 +690,7 @@ export const FOOTER_COLS = [
 /** Legal labels shown in the footer until dedicated routes exist. */
 export const FOOTER_LEGAL_LABELS = ["Privacy", "Terms", "Cookies"] as const
 
-/** TalentBridge workspace areas (signed-in nav minus Overview), from src/lib/product-manifest.ts. */
+/** Skylent Career Support workspace areas (signed-in nav minus Overview), from src/lib/product-manifest.ts. */
 export const CAREER_OS_IA: readonly {
   id: string
   label: string
@@ -763,7 +763,7 @@ export const PRACTICE_DESTINATIONS: readonly PillarDestinationLine[] = [
   },
 ] as const
 
-/** TalentBridge public subnav — overview plus workspace areas (sign-in required for data). */
+/** Skylent Career Support public subnav — overview plus workspace areas (sign-in required for data). */
 export const CAREER_PUBLIC_DESTINATIONS: readonly {
   id: string
   label: string

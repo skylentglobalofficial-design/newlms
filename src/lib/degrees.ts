@@ -140,7 +140,7 @@ const STATIC_DEGREE_ENRICHMENT: Record<string, Partial<Degree>> = {
       },
       {
         label: "Year 4 (Sem 7–8)",
-        subjects: ["6-Month Industry Internship / Production Capstone", "Security, Observability & Idempotent Ledgers", "TalentBridge Proof-of-Work Portfolio Defense"],
+        subjects: ["6-Month Industry Internship / Production Capstone", "Security, Observability & Idempotent Ledgers", "Skylent Career Support Proof-of-Work Portfolio Defense"],
         teaching: "Mentored industry capstone + external architecture defense",
       },
     ],
@@ -157,7 +157,7 @@ const STATIC_DEGREE_ENRICHMENT: Record<string, Partial<Degree>> = {
     eligibility: "Class XII (10+2) in any stream from a recognised board (min. 50% aggregate)",
     residence: "100% Online Digital Campus (Optional Weekend City Immersions)",
     learningMode: {
-      pacing: "8–10 hrs/week · Self-paced modules + scheduled weekend tutorials",
+      pacing: "8–10 hrs/week · Recorded + SkyLab modules + scheduled weekend tutorials",
       liveSessions: "Weekend live case seminars & timed 60-second Boardroom Cold Calls",
       support: "Dedicated Cohort Lead + 20-Min Faculty TA Doubt SLA",
     },
@@ -174,7 +174,7 @@ const STATIC_DEGREE_ENRICHMENT: Record<string, Partial<Degree>> = {
       },
       {
         label: "Year 3 (Sem 5–6)",
-        subjects: ["Strategic Management & Competitive Moats", "AI Workflows for Business & Operations", "Executive Capstone: Commercial & Product Defense", "TalentBridge Portfolio & Mock Boardroom Defense"],
+        subjects: ["Strategic Management & Competitive Moats", "AI Workflows for Business & Operations", "Executive Capstone: Commercial & Product Defense", "Skylent Career Support Portfolio & Mock Boardroom Defense"],
         teaching: "Graded capstone dossier + live panel defense",
       },
     ],
@@ -213,7 +213,7 @@ const STATIC_DEGREE_ENRICHMENT: Record<string, Partial<Degree>> = {
       },
       {
         label: "Semester 4",
-        subjects: ["Master's Thesis & Executive Capstone Defense", "Boardroom Cold Call Simulation & Peer Benchmarking", "TalentBridge Verified Dossier & Leadership Transition"],
+        subjects: ["Master's Thesis & Executive Capstone Defense", "Boardroom Cold Call Simulation & Peer Benchmarking", "Skylent Career Support Verified Dossier & Leadership Transition"],
         teaching: "1-on-1 faculty mentorship + graded executive dossier",
       },
     ],
@@ -252,7 +252,7 @@ const STATIC_DEGREE_ENRICHMENT: Record<string, Partial<Degree>> = {
       },
       {
         label: "Semester 4",
-        subjects: ["Production Engineering Capstone & System Defense", "Open-Source / Enterprise Architecture Dossier", "TalentBridge Technical Verification & Mock System Design"],
+        subjects: ["Production Engineering Capstone & System Defense", "Open-Source / Enterprise Architecture Dossier", "Skylent Career Support Technical Verification & Mock System Design"],
         teaching: "Graded production codebase + cryptographic proof dossier",
       },
     ],

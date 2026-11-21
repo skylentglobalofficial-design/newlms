@@ -74,7 +74,7 @@ export function nonProgrammeExecutionSteps(track: PathTrack, diagnosis: PathDiag
   }
 
   if (track === "technology_professional" && diagnosis.targetOutcome === "land_first_role") {
-    steps.push("When evidence exists, use TalentBridge (/career-os) to organise proof — it does not guarantee hiring.")
+    steps.push("When evidence exists, use Skylent Career Support (/career-os) to organise proof — it does not guarantee hiring.")
   }
 
   return steps

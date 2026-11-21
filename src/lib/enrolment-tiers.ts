@@ -1,5 +1,5 @@
 /**
- * Skylent 2-Tier Course Enrolment & Smart TalentBridge Validity Engine.
+ * Skylent 2-Tier Course Enrolment & Smart Skylent Career Support Validity Engine.
  */
 
 export type SkylentTierId = "certificate" | "professional" | "flagship"
@@ -82,7 +82,7 @@ export function buildSkylentTiersForPrice(_baseCoursePrice: number, slug?: strin
         "Complete recorded lessons & live SkyLab workspaces",
         "Hands-on capstone project & verifiable certificate",
         "Live SkyLab case studies & rubric feedback included",
-        "✕ No Job Assistance, Mock Interviews, or Live Mentor Classes (Included only in ₹11,999 Professional Program)",
+        "No Job Assistance, Mock Interviews, or Live Mentor Classes (Included only in ₹11,999 Professional Program)",
       ],
     },
     {
