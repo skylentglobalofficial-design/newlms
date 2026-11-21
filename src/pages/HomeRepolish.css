@@ -3966,3 +3966,22 @@ footer a[href="/courses"]:hover {
   font-weight: 600 !important;
   color: #0f172a !important;
 }
+
+
+/* v167 Dashboard & CareerOS Polish */
+.ads-elixir-pill {
+  display: none !important;
+}
+.sh-card {
+  border-radius: 16px !important;
+  overflow: hidden !important;
+  background-clip: padding-box !important;
+}
+.sh-card > .sh-card-head {
+  background: linear-gradient(155deg, #2E1065 0%, #4C1D95 55%, #5142B5 100%) !important;
+  border-top-left-radius: 15px !important;
+  border-top-right-radius: 15px !important;
+}
+.sh-card > .sh-card-head .sh-note {
+  color: #DDD6FE !important;
+}

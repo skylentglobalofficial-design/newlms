@@ -38,7 +38,7 @@ export default function CareerOSApplicationsPage() {
   return (
     <div className="cos-work" style={{ maxWidth: 900, margin: "0 auto", minWidth: 0, overflowX: "hidden" }}>
       <PageHead
-        eyebrow="TalentBridge · Applications"
+        eyebrow="Career Portfolio · Applications"
         title="Applications"
         lead="This list is private to you. A role reaches an employer only after you choose Share with employer on Opportunities."
         action={

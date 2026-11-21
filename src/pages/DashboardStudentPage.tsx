@@ -804,7 +804,6 @@ function SelectYourPlanPortalModal({
               <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gap: 10, fontSize: 13, color: '#334155', lineHeight: 1.5 }}>
                 <li>✓ Complete recorded lessons &amp; live SkyLab workspaces</li>
                 <li>✓ Hands-on capstone project &amp; verified certificate</li>
-                <li>✓ 2-Month Complimentary Practice &amp; Internship included</li>
                 <li style={{ color: "#dc2626" }}>✕ No Job Assistance, Mock Interviews, or Live Mentor Classes (Included only in ₹11,999 Pro Program)</li>
               </ul>
             </div>
@@ -1822,7 +1821,7 @@ export default function DashboardStudentPage() {
         </>
       )}
       <p className="sh-foot">
-        Project evidence is kept in TalentBridge.{' '}
+        Project evidence is kept in your Career Portfolio.{' '}
         <Link className="os-link" to="/career-os/projects">View your projects <ArrowRight /></Link>
       </p>
     </section>
@@ -1838,13 +1837,13 @@ export default function DashboardStudentPage() {
         {[
           {
             title: 'SQL Revenue & Margin Diagnostics Workshop',
-            when: 'Sat, Nov 14 · 6:00 PM IST',
-            badge: '₹99 → 99 Elixir Cashback',
+            when: 'Weekly Live · Saturdays, 6:00 PM IST',
+            badge: 'Included with Enrolment',
             href: '/events',
           },
           {
             title: 'Grounded RAG & LLM Evaluation Live Lab',
-            when: 'Sun, Nov 15 · 11:00 AM IST',
+            when: 'Weekly Live · Sundays, 11:00 AM IST',
             badge: 'Live Browser Lab',
             href: '/events',
           },
@@ -2191,7 +2190,7 @@ export default function DashboardStudentPage() {
                     </span>
                   </div>
                   <span style={{ fontSize: 12, fontWeight: 700, padding: '4px 10px', borderRadius: 999, background: '#ecfdf5', color: '#047857' }}>
-                    +{streak.streakBonusElixir} Elixir Bonus
+                    Active Learning Streak
                   </span>
                 </div>
 

@@ -81,7 +81,7 @@ export default function CareerOSJobsPage() {
   return (
     <div className="career-jobs-page cos-work" style={{ maxWidth: 1200, margin: "0 auto", minWidth: 0, overflowX: "hidden" }}>
       <PageHead
-        eyebrow="TalentBridge · Recruiter Job Board"
+        eyebrow="Career Portfolio · Recruiter Job Board"
         title="Recruiter Job Board & Verified Shortlists"
         lead="Apply directly to hiring partners using your verified Skylent Proof-of-Work Dossier, SQL/Python lab evidence, and graded capstones."
       />

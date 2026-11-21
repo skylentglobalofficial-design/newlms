@@ -96,15 +96,15 @@ function NavGlyph({ label }: { label: string }) {
 
 function CareerOSWorkspace() {
   return (
-    <div className="hp-cos-work" aria-label="TalentBridge workspace">
+    <div className="hp-cos-work" aria-label="Career Portfolio workspace">
       <header className="hp-cos-work-bar">
         <p className="hp-cos-brand">SkyLab</p>
-        <p className="hp-cos-work-kicker">TalentBridge</p>
+        <p className="hp-cos-work-kicker">Career Portfolio</p>
       </header>
 
       <div className="hp-cos-work-grid">
-        <nav className="hp-cos-shell-nav" aria-label="TalentBridge">
-          <p className="hp-cos-shell-title">TalentBridge</p>
+        <nav className="hp-cos-shell-nav" aria-label="Career Portfolio">
+          <p className="hp-cos-shell-title">Career Portfolio</p>
           <ul>
             {CAREER_OS_IA.map((item) => (
               <li key={item.to}>
@@ -176,14 +176,14 @@ export default function SkylentHomeCareerOS() {
         <header className="hp-cos-copy">
           <p className="hp-cos-kicker">
             <i aria-hidden="true" />
-            TalentBridge
+            Career Portfolio
           </p>
           <h2 id="home-career-os-heading">The career layer connected to your learning.</h2>
           <p className="hp-cos-lead">
-            TalentBridge holds profile, projects, opportunities, applications, interviews, and support — so evidence
+            Career Portfolio holds profile, projects, opportunities, applications, interviews, and support — so evidence
             from SkyLab can move toward real next steps when they exist.
           </p>
-          <ol className="hp-cos-dest" aria-label="TalentBridge destinations">
+          <ol className="hp-cos-dest" aria-label="Career Portfolio destinations">
             {CAREER_LAYERS.map((item, index) => (
               <li key={item.to}>
                 <span>{String(index + 1).padStart(2, "0")}</span>
@@ -201,7 +201,7 @@ export default function SkylentHomeCareerOS() {
 
       <div className="hp-rail hp-cos-foot">
         <p>Your work should open doors.</p>
-        <Link to="/career-os">Explore TalentBridge →</Link>
+        <Link to="/career-os">Explore Career Portfolio →</Link>
       </div>
     </section>
   )

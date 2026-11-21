@@ -88,8 +88,8 @@ export default function CareerOSPublicAreaPage() {
         <div className="cos-public-page">
           <div className="sk-rail">
             <CareerPublicSubnav current={navId} />
-            <p className="cos-public-lead">This TalentBridge destination is not recognised.</p>
-            <Link to="/career-os">Back to TalentBridge overview</Link>
+            <p className="cos-public-lead">This Career Portfolio destination is not recognised.</p>
+            <Link to="/career-os">Back to Career Portfolio overview</Link>
           </div>
         </div>
       </PageShell>
@@ -104,7 +104,7 @@ export default function CareerOSPublicAreaPage() {
         <section className="cos-public-area" aria-labelledby="cos-area-title">
           <div className="sk-rail">
             <CareerPublicSubnav current={navId} />
-            <p className="cos-eyebrow">TALENTBRIDGE · WORKSPACE PREVIEW</p>
+            <p className="cos-eyebrow">CAREER PORTFOLIO · WORKSPACE PREVIEW</p>
             <h1 id="cos-area-title">{area.label}</h1>
             <p className="cos-public-lead">{preview.headline}</p>
 
@@ -136,7 +136,7 @@ export default function CareerOSPublicAreaPage() {
                 Inspect Sample Graduate Dossiers (/verify)
               </Link>
               <Link className="sk-btn sk-btn-secondary" to="/career-os">
-                TalentBridge Overview
+                Career Portfolio Overview
               </Link>
             </div>
           </div>
