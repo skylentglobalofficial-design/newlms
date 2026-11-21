@@ -166,6 +166,7 @@ function Chevron() {
 }
 
 export default function ProfessionalProgrammeTemplate({ program, content, truth, afterEnrol, onEnrol, confirmed = true }: Props) {
+  const isProTrack = ["full-stack", "data-science-ai", "generative-ai-program"].includes((program.slug || "").toLowerCase())
   const course = useCatalogCourse(content.courseSlug)
   const authoredCourse = courseBySlug(content.courseSlug)
   const linkedAuthoredCourses = (program.linkedCourseSlugs ?? [])
@@ -295,10 +296,9 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
     },
     { n: "02", verb: "Plans", what: isProTrack ? "\u20b911,999 Pro" : "\u20b91,499 Skill", href: "#pp-pricing" },
     { n: "03", verb: "Live Lab", what: "Browser Practice", href: "#pp-stage" },
-    { n: "04", verb: "Projects", what: `${plural(content.evidence.rows.length, "project")} & internship`, href: "#pp-evidence" },
+    { n: "04", verb: "Projects", what: `${plural(content.evidence.rows.length, "project")}${isProTrack ? " & internship" : " \u00b7 verified proof"}`, href: "#pp-evidence" },
   ]
 
-  const isProTrack = ["full-stack", "data-science-ai", "generative-ai-program"].includes((program.slug || "").toLowerCase())
   const nextStepLabel = ["Next step", firstNode ? "Lesson 1" : "", firstNode ? nodeKind(firstNode.nodeType) : "", firstNode?.duration ?? ""]
     .filter(Boolean)
     .join(" · ")

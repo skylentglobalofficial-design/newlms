@@ -3864,3 +3864,26 @@ footer a[href="/courses"]:hover {
 .pp-page [style*="line-through"] {
   color: rgba(255, 255, 255, 0.72) !important;
 }
+
+
+/* v165.2 About CTA white contrast + Education PG card align-start */
+/* Force crisp white text on solid purple CTA buttons on About page */
+.site-light a[href="/courses"][style*="5142b5"],
+.site-light a[href="/courses"][style*="4c1d95"],
+.site-light a[href="/courses"][style*="2e1065"],
+.site-light a[href="/courses"][style*="gradient"],
+.site-light a[href="/courses"].btn-primary,
+.site-light a[href="/courses"].sky-btn,
+.site-light a[href="/courses"].sky-btn--primary,
+.site-light a[href="/courses"].about-cta-primary,
+.site-light main section a[href="/courses"]:has(svg),
+.site-light main section a[href="/courses"][class*="primary"] {
+  color: #ffffff !important;
+}
+/* Prevent PG on campus card from stretching to match tall PG online sibling */
+.site-light .edu-grid,
+.site-light .edu-track-grid,
+.site-light .edu-cards-grid,
+.site-light [class*="edu"][class*="grid"] {
+  align-items: start !important;
+}

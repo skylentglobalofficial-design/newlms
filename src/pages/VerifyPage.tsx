@@ -1,6 +1,6 @@
 /**
  * Public certificate check (/verify and /verify/:code).
- * Shows what GET /certificates/verify/:code returns (ID, learner name, course, issue date, and Verified Verified Project Portfolio).
+ * Shows what GET /certificates/verify/:code returns (ID, learner name, course, issue date, and Verified Project Portfolio).
  * A code in the URL is checked on load, so a link to a certificate can be shared with recruiters.
  */
 import { useEffect, useId, useState, type FormEvent } from "react"
@@ -372,7 +372,7 @@ export default function VerifyPage() {
                     }}
                   >
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, marginBottom: 10 }}>
-                      <h3 style={{ margin: 0, fontSize: 15, fontWeight: 700, color: "#0f172a" }}>Verified Verified Project Portfolio</h3>
+                      <h3 style={{ margin: 0, fontSize: 15, fontWeight: 700, color: "#0f172a" }}>Verified Project Portfolio</h3>
                       <span className="sky-label" style={{ fontSize: 11 }}>{check.record.proofOfWork.verifiedModulesSummary}</span>
                     </div>
                     {check.record.proofOfWork.verifiedSkills.length > 0 ? (
