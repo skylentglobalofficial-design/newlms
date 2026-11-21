@@ -503,7 +503,7 @@ export default function DashboardRecruiterPage() {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, flexWrap: 'wrap', marginBottom: 8 }}>
               <div>
                 <span style={{ fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 700, color: '#5142b5' }}>
-                  INSTANT CANDIDATE FLIGHT RECORDER LOOKUP
+                  INSTANT CANDIDATE PORTFOLIO LOOKUP
                 </span>
                 <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 700, color: C.ink, margin: '2px 0 0' }}>
                   Verified Proof-of-Work &amp; Credential Dossier Check
@@ -514,7 +514,7 @@ export default function DashboardRecruiterPage() {
               </a>
             </div>
             <p style={{ color: C.slate, fontSize: 13, lineHeight: 1.6, margin: '0 0 12px' }}>
-              Every Skylent candidate certificate ID (e.g. <code>SKL-2026-DA-...</code> or <code>SKL-2026-PGM...</code>) resolves a live Proof-of-Work Dossier across all 6 flagship Capstone Project Studios:
+              Every Skylent candidate certificate ID (e.g. <code>SKL-2026-DA-...</code> or <code>SKL-2026-PGM...</code>) resolves a live Proof-of-Work Dossier across Flagship Capstone Project Studios:
             </p>
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 14 }}>
               <input

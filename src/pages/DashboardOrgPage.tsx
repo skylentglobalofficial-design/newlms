@@ -218,7 +218,7 @@ function ProgramOperations({ programs }: { programs: OrganisationDashboard['prog
             </div>
           </div>
         )) : (
-          <p style={{ color: C.slate, fontSize: 13, margin: 0 }}>6 Flagship SkyLab & TalentBridge tracks ready for cohort assignment.</p>
+          <p style={{ color: C.slate, fontSize: 13, margin: 0 }}>Flagship SkyLab & Career Portfolio tracks ready for cohort assignment.</p>
         )}
       </div>
     </div>
@@ -305,7 +305,7 @@ function OrgContextRail({ programs }: { programs: OrganisationDashboard['program
           ATTENTION &amp; SLA
         </span>
         <p style={{ color: '#475569', fontSize: 13, margin: 0, lineHeight: 1.6 }}>
-          20-minute human Faculty TA SLA and V1 → V2 Capstone Red-Line reviews are active across all 6 flagship tracks.
+          Faculty review and V1 → V2 Capstone Red-Line reviews are active across all active tracks.
         </p>
       </div>
     </div>

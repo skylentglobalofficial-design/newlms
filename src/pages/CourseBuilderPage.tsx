@@ -816,7 +816,7 @@ export function CourseAuthoringStudio({
             🎓 Teacher / Faculty Role (/dashboard/faculty)
           </strong>
           <p style={{ margin: "4px 0 0", fontSize: 12.5, color: "#334155", lineHeight: 1.5 }}>
-            <strong>Teaching &amp; Content Execution:</strong> Edit Assigned Course Modules &amp; Lectures (Notes, Video Links) · Add New Modules &amp; Lectures · <strong>Upload Lecture Videos (.mp4), PDFs, PPTX Slides &amp; Datasets</strong> · Grade V1→V2 Submissions · Resolve 20-Min Student Doubts. <em>(Cannot delete courses or change prices/coupons).</em>
+            <strong>Teaching &amp; Content Execution:</strong> Edit Assigned Course Modules &amp; Lectures (Notes, Video Links) · Add New Modules &amp; Lectures · <strong>Upload Lecture Videos (.mp4), PDFs, PPTX Slides &amp; Datasets</strong> · Grade V1→V2 Submissions · Resolve Student Doubts. <em>(Cannot delete courses or change prices/coupons).</em>
           </p>
         </div>
       </section>

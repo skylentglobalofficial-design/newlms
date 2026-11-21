@@ -2034,3 +2034,43 @@ code:not(pre code) {
 .sh-card > .sh-card-head a:hover {
   color: #FFFFFF !important;
 }
+
+
+/* v172 Badge contrast on purple headers + clean ChangePasswordPage styling */
+/* Fix NOT STARTED / Profile Saved badge contrast on Deep Royal Purple headers */
+.sh-card > .sh-card-head .os-status,
+.sh-card > .sh-card-head [class*="badge"],
+.sh-card > .sh-card-head [class*="status"] {
+  background: rgba(255, 255, 255, 0.16) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.28) !important;
+}
+
+/* Style /account/password standalone page cleanly */
+main:has(input[type="password"]):not(:has(.sk-login-card)):not(:has(.lp-card)) {
+  max-width: 440px;
+  margin: 72px auto;
+  padding: 32px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  box-shadow: 0 12px 32px -12px rgba(15, 23, 42, 0.12);
+}
+main:has(input[type="password"]):not(:has(.sk-login-card)):not(:has(.lp-card)) input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  margin: 6px 0 14px;
+  font-size: 14px;
+}
+main:has(input[type="password"]):not(:has(.sk-login-card)):not(:has(.lp-card)) button[type="submit"] {
+  width: 100%;
+  padding: 11px 16px;
+  border-radius: 10px;
+  border: 0;
+  background: linear-gradient(155deg, #2E1065 0%, #4C1D95 55%, #5142B5 100%);
+  color: #ffffff;
+  font-weight: 700;
+  cursor: pointer;
+}

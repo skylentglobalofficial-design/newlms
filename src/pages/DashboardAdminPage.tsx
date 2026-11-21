@@ -396,7 +396,7 @@ function AdminEnquiriesSection() {
         INBOUND ADMISSIONS &amp; INSTITUTIONAL LEADS
       </span>
       <h2 style={{ margin: '2px 0 8px', fontSize: 18, color: '#0f172a' }}>Enquiries</h2>
-      <p style={{ color: C.slate, fontSize: 12.5, lineHeight: 1.6, marginTop: 0 }}>Read only. All public contact, university pathway, and Reva fallback enquiries appear below.</p>
+      <p style={{ color: C.slate, fontSize: 12.5, lineHeight: 1.6, marginTop: 0 }}>Read only. All public contact, university pathway, and callback enquiries appear below.</p>
       {message ? <p className="os-error" role="alert">{message}</p> : null}
       {status === "loading" ? <p style={{ color: C.slate, fontSize: 13 }}>Loading enquiries…</p> : null}
       {status === "ready" && rows.length === 0 ? <p style={{ color: C.slate, fontSize: 13 }}>No enquiries yet.</p> : null}

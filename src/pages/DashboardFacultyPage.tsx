@@ -30,7 +30,7 @@ const NAV_ITEMS: AuthNavItem[] = [
   { id: 'classes', label: 'Assigned Courses', short: 'Courses' },
   { id: 'curriculum', label: 'Add Lectures & PDFs', short: 'Author' },
   { id: 'assignments', label: 'V1→V2 Grading Studio', short: 'Grade' },
-  { id: 'assessments', label: '20-Min Doubt Queue', short: 'Doubts' },
+  { id: 'assessments', label: 'Faculty Doubt Queue', short: 'Doubts' },
   { id: 'learners', label: 'Learner Cohort', short: 'Learners' },
   { id: 'settings', label: 'Rubric & Settings', short: 'Settings' },
 ]
@@ -468,7 +468,7 @@ function FacultyLectureAuthoringStudio({
         }}
       >
         <div>
-          <strong style={{ color: '#5142b5' }}>🎓 Teacher / Faculty Permissions:</strong> You can <strong>Edit Existing Modules &amp; Lectures</strong>, <strong>Add New Modules &amp; Lectures</strong>, <strong>Upload Videos (.mp4 / YouTube) &amp; PDF/PPTX Slides</strong>, <strong>Grade V1→V2 Assignments</strong>, and <strong>Resolve 20-Min Doubts</strong>. <em>(Course Creation/Deletion, Pricing &amp; Coupons are managed by Admin).</em>
+          <strong style={{ color: '#5142b5' }}>🎓 Teacher / Faculty Permissions:</strong> You can <strong>Edit Existing Modules &amp; Lectures</strong>, <strong>Add New Modules &amp; Lectures</strong>, <strong>Upload Videos (.mp4 / YouTube) &amp; PDF/PPTX Slides</strong>, <strong>Grade V1→V2 Assignments</strong>, and <strong>Resolve Student Doubts</strong>. <em>(Course Creation/Deletion, Pricing &amp; Coupons are managed by Admin).</em>
         </div>
       </div>
 
@@ -1289,7 +1289,7 @@ function FacultyDoubtQueue({
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, marginBottom: 12 }}>
         <div>
           <div style={{ color: '#5142b5', fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
-            20-Minute Faculty TA Doubt Queue
+            FACULTY DOUBT QUEUE
           </div>
           <h2 style={{ color: '#0f172a', fontSize: 18, margin: '4px 0 0', fontFamily: 'var(--font-display)' }}>
             Live Lesson Doubt Escalations ({openDoubts.length} open)
@@ -1298,7 +1298,7 @@ function FacultyDoubtQueue({
       </div>
       {openDoubts.length === 0 ? (
         <p style={{ color: C.slate, fontSize: 14, margin: 0 }}>
-          No open learner doubts in the 20-minute SLA queue right now.
+          No open learner doubts in the faculty review queue right now.
         </p>
       ) : (
         <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gap: 12 }}>

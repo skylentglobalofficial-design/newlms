@@ -292,12 +292,22 @@ async function parseJson<T>(response: Response): Promise<T> {
   return parseApiJson<T>(response)
 }
 
-async function careerGet<T>(path: string): Promise<T> {
+const __careerGetCache = new Map<string, { ts: number; data: unknown }>()
+const __CAREER_TTL_MS = 60_000
+async function _careerGetUncached<T>(path: string): Promise<T> {
   const response = await fetch(`${API_BASE}${path}`, { credentials: "include" })
   return parseJson<T>(response)
 }
+async function careerGet<T>(path: string): Promise<T> {
+  const hit = __careerGetCache.get(path)
+  if (hit && Date.now() - hit.ts < __CAREER_TTL_MS) return hit.data as T
+  const data = await _careerGetUncached<T>(path)
+  __careerGetCache.set(path, { ts: Date.now(), data })
+  return data
+}
 
 async function careerMutate<T>(path: string, method: string, body?: Record<string, unknown>): Promise<T> {
+  __careerGetCache.clear()
   const token = await ensureCsrfToken()
   const response = await fetch(`${API_BASE}${path}`, {
     method,

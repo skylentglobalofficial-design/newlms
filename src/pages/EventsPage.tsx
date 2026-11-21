@@ -247,7 +247,7 @@ export default function EventsPage() {
                   marginBottom: 12,
                 }}
               >
-                WEEKEND WORKSHOPS · ₹99 ENTRY WITH 100% COIN BACK
+                LIVE WEEKEND SKYLAB WORKSHOPS
               </span>
               <h1 className="cat-h1--display" style={{ marginTop: 0 }}>
                 Live Weekend Workshops &amp; Case Studies
@@ -257,7 +257,7 @@ export default function EventsPage() {
                   ? "Checking which live weekend sprints are open for registration."
                   : loadError
                     ? "Showing our curated weekend execution sprints while the live schedule refreshes."
-                    : "Join a 90-minute hands-on weekend workshop in the browser lab for ₹99 and get 99 Workshop Coins (100% cashback) instantly."}
+                    : "Join a 90-minute hands-on weekend workshop in the browser lab with live faculty walkthroughs and hands-on browser labs."}
               </p>
               <div className="cat-actions" style={{ display: "flex", flexWrap: "wrap", gap: 12, marginTop: 20 }}>
                 <a className="cat-btn cat-btn-primary" href="#events-launch-tracks-title">
@@ -286,7 +286,7 @@ export default function EventsPage() {
                   HOW ₹99 WORKSHOPS WORK
                 </span>
                 <span style={{ padding: "3px 10px", borderRadius: 999, background: "#DCFCE7", color: "#15803D", fontSize: 11, fontWeight: 600 }}>
-                  100% Coin Back
+                  Live Guided Labs
                 </span>
               </div>
               <h2 style={{ margin: "0 0 8px", fontSize: 20, fontWeight: 700, color: "#0F172A" }}>
@@ -297,8 +297,8 @@ export default function EventsPage() {
               </p>
               <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10 }}>
                 {[
-                  ["STEP 01", "Register for ₹99", "90-min weekend sprint"],
-                  ["STEP 02", "Get +99 Coins", "Instant wallet credit"],
+                  ["STEP 01", "Register for Workshop", "90-min weekend sprint"],
+                  ["STEP 02", "Practise Live", "Instant wallet credit"],
                   ["STEP 03", "Unlock Cases", "Redeem in dashboard"],
                 ].map(([step, head, sub]) => (
                   <div key={step} style={{ padding: "10px 12px", borderRadius: 12, background: "#F8FAFC", border: "1px solid #E2E8F0" }}>
@@ -312,11 +312,11 @@ export default function EventsPage() {
           </div>
         </section>
 
-        {/* Section 1: 3 Flagship ₹99 Live Workshop Tracks (3-Card Grid) */}
+        {/* Section 1: Flagship Live Workshop Tracks (3-Card Grid) */}
         <section className="cat-section" aria-labelledby="events-launch-tracks-title">
           <div className="cat-rail">
             <p className="cat-label">Launch Workshop Tracks · ₹99 Entry = 99 Workshop Coins</p>
-            <h2 id="events-launch-tracks-title">3 Flagship ₹99 Live Workshop Tracks</h2>
+            <h2 id="events-launch-tracks-title">Flagship Live Workshop Tracks</h2>
             <p className="cat-lead">
               Every scheduled ₹99 workshop grants 100% coin cashback (99 Workshop Coins) in your Skylent wallet immediately upon registration.
             </p>
@@ -369,7 +369,7 @@ export default function EventsPage() {
           style={{ background: "linear-gradient(180deg, #F6F4FF 0%, #FFFFFF 100%)", borderBlock: "1px solid #E2DCFF" }}
         >
           <div className="cat-rail">
-            <p className="cat-label">100% Coin Back Rewards</p>
+            <p className="cat-label">Live Guided Labs Rewards</p>
             <h2 id="events-elixir-store-title">Redeemable with your 99 Workshop Reward Coins</h2>
             <p className="cat-lead">
               When you register for a ₹99 session, 99 Workshop Coins are credited to your wallet in My Learning. Use them to unlock these practical case studies and playbooks:
