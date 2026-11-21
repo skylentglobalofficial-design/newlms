@@ -236,7 +236,6 @@ export function HomeHero({
   return (
     <section aria-labelledby="hx-hero-title" className="hx-hero-v158 hx-hero-v159 hx-hero-v160">
       <div className="hx-hero-v158__inner">
-        <span className="hx-hero-v159__eyebrow">Courses · SkyLab · University Degrees</span>
 
         <h1 id="hx-hero-title" className="hx-hero-v159__title hx-hero-v160__title">
           Master real skills.<br />
@@ -247,10 +246,6 @@ export function HomeHero({
           <span>Learn</span>
           <strong className="hx-hero-v159__typed">{typed}</strong>
           <span className="hx-hero-v159__cursor" aria-hidden="true" />
-        </p>
-
-        <p className="hx-hero-v159__desc">
-          Not sure where to start? Tell SkyAI your goal — or explore Skill Courses, career-backed Pro Programs, and University Degrees built around verified work.
         </p>
 
         <p className="hx-sr" aria-live="polite">{availability}</p>
@@ -320,11 +315,6 @@ export function HomeHero({
             </Link>
           ))}
         </div>
-
-        <p className="hx-hero-v158__proof">
-          In-Browser SkyLab <span aria-hidden="true">·</span> Graded Capstones <span aria-hidden="true">·</span>{" "}
-          Verifiable at <Link to="/verify" className="hx-hero-v158__verify-link">skylent.live/verify</Link>
-        </p>
       </div>
     </section>
   )

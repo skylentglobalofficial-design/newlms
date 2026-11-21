@@ -3442,3 +3442,13 @@ section[class*="pp-"][style*="#102a43"] {
   color: #64748b;
   text-decoration: underline;
 }
+
+
+/* v160.1 decluttered 4-layer hero rhythm */
+.hx-hero-v160 {
+  min-height: clamp(420px, 64vh, 560px) !important;
+  padding: clamp(56px, 8vh, 88px) 20px clamp(48px, 7vh, 72px) !important;
+}
+.hx-hero-v159__subline {
+  margin-bottom: 28px !important;
+}
