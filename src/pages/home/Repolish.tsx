@@ -1078,7 +1078,7 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
                 <Link to="/courses">See programmes</Link>
               </p>
             )}
-            <ul className="hx-live-courses-grid" aria-label="All 6 programmes and courses">
+            <ul className="hx-live-courses-grid" aria-label="Flagship programmes and courses">
               {[
                 {
                   slug: "data-analytics",
@@ -1865,9 +1865,9 @@ export function HomeClosing() {
       <div className="sky-container">
         <div
           style={{
-            background: "#5142b5",
+            background: "linear-gradient(155deg, #2e1065 0%, #4c1d95 55%, #5142b5 100%)",
             color: "#ffffff",
-            borderRadius: 18,
+            borderRadius: 20,
             padding: "clamp(28px, 4vw, 44px)",
             display: "flex",
             alignItems: "center",
