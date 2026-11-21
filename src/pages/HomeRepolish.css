@@ -3524,3 +3524,58 @@ section[class*="pp-"][style*="#102a43"] {
   white-space: nowrap;
   flex-shrink: 0;
 }
+
+
+/* v160.5 crisp real H1 typing + smooth Learn slide-up */
+.hx-type-ch {
+  visibility: hidden;
+  position: relative;
+}
+.hx-type-ch.is-shown {
+  visibility: visible;
+}
+.hx-type-ch.is-caret::after {
+  content: "";
+  position: absolute;
+  right: -3px;
+  top: 0.1em;
+  width: 3px;
+  height: 0.88em;
+  border-radius: 2px;
+  background: #4a3f99;
+}
+.hx-hero-v1605__subline {
+  gap: 8px !important;
+  overflow: hidden;
+}
+.hx-hero-v1605__rotator {
+  display: inline-block;
+  color: #4a3f99;
+  font-weight: 700;
+  animation: hxSlideUp1605 380ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes hxSlideUp1605 {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+/* v160.6 smooth fade-out -> fade-in Learn rotator */
+.hx-hero-v1606__rotator {
+  display: inline-block;
+  color: #4a3f99;
+  font-weight: 700;
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 220ms ease, transform 220ms ease;
+}
+.hx-hero-v1606__rotator.is-out {
+  opacity: 0;
+  transform: translateY(-6px);
+}

@@ -48,12 +48,14 @@ function OfferingIcon({ type }: { type: string }) {
   }
 }
 
+const HERO_H1_L1 = "Master real skills."
+const HERO_H1_L2 = "Prove your work."
+
 const HERO_PHRASES = [
-  { text: "Data Analytics", chip: 0, placeholder: "Ask SkyAI: e.g. 'I want to become a Data Analyst'" },
-  { text: "Product Management", chip: 1, placeholder: "Ask SkyAI: e.g. 'How do I transition into Product Management?'" },
-  { text: "Full-Stack Engineering", chip: 2, placeholder: "Ask SkyAI: e.g. 'Build real web apps & APIs'" },
-  { text: "Python & Automation", chip: 0, placeholder: "Ask SkyAI: e.g. 'Start with Python from scratch'" },
-  { text: "UG & PG Degrees", chip: 3, placeholder: "Ask SkyAI: e.g. 'Online BCA, BBA or MBA pathways'" },
+  { text: "Data Analytics", chip: 0, placeholder: "B.Com or fresher aiming to break into Data Analytics..." },
+  { text: "Product Management", chip: 1, placeholder: "Non-tech grad transitioning into Product Management..." },
+  { text: "Full-Stack Engineering", chip: 2, placeholder: "Build a verified Full-Stack portfolio in 6 months..." },
+  { text: "UG & PG Degrees", chip: 3, placeholder: "Explore online or campus BCA, BBA & MBA pathways..." },
 ] as const
 
 const HERO_CHIPS = [
@@ -185,12 +187,17 @@ export function HomeHero({
   catalogue?: "loading" | "confirmed" | "unknown"
   openTitles?: readonly string[]
 }) {
+  const totalH1 = HERO_H1_L1.length + HERO_H1_L2.length
   const [query, setQuery] = useState("")
   const [submitted, setSubmitted] = useState(false)
   const [aiMatch, setAiMatch] = useState<SkyAiMatch | null>(null)
   const [phraseIdx, setPhraseIdx] = useState(0)
-  const [typed, setTyped] = useState<string>(HERO_PHRASES[0].text)
-  const [deleting, setDeleting] = useState(false)
+  const [fadingOut, setFadingOut] = useState(false)
+  const [h1Count, setH1Count] = useState(() =>
+    typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches
+      ? totalH1
+      : 0
+  )
 
   const availability = catalogue === "loading"
     ? CATALOGUE_CHECKING
@@ -198,30 +205,34 @@ export function HomeHero({
       ? AVAILABILITY_UNKNOWN
       : programmesIndexIntro(true, openTitles)
 
+  // Snappy 22ms one-time real typing on page load / refresh (~0.85s total)
   useEffect(() => {
-    if (typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
-      setTyped(HERO_PHRASES[0].text)
-      return
-    }
-    const target = HERO_PHRASES[phraseIdx].text
-    if (!deleting && typed === target) {
-      const pause = window.setTimeout(() => setDeleting(true), 2200)
-      return () => window.clearTimeout(pause)
-    }
-    if (deleting && typed === "") {
-      setDeleting(false)
-      setPhraseIdx((i) => (i + 1) % HERO_PHRASES.length)
-      return
-    }
-    const speed = deleting ? 32 : 52
-    const timer = window.setTimeout(() => {
-      setTyped(deleting ? target.slice(0, Math.max(0, typed.length - 1)) : target.slice(0, typed.length + 1))
-    }, speed)
-    return () => window.clearTimeout(timer)
-  }, [typed, deleting, phraseIdx])
+    if (h1Count >= totalH1) return
+    const delay = h1Count === HERO_H1_L1.length ? 110 : 22
+    const t = window.setTimeout(() => setH1Count((c) => c + 1), delay)
+    return () => window.clearTimeout(t)
+  }, [h1Count, totalH1])
 
+  // Smooth fade-out -> swap -> fade-in on Learn subline (1-to-1 with 4 chips)
+  useEffect(() => {
+    if (h1Count < totalH1) return
+    if (typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return
+    let swapTimer: number | undefined
+    const id = window.setInterval(() => {
+      setFadingOut(true)
+      swapTimer = window.setTimeout(() => {
+        setPhraseIdx((i) => (i + 1) % HERO_PHRASES.length)
+        setFadingOut(false)
+      }, 220)
+    }, 2900)
+    return () => {
+      window.clearInterval(id)
+      if (swapTimer) window.clearTimeout(swapTimer)
+    }
+  }, [h1Count, totalH1])
 
   const activeChip = HERO_PHRASES[phraseIdx].chip
+  const typingDone = h1Count >= totalH1
 
   function handleSkyAiSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -237,16 +248,38 @@ export function HomeHero({
   return (
     <section aria-labelledby="hx-hero-title" className="hx-hero-v158 hx-hero-v159 hx-hero-v160">
       <div className="hx-hero-v158__inner">
-
-        <h1 id="hx-hero-title" className="hx-hero-v159__title hx-hero-v160__title">
-          Master real skills.<br />
-          <span className="hx-hero-v160__accent">Prove your work.</span>
+        <h1 id="hx-hero-title" className="hx-hero-v159__title hx-hero-v160__title" aria-label="Master real skills. Prove your work.">
+          <span aria-hidden="true">
+            {HERO_H1_L1.split("").map((ch, i) => {
+              const shown = i < h1Count
+              const isCaret = !typingDone && i === h1Count - 1 && h1Count <= HERO_H1_L1.length
+              return (
+                <span key={"a" + i} className={`hx-type-ch${shown ? " is-shown" : ""}${isCaret ? " is-caret" : ""}`}>
+                  {ch}
+                </span>
+              )
+            })}
+          </span>
+          <br />
+          <span className="hx-hero-v160__accent" aria-hidden="true">
+            {HERO_H1_L2.split("").map((ch, i) => {
+              const idx = HERO_H1_L1.length + i
+              const shown = idx < h1Count
+              const isCaret = !typingDone && idx === h1Count - 1 && h1Count > HERO_H1_L1.length
+              return (
+                <span key={"b" + i} className={`hx-type-ch${shown ? " is-shown" : ""}${isCaret ? " is-caret" : ""}`}>
+                  {ch}
+                </span>
+              )
+            })}
+          </span>
         </h1>
 
-        <p className="hx-hero-v159__subline" aria-live="polite">
+        <p className="hx-hero-v159__subline hx-hero-v1605__subline" aria-live="polite">
           <span>Learn</span>
-          <strong className="hx-hero-v159__typed">{typed}</strong>
-          <span className="hx-hero-v159__cursor" aria-hidden="true" />
+          <span className={`hx-hero-v1606__rotator${fadingOut ? " is-out" : ""}`}>
+            {HERO_PHRASES[phraseIdx].text}
+          </span>
         </p>
 
         <p className="hx-sr" aria-live="polite">{availability}</p>
@@ -261,7 +294,7 @@ export function HomeHero({
               if (submitted) setSubmitted(false)
             }}
             placeholder={HERO_PHRASES[phraseIdx].placeholder}
-            aria-label="Ask SkyAI what you want to learn or build"
+            aria-label="Describe your goal to SkyAI"
             className="hx-hero-v158__input hx-hero-v160__input"
           />
           <button type="submit" className="hx-hero-v158__submit hx-hero-v160__submit" aria-label="Ask SkyAI">
