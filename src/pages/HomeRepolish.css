@@ -3806,3 +3806,44 @@ footer a[href="/login"] {
 footer a[href="/login"]:hover {
   color: #0f172a !important;
 }
+
+
+/* v164 Public Pages Visual Audit Polish: /about, /education, /courses, Footer */
+/* /about: crisp white text on purple primary buttons */
+main a[style*="#5142b5"],
+main a[style*="#4c1d95"],
+main a[style*="linear-gradient"][href="/courses"],
+.ab-btn-primary,
+.ab-cta-primary {
+  color: #ffffff !important;
+}
+
+/* /education: unify dark navy online cards to Deep Royal Purple & prevent stretched empty PG card */
+.edu-grid,
+.ed-grid,
+[class*="degree"][class*="grid"] {
+  align-items: start !important;
+}
+.edu-card--dark,
+.ed-card--dark,
+[class*="edu"][class*="online"],
+[class*="edu"][class*="navy"] {
+  background: linear-gradient(155deg, #2e1065 0%, #4c1d95 58%, #5142b5 100%) !important;
+}
+
+/* /courses & /education: remove excessive ~200px blank vertical gaps */
+.pg-filters + section,
+.pg-catalog-head,
+.edu-compare + section {
+  margin-top: 24px !important;
+  padding-top: 24px !important;
+}
+
+/* Global Footer: unify All courses link color with sibling links */
+footer a[href="/courses"] {
+  color: #475569 !important;
+  font-weight: 500 !important;
+}
+footer a[href="/courses"]:hover {
+  color: #0f172a !important;
+}

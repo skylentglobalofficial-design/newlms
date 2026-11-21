@@ -343,7 +343,7 @@ export default function ProgramsPage() {
         <section className="pgx-intro" aria-labelledby="pgx-title">
           <div className="sky-container pgx-intro__split">
             <div className="pgx-intro__inner">
-              <p className="pgx-eyebrow">Skylent programmes · 6 Career Tracks</p>
+              <p className="pgx-eyebrow">Skylent programmes · CAREER TRACKS</p>
               <h1 id="pgx-title">Choose the skill you want to build and prove.</h1>
               <p className="pgx-lede">
                 Learn step-by-step in live browser labs and graduate with a verified capstone project.

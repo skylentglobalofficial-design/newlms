@@ -202,7 +202,7 @@ export default function EducationPage() {
                 University degree pathways &amp; <em>institutional lab integration.</em>
               </h1>
               <p className="edx-lede">
-                These UG and PG tracks are proposed university articulation frameworks. <strong>Skylent does not independently award degrees or NEP/ABC academic credits</strong>—degrees, admissions, and credit recognition rest solely with a UGC/AICTE-authorised Partner Higher Education Institution (HEI) once confirmed. Looking for immediate skill certification? <Link to="/programmes" style={{ color: "#5142b5", fontWeight: 700 }}>Start one of our 6 practical SkyLab courses today →</Link>
+                These UG and PG tracks are proposed university articulation frameworks. <strong>Skylent does not independently award degrees or NEP/ABC academic credits</strong>—degrees, admissions, and credit recognition rest solely with a UGC/AICTE-authorised Partner Higher Education Institution (HEI) once confirmed. Looking for immediate skill certification? <Link to="/programmes" style={{ color: "#5142b5", fontWeight: 700 }}>Start one of our practical SkyLab courses today →</Link>
               </p>
 
               {settled && unavailable ? (
@@ -284,7 +284,7 @@ export default function EducationPage() {
           <div className="sky-container edx-help__inner">
             <div>
               <h2 id="edx-help-title">Register learner or institutional interest</h2>
-              <p>Register your interest in upcoming university pathways, partner with Skylent as a college or institution, or start one of our 6 practical SkyLab courses today.</p>
+              <p>Register your interest in upcoming university pathways, partner with Skylent as a college or institution, or start one of our practical SkyLab courses today.</p>
             </div>
             <div className="edx-help__actions">
               <Link className="sk-btn sk-btn-primary" to="/contact">
@@ -295,7 +295,7 @@ export default function EducationPage() {
                 Institutional partnerships
               </Link>
               <Link className="sk-btn sk-btn-secondary" to="/programmes">
-                Explore 6 live courses
+                Explore live courses
               </Link>
             </div>
           </div>

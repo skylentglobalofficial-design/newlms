@@ -33,9 +33,9 @@ const PRODUCTS = [
   },
   {
     code: "04 · Learner Support",
-    title: "Hinglish Study Support + 20-Min TA SLA",
+    title: "English & Hinglish Study Support",
     text: "24/7 first-principles intuition in simple Hinglish or English inside every lesson, backed by human Teaching Assistants on a 20-minute SLA.",
-    badge: "✓ 20-Min Human SLA",
+    badge: "✓ Rubric-Graded Support",
     to: "/programmes/data-analytics-pro",
   },
 ]
@@ -82,7 +82,7 @@ export default function AboutPage() {
               </p>
               <div className="hx-hero__actions" style={{ marginTop: 22 }}>
                 <Link className="sk-btn sk-btn-primary hx-btn" to="/programmes">
-                  Explore all 6 programmes
+                  Explore courses
                   <ArrowRight />
                 </Link>
                 <Link className="sk-btn sk-btn-secondary hx-btn" to="/verify/SKL-2026-DA-EXEMPLAR">
@@ -127,7 +127,7 @@ export default function AboutPage() {
                 </div>
                 <div>
                   <span>DOUBT SLA</span>
-                  <strong>20-Min Human TA</strong>
+                  <strong>Faculty & Rubric Feedback</strong>
                 </div>
                 <div>
                   <span>ENTRY MODEL</span>
@@ -153,13 +153,13 @@ export default function AboutPage() {
               </div>
               <div className="abx-founder-stats">
                 <div>
-                  <span>6 Flagship Tracks</span>
+                  <span>FLAGSHIP TRACKS</span>
                   <strong>90 Authored Lessons</strong>
                   <p>Complete 5-module, 15-lesson curricula across Data, Product, Python, AI &amp; Full-Stack.</p>
                 </div>
                 <div>
                   <span>5 Competency Levels</span>
-                  <strong>Course + 2-Month Internship</strong>
+                  <strong>Verified Skill Portfolio</strong>
                   <p>Every track includes hands-on projects, mentor feedback, and a 2-month complimentary internship.</p>
                 </div>
               </div>
