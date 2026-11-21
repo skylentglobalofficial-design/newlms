@@ -11,6 +11,38 @@ export type ServerQuizQuestion = {
 }
 
 const TRACK_QUIZ_BANKS: Record<string, ServerQuizQuestion[]> = {
+    "product-management": [
+    {
+      question: "A store lead says: \"Build us a shared inbox.\" What is the best first PM response?",
+      options: ["Scope an inbox UI immediately and estimate sprint points.","Ask what job is failing today (e.g., missed late-truck alerts before 07:00) before choosing a solution.","Copy Gmail's folder structure so store leads feel familiar.","Tell them chat tools are out of scope without asking why."],
+      correctIndex: 1,
+      explanation: "A shared inbox is a proposed solution. Good product framing starts with the real user, job, and failing outcome.",
+    },
+    {
+      question: "Which of the following is a measurable product outcome rather than an output?",
+      options: ["Shipped a new escalation tab with 4 status labels.","Published a 12-page PRD approved by engineering.","Reduced unowned late-delivery escalations before 07:00 from 18/week to under 3/week.","Added AI auto-tagging to every incoming store message."],
+      correctIndex: 2,
+      explanation: "Outputs are features shipped; outcomes measure how the user's job actually got easier or more reliable.",
+    },
+    {
+      question: "In a usable product brief for Harbor Desk, who is the primary user?",
+      options: ["The business as a whole.","A concrete role in the case (such as a store lead or operations coordinator handling morning exceptions).","A generic fictional persona named Arun invented outside the case.","Only the company CEO who signs off on budgets."],
+      correctIndex: 1,
+      explanation: "Naming a real role from the case keeps problem framing grounded in actual workflow constraints.",
+    },
+    {
+      question: "Engineering has 2 engineers for 6 weeks and cannot integrate an ERP. Where does that belong in a product brief?",
+      options: ["Under Constraints (explicit boundaries you are not allowed to exceed).","Left out so stakeholders stay optimistic.","Under User Outcomes.","In a post-launch marketing deck."],
+      correctIndex: 0,
+      explanation: "Constraints define hard delivery limits (team size, timeline, system boundaries) so scope stays realistic.",
+    },
+    {
+      question: "A stakeholder asks: \"Add AI to triage exceptions automatically\" when you only have 9 handwritten notes and no labelled dataset. What should a PM do?",
+      options: ["Promise AI triage in v1 to win stakeholder buy-in.","Refuse the ungrounded solution and propose a simple, verifiable workflow supported by the current evidence.","Buy a random public dataset from another industry.","Skip user research and start training a custom model."],
+      correctIndex: 1,
+      explanation: "Refusing an ungrounded solution when the evidence cannot support it protects engineering time and user trust.",
+    }
+  ],
   "python-programming": [
     {
       question: "When ingesting a nightly JSONL settlement feed that may contain duplicate webhook retries and negative fee rows, what is the safest ETL design?",
