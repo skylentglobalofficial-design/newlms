@@ -3497,3 +3497,30 @@ section[class*="pp-"][style*="#102a43"] {
   padding: 10px 16px !important;
   font-size: 14px !important;
 }
+
+
+/* v160.3 zero-jump smooth H1 entrance typing */
+.hx-ch {
+  opacity: 0;
+  transition: opacity 120ms ease;
+}
+.hx-ch.is-on {
+  opacity: 1;
+}
+
+
+/* v160.4 prevent track card footer clipping */
+.hx-track-card__foot,
+.hx-course-card__foot,
+[class*="track"][class*="foot"] {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: nowrap;
+}
+.hx-track-card__foot > :last-child,
+.hx-course-card__foot > :last-child {
+  white-space: nowrap;
+  flex-shrink: 0;
+}

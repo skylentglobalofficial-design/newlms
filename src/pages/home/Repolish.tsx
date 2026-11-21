@@ -220,6 +220,7 @@ export function HomeHero({
     return () => window.clearTimeout(timer)
   }, [typed, deleting, phraseIdx])
 
+
   const activeChip = HERO_PHRASES[phraseIdx].chip
 
   function handleSkyAiSubmit(e: React.FormEvent) {
@@ -422,7 +423,7 @@ export function WalkControls({
 
 const DA_SLUG = "data-analytics-pro"
 const LMS_STAGES = [
-  { key: "programme", label: "1. Course Syllabus", href: "/courses/data-analytics-pro", action: "Explore Programmes" },
+  { key: "programme", label: "1. Course Syllabus", href: "/courses/data-analytics-pro", action: "Explores" },
   { key: "lesson", label: "2. Interactive Lesson", href: "/courses/data-analytics", action: "Preview Lessons" },
   { key: "practice", label: "3. SkyLab SQL Studio", href: "/labs", action: "See Browser Labs" },
   { key: "project", label: "4. Capstone Project", href: "/verify/SKL-2026-DA-EXEMPLAR", action: "View Capstones" },
@@ -984,7 +985,7 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
       <div className="sky-container">
         <Reveal className="hx-head" stagger>
           <div data-reveal-group>
-            <p className="hx-eyebrow hx-eyebrow--dark">6 Job-Ready Career Tracks</p>
+            <p className="hx-eyebrow hx-eyebrow--dark">CAREER TRACKS</p>
             <h2 id="hx-programmes-title" className="hx-h2">
               Choose a career track
             </h2>
@@ -992,9 +993,9 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
           </div>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center" }}>
             {[
-              { id: "skill" as const, label: "Skill Courses (3)" },
-              { id: "pro" as const, label: "Pro Programs (3)" },
-              { id: "all" as const, label: "All (6)" },
+              { id: "skill" as const, label: "Skill Courses" },
+              { id: "pro" as const, label: "Pro Programs" },
+              { id: "all" as const, label: "All" },
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -1053,7 +1054,7 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
                   category: "DATA ANALYTICS",
                   title: "Data Analytics",
                   desc: "Master SQL queries, spreadsheets & BI dashboards with hands-on business analytics projects.",
-                  meta: "6–8 Weeks · Skill Course · SkyLab Case Studies",
+                  meta: "6–8 Weeks · Skill Course",
                   img: photoAnalytics,
                   alt: "Data Analytics workspace preview",
                 },
@@ -1064,7 +1065,7 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
                   category: "PRODUCT MANAGEMENT",
                   title: "Product Management",
                   desc: "Master user research, product strategy, metrics & engineering PRDs with real case studies.",
-                  meta: "6–8 Weeks · Skill Course · SkyLab Case Studies",
+                  meta: "6–8 Weeks · Skill Course",
                   img: photoProduct,
                   alt: "Product Management studio preview",
                 },
@@ -1075,7 +1076,7 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
                   category: "PYTHON & AUTOMATION",
                   title: "Python & Automation",
                   desc: "Build Python data automation scripts, validators & backend ETL workflows from scratch.",
-                  meta: "6–8 Weeks · Skill Course · SkyLab Case Studies",
+                  meta: "6–8 Weeks · Skill Course",
                   img: photoScience,
                   alt: "Python engineering workspace preview",
                 },
@@ -1160,7 +1161,7 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
                       <span className="hx-live-course-card__foot">
                         <span className="hx-live-course-card__meta">{item.meta}</span>
                         <span className="hx-live-course-card__cta">
-                          Explore Programme <ArrowRight />
+                          Explore <ArrowRight />
                         </span>
                       </span>
                     </span>
@@ -1710,7 +1711,7 @@ export function HomeAi() {
 
             <div className="hx-ai-studio__actions">
               <Link className="sk-btn sk-btn-primary" to="/courses">
-                Explore Programmes
+                Explores
                 <ArrowRight />
               </Link>
               <Link className="sk-btn sk-btn-secondary" to="/courses/data-analytics">
