@@ -13,7 +13,7 @@ export function homeCataloguePhase(loading: boolean, offline: boolean): HomeCata
 export function homepageProgrammeLead(loading: boolean, confirmed: boolean): string {
   if (loading) return CATALOGUE_CHECKING
   if (!confirmed) return AVAILABILITY_UNKNOWN
-  return "Open programmes can be started immediately, alongside all 6 practical flagship courses and live SQL & case sandboxes."
+  return "Open programmes can be started immediately, alongside practical flagship courses and live SQL & case sandboxes."
 }
 
 export type PublicCatalogueState = "open" | "closed" | "unknown"

@@ -3660,3 +3660,21 @@ section[class*="pp-"][style*="#102a43"] {
   opacity: 1;
   transform: translateY(0);
 }
+
+
+/* v162.2 Brilliant-style generous section breathing room + calm pill navbar CTA */
+.site-light section:not(.hx-hero-v160) {
+  padding-top: clamp(64px, 8vw, 96px);
+  padding-bottom: clamp(64px, 8vw, 96px);
+}
+header a[href="/login"].sk-btn-primary,
+nav a[href="/login"],
+.sk-nav-cta {
+  border-radius: 999px !important;
+  background: #4a3f99 !important;
+  box-shadow: 0 4px 12px -4px rgba(74, 63, 153, 0.32) !important;
+}
+header a[href="/login"].sk-btn-primary:hover,
+.sk-nav-cta:hover {
+  background: #3d3382 !important;
+}
