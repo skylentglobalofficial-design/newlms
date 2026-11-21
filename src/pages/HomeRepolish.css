@@ -3663,7 +3663,7 @@ section[class*="pp-"][style*="#102a43"] {
 
 
 /* v162.2 Brilliant-style generous section breathing room + calm pill navbar CTA */
-.site-light section:not(.hx-hero-v160) {
+.site-light .hx-hero-v160 ~ section {
   padding-top: clamp(64px, 8vw, 96px);
   padding-bottom: clamp(64px, 8vw, 96px);
 }
@@ -3846,4 +3846,21 @@ footer a[href="/courses"] {
 }
 footer a[href="/courses"]:hover {
   color: #0f172a !important;
+}
+
+
+/* v165 kill subpage 200px blank voids + crisp contrast on dark purple cards */
+.pp-page section {
+  padding-top: clamp(36px, 4.5vw, 56px) !important;
+  padding-bottom: clamp(36px, 4.5vw, 56px) !important;
+}
+.pp-page .pp-practice p,
+.pp-page .pp-close p {
+  background: transparent !important;
+  color: rgba(255, 255, 255, 0.88) !important;
+}
+.pp-page del,
+.pp-page s,
+.pp-page [style*="line-through"] {
+  color: rgba(255, 255, 255, 0.72) !important;
 }
