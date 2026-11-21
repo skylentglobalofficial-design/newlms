@@ -284,7 +284,7 @@ export function HomeHero({
 
         <p className="hx-sr" aria-live="polite">{availability}</p>
 
-        <form className="hx-hero-v158__bar hx-hero-v160__bar" onSubmit={handleSkyAiSubmit} role="search" aria-label="Ask SkyAI for a learning path">
+        <form className={`hx-hero-v158__bar hx-hero-v160__bar hx-hero-reveal hx-hero-reveal--bar${typingDone ? " is-ready" : ""}`} onSubmit={handleSkyAiSubmit} role="search" aria-label="Ask SkyAI for a learning path">
           <span className="hx-hero-v160__ai-tag" aria-hidden="true">✦ SkyAI</span>
           <input
             type="text"
@@ -336,7 +336,7 @@ export function HomeHero({
           </div>
         ) : null}
 
-        <div className="hx-hero-v158__chips" role="list">
+        <div className={`hx-hero-v158__chips hx-hero-reveal hx-hero-reveal--chips${typingDone ? " is-ready" : ""}`} role="list">
           {HERO_CHIPS.map((chip, idx) => (
             <Link
               key={chip.to}

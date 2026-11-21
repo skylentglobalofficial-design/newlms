@@ -3627,3 +3627,23 @@ section[class*="pp-"][style*="#102a43"] {
 .hx-hero-v158__chip.is-active {
   transform: none !important;
 }
+
+
+/* v162 staggered fade-up reveal for SkyAI bar & chips after H1 typing completes */
+.hx-hero-reveal {
+  opacity: 0;
+  transform: translateY(12px);
+  pointer-events: none;
+  transition: opacity 420ms cubic-bezier(0.22, 1, 0.36, 1), transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.hx-hero-reveal--bar {
+  transition-delay: 90ms;
+}
+.hx-hero-reveal--chips {
+  transition-delay: 190ms;
+}
+.hx-hero-reveal.is-ready {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
