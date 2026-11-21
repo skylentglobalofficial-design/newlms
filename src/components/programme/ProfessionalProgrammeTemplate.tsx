@@ -293,11 +293,12 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
       what: courseReady && lessonCount > 0 ? `${plural(moduleCount, "module")}, ${plural(lessonCount, "lesson")}` : "5 modules, 15 lessons",
       href: "#pp-curriculum",
     },
-    { n: "02", verb: "Plans", what: "₹1,499 & ₹11,999", href: "#pp-pricing" },
+    { n: "02", verb: "Plans", what: isProTrack ? "\u20b911,999 Pro" : "\u20b91,499 Skill", href: "#pp-pricing" },
     { n: "03", verb: "Live Lab", what: "Browser Practice", href: "#pp-stage" },
     { n: "04", verb: "Projects", what: `${plural(content.evidence.rows.length, "project")} & internship`, href: "#pp-evidence" },
   ]
 
+  const isProTrack = ["full-stack", "data-science-ai", "generative-ai-program"].includes((program.slug || "").toLowerCase())
   const nextStepLabel = ["Next step", firstNode ? "Lesson 1" : "", firstNode ? nodeKind(firstNode.nodeType) : "", firstNode?.duration ?? ""]
     .filter(Boolean)
     .join(" · ")
@@ -364,7 +365,7 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
               <div className="pp-metrics-grid" aria-label="Programme structure at a glance">
                 <div className="pp-metric-card" style={{ borderTop: "3px solid #5142b5" }}>
                   <span className="pp-metric-card__label">Duration &amp; Pace</span>
-                  <strong className="pp-metric-card__val">2 Months (8 Weeks)</strong>
+                  <strong className="pp-metric-card__val">{isProTrack ? "4\u20136 Months" : "2 Months (8 Weeks)"}</strong>
                   <span className="pp-metric-card__sub">{facts.format} · + SkyLab Case Studies</span>
                 </div>
                 <div className="pp-metric-card" style={{ borderTop: "3px solid #5142b5" }}>
@@ -472,11 +473,11 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
                   <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 10, marginBottom: 14, paddingBottom: 14, borderBottom: "1px solid #f1f5f9" }}>
                     <div>
                       <span style={{ fontSize: 11.5, fontWeight: 600, color: "#64748b", display: "block" }}>
-                        Skill Course · Recorded + Live SkyLab
+                        {isProTrack ? "Pro Program \u00b7 Job Assistance" : "Skill Course \u00b7 Recorded + Live SkyLab"}
                       </span>
                       <div style={{ display: "flex", alignItems: "baseline", gap: 8, flexWrap: "wrap" }}>
                         <strong style={{ fontSize: 26, fontWeight: 800, color: "#0f172a", fontFamily: "var(--font-display)" }}>
-                          ₹1,499
+                          {isProTrack ? "\u20b911,999" : "\u20b91,499"}
                         </strong>
                         
                       </div>
