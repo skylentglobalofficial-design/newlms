@@ -3452,3 +3452,48 @@ section[class*="pp-"][style*="#102a43"] {
 .hx-hero-v159__subline {
   margin-bottom: 28px !important;
 }
+
+
+/* v160.2 commanding hero scale & breathing room */
+.hx-hero-v160 {
+  min-height: clamp(540px, 78vh, 720px) !important;
+  padding: clamp(72px, 11vh, 116px) 24px clamp(64px, 9vh, 96px) !important;
+}
+.hx-hero-v158__inner {
+  max-width: 860px !important;
+}
+.hx-hero-v160__title,
+.hx-hero-v160__title span,
+.hx-hero-v160__accent {
+  font-size: clamp(44px, 6.2vw, 72px) !important;
+  line-height: 1.06 !important;
+  letter-spacing: -0.036em !important;
+  margin-bottom: 18px !important;
+}
+.hx-hero-v159__subline {
+  font-size: clamp(20px, 2.3vw, 26px) !important;
+  margin-bottom: 34px !important;
+}
+.hx-hero-v160__bar {
+  max-width: 680px !important;
+  padding: 8px 8px 8px 12px !important;
+}
+.hx-hero-v160__ai-tag {
+  padding: 8px 14px !important;
+  font-size: 13.5px !important;
+}
+.hx-hero-v160__input {
+  font-size: 16.5px !important;
+}
+.hx-hero-v160__submit {
+  width: 48px !important;
+  height: 48px !important;
+}
+.hx-hero-v158__chips {
+  margin-top: 24px !important;
+  gap: 12px !important;
+}
+.hx-hero-v158__chip {
+  padding: 10px 16px !important;
+  font-size: 14px !important;
+}
