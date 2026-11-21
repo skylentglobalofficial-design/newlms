@@ -2359,7 +2359,7 @@
   display: flex !important;
   flex-direction: column !important;
   border: 1px solid #e2e8f0 !important;
-  border-top: 3px solid #5142b5 !important;
+  border-top: 1px solid #e7e5e4 !important;
   border-radius: 16px !important;
   background: #ffffff !important;
   box-shadow: 0 10px 26px -16px rgba(15, 23, 42, 0.1) !important;
@@ -3929,6 +3929,39 @@ footer a[href="/courses"]:hover {
   object-fit: cover !important;
 }
 .hx-live-course-card__meta {
+  white-space: nowrap !important;
+  font-weight: 600 !important;
+  color: #0f172a !important;
+}
+
+
+/* v166.1 High-specificity Homepage Career Track cards fix */
+.hx-page--home .hx-live-course-card {
+  border: 1px solid #e7e5e4 !important;
+  border-top: 1px solid #e7e5e4 !important;
+  overflow: hidden !important;
+}
+.hx-page--home .hx-live-course-card__media {
+  position: relative !important;
+  display: block !important;
+  width: 100% !important;
+  aspect-ratio: 16 / 10 !important;
+  height: auto !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+  background: #0f172a !important;
+}
+.hx-page--home .hx-live-course-card__media > img {
+  display: block !important;
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-height: none !important;
+  object-fit: cover !important;
+}
+.hx-page--home .hx-live-course-card__meta {
   white-space: nowrap !important;
   font-weight: 600 !important;
   color: #0f172a !important;
