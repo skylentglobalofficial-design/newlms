@@ -646,7 +646,7 @@ export default function SkylentAI({
         <div className="os-ai-sla" style={{ marginTop: 8, fontSize: 11.5 }}>
           {doubtEscalated ? (
             <p role="status" style={{ margin: 0, color: "#047857", fontWeight: 600 }}>
-              ✓ Flagged for Faculty TA review (20-min SLA).
+              ✓ Flagged for Faculty TA review .
             </p>
           ) : (
             <button
@@ -663,7 +663,7 @@ export default function SkylentAI({
                 }).catch(() => undefined)
               }}
             >
-              Need human help? Flag for Faculty TA review (20-min SLA)
+              Need human help? Flag for Faculty review
             </button>
           )}
         </div>

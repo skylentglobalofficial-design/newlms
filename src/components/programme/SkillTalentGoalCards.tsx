@@ -108,7 +108,7 @@ export function SkillTalentGoalCards() {
           <div>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
               <span style={{ fontSize: 11, fontWeight: 800, color: "#ffffff", background: "rgba(255,255,255,0.18)", padding: "4px 10px", borderRadius: 999 }}>
-                POWERED BY TALENTBRIDGE · 4–6 MONTHS
+                POWERED BY CAREER PORTFOLIO · 4–6 MONTHS
               </span>
               <span style={{ fontSize: 17, fontWeight: 800, color: "#ffffff" }}>
                 ₹11,999 <span style={{ fontSize: 12, textDecoration: "line-through", color: "rgba(255,255,255,0.65)", fontWeight: 500 }}>₹19,999</span>

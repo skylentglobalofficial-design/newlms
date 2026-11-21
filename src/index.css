@@ -1985,3 +1985,28 @@ code:not(pre code) {
 .sia-launcher {
   display: none !important;
 }
+
+
+/* v168 Global Auth Dashboard + LearnPage Polish */
+/* Hide Elixir pill globally across Dashboard, Career Portfolio & Learn Player */
+.ads-elixir-pill,
+[class*="elixir-pill"],
+[title*="Elixir Wallet"] {
+  display: none !important;
+}
+
+/* Fix My Courses & Projects dark-navy headers -> Skylent Deep Royal Purple + zero corner bleed */
+.sh-card {
+  border-radius: 16px !important;
+  overflow: hidden !important;
+  background-clip: padding-box !important;
+}
+.sh-card > .sh-card-head {
+  background: linear-gradient(155deg, #2E1065 0%, #4C1D95 55%, #5142B5 100%) !important;
+  border-top-left-radius: 15px !important;
+  border-top-right-radius: 15px !important;
+  margin: 0 !important;
+}
+.sh-card > .sh-card-head .sh-note {
+  color: #DDD6FE !important;
+}

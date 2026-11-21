@@ -90,7 +90,7 @@ export default function CareerOSJobsPage() {
       <section style={{ marginBottom: 24 }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 10, marginBottom: 14 }}>
           <strong style={{ fontSize: 15, color: "#0f172a" }}>
-            Featured Recruiter Openings ({filteredPartnerJobs.length} Active Roles)
+            Sample Partner Roles (Preview) ({filteredPartnerJobs.length} Active Roles)
           </strong>
           <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
             {[

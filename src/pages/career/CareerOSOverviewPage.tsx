@@ -565,7 +565,7 @@ export default function CareerOSOverviewPage({ onEnrolled }: { onEnrolled?: () =
               Unlock Career Portfolio & Job Assistance
             </h1>
             <p style={{ margin: 0, fontSize: 13, color: "#cbd5e1" }}>
-              Complete <strong>60% of your course + quizzes + project</strong>within 6 months to unlock Career Portfolio &amp; get <strong>+3 Months Extra Practice</strong>.
+              Complete <strong>60% of your course + quizzes + project</strong> within 6 months to unlock Career Portfolio &amp; get <strong>+3 Months Extra Practice</strong>.
             </p>
           </div>
 
