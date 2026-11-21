@@ -2023,3 +2023,14 @@ code:not(pre code) {
 .sh-card > .sh-card-head .sh-note {
   color: #DDD6FE !important;
 }
+
+
+/* v171 Light link contrast on purple .sh-card-head */
+.sh-card > .sh-card-head a,
+.sh-card > .sh-card-head a:visited,
+.sh-card > .sh-card-head .os-link {
+  color: #EDE9FE !important;
+}
+.sh-card > .sh-card-head a:hover {
+  color: #FFFFFF !important;
+}

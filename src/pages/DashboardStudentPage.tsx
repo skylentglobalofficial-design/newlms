@@ -2089,7 +2089,23 @@ export default function DashboardStudentPage() {
         ) : null}
 
         {/* Resume Learning Card */}
-        {studentTab === 'overview' ? (
+        {(() => {
+          let lastSlug = ''
+          try { lastSlug = localStorage.getItem('skylent_last_course_slug') || '' } catch {}
+          const rows = (allMyCourses || []) as Array<Record<string, any>>
+          const byLast = lastSlug ? rows.find((r) => (r.slug || r.courseSlug) === lastSlug) : undefined
+          const byProgress = [...rows].sort((a, b) => (Number(b.completedCount ?? b.completed ?? 0) - Number(a.completedCount ?? a.completed ?? 0)))[0]
+          const preferredResumeRow = byLast || byProgress
+          const prefSlug = preferredResumeRow ? String(preferredResumeRow.slug || preferredResumeRow.courseSlug || '') : ''
+          const usePref = Boolean(preferredResumeRow && prefSlug && prefSlug !== course.slug)
+          const rSlug = usePref ? prefSlug : course.slug
+          const rTitle = usePref ? String(preferredResumeRow!.title || course.title) : course.title
+          const rCompleted = usePref ? Number(preferredResumeRow!.completedCount ?? preferredResumeRow!.completed ?? 0) : completedCount
+          const rTotal = usePref ? Number(preferredResumeRow!.totalLessons ?? preferredResumeRow!.total ?? 15) : totalLessons
+          const rPct = rTotal > 0 ? Math.round((rCompleted / rTotal) * 100) : progressPct
+          const rDone = rTotal > 0 && rCompleted >= rTotal
+          const rHref = usePref ? `/learn/${rSlug}` : (allComplete ? `/learn/${course.slug}` : resumeHref)
+          return studentTab === 'overview' ? (
           <section
             id="student-learning"
             aria-labelledby="sh-continue"
@@ -2106,64 +2122,39 @@ export default function DashboardStudentPage() {
             <div style={{ fontSize: 12, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12 }}>
               Resume Learning
             </div>
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                gap: 20,
-                flexWrap: 'wrap',
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', gap: 16, minWidth: 260, flex: 1 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 20, flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 16, minWidth: 0, flex: '1 1 320px' }}>
                 <img
-                  src={courseThumbForSlug(course.slug)}
-                  alt={course.title}
-                  style={{
-                    width: 128,
-                    height: 84,
-                    objectFit: 'cover',
-                    borderRadius: 12,
-                    border: '1px solid #e2e8f0',
-                    flexShrink: 0,
-                  }}
+                  src={courseThumbForSlug(rSlug)}
+                  alt={rTitle}
+                  style={{ width: 128, height: 84, objectFit: 'cover', borderRadius: 12, border: '1px solid #e2e8f0', flexShrink: 0 }}
                 />
                 <div>
                   <span style={{ fontSize: 12, fontWeight: 700, color: '#5142b5', display: 'block', marginBottom: 2 }}>
-                    {course.title} · Module {resume.moduleIndex} of {Math.max(resume.moduleTotal, 5)}
+                    {usePref ? `${rTitle} · In Progress` : `${course.title} · Module ${resume.moduleIndex} of ${Math.max(resume.moduleTotal, 5)}`}
                   </span>
                   <h2 id="sh-continue" style={{ margin: '0 0 6px', fontSize: 19, color: '#0f172a', fontFamily: 'var(--font-display)' }}>
-                    {allComplete
-                      ? `Completed: ${course.title}`
-                      : `${resumeNumber ? `Lecture ${resumeNumber}: ` : ''}${resume.lessonTitle || course.title}`}
+                    {rDone ? `Completed: ${rTitle}` : usePref ? `Continue ${rTitle}` : `${resumeNumber ? `Lecture ${resumeNumber}: ` : ''}${resume.lessonTitle || course.title}`}
                   </h2>
                   <span style={{ fontSize: 13, color: '#64748b' }}>
-                    {completedModulesCount}/{totalModulesCount} Modules Completed · {completedCount}/{totalLessons} Lessons ({progressPct}%)
+                    {usePref ? `${rCompleted}/${rTotal} Lessons Completed (${rPct}%)` : `${completedModulesCount}/${totalModulesCount} Modules Completed · ${completedCount}/${totalLessons} Lessons (${progressPct}%)`}
                   </span>
                 </div>
               </div>
-
               <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-                <ProgressRing percent={progressPct} size={54} stroke={5} />
+                <ProgressRing percent={rPct} size={54} stroke={5} />
                 <Link
                   className="os-btn os-btn-primary"
-                  to={allComplete ? `/learn/${course.slug}` : resumeHref}
-                  style={{
-                    padding: '12px 20px',
-                    borderRadius: 10,
-                    background: '#5142b5',
-                    color: '#ffffff',
-                    fontWeight: 700,
-                    fontSize: 14,
-                    textDecoration: 'none',
-                  }}
+                  to={rHref}
+                  style={{ padding: '12px 20px', borderRadius: 10, background: '#5142b5', color: '#ffffff', fontWeight: 700, fontSize: 14, textDecoration: 'none' }}
                 >
-                  {allComplete ? 'Review Course' : 'Continue Learning'} <ArrowRight />
+                  {rDone ? 'Review Course' : 'Continue Learning'} <ArrowRight />
                 </Link>
               </div>
             </div>
           </section>
-        ) : null}
+        ) : null
+        })()}
 
         {/* Clean 2-Column Home Overview: My Courses (Left) + Progress & 14-Day Activity (Right) */}
         {studentTab === 'overview' ? (

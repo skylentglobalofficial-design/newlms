@@ -129,6 +129,7 @@ export default function LearnPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [compact, setCompact] = useState(() => typeof window !== 'undefined' && window.matchMedia('(max-width: 900px)').matches)
   const [aiCompact, setAiCompact] = useState(true)
+  useEffect(() => { if (slug) { try { localStorage.setItem('skylent_last_course_slug', slug) } catch {} } }, [slug])
   const [quizQuestions, setQuizQuestions] = useState<QuizQuestion[]>([])
   const [quizStatus, setQuizStatus] = useState<'loading' | 'ready' | 'error'>('ready')
   const [quizAttempt, setQuizAttempt] = useState(0)
