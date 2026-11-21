@@ -3779,3 +3779,30 @@ header a[href="/login"]:not(.sk-btn-primary):not(.sk-nav-cta) {
 .hx-more:hover {
   color: #2e1065 !important;
 }
+
+
+/* v163.2 fix flex child mid-word clipping in horizontal course rail + footer link consistency */
+.hx-live-courses-grid > li,
+.hx-live-courses-grid > li > *,
+.hx-live-courses-grid > li > * > * {
+  min-width: 0 !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+.hx-live-courses-grid > li p,
+.hx-live-courses-grid > li div,
+.hx-live-courses-grid > li span {
+  white-space: normal !important;
+  overflow-wrap: anywhere !important;
+}
+.hx-live-courses-grid > li a:last-child,
+.hx-live-courses-grid > li [class*="cta"],
+.hx-live-courses-grid > li [class*="more"] {
+  white-space: nowrap !important;
+}
+footer a[href="/login"] {
+  color: #475569 !important;
+}
+footer a[href="/login"]:hover {
+  color: #0f172a !important;
+}

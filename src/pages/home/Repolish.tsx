@@ -456,7 +456,7 @@ export function WalkControls({
 
 const DA_SLUG = "data-analytics-pro"
 const LMS_STAGES = [
-  { key: "programme", label: "1. Course Syllabus", href: "/courses/data-analytics-pro", action: "Explores" },
+  { key: "programme", label: "1. Course Syllabus", href: "/courses/data-analytics-pro", action: "Explore Programmes" },
   { key: "lesson", label: "2. Interactive Lesson", href: "/courses/data-analytics", action: "Preview Lessons" },
   { key: "practice", label: "3. SkyLab SQL Studio", href: "/labs", action: "See Browser Labs" },
   { key: "project", label: "4. Capstone Project", href: "/verify/SKL-2026-DA-EXEMPLAR", action: "View Capstones" },
@@ -1744,7 +1744,7 @@ export function HomeAi() {
 
             <div className="hx-ai-studio__actions">
               <Link className="sk-btn sk-btn-primary" to="/courses">
-                Explores
+                Explore Programmes
                 <ArrowRight />
               </Link>
               <Link className="sk-btn sk-btn-secondary" to="/courses/data-analytics">
