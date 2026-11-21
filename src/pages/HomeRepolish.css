@@ -3668,7 +3668,6 @@ section[class*="pp-"][style*="#102a43"] {
   padding-bottom: clamp(64px, 8vw, 96px);
 }
 header a[href="/login"].sk-btn-primary,
-nav a[href="/login"],
 .sk-nav-cta {
   border-radius: 999px !important;
   background: #4a3f99 !important;
@@ -3739,7 +3738,6 @@ header a[href="/login"].sk-btn-primary:hover,
 }
 .hx-hero-v160__submit,
 header a[href="/login"].sk-btn-primary,
-nav a[href="/login"],
 .sk-nav-cta {
   border-radius: 999px !important;
   background: linear-gradient(155deg, #2e1065 0%, #4c1d95 55%, #5142b5 100%) !important;
@@ -3749,4 +3747,35 @@ nav a[href="/login"],
 header a[href="/login"].sk-btn-primary:hover,
 .sk-nav-cta:hover {
   filter: brightness(1.07);
+}
+
+
+/* v163.1 hotfix: restore plain Sign in links, fix mid-word card clip, crisp Compare all contrast */
+/* Restore plain-text Sign in links in header & footer */
+footer a[href="/login"],
+header a[href="/login"]:not(.sk-btn-primary):not(.sk-nav-cta) {
+  background: transparent !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  color: inherit !important;
+}
+/* Fix mid-word description clipping on horizontal course cards */
+.hx-live-courses-grid p {
+  white-space: normal !important;
+  overflow-wrap: break-word !important;
+  height: auto !important;
+  max-height: none !important;
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+/* Crisp readable contrast on Compare all link */
+.hx-more {
+  color: #4c1d95 !important;
+  font-weight: 600 !important;
+}
+.hx-more:hover {
+  color: #2e1065 !important;
 }
