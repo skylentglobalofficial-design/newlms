@@ -3579,3 +3579,18 @@ section[class*="pp-"][style*="#102a43"] {
   opacity: 0;
   transform: translateY(-6px);
 }
+
+
+/* v160.7 reveal Learn subline after H1 finishes typing */
+.hx-hero-v1605__subline {
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 300ms ease, transform 300ms ease;
+}
+.hx-hero-v1605__subline.is-ready {
+  opacity: 1;
+  transform: translateY(0);
+}
+.hx-hero-v1606__rotator {
+  transition: opacity 150ms ease, transform 150ms ease !important;
+}

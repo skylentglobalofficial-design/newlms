@@ -223,7 +223,7 @@ export function HomeHero({
       swapTimer = window.setTimeout(() => {
         setPhraseIdx((i) => (i + 1) % HERO_PHRASES.length)
         setFadingOut(false)
-      }, 220)
+      }, 150)
     }, 2900)
     return () => {
       window.clearInterval(id)
@@ -275,7 +275,7 @@ export function HomeHero({
           </span>
         </h1>
 
-        <p className="hx-hero-v159__subline hx-hero-v1605__subline" aria-live="polite">
+        <p className={`hx-hero-v159__subline hx-hero-v1605__subline${typingDone ? " is-ready" : ""}`} aria-live="polite">
           <span>Learn</span>
           <span className={`hx-hero-v1606__rotator${fadingOut ? " is-out" : ""}`}>
             {HERO_PHRASES[phraseIdx].text}
