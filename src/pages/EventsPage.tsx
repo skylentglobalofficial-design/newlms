@@ -96,7 +96,7 @@ export const CURATED_UPCOMING_WORKSHOPS: EventData[] = [
 const LAUNCH_TRACKS = [
   {
     badge: "TRACK 01 · DATA ANALYTICS",
-    fee: "₹99 Entry → +99 Workshop Coins",
+    fee: "Live SkyLab Session",
     title: "Northwind SQL Margin & Cohort Live Workshop",
     desc: "Practise multi-table SQL joins, revenue analysis, and business reporting live in your browser.",
     lab: "Northwind SQL Lab · Zero Setup",
@@ -104,7 +104,7 @@ const LAUNCH_TRACKS = [
   },
   {
     badge: "TRACK 02 · PRODUCT MANAGEMENT",
-    fee: "₹99 Entry → +99 Workshop Coins",
+    fee: "Live SkyLab Session",
     title: "Harbor Desk Product Scoping & PRD Triage Workshop",
     desc: "Synthesise 18 store-manager interviews, frame the weekend exception bottleneck, and scope a 6-week bet for a 2-engineer squad.",
     lab: "Harbor Desk PRD Studio",
@@ -112,7 +112,7 @@ const LAUNCH_TRACKS = [
   },
   {
     badge: "TRACK 03 · PYTHON & GENAI",
-    fee: "₹99 Entry → +99 Workshop Coins",
+    fee: "Live SkyLab Session",
     title: "Applied Python & GenAI Workflow Automation Workshop",
     desc: "Quarantine duplicate webhook retries, enforce schema contracts, and evaluate citation-grounded LLM outputs inside the browser sandbox.",
     lab: "Python & RAG Evaluator",
@@ -122,28 +122,28 @@ const LAUNCH_TRACKS = [
 
 const CASE_STORE_ITEMS = [
   {
-    coins: "49 Coins",
+    coins: "Live Lab",
     kind: "Case study · Data Analytics",
     title: "Northwind Margin & Discount Leakage Case Study",
     desc: "Full SQL solution queries, cohort margin breakdown tables, and exemplar executive memo.",
     to: "/dashboard/student",
   },
   {
-    coins: "49 Coins",
+    coins: "Live Lab",
     kind: "Case study · Product Management",
     title: "Harbor Desk Weekend Exception Queue PRD Case",
     desc: "Complete 18-interview synthesis matrix, trade-off rubric, and 6-week engineering PRD.",
     to: "/dashboard/student",
   },
   {
-    coins: "99 Coins",
+    coins: "Live Lab",
     kind: "Flagship case · SaaS Retention",
     title: "Enterprise B2B SaaS Onboarding & Churn Case Study",
     desc: "End-to-end 90-day activation bottleneck teardown — redeemable with a single ₹99 workshop cashback.",
     to: "/dashboard/student",
   },
   {
-    coins: "39 Coins",
+    coins: "Live Lab",
     kind: "Playbook notes · SQL",
     title: "E-Commerce SQL Cohort & Retention Playbook",
     desc: "Reusable window-function patterns, repeat-purchase SQL templates, and grain-fanout checks.",
@@ -263,8 +263,8 @@ export default function EventsPage() {
                 <a className="cat-btn cat-btn-primary" href="#events-launch-tracks-title">
                   Browse upcoming sprints ↓
                 </a>
-                <Link className="cat-btn" to="/programmes" style={{ background: "#FFFFFF", border: "1.5px solid #DDD7FF", color: "#5142B5", fontWeight: 700 }}>
-                  Explore all 6 programmes →
+                <Link className="cat-btn" to="/courses" style={{ background: "#FFFFFF", border: "1.5px solid #DDD7FF", color: "#5142B5", fontWeight: 700 }}>
+                  Explore all courses →
                 </Link>
               </div>
             </div>
@@ -290,11 +290,10 @@ export default function EventsPage() {
                 </span>
               </div>
               <h2 style={{ margin: "0 0 8px", fontSize: 20, fontWeight: 700, color: "#0F172A" }}>
-                Pay ₹99 → Attend Live Lab → Unlock ₹99 Case Studies Free
+                Attend Live Weekend SkyLab Workshops
               </h2>
               <p style={{ margin: "0 0 16px", fontSize: 13.5, lineHeight: 1.55, color: "#475569" }}>
-                Every rupee you spend on a weekend sprint is returned 1:1 as Reward Coins in your learner wallet so you can unlock solved industry teardowns and SQL playbooks.
-              </p>
+                Join live weekend sessions with faculty walkthroughs and hands-on browser labs.</p>
               <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10 }}>
                 {[
                   ["STEP 01", "Register for Workshop", "90-min weekend sprint"],
@@ -318,7 +317,7 @@ export default function EventsPage() {
             <p className="cat-label">Launch Workshop Tracks · ₹99 Entry = 99 Workshop Coins</p>
             <h2 id="events-launch-tracks-title">Flagship Live Workshop Tracks</h2>
             <p className="cat-lead">
-              Every scheduled ₹99 workshop grants 100% coin cashback (99 Workshop Coins) in your Skylent wallet immediately upon registration.
+              Every weekend session includes live faculty walkthroughs and browser-based SkyLab practice.
             </p>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 18, marginTop: 22 }}>
               {LAUNCH_TRACKS.map((track) => (
@@ -370,10 +369,9 @@ export default function EventsPage() {
         >
           <div className="cat-rail">
             <p className="cat-label">Live Guided Labs Rewards</p>
-            <h2 id="events-elixir-store-title">Redeemable with your 99 Workshop Reward Coins</h2>
+            <h2 id="events-elixir-store-title">Included Case Studies & Playbooks</h2>
             <p className="cat-lead">
-              When you register for a ₹99 session, 99 Workshop Coins are credited to your wallet in My Learning. Use them to unlock these practical case studies and playbooks:
-            </p>
+              Practise directly on real-world case studies and playbooks inside SkyLab.</p>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 16, marginTop: 22 }}>
               {CASE_STORE_ITEMS.map((item) => (
                 <Link
@@ -496,7 +494,7 @@ export default function EventsPage() {
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 6 }}>
                       <span style={{ padding: "4px 10px", borderRadius: 999, background: "#DCFCE7", border: "1px solid #86EFAC", color: "#15803D", fontSize: 11.5, fontWeight: 600 }}>
-                        ₹99 → +99 Coins
+                        Included with Enrolment
                       </span>
                       <span style={{ fontSize: 12, fontWeight: 700, color: "#5142B5" }}>
                         {event.spotsRemaining === 0

@@ -143,7 +143,7 @@ function FeatureCard({ feature, index }: { feature: ProductFeature; index: numbe
 }
 
 const SOURCES = [
-  { title: "6 Live Courses & Programmes", text: "Complete 60% of any authored course to unlock Career Rise and carry graded capstones into your portfolio.", to: "/courses" },
+  { title: "Live Courses & Programmes", text: "Complete 60% of any authored course to unlock Career Rise and carry graded capstones into your portfolio.", to: "/courses" },
   { title: "Verified Skill-Gap Match", text: "Compare your verified skills against target roles with live match percentages and missing-skill badges.", to: "/career-os/profile" },
   { title: "Verifiable Project Certificates", text: "Attach publicly verifiable Course and Programme Master certificates (/verify) with project summaries.", to: "/verify" },
 ]
@@ -302,7 +302,7 @@ export default function CareerOSPublicPage() {
               Sign in to build <em>your profile.</em>
             </h2>
             <div className="hx-hero__actions">
-              <Link className="sk-btn sk-btn-primary hx-btn" to="/programmes">
+              <Link className="sk-btn sk-btn-primary hx-btn" to="/courses">
                 Explore programmes
                 <ArrowRight />
               </Link>

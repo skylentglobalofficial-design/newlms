@@ -1,7 +1,7 @@
 /**
  * /institutions (repolish). The B2B entry point, linked from the main navigation and the
  * homepage. It describes what Skylent provides to learners today (programmes, labs, LMS progress,
- * TalentBridge, lesson help, and the isolated College Tenant OS with 1-click CSV export) and how a
+ * Career Portfolio, lesson help, and the isolated College Tenant OS with 1-click CSV export) and how a
  * partnership is set up.
  */
 import { Link } from "react-router-dom"
@@ -14,11 +14,11 @@ import "./AboutRepolish.css"
 import "./InstitutionsRepolish.css"
 
 const PROVIDES = [
-  { title: "6 Live 15-Lesson Courses & Programmes", text: "Data Analytics, Product Management, Python, Data Science & AI, Generative AI, and Full Stack Web — ready for immediate campus cohort deployment." },
+  { title: "Live 15-Lesson Courses & Programmes", text: "Data Analytics, Product Management, Python, Data Science & AI, Generative AI, and Full Stack Web — ready for immediate campus cohort deployment." },
   { title: "Graded Browser Labs & Capstones", text: "In-browser SQL & Python sandboxes, timed mock interview checks, and 6-task Capstone Project Studios that generate verifiable work samples." },
   { title: "Isolated College Tenant OS (/dashboard/college)", text: "Dedicated institutional portal for Deans, HODs, and Placement Officers with strict campus cohort management." },
   { title: "Direct NAAC / NIRF / Placement CSV Export", text: "Export audited cohort progress, lesson completion rates, capstone readiness, and verified certificate codes in one click." },
-  { title: "24/7 Guided Study Support (Hinglish + English) + 20-Min Faculty TA SLA", text: "In-lesson guided explanations that help students without spoiling answers, backed by live human Faculty TA support within 20 minutes." },
+  { title: "24/7 Guided Study Support (Hinglish + English) + Faculty & Rubric Review", text: "In-lesson guided explanations that help students without spoiling answers, backed by live human Faculty TA support with structured faculty feedback." },
 ]
 
 const PARTNERS = [
@@ -44,10 +44,10 @@ export default function InstitutionsPage() {
             <div>
               <p className="hx-eyebrow">For institutions · Multi-Tenant College OS</p>
               <h1 id="inx-title" className="hx-hero__title">
-                Practical learning and <em>TalentBridge</em> for your learners.
+                Practical learning and <em>Career Portfolio</em> for your learners.
               </h1>
               <p className="hx-hero__lead">
-                Deploy Skylent’s 6 live 15-lesson courses, interactive SQL &amp; Python sandboxes, verifiable project certificates, and Isolated College Tenant OS alongside your campus curriculum.
+                Deploy Skylent’s Live 15-Lesson courses, interactive SQL &amp; Python sandboxes, verifiable project certificates, and Isolated College Tenant OS alongside your campus curriculum.
               </p>
               <div className="hx-hero__actions">
                 <Link className="sk-btn sk-btn-primary hx-btn" to="/contact?for=institution">
@@ -127,7 +127,7 @@ export default function InstitutionsPage() {
                 Talk to partnerships
                 <ArrowRight />
               </Link>
-              <Link className="sk-btn hx-btn hx-btn--ghost" to="/programmes">
+              <Link className="sk-btn hx-btn hx-btn--ghost" to="/courses">
                 Explore programmes
               </Link>
             </div>

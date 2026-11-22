@@ -120,12 +120,24 @@ async function parseJson<T>(response: Response): Promise<T> {
   return parseApiJson<T>(response)
 }
 
-async function lmsGet<T>(path: string): Promise<T> {
+const __lmsGetCache = new Map<string, { ts: number; data: unknown }>()
+const __LMS_TTL_MS = 20_000
+async function _lmsGetUncached<T>(path: string): Promise<T> {
   const response = await fetch(`${API_BASE}${path}`, { credentials: "include" })
   return parseJson<T>(response)
 }
+async function lmsGet<T>(path: string): Promise<T> {
+  if (!path.includes('/quiz')) {
+    const hit = __lmsGetCache.get(path)
+    if (hit && Date.now() - hit.ts < __LMS_TTL_MS) return hit.data as T
+  }
+  const data = await _lmsGetUncached<T>(path)
+  if (!path.includes('/quiz')) __lmsGetCache.set(path, { ts: Date.now(), data })
+  return data
+}
 
 async function lmsMutate<T>(path: string, body: Record<string, unknown>): Promise<T> {
+  __lmsGetCache.clear()
   const token = await ensureCsrfToken()
   const response = await fetch(`${API_BASE}${path}`, {
     method: "POST",
