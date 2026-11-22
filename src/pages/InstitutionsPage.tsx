@@ -24,7 +24,7 @@ const PROVIDES = [
 const PARTNERS = [
   { title: "Colleges and universities", text: "Add practical 15-lesson courses, graded capstones, and verifiable certificates beside the degree you award." },
   { title: "Placement & Training Cells (TPOs)", text: "Track real-time student readiness across the 60% Career Rise milestone and export verified project portfolios for visiting recruiters." },
-  { title: "Campus ₹99 Workshop Chapters", text: "Host live campus workshops where every ₹99 seat grants 99 Workshop Coins (100% coin cashback) for applied case studies." },
+  { title: "Campus Live SkyLab Workshops", text: "Host live campus workshops with guided browser-based SQL, Python, and product case-study sprints for students." },
 ]
 
 const STEPS = [
