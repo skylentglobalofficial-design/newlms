@@ -304,6 +304,7 @@ if (typeof window !== "undefined" && !(window as any).__skylentMasterQaInstalled
       el.style.padding = "6px 12px";
       el.style.borderRadius = "6px";
       el.textContent = "Running SQL & Rubric Checks...";
+      if (window.location.pathname === "/" || el.tagName !== "BUTTON" || el.closest("header, nav, footer")) return;
       setTimeout(() => {
         el.style.background = "#15803d";
         el.style.color = "#ffffff";

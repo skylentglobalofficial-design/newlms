@@ -266,7 +266,7 @@ export function EnrollmentModal({ item, onClose }: { item: CatalogEnrollItem; on
         {/* 3 Side-by-Side Plan Cards (Basic / Premium / Pro Recommended) */}
         <div style={{ padding: "24px 28px 28px" }}>
           <div
-            style={{ display: !(/full-stack|data-science|generative/i.test(String(window.location.pathname || window.location.pathname))) ? 'none' : undefined,  display: (/full-stack|data-science|generative/i.test(String(window.location.pathname || window.location.pathname))) ? 'none' : undefined, 
+            style={{
               display: "grid",
               gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 285px), 1fr))",
               gap: 18,
@@ -275,6 +275,9 @@ export function EnrollmentModal({ item, onClose }: { item: CatalogEnrollItem; on
           >
             {tiers.map((tier) => {
               const isProCard = tier.id === "flagship"
+              const _isProSlug = /full-stack|data-science|generative/i.test(String(window.location.pathname || ""))
+              if (_isProSlug && !isProCard) return null
+              if (!_isProSlug && isProCard) return null
               const displayTitle =
                 tier.id === "certificate"
                   ? "Skill Course Plan"
