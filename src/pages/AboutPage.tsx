@@ -36,7 +36,7 @@ const PRODUCTS = [
     title: "English & Hinglish Study Support",
     text: "24/7 first-principles intuition in simple Hinglish or English inside every lesson, backed by faculty review and rubric-graded project feedback.",
     badge: "✓ Rubric-Graded Support",
-    to: "/programmes/data-analytics-pro",
+    to: "/courses",
   },
 ]
 

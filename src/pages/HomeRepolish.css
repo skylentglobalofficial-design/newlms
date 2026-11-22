@@ -3985,3 +3985,14 @@ footer a[href="/courses"]:hover {
 .sh-card > .sh-card-head .sh-note {
   color: #DDD6FE !important;
 }
+
+
+/* v174 Full-viewport centered Hero (zero bottom-edge cut) */
+.hx-hero-v160 {
+  min-height: calc(100vh - 76px) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  padding-top: 32px !important;
+  padding-bottom: 48px !important;
+}

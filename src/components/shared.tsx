@@ -266,7 +266,7 @@ export function EnrollmentModal({ item, onClose }: { item: CatalogEnrollItem; on
         {/* 3 Side-by-Side Plan Cards (Basic / Premium / Pro Recommended) */}
         <div style={{ padding: "24px 28px 28px" }}>
           <div
-            style={{
+            style={{ display: !(/full-stack|data-science|generative/i.test(String(window.location.pathname || window.location.pathname))) ? 'none' : undefined,  display: (/full-stack|data-science|generative/i.test(String(window.location.pathname || window.location.pathname))) ? 'none' : undefined, 
               display: "grid",
               gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 285px), 1fr))",
               gap: 18,
