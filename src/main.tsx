@@ -291,7 +291,7 @@ if (typeof window !== "undefined" && !(window as any).__skylentMasterQaInstalled
   }
 
   // C. Global Interactive Click Listener for "Run Verification Check"
-  document.addEventListener("click", (ev) => {
+  /* v174.3 disabled rogue SQL click hijacker */ ((..._a: unknown[]) => {})("click", (ev) => {
     const target = (ev.target as HTMLElement)?.closest("button, span, div");
     if (!target) return;
     const txt = (target.textContent || "").trim();
