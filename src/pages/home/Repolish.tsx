@@ -1156,7 +1156,7 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
                         width={800}
                         height={530}
                         loading="eager"
-                        decoding="async"
+                        decoding="sync"
                         style={item.slug === "full-stack-web" ? { objectPosition: "left center", filter: "hue-rotate(-14deg) saturate(1.08)" } : undefined}
                       />
                       <span

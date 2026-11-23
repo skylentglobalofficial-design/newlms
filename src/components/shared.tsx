@@ -544,7 +544,7 @@ const PUBLIC_NAV: readonly PublicNavGroup[] = [
     label: 'About Us',
     to: '/about',
     tagline: 'Who we are, verified credentials, and institutional partnerships',
-    match: ['/about', '/stories', '/blog', '/contact', '/terms', '/privacy', '/institutions', '/verify'],
+    match: ['/about', '/stories', '/blog', '/contact', '/terms', '/privacy'],
     items: [
       { label: 'About Skylent', sub: 'Our mission, SkyLab learning approach, and Bhubaneswar HQ.', to: '/about' },
       { label: 'For Colleges & Institutions', sub: 'Campus partner labs, student tracking, and reporting.', to: '/institutions' },

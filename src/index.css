@@ -2121,3 +2121,22 @@ button:not(:disabled):active,
   main { animation: none !important; }
   * { transition-duration: 0.01ms !important; }
 }
+
+
+/* v174.4 Disabled CTA Contrast & Degrees Purple Subtitle Polish */
+.sk-btn-primary:disabled,
+button.sk-btn-primary:disabled {
+  background: #e2e8f0 !important;
+  color: #475569 !important;
+  border-color: #cbd5e1 !important;
+  opacity: 1 !important;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+}
+
+.edx-mode--online .edx-mode-meta,
+.edx-mode--online .edx-mode-cohort,
+.edx-mode--online p,
+.edx-mode--online small {
+  color: rgba(255, 255, 255, 0.92);
+}

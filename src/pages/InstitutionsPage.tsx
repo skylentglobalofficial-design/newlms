@@ -30,7 +30,7 @@ const PARTNERS = [
 const STEPS = [
   { title: "Understand", text: "We map your departments, academic calendar, and cohort skill goals together." },
   { title: "Configure", text: "Provision your Isolated College Tenant OS and assign tracks across semesters." },
-  { title: "Launch", text: "Students enrol (+50 Elixir bonus), practise in browser labs, and ship graded capstones." },
+  { title: "Launch", text: "Students enrol, practise in browser labs, and ship graded capstones." },
   { title: "Track & Export", text: "Monitor live cohort completion and export verified CSV reports for accreditation and placement drives." },
 ]
 
@@ -93,7 +93,7 @@ export default function InstitutionsPage() {
             <ul className="abx-principles">
               {PARTNERS.map((item) => (
                 <li key={item.title}>
-                  <b>{item.title}</b>
+                  <b>{item.title}</b>{" — "}
                   <span>{item.text}</span>
                 </li>
               ))}
