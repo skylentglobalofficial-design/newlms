@@ -471,7 +471,7 @@ export const programs: Program[] = [
     duration: '8 months',
     modules: 14,
     projects: 5,
-    format: 'Recorded + SkyLab',
+    format: 'Self-paced',
     cert: 'Professional Certificate',
     outcome: 'Data Analyst / BI Developer',
     desc: 'Advertised as an 8-month analytics pathway with Gen AI. The live LMS today is the Data Analytics course (spreadsheets, SQL, dashboards, Northwind capstone). Python and Gen AI modules are not teachable here yet.',
