@@ -13,6 +13,7 @@ export type ProjectTaskStatus = "open" | "complete"
 export type ProjectTool = "analysis" | "sql" | "evidence" | "reflection"
 
 export type ProjectReflection = {
+  updatedAt?: string
   finding: string
   whyItMatters: string
   recommendation: string
