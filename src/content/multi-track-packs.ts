@@ -582,16 +582,16 @@ export function getMultiTrackLessonMeta(courseSlug: string, lessonId: string): W
   const next = spec.lessons[idx + 1]
   return {
     id: lesson.id,
-    number: idx + 1,
     moduleId: `m${Math.floor(idx / 3) + 1}`,
-    moduleNumber: Math.floor(idx / 3) + 1,
-    moduleTitle: lesson.moduleTitle,
     title: lesson.title,
     kind: lesson.kind,
-    duration: lesson.kind === "quiz" ? "20 min" : lesson.kind === "capstone" ? "6 hr" : lesson.kind === "assignment" ? "3 hr" : "45 min",
     objective: lesson.objective,
-    nextAction: next ? `Continue to ${next.title}` : "Claim your verified course certificate and link your Capstone Project Studio to TalentBridge.",
-    WhyThisMatters: `Part of the ${spec.title} production verification path.`,
+    whyItMatters: `Part of the ${spec.title} production verification path.`,
+    concepts: [lesson.objective],
+    practicalOutput: lesson.kind === "quiz" ? "Complete the knowledge check." : lesson.kind === "assignment" || lesson.kind === "capstone" ? "Submit the written engineering specification." : "Work through the lesson and its production example.",
+    assessment: lesson.kind === "quiz" ? "Knowledge check." : lesson.kind === "assignment" || lesson.kind === "capstone" ? "Reviewed written submission." : "Lesson knowledge check.",
+    prerequisite: idx === 0 ? "None" : spec.lessons[idx - 1].title,
+    estimatedMinutes: lesson.kind === "quiz" ? 20 : lesson.kind === "capstone" ? 360 : lesson.kind === "assignment" ? 180 : 45,
   }
 }
 
@@ -606,19 +606,25 @@ export function getMultiTrackAssignment(courseSlug: string, lessonId: string): A
   const lesson = spec.lessons.find((l) => l.id === lessonId)
   if (!lesson || (lesson.kind !== "assignment" && lesson.kind !== "capstone")) return undefined
   return {
+    id: lesson.id,
     lessonId: lesson.id,
     title: lesson.title,
     scenario: lesson.body,
-    deliverable: `A structured engineering specification (150–400 words) addressing ${lesson.title} on ${spec.datasetFilename}.`,
-    steps: [
+    objective: lesson.objective,
+    instructions: [
       `Inspect the scenario constraints and test vectors in ${spec.datasetFilename}.`,
       "State the primary failure mode or architectural risk and why naive implementations fail.",
       "Specify the concrete production design, validation rules, and verification checks.",
     ],
-    rubric: [
-      { criterion: "Technical accuracy & invariant design", detail: "Identifies the exact concurrency, leakage, grounding, or schema invariant required." },
-      { criterion: "Verification & edge-case coverage", detail: "Includes concrete test assertions, thresholds, or failure recovery rules." },
-      { criterion: "Executive clarity", detail: "Written clearly with actionable trade-offs and zero unverified claims." },
+    requiredOutput: [
+      `A structured engineering specification (150–400 words) addressing ${lesson.title} on ${spec.datasetFilename}.`,
+      "Concrete validation rules and edge-case checks.",
+    ],
+    submissionFormat: "Submit a structured written response in the assignment workspace.",
+    evaluationCriteria: [
+      { criterion: "Technical accuracy & invariant design", weight: "40%", description: "Identifies the exact concurrency, leakage, grounding, or schema invariant required." },
+      { criterion: "Verification & edge-case coverage", weight: "40%", description: "Includes concrete test assertions, thresholds, or failure recovery rules." },
+      { criterion: "Executive clarity", weight: "20%", description: "Written clearly with actionable trade-offs and zero unverified claims." },
     ],
   }
 }
@@ -656,7 +662,6 @@ export function getMultiTrackQuiz(courseSlug: string, lessonId: string): DaQuizB
   return {
     lessonId,
     title: lesson.title,
-    passPercent: 75,
     questions: [
       {
         id: `${courseSlug}-${lessonId}-q1`,
