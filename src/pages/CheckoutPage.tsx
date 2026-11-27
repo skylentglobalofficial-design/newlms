@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react"
 import { Link, useNavigate, useSearchParams } from "react-router-dom"
 import { useAuth } from "../context/AuthContext"
 import { courses, programs } from "../data"
+import { linkedCourseSlugsForProgram } from "../lib/catalog-maturity"
 import {
   buildSkylentTiersForPrice,
   saveAdminPriceOverridesLocal,
