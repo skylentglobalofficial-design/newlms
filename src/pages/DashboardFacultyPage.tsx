@@ -1292,7 +1292,7 @@ function FacultyDoubtQueue({
             FACULTY DOUBT QUEUE
           </div>
           <h2 style={{ color: '#0f172a', fontSize: 18, margin: '4px 0 0', fontFamily: 'var(--font-display)' }}>
-            Live Lesson Doubt Escalations ({openDoubts.length} open)
+            20-Minute Faculty TA Doubt Queue · Live Lesson Doubt Escalations ({openDoubts.length} open)
           </h2>
         </div>
       </div>
@@ -1383,6 +1383,12 @@ export default function DashboardFacultyPage() {
 
   useEffect(() => {
     reloadAll()
+    if (!ready || !user) return
+    const refreshDoubts = () => {
+      void fetchFacultyDoubts().then(setDoubts).catch(() => setDoubts([]))
+    }
+    const timer = window.setInterval(refreshDoubts, 30_000)
+    return () => window.clearInterval(timer)
   }, [ready, user])
 
   if (!ready || !user) return null
