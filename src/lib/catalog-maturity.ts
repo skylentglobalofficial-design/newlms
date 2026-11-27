@@ -256,7 +256,7 @@ export function programmeAfterEnrolCopy(view: {
   const authored = view.linked.find((item) => item.authored)
   if (view.maturity === "coming_later") return "Enrolment is not open on this listing."
   if (authored) {
-    return `Enrolment opens ${authored.title} in SkyLab. It does not create a separate taught programme. Payment is not collected on preview lessons; full paid plans start from ₹1,499.`
+    return `Enrolment opens ${authored.title} in Skylent OS (SkyLab). It does not create a separate taught programme. Payment is not collected on preview lessons; full paid plans start from ₹1,499.`
   }
   if (view.linked[0]) {
     return `Enrolment opens the ${view.linked[0].title} outline in SkyLab. Payment is not collected.`
