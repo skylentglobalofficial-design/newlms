@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react"
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom"
 import { AuthDashboardShell } from "../components/AuthDashboardShell"
-import { LEARNER_NAV, LearnerNavIcon, type LearnerNavId } from "../components/learner/learner-nav"
+import { LEARNER_NAV, LearnerNavIcon } from "../components/learner/learner-nav"
 import { fetchLearnerPracticeWorkspace, saveLearnerPracticeResponse, type LearnerPracticeWorkspace } from "../lib/practice-api"
 import {
   buildPracticeWorkspaceDraftKey,
@@ -27,6 +27,8 @@ export default function PracticeWorkspacePage() {
   const editVersionRef = useRef(0)
 
   const draftKey = courseSlug && lessonId ? buildPracticeWorkspaceDraftKey(courseSlug, lessonId) : ""
+
+  type LearnerNavId = "overview" | "courses" | "projects" | "explore" | "career"
 
   function handleNavSelect(id: string) {
     const navId = id as LearnerNavId
@@ -121,7 +123,7 @@ export default function PracticeWorkspacePage() {
 
   return (
     <AuthDashboardShell
-      workspace="learner"
+      workspace="learning"
       title={workspace?.title ?? "Case Practice Studio"}
       subtitle={workspace?.courseTitle ?? "Interactive Case Notes"}
       navItems={LEARNER_NAV}
