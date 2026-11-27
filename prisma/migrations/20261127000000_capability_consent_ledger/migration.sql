@@ -33,8 +33,6 @@ CREATE TABLE "CapabilityConsentEvent" (
   "scopes" TEXT[] NOT NULL,
   "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT "CapabilityConsentEvent_pkey" PRIMARY KEY ("id"),
-  CONSTRAINT "CapabilityConsentEvent_consentId_fkey"
-    FOREIGN KEY ("consentId") REFERENCES "CapabilityConsent"("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 CREATE INDEX "CapabilityConsentEvent_consentId_createdAt_idx"
   ON "CapabilityConsentEvent"("consentId", "createdAt");
