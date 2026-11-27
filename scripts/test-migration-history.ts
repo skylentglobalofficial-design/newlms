@@ -27,6 +27,7 @@ const OCTOBER = [
   "20261028160000_college_membership",
   "20261028161000_lesson_material_compat",
   "20261101000000_programme_certs_and_faculty_doubts",
+  "20261127000000_capability_consent_ledger",
 ]
 
 const local = listLocalMigrations()
