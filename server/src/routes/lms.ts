@@ -266,6 +266,10 @@ lmsRouter.post("/enrollments", requireAuth, requireCsrf, async (req: Authenticat
       }
 
       // New programme enrolments only. An existing row above still reopens its workspace.
+      const hasAuthoredCourse = program.programCourses.some((link) => courseIsEnrolable(link.course))
+      if (!hasAuthoredCourse) {
+        return res.status(400).json({ error: "Program has no authored courses available for enrollment" })
+      }
       if (
         !isAuthoredProgramme(program.slug) ||
         !program.programCourses.every((link) => courseIsEnrolable(link.course))
