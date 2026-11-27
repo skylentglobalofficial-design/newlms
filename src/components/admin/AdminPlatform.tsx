@@ -177,10 +177,9 @@ export default function AdminPlatform({
         slug: String(form.get("slug")),
         title: String(form.get("title")),
         summary: String(form.get("summary")),
-        body: String(form.get("body")),
         kind: rawKind,
         elixirPrice: Number(form.get("elixirPrice")),
-        active: true,
+        published: true,
       })
       setMessage("Learning resource saved.")
       event.currentTarget.reset()
