@@ -18,6 +18,7 @@ import {
   HomeHero,
   HomeProgrammes,
   InsideProgramme,
+  ZeroLoginInteractiveTryout,
 } from "./home/Repolish"
 import "./HomePage.v2.css"
 import "./HomeRepolish.css"
@@ -201,6 +202,7 @@ export default function HomePage() {
           }}
         >
           <InsideProgramme />
+          <ZeroLoginInteractiveTryout />
           <div className="sky-container" style={{ marginTop: 20 }}>
             <div
               style={{
