@@ -5,7 +5,7 @@
  *
  * We intentionally render no custom "Get app" button or instruction modal on the page.
  */
-export function InstallAppPrompt(_props: { variant?: "nav" | "banner" | "hero" }) {
+export function InstallAppPrompt(_props: { variant?: "nav" | "banner" | "hero" | "dashboard" }) {
   return null
 }
 
