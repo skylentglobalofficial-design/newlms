@@ -371,7 +371,7 @@ export default function EventsPage() {
             <p className="cat-label">Live Guided Labs Rewards</p>
             <h2 id="events-elixir-store-title">Included Case Studies & Playbooks</h2>
             <p className="cat-lead">
-              Practise directly on real-world case studies and playbooks inside SkyLab.</p>
+              Practise directly on real-world case studies and playbooks inside SkyLab. Redeemable with your 99 Workshop Elixir Coins.</p>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 16, marginTop: 22 }}>
               {CASE_STORE_ITEMS.map((item) => (
                 <Link
