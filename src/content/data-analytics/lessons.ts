@@ -1,4 +1,4 @@
-export type LessonKind = 'notes' | 'quiz' | 'assignment'
+export type LessonKind = 'notes' | 'quiz' | 'assignment' | 'reading' | 'capstone'
 
 export type WrittenLessonMeta = {
   id: string
