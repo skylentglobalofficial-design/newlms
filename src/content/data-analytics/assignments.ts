@@ -1,5 +1,6 @@
 export type AssignmentBrief = {
   id: string;
+  lessonId?: string;
   title: string;
   scenario: string;
   objective: string;
@@ -11,9 +12,9 @@ export type AssignmentBrief = {
   requiredOutput: string[];
   submissionFormat: string;
   evaluationCriteria: { criterion: string; weight: string; description: string }[];
-  commonMistakes: string[];
-  extension: string;
-  careerEvidence: {
+  commonMistakes?: string[];
+  extension?: string;
+  careerEvidence?: {
     learning: string;
     artifact: string;
     skill: string;
