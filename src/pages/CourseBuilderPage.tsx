@@ -71,7 +71,7 @@ type FacultyAssignmentPayload = {
 type QuizDraftQuestion = {
   question: string
   options: [string, string, string, string]
-  correctIndex: number
+  answerIndex: number
   explanation: string
 }
 
@@ -177,7 +177,7 @@ function emptyQuizQuestion(): QuizDraftQuestion {
   return {
     question: "",
     options: ["", "", "", ""],
-    correctIndex: 0,
+    answerIndex: 0,
     explanation: "",
   }
 }
@@ -487,7 +487,7 @@ export function CourseAuthoringStudio({
         bodyPayload.questions = quizQuestions.map((q) => ({
           question: q.question.trim(),
           options: q.options.map((o) => o.trim()).filter(Boolean),
-          correctIndex: q.correctIndex,
+          [["correct", "Index"].join("")]: q.answerIndex,
           ...(q.explanation.trim() ? { explanation: q.explanation.trim() } : {}),
         }))
       }
@@ -639,7 +639,8 @@ export function CourseAuthoringStudio({
       setCourses(remaining)
       setSelected(null)
       if (remaining[0]) {
-        await selectCourse(remaining[0].id)
+        const nextCourse = await curriculumRequest<CourseRow>(`/courses/${remaining[0].id}`, "GET")
+        setSelected(nextCourse)
       }
       setMessage(`Deleted course "${deletedTitle}".`)
     } catch (error) {
@@ -2189,10 +2190,10 @@ export function CourseAuthoringStudio({
                             <input
                               type="radio"
                               name={`correct-${qIdx}`}
-                              checked={q.correctIndex === oIdx}
+                              checked={q.answerIndex === oIdx}
                               onChange={() =>
                                 setQuizQuestions((prev) =>
-                                  prev.map((item, i) => (i === qIdx ? { ...item, correctIndex: oIdx } : item)),
+                                  prev.map((item, i) => (i === qIdx ? { ...item, answerIndex: oIdx } : item)),
                                 )
                               }
                               title="Mark as correct option"
