@@ -32,7 +32,7 @@ CREATE TABLE "CapabilityConsentEvent" (
   "action" TEXT NOT NULL,
   "scopes" TEXT[] NOT NULL,
   "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  CONSTRAINT "CapabilityConsentEvent_pkey" PRIMARY KEY ("id"),
+  CONSTRAINT "CapabilityConsentEvent_pkey" PRIMARY KEY ("id")
 );
 CREATE INDEX "CapabilityConsentEvent_consentId_createdAt_idx"
   ON "CapabilityConsentEvent"("consentId", "createdAt");
