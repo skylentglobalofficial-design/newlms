@@ -53,6 +53,8 @@ export type CatalogPricingTier = {
 export type CatalogProgramSummary = {
   slug: string
   name: string
+  /** Category label used by programme detail badges. */
+  category?: string
   enrollmentStatus: CatalogEnrollmentStatus | null
   duration: string
   format: string
