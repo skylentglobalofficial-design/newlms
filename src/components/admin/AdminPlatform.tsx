@@ -167,13 +167,18 @@ export default function AdminPlatform({
     event.preventDefault()
     const form = new FormData(event.currentTarget)
     setMessage(null)
+    const rawKind = form.get("kind")
+    if (rawKind !== "notes" && rawKind !== "case_study") {
+      setMessage("Choose a valid learning resource type.")
+      return
+    }
     try {
       await createLearningResource({
         slug: String(form.get("slug")),
         title: String(form.get("title")),
         summary: String(form.get("summary")),
         body: String(form.get("body")),
-        kind: String(form.get("kind")),
+        kind: rawKind,
         elixirPrice: Number(form.get("elixirPrice")),
         active: true,
       })
