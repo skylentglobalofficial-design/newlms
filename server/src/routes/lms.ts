@@ -252,12 +252,6 @@ lmsRouter.post("/enrollments", requireAuth, requireCsrf, async (req: Authenticat
         return res.status(400).json({ error: "Program has no linked courses" })
       }
 
-      const hasAuthoredCourse = isAuthoredProgramme(program.slug)
-      const everyLinkedCourseIsEnrolable = program.programCourses.every((link) => courseIsEnrolable(link.course))
-      if (!hasAuthoredCourse || !everyLinkedCourseIsEnrolable) {
-        return res.status(400).json({ error: "Program has no authored courses available for enrollment" })
-      }
-
       const existing = await prisma.userEnrollment.findUnique({
         where: { userId_programId: { userId, programId: program.id } },
       })
@@ -272,9 +266,10 @@ lmsRouter.post("/enrollments", requireAuth, requireCsrf, async (req: Authenticat
       }
 
       // New programme enrolments only. An existing row above still reopens its workspace.
-      const approvedProgramme = isAuthoredProgramme(program.slug)
-      const everyLinkedCourseAuthored = program.programCourses.every((link) => courseIsEnrolable(link.course))
-      if (!approvedProgramme || !everyLinkedCourseAuthored) {
+      if (
+        !isAuthoredProgramme(program.slug) ||
+        !program.programCourses.every((link) => courseIsEnrolable(link.course))
+      ) {
         return res.status(400).json({ error: "This programme is not open for enrollment" })
       }
 
