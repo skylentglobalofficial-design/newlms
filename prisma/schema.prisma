@@ -238,6 +238,7 @@ model User {
   elixirTransactions  ElixirTransaction[]
   elixirAdjustments   ElixirTransaction[]          @relation("ElixirActor")
   verifiedPayments    VerifiedPayment[]
+  capabilityConsents  CapabilityConsent[] @relation("CapabilityConsentLearner")
   resourceEntitlements LearningResourceEntitlement[]
   adminAuditLogs      AdminAuditLog[]              @relation("AuditActor")
 }
@@ -852,6 +853,7 @@ model Employer {
   jobs         Job[]
   applications JobApplication[]
   members      EmployerMembership[]
+  capabilityConsents CapabilityConsent[]
 
   @@index([verificationStatus])
   @@index([location])
@@ -868,6 +870,42 @@ model EmployerMembership {
 
   @@unique([userId, employerId])
   @@index([employerId])
+}
+
+
+/// Employer-specific, learner-controlled permission to view selected Career OS evidence.
+/// A consent row is never treated as proof that a skill is verified.
+model CapabilityConsent {
+  id            String   @id @default(uuid()) @db.Uuid
+  learnerUserId String   @db.Uuid
+  employerId    String   @db.Uuid
+  scopes        String[]
+  grantedAt     DateTime @default(now())
+  revokedAt     DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  learner  User       @relation("CapabilityConsentLearner", fields: [learnerUserId], references: [id], onDelete: Cascade)
+  employer Employer  @relation(fields: [employerId], references: [id], onDelete: Cascade)
+  events   CapabilityConsentEvent[]
+
+  @@unique([learnerUserId, employerId])
+  @@index([employerId, revokedAt])
+  @@index([learnerUserId, revokedAt])
+}
+
+/// Append-only audit record for learner-controlled employer sharing.
+model CapabilityConsentEvent {
+  id          String   @id @default(uuid()) @db.Uuid
+  consentId   String   @db.Uuid
+  actorUserId String   @db.Uuid
+  action      String
+  scopes      String[]
+  createdAt   DateTime @default(now())
+
+  consent CapabilityConsent @relation(fields: [consentId], references: [id], onDelete: Cascade)
+
+  @@index([consentId, createdAt])
 }
 
 model Job {
