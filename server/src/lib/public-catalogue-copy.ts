@@ -124,7 +124,7 @@ export const PUBLIC_PROGRAMME_COPY: Record<string, ProgrammeCopy> = {
   },
   "product-management": {
     desc: "Advertised as a 5-month Product Management pathway. Enrolment today opens the authored Product Management course. Brochure modules beyond that course are not teachable here yet. There is no live classroom.",
-    format: "Self-paced",
+    format: "Recorded + SkyLab",
     taughtModuleCount: 5,
   },
   "sql-certificate": {
