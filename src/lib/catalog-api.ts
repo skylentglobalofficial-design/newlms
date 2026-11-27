@@ -6,6 +6,8 @@ export type CatalogEnrollmentStatus = "open" | "waitlist" | "coming_soon"
 export type CatalogCourseSummary = {
   slug: string
   title: string
+  /** Legacy presentation alias used by course listing surfaces. */
+  description?: string
   category: string
   level: string
   duration: string
