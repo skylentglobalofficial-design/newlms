@@ -14,6 +14,7 @@ import { useCatalogPrograms } from "@/hooks/useCatalog"
 import {
   confirmedOpenTitles,
   HomeClosing,
+  HomeElixirFlywheel,
   HomeHero,
   HomeProgrammes,
   InsideProgramme,
@@ -135,6 +136,8 @@ export default function HomePage() {
             onRetry={() => void catalog.reload()}
           />
         </section>
+
+        <HomeElixirFlywheel />
 
         {/* Visual Degree Pathways Band (UG & PG) */}
         <section
