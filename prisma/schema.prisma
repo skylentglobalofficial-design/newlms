@@ -887,7 +887,6 @@ model CapabilityConsent {
 
   learner  User       @relation("CapabilityConsentLearner", fields: [learnerUserId], references: [id], onDelete: Cascade)
   employer Employer  @relation(fields: [employerId], references: [id], onDelete: Cascade)
-  events   CapabilityConsentEvent[]
 
   @@unique([learnerUserId, employerId])
   @@index([employerId, revokedAt])
@@ -902,8 +901,6 @@ model CapabilityConsentEvent {
   action      String
   scopes      String[]
   createdAt   DateTime @default(now())
-
-  consent CapabilityConsent @relation(fields: [consentId], references: [id], onDelete: Cascade)
 
   @@index([consentId, createdAt])
 }
