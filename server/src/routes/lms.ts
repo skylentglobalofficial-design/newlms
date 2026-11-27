@@ -309,16 +309,16 @@ lmsRouter.post("/enrollments", requireAuth, requireCsrf, async (req: Authenticat
 
     const course = await findCourseBySlug(parsed.data.courseSlug!)
     if (!course) return res.status(404).json({ error: "Course not found" })
-    if (!courseIsEnrolable(course)) {
-      return res.status(400).json({ error: "This course is not open for enrollment yet" })
-    }
-
     const existing = await prisma.userEnrollment.findUnique({
       where: { userId_courseId: { userId, courseId: course.id } },
     })
     if (existing) {
       const workspace = await buildCourseWorkspace({ ...existing, course })
       return res.json({ data: await attachProgramWorkspace(userId, workspace, null, course.id) })
+    }
+
+    if (!courseIsEnrolable(course)) {
+      return res.status(400).json({ error: "This course is not open for enrollment yet" })
     }
 
     const consent = readConsent(req.body)
