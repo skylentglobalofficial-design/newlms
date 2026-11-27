@@ -256,6 +256,9 @@ export function HomeHero({
   return (
     <section aria-labelledby="hx-hero-title" className="hx-hero-v158 hx-hero-v159 hx-hero-v160">
       <div className="hx-hero-v158__inner">
+        <p className="hx-hero-v159__eyebrow" style={{ margin: "0 0 18px", fontWeight: 700, letterSpacing: "0.04em" }}>
+          Learn. Practise. Build. <em>Prove it.</em>
+        </p>
         <h1 id="hx-hero-title" className="hx-hero-v159__title hx-hero-v160__title" aria-label="Master real skills. Prove your work.">
           <span aria-hidden="true">
             {HERO_H1_L1.split("").map((ch, i) => {
@@ -283,6 +286,20 @@ export function HomeHero({
           </span>
         </h1>
 
+        <img
+          src={heroStudent1024}
+          srcSet={`${heroStudent720} 720w, ${heroStudent1024} 1024w`}
+          sizes="(max-width: 720px) 100vw, 720px"
+          alt="Learner practising in the Skylent learning workspace"
+          width={1024}
+          height={640}
+          fetchPriority="high"
+          decoding="async"
+          style={{ display: "block", width: "min(100%, 560px)", height: "auto", aspectRatio: "16 / 10", objectFit: "cover", borderRadius: 18, margin: "0 auto 24px" }}
+        />
+        <p className="hx-hero-v159__subline" style={{ margin: "0 0 28px", fontWeight: 600 }}>
+          Interactive SQL &amp; Python practice
+        </p>
         <p className={`hx-hero-v159__subline hx-hero-v1605__subline${typingDone ? " is-ready" : ""}`} aria-live="polite">
           <span>Learn</span>
           <span className={`hx-hero-v1606__rotator${fadingOut ? " is-out" : ""}`}>
