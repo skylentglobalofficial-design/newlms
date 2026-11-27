@@ -1455,7 +1455,7 @@ export default function DashboardFacultyPage() {
                     message={dashboard?.teachingScopeMessage}
                     onOpenCurriculum={() => setActiveNav('curriculum')}
                     onQuickActivate={async () => {
-                      await claimFacultyDefaultScope().catch(() => null)
+                      await claimDefaultFacultyCourses().catch(() => null)
                       reloadAll()
                     }}
                   />
