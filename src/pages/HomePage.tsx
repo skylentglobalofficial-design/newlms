@@ -21,7 +21,7 @@ import {
 } from "./home/Repolish"
 import "./HomePage.v2.css"
 import "./HomeRepolish.css"
-import degreeUgImg from "@/assets/home/pexels-3874631-cafe.jpg"
+import degreeUgImg from "@/assets/site/home/hero-classroom-960.webp"
 import degreePgImg from "@/assets/site/home/degree-management-960.webp"
 
 const OUTCOME_CARDS = [
