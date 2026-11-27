@@ -600,7 +600,7 @@ export function getMultiTrackLessonBody(courseSlug: string, lessonId: string): s
   return TRACK_SPECS[courseSlug].lessons.find((l) => l.id === lessonId)?.body
 }
 
-export function getMultiTrackAssignment(courseSlug: string, lessonId: string): AssignmentBrief | undefined {
+export function getMultiTrackAssignment(courseSlug: string, lessonId: string): (AssignmentBrief & { rubric: AssignmentBrief["evaluationCriteria"] }) | undefined {
   if (!isMultiTrackAuthoredCourse(courseSlug)) return undefined
   const spec = TRACK_SPECS[courseSlug]
   const lesson = spec.lessons.find((l) => l.id === lessonId)
@@ -622,6 +622,11 @@ export function getMultiTrackAssignment(courseSlug: string, lessonId: string): A
     ],
     submissionFormat: "Submit a structured written response in the assignment workspace.",
     evaluationCriteria: [
+      { criterion: "Technical accuracy & invariant design", weight: "40%", description: "Identifies the exact concurrency, leakage, grounding, or schema invariant required." },
+      { criterion: "Verification & edge-case coverage", weight: "40%", description: "Includes concrete test assertions, thresholds, or failure recovery rules." },
+      { criterion: "Executive clarity", weight: "20%", description: "Written clearly with actionable trade-offs and zero unverified claims." },
+    ],
+    rubric: [
       { criterion: "Technical accuracy & invariant design", weight: "40%", description: "Identifies the exact concurrency, leakage, grounding, or schema invariant required." },
       { criterion: "Verification & edge-case coverage", weight: "40%", description: "Includes concrete test assertions, thresholds, or failure recovery rules." },
       { criterion: "Executive clarity", weight: "20%", description: "Written clearly with actionable trade-offs and zero unverified claims." },
@@ -687,11 +692,6 @@ export function getMultiTrackQuiz(courseSlug: string, lessonId: string): DaQuizB
         correctIndex: 0,
         explanation: "Automated regression fixtures covering malformed inputs and replay edge cases catch regressions before deployment.",
       },
-    ],
-    rubric: [
-      { criterion: "Technical accuracy & invariant design", weight: "40%", description: "Identifies the exact concurrency, leakage, grounding, or schema invariant required." },
-      { criterion: "Verification & edge-case coverage", weight: "40%", description: "Includes concrete test assertions, thresholds, or failure recovery rules." },
-      { criterion: "Executive clarity", weight: "20%", description: "Written clearly with actionable trade-offs and zero unverified claims." },
     ],
   }
 }
