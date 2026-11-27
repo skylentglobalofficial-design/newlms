@@ -58,7 +58,7 @@ export const PUBLIC_COURSE_COPY: Record<string, CourseCopy> = {
       "Analysts who currently report numbers and now have to recommend a product change",
       "Anyone who has to choose one problem under a real constraint, without a research team",
     ],
-    mode: "Self-paced",
+    mode: "Recorded + SkyLab",
   },
   "python-programming": {
     desc: "Learn core Python syntax, idiomatic data structures, object-oriented design, workflow automation, and production testing on real-world engineering scripts.",
