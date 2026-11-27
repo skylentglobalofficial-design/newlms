@@ -123,13 +123,16 @@ export default function PracticeWorkspacePage() {
 
   return (
     <AuthDashboardShell
+      themeId="data-science"
       workspace="learning"
-      title={workspace?.title ?? "Case Practice Studio"}
-      subtitle={workspace?.courseTitle ?? "Interactive Case Notes"}
+      workspaceLabel={workspace?.courseTitle ?? "My Courses"}
+      roleLabel="Learner"
       navItems={LEARNER_NAV}
+      bottomNavItems={LEARNER_NAV}
       activeNav="projects"
-      onSelectNav={handleNavSelect}
+      onNavChange={handleNavSelect}
       renderNavIcon={(id) => <LearnerNavIcon id={id as LearnerNavId} />}
+      header={<div><strong>{workspace?.title ?? "Case Practice Studio"}</strong><span> · Interactive Case Notes</span></div>}
     >
       {status === "loading" ? (
         <div className="lab-empty"><p>Opening the workspace…</p></div>
