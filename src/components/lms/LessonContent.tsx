@@ -94,7 +94,7 @@ function AssignmentBriefView({ brief }: { brief: AssignmentBrief; accent: Accent
       <section className="as-block">
         <h3>Common mistakes</h3>
         <ul>
-          {brief.commonMistakes.map((item) => <li key={item}>{item}</li>)}
+          {(brief.commonMistakes ?? []).map((item) => <li key={item}>{item}</li>)}
         </ul>
       </section>
       {brief.extension ? (
@@ -105,10 +105,10 @@ function AssignmentBriefView({ brief }: { brief: AssignmentBrief; accent: Accent
       ) : null}
       <section className="as-block as-evidence">
         <h3>TalentBridge evidence</h3>
-        <p style={{ marginBottom: 8 }}><strong>Learning.</strong> {brief.careerEvidence.learning}</p>
-        <p style={{ marginBottom: 8 }}><strong>Artifact.</strong> {brief.careerEvidence.artifact}</p>
-        <p style={{ marginBottom: 8 }}><strong>Skill.</strong> {brief.careerEvidence.skill}</p>
-        <p>{brief.careerEvidence.evidence} Once submitted, you can showcase this verified artifact directly in your TalentBridge → Projects portfolio.</p>
+        <p style={{ marginBottom: 8 }}><strong>Learning.</strong> {brief.careerEvidence?.learning ?? 'Applied course learning'}</p>
+        <p style={{ marginBottom: 8 }}><strong>Artifact.</strong> {brief.careerEvidence?.artifact ?? brief.title}</p>
+        <p style={{ marginBottom: 8 }}><strong>Skill.</strong> {brief.careerEvidence?.skill ?? brief.objective}</p>
+        <p>{brief.careerEvidence?.evidence ?? 'Your submission can be reviewed by faculty.'} Once submitted, you can showcase this verified artifact directly in your TalentBridge → Projects portfolio.</p>
       </section>
     </div>
   )
