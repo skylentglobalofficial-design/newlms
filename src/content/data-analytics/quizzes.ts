@@ -4,8 +4,8 @@ export type DaQuizQuestion = {
   options: string[];
   correctIndex: number;
   explanation: string;
-  lessonId: string;
-  moduleId: string;
+  lessonId?: string;
+  moduleId?: string;
 };
 
 export type DaQuizBank = {
