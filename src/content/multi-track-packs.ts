@@ -688,6 +688,11 @@ export function getMultiTrackQuiz(courseSlug: string, lessonId: string): DaQuizB
         explanation: "Automated regression fixtures covering malformed inputs and replay edge cases catch regressions before deployment.",
       },
     ],
+    rubric: [
+      { criterion: "Technical accuracy & invariant design", weight: "40%", description: "Identifies the exact concurrency, leakage, grounding, or schema invariant required." },
+      { criterion: "Verification & edge-case coverage", weight: "40%", description: "Includes concrete test assertions, thresholds, or failure recovery rules." },
+      { criterion: "Executive clarity", weight: "20%", description: "Written clearly with actionable trade-offs and zero unverified claims." },
+    ],
   }
 }
 
