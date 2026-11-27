@@ -956,7 +956,7 @@ console.log("14. Admin C-Suite Unit Economics UI and Student Programme Master Ce
     coursesPageSrc.includes("COURSE_SKILL_TAGS") &&
       courseDetailSrc.includes("cat-rubric-strip") &&
       courseDetailSrc.includes("Graded Capstone Project Studio") &&
-      progListingSrc.includes("Start the linked self-paced course") &&
+      progListingSrc.includes("Start the linked Recorded + SkyLab course immediately") &&
       repolishUpdated.includes("hx-live-courses-grid") &&
       repolishUpdated.includes("ZeroLoginInteractiveTryout") &&
       homeCssSrc.includes(".hx-page--home .hxw-ws") &&
