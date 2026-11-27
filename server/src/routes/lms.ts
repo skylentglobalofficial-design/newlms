@@ -252,8 +252,9 @@ lmsRouter.post("/enrollments", requireAuth, requireCsrf, async (req: Authenticat
         return res.status(400).json({ error: "Program has no linked courses" })
       }
 
-      const hasAuthoredCourse = program.programCourses.some((link) => courseIsEnrolable(link.course))
-      if (!hasAuthoredCourse) {
+      const hasAuthoredCourse = isAuthoredProgramme(program.slug)
+      const everyLinkedCourseIsEnrolable = program.programCourses.every((link) => courseIsEnrolable(link.course))
+      if (!hasAuthoredCourse || !everyLinkedCourseIsEnrolable) {
         return res.status(400).json({ error: "Program has no authored courses available for enrollment" })
       }
 
