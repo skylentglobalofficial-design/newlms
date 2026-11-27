@@ -1011,10 +1011,13 @@ function ProgrammeGroup({ title, rows, confirmed }: { title: string; rows: HomeR
 }
 
 export function confirmedOpenTitles(programmes: CatalogProgramSummary[]): string[] {
-  return homeRows(programmes)
-    .filter((row) => FOCUS_SLUGS.includes(row.program.slug as (typeof FOCUS_SLUGS)[number]) && row.open)
+  const rows = homeRows(programmes)
+    .filter((row) => FOCUS_SLUGS.slice(0, 2).includes(row.program.slug as (typeof FOCUS_SLUGS)[number]))
     .sort((a, b) => FOCUS_SLUGS.indexOf(a.program.slug as (typeof FOCUS_SLUGS)[number]) - FOCUS_SLUGS.indexOf(b.program.slug as (typeof FOCUS_SLUGS)[number]))
-    .map((row) => FOCUS_FACE[row.program.slug]?.title || row.title)
+  // The homepage's two featured programme names are a paired claim: show neither
+  // unless both are confirmed open and backed by live authored learning paths.
+  if (rows.length !== 2 || rows.some((row) => !row.open)) return []
+  return rows.map((row) => FOCUS_FACE[row.program.slug]?.title || row.title)
 }
 
 export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { programmes: CatalogProgramSummary[]; loading: boolean; confirmed: boolean; onRetry?: () => void }) {
