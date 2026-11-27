@@ -32,6 +32,14 @@ import photoMacbook from "@/assets/home/pexels-3987012-macbook.jpg"
 import photoCampusPg from "@/assets/site/home/degree-management-960.webp"
 import { STATUS_NOT_CONFIRMED } from "../../components/programme/CatalogueNotice"
 
+const JOURNEY_STEPS: Array<{ n: string; title: string; text: string }> = [
+  { n: "01", title: "Discover", text: "Choose a programme that matches your goal and current level." },
+  { n: "02", title: "Learn", text: "Work through structured lessons and knowledge checks." },
+  { n: "03", title: "Practise", text: "Apply concepts through assignments, labs, and projects." },
+  { n: "04", title: "Get reviewed", text: "Receive faculty feedback on submitted work and evidence." },
+  { n: "05", title: "Show your work", text: "Build a portfolio of completed, reviewable learning artifacts." },
+]
+
 function OfferingIcon({ type }: { type: string }) {
   const iconColor = "#c4b8ff"
   switch (type) {
