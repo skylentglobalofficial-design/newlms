@@ -127,6 +127,8 @@ export type JobListing = {
   id: string
   employerId: string
   employer?: EmployerSummary
+  /** Legacy company label used by recruiter-facing job cards. */
+  company?: string
   title: string
   slug: string
   description: string
