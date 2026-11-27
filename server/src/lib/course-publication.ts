@@ -1,5 +1,5 @@
 import { CoursePublicationStatus, type Course } from "@prisma/client"
-import { FLAGSHIP_COURSE_SLUG, PRODUCT_MANAGEMENT_SLUG } from "./authored-courses.js"
+import { isAuthoredCourse } from "./authored-courses.js"
 
 type EnrolmentCourse = Pick<Course, "slug" | "publicationStatus" | "authoredInApp">
 
@@ -11,5 +11,5 @@ type EnrolmentCourse = Pick<Course, "slug" | "publicationStatus" | "authoredInAp
  */
 export function courseIsEnrolable(course: EnrolmentCourse): boolean {
   if (course.publicationStatus !== CoursePublicationStatus.PUBLISHED) return false
-  return course.slug === FLAGSHIP_COURSE_SLUG || course.slug === PRODUCT_MANAGEMENT_SLUG || course.authoredInApp
+  return isAuthoredCourse(course.slug) || course.authoredInApp
 }
