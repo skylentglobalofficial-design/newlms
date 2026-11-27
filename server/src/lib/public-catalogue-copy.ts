@@ -40,7 +40,7 @@ export const PUBLIC_COURSE_COPY: Record<string, CourseCopy> = {
       "Business analysts who need SQL and dashboard practice",
       "Anyone who wants a portfolio work sample, not a certificate",
     ],
-    mode: "Self-paced",
+    mode: "Recorded + SkyLab",
   },
   "product-management": {
     desc: "Learn product thinking, user evidence, problem framing, prioritisation, and specification on a fictional Harbor Retail operations case.",
