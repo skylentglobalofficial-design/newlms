@@ -11,5 +11,7 @@ type EnrolmentCourse = Pick<Course, "slug" | "publicationStatus" | "authoredInAp
  */
 export function courseIsEnrolable(course: EnrolmentCourse): boolean {
   if (course.publicationStatus !== CoursePublicationStatus.PUBLISHED) return false
+  // Python is a linked learning track, not an independently open direct-enrolment product.
+  if (course.slug === "python-programming") return false
   return isAuthoredCourse(course.slug) || course.authoredInApp
 }
