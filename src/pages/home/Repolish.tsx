@@ -1024,6 +1024,9 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
   const [trackFilter, setTrackFilter] = useState<"skill" | "pro" | "all">("skill")
   const rows = homeRows(programmes).filter((row) => FOCUS_SLUGS.includes(row.program.slug as (typeof FOCUS_SLUGS)[number]))
   const ordered = [...rows].sort((a, b) => FOCUS_SLUGS.indexOf(a.program.slug as (typeof FOCUS_SLUGS)[number]) - FOCUS_SLUGS.indexOf(b.program.slug as (typeof FOCUS_SLUGS)[number]))
+  const dataAnalyticsOpen = ordered.some((row) => row.program.slug === "data-analytics-pro" && row.open)
+  const productManagementOpen = ordered.some((row) => row.program.slug === "product-management" && row.open)
+  const bothFeaturedProgrammesOpen = confirmed && dataAnalyticsOpen && productManagementOpen
   return (
     <section id="programmes" className="hx-programmes" aria-labelledby="hx-programmes-title">
       <div className="sky-container">
