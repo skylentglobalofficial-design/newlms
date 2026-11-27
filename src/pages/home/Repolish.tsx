@@ -28,9 +28,17 @@ import photoAnalytics from "@/assets/site/home/program-analytics-800.webp"
 import photoProduct from "@/assets/site/home/program-product-800.webp"
 import photoScience from "@/assets/site/home/program-web-800.webp"
 import photoClass from "@/assets/site/home/hero-classroom-960.webp"
-import photoMacbook from "@/assets/home/pexels-3987012-macbook.jpg"
+import photoMacbook from "@/assets/site/home/hero-student-1024.webp"
 import photoCampusPg from "@/assets/site/home/degree-management-960.webp"
 import { STATUS_NOT_CONFIRMED } from "../../components/programme/CatalogueNotice"
+
+const JOURNEY_STEPS: Array<{ n: string; title: string; text: string }> = [
+  { n: "01", title: "Discover", text: "Choose a programme that matches your goal and current level." },
+  { n: "02", title: "Learn", text: "Work through structured lessons and knowledge checks." },
+  { n: "03", title: "Practise", text: "Apply concepts through assignments, labs, and projects." },
+  { n: "04", title: "Get reviewed", text: "Receive faculty feedback on submitted work and evidence." },
+  { n: "05", title: "Show your work", text: "Build a portfolio of completed, reviewable learning artifacts." },
+]
 
 function OfferingIcon({ type }: { type: string }) {
   const iconColor = "#c4b8ff"
@@ -248,6 +256,9 @@ export function HomeHero({
   return (
     <section aria-labelledby="hx-hero-title" className="hx-hero-v158 hx-hero-v159 hx-hero-v160">
       <div className="hx-hero-v158__inner">
+        <p className="hx-hero-v159__eyebrow" style={{ margin: "0 0 18px", fontWeight: 700, letterSpacing: "0.04em" }}>
+          Learn. Practise. Build. <em>Prove it.</em>
+        </p>
         <h1 id="hx-hero-title" className="hx-hero-v159__title hx-hero-v160__title" aria-label="Master real skills. Prove your work.">
           <span aria-hidden="true">
             {HERO_H1_L1.split("").map((ch, i) => {
@@ -275,6 +286,20 @@ export function HomeHero({
           </span>
         </h1>
 
+        <img
+          src={heroStudent1024}
+          srcSet={`${heroStudent720} 720w, ${heroStudent1024} 1024w`}
+          sizes="(max-width: 720px) 100vw, 720px"
+          alt="Learner practising in the Skylent learning workspace"
+          width={1024}
+          height={640}
+          fetchPriority="high"
+          decoding="async"
+          style={{ display: "block", width: "min(100%, 560px)", height: "auto", aspectRatio: "16 / 10", objectFit: "cover", borderRadius: 18, margin: "0 auto 24px" }}
+        />
+        <p className="hx-hero-v159__subline" style={{ margin: "0 0 28px", fontWeight: 600 }}>
+          Interactive SQL &amp; Python practice
+        </p>
         <p className={`hx-hero-v159__subline hx-hero-v1605__subline${typingDone ? " is-ready" : ""}`} aria-live="polite">
           <span>Learn</span>
           <span className={`hx-hero-v1606__rotator${fadingOut ? " is-out" : ""}`}>
@@ -1003,16 +1028,22 @@ function ProgrammeGroup({ title, rows, confirmed }: { title: string; rows: HomeR
 }
 
 export function confirmedOpenTitles(programmes: CatalogProgramSummary[]): string[] {
-  return homeRows(programmes)
-    .filter((row) => FOCUS_SLUGS.includes(row.program.slug as (typeof FOCUS_SLUGS)[number]) && row.open)
+  const rows = homeRows(programmes)
+    .filter((row) => FOCUS_SLUGS.slice(0, 2).includes(row.program.slug as (typeof FOCUS_SLUGS)[number]))
     .sort((a, b) => FOCUS_SLUGS.indexOf(a.program.slug as (typeof FOCUS_SLUGS)[number]) - FOCUS_SLUGS.indexOf(b.program.slug as (typeof FOCUS_SLUGS)[number]))
-    .map((row) => FOCUS_FACE[row.program.slug]?.title || row.title)
+  // The homepage's two featured programme names are a paired claim: show neither
+  // unless both are confirmed open and backed by live authored learning paths.
+  if (rows.length !== 2 || rows.some((row) => !row.open)) return []
+  return rows.map((row) => FOCUS_FACE[row.program.slug]?.title || row.title)
 }
 
 export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { programmes: CatalogProgramSummary[]; loading: boolean; confirmed: boolean; onRetry?: () => void }) {
   const [trackFilter, setTrackFilter] = useState<"skill" | "pro" | "all">("skill")
   const rows = homeRows(programmes).filter((row) => FOCUS_SLUGS.includes(row.program.slug as (typeof FOCUS_SLUGS)[number]))
   const ordered = [...rows].sort((a, b) => FOCUS_SLUGS.indexOf(a.program.slug as (typeof FOCUS_SLUGS)[number]) - FOCUS_SLUGS.indexOf(b.program.slug as (typeof FOCUS_SLUGS)[number]))
+  const dataAnalyticsOpen = ordered.some((row) => row.program.slug === "data-analytics-pro" && row.open)
+  const productManagementOpen = ordered.some((row) => row.program.slug === "product-management" && row.open)
+  const bothFeaturedProgrammesOpen = confirmed && dataAnalyticsOpen && productManagementOpen
   return (
     <section id="programmes" className="hx-programmes" aria-labelledby="hx-programmes-title">
       <div className="sky-container">
@@ -1023,6 +1054,7 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
               Choose a career track
             </h2>
             <p className="hx-programmes__lead">{homepageProgrammeLead(loading, confirmed)}</p>
+            {bothFeaturedProgrammesOpen ? <p className="hx-programmes__lead">Two programmes are open to start.</p> : null}
           </div>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center" }}>
             {[

@@ -308,7 +308,7 @@ function CertificateName() {
       const sixMonthsLater = new Date(Date.now() + 180 * 24 * 60 * 60 * 1000).toISOString()
       setLocalLockedUntil(sixMonthsLater)
       try {
-        window.localStorage.setItem(`skylent:name-locked-until:${user.id}`, sixMonthsLater)
+        window.localStorage.setItem(`skylent:name-locked-until:${user?.id ?? ''}`, sixMonthsLater)
       } catch {
         // ignore
       }
@@ -761,7 +761,7 @@ function SelectYourPlanPortalModal({
         >
           {/* Plan 1: Certification + 2-Month Complimentary Internship (₹1,499) */}
           <div
-            style={{display: /full-stack|data-science|data science|generative/i.test(`${course.slug || ''} ${course.title || ''}`) ? 'none' : undefined, 
+            style={{
               borderRadius: 16,
               border: '1px solid #e2e8f0',
               borderTop: '4px solid #5142b5',
@@ -1257,7 +1257,7 @@ export default function DashboardStudentPage() {
                   ₹{(selectedExploreDetail.price * 2).toLocaleString('en-IN')}
                 </span>
                 <span style={{ fontSize: 12, fontWeight: 700, padding: '3px 10px', borderRadius: 999, background: '#dcfce7', color: '#166534' }}>
-                  {/full-stack|data-science|data science|generative/i.test(`${c.slug || ''} ${c.title || ''}`) ? "Pro Program \u00b7 Job Assistance" : "Skill Course \u00b7 Recorded + Live SkyLab"} Plans
+                  {/full-stack|data-science|data science|generative/i.test(`${selectedExploreDetail.slug || ''} ${selectedExploreDetail.title || ''}`) ? "Pro Program \u00b7 Job Assistance" : "Skill Course \u00b7 Recorded + Live SkyLab"} Plans
                 </span>
               </div>
               <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>

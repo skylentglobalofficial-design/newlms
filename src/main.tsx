@@ -290,28 +290,7 @@ if (typeof window !== "undefined" && !(window as any).__skylentMasterQaInstalled
     });
   }
 
-  // C. Global Interactive Click Listener for "Run Verification Check"
-  /* v174.3 disabled rogue SQL click hijacker */ ((..._a: unknown[]) => {})("click", (ev) => {
-    const target = (ev.target as HTMLElement)?.closest("button, span, div");
-    if (!target) return;
-    const txt = (target.textContent || "").trim();
-    if (txt.includes("Run Verification Check") || txt.includes("Re-Run Verification") || txt.includes("166 Verified Rows")) {
-      const el = target as HTMLElement;
-      el.style.cursor = "pointer";
-      el.style.transition = "all 0.2s ease";
-      el.style.background = "#1e3a8a";
-      el.style.color = "#ffffff";
-      el.style.padding = "6px 12px";
-      el.style.borderRadius = "6px";
-      el.textContent = "Running SQL & Rubric Checks...";
-      if (window.location.pathname === "/" || el.tagName !== "BUTTON" || el.closest("header, nav, footer")) return;
-      setTimeout(() => {
-        el.style.background = "#15803d";
-        el.style.color = "#ffffff";
-        el.textContent = "✓ Checks Passed (166 Rows Verified) · Click to Re-Run";
-      }, 400);
-    }
-  });
+  // Legacy click hijacker removed; verification is handled by its page component.
 }
 
 // v139 Lightweight Route Tier Sync & Red Cross Fix (Zero MutationObserver overhead)

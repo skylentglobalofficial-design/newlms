@@ -44,6 +44,7 @@ import { revaRouter } from "./routes/skylent/reva.js"
 import { eventsRouter } from "./routes/events.js"
 import { degreesRouter } from "./routes/degrees.js"
 import { paymentsRouter } from "./routes/payments.js"
+import { capabilityRouter } from "./routes/capability.js"
 
 assertProductionEnv()
 
@@ -99,6 +100,7 @@ app.use("/api/v1/reva", revaRouter)
 app.use("/api/v1/events", eventsRouter)
 app.use("/api/v1/degrees", degreesRouter)
 app.use("/api/v1/payments", paymentsRouter)
+app.use("/api/v1/capability", capabilityRouter)
 app.use("/api", (_request, response) => {
   response.status(404).json({ error: "Not found" })
 })

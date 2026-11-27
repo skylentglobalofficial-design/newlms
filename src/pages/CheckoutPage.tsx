@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react"
 import { Link, useNavigate, useSearchParams } from "react-router-dom"
 import { useAuth } from "../context/AuthContext"
 import { courses, programs } from "../data"
+import { linkedCourseSlugsForProgram } from "../lib/catalog-maturity"
 import {
   buildSkylentTiersForPrice,
   saveAdminPriceOverridesLocal,
@@ -77,11 +78,12 @@ export default function CheckoutPage() {
     const override = priceOverrides[slug]
     if (kind === "program") {
       const prog = programs.find((p) => p.slug === slug)
-      const baseCourse = courses.find((c) => prog?.linkedCourseSlugs?.includes(c.slug))
+      const linkedSlugs = prog ? linkedCourseSlugsForProgram(prog.slug) : []
+      const baseCourse = courses.find((c) => linkedSlugs.includes(c.slug))
       return {
         title: prog?.name || "Skylent Career Programme",
         basePrice: override?.basePrice ?? 3499,
-        linkedSlugs: prog?.linkedCourseSlugs ?? [],
+        linkedSlugs,
       }
     }
     const c = courses.find((row) => row.slug === slug)

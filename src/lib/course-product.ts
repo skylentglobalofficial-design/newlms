@@ -26,6 +26,10 @@ export type CourseProjectLink = {
   label: string
   href: string
   note: string
+  /** Display aliases consumed by the course detail and learner dashboard surfaces. */
+  title?: string
+  summary?: string
+  ctaLabel?: string
 }
 
 export type CourseProductProfile = {

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react"
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom"
 import { AuthDashboardShell } from "../components/AuthDashboardShell"
-import { LEARNER_NAV, LearnerNavIcon, type LearnerNavId } from "../components/learner/learner-nav"
+import { LEARNER_NAV, LearnerNavIcon } from "../components/learner/learner-nav"
 import { fetchLearnerPracticeWorkspace, saveLearnerPracticeResponse, type LearnerPracticeWorkspace } from "../lib/practice-api"
 import {
   buildPracticeWorkspaceDraftKey,
@@ -27,6 +27,8 @@ export default function PracticeWorkspacePage() {
   const editVersionRef = useRef(0)
 
   const draftKey = courseSlug && lessonId ? buildPracticeWorkspaceDraftKey(courseSlug, lessonId) : ""
+
+  type LearnerNavId = "overview" | "courses" | "projects" | "explore" | "career"
 
   function handleNavSelect(id: string) {
     const navId = id as LearnerNavId
@@ -121,13 +123,16 @@ export default function PracticeWorkspacePage() {
 
   return (
     <AuthDashboardShell
-      workspace="learner"
-      title={workspace?.title ?? "Case Practice Studio"}
-      subtitle={workspace?.courseTitle ?? "Interactive Case Notes"}
+      themeId="data-science"
+      workspace="learning"
+      workspaceLabel={workspace?.courseTitle ?? "My Courses"}
+      roleLabel="Learner"
       navItems={LEARNER_NAV}
+      bottomNavItems={LEARNER_NAV}
       activeNav="projects"
-      onSelectNav={handleNavSelect}
+      onNavChange={handleNavSelect}
       renderNavIcon={(id) => <LearnerNavIcon id={id as LearnerNavId} />}
+      header={<div><strong>{workspace?.title ?? "Case Practice Studio"}</strong><span> · Interactive Case Notes</span></div>}
     >
       {status === "loading" ? (
         <div className="lab-empty"><p>Opening the workspace…</p></div>

@@ -397,7 +397,13 @@ export async function completeProjectTask(options: {
     )
   }
 
-  const tasks = parseStoredProjectTasks(row.tasks, definition).map((task) =>
+  const currentTasks = parseStoredProjectTasks(row.tasks, definition)
+  const currentTask = currentTasks.find((task) => task.key === options.taskKey)
+  if (taskDef.completion === "lab_work" && !currentTask?.labWorkId) {
+    throw new ProjectServiceError("invalid_request", "Attach valid saved lab evidence before completing this task.")
+  }
+
+  const tasks = currentTasks.map((task) =>
     task.key === options.taskKey
       ? { ...task, status: "complete" as const, completedAt: task.completedAt ?? new Date().toISOString() }
       : task,

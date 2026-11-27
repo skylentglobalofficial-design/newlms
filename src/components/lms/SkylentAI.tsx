@@ -663,7 +663,7 @@ export default function SkylentAI({
                 }).catch(() => undefined)
               }}
             >
-              Need human help? Flag for Faculty review
+              Need human help? Flag for Faculty TA review (20-min SLA)
             </button>
           )}
         </div>

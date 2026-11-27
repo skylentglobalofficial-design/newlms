@@ -40,7 +40,7 @@ export const PUBLIC_COURSE_COPY: Record<string, CourseCopy> = {
       "Business analysts who need SQL and dashboard practice",
       "Anyone who wants a portfolio work sample, not a certificate",
     ],
-    mode: "Self-paced",
+    mode: "Recorded + SkyLab",
   },
   "product-management": {
     desc: "Learn product thinking, user evidence, problem framing, prioritisation, and specification on a fictional Harbor Retail operations case.",
@@ -58,7 +58,7 @@ export const PUBLIC_COURSE_COPY: Record<string, CourseCopy> = {
       "Analysts who currently report numbers and now have to recommend a product change",
       "Anyone who has to choose one problem under a real constraint, without a research team",
     ],
-    mode: "Self-paced",
+    mode: "Recorded + SkyLab",
   },
   "python-programming": {
     desc: "Learn core Python syntax, idiomatic data structures, object-oriented design, workflow automation, and production testing on real-world engineering scripts.",
@@ -124,7 +124,7 @@ export const PUBLIC_PROGRAMME_COPY: Record<string, ProgrammeCopy> = {
   },
   "product-management": {
     desc: "Advertised as a 5-month Product Management pathway. Enrolment today opens the authored Product Management course. Brochure modules beyond that course are not teachable here yet. There is no live classroom.",
-    format: "Self-paced",
+    format: "Recorded + SkyLab",
     taughtModuleCount: 5,
   },
   "sql-certificate": {

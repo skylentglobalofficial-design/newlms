@@ -17,6 +17,8 @@ export type UserRole = ApiRole
 export type AuthUser = {
   id: string
   name: string
+  /** API compatibility alias; the canonical display value is `name`. */
+  displayName?: string
   email: string
   role: UserRole
   avatar: string

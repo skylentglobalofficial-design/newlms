@@ -14,13 +14,15 @@ import { useCatalogPrograms } from "@/hooks/useCatalog"
 import {
   confirmedOpenTitles,
   HomeClosing,
+  HomeElixirFlywheel,
   HomeHero,
   HomeProgrammes,
   InsideProgramme,
+  ZeroLoginInteractiveTryout,
 } from "./home/Repolish"
 import "./HomePage.v2.css"
 import "./HomeRepolish.css"
-import degreeUgImg from "@/assets/home/pexels-3874631-cafe.jpg"
+import degreeUgImg from "@/assets/site/home/hero-classroom-960.webp"
 import degreePgImg from "@/assets/site/home/degree-management-960.webp"
 
 const OUTCOME_CARDS = [
@@ -136,6 +138,8 @@ export default function HomePage() {
           />
         </section>
 
+        <HomeElixirFlywheel />
+
         {/* Visual Degree Pathways Band (UG & PG) */}
         <section
           aria-label="Degree pathways"
@@ -198,6 +202,7 @@ export default function HomePage() {
           }}
         >
           <InsideProgramme />
+          <ZeroLoginInteractiveTryout />
           <div className="sky-container" style={{ marginTop: 20 }}>
             <div
               style={{
