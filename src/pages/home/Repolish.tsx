@@ -28,7 +28,7 @@ import photoAnalytics from "@/assets/site/home/program-analytics-800.webp"
 import photoProduct from "@/assets/site/home/program-product-800.webp"
 import photoScience from "@/assets/site/home/program-web-800.webp"
 import photoClass from "@/assets/site/home/hero-classroom-960.webp"
-import photoMacbook from "@/assets/home/pexels-3987012-macbook.jpg"
+import photoMacbook from "@/assets/site/home/hero-student-1024.webp"
 import photoCampusPg from "@/assets/site/home/degree-management-960.webp"
 import { STATUS_NOT_CONFIRMED } from "../../components/programme/CatalogueNotice"
 
