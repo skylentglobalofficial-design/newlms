@@ -1037,6 +1037,7 @@ export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { pr
               Choose a career track
             </h2>
             <p className="hx-programmes__lead">{homepageProgrammeLead(loading, confirmed)}</p>
+            {bothFeaturedProgrammesOpen ? <p className="hx-programmes__lead">Two programmes are open to start.</p> : null}
           </div>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center" }}>
             {[
