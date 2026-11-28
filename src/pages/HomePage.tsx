@@ -138,6 +138,18 @@ export default function HomePage() {
           />
         </section>
 
+        <section
+          className="sky-container"
+          aria-labelledby="home-campus-title"
+          style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: "16px 24px", paddingBlock: "clamp(28px, 5vw, 56px)" }}
+        >
+          <div>
+            <h2 id="home-campus-title" className="hx-h2 hx-h2--sm">Practical learning for your department.</h2>
+            <p>See how a student submission becomes faculty feedback and a cohort report.</p>
+          </div>
+          <Link className="sk-btn sk-btn-secondary" to="/institutions">For Colleges</Link>
+        </section>
+
         <HomeElixirFlywheel />
 
         {/* Visual Degree Pathways Band (UG & PG) */}
