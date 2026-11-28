@@ -1,9 +1,3 @@
-/**
- * /institutions (repolish). The B2B entry point, linked from the main navigation and the
- * homepage. It describes what Skylent provides to learners today (programmes, labs, LMS progress,
- * Career Portfolio, lesson help, and the isolated College Tenant OS with 1-click CSV export) and how a
- * partnership is set up.
- */
 import { Link } from "react-router-dom"
 import { PageShell } from "../components/shared"
 import { ArrowRight } from "../components/skylent/primitives"
@@ -12,26 +6,19 @@ import "./HomePage.v2.css"
 import "./HomeRepolish.css"
 import "./AboutRepolish.css"
 import "./InstitutionsRepolish.css"
+import CampusLabPreview from "./CampusLabPreview"
 
-const PROVIDES = [
-  { title: "Live 15-Lesson Courses & Programmes", text: "Data Analytics, Product Management, Python, Data Science & AI, Generative AI, and Full Stack Web — ready for immediate campus cohort deployment." },
-  { title: "Graded Browser Labs & Capstones", text: "In-browser SQL & Python sandboxes, timed mock interview checks, and 6-task Capstone Project Studios that generate verifiable work samples." },
-  { title: "Isolated College Tenant OS (/dashboard/college)", text: "Dedicated institutional portal for Deans, HODs, and Placement Officers with strict campus cohort management." },
-  { title: "Direct NAAC / NIRF / Placement CSV Export", text: "Export audited cohort progress, lesson completion rates, capstone readiness, and verified certificate codes in one click." },
-  { title: "24/7 Guided Study Support (Hinglish + English) + Faculty & Rubric Review", text: "In-lesson guided explanations that help students without spoiling answers, backed by live human Faculty TA support with structured faculty feedback." },
-]
-
-const PARTNERS = [
-  { title: "Colleges and universities", text: "Add practical 15-lesson courses, graded capstones, and verifiable certificates beside the degree you award." },
-  { title: "Placement & Training Cells (TPOs)", text: "Track real-time student readiness across the 60% Career Rise milestone and export verified project portfolios for visiting recruiters." },
-  { title: "Campus Live SkyLab Workshops", text: "Host live campus workshops with guided browser-based SQL, Python, and product case-study sprints for students." },
+const TRACKS = [
+  { title: "Data Analytics & SQL", text: "Use sales and returns data to answer a business question and explain the calculation." },
+  { title: "Python Fundamentals", text: "Clean a CSV and document how the script handles invalid and missing values." },
+  { title: "Product Management", text: "Turn customer feedback into a prioritised change and define how to measure it." },
 ]
 
 const STEPS = [
   { title: "Understand", text: "We map your departments, academic calendar, and cohort skill goals together." },
-  { title: "Configure", text: "Provision your Isolated College Tenant OS and assign tracks across semesters." },
-  { title: "Launch", text: "Students enrol, practise in browser labs, and ship graded capstones." },
-  { title: "Track & Export", text: "Monitor live cohort completion and export verified CSV reports for accreditation and placement drives." },
+  { title: "Configure", text: "Agree on the cohort, practical tasks and who will review each submission." },
+  { title: "Launch", text: "Students practise, submit an individual project and receive rubric-based feedback." },
+  { title: "Track & Export", text: "Review submissions, passes and outstanding feedback with the placement cell." },
 ]
 
 export default function InstitutionsPage() {
@@ -42,21 +29,19 @@ export default function InstitutionsPage() {
           <div className="hx-hero__glow" aria-hidden="true" />
           <div className="sky-container hx-hero__inner inx-hero">
             <div>
-              <p className="hx-eyebrow">For institutions · Multi-Tenant College OS</p>
+              <p className="hx-eyebrow">For colleges and placement cells</p>
               <h1 id="inx-title" className="hx-hero__title">
-                Practical learning and <em>Career Portfolio</em> for your learners.
+                Skylent <em>Campus Lab Pack</em>
               </h1>
               <p className="hx-hero__lead">
-                Deploy Skylent’s Live 15-Lesson courses, interactive SQL &amp; Python sandboxes, verifiable project certificates, and Isolated College Tenant OS alongside your campus curriculum.
+                Start with a four-week SQL pilot for one department. Students complete practical work, faculty assess it with a shared rubric, and placement teams see who passed and who needs another attempt.
               </p>
               <div className="hx-hero__actions">
                 <Link className="sk-btn sk-btn-primary hx-btn" to="/contact?for=institution">
-                  Talk to partnerships
+                  Discuss a campus pilot
                   <ArrowRight />
                 </Link>
-                <Link className="sk-btn hx-btn hx-btn--ghost" to="/login">
-                  Organisation sign in
-                </Link>
+                <a className="sk-btn hx-btn hx-btn--ghost" href="#campus-preview">Try the sample cohort</a>
               </div>
             </div>
             <div className="inx-hero__media">
@@ -69,14 +54,14 @@ export default function InstitutionsPage() {
           <div className="sky-container">
             <div className="hx-head">
               <div>
-                <p className="hx-eyebrow hx-eyebrow--dark">What Skylent provides</p>
+                <p className="hx-eyebrow hx-eyebrow--dark">Campus Lab Pack tracks</p>
                 <h2 id="inx-provides" className="hx-h2">
-                  Everything your learners and faculty use, <em>in one platform.</em>
+                  What students will work on.
                 </h2>
               </div>
             </div>
             <ul className="inx-provides">
-              {PROVIDES.map((item) => (
+              {TRACKS.map((item) => (
                 <li key={item.title}>
                   <b>{item.title}</b>
                   <span>{item.text}</span>
@@ -86,25 +71,12 @@ export default function InstitutionsPage() {
           </div>
         </section>
 
-        <section className="abx-section abx-section--tint" aria-labelledby="inx-partners">
-          <div className="sky-container">
-            <p className="hx-eyebrow hx-eyebrow--dark">Who we work with</p>
-            <h2 id="inx-partners" className="hx-h2 hx-h2--sm">Partnerships by type of institution.</h2>
-            <ul className="abx-principles">
-              {PARTNERS.map((item) => (
-                <li key={item.title}>
-                  <b>{item.title}</b>{" — "}
-                  <span>{item.text}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
+        <CampusLabPreview />
 
         <section className="abx-section" aria-labelledby="inx-steps">
           <div className="sky-container">
             <p className="hx-eyebrow hx-eyebrow--dark">How it works</p>
-            <h2 id="inx-steps" className="hx-h2 hx-h2--sm">Understand, configure, launch, track.</h2>
+            <h2 id="inx-steps" className="hx-h2 hx-h2--sm">How the pilot runs.</h2>
             <ol className="inx-steps">
               {STEPS.map((step) => (
                 <li key={step.title}>
@@ -124,11 +96,11 @@ export default function InstitutionsPage() {
             </h2>
             <div className="hx-hero__actions">
               <Link className="sk-btn sk-btn-primary hx-btn" to="/contact?for=institution">
-                Talk to partnerships
+                Discuss a campus pilot
                 <ArrowRight />
               </Link>
-              <Link className="sk-btn hx-btn hx-btn--ghost" to="/courses">
-                Explore programmes
+              <Link className="sk-btn hx-btn hx-btn--ghost" to="/login">
+                Organisation sign in
               </Link>
             </div>
           </div>
